@@ -789,9 +789,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	if (gmt_M_compat_check (GMT, 4) && !Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
 		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
-	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
+	if (Ctrl->N.info && Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST)
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
-	}
 
 	if (gmt_M_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
@@ -893,7 +892,9 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case GRDFFT_UP_DOWN_CONTINUE:
-				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_Message (API, GMT_TIME_NONE, "downward continuation...\n") : GMT_Message (API, GMT_TIME_NONE,  "upward continuation...\n"));
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
+					((Ctrl->par[par_count] < 0.0) ? GMT_Message (API, GMT_TIME_NONE, "downward continuation...\n") :
+					                                GMT_Message (API, GMT_TIME_NONE,  "upward continuation...\n"));
 				par_count += do_continuation (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_AZIMUTHAL_DERIVATIVE:
