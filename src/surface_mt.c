@@ -35,10 +35,10 @@
  * Version:	5 API
  *
  * This 5.3 version is a complete re-write that differs from the original code:
- * 1. It uses scan-line grid structure, so we no longer need to transpose grid
- * 2. It keeps node spacing at 1, thus no longer need complicated strides between
+ * 1. It uses scan-line grid structures, so we no longer need to transpose grids
+ * 2. It keeps node spacing at 1, thus we no longer need complicated strides between
  *    active nodes.  That spacing is now always 1 and we expand the grid as we
- *    go to larger grids (more nodes).
+ *    go to larger grids (i.e., adding more nodes).
  * 3. It relies more on functions and macros from GMT to handle rows/cols/node calculations.
  * 4. TESTING: It enables multiple threads via OpenMP [if compiled that way].
  */
@@ -163,7 +163,7 @@ float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 /* Go from data x to fractional column x: */
 #define x_to_fcol(x,x0,idx) (((x) - (x0)) * (idx))
 /* Go from x to grid integer column knowing it is a gridline-registered grid: */
-#define x_to_col(x,x0,idx) (irint(x_to_fcol(x,x0,idx)))
+#define x_to_col(x,x0,idx) ((int64_t)floor(x_to_fcol(x,x0,idx)+0.5))
 /* Go from data y to fractional row y_up measured from south (y_up = 0) towards north (y_up = ny-1): */
 #define y_to_frow(y,y0,idy) (((y) - (y0)) * (idy))
 /* Go from y to row (row = 0 is north) knowing it is a gridline-registered grid: */
@@ -214,7 +214,7 @@ struct SURFACE_DATA {	/* Data point and index to node it currently constrains  *
 	float x, y, z;
 	uint64_t index;
 #ifdef DEBUG	/* For debugging purposes only - it is the original input data point number before sorting */
-	uint64_t number;
+	int64_t number;
 #endif
 };
 
@@ -1208,7 +1208,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				}
 				
 				/* Here we must estimate a solution via equations (A-4) [SURFACE_UNCONSTRAINED] or (A-7) [SURFACE_CONSTRAINED] */
-				dump = (row == 19 && col == 32 && (iteration_count > 0 && iteration_count < 20));
+				//dump = (row == 19 && col == 32 && (iteration_count > 0 && iteration_count < 20));
 				u_00 = 0.0;	/* Start with zero, build updated solution for central node */
 				set = (status[node] == SURFACE_IS_UNCONSTRAINED) ? SURFACE_UNCONSTRAINED : SURFACE_CONSTRAINED;	/* Index to C->coeff set to use */
 				for (k = 0; k < 12; k++) {	/* This is either equation (A-4) or the corresponding part of (A-7), depending on the value of set */
@@ -1435,6 +1435,10 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	*/
 
 	uint64_t last_index, n_outside, k;
+#ifdef DEBUG
+	unsigned int kind;
+	char *point_type[2] = {"Original", "Breakline"};
+#endif
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Eliminate data points that are not nearest a node.\n");
 
@@ -1450,7 +1454,9 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
+			kind = (C->data[k].number > 0) ? 0 : 1;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s point %" PRId64 " will be ignored.\n", point_type[kind], labs(C->data[k].number));
+			//fprintf (stderr, "This points (x,y) vs previous (x,y): (%g, %g) vs {%g, %g}\n", C->data[k].x, C->data[k].y, C->data[k-1].x, C->data[k-1].y);
 #endif
 			n_outside++;
 		}
@@ -1458,7 +1464,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 			last_index = C->data[k].index;
 	}
 	
-	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
+	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be sorted to end of the array */
 		qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points, &(C->info));
 		C->npoints -= n_outside;	/* Effectively chopping off the eliminated points */
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);	/* Adjust memory accordingly */
@@ -1466,6 +1472,8 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
+		//for (k = 0; k < C->npoints; k++)
+			//printf ("%g\t%g\t%g\n", C->data[k].x, C->data[k].y, C->data[k].z);
 	}
 }
 
@@ -1640,6 +1648,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 		}
 		n_tot += this_end;
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d breakline points, reinterpolated to %d points\n", (int)xyzline->n_records, (int)n_tot);
 
 	/* Now append the interpolated breakline to the C data structure */
 
@@ -1662,7 +1671,8 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 
 		C->data[k].index = row_col_to_index (srow, scol, C->current_nx);
 #ifdef DEBUG
-		C->data[k].number = k + 1;
+		C->data[k].number = -(n + 1);
+		// printf ("%g\t%g\t%g\n", x[n], y[n], z[n]);
 #endif
 		C->data[k].x = (float)x[n];
 		C->data[k].y = (float)y[n];

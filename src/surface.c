@@ -1466,6 +1466,7 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		C->data[k].index = scol * C->block_ny + srow;
 #ifdef DEBUG
 		C->data[k].number = k + 1;
+		//printf ("%g\t%g\t%g\n", x[n], y[n], z[n]);
 #endif
 		C->data[k].x = (float)x[n];
 		C->data[k].y = (float)y[n];

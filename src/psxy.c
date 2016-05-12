@@ -338,11 +338,11 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 	unsigned int k, current[2] = {0,0}, next[2] = {1,0};
 	double dim[PSL_MAX_DIMS], angle, s, c, L;
 	char *end[2] = {"start", "end"};
-	if (n < 2) return;
+	if (n < 2) return;	/* No line of mine */
+	if (P->end[0].V == NULL && P->end[1].V == NULL) return;	/* No arrow heads requested */
 	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
-	if (P->end[0].V == NULL && P->end[0].V == NULL) return;
 	PSL_command (GMT->PSL, "V\n");
-	GMT->PSL->current.linewidth = -1.0;				/* Will be changed by next PSL_setlinewidth */
+	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
@@ -361,7 +361,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		if (P->end[k].V->v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
-	GMT->PSL->current.linewidth = -1.0;				/* Will be changed by next PSL_setlinewidth */
+	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
 	PSL_command (GMT->PSL, "U\n");
 }
 
