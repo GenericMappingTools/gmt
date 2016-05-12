@@ -316,7 +316,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					if (X != 'X' && X != Ctrl->C.unit) n_units++;
 					if (mode != 0 && mode != Ctrl->C.dist_mode) n_modes++;
 				}
-				if (Ctrl->C.mode) *c = '+';	/* Undo truncation */
+				if (c && Ctrl->C.mode) *c = '+';	/* Undo truncation */
 				if (n_units) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
 					n_errors++;
@@ -381,7 +381,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 			case 'L':	/* GMT4 Sets BCs */
 				if (gmt_M_compat_check (GMT, 4)) {
 					if (opt->arg[0]) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+						GMT_Report (API, GMT_MSG_COMPAT,
+						            "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 						strncpy (GMT->common.n.BC, opt->arg, 4U);
 					}
 					else {
@@ -457,13 +458,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	}
 	Ctrl->G.n_grids = ng;
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] || Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]), "Syntax error -S: Must specify at least one modifier.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
+	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
+	                                   "Syntax error -S: Must specify at least one modifier.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0),
+	                                   "Syntax error -C: Arguments must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0), "Syntax error -T: Only one non-img input grid can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0),
+	                                   "Syntax error -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
