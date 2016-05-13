@@ -347,7 +347,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			Ctrl->CM4_D.dst = realloc(Ctrl->CM4_D.dst, (size_t)(Ctrl->CM4_DATA.n_times) * sizeof(double));
 
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
-		Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
+		if (dstx) Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
 		if (cerr > 49) {
 			gmt_M_str_free ( dstx);
 			if (Ctrl->CM4_DATA.n_times > 1) gmt_M_str_free (Ctrl->CM4_D.dst);
