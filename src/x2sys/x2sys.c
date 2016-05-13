@@ -746,7 +746,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (n_records <= 0) {
+	if (n_records <= 0 || n_records > 1e6) {	/* The 1e6 is to satisfy CID 39227 (TAINTED variable) */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Got bad n_records %d\n", n_records);
 		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);
