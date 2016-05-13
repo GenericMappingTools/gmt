@@ -219,7 +219,7 @@ struct SURFACE_DATA {	/* Data point and index to node it currently constrains  *
 };
 
 struct SURFACE_BRIGGS {		/* Coefficients in Taylor series for Laplacian(z) a la I. C. Briggs (1974)  */
-	double b[6];
+	float b[6];
 };
 
 struct SURFACE_SEARCH {		/* Things needed inside compare function will be passed to qsort_r */
@@ -552,7 +552,7 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->npoints -= k_skipped;
 }
 
-GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, double *b, double xx, double yy, float z) {
+GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, float *b, double xx, double yy, float z) {
 	/* Given the normalized offset (xx,yy) from current node (value z) we determine the
 	 * Briggs coefficients b_k, k = 1,5  [Equation (A-6) in the reference] 
 	 * Here, xx, yy are the fractional distances, accounting for any anisotropy.
@@ -560,28 +560,28 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, double *b, dou
 	 * we actually need to divide by it so we do that change here as well.
 	 * Finally, b[4] will multiply with the off-node constraint so we do that here.
 	 */
-	double xx2, yy2, xx_plus_yy, xx_plus_yy_plus_one, inv_xx_plus_yy_plus_one, inv_delta;
+	double xx2, yy2, xx_plus_yy, xx_plus_yy_plus_one, inv_xx_plus_yy_plus_one, inv_delta, b_4;
 	
 	xx_plus_yy = xx + yy;
 	xx_plus_yy_plus_one = 1.0 + xx_plus_yy;
 	inv_xx_plus_yy_plus_one = 1.0 / xx_plus_yy_plus_one;
 	xx2 = xx * xx;	yy2 = yy * yy;
 	inv_delta = inv_xx_plus_yy_plus_one / xx_plus_yy;
-	b[0] = (xx2 + 2.0 * xx * yy + xx - yy2 - yy) * inv_delta;
-	b[1] = 2.0 * (yy - xx + 1.0) * inv_xx_plus_yy_plus_one;
-	b[2] = 2.0 * (xx - yy + 1.0) * inv_xx_plus_yy_plus_one;
-	b[3] = (-xx2 + 2.0 * xx * yy - xx + yy2 + yy) * inv_delta;
-	b[4] = 4.0 * inv_delta;
+	b[0] = (float)((xx2 + 2.0 * xx * yy + xx - yy2 - yy) * inv_delta);
+	b[1] = (float)(2.0 * (yy - xx + 1.0) * inv_xx_plus_yy_plus_one);
+	b[2] = (float)(2.0 * (xx - yy + 1.0) * inv_xx_plus_yy_plus_one);
+	b[3] = (float)((-xx2 + 2.0 * xx * yy - xx + yy2 + yy) * inv_delta);
+	b_4 = 4.0 * inv_delta;
 	/* We also need to normalize by the sum of the b[k] values, so sum them here */
-	b[5] = b[0] + b[1] + b[2] + b[3] + b[4];
+	b[5] = b[0] + b[1] + b[2] + b[3] + b_4;
 	//fprintf (stderr, "b: %g %g %g %g %g %g [%g/%g]\n", b[0], b[1], b[2], b[3], b[4], b[5], xx, yy);
 	/* We need to sum k = 0<5 of u[k]*b[k], where u[k] are the nodes of the points A-D,
 	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
 	 * add add b[4] to the rest of the sum inside the iteration loop. */
-	b[4] *= z;
+	b[4] = (float)(b_4 * z);
 	
 	/* b[5] is part of a denominator so we do the division here instead of inside iterate loop */
-	b[5] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[5]);
+	b[5] = (float)(1.0 / (C->a0_const_1 + C->a0_const_2 * b[5]));
 }
 
 GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -1127,7 +1127,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	bool finished, dump;
 	double current_limit = C->converge_limit / C->current_stride;
 	double u_change, max_u_change, max_z_change, sum_bk_uk, u_00;
-	double *b = NULL;
+	float *b = NULL;
 #ifdef _OPENMP	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
 	float *u_new = C->Grid->data, *u_old = C->alternate_grid;
 #else		/* Here they are the same single grid */
