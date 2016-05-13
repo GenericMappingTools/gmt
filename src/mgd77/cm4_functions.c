@@ -197,6 +197,14 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		fclose (fp);
 		return 1;
 	}
+	
+	if (lsmf > 5000 || lpos > 13000 || lcmf > 9000) {	/* Mainly to shut up CID 39232 (TAINTED variables), but it maybe right */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Suspicious values in first line of umdl.CM4 file\n");;
+		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
+		fclose (fp);
+		return 1;
+	}
+	
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%d", &lum1);
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
