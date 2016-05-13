@@ -229,7 +229,7 @@ in Parker expansion):
 
     gmt gravfft bat.grd -D1665 -Gwater_g.grd -E4
 
-Now subtract it to your free-air anomaly faa.grd and you will get the
+Now subtract it from your free-air anomaly faa.grd and you will get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
 After all the Bouguer anomaly pretends to correct the mass deficiency
 presented by the water layer, so we should add because water is less
@@ -255,7 +255,7 @@ offset due to the fact that *z* is positive up):
 
     gmt gravfft bat.grd=nf/1/-6000 -D600 -Gmoho_g.grd
 
-Now, subtract it to the Bouguer to obtain the MBA anomaly. That is:
+Now, subtract it from the Bouguer to obtain the MBA anomaly. That is:
 
    ::
 
