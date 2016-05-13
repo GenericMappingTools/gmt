@@ -255,11 +255,11 @@ offset due to the fact that *z* is positive up):
 
     gmt gravfft bat.grd=nf/1/-6000 -D600 -Gmoho_g.grd
 
-Now, subtract it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
+Now, subtract it to the Bouguer to obtain the MBA anomaly. That is:
 
    ::
 
-    gmt grdmath water_g.grd moho_g.grd SUB = mba.grd
+    gmt grdmath bouguer.grd moho_g.grd SUB = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an average depth
@@ -291,7 +291,7 @@ only the above example seams to give the correct result.
     gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -E1
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
-below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
+below a region whose bathymetry is given by bat.grd, a Moho at 9 km
 depth and the same densities as before?
 
    ::
