@@ -154,6 +154,7 @@ float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 #define SURFACE_IS_CONSTRAINED		5		/* Node has already been set */
 #define SURFACE_UNCONSTRAINED		0		/* Use coefficients for unconstrained node */
 #define SURFACE_CONSTRAINED		1		/* Use coefficients for constrained node */
+#define SURFACE_BREAKLINE		1		/* Flag for breakline constraints that should overrule data constraints */
 
 /* Misc. macros used to get row, cols, index, node, x, y, plane trend etc. */
 
@@ -213,6 +214,7 @@ enum surface_iter { GRID_NODES = 0, GRID_DATA = 1 };
 
 struct SURFACE_DATA {	/* Data point and index to node it currently constrains  */
 	float x, y, z;
+	int kind;
 	uint64_t index;
 #ifdef DEBUG	/* For debugging purposes only - it is the original input data point number before sorting */
 	int64_t number;
@@ -502,11 +504,14 @@ GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v, void *
 	if (index_1 < index_2) return (-1);
 	if (index_1 > index_2) return (+1);
 	if (index_1 == SURFACE_OUTSIDE) return (0);
-	/* Points are in same grid cell, find the one who is nearest to grid point */
+	/* Points are in same grid cell.  First check for breakline points to sort those ahead of data points */
+	if (point_1->kind == SURFACE_BREAKLINE && point_2->kind == 0) return (-1);
+	if (point_2->kind == SURFACE_BREAKLINE && point_1->kind == 0) return (+1);
+	/* Now find the one who is nearest to grid point */
 	/* Note: index calculations do not include boundary pad */
 	info = arg;	/* Get the needed metadata for distance calculations */
-	row = index_to_row (point_1->index, info->current_nx);
-	col = index_to_col (point_1->index, info->current_nx);
+	row = index_to_row (index_1, info->current_nx);
+	col = index_to_col (index_1, info->current_nx);
 	x0 = col_to_x (col, info->wesn[XLO], info->wesn[XHI], info->inc[GMT_X], info->current_nx);
 	y0 = row_to_y (row, info->wesn[YLO], info->wesn[YHI], info->inc[GMT_Y], info->current_ny);
 	dist_1 = (point_1->x - x0) * (point_1->x - x0) + (point_1->y - y0) * (point_1->y - y0);
@@ -1601,178 +1606,83 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	gmt_M_memcpy (C->info.wesn, C->Grid->header->wesn, 4, double);
 }
 
-GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline, char dummy[]) {
-	/* Add constraints from breaklines */
-
-	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
-	uint64_t k = 0, n, kmax = 0, kmin = 0, row, seg;
-	int srow, scol;
-	size_t n_alloc;
-	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, zmin = DBL_MAX, zmax = -DBL_MAX;
-
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read breakline data and assign indices\n");
-	
-	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	x = gmt_M_memory (GMT, NULL, n_alloc, double);
-	y = gmt_M_memory (GMT, NULL, n_alloc, double);
-	z = gmt_M_memory (GMT, NULL, n_alloc, double);
-
-	/* We wish to ensure that the breakline has points of comparable line density to teh grid spacing */
-	for (seg = 0; seg < xyzline->n_segments; seg++) {
-		for (row = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
-			dx = xyzline->segment[seg]->coord[GMT_X][row+1] - xyzline->segment[seg]->coord[GMT_X][row];
-			dy = xyzline->segment[seg]->coord[GMT_Y][row+1] - xyzline->segment[seg]->coord[GMT_Y][row];
-			dz = xyzline->segment[seg]->coord[GMT_Z][row+1] - xyzline->segment[seg]->coord[GMT_Z][row];
-			/* Given point spacing and grid spacing, how many points to interpolate? */
-			n_int = lrint (MAX (fabs(dx) * C->r_inc[GMT_X], fabs(dy) * C->r_inc[GMT_Y] ) ) + 1;
-			this_end += n_int;
-
-			if (n_alloc >= this_end) {
-				n_alloc += MAX (GMT_CHUNK, n_int);
-				x = gmt_M_memory (GMT, x, n_alloc, double);
-				y = gmt_M_memory (GMT, y, n_alloc, double);
-				z = gmt_M_memory (GMT, z, n_alloc, double);
-			}
-
-			dx /= (floor((double)n_int) - 1);
-			dy /= (floor((double)n_int) - 1);
-			dz /= (floor((double)n_int) - 1);
-			for (k = this_ini, n = 0; k < this_end - 1; k++, n++) {
-				x[k] = xyzline->segment[seg]->coord[GMT_X][row] + n * dx;
-				y[k] = xyzline->segment[seg]->coord[GMT_Y][row] + n * dy;
-				z[k] = xyzline->segment[seg]->coord[GMT_Z][row] + n * dz;
-			}
-			x[this_end-1] = xyzline->segment[seg]->coord[GMT_X][row+1];
-			y[this_end-1] = xyzline->segment[seg]->coord[GMT_Y][row+1];
-			z[this_end-1] = xyzline->segment[seg]->coord[GMT_Z][row+1];
-
-			this_ini += n_int;
-		}
-		n_tot += this_end;
-	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d breakline points, reinterpolated to %d points\n", (int)xyzline->n_records, (int)n_tot);
-
-	/* Now append the interpolated breakline to the C data structure */
-
-	k = C->npoints;
-	C->data = gmt_M_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
-	C->z_mean *= k;		/* It was already computed, reset it to the sum so we can add more and recalculate the mean */
-	if (C->set_limit[LO] == DATA)	/* Lower limit should equal minimum data found.  Start with what we have so far and change if we find lower values */
-		zmin = C->limit[LO];
-	if (C->set_limit[HI] == DATA)	/* Upper limit should equal maximum data found.  Start with what we have so far and change if we find higher values */
-		zmax = C->limit[HI];
-
-	for (n = 0; n < n_tot; n++) {
-
-		if (gmt_M_is_dnan (z[n])) continue;
-
-		scol = x_to_col (x[n], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
-		if (scol < 0 || scol >= C->current_nx) continue;
-		srow = y_to_row (y[n], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
-		if (srow < 0 || srow >= C->current_ny) continue;
-
-		C->data[k].index = row_col_to_index (srow, scol, C->current_nx);
-#ifdef DEBUG
-		C->data[k].number = -(n + 1);
-		// printf ("%g\t%g\t%g\n", x[n], y[n], z[n]);
-#endif
-		C->data[k].x = (float)x[n];
-		C->data[k].y = (float)y[n];
-		C->data[k].z = (float)z[n];
-		if (zmin > z[n]) zmin = z[n], kmin = k;
-		if (zmax < z[n]) zmax = z[n], kmax = k;
-		k++;
-		C->z_mean += z[n];
-	}
-
-	if (k != (C->npoints + n_tot))		/* We had some NaNs */
-		C->data = gmt_M_memory (GMT, C->data, k, struct SURFACE_DATA);
-
-	C->npoints = k;
-	C->z_mean /= k;
-
-	if (C->set_limit[LO] == DATA)	/* Update our lower data-driven limit to the new minimum found */
-		C->limit[LO] = C->data[kmin].z;
-	if (C->set_limit[HI] == DATA)	/* Update our upper data-driven limit to the new maximum found */
-		C->limit[HI] = C->data[kmax].z;
-
-	gmt_M_free (GMT, x);
-	gmt_M_free (GMT, y);
-	gmt_M_free (GMT, z);
-}
-
-int find_closest_point (double *x, double *y, double *z, uint64_t k, double x0, double y0, double *xx, double *yy, double *zz) {
-	double dx, dy, r, a;
-	dx = x[k] - x[k-1];
-	dy = y[k] - y[k-1];
-	r = DBL_MAX;	/* Initialize the distance from node to nearest point measured orthogonally onto break line */
+double find_closest_point (double *x, double *y, double *z, uint64_t k, double x0, double y0, double half_dx, double half_dy, double *xx, double *yy, double *zz) {
+	/* Find the point on the line from (x[k-1],y[k-1]) to (x[k], y[k]) closest to (x0,y0).  If the
+	 * point we find is outside the end of the line then we return r = DBL_MAX */
+	double dx, dy, a, r= DBL_MAX;	/* Initialize distance from (x0,y0) to nearest point measured orthogonally onto break line */
+	dx = x[k] - x[k-1];	dy = y[k] - y[k-1];
 	if (gmt_M_is_zero (dx)) {	/* Break line is vertical */
-		if ((y[k] <= y0 && y[k-1] >= y0) || (y[k-1] <= y0 && y[k] >= y0)) {	/* Nearest point is in same bin */
+		if ((y[k] <= y0 && y[k-1] > y0) || (y[k-1] <= y0 && y[k] > y0)) {	/* Nearest point is in same bin */
 			*xx = x[k];	*yy = y0;
 			r = fabs (*xx - x0);
-			*zz = z[k-1] + (z[k] - z[k]) * (*yy - y[k-1]) / dy;
+			*zz = z[k-1] + (z[k] - z[k-1]) * (*yy - y[k-1]) / dy;
 		}
 	}
 	else if (gmt_M_is_zero (dy)) {	/* Break line is horizontal */
-		if ((x[k] <= x0 && x[k-1] >= x0) || (x[k-1] <= x0 && x[k] >= x0)) {	/* Nearest point in same bin */
+		if ((x[k] <= x0 && x[k-1] > x0) || (x[k-1] <= x0 && x[k] > x0)) {	/* Nearest point in same bin */
 			*xx = x0;	*yy = y[k];
 			r = fabs (*yy - y0);
-			*zz = z[k-1] + (z[k] - z[k]) * (*xx - x[k-1]) / dx;
+			*zz = z[k-1] + (z[k] - z[k-1]) * (*xx - x[k-1]) / dx;
 		}
 	}
 	else {	/* General case.  Nearest orthogonal point may or may not be in bin, in which case r > r_prev */
 		a = dy / dx;	/* Slope of line */
-		*xx = (y0 - y[k] + a * (x[k] + x0)) / (a + 1.0/a);
+		*xx = (y0 - y[k-1] + a * x[k-1] + x0 / a) / (a + 1.0/a);
 		*yy = a * (*xx - x[k]) + y[k];
-		if ((x[k] <= *xx && x[k-1] >= *xx) || (x[k-1] <= *xx && x[k] >= *xx)) {	/* Orthonormal point real, i.e., between the end points of line */
-			r = hypot (*xx - x0, *yy - y0);
-			*zz = z[k-1] + (z[k] - z[k]) * (*xx - x[k-1]) / dx;
+		if ((x[k] <= *xx && x[k-1] > *xx) || (x[k-1] <= *xx && x[k] > *xx)) {	/* Orthonormal point found between the end points of line */
+			if (fabs (*xx-x0) < half_dx && fabs (*yy-y0) < half_dy) {	/* Yes, within this bin */
+				r = hypot (*xx - x0, *yy - y0);
+				*zz = z[k-1] + (z[k] - z[k-1]) * (*xx - x[k-1]) / dx;
+			}
 		}
 	}
 	return r;
 }
 
-#if 0
-GMT_LOCAL void interpolate_add_breakline_new (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline, char *file) {
-	bool dump = false;
+GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *T, char *file) {
 	int srow, scol;
-	uint64_t n_tot = 0, next_k = 0, new_n = 0, n_int = 0, nb = 0;
+	uint64_t new_n = 0, n_int = 0, nb = 0;
 	uint64_t k = 0, n, kmax = 0, kmin = 0, row, seg, node_this, node_prev;
-	size_t n_alloc;
-	double dx, dy, dz, r, r_this, r_prev, r_min, f, x0_prev, y0_prev, x0_this, y0_this, xx, yy, zz, zmin = DBL_MAX, zmax = -DBL_MAX;
+	size_t n_alloc, n_alloc_b;
+	double dx, dy, dz, r, r_this, r_prev, r_min, x0_prev, y0_prev, x0_this, y0_this;
+	double xx, yy, zz, half_dx, half_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 	double *xline = NULL, *yline = NULL, *zline = NULL;
 	double *x = NULL, *y = NULL, *z = NULL, *xb = NULL, *yb = NULL, *zb = NULL;
-	FILE *fp = NULL;
+	char fname1[GMT_LEN256] = {""}, fname2[GMT_LEN256] = {""};
+	FILE *fp1 = NULL, *fp2 = NULL;
 
-	if (file[0]) {
-		dump = true;
-		fp = fopen (file, "w");
+	if (file) {
+		sprintf (fname1, "%s.int",   file);
+		sprintf (fname2, "%s.final", file);
+		fp1 = fopen (fname1, "w");
+		fp2 = fopen (fname2, "w");
 	}
 	/* Add constraints from breaklines */
 	/* Reduce breaklines to the nearest point per node of cells crossed */
 
-	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	xb = gmt_M_memory (GMT, NULL, n_alloc, double);
-	yb = gmt_M_memory (GMT, NULL, n_alloc, double);
-	zb = gmt_M_memory (GMT, NULL, n_alloc, double);
+	n_alloc = n_alloc_b = GMT_INITIAL_MEM_ROW_ALLOC;
+	xb = gmt_M_memory (GMT, NULL, n_alloc_b, double);
+	yb = gmt_M_memory (GMT, NULL, n_alloc_b, double);
+	zb = gmt_M_memory (GMT, NULL, n_alloc_b, double);
 
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
 	y = gmt_M_memory (GMT, NULL, n_alloc, double);
 	z = gmt_M_memory (GMT, NULL, n_alloc, double);
 
-	for (seg = 0; seg < xyzline->n_segments; seg++) {
-		xline = xyzline->segment[seg]->coord[GMT_X];
-		yline = xyzline->segment[seg]->coord[GMT_Y];
-		zline = xyzline->segment[seg]->coord[GMT_Z];
+	half_dx = 0.5 * C->inc[GMT_X];	half_dy = 0.5 * C->inc[GMT_Y];
+	for (seg = 0; seg < T->n_segments; seg++) {
+		xline = T->segment[seg]->coord[GMT_X];
+		yline = T->segment[seg]->coord[GMT_Y];
+		zline = T->segment[seg]->coord[GMT_Z];
 		/* 1. Interpolate the breakline to ensure there are points in every bin that it crosses */
-		for (row = k = next_k = new_n = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
+		if (file) fprintf (fp1, "> Segment %d\n", (int)seg);
+		for (row = k = 0, new_n = 1; row < T->segment[seg]->n_rows - 1; row++) {
 			dx = xline[row+1] - xline[row];
 			dy = yline[row+1] - yline[row];
 			dz = zline[row+1] - zline[row];
 			/* Given point spacing and grid spacing, how many points to interpolate? */
-			n_int = lrint (MAX (fabs(dx) * C->r_inc[GMT_X], fabs(dy) * C->r_inc[GMT_Y] ) ) + 1;
+			n_int = lrint (hypot (dx, dy) * MAX (C->r_inc[GMT_X], C->r_inc[GMT_Y])) + 1;
 			new_n += n_int;
-
 			if (n_alloc <= new_n) {
 				n_alloc += MAX (GMT_CHUNK, n_int);
 				x = gmt_M_memory (GMT, x, n_alloc, double);
@@ -1780,38 +1690,34 @@ GMT_LOCAL void interpolate_add_breakline_new (struct GMT_CTRL *GMT, struct SURFA
 				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 
-			f = n_int - 1.0;
-			dx /= f;	dy /= f;	dz /= f;
-			for (k = next_k, n = 0; k < new_n - 1; k++, n++) {
+			dx /= n_int;	dy /= n_int;	dz /= n_int;
+			for (n = 0; n < n_int; k++, n++) {
 				x[k] = xline[row] + n * dx;
-				y[k] = xline[row] + n * dy;
-				z[k] = xline[row] + n * dz;
+				y[k] = yline[row] + n * dy;
+				z[k] = zline[row] + n * dz;
+				if (file) fprintf (fp1, "%g\t%g\t%g\n", x[k], y[k], z[k]);
 			}
-			x[new_n-1] = xline[row+1];
-			y[new_n-1] = xline[row+1];
-			z[new_n-1] = xline[row+1];
-
-			next_k += n_int;
 		}
+		x[k] = xline[row];	y[k] = yline[row];	z[k] = zline[row];
+		if (file) fprintf (fp1, "%g\t%g\t%g\n", x[k], y[k], z[k]);
 	
 		/* 2. Go along the (x,y,z), k = 1:new_n line and find the closest point to each bin node */
-		if (dump) fprintf (fp, "> Segment %d\n", (int)seg);
+		if (file) fprintf (fp2, "> Segment %d\n", (int)seg);
 		scol = x_to_col (x[0], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
 		srow = y_to_row (y[0], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 		node_this = row_col_to_node (srow, scol, C->current_mx);				/* The bin we are in */
 		x0_this = col_to_x (scol, C->Grid->header->wesn[XLO], C->Grid->header->wesn[XHI], C->inc[GMT_X], C->current_nx);	/* Node center point */
 		y0_this = row_to_y (srow, C->Grid->header->wesn[YLO], C->Grid->header->wesn[YHI], C->inc[GMT_Y], C->current_ny);
 		r_min = hypot (x[0] - x0_this, y[0] - y0_this);	/* Distance from node center to start of breakline */
-		xb[nb] = x[0];	yb[nb] = y[0];	zb[nb] = z[0];	/* Add this as our "nearest" breakline point for this bin */
+		xb[nb] = x[0];	yb[nb] = y[0];	zb[nb] = z[0];	/* Add this as our "nearest" breakline point (so far) for this bin */
+		//fprintf (stderr, "p2 k = 0 nb = %d x = %g y = %g r = %g\n", (int)nb, xb[nb], yb[nb], r_min);
 		for (k = 1; k < new_n; k++) {
-			/* Reset what is the previous point now */
+			//fprintf (stderr, "-------------------------------------------------\n");
+			/* Reset what is the previous point */
 			r_prev = r_this;	node_prev = node_this;
 			x0_prev = x0_this;	y0_prev = y0_this;
-		
 			scol = x_to_col (x[k], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
-			if (scol < 0 || scol >= C->current_nx) continue;
 			srow = y_to_row (y[k], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
-			if (srow < 0 || srow >= C->current_ny) continue;
 			x0_this = col_to_x (scol, C->Grid->header->wesn[XLO], C->Grid->header->wesn[XHI], C->inc[GMT_X], C->current_nx);	/* Node center point */
 			y0_this = row_to_y (srow, C->Grid->header->wesn[YLO], C->Grid->header->wesn[YHI], C->inc[GMT_Y], C->current_ny);
 			node_this = row_col_to_node (srow, scol, C->current_mx);
@@ -1820,36 +1726,52 @@ GMT_LOCAL void interpolate_add_breakline_new (struct GMT_CTRL *GMT, struct SURFA
 				if (r_this < r_min) {	/* This point is closer than previous point */
 					xb[nb] = x[k];	yb[nb] = y[k];	zb[nb] = z[k];
 					r_min = r_this;
+					//fprintf (stderr, "p1 k = %d nb = %d x = %g y = %g r = %g\n", (int)k, (int)nb, xb[nb], yb[nb], r_min);
 				}
 			}
-			r = find_closest_point (x, y, z, k, x0_prev, y0_prev, &xx, &yy, &zz);
+			/* Find point on line closest to prev bin center */
+			r = find_closest_point (x, y, z, k, x0_prev, y0_prev, half_dx, half_dy, &xx, &yy, &zz);
 			if (r < r_min) {	/* Yes, closer than previous point */
-				xb[nb] = xx;	yb[nb] = yy;	zb[nb] = z[0];
+				xb[nb] = xx;	yb[nb] = yy;	zb[nb] = zz;
 				r_min = r;
+				//fprintf (stderr, "x1 k = %d nb = %d x = %g y = %g r = %g\n", (int)k, (int)nb, xb[nb], yb[nb], r_min);
 			}
-			if (node_this != node_prev) {	/* Update this bin center and radial distance from point to current bin center */
-				r = find_closest_point (x, y, z, k, x0_this, y0_this, &xx, &yy, &zz);
-				if (r < r_min) {	/* Yes, closer than previous point */
-					xb[nb] = xx;	yb[nb] = yy;	zb[nb] = z[0];
-				}
-				if (dump) fprintf (fp, "%g\t%g\t%g\n", xb[nb], yb[nb], zb[nb]);
+			if (node_this != node_prev) {	/* Find point on line closest to this bin center */
+				if (file) fprintf (fp2, "%g\t%g\t%g\n", xb[nb], yb[nb], zb[nb]);
 				nb++;	/* OK, moving on from this bin */
-				xb[nb] = x[k];	yb[nb] = y[k];	zb[nb] = z[k];	/* Add this as our "nearest" breakline point for this bin for now */
+				if (nb > n_alloc_b) {
+					n_alloc_b += GMT_CHUNK;
+					xb = gmt_M_memory (GMT, xb, n_alloc_b, double);
+					yb = gmt_M_memory (GMT, yb, n_alloc_b, double);
+					zb = gmt_M_memory (GMT, zb, n_alloc_b, double);
+				}
+				xb[nb] = x[k];	yb[nb] = y[k];	zb[nb] = z[k];
 				r_min = r_this;
+				//fprintf (stderr, "p2 k = %d nb = %d x = %g y = %g r = %g\n", (int)k, (int)nb, xb[nb], yb[nb], r_min);
+				r = find_closest_point (x, y, z, k, x0_this, y0_this, half_dx, half_dy, &xx, &yy, &zz);
+				if (r < r_min) {	/* Yes, closer than previous point */
+					xb[nb] = xx;	yb[nb] = yy;	zb[nb] = zz;
+					r_min = r;
+					//fprintf (stderr, "x2 k = %d nb = %d x = %g y = %g r = %g\n", (int)k, (int)nb, xb[nb], yb[nb], r_min);
+				}
 			}
 		}
+		if (file) fprintf (fp2, "%g\t%g\t%g\n", xb[nb], yb[nb], zb[nb]);
+		nb++;
 	}
-	if (dump) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reinterpolated breakline saved to file %s\n", file);
-		fclose (fp);
+	if (file) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reinterpolated breakline saved to file %s\n", fname1);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Final breakline constraints saved to file %s\n", fname2);
+		fclose (fp1);
+		fclose (fp2);
 	}
 	
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d breakline points, reinterpolated to %d points\n", (int)xyzline->n_records, (int)nb);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d breakline points, reinterpolated to %d points, reduced to %d points\n", (int)T->n_records, (int)new_n, (int)nb);
 
 	/* Now append the interpolated breakline to the C data structure */
 
 	k = C->npoints;
-	C->data = gmt_M_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
+	C->data = gmt_M_memory (GMT, C->data, k+nb, struct SURFACE_DATA);
 	C->z_mean *= k;		/* It was already computed, reset it to the sum so we can add more and recalculate the mean */
 	if (C->set_limit[LO] == DATA)	/* Lower limit should equal minimum data found.  Start with what we have so far and change if we find lower values */
 		zmin = C->limit[LO];
@@ -1873,6 +1795,7 @@ GMT_LOCAL void interpolate_add_breakline_new (struct GMT_CTRL *GMT, struct SURFA
 		C->data[k].x = (float)xb[n];
 		C->data[k].y = (float)yb[n];
 		C->data[k].z = (float)zb[n];
+		C->data[k].kind = SURFACE_BREAKLINE;	/* Mark as breakline constraint */
 		if (zmin > zb[n]) zmin = z[n], kmin = k;
 		if (zmax < zb[n]) zmax = z[n], kmax = k;
 		k++;
@@ -1897,7 +1820,6 @@ GMT_LOCAL void interpolate_add_breakline_new (struct GMT_CTRL *GMT, struct SURFA
 	gmt_M_free (GMT, yb);
 	gmt_M_free (GMT, zb);
 }
-#endif
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
@@ -2249,10 +2171,9 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	if (Ctrl->D.active) {	/* Append breakline dataset */
 		struct GMT_DATASET *Lin = NULL;
-		char file[GMT_LEN256] = {""};
+		char *file = (Ctrl->D.debug) ? Ctrl->D.file : NULL;
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
-		if (Ctrl->D.debug) sprintf (file, "%s.debug", Ctrl->D.file);
 		interpolate_add_breakline (GMT, &C, Lin->table[0], file);	/* Pass the single table since we read a single file */
 	}
 	
