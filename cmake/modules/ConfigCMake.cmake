@@ -77,16 +77,23 @@ set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_SVN_REVI
 set (GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUMMARY}, Version ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
 
 # Get date
-try_run (_exit_today _compiled_today
-	${CMAKE_BINARY_DIR}/CMakeTmp
-	${CMAKE_MODULE_PATH}/today.c
-	CMAKE_FLAGS
-	RUN_OUTPUT_VARIABLE _today)
+if(DEFINED ENV{SOURCE_DATE_EPOCH})
+	EXECUTE_PROCESS(
+	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}" "+%Y;%m;%d;%B"
+	  OUTPUT_VARIABLE _today
+	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+else(DEFINED ENV{SOURCE_DATE_EPOCH})
+	try_run (_exit_today _compiled_today
+		${CMAKE_BINARY_DIR}/CMakeTmp
+		${CMAKE_MODULE_PATH}/today.c
+		CMAKE_FLAGS
+		RUN_OUTPUT_VARIABLE _today)
 
-if (NOT _compiled_today OR _exit_today EQUAL -1)
-	message (WARNING "Date not implemented, please file a bug report.")
-	set(_today "1313;13;13;Undecember")
-endif (NOT _compiled_today OR _exit_today EQUAL -1)
+	if (NOT _compiled_today OR _exit_today EQUAL -1)
+		message (WARNING "Date not implemented, please file a bug report.")
+		set(_today "1313;13;13;Undecember")
+	endif (NOT _compiled_today OR _exit_today EQUAL -1)
+endif(DEFINED ENV{SOURCE_DATE_EPOCH})
 
 list(GET _today 0 YEAR)
 list(GET _today 1 MONTH)
