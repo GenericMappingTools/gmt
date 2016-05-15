@@ -190,6 +190,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		return 1;
 	}
 
+	/* coverity[tainted_data_argument] */	/* Try to shut up Coverity about Tainted variables */
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	if ((n = sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf)) != 3) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to parse line in MGD77_cm4field\n");
