@@ -4144,6 +4144,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #else
 			/* We simulate POSIX opendir/readdir/closedir by listing the directory to a temp file */
 			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[j]);
+			/* coverity[tainted_string] */
 			if (system (line)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] returned error.\n", line);
 				continue;
