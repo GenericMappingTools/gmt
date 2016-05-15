@@ -764,6 +764,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	z = gmt_M_memory (GMT, NULL, s->n_out_columns, double *);
 	for (i = 0; i < (int)s->n_out_columns; i++) z[i] = gmt_M_memory (GMT, NULL, p->n_rows, double);
 
+	/* coverity[tainted_data] */	/* p->n_rows was checked above to be less than 1e6 */
 	for (j = 0; j < p->n_rows; j++) {
 
 		if (fread (&record, 18U, 1U, fp) != 1) {
