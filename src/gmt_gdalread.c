@@ -1192,6 +1192,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 	}
 
+#if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
 	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
 		for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 			nn = (pad_w+m)*(nXSize_withPad) + startColPos;
@@ -1201,7 +1202,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			}
 		}
 	}
-
+#endif
 	gmt_M_free (GMT, rowVec);
 	gmt_M_str_free (tmp);
 	gmt_M_free (GMT, whichBands);
