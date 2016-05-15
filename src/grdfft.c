@@ -743,7 +743,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'M':	/* Geographic data */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!gmt_M_is_geographic (GMT, GMT_IN))
+						gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -764,7 +765,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				break;
 			case 'T':	/* Flexural isostasy */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
+					GMT_Report (API, GMT_MSG_COMPAT,
+					            "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 					Ctrl->T.active = true;
 					n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 					for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
@@ -792,7 +794,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	if (Ctrl->N.info && Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST)
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 
-	if (gmt_M_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
+	if (Ctrl->N.info && gmt_M_compat_check (GMT, 4) && Ctrl->T.active)
+		Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
@@ -949,7 +952,8 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 
 		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+		                    GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 			Return (API->error);
 		}
 	}
