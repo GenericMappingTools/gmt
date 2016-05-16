@@ -931,11 +931,12 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	C->z_mean /= C->npoints;	/* Estimate mean data value */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		char msg[GMT_LEN256] = {""};
 		sprintf (C->format, "%s %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Minimum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
+		sprintf (msg, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Minimum value of your dataset x,y,z at: %s", msg);
+		sprintf (msg, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: %s", msg);
 		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
 	C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
@@ -1441,10 +1442,10 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	   We sort, mark redundant data as SURFACE_OUTSIDE, and sort again, chopping off the excess.
 	*/
 
-	uint64_t last_index, n_outside, k;
+	uint64_t last_index, n_outside, k,  n_ignored;
 #ifdef DEBUG
-	unsigned int kind;
-	char *point_type[2] = {"Original", "Breakline"};
+	unsigned int last_kind;
+	char *point_type[2] = {"original", "breakline"};
 #endif
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Eliminate data points that are not nearest a node.\n");
@@ -1456,29 +1457,37 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	/* If more than one datum is indexed to the same node, only the first should be kept.
 	   Mark the additional ones as SURFACE_OUTSIDE.
 	*/
-	last_index = UINTMAX_MAX;	n_outside = 0;
+	last_index = UINTMAX_MAX;	n_outside = n_ignored = 0;
 	for (k = 0; k < C->npoints; k++) {
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
-			kind = (C->data[k].number > 0) ? 0 : 1;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s point %" PRId64 " will be ignored.\n", point_type[kind], labs(C->data[k].number));
+			if (C->data[k].kind != last_kind)
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " has been replaced by a %s point.\n", point_type[C->data[k].kind], labs(C->data[k].number), point_type[last_kind]);
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " will be ignored.\n", point_type[C->data[k].kind], labs(C->data[k].number));
+				n_ignored++;
+			}
 			//fprintf (stderr, "This points (x,y) vs previous (x,y): (%g, %g) vs {%g, %g}\n", C->data[k].x, C->data[k].y, C->data[k-1].x, C->data[k-1].y);
 #endif
 			n_outside++;
 		}
-		else	/* New index, just update last_index */
+		else {	/* New index, just update last_index */
 			last_index = C->data[k].index;
+		}
+		last_kind = C->data[k].kind;
 	}
 	
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be sorted to end of the array */
 		qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points, &(C->info));
 		C->npoints -= n_outside;	/* Effectively chopping off the eliminated points */
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);	/* Adjust memory accordingly */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
+		if (n_ignored) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_ignored);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
+		}
 		//for (k = 0; k < C->npoints; k++)
 			//printf ("%g\t%g\t%g\n", C->data[k].x, C->data[k].y, C->data[k].z);
 	}
@@ -1607,32 +1616,33 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 }
 
 double find_closest_point (double *x, double *y, double *z, uint64_t k, double x0, double y0, double half_dx, double half_dy, double *xx, double *yy, double *zz) {
-	/* Find the point on the line from (x[k-1],y[k-1]) to (x[k], y[k]) closest to (x0,y0).  If the
-	 * point we find is outside the end of the line then we return r = DBL_MAX */
-	double dx, dy, a, r= DBL_MAX;	/* Initialize distance from (x0,y0) to nearest point measured orthogonally onto break line */
-	dx = x[k] - x[k-1];	dy = y[k] - y[k-1];
+	/* Find the point (xx,yy) on the line from (x[k-1],y[k-1]) to (x[k], y[k]) that is closest to (x0,y0).  If (xx,yy)
+	 * is outside the end of the line segment or outside the bin then we return r = DBL_MAX */
+	double dx, dy, a, r= DBL_MAX;	/* Initialize distance from (x0,y0) to nearest point (xx,yy) measured orthogonally onto break line */
+	uint64_t km1 = k - 1;
+	dx = x[k] - x[km1];	dy = y[k] - y[km1];
 	if (gmt_M_is_zero (dx)) {	/* Break line is vertical */
-		if ((y[k] <= y0 && y[k-1] > y0) || (y[k-1] <= y0 && y[k] > y0)) {	/* Nearest point is in same bin */
+		if ((y[k] <= y0 && y[km1] > y0) || (y[km1] <= y0 && y[k] > y0)) {	/* Nearest point is in same bin */
 			*xx = x[k];	*yy = y0;
 			r = fabs (*xx - x0);
-			*zz = z[k-1] + (z[k] - z[k-1]) * (*yy - y[k-1]) / dy;
+			*zz = z[km1] + (z[k] - z[km1]) * (*yy - y[km1]) / dy;
 		}
 	}
 	else if (gmt_M_is_zero (dy)) {	/* Break line is horizontal */
-		if ((x[k] <= x0 && x[k-1] > x0) || (x[k-1] <= x0 && x[k] > x0)) {	/* Nearest point in same bin */
+		if ((x[k] <= x0 && x[km1] > x0) || (x[km1] <= x0 && x[k] > x0)) {	/* Nearest point in same bin */
 			*xx = x0;	*yy = y[k];
 			r = fabs (*yy - y0);
-			*zz = z[k-1] + (z[k] - z[k-1]) * (*xx - x[k-1]) / dx;
+			*zz = z[km1] + (z[k] - z[km1]) * (*xx - x[km1]) / dx;
 		}
 	}
 	else {	/* General case.  Nearest orthogonal point may or may not be in bin, in which case r > r_prev */
 		a = dy / dx;	/* Slope of line */
-		*xx = (y0 - y[k-1] + a * x[k-1] + x0 / a) / (a + 1.0/a);
+		*xx = (y0 - y[km1] + a * x[km1] + x0 / a) / (a + 1.0/a);
 		*yy = a * (*xx - x[k]) + y[k];
-		if ((x[k] <= *xx && x[k-1] > *xx) || (x[k-1] <= *xx && x[k] > *xx)) {	/* Orthonormal point found between the end points of line */
+		if ((x[k] <= *xx && x[km1] > *xx) || (x[km1] <= *xx && x[k] > *xx)) {	/* Orthonormal point found between the end points of line */
 			if (fabs (*xx-x0) < half_dx && fabs (*yy-y0) < half_dy) {	/* Yes, within this bin */
 				r = hypot (*xx - x0, *yy - y0);
-				*zz = z[k-1] + (z[k] - z[k-1]) * (*xx - x[k-1]) / dx;
+				*zz = z[km1] + (z[k] - z[km1]) * (*xx - x[km1]) / dx;
 			}
 		}
 	}
@@ -2223,27 +2233,27 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Report on memory usage for this run */
 		size_t mem_use, mem_total;
 		mem_use = mem_total = C.npoints * sizeof (struct SURFACE_DATA);
-		GMT_Report (API, GMT_MSG_VERBOSE, "-----------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for data array", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use));
 		mem_use = sizeof (struct GMT_GRID) + C.Grid->header->size * sizeof (float);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use));
 		for (end = LO; end <= HI; end++) if (C.set_limit[end]) {	/* Will need to keep a lower|upper surface constrain grid */
 			mem_total += mem_use;
-			GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use));
+			GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use));
 		}
 #ifdef PARALLEL_MODE
 		mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use));
 		mem_use = C.Grid->header->size * sizeof (uint64_t);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use));
 #endif
 		mem_use = C.npoints * sizeof (struct SURFACE_BRIGGS) ;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
 		mem_use = C.Grid->header->size;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for node status", gmt_memory_use (mem_use));
-		GMT_Report (API, GMT_MSG_VERBOSE, "-----------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Total memory use", gmt_memory_use (mem_total));
-		GMT_Report (API, GMT_MSG_VERBOSE, "=========================================\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total));
+		GMT_Report (API, GMT_MSG_VERBOSE, "==========================================\n");
 	}
 
 	/* Allocate the memory needed to perform the gridding  */
