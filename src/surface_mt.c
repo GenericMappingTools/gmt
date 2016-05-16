@@ -68,9 +68,10 @@ struct SURFACE_CTRL {
 		char *file;	/* Name of file with breaklines */
 	} D;
 #ifdef DEBUG_SURF
-	struct E {	/* -E[+o|p|m+1+a][<name>] */
+	struct E {	/* -E[+o|p|m+1+a+s][<name>] */
 		bool active;
 		bool once;
+		bool save;
 	} E;
 #endif
 	struct G {	/* -G<file> */
@@ -117,12 +118,13 @@ struct SURFACE_CTRL {
 /* Paul Wessel testing only!
  * Compiled for debug to simulate grid updating such as under OpenMP
  * but without actually running OpenMP. The -E option supports:
- * -E[+o|m|p+1][<name>]
+ * -E[+a|o|m|p||s1][<name>]
  * +1 : Force a single iteration cycle (no multigrid)
  * +a : Determine average data constraint [default select just nearest]
  * +o : Original algorithm (update on a single grid) [Default]
  * +m : Two grids, use memcpy to move latest to old, then update on new grid
  * +p : Two grids, use pointers to alternate old and new grid.
+ * +s : Save data constraints & breakline table after throw_away_unusables is done.
  * Upper case O|M|P will write normalized (nondimensional) grids [Default restores plane and scale]
  * Optionally, add the prefix name for the intermediate grids [surface].
  * If OPENMP is also selected then only mode +o|O is supported.
@@ -305,6 +307,9 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double alpha2, e_m2, one_plus_e2;
 	double eps_p2, eps_m2, two_plus_ep2;
 	double two_plus_em2;
+#ifdef DEBUG_SURF
+	bool save;
+#endif
 };
 
 GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -1488,8 +1493,15 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
 		}
-		//for (k = 0; k < C->npoints; k++)
-			//printf ("%g\t%g\t%g\n", C->data[k].x, C->data[k].y, C->data[k].z);
+		if (C->save) {	/* Debug saving the final data constraints */
+			char kind[2] = {'D', 'B'};
+			FILE *fp = fopen ("surface.data", "w");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Writing final usable data constraints to file surface.data.\n");
+			fprintf (fp, "# x\ty\tz\tID\tindex\tkind\n");
+			for (k = 0; k < C->npoints; k++)
+				fprintf (fp, "%g\t%g\t%g\t%" PRId64 "\t%" PRIu64 "\t%c\n", C->data[k].x, C->data[k].y, C->data[k].z, C->data[k].number, C->data[k].index, kind[C->data[k].kind]);
+			fclose (fp);
+		}
 	}
 }
 
@@ -1613,6 +1625,9 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	gmt_M_memcpy (C->p, p, 20, unsigned int);
 	
 	gmt_M_memcpy (C->info.wesn, C->Grid->header->wesn, 4, double);
+#ifdef DEBUG_SURF
+	C->save = Ctrl->E.save;
+#endif
 }
 
 double find_closest_point (double *x, double *y, double *z, uint64_t k, double x0, double y0, double half_dx, double half_dy, double *xx, double *yy, double *zz) {
@@ -1880,6 +1895,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the rms of your z data after removing L2 plane (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in the same units as your z data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data in the <breakline> file as a 'soft breakline'.\n");
+#ifdef DEBUG_SURF
+	/* Paul Wessel testing only! */
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Special debug switches.  Append any combination of:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +1 : Force a single iteration cycle (no multigrid)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +a : Determine average data constraint [default select just nearest]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +o : Original algorithm (update on a single grid) [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +m : Two grids, use memcpy to move latest to old, then update on new grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +p : Two grids, use pointers to alternate old and new grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +s : Save data constraints & breakline table after throw_away_unusables is done\n");
+#endif	
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
@@ -1895,7 +1920,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default = 0 gives minimum curvature (smoothest; bicubic) solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1 gives a harmonic spline solution (local max/min occur only at data points).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, 0.25 or more is good for potential field (smooth) data;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0.75 or so for topography.  Experiment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   0.5-0.75 or so for topography.  We encourage you to experiment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend b to set tension in boundary conditions only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend i to set tension in interior equations only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No appended letter sets tension for both to same value.\n");
@@ -1906,7 +1931,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n");
 	GMT_Option (API, "a,bi3,di,f,h,i,r,s,x,:,.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 	
 	return (EXIT_FAILURE);
@@ -1947,6 +1972,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 						case 'P': debug = 3; nondimensional = true; break;
 						case 'm': debug = 2; break;
 						case 'M': debug = 2; nondimensional = true; break;
+						case 's': Ctrl->E.save = true; break;
 					}
 					k += 2;
 				}

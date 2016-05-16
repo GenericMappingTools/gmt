@@ -113,6 +113,9 @@
 #define gmt_M_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
 		"(%s) | %s\n", C->init.module_name, __VA_ARGS__);}
 
+/*! Cleaner check to see if a line is associated with the extended syntax or not */
+#define gmt_M_showusage(API) (!API->GMT->common.synopsis.extended)
+
 /* COLOR MACROS */
 
 /*! Copy two RGB[T] arrays (a = b) */

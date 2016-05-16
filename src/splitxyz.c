@@ -179,7 +179,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_Option (API, "V,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
 	GMT_Option (API, "bo,d,f,g,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);

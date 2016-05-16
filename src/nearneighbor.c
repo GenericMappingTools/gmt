@@ -150,11 +150,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_Option (API, "di,f,h,i");
-	GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic boundary conditions, or one or both of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x for periodic boundary conditions on x,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   y for periodic boundary conditions on y.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+	if (gmt_M_showusage (API)) {
+		GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic boundary conditions, or one or both of\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   x for periodic boundary conditions on x,\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   y for periodic boundary conditions on y.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+	}
 	GMT_Option (API, "r,s,:,.");
 
 	return (EXIT_FAILURE);
