@@ -358,7 +358,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
 		if (dstx) Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
 		if (cerr > 49) {
-			gmt_M_str_free ( dstx);
+			gmt_M_str_free (dstx);
 			if (Ctrl->CM4_DATA.n_times > 1) gmt_M_str_free (Ctrl->CM4_D.dst);
 			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
@@ -367,10 +367,12 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 
 
-		for (n = 1; n < Ctrl->CM4_DATA.n_times; ++n)
-			Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
+		if (dstx) {
+			for (n = 1; n < Ctrl->CM4_DATA.n_times; n++)
+				Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
-		gmt_M_str_free ( dstx);
+			gmt_M_str_free (dstx);
+		}
 		if (cerr > 49) {
 			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
