@@ -618,7 +618,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 		}
 	}
 
-	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
+	if (Ctrl->N.info && Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
