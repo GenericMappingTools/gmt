@@ -269,6 +269,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (D->n_columns < 4) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 4 are needed\n", (int)D->n_columns);
+		Return (GMT_DIM_TOO_SMALL);
+	}
 	gmt_set_geographic (GMT, GMT_IN);	/* But x and y are really lon,lat in the rest of the program */
 	
 	if (Ctrl->F.active && Ctrl->F.km) {	/* Convert cutoffs to harmonic degrees */

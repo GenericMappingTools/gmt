@@ -736,6 +736,10 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Din->n_columns < (1 + C.y_given)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, 1 + C.y_given);
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	alloc_arrays (GMT, &C);
 

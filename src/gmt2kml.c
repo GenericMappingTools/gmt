@@ -849,6 +849,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		if ((Dd = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
+		if (Dd->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Dd->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
 		n_tables = Dd->n_tables;
 	}
 	else {	/* Free-form text record, parse coordinates when required */

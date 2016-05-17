@@ -1036,6 +1036,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (D->n_columns < 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+		Return (GMT_DIM_TOO_SMALL);
+	}
 	
 	/* Allocate memory and read in all the files; each file can have many lines (-m) */
 	
@@ -1333,6 +1337,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
+				if (C->n_columns < 2) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+					Return (GMT_DIM_TOO_SMALL);
+				}
 				gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
@@ -1524,6 +1532,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
+			if (C->n_columns < 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+				Return (GMT_DIM_TOO_SMALL);
+			}
 			gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			from = Ctrl->D.file;
 		}
@@ -1663,6 +1675,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
+		}
+		if (C->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */

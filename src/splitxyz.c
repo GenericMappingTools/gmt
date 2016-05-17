@@ -306,7 +306,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 
 int GMT_splitxyz (void *V_API, int mode, void *args) {
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, io_mode = 0;
-	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
+	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
 	int error = 0;
 	bool ok, first = true, no_z_column;
 	uint64_t dim[4] = {1, 0, 0, 0};
@@ -346,7 +346,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	n_in = (Ctrl->S.active) ? 5 : 3;
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -354,6 +355,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_FILEBREAK, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
+	}
+	if (D[GMT_IN]->n_columns < n_in) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %u are needed\n", (int)D[GMT_IN]->n_columns, n_in);
+		Return (GMT_DIM_TOO_SMALL);
 	}
 
 	gmt_M_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);

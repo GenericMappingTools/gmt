@@ -720,6 +720,10 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 				Return (API->error);
 			}
+			if (Cin->n_columns < 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->C.file, (int)Cin->n_columns);
+				Return (GMT_DIM_TOO_SMALL);
+			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
 			n_modes = (unsigned int)P->n_records;
 			mode_direction = P->segment[0]->coord[GMT_X];

@@ -431,6 +431,10 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}
+			if (F->n_columns < 3) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 3 are needed\n", file, (int)F->n_columns);
+				Return (GMT_DIM_TOO_SMALL);
+			}
 			hotspot[spot].D = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->coord[GMT_Y][row] = gmt_lat_swap (GMT, hotspot[spot].D->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 		}

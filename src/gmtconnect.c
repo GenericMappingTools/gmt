@@ -348,6 +348,10 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (D[GMT_IN]->n_columns < 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D[GMT_IN]->n_columns);
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	if (D[GMT_IN]->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");

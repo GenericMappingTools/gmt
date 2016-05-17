@@ -431,7 +431,7 @@ GMT_LOCAL void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtvector (void *V_API, int mode, void *args) {
-	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
+	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0;
 	bool single = false, convert;
 	
 	uint64_t row, seg;
@@ -484,6 +484,8 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	/* Read input data set */
 	
+	n_in = (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->C.active[GMT_IN]) ? 3 : 2;
+	
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[4] = {1, 1, 1, 3};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
@@ -493,6 +495,10 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			}
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
+			}
+			if (Din->n_columns < 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %u are needed\n", (int)Din->n_columns, n_in);
+				Return (GMT_DIM_TOO_SMALL);
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || gmt_M_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
@@ -524,6 +530,10 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		}
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
+		}
+		if (Din->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %u are needed\n", (int)Din->n_columns, n_in);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || gmt_M_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 	}

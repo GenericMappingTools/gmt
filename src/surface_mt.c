@@ -2210,6 +2210,10 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		char *file = (Ctrl->D.debug) ? Ctrl->D.file : NULL;
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
+		if (Lin->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->D.file, (int)Lin->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
 		interpolate_add_breakline (GMT, &C, Lin->table[0], file);	/* Pass the single table since we read a single file */
 	}
 	

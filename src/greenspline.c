@@ -1498,14 +1498,54 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
+		unsigned int n_A_cols;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_DATATABLE *S = NULL;
+		switch (dimension) {
+			case 1:	/* 1-D */
+				switch (Ctrl->A.mode) {
+					case 0:	n_A_cols = 2; break;/* x, slope */
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 1-D data (%d) - aborting!\n", Ctrl->A.mode);
+						Return (GMT_DATA_READ_ERROR);
+						break;
+				}
+				break;
+			case 2:	/* 2-D */
+				switch (Ctrl->A.mode) {
+					case 1:	n_A_cols = 4; break; /* (x, y, az, gradient) */
+					case 2:	n_A_cols = 4; break; /* (x, y, gradient, azimuth) */
+					case 3:	n_A_cols = 4; break; /* (x, y, direction, gradient) */
+					case 4:	n_A_cols = 4; break; /* (x, y, gx, gy) */
+					case 5:	n_A_cols = 5; break; /* (x, y, nx, ny, gradient) */
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 2-D data (%d) - aborting!\n", Ctrl->A.mode);
+						Return (GMT_DATA_READ_ERROR);
+						break;
+				}
+				break;
+			case 3:	/* 3-D */
+				switch (Ctrl->A.mode) {
+					case 4:	n_A_cols = 6; break; /* (x, y, z, gx, gy, gz) */
+					case 5: n_A_cols = 7; break; /* (x, y, z, nx, ny, nz, gradient) */
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 3-D data (%d) - aborting!\n", Ctrl->A.mode);
+						Return (GMT_DATA_READ_ERROR);
+						break;
+				}
+				break;
+		}
+		
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
+		}
+		if (Din->n_columns < n_A_cols) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %u are needed\n", (int)Din->n_columns, n_A_cols);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		S = Din->table[0];	/* Can only be one table */
@@ -1521,17 +1561,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
 				for (ii = 0; ii < n_cols; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
 				switch (dimension) {
-					case 1:	/* 1-D */
-						switch (Ctrl->A.mode) {
-							case 0:	/* x, slope */
-								D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-								obs[p] = S->segment[seg]->coord[dimension][row];
-								break;
-							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 1-D data (%d) - aborting!\n", Ctrl->A.mode);
-								Return (GMT_DATA_READ_ERROR);
-								break;
-						}
+					case 1:	/* 1-D: x, slope */
+						D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
+						obs[p] = S->segment[seg]->coord[dimension][row];
 						break;
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
@@ -1555,10 +1587,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
 								obs[p] = S->segment[seg]->coord[4][row];	/* Magnitude of gradient */
 								break;
-							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 2-D data (%d) - aborting!\n", Ctrl->A.mode);
-								Return (GMT_DATA_READ_ERROR);
-								break;
 						}
 						sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
 						break;
@@ -1572,10 +1600,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
 								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the unit vector */
 								obs[p] = S->segment[seg]->coord[6][row];	/* This is the gradient magnitude */
-								break;
-							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 3-D data (%d) - aborting!\n", Ctrl->A.mode);
-								Return (GMT_DATA_READ_ERROR);
 								break;
 						}
 						break;
@@ -1676,6 +1700,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
+		}
+		if (Nin->n_columns < dimension) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least %u are needed\n", Ctrl->N.file, (int)Nin->n_columns, dimension);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		T = Nin->table[0];

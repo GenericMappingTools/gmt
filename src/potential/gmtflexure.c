@@ -1271,6 +1271,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		if ((Q = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		if (Q->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->Q.file, (int)Q->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
 		/* If topography given then scale to load */
 		if (Ctrl->Q.mode == T_LOAD) {
 			uint64_t n_subaerial = 0;
@@ -1299,6 +1303,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
+		}
+		if (E->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)E->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
@@ -1363,6 +1371,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
+		}
+		if (T->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->T.file, (int)T->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (T->n_tables != E->n_tables || T->n_segments != E->n_segments || T->n_records != E->n_records) {

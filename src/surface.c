@@ -1820,6 +1820,10 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Consider breakline dataset */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
+		if (Lin->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->D.file, (int)Lin->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
 
 		interp_breakline (GMT, &C, xyzline);
