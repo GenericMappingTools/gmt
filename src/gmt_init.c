@@ -2485,7 +2485,12 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	gmt_M_memset (n_int, 4, int);
 	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%*s %s", type);
+		k = sscanf (line, "%*s %s", type);
+		if (k != 1) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bad format record [%s] in custom file %s.\n", line, A->file_custom);
+			n_errors++;
+			continue;
+		}
 		k = 0;
 		for (k = 0; type[k]; k++) {
 			switch (type[k]) {

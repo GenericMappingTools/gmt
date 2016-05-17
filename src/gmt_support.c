@@ -11470,8 +11470,12 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
 	if (text) L = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#') continue;
+		if (line[0] == '#' || line[0] == '\n') continue;
 		nc = sscanf (line, "%s %s %[^\n]", str, type, txt);
+		if (nc < 2) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Bad format record [%s] in custom file %s.\n", line, A->file_custom);
+			continue;
+		}
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
 		if (strchr (type, 'i')) n_int++;
