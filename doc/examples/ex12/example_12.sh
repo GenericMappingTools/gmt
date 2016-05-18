@@ -4,7 +4,7 @@
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT progs:	makecpt, gmtinfo, pscontour, pstext, psxy, triangulate
-# Unix progs:	$AWK, echo, rm
+# Unix progs:	echo, rm
 #
 # First draw network and label the nodes
 #
@@ -12,7 +12,7 @@ ps=example_12.ps
 gmt triangulate table_5.11 -M > net.xy
 gmt psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1 -BWSNe net.xy -Wthinner -P -K -X0.9i -Y4.65i > $ps
 gmt psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -Wthinnest >> $ps
-$AWK '{print $1, $2, NR-1}' table_5.11 | gmt pstext -R -J -F+f6p -O -K >> $ps
+gmt pstext table_5.11 -R -J -F+f6p+r -O -K >> $ps
 #
 # Then draw network and print the node values
 #
