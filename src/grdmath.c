@@ -2695,7 +2695,7 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	gmt_M_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	gmt_sort_array (GMT, stack[last], info->nm, GMT_FLOAT);
+	gmt_sort_array(GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && gmt_M_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
 		med = (n%2) ? stack[last]->G->data[n/2] : 0.5f * (stack[last]->G->data[(n-1)/2] + stack[last]->G->data[n/2]);
