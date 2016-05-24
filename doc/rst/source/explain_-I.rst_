@@ -6,7 +6,7 @@
     instead, the increment is assumed to be given in meter, foot, km, Mile,
     nautical mile or US survey foot, respectively, and will be converted to
     the equivalent degrees longitude at the middle latitude of the region
-    (the conversion depends on :ref:`PROJ_ELLIPSOID <Projection Parameters>`). If /*y_inc* is given
+    (the conversion depends on :ref:`PROJ_ELLIPSOID <Projection Parameters>`). If *y_inc* is given
     but set to 0 it will be reset equal to *x_inc*; otherwise it will be
     converted to degrees latitude. **All coordinates**: If **=** is appended
     then the corresponding max *x* (*east*) or *y* (*north*) may be slightly
