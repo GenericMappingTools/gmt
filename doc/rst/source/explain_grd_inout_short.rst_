@@ -1,0 +1,8 @@
+Grid File Formats
+-----------------
+
+By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called "packing" of grids, writing out floating point
+data as 1- or 2-byte integers. :ref:`(more ...) <grd_inout_full>` 
