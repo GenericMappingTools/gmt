@@ -177,7 +177,7 @@ unnormalized gradient grd.
 
 If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
 
-.. include:: explain_grd_inout.rst_
+.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

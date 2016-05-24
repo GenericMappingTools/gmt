@@ -127,7 +127,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: explain_grd_inout.rst_
+.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------
