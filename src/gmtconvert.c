@@ -388,8 +388,6 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->T.active) gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
-
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
 		Return (GMT_RUNTIME_ERROR);
@@ -399,6 +397,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
+	if (Ctrl->T.active)	/* Turn off segment headers on output */
+		GMT->current.io.skip_headers_on_outout = true;
+
 	if (Ctrl->F.active) {	/* Segmentizing happens here and then we are done */
 		D[GMT_OUT] = gmt_segmentize_data (GMT, D[GMT_IN], &(Ctrl->F.S));	/* Segmentize the data */
 		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_OK) {	/* Be gone with the original */
@@ -409,6 +410,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 			Return (API->error);
 		}
+		if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
 		Return (GMT_OK);	/* We are done! */
 	}
 	
@@ -550,11 +552,13 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	else {	/* Just register output to stdout or given file via ->outfile */
 		if (GMT->common.a.output)
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
+		//if (D[GMT_OUT]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	}
 
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
+	if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);

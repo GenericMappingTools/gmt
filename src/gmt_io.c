@@ -2650,7 +2650,7 @@ GMT_LOCAL void gmtio_write_multilines (struct GMT_CTRL *GMT, FILE *fp, char *tex
 }
 
 /*! . */
-GMT_LOCAL int gmtio_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct GMT_TEXTTABLE *table, int io_mode) {
+GMT_LOCAL int gmtio_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct GMT_TEXTTABLE *table, int io_mode, unsigned int n_seg) {
 	/* Writes an entire segment text data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
@@ -2715,7 +2715,7 @@ GMT_LOCAL int gmtio_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_
 		}
 	}
 	was = GMT->current.io.multi_segments[GMT_OUT];
-	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
+	GMT->current.io.multi_segments[GMT_OUT] = (n_seg > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
@@ -3172,7 +3172,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 }
 
 /*! . */
-GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATATABLE *table, bool use_GMT_io, unsigned int io_mode) {
+GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATATABLE *table, bool use_GMT_io, unsigned int io_mode, unsigned int n_seg) {
 	/* Writes an entire segment data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
@@ -3252,7 +3252,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			gmt_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 		}
 		if (table->ogr) gmt_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
-		GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
+		GMT->current.io.multi_segments[GMT_OUT] = (n_seg > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	}
 
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);
@@ -3917,7 +3917,7 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 /*! . */
 int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table) {
 	/* Writes an entire data set to file or stream */
-	unsigned int tbl, u_table;
+	unsigned int tbl, u_table, n_seg;
 	bool close_file = false;
 	int error, append = 0;
 	int *fd = NULL;
@@ -3986,7 +3986,7 @@ int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
-			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) {
+			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode, 1))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
@@ -3997,13 +3997,15 @@ int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", out_file);
-			if ((error = gmtio_write_table (GMT, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) {
+			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments;
+			if ((error = gmtio_write_table (GMT, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
 		}
 		else {	/* Write to stream we set up earlier */
-			if ((error = gmtio_write_table (GMT, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode))) {
+			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments;
+			if ((error = gmtio_write_table (GMT, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
@@ -6392,7 +6394,7 @@ void gmt_set_xycolnames (struct GMT_CTRL *GMT, char *string) {
 int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_TEXTSET *D, int table) {
 	/* Writes an entire text set to file or stream */
 	int error;
-	unsigned int tbl, u_table, append = 0;
+	unsigned int tbl, u_table, append = 0, n_seg;
 	bool close_file = false;
 	int *fd = NULL;	/* Must be int */
 	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile;
@@ -6450,7 +6452,7 @@ int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLE) {	/* Must pass original file name in case a template */
-			if ((error = gmtio_write_texttable (GMT, dest, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
+			if ((error = gmtio_write_texttable (GMT, dest, GMT_IS_FILE, D->table[tbl], D->io_mode, 1))) return (error);
 		}
 		else if (D->io_mode == GMT_WRITE_TABLE) {	/* Must write this table a its own file */
 			if (D->table[tbl]->file[GMT_OUT])
@@ -6458,13 +6460,15 @@ int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Text Table to file %s\n", out_file);
-			if ((error = gmtio_write_texttable (GMT, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode))) {
+			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments;
+			if ((error = gmtio_write_texttable (GMT, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode, D->table[tbl]->n_segments))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
 		}
 		else {	/* Write to stream we set up earlier */
-			if ((error = gmtio_write_texttable (GMT, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode))) {
+			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments;
+			if ((error = gmtio_write_texttable (GMT, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode, D->n_segments))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}

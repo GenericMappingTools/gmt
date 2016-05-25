@@ -241,6 +241,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_GRID_INFO grd_info;
 
 	bool multi_segments[2];	/* true if current ASCII input/output file has multiple segments */
+	bool skip_headers_on_outout;	/* true when gmtconvert -T is set [or possibly other similar actions in the future] */
 	bool skip_bad_records;	/* true if records where x and/or y are NaN or Inf */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
