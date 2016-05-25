@@ -1462,7 +1462,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
 					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
-						L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						/* The whole trimming stuff requires at least 2 points per line so we resample */
+						if (gmt_M_is_geographic (GMT, GMT_IN))
+							L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						else
+							L->n_rows = gmt_resample_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, 0.5 * hypot (L->coord[GMT_X][1]-L->coord[GMT_X][0], L->coord[GMT_Y][1]-L->coord[GMT_Y][0]), GMT_TRACK_FILL);
 						resampled = true;	/* To avoid doing it twice */
 					}
 					if (gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */

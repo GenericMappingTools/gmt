@@ -5957,7 +5957,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	if (mode & 4) {
 		gmt_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
 		gmt_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
-		gmt_message (GMT, "\t        See vector specifications for details.\n");
+		gmt_message (GMT, "\t        See vector specifications for details. Note: +v must be last modifier for a pen.\n");
 	}
 }
 
