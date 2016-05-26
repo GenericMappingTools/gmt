@@ -253,6 +253,8 @@ Optional Arguments
     **+s** will draw the line using a *PostScript* Bezier spline [linear spline];
     **+v**\ *vspecs* will place a vector head at the ends of the lines.  You can
     use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
+    Because **+v** may take additional modifiers it must necessarily be given
+    at the end of the pen specification.
     See the :ref:`Vec_attributes` for more information.
 
 .. _-X:
