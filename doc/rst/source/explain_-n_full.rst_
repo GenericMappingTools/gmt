@@ -10,7 +10,7 @@
     periodic, or **n** for natural boundary conditions. For the latter
     two you may append **x** or **y** to specify just one direction,
     otherwise both are assumed. Append **+c** to clip the interpolated
-    grid to input z-min/max [Default may exceed limits].  Add append **+t**\ *threshold* to
+    grid to input z-min/max [Default may exceed limits]. Append **+t**\ *threshold* to
     control how close to nodes with NaNs the interpolation will go. A
     *threshold* of 1.0 requires all (4 or 16) nodes involved in
     interpolation to be non-NaN. 0.5 will interpolate about half way
