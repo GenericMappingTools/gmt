@@ -168,7 +168,6 @@ Things only complicate a little more for the cases where we can have more than o
 documentation, has many (not so trivial) examples on usage og the MEX GMT API.
 
 
-
 .. _grid-struct:
 
 .. code-block:: c
@@ -194,3 +193,31 @@ documentation, has many (not so trivial) examples on usage og the MEX GMT API.
   z_units                % Units of ZZ axis (Optional)
 
 Definition of the *grid structure* that holds a grid and its metadata.
+
+.. _img-struct:
+
+.. code-block:: c
+
+  ProjectionRefPROJ4     % Projection string in PROJ4 syntax (Optional)
+  ProjectionRefWKT       % Projection string in WKT syntax (Optional)
+  range                  % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+  inc                    % 1x2 vector with [x_inc y_inc]
+  n_rows                 % Number of rows in image
+  n_columns              % Number of columns in image
+  n_bands                % Number of bands in image
+  registration           % Registration type: 0 -> Grid registration; 1 -> Pixel registration [Default]
+  NoDataValue            % The value of nodata
+  title                  % Title (Optional)
+  remark                 % Remark (Optional)
+  command                % Command used to create the image (Optional) 
+  DataType               % 'uint8' or 'int8' (needs checking)
+  x                      % [1 x n_columns] vector with XX coordinates
+  y                      % [1 x n_rows]    vector with YY coordinates
+  image                  % [n_rows x n_columns] image array
+  x_units                % Units of XX axis (Optional)
+  y_units                % Units of YY axis (Optional)
+  z_units                % Units of ZZ axis (Optional)
+  colormap               % A color palette structure
+  alpha                  % A [n_rows x n_columns] alpha array
+
+Definition of the *image structure* that holds a image and its metadata.
