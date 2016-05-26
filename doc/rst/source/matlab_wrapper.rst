@@ -221,3 +221,14 @@ Definition of the *grid structure* that holds a grid and its metadata.
   alpha                  % A [n_rows x n_columns] alpha array
 
 Definition of the *image structure* that holds a image and its metadata.
+
+.. _cpt-struct:
+
+.. code-block:: c
+
+  colormap               % 
+  alpha                  % A [ncolors x 1] vector with transparency (alpha) values in [0 255] range (optional)
+  range                  % A [ncolors x 2] matrix with z_low z_high for each 'color' interval
+  rangeMinMax            % A 2 elements vector with [z_min z_max]
+
+Definition of the *CPT structure* that holds the color palette.
