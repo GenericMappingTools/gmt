@@ -7942,6 +7942,16 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 	/* First intercept any API Keywords */
 	if (!strncmp (keyword, "API_PAD", 7U))	/* Change the grid padding setting */
 		sprintf (value, "%d", API->pad);
+	else if (!strncmp (keyword, "BINDIR", 6U))	/* Report binary directory */
+		sprintf (value, "%s", API->GMT->init.runtime_bindir);
+	else if (!strncmp (keyword, "SHAREDIR", 8U))	/* Report share directory */
+		sprintf (value, "%s", API->GMT->session.SHAREDIR);
+	else if (!strncmp (keyword, "DATADIR", 8U))	/* Report data directory */
+		sprintf (value, "%s", API->GMT->session.DATADIR);
+	else if (!strncmp (keyword, "PLUGINDIR", 10U))	/* Report plugin directory */
+		sprintf (value, "%s", API->GMT->init.runtime_plugindir);
+	else if (!strncmp (keyword, "CORES", 5U))	/* Report number of cores */
+		sprintf (value, "%d", API->n_cores);
 #ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
 		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
