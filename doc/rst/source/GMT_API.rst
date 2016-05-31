@@ -2323,15 +2323,15 @@ To specify an input file name via an option, simply use < as the
 option (this is what GMT_Create_Options_ does when it finds filenames
 on the command line). Likewise, > can be used to explicitly
 indicate an output file. In order to append to an existing file, use
->>. For example the following command would read from file.A and
+). For example the following command would read from file.A and
 append to file.B:
 
   ::
 
-    gmt convert -<file.A ->>file.B
+    gmt convert -<file.A -)file.B
 
 These options also work on the command line but usually one would have
-to escape the special characters < and > as they are
+to escape the special characters <, > and ) as they are
 used for file redirection.
 
 Encode option arguments for external interfaces

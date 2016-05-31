@@ -474,12 +474,21 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			first_char = 6, option = GMT_OPT_USAGE;
 		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !gmt_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
 			first_char = 0, option = GMT_OPT_INFILE;
-		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
+		else {	/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			first_char = 2, option = args[arg][1];
+			if (option == ')') option = GMT_OPT_OUTFILE, append = 1;	/* -)file is same as ">> file", i.e., append to existing file */
+		}
 
 		if (append) {	/* Must prepend ">" to the filename so we select append mode when opening the file later */
-			sprintf (buffer, ">%s", args[arg]);
-			this_arg = buffer;
+			/* First check that this file exists */
+			if (access (&args[arg][first_char], F_OK)) {	/* File does not exist; revert to writing to new output file */
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Options: File %s does not exist so append (>>) changed to output (>)\n", &args[arg][first_char]);
+				this_arg = &args[arg][first_char];
+			}
+			else {
+				sprintf (buffer, ">%s", &args[arg][first_char]);
+				this_arg = buffer;
+			}
 			append = 0;
 		}
 		else
