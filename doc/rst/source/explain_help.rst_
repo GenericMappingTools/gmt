@@ -4,9 +4,4 @@
     Print an extensive usage (help) message, including the explanation of
     any module-specific option (but not the GMT common options), then exits.
 **-?** or no arguments
-    Print a complete usage (help) message, including the explanation of
-    options, then exits.
-**-**\ **-version**
-    Print GMT version and exit.
-**-**\ **-show-datadir**
-    Print full path to GMT share directory and exit.
+    Print a complete usage (help) message, including the explanation of options, then exits.
