@@ -314,11 +314,22 @@ GMT_LOCAL bool gmtio_traverse_dir (const char *file, char *path) {
 #endif /* HAVE_DIRENT_H_ */
 
 /*! . */
-GMT_LOCAL void gmtio_adjust_periodic (struct GMT_CTRL *GMT) {
+GMT_LOCAL void gmtio_adjust_periodic_x (struct GMT_CTRL *GMT) {
 	while (GMT->current.io.curr_rec[GMT_X] > GMT->common.R.wesn[XHI] && (GMT->current.io.curr_rec[GMT_X] - 360.0) >=
 	       GMT->common.R.wesn[XLO]) GMT->current.io.curr_rec[GMT_X] -= 360.0;
 	while (GMT->current.io.curr_rec[GMT_X] < GMT->common.R.wesn[XLO] && (GMT->current.io.curr_rec[GMT_X] + 360.0) <=
 	       GMT->common.R.wesn[XLO]) GMT->current.io.curr_rec[GMT_X] += 360.0;
+	/* If data is not inside the given range it will satisfy (lon > east) */
+	/* Now it will be outside the region on the same side it started out at */
+}
+
+/*! . */
+GMT_LOCAL void gmtio_adjust_periodic_y (struct GMT_CTRL *GMT) {
+	/* Here, longitude appears as y, probably plotting longitude versus time or similar */
+	while (GMT->current.io.curr_rec[GMT_Y] > GMT->common.R.wesn[YHI] && (GMT->current.io.curr_rec[GMT_Y] - 360.0) >=
+	       GMT->common.R.wesn[YLO]) GMT->current.io.curr_rec[GMT_Y] -= 360.0;
+	while (GMT->current.io.curr_rec[GMT_Y] < GMT->common.R.wesn[YLO] && (GMT->current.io.curr_rec[GMT_Y] + 360.0) <=
+	       GMT->common.R.wesn[YLO]) GMT->current.io.curr_rec[GMT_Y] += 360.0;
 	/* If data is not inside the given range it will satisfy (lon > east) */
 	/* Now it will be outside the region on the same side it started out at */
 }
@@ -3158,7 +3169,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmtio_adjust_periodic (GMT);	/* Must account for periodicity in 360 as per current rule*/
+	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmtio_adjust_periodic_x (GMT);	/* Must account for periodicity in 360 as per current rule*/
+	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON) gmtio_adjust_periodic_y (GMT);	/* Must account for periodicity in 360 as per current rule*/
 
 	if (gmtlib_gap_detected (GMT)) {*status = gmtlib_set_gap (GMT); return (GMT->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
@@ -3880,7 +3892,8 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmtio_adjust_periodic (GMT);	/* Must account for periodicity in 360 */
+	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmtio_adjust_periodic_x (GMT);	/* Must account for periodicity in 360 */
+	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON) gmtio_adjust_periodic_y (GMT);	/* Must account for periodicity in 360 as per current rule*/
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
@@ -7400,7 +7413,8 @@ int gmt_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 		k++;
 	}
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && k >= 2) double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmtio_adjust_periodic (GMT);			/* Must account for periodicity in 360 */
+	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmtio_adjust_periodic_x (GMT);			/* Must account for periodicity in 360 */
+	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON) gmtio_adjust_periodic_y (GMT);	/* Must account for periodicity in 360 as per current rule*/
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	return (0);
 }

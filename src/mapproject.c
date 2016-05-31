@@ -910,7 +910,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
-			if (in[GMT_Y] < -90.0 || in[GMT_Y] > 90.0) {
+			if (gmt_M_y_is_lat (GMT,GMT_IN) && (in[GMT_Y] < -90.0 || in[GMT_Y] > 90.0)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Bad latitude outside valid range at input line %" PRIu64 " - skipped\n", n_read);
 				continue;
 			}
@@ -1097,7 +1097,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && n > 0) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
