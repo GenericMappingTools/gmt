@@ -227,7 +227,7 @@ Definition of the *image structure* that holds a image and its metadata.
 .. code-block:: c
 
   colormap               % A [ncolors x 3] matrix with colorvalues in [0-1] range
-  alpha                  % A [ncolors x 1] vector with transparency (alpha) values in [0 255] range (optional)
+  alpha                  % A [ncolors x 1] vector with transparency (alpha) values in [0-1] range (optional)
   range                  % A [ncolors x 2] matrix with z_low z_high for each 'color' interval
   BNF                    % A [3 x 3] matrix with color values in [0-1] range for background, foreground, and NaN-nodes
   rangeMinMax            % A 2 elements vector with [z_min z_max]
