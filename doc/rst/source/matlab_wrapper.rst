@@ -226,9 +226,21 @@ Definition of the *image structure* that holds a image and its metadata.
 
 .. code-block:: c
 
-  colormap               % 
+  colormap               % A [ncolors x 3] matrix with colorvalues in [0-1] range
   alpha                  % A [ncolors x 1] vector with transparency (alpha) values in [0 255] range (optional)
   range                  % A [ncolors x 2] matrix with z_low z_high for each 'color' interval
+  BNF                    % A [3 x 3] matrix with color values in [0-1] range for background, foreground, and NaN-nodes
   rangeMinMax            % A 2 elements vector with [z_min z_max]
+  depth                  % Depth of the CPT (1, 8, 24)
 
 Definition of the *CPT structure* that holds the color palette.
+
+.. _cpt-struct:
+
+.. code-block:: c
+
+  postscript             % A string with all the PostScript code as text
+  length                 % Number of bytes in the string
+  mode                   % 1 means has header only, 2 means has trailer only, 3 means complete
+
+Definition of the *PS structure* that holds the *PostScript* plot.
