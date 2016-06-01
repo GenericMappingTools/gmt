@@ -6900,11 +6900,8 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			P->range[n].z_low, P->range[n].z_high, gmt_putrgb (GMT, P->range[n].rgb_low), gmt_putrgb (GMT, P->range[n].rgb_high),
 			P->range[n].i_dz, P->range[n].rgb_diff[0], P->range[n].rgb_diff[1], P->range[n].rgb_diff[2]);
 	}
-	/* Set background and foreground colors to the bottom and top of the colormap, plus use default NaN color */
-	gmt_M_memcpy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low, 4, double);
-	gmt_M_memcpy (P->patch[GMT_FGD].rgb, P->range[P->n_colors-1].rgb_high, 4, double);
-	gmt_M_memcpy (P->patch[GMT_NAN].rgb, GMT->current.setting.color_patch[GMT_NAN], 4, double);
-	P->model = GMT_RGB;		/* ---" --- */
+	/* We leave BNF as we got them from the external API, but clarify the model is only RGB */
+	P->model = GMT_RGB;	
 }
 
 /*! . */
