@@ -541,7 +541,7 @@ pass as arguments to GMT modules.
        unsigned int          cpt_flags;          /* Flags controlling use of BFN colors */
        struct GMT_LUT       *range;              /* CPT lookup table read by GMT_read_cpt */
        struct GMT_BFN_COLOR  patch[3];           /* Structures with back/fore/nan colors */
-       char **header;                            /* Array with all CPT file header records, if any) */
+       char                **header;             /* Array with all CPT file header records, if any) */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t              id;                 /* The internal number of the data set */
        enum GMT_enum_alloc   alloc_mode;         /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
@@ -557,6 +557,38 @@ pass as arguments to GMT modules.
        unsigned int          z_mode[2];          /* 1 if +U<unit> was parsed, 0 otherwise */
        unsigned int          z_unit[2];          /* Unit enum specified via +u<unit> */
        double                z_unit_to_meter[2]; /* Scale, given z_unit, to convert z from <unit> to meters */
+   };
+
+.. code-block:: c
+
+   struct GMT_LUT {         /* For back-, fore-, and nan-colors */
+       double                z_low, z_high, i_dz;
+       double                rgb_low[4], rgb_high[4], rgb_diff[4];
+       double                hsv_low[4], hsv_high[4], hsv_diff[4];
+       unsigned int          annot;              /* 1 for Lower, 2 for Upper, 3 for Both */
+       unsigned int          skip;               /* true means skip this slice */
+       struct GMT_FILL      *fill;               /* For patterns instead of color */
+       char                 *label;              /* For non-number labels */
+   };
+
+.. code-block:: c
+
+   struct GMT_BFN_COLOR {   /* For back-, fore-, and nan-colors */
+       double                rgb[4];             /* Red, green, blue, and alpha */
+       double                hsv[4];             /* Hue, saturation, value, alpha */
+       unsigned int          skip;               /* true means skip this slice */
+       struct GMT_FILL      *fill;               /* For patterns instead of color */
+   };
+
+.. code-block:: c
+
+   struct GMT_FILL {        /*! Holds fill attributes */
+       double                rgb[4];             /* Chosen color if no pattern + Transparency 0-1 [0 = opaque] */
+       double                f_rgb[4], b_rgb[4]; /* Colors applied to unset and set bits in 1-bit image */
+       bool                  use_pattern;        /* true if pattern rather than rgb is set */
+       int                   pattern_no;         /* Number of a predefined pattern, or -1 if not set */
+       unsigned int          dpi;                /* Desired dpi of image building-block if use_pattern is true */
+       char                  pattern[GMT_BUFSIZ];/* Full filename of user-defined raster pattern */
    };
 
 PostScript text
