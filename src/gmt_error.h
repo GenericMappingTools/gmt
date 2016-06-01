@@ -90,7 +90,7 @@ enum Gmt_error_code {
 
 EXTERN_MSC const char * GMT_strerror (int err);
 
-#define gmt_M_is_verbose(C,level) (C->current.setting.verbose >= level)
+#define gmt_M_is_verbose(C,level) (MAX(C->parent->verbose, C->current.setting.verbose) >= level)
 
 /* Check condition and report error if true */
 #define gmt_M_check_condition(C,condition,...) ((condition) ? 1+GMT_Report(C->parent,GMT_MSG_NORMAL,__VA_ARGS__) : 0)

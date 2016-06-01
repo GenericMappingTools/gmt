@@ -765,6 +765,7 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
 	int object_ID;			/* Object ID returned by GMT_Register_IO */
 	int pos;			/* Corresponding index into external object in|out arrays */
+	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the registered GMT object */
 };
 

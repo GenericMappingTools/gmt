@@ -918,6 +918,9 @@ GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_
 #define GMT_FILE_EXPLICIT	1
 #define GMT_FILE_IMPLICIT	2
 
+#define K_PRIMARY			0
+#define K_SECONDARY			1
+
 GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometry) {
 	/* Assign direction, family, and geometry based on key */
 
@@ -4369,7 +4372,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	char *dir = getenv ("TEMP");
 #endif
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
-	API->verbose = (mode >> 2);	/* Pick up any -V settings from gmt.c */
+	API->verbose = (mode >> 10);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? api_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* if set, then api_exit & GMT_exit are simply a return; otherwise they call exit */
@@ -7626,7 +7629,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *
 	 */
 
-	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku,  n_out = 0;
+	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku,  n_out = 0, nn[2][2];
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
@@ -7641,6 +7644,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
 	struct GMTAPI_CTRL *API = NULL;
+	char *omode[2] = {"Primary", "Secondary"};
 
 	*n = 0;	/* Initialize counter to zero in case we return prematurely */
 
@@ -7718,6 +7722,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
+			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required { becomes ( so we dont add it later */
 			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
@@ -7762,6 +7767,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].family    = family;
 				info[n_items].geometry  = geometry;
 				info[n_items].direction = direction;
+				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
 				/* Excplicitly add the missing marker (e.g., $) to the option argument */
@@ -7808,6 +7814,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].geometry  = geometry;
 				info[n_items].direction = direction;
 				info[n_items].pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
+				info[n_items].mode = K_PRIMARY;
 				GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
 					S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
 				n_items++;
@@ -7823,12 +7830,31 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	if (n_items && n_items < n_alloc) info = realloc (info, n_items * sizeof (struct GMT_RESOURCE));
 	else if (n_items == 0) gmt_M_str_free (info);	/* No containers used */
 
+	gmt_M_memset (nn, 4, unsigned int);
+	for (k = 0; k < n_items; k++)	/* Count how many primary and secondary objects for input and output */
+		nn[info[k].direction][info[k].mode]++;
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: nn[GMT_IN] = {%d, %d}, nn[GMT_OUT] = {%d, %d}\n",
+		nn[GMT_IN][K_PRIMARY], nn[GMT_IN][K_SECONDARY], nn[GMT_OUT][K_PRIMARY], nn[GMT_OUT][K_SECONDARY]);
+	
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Before sorting positions\n");
+	for (k = 0; k < n_items; k++) {	/* Reorder so that primary objects are listed before secondary objects */
+		GMT_Report (API, GMT_MSG_DEBUG, "External API item %2d: Family: %14s Direction: %6s Pos: %d Mode: %s\n",
+			k, GMT_family[info[k].family], GMT_direction[info[k].direction],info[k].pos, omode[info[k].mode]);
+		if (info[k].mode == K_SECONDARY) info[k].pos += nn[info[k].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
+		else info[k].pos -= nn[info[k].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
+	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", implicit_pos, output_pos);
 	/* Just checking that the options were properly processed */
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
+		char *omode[2] = {"Primary", "Secondary"};
 		text = GMT_Create_Cmd (API, *head);
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
 		GMT_Destroy_Cmd (API, &text);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: List of items returned:\n");
+		for (k = 0; k < n_items; k++) {
+			GMT_Report (API, GMT_MSG_DEBUG, "External API item %2d: Family: %14s Direction: %6s Pos: %d Mode: %s\n",
+				k, GMT_family[info[k].family], GMT_direction[info[k].direction], info[k].pos, omode[info[k].mode]);
+		}
 	}
 
 	/* Pass back the info array and the number of items */
