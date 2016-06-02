@@ -90,7 +90,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<G{,GG},RG-"},
 	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", "GG},TD),RG-"},
 	{"grdsample", "core", "Resample a grid onto a new lattice", "<G{,GG},RG-"},
-	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<D{,DD),GG(,>D},RG-"},
+	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<D(,DD),GG{,>D},RG-"},
 	{"grdtrend", "core", "Fit trend surface to grids and compute residuals", "<G{,DG),TG),WG),RG-"},
 	{"grdvector", "core", "Plot vector field from two component grids", "<G{,CC(,>X},RG-"},
 	{"grdview", "core", "Create 3-D perspective image or surface mesh from a grid", "<G{,CC(,GG(,IG(,>X},RG-"},
@@ -124,6 +124,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<D{,GG},RG-"},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND),RG-"},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}"},
+	{"surface_mt", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG},RG-"},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG},RG-"},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [and/or Fourier] model for y = f(x) to xy[w] data", "<D{,>D}"},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<D{,>D}"},
@@ -175,7 +176,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<G{,GG},RG-", &GMT_grdproject},
 	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", "GG},TD),RG-", &GMT_grdraster},
 	{"grdsample", "core", "Resample a grid onto a new lattice", "<G{,GG},RG-", &GMT_grdsample},
-	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<D{,DD),GG(,>D},RG-", &GMT_grdtrack},
+	{"grdtrack", "core", "Sample grids at specified (x,y) locations", "<D(,DD),GG{,>D},RG-", &GMT_grdtrack},
 	{"grdtrend", "core", "Fit trend surface to grids and compute residuals", "<G{,DG),TG),WG),RG-", &GMT_grdtrend},
 	{"grdvector", "core", "Plot vector field from two component grids", "<G{,CC(,>X},RG-", &GMT_grdvector},
 	{"grdview", "core", "Create 3-D perspective image or surface mesh from a grid", "<G{,CC(,GG(,IG(,>X},RG-", &GMT_grdview},
@@ -209,6 +210,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<D{,GG},RG-", &GMT_sphinterpolate},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND),RG-", &GMT_sphtriangulate},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}", &GMT_splitxyz},
+	{"surface_mt", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG},RG-", &GMT_surface_mt},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG},RG-", &GMT_surface},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [and/or Fourier] model for y = f(x) to xy[w] data", "<D{,>D}", &GMT_trend1d},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<D{,>D}", &GMT_trend2d},
@@ -221,18 +223,18 @@ static struct Gmt_moduleinfo g_core_module[] = {
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmt_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
-	char message[256];
+	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	GMT_Message (V_API, GMT_TIME_NONE, "\n===  GMT core: The main modules of the Generic Mapping Tools  ===\n");
 	while (g_core_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_core_module[module_id-1].component, g_core_module[module_id].component)) {
 			/* Start of new supplemental group */
-			sprintf (message, "\nModule name:     Purpose of %s module:\n", g_core_module[module_id].component);
+			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", g_core_module[module_id].component);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
 		if (API->mode || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite"))) {
-			sprintf (message, "%-16s %s\n",
+			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_core_module[module_id].name, g_core_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
 		}

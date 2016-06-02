@@ -7692,6 +7692,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		}
 		if (delete != *head) GMT_Delete_Option (API, delete);
 	}
+	/* 1c. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
+	if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
+		/* Found a -<"file" option; this is indeed the input file but the 2nd "input" is actually output */
+		if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt)))	/* Found the next input file option */
+			opt->option = GMT_OPT_OUTFILE;	/* Switch it to an output option */
+	}
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
