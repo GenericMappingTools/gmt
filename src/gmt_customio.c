@@ -1284,6 +1284,8 @@ GMT_LOCAL int customio_read_srfheader6 (FILE *fp, struct srf_header6 *h) {
 		return (GMT_GRDIO_READ_FAILED);
 	if (gmt_M_fread (h->wesn, sizeof (double), 4U, fp) != 4U)
 		return (GMT_GRDIO_READ_FAILED);
+	if (gmt_M_fread(&h->z_min, 2*sizeof(double), 1U, fp) != 1U)
+		return (GMT_GRDIO_READ_FAILED);
 
 	return GMT_NOERROR;
 }
@@ -1737,7 +1739,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	if (from_gdalread->band_field_names) {
 		header->z_scale_factor = from_gdalread->band_field_names[0].ScaleOffset[0];
 		header->z_add_offset   = from_gdalread->band_field_names[0].ScaleOffset[1];
-		header->nan_value      = from_gdalread->band_field_names[0].nodata;
+		header->nan_value      = (float)from_gdalread->band_field_names[0].nodata;
 	}
 	else {
 		header->z_scale_factor = 1.0;
