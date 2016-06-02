@@ -2377,7 +2377,7 @@ a GMT call in the MATLAB or Octave application might look like
 ::
 
   table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
-  grid  = gmt ('surface -R -I2m -Lu$', high_limit_grid, table);
+  grid  = gmt ('surface -R -I2m -Lu$', table, high_limit_grid);
 
 and in such environments we need the ability to (1) specify references
 to memory items (via a marker, here "$") and (2) supply implicit
@@ -2386,6 +2386,10 @@ to represent the input 3-column table, a "> $" to indicate the output
 of blockmean should go to a memory reference (eventually end up in the
 variable table, and a "-G$" to indicate the output grid from surface
 should be written to a memory reference, ending up in the variable grid).
+Most of the time our implicit rules will take care of the ordering.  The
+rule says that all required input data items must be listed before any
+optional input data items.  Thus, in the surface call above we first gave
+the required input data *table* and then the optional high_limit_grid file.
 Such explicit and implicit references to data sources requires processing
 and even the addition of extra options to the linked list of options.
 API developers may use ``GMT_Encode_Options`` to do so.
@@ -2419,6 +2423,7 @@ error number.  The GMT_RESOURCE structure is defined below:
        struct GMT_OPTION *option;       /* Pointer to the corresponding module option */
        int object_ID;                   /* Object ID returned by GMT_Register_IO */
        int pos;                         /* Corresponding index into external object in|out arrays */
+       int mode;                        /* 0 means primary i/o object, 1 means secondary */
        void *object;                    /* Pointer to the registered GMT object */
    };
 

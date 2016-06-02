@@ -32,7 +32,7 @@ Windows
 -------
 
 The Windows installers come already with the gmtmex.mexw64|32 and gmt.m files necessary run the MEX.
-Only make sure that the GMT5.2 binary dir is either in the Windows path (the installer does that for you)
+Only make sure that the GMT5.3 binary dir is either in the Windows path (the installer does that for you)
 and in the MATLAB path (you have to do it yourself).
 If you want to (re)build the MEX file yourself, see the *compile_mex.bat* in the source SVN repository.
 
@@ -45,7 +45,7 @@ kinks.  The following works:
 
 #. Install the GMT OS X Bundle
 #. Run the gmt_prepmex.sh script in the bundle's share/tools directory.  This will duplicate
-   the GMT 5.2 installation into /opt/gmt and re-baptize all the shared libraries.
+   the GMT 5.3 installation into /opt/gmt and re-baptize all the shared libraries.
 #. Use gmtswitch to make /opt/gmt the current active GMT version
 #. Checkout the gmt-mex project via subversion into some directory, i.e.,
    svn checkout svn://gmtserver.soest.hawaii.edu/gmt-mex gmt-mex
@@ -58,10 +58,11 @@ kinks.  The following works:
 You can also build your own bundle (see CMakeLists.txt in main GMT directory).  The above works
 with UNIX installations from fink or HomeBrew but fails for us if under MacPorts (then, MATLAB
 will complain about wrong shared HDF5 library and we crash).
-If you wish to help debug in XCode then see the gmt-mex wiki for more details.  You will have 
-to install the older Xcode (6.4) since MATLAB does not yet support version 7.
-We used the 2015b MATLAB version to build the interface but 2015a should also work.  Older
-version may also work but we have not attempted this since we only have access to those two.
+If you wish to help debug in XCode then see the gmt-mex wiki for more details.  While the latest
+2016a MATLAB version works with XCode 7, earlier versions may require 6.4 and you will have 
+to install the older Xcode version.
+We used the 2016b MATLAB version to build the interface but 2015a,b should also work.  Older
+versions may also work but we have not attempted this since we only have access to these three.
 
 Unix/Linux)
 -----------
@@ -118,13 +119,15 @@ but compute the CPT separately.
   ::
 
    cpt = gmt('grd2cpt -Cblue,red', G);
-   gmt('grdimage -JX8c -Ba -P -C -G > crap_img.ps', cpt, G)
+   gmt('grdimage -JX8c -Ba -P -C -G > crap_img.ps', G, cpt)
 
 Now we had to explicitly write the **-C** & **-G** (well, actually we could have omitted the **-G** because
 it's a mandatory input but that would make the things more confusing). Note also the order of the input data variables.
-It is crucial that they are used in the **exact** same order as the options in the command string.
+It is crucial that any *required* (primary) input data objects (for grdimage that is the grid) are given before
+any *optional* (secondary) input data objects (here, that is the CPT object).  The same is true for modules that
+return more than one item: List the required output object first followed by optional ones.
 
-To illustrate another aspect on the importance of the order of input data let us see how to plot a sinus curve
+To illustrate another aspect on the importance of the order of input data let us see how to plot a sine curve
 made of colored filled circles.
 
   ::
@@ -133,11 +136,10 @@ made of colored filled circles.
    seno = sin(x);                     % *yy*
    xyz  = [x seno seno];              % Duplicate *yy* so that it can be colored
    cpt  = gmt('makecpt -T-1/1/0.1');  % Create a CPT
-   gmt('psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps', cpt, xyz)
+   gmt('psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps', xyz, cpt)
 
-The poin here is that we had to give *cpt, xyz* and not *xyz, cpt* (which would error) because input data
-associated with an option letter **always comes first** and has to respect the corresponding options order
-in command string.
+The point here is that we had to give *xyz, cpt* and not *cpt, xyz* (which would error) because optional input data
+associated with an option letter **always comes after the required input**.
 
 To plot text strings we send in the input data wrapped in a cell array. Example:
 
@@ -150,7 +152,7 @@ and we get back text info in cell arrays as well. Using the *G* grid computed ab
 
   ::
 
-    info = gmt('gmtinfo', G)
+    info = gmt('info', G)
 
 At the end of an **GMT** session work we call the internal functions that will do the house keeping of
 freeing no longer needed memory. We do that with this command:
@@ -160,12 +162,13 @@ freeing no longer needed memory. We do that with this command:
    gmt('destroy')
 
 
-So that's basically how it works. When numeric data has to be sent *in* to **GMT** we use
-MATLAB variables holding the data in matrices or structures or cell arrays depending on the case. On
+So that's basically how it works. When numeric data have to be sent *in* to **GMT** we use
+MATLAB variables holding the data in matrices or structures or cell arrays, depending on data type. On
 return we get the computed result stored in variables that we gave as output arguments.
 Things only complicate a little more for the cases where we can have more than one *input* or
-*output* arguments. The file *gallery.m*, that reproduces the examples in the Gallery section of the GMT
-documentation, has many (not so trivial) examples on usage og the MEX GMT API.
+*output* arguments, since the order or the arguments matter (Remember the rule: primary first, secondary second).
+The file *gallery.m*, that reproduces the examples in the Gallery section of the GMT
+documentation, has many (not so trivial) examples on usage of the MEX GMT API.
 
 
 .. _grid-struct:
