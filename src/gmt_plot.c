@@ -6393,12 +6393,16 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 		}
 		P->data[P->n++] = (char)c;
 	}
+	if (close_file) fclose (fp);
 	if (P->n > n_alloc)
 		P->data = gmt_M_memory (GMT, P->data, P->n, char);
 	P->n_alloc = P->n;
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
-
-	if (close_file) fclose (fp);
+	/* Determine the mode by checking for typical starts and ends of PS */
+	if (P->n > 4 && !strncmp (P-data, "%!PS", 4U))
+		P->mode = 1;	/* Found start of PS header */
+	if (P->n > 10 && !strncmp (&P->data[P->n-10], "end\n%%EOF\n", 10U))
+		P->mode += 2;	/* Found end of PS trailer */
 	return (P);
 }
 
