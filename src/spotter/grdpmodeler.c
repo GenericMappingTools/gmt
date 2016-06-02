@@ -263,7 +263,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 
 	uint64_t node, seg, n_old = 0, n_outside = 0, n_NaN = 0;
 
-	double lon, lat, d, value = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL, *out = NULL;
+	double lon = 0, lat = 0, d, value = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL, *out = NULL;
 
 	char *quantity[N_PM_ITEMS] = { "azimuth", "distance displacement", "stage", "velocity", "rotation rate", "longitude displacement", \
 		"latitude displacement", "reconstructed longitude", "reconstructed latitude"};

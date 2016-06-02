@@ -223,7 +223,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	
 	uint64_t seg, n_old = 0, n_outside = 0, n_NaN = 0, n_read = 0;
 	
-	double lon, lat, lat_c, d, value = 0.0, age, *in = NULL, *out = NULL;
+	double lon = 0, lat = 0, lat_c, d, value = 0.0, age, *in = NULL, *out = NULL;
 	
 	char *tag[N_PM_ITEMS] = { "az", "dist", "stage", "vel", "omega", "dlon", "dlat", "lon", "lat" };
 	struct GMT_DATASET *D = NULL;
