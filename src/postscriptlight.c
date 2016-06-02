@@ -3957,7 +3957,6 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 
 	if (PSL->internal.memory) {	/* Finalize memory buffer allocation */
 		memset (&PSL->internal.buffer[PSL->internal.n], 0, (PSL->internal.n_alloc-PSL->internal.n)*sizeof (char));	/* Wipe the unused stuff */
-		PSL->internal.n++;		/* To account for the null terminator */
 		PSL->internal.n_alloc = PSL->internal.n;	/* Shrink allocated memory to what is needed to hold the PS */
 		PSL->internal.buffer  = PSL_memory (PSL, PSL->internal.buffer, PSL->internal.n_alloc, char);
 		if (lastpage) PSL->internal.pmode |= 2;	/* We provided a trailer */
