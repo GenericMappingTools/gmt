@@ -690,14 +690,14 @@ GMT_LOCAL int comp_cakes (const void *cake_a, const void *cake_b) {
 
 int GMT_talwani3d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
-	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node, n_duplicate = 0;
+	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node = 0, n_duplicate = 0;
 	uint64_t node;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	
 	bool flat_earth = false, first_slice = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"}, remark[GMT_LEN64] = {""};
-	double z_level, depth, rho;
+	double z_level, depth = 0.0, rho = 0.0;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 					
 	struct SLICE *sl = NULL, *slnext = NULL;

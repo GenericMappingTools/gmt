@@ -8788,7 +8788,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	 * To avoid some downstream problems we make sure that if circle crosses Greenwhich or Dateline that
 	 * we insert a point at lon = 0 and/or lon = 180. I imagine that in the worst-case scenario we could
 	 * cross those lines twice each, hence I allocate 4 more spaces than needed. */
-	double P[3], X[3], N[3], R[3][3], xlat, dlon, xx, yy, x, y, last_x, last_y, dx;
+	double P[3], X[3], N[3], R[3][3], xlat, dlon, xx, yy, x, y, last_x = 0.0, last_y = 0.0, dx;
 	uint64_t k, n;
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;

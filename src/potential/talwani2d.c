@@ -516,10 +516,10 @@ GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_
 
 int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int srow, error = 0, ns;
-	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node, n_duplicate = 0;
+	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	uint64_t dim[4] = {1, 1, 0, 2}, row;
-	double scl, rho, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
+	double scl, rho = 0.0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
