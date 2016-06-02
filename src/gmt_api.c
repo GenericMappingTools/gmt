@@ -7833,13 +7833,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	gmt_M_memset (nn, 4, unsigned int);
 	for (k = 0; k < n_items; k++)	/* Count how many primary and secondary objects for input and output */
 		nn[info[k].direction][info[k].mode]++;
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: nn[GMT_IN] = {%d, %d}, nn[GMT_OUT] = {%d, %d}\n",
-		nn[GMT_IN][K_PRIMARY], nn[GMT_IN][K_SECONDARY], nn[GMT_OUT][K_PRIMARY], nn[GMT_OUT][K_SECONDARY]);
 	
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Before sorting positions\n");
 	for (k = 0; k < n_items; k++) {	/* Reorder so that primary objects are listed before secondary objects */
-		GMT_Report (API, GMT_MSG_DEBUG, "External API item %2d: Family: %14s Direction: %6s Pos: %d Mode: %s\n",
-			k, GMT_family[info[k].family], GMT_direction[info[k].direction],info[k].pos, omode[info[k].mode]);
 		if (info[k].mode == K_SECONDARY) info[k].pos += nn[info[k].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
 		else info[k].pos -= nn[info[k].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
