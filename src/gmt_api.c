@@ -7561,71 +7561,76 @@ const char * gmtapi_get_moduleinfo (void *V_API, char *module) {
 
 /*! . */
 struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, char marker, int n_in, struct GMT_OPTION **head, unsigned int *n) {
-	/* This function determines which input sources and output destinations are required given the options.
-	 * It is only used to assist developers of external APIs such as the MATLAB, Julia, Python, R, and other APIs.
-	 * These are the function arguments:
+	/* This function determines which input sources and output destinations are required given the module options.
+	 * It is only used to assist developers of external APIs, such as the MATLAB, Julia, Python, R, and others.
+	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
+	 * THIS_MODULE_KEYS.  For instance, here are the keys for grdtrack:
+	 *
+	 * #define THIS_MODULE_KEYS        "<D{,DD),GG(,>D},RG-"
+	 *
+	 * Here are the GMT_Encode_Options arguments:
 	 *   API	Controls all things within GMT.
-	 *   module	Name of the GMT module. An input arg, but may grow if a prefix of "gmt" is prepended.
-	 *   marker	Character that represents a resource, typically $, but could be another char if need be.
-	 *   n_in	Number of objects given as input resources (-1 if not known).
+	 *   module	Name of the GMT module.
+	 *   marker	Character that represents a secondary resource, typically $, but could be another unique char if need be.
+	 *   n_in	Known number of objects given as input resources (-1 if not known).
 	 *   head	Linked list of GMT options passed for this module. We may hook on 1-2 additional options.
-	 *   We return an array of structures with information about registered resources going to/from GMT.
-	 *   The number of structures is returned by the *n argument. Struct GMT_RESOURCE is defined in gmt.h.
-	 * Basically, given the module we look up the keys for that module which tells us which options provide
+	 *   *n		Number of structures returned by the function. Struct GMT_RESOURCE is defined in gmt.h
+	 *   
+	 * We also return an array of structures with information about registered resources going to/from GMT.
+	 * Basically, given the module we look up the keys for that module, which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
-	 * to insert the given marker as the filename. Some options may already have the marker, e.g., -G$, and
-	 * it is required for filenames on the command line that is to come from memory (just $). After scanning
+	 * to insert the given marker as the filename. Some options may already have the marker. After scanning
 	 * the options we examine the keys for any required input or output argument that have yet to be specified
-	 * explicitly. If so we add the missing options, with filename = marker, and append them to the end of
+	 * explicitly. If so we create the missing options, with filename = marker, and append them to the end of
 	 * the option list (head). The API developers can then use this array of encoded options in concert with
 	 * the information passed back via the structure list to attach actual resources.
 	 *
-	 * For each option that may take a file we need to know what kind of file and if this is input or output.
-	 * We encode this in a 3-character word XYZ, explained below.  Note that each module may
+	 * For each option that may take a file we need to know what kind of file and if it is input or output.
+	 * We encode this information in a 3-character word XYZ, explained below.  Note that each module may
 	 * need several comma-separated XYZ words and these are returned as one string via GMT_Get_Moduleinfo.
-	 * The origin of these words are given by the THIS_MODULE_KEY in every module source code.
+	 * The X, Y, and Z letter position represent different information, as discussed below:
 	 *
-	 * X stands for the specific program option (e.g., L for -L, F for -F) or < for standard input and
-	 *    > for standard output (if reading tables) or command-line files (if reading grids).
-	 * Y stands for data type (C = CPT, D = Dataset/Point, L = Dataset/Line,
-	 *    P = Dataset/Polygon, G = Grid, I = Image, T = Textset, X = PostScript, ? = type given via a module option),
+	 * X stands for the specific program OPTION (e.g., L for -L, F for -F). For tables or grids read from files or
+	 * tables processed via standard input we use '<', while '>' is used for standard (table) output.
+	 * Y stands for data TYPE (C = CPT, D = Dataset/Point, L = Dataset/Line, P = Dataset/Polygon,
+	 *    G = Grid, I = Image, T = Textset, X = PostScript, ? = type specified via a module option [more later]),
 	 *    while a hyphen (-) means there is NO data when this option is set (see Z for whether this is for in- or output).
-	 * Z stands for primary inputs '{', primary output '}', secondary input '(', or secondary output ')'.
-	 *   Primary inputs and outputs need to be assigned, and if not explicitly given will result in
+	 * Z stands for PRIMARY inputs '{', primary output '}' OR SECONDARY input '(', or secondary output ')'.
+	 *   Primary inputs and outputs MUST be assigned, and if not explicitly given will result in
 	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
-	 *   via the given left- and right-hand side arguments to supply input or accept output.
-	 *   Secondary inputs means they are only assigned if the option is actually given.  If in|out is irrelevant
-	 *   for an option we use '-'.
+	 *   via any given left- and right-hand side arguments to supply inputs or accept outputs.
+	 *   Secondary inputs means they are only assigned if an option is actually given.  If the in|out designation
+	 *   is irrelevant for an option we use '-'.
 	 *
-	 * There are a few special cases where X, Y, or Z take on magic behavior:
+	 * There are a few special cases where X, Y, or Z take on "magic" behavior:
 	 *
-	 *   A few modules with have X = - (hyphen) and this means the primary input or output (determined by Z)
-	 *   has a data type that is not known until runtime.  A module option tells us which type it is, and this
-	 *   option is encoded in Y.  So the -Y<type> option is _required_ and that is how we can update the primary
+	 *   A few modules with have X = - (hyphen). This means the primary input or output (determined by Z)
+	 *   has a data type that is not known until runtime.  A module option will tells us which type it is, and this
+	 *   option is encoded in Y.  So a -Y<type> option is _required_ and that is how we can update the primary
 	 *   data type.  Example: gmtread can read any GMT object but requires -T<type>.  It thus has the keys
-	 *   "<?{,>?},-T-".  Thus, we use -T<type> and replace ? with the dataset implied by <type> both for input
-	 *   and output (since Z was indeterminate).  Use i|o if only input or output should have this treatment.
+	 *   "<?{,>?},-T-".  Hence, we examine -T<type> and replace ? with the dataset implied by <type> both for input
+	 *   AND output (since Z was indeterminate).  Use i|o if only input or output should have this treatment.
 	 *
 	 *   A few modules will have Y = - which is another magic key: If the -X option is given then either the input
 	 *   or output (depending on what Z is) will NOT be required. As an example of this behavior, consider psxy
 	 *   which has a -T option that means "read no input, just write trailer". So the key "T-(" in psxy means that
-	 *   when -T is used then NO input is required.  This means the primary input key "<D{" is set to "<D(" (secondary)
+	 *   when -T is used then NO input is required.  This means the primary input key "<D{" is changed to "<D(" (secondary)
 	 *   and no attempt is made to connect external input to the psxy input.
 	 *
-	 *   A few modules will specify Z as some letter not {|(|}|)|-, which means that normally these modules
+	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
-	 *   output will be changed to the given Y.  This is confusing so here are two examples:
-	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its key
-	 *      contains the entry ">DM", which means that when -M is active then PostScript key ">X}" turns into ">D}" and
+	 *   output will be changed to the given type Y.  This is confusing so here are two examples:
+	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its keys
+	 *      contain the entry ">DM", which means that when -M is active then PostScript key ">X}" morphs into ">D}" and
 	 *      thus allows for data set export instead.
 	 *   2. grdinfo normally writes a textset (key ">T}") but with -C it should write a dataset.  It has the magic
-	 *      key ">DC". If the -C option is given then the ">T}" is changed to ">D}".
+	 *      key ">DC": If the -C option is given then the ">T}" is morphed to ">D}".
 	 *   3. grdcontour normally writes PostScript but grdcontour -D will instead export data to a file set by -D, so its key
-	 *      contains the entry "DDD", which means that when -D is active then PostScript key ">X}" turns into "DD}" and
+	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
 	 *
-	 *   After processing, all magic key sequences are set to "---" meaning inactive.
+	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *
 	 */
 
