@@ -129,18 +129,18 @@ static void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, do
 int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
 	int c__1356 = 1356, c__13680 = 13680;
-	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
+	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr = 0, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows, i_unused = 0;
 	int *msec = NULL, *mjdy = NULL;
-	int imon = 0, idom = 0, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
+	int imon = 0, idom = 0, jaft, jmon = 0, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
 	double *mut = NULL, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
-	double re, xd, yd, rm, xg, ro, rp, yg, zg, zd;
+	double re, xd, yd, rm, xg, ro = 0, rp, yg, zg, zd;
 	double bc[29], wb[58], trig[132], ru, rt, rse[9], doy, fyr, cego, epch;
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
-	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
+	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas = 0, rtay_dk;
 	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
 	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
 	double *hq = NULL, *ht = NULL, *pleg = NULL, *rcur = NULL;		/* was hq[53040], ht[17680], pleg[4422], rcur[9104] */
