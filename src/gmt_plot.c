@@ -2260,7 +2260,7 @@ GMT_LOCAL void plot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
-	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick, form;
+	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick = 0, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
 	char label[GMT_LEN16], *type[2] = {"inner", "outer"};
@@ -2310,7 +2310,8 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			sincosd (ew_angle + angle, &s, &c);
-			x[0] = mr->refpoint->x + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] = mr->refpoint->y + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
+			x[0] = mr->refpoint->x + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] =
+			       mr->refpoint->y + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
 			if (GMT->current.setting.map_degree_symbol == gmt_none)
 				snprintf (label, GMT_LEN16, "%ld", lrint (val[i]));
 			else

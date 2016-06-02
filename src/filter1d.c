@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0;
-	int sval;
+	int sval = 0;
 	char c, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -278,7 +278,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 							}
 							break;
 					}
-					n_errors += gmt_M_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0, "Syntax error -F option: Filterwidth must be positive\n");
+					n_errors += gmt_M_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0,
+					                                   "Syntax error -F option: Filterwidth must be positive\n");
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");

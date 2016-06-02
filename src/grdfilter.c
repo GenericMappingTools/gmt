@@ -823,9 +823,9 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	struct THREAD_STRUCT *threadArg;
+	struct THREAD_STRUCT *threadArg = NULL;
 #ifdef HAVE_GLIB_GTHREAD
-	GThread **threads;
+	GThread **threads = NULL;
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/

@@ -387,7 +387,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 #ifdef HAVE_GDAL
-	int k, r,g,b, has_trans = 0;
+	int k, r = 0, g = 0, b = 0, has_trans = 0;
 	unsigned char colormap[4*256];
 	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
 #endif

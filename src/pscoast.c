@@ -866,7 +866,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
 		gmt_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
-		if (Ctrl->G.active) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
+		if (Ctrl->G.active)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\n"
+			                                  "If the antipole (%g/%g) is in the ocean then chances are good\n"
+			                                  "Else: avoid projection center coordinates that are exact multiples of %g degrees\n",
+			                                  anti_lon, anti_lat, c.bsize);
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */

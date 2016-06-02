@@ -1104,8 +1104,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					ascii_output_three (API, out, N);
 					if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
 						/* GE cannot handle polygons crossing the dateline; warn for now */
-						GMT_Report (API, GMT_MSG_NORMAL, "Warning: At least on polygon is straddling the Dateline.  Google Earth will wrap these the wrong way\n");
-						GMT_Report (API, GMT_MSG_NORMAL, "Split such polygons into East and West parts and plot them as separate polygons.\n");
+						GMT_Report (API, GMT_MSG_NORMAL,
+						            "Warning: At least on polygon is straddling the Dateline.  Google Earth will wrap these the wrong way\n");
+						GMT_Report (API, GMT_MSG_NORMAL,
+						            "Split such polygons into East and West parts and plot them as separate polygons.\n");
 						GMT_Report (API, GMT_MSG_NORMAL, "Use gmtconvert to help in this conversion.\n");
 						no_dateline = true;
 					}

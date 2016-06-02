@@ -400,7 +400,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	unsigned int row, col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
+	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id = 0;
 	uint64_t w_col, i_col = 0, sid_col;
 
 	size_t n_alloc = 0, nz_alloc = 0;

@@ -1313,7 +1313,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL;
-	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az, grad, weight_i, weight_j;
+	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_i, weight_j;
 	double *A = NULL, r_min, r_max;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
@@ -1456,12 +1456,15 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			r = get_radius (GMT, X[i], X[n], dimension);
 			if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 				if (doubleAlmostEqualZero (in[dimension], obs[i])) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
 					skip = true;
 					n_skip++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i, in[dimension], obs[i]);
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ"
+					            " in observation (%.12g vs %.12g)\n", n_read, i, in[dimension], obs[i]);
 					n_duplicates++;
 				}
 			}
@@ -1498,7 +1501,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
-		unsigned int n_A_cols;
+		unsigned int n_A_cols = 0;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_DATATABLE *S = NULL;
 		switch (dimension) {
@@ -1647,9 +1650,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Distance between distant constraints = %.12g]\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
+		GMT_Report (API, GMT_MSG_VERBOSE,
+		            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
+			GMT_Report (API, GMT_MSG_VERBOSE,
+			            "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
 			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			if (m) {
@@ -1702,7 +1707,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Nin->n_columns < dimension) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least %u are needed\n", Ctrl->N.file, (int)Nin->n_columns, dimension);
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "Input file %s has %d column(s) but at least %u are needed\n", Ctrl->N.file, (int)Nin->n_columns, dimension);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */

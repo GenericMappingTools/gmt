@@ -994,7 +994,7 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtregress (void *V_API, int mode, void *args) {
-	uint64_t k, seg, tbl, col, row, n_try = 0, n_t, n_alloc = 0, n_columns = GMTREGRESS_N_FARGS;
+	uint64_t k, seg, tbl, col = 0, row, n_try = 0, n_t, n_alloc = 0, n_columns = GMTREGRESS_N_FARGS;
 
 	int error = 0;
 	

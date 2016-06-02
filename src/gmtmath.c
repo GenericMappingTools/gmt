@@ -237,7 +237,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	 */
 
 	unsigned int i, j, k, k0, i2, j2, n;
-	int ier;
+	int ier = 0;
 	uint64_t row, seg, rhs, w_col = 0;
 	double cond, w = 1.0;
 	double *N = NULL, *r = NULL, *d = NULL, *x = NULL;
@@ -331,7 +331,8 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		unsigned int nrots;
 		double *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 		if (!svd) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cholesky decomposition failed, try SVD decomposition instead and exclude eigenvalues < %g.\n", eigen_min);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			            "Cholesky decomposition failed, try SVD decomposition instead and exclude eigenvalues < %g.\n", eigen_min);
 			gmt_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
 		}
 		/* Solve instead using the SVD of a square matrix via gmt_jacobi */
@@ -374,7 +375,8 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	if (info->fit_mode == GMTMATH_COEFFICIENTS) {	/* Return coefficients only as a single vector */
 		uint64_t dim[4] = {1, 1, 0, 1};
 		dim[GMT_ROW] = n;
-		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
+		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+			return (GMT->parent->error);
 		for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
 		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
 		if (GMT->common.h.add_colnames) {
@@ -382,13 +384,11 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			sprintf (header, "#coefficients");
 			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 		}
-		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK)
 			return (GMT->parent->error);
-		}
 #if 0
-		if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK)
 			return (GMT->parent->error);
-		}
 #endif
 	}
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
