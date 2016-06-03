@@ -7625,7 +7625,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *   be one of the options with required input (or output) and we change that option to option input (or output).
 	 *   Example: grdtrack has two required inputs (the grid(s) and the track/point file.  However, if -E is set then
 	 *   the track/point file is not expected so we need to change it to secondary.  We thus add E-< which then will
-	 *   change <D{ to <D().
+	 *   change <D{ to <D(.
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
