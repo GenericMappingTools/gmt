@@ -26,6 +26,7 @@
  */
 #include "gmt.h"
 #define gmt_M_unused(x) (void)(x)
+#define GMT_LEN256 256
 #include "gmt_supplements_module.h"
 #include <string.h>
 
@@ -52,39 +53,39 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77magref", "mgd77", "Evaluate the IGRF or CM4 magnetic field models", "<D{,>D}"},
 	{"mgd77manage", "mgd77", "Manage the content of MGD77+ files", ""},
 	{"mgd77path", "mgd77", "Return paths to MGD77 cruises and directories", ">T}"},
-	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", ""},
+	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", "RG-"},
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", ">X},RG-"},
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<G{,GG},RG-,>DQ"},
-	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<D{,QD(,>D}"},
-	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
+	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "ED(,QD(,TD(,>D}"},
+	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D},RG-"},
 	{"gpsgridder", "potential", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD),GG},RG-"},
-	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<G{,GG},GDC,GDI"},
-	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG}"},
-	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{,FD(,GG}"},
-	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG}"},
+	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<G{,GG},DG(,GDC,GDI"},
+	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG},LT),TD("},
+	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{,FD(,GG},RG-"},
+	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG},RG-,ZG)"},
 	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<T{,GG},RG-"},
 	{"talwani2d", "potential", "Compute geopotential anomalies over 2-D bodies by the method of Talwani", "<D{,ND(,>D}"},
-	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),>D},RG-"},
+	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),G-<,>D},RG-"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X},RG-"},
 	{"pssegy", "segy", "Plot a SEGY file on a map", ">X},RG-"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", "GG},RG-"},
-	{"backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},ED{,FD("},
-	{"gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,ET{,FD(,>D}"},
-	{"grdpmodeler", "spotter", "Evaluate a plate motion model on a geographic grid", "<G{,ET{,FD(,GG),>DG,RG-"},
-	{"grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", "<G{,ET{,FD(,GG},RG-"},
-	{"grdspotter", "spotter", "Create CVA image from a gravity or topography grid", "<G{,AG(,ET{,DG),LG),GG},RG-"},
-	{"hotspotter", "spotter", "Create CVA image from seamount locations", "<D{,ET{,GG},RG-"},
-	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,ET{,FD(,>D}"},
+	{"backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", "<D{,>D},FD("},
+	{"gmtpmodeler", "spotter", "Evaluate a plate motion model at given locations", "<D{,FD(,>D}"},
+	{"grdpmodeler", "spotter", "Evaluate a plate motion model on a geographic grid", "<G{,FD(,GG),>DG,RG-"},
+	{"grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", "<G{,FD(,GG},TD(,RG-"},
+	{"grdspotter", "spotter", "Create CVA image from a gravity or topography grid", "<G{,AG(,DG),LG),GG},RG-"},
+	{"hotspotter", "spotter", "Create CVA image from seamount locations", "<D{,GG},RG-"},
+	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
 	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">T}"},
-	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", "AT(,>D},RG-"},
-	{"x2sys_datalist", "x2sys", "Extract content of track data files", "LT(,IT(,>D},RG-"},
+	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", ">D},RG-"},
+	{"x2sys_datalist", "x2sys", "Extract content of track data files", ">D},RG-"},
 	{"x2sys_get", "x2sys", "Get track listing from track index database", ">T},RG-"},
 	{"x2sys_init", "x2sys", "Initialize a new x2sys track database", "RG-"},
-	{"x2sys_list", "x2sys", "Extract subset from crossover data base", "LT(,IT(,>D},RG-"},
+	{"x2sys_list", "x2sys", "Extract subset from crossover data base", ">D},RG-"},
 	{"x2sys_merge", "x2sys", "Merge an updated COEs table (smaller) into the main table (bigger)", ">T}"},
 	{"x2sys_put", "x2sys", "Update track index database from track bin file", ""},
-	{"x2sys_report", "x2sys", "Report statistics from crossover data base", "LT(,IT(,>T},RG-"},
+	{"x2sys_report", "x2sys", "Report statistics from crossover data base", ">T},RG-"},
 	{"x2sys_solve", "x2sys", "Determine least-squares systematic correction from crossovers", ">T}"},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
@@ -92,16 +93,16 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 /* Pretty print all GMT supplements module names and their purposes for gmt --help */
 void gmt_supplements_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
-	char message[256];
+	char message[GMT_LEN256];
 	GMT_Message (V_API, GMT_TIME_NONE, "\n===  GMT suppl: The official supplements to the Generic Mapping Tools  ===\n");
 	while (g_supplements_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_supplements_module[module_id-1].component, g_supplements_module[module_id].component)) {
 			/* Start of new supplemental group */
-			sprintf (message, "\nModule name:     Purpose of %s module:\n", g_supplements_module[module_id].component);
+			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", g_supplements_module[module_id].component);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-		sprintf (message, "%-16s %s\n",
+		snprintf (message, GMT_LEN256, "%-16s %s\n",
 			g_supplements_module[module_id].name, g_supplements_module[module_id].purpose);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 		++module_id;

@@ -17,7 +17,7 @@ Synopsis
 [ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
-[ |SYN_OPT-o| ] > *asciifile.txt*
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -25,7 +25,8 @@ Description
 -----------
 
 **gshhg** reads the binary coastline (GSHHG) or political boundary or
-river (WDBII) files and extracts an ASCII listing. It automatically
+river (WDBII) files and writes an ASCII (or binary; see **-b**) listing
+to standard output. It automatically
 handles byte-swabbing between different architectures. Optionally, only
 segment header info can be displayed. The header info has the format *ID
 npoints hierarchical-level source area f\_area west east south north

@@ -19,7 +19,7 @@ Synopsis
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ |-S|\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
+[ |-S|\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *file*]\  \|\ *n*]\ [**+l**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*]
@@ -132,12 +132,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *file*]\ \|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
     give start time *t0*. The unit is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
-    Alternatively, give a file with the desired times in the first column (these times
+    Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
     We then write a separate model grid file for each given time step.
 

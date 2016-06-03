@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pslegend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot legends on maps"
-#define THIS_MODULE_KEYS	"<T{,AC(,>X},RG-"
+#define THIS_MODULE_KEYS	"<T{,>X},RG-"
 
 #include "gmt_dev.h"
 
@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 

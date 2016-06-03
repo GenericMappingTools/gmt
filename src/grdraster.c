@@ -648,9 +648,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	for (i = 0; i < nrasters; i++) GMT_Message (API, GMT_TIME_NONE, "%s\n", rasinfo[i].h.command);
 	GMT_Message (API, GMT_TIME_NONE, "------------------------------------------------------------------------------------\n\n");
 #ifdef WORDS_BIGENDIAN
-	GMT_Message (API, GMT_TIME_NONE, "grdraster default binary byte order is Big-endian.\n");
+	GMT_Message (API, GMT_TIME_NONE, "grdraster default binary byte order is Big-endian.\n\n");
 #else
-	GMT_Message (API, GMT_TIME_NONE, "grdraster default binary byte order is Little-endian.\n");
+	GMT_Message (API, GMT_TIME_NONE, "grdraster default binary byte order is Little-endian.\n\n");
 #endif
 	gmt_M_free (API->GMT, rasinfo);
 

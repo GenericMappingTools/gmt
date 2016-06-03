@@ -133,9 +133,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pspolar [<table>] %s %s -D<longitude>/<latitude>\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pspolar [<table>] %s %s -D<lon>/<lat>\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-N] [-O] [-P] [-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>/[V[<vecpar>]][G<fill>][L] [-Qt<pen>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);

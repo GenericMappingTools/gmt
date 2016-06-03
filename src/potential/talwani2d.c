@@ -213,7 +213,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n|v]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);

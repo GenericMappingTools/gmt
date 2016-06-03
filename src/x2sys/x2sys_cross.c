@@ -31,7 +31,7 @@
 #define THIS_MODULE_NAME	"x2sys_cross"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Calculate crossovers between track data files"
-#define THIS_MODULE_KEYS	"AT(,>D},RG-"
+#define THIS_MODULE_KEYS	">D},RG-"
 
 #include "x2sys.h"
 
@@ -109,7 +109,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_bo_OPT, GMT_do_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n\n");
 	
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 

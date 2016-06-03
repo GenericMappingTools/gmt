@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, " [-+<bin>]");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 

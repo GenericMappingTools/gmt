@@ -605,11 +605,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
-#if 0
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   It also implicitly sets -L.\n");
-#endif
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");

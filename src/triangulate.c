@@ -223,7 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchck triangulation algorithm\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuk triangulation algorithm\n");
 	if (!(Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) Ctrl->N.active = !Ctrl->G.active;	/* The default action */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

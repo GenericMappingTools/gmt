@@ -154,6 +154,7 @@ else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt.h"
 #define gmt_M_unused(x) (void)(x)
+#define GMT_LEN256 256
 #include "gmt_supplements_module.h"
 #include <string.h>
 EOF

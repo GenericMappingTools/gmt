@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
-#define THIS_MODULE_KEYS	"<D(,DD),GG{,>D},RG-,SD)"
+#define THIS_MODULE_KEYS	"<D{,DD),E-<,GG{,>D},RG-,SD)"
 
 #include "gmt_dev.h"
 
@@ -157,19 +157,19 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+v]] [-D<dfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+v]] [-D<dfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of a more 2-D binary data set to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See below if the file is a Sandwell/Smith Mercator grid (IMG format).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -G+l<list> to pass a list of file names.\n");
 	gmt_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -C or -E are selected:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");

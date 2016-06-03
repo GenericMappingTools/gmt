@@ -1038,7 +1038,12 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
 					if (!s[kk]) continue;		/* A previously processed/freed key */
 					if (s[kk][K_DIR] == '{' && strchr ("-({", s[k][K_DIR])) s[kk][K_DIR] = '(';	/* No longer an implicit input */
-					if (s[kk][K_DIR] == '}' && strchr ("-)}", s[k][K_DIR])) s[kk][K_DIR] = ')';	/* No longer an implicit output */
+					else if (s[kk][K_DIR] == '}' && strchr ("-)}", s[k][K_DIR])) s[kk][K_DIR] = ')';	/* No longer an implicit output */
+					else if (!strchr ("-)}", s[k][K_DIR])) {	/* Neither input nor output, specified another option that we should make optional */
+						for (unsigned int kkk = 0; kkk < n; kkk++) {	/* Find the corresponding option and change to secondary input/output */
+							if (s[kkk][K_OPT] == s[k][K_DIR]) s[kkk][K_DIR] = (s[kkk][K_DIR] == '{') ? '(' : ')';
+						}
+					}
 				}
 			}
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
@@ -7616,11 +7621,20 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *   or output (depending on what Z is) will NOT be required. As an example of this behavior, consider psxy
 	 *   which has a -T option that means "read no input, just write trailer". So the key "T-(" in psxy means that
 	 *   when -T is used then NO input is required.  This means the primary input key "<D{" is changed to "<D(" (secondary)
-	 *   and no attempt is made to connect external input to the psxy input.
+	 *   and no attempt is made to connect external input to the psxy input.  If Z is none of () then we expect Z to
+	 *   be one of the options with required input (or output) and we change that option to option input (or output).
+	 *   Example: grdtrack has two required inputs (the grid(s) and the track/point file.  However, if -E is set then
+	 *   the track/point file is not expected so we need to change it to secondary.  We thus add E-< which then will
+	 *   change <D{ to <D().
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
-	 *   output will be changed to the given type Y.  This is confusing so here are two examples:
+	 *   output will be changed to the given type Y.  Also, modifiers may be involved. 	The full syntax for this is
+	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
+	 *      1. -Z is given
+	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
+	 *      3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+	 *   The Z magic is a bit confusing so here are several examples:
 	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its keys
 	 *      contain the entry ">DM", which means that when -M is active then PostScript key ">X}" morphs into ">D}" and
 	 *      thus allows for data set export instead.
@@ -7629,6 +7643,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *   3. grdcontour normally writes PostScript but grdcontour -D will instead export data to a file set by -D, so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
+	 *   4. gmtspatial : New key “”>TN+r” means if -N[...]+r is given then set >T}.  Just giving -N without the given
+	 *      modifier +r will not trigger the change.
+	 *   5. pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R are then set to >T}.
 	 *
 	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *

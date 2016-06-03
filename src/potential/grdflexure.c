@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"grdflexure"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 3-D surfaces for various rheologies"
-#define THIS_MODULE_KEYS	"<G{,GG}"
+#define THIS_MODULE_KEYS	"<G{,GG},LT),TD("
 
 #include "gmt_dev.h"
 
@@ -643,7 +643,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
