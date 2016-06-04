@@ -1169,7 +1169,6 @@ int gmt_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	/* pack z-range: */
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	//gmtlib_grd_set_units (GMT, header);
 	return ((*GMT->session.writeinfo[header->type]) (GMT, header));
 }
 
@@ -1182,7 +1181,6 @@ int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADE
 	gmt_M_unused(file);
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
-	//gmtlib_grd_set_units (GMT, header);
 	return ((*GMT->session.updateinfo[header->type]) (GMT, header));
 }
 
@@ -1237,7 +1235,6 @@ int gmt_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	int err;	/* Implied by GMT_err_trap */
 
 	GMT_err_trap (gmt_grd_get_format (GMT, file, header, false));
-	//gmtlib_grd_set_units (GMT, header);
 	grdio_pack_grid (GMT, header, grid, k_grd_pack); /* scale and offset */
 	grdio_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
