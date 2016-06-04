@@ -1963,6 +1963,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			struct GMT_IMAGE *I = NULL;
 #ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+			GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TCLS");	/* State how we wish to receive images from GDAL */
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
