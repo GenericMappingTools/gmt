@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtwrite"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Write GMT objects from external API"
-#define THIS_MODULE_KEYS	"<?{,>?},-T-"
+#define THIS_MODULE_KEYS	"-T-,<?{,>?}"
 
 #include "gmt_dev.h"
 

@@ -1037,6 +1037,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					GMT->current.io.col_type[GMT_IN][pos2y] = save[GMT_Y];
 				}
 			}
+			else if (read_mode == GMT_READ_TEXT) {	/* Must unscramble the text record from the API */
+				if (gmt_conv_intext2dbl (GMT, record, n_needed)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
+					continue;
+				}
+			}
 
 			if (get_rgb) {
 				gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);

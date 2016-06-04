@@ -998,7 +998,6 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 	/* Allocate and populate the character array, then return it and n_items */
 	s = (char **) calloc (n, sizeof (char *));
 	k = 0;
-	/* While processing the array we also determine the key # for the primary output */
 	while ((next = strsep (&tmp, ",")) != NULL) {
 		if (strlen (next) < 3) {
 			GMT_Report (API, GMT_MSG_NORMAL,
@@ -1013,17 +1012,9 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 			else
 				o_id = (int)k;
 		}
-		if (next[K_DIR] == '{') {	/* Identified a primary input key */
-			(void)api_key_to_family (API, next, &family, &geometry);	/* Get datatype, and geometry, then set how many are requested */
-			if (family != GMT_NOTSET) {	/* Safeguard: If family not found then we dont want to crash... */
-				if (next[K_DIR+1])	/* Gave an argument: This is either a number (a specific count) or + (1 or more) */
-					n_to_add[family] = (next[K_DIR+1] == '+') ? GMTAPI_UNLIMITED : atoi (&next[K_DIR+1]);
-				else
-					n_to_add[family] = (family == GMT_IS_DATASET || family == GMT_IS_TEXTSET) ? GMTAPI_UNLIMITED : 1;
-			}
-		}
 		k++;
 	}
+	/* While processing the array we also determine the key # for the primary output */
 	for (k = 0; k < n; k++) {	/* Check for presence of any of the magic X,Y,Z keys */
 		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
 			/* Must first determine which data type we are dealing with via -Y<type> */
@@ -1093,6 +1084,15 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				}
 			}
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
+		}
+		else if (s[k][K_DIR] == '{') {	/* Non-magic key: Identified a primary input key */
+			(void)api_key_to_family (API, s[k], &family, &geometry);	/* Get datatype, and geometry, then set how many are requested */
+			if (family != GMT_NOTSET) {	/* Safeguard: If family not found then we dont want to crash... */
+				if (s[k][K_DIR+1])	/* Gave an argument: This is either a number (a specific count) or + (1 or more) */
+					n_to_add[family] = (s[k][K_DIR+1] == '+') ? GMTAPI_UNLIMITED : atoi (&s[k][K_DIR+1]);
+				else
+					n_to_add[family] = (family == GMT_IS_DATASET || family == GMT_IS_TEXTSET) ? GMTAPI_UNLIMITED : 1;
+			}
 		}
 	}
 	/* Shuffle away any NULL entries */
