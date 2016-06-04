@@ -3545,6 +3545,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	if (S_obj->region && G_obj) {	/* See if this is really a subset or just the same region as the grid */
 		if (G_obj->header->wesn[XLO] == S_obj->wesn[XLO] && G_obj->header->wesn[XHI] == S_obj->wesn[XHI] && G_obj->header->wesn[YLO] == S_obj->wesn[YLO] && G_obj->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
 	}
+	gmtlib_grd_set_units (GMT, G_obj->header);	/* Ensure unit strings are set, regardless of destination */
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (mode & GMT_GRID_HEADER_ONLY) {	/* Update header structure only */

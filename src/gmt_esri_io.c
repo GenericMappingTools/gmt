@@ -31,8 +31,6 @@
 
 #include "common_byteswap.h"
 
-EXTERN_MSC void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-
 /* Private function visible only in this file */
 
 GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
@@ -211,7 +209,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		}
 		header->registration = GMT_GRID_PIXEL_REG;
 		gmt_set_geographic (GMT, GMT_IN);
-		gmt_grd_set_units (GMT, header);
+		gmtlib_grd_set_units (GMT, header);
 		
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
@@ -246,7 +244,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 			strcpy (header->remark, "Assumed to be a SRTM1 tile");
 		}
 		gmt_set_geographic (GMT, GMT_IN);
-		gmt_grd_set_units (GMT, header);
+		gmtlib_grd_set_units (GMT, header);
 		return (GMT_NOERROR);
 	}
 	else if ((header->flags[0] == 'L' || header->flags[0] == 'B') && header->flags[1] == '2') {	/* A Arc/Info BINARY file */
