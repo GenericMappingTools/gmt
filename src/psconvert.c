@@ -679,19 +679,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
-		"Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
+	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
-		"Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
+	                                   "Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
-		"Syntax error: Cannot handle both a file list and multiple ps files in input\n");
+	                                   "Syntax error: Cannot handle both a file list and multiple ps files in input\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
-		"Error: Cannot read list file %s\n", Ctrl->L.file);
+	                                   "Error: Cannot read list file %s\n", Ctrl->L.file);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
-		"Syntax error: Creation of Multipage PDF requires setting -F option\n");
+	                                   "Syntax error: Creation of Multipage PDF requires setting -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1082,7 +1082,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
-	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
+	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
+	                              "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *device_options[N_GS_DEVICES] = {
 		/* extra options to pass to individual drivers */
 		"",
@@ -1452,10 +1453,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					}
 					got_BB = got_HRBB = true;
 					GMT_Report (API, GMT_MSG_VERBOSE, "Figure dimensions: Width: %g points [%g %s]  Height: %g points [%g %s]\n",
-						x1-x0, (x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
-						API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
-						y1-y0, (y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
-						API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+					            x1-x0, (x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+					            API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
+					            y1-y0, (y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+					            API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 				}
 			}
 			if (fpb != NULL) /* don't close twice */
@@ -1815,9 +1816,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t\t\t/Subtype /GEO\n");
 					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
 					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
-						south, west, north, west, north, east, south, east);
+					         south, west, north, west, north, east, south, east);
 					fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n",
-						lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
+					         lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
 					fprintf (fpo, "\t\t\t\t/WKT\n");
@@ -1905,10 +1906,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (access (out_file, R_OK)) {		/* output file not created */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
 				else
 					/* Either a bad closed GMT PS file or one of unknown origin */
-					GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
 			}
 			else {								/* output file exists */
 				if (isGMT_PS && excessK)
