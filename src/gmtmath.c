@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"gmtmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
-#define THIS_MODULE_KEYS	"<D{,AD(,>D}"
+#define THIS_MODULE_KEYS	"<D{,AD(,TD(,>D}"
 
 #include "gmt_dev.h"
 
@@ -635,7 +635,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				if (!opt->arg[0])	/* Turn off default GMT NaN-handling in t column */
 					Ctrl->T.notime = true;
-				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
+				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
 					Ctrl->T.file = strdup (opt->arg);
 				else {	/* Presumably gave tmin/tmax/tinc */
 					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc) != 3) {

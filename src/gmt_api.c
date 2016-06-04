@@ -194,6 +194,7 @@ EXTERN_MSC unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT
 EXTERN_MSC int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode);
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
+#define GMTAPI_UNLIMITED	0	/* Using 0 to mean we may allow 1 or more data objects of this family */
 
 #ifdef FORTRAN_API
 /* Global structure pointer needed for FORTRAN-77 [PW: not tested yet - is it even needed?] */
@@ -971,17 +972,18 @@ GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometr
 	return ((key[K_DIR] == ')' || key[K_DIR] == '}') ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o */
 }
 
-GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items) {
+GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, int *n_to_add, unsigned int *n_items) {
 	/* Turn the comma-separated list of 3-char codes into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
 	 * We return the array of strings and its number (n_items). */
 	size_t len, k, kk, n;
-	int o_id = GMT_NOTSET;
+	int o_id = GMT_NOTSET, family = GMT_NOTSET, geometry = GMT_NOTSET;
 	bool change_type = false;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	*n_items = 0;	/* No keys yet */
 
+	for (k = 0; k < GMT_N_FAMILIES; k++) n_to_add[k] = -1;	/* Initially no input counts */
 	if (!string) return NULL;	/* Got NULL, just give up */
 	len = strlen (string);		/* Get the length of this item */
 	if (len == 0) return NULL;	/* Got no characters, give up */
@@ -1010,6 +1012,15 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				            "api_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
 			else
 				o_id = (int)k;
+		}
+		if (next[K_DIR] == '{') {	/* Identified a primary input key */
+			(void)api_key_to_family (API, next, &family, &geometry);	/* Get datatype, and geometry, then set how many are requested */
+			if (family != GMT_NOTSET) {	/* Safeguard: If family not found then we dont want to crash... */
+				if (next[K_DIR+1])	/* Gave an argument: This is either a number (a specific count) or + (1 or more) */
+					n_to_add[family] = (next[K_DIR+1] == '+') ? GMTAPI_UNLIMITED : atoi (&next[K_DIR+1]);
+				else
+					n_to_add[family] = (family == GMT_IS_DATASET || family == GMT_IS_TEXTSET) ? GMTAPI_UNLIMITED : 1;
+			}
 		}
 		k++;
 	}
@@ -7655,7 +7666,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int k, n_in_added = 0, n_to_add, e;
+	int k, n_in_added = 0, n_to_add, e, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -7712,13 +7723,21 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 1c. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
 	if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
 		/* Found a -<"file" option; this is indeed the input file but the 2nd "input" is actually output */
-		if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt)))	/* Found the next input file option */
+		if (opt->next && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt->next)))	/* Found the next input file option */
 			opt->option = GMT_OPT_OUTFILE;	/* Switch it to an output option */
 	}
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
-	key = api_process_keys (API, keys, type, *head, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
+	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
+
+	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
+		char txt[4] = {""};
+		for (k = 0; k < GMT_N_FAMILIES; k++) if (n_per_family[k] != GMT_NOTSET) {
+			(n_per_family[k] == GMTAPI_UNLIMITED) ? sprintf (txt, ">1") : sprintf (txt, "%d", n_per_family[k]);
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: For %s we expect %s input objects\n", GMT_family[k], txt);
+		}
+	}
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = api_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
@@ -7733,7 +7752,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Can only specify one main output object via command line\n");
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
-	n_alloc = n_explicit + n_keys;	/* Max number of registrations needed (may be just n_explicit) */
+	n_alloc = n_explicit + n_keys;	/* Initial number of registrations needed (may be just n_explicit) */
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
 
 	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
@@ -7821,6 +7840,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			GMT_Report (API, GMT_MSG_DEBUG, "%s: Option -%c%s includes a memory reference to %s argument # %d\n", S[direction], opt->option, opt->arg, LR[direction], pos);
 		else
 			GMT_Report (API, GMT_MSG_DEBUG, "---: Option -%c%s includes no memory reference%s\n", opt->option, opt->arg, satisfy);
+		if (n_items == n_alloc) {
+			n_alloc <<= 1;
+			info = realloc (info, n_alloc * sizeof (struct GMT_RESOURCE));
+		}
 	}
 
 	/* Done processing references that were explicitly given in the options.  Now determine if module
@@ -7831,7 +7854,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			char str[2] = {0,0};
 			str[0] = marker;
 			direction = api_key_to_family (API, key[ku], &family, &geometry);	/* Extract family and geometry */
-			n_to_add = (direction == GMT_OUT || n_in == GMT_NOTSET) ? 1 : n_in - n_in_added;	/* How many items? */
+			/* We need to know how many implicit items for a given family we might have to add.  For instance,
+			 * one can usually give any number of data or text tables but only one grid file.  However, this is
+			 * not a fixed thing, hence we counted up n_per_family from the keys earlier so we have some limits */
+			if (direction == GMT_OUT || n_in == GMT_NOTSET)	/* For output or lack of info we only add one item per key */
+				n_to_add = 1;
+			else	/* More information to act on for inputs */
+				n_to_add = (n_per_family[family] == GMTAPI_UNLIMITED) ? n_in - n_in_added : n_per_family[family];
 			for (e = 0; e < n_to_add; e++) {
 				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "$" */
 				/* Append the new option to the list */
@@ -7846,6 +7875,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 					S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
 				n_items++;
 				if (direction == GMT_IN) n_in_added++;
+				if (n_items == n_alloc) {
+					n_alloc <<= 1;
+					info = realloc (info, n_alloc * sizeof (struct GMT_RESOURCE));
+				}
 			}
 		}
 		gmt_M_str_free (key[ku]);	/* Free up this key */
