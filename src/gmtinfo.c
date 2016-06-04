@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
-#define THIS_MODULE_KEYS	"<D{,>T},>DC"
+#define THIS_MODULE_KEYS	"<D{+,>T},>DC"
 
 #include "gmt_dev.h"
 
