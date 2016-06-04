@@ -71,9 +71,10 @@ struct GRDVIEW_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct GRDVIEW_G {	/* -G<drapefile> */
+	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
 		bool active;
 		bool image;
+		unsigned int n;
 		char *file[3];
 	} G;
 	struct GRDVIEW_I {	/* -I<intensfile>|<value> */
@@ -324,7 +325,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r> -G<grd_g> -G<grd_b>]\n",
 	             GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
@@ -345,7 +346,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use <topogrid> as the relief and drape the image on top.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, repeat -G for three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If so, you must also choose -Qi.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
@@ -391,7 +392,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
+	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id;
 	int sval;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -419,7 +420,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 			case 'G':	/* One or Three grid files */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
-				if (n_commas == 2) {	/* Three r,g,b grids for draping */
+				if (gmt_M_compat_check (GMT, 5) && n_commas == 2) {	/* Old-style -Ga,b,c option */
+					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
 					if (gmt_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
@@ -434,16 +436,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->G.file[2] = strdup (C);
 					else
 						n_errors++;
+					Ctrl->G.n = 3;
 					Ctrl->G.image = true;
 				}
-				else if (n_commas == 0) {	/* Just got a single drape file */
+				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got a single drape file */
 					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[0] = strdup (opt->arg);
+						Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
 					else
 						n_errors++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -613,18 +616,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
 	/* Gave both -Q and -T */
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Error: -Q and -T are mutually exclusive options\n");
-	n_drape = Ctrl->G.image ? 3 : 1;
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3), "Error: -G requires either 1 or 3 grids\n");
 	if (Ctrl->G.active) {
 		unsigned int i;
-		for (i = 0; i < n_drape; i++) {
+		for (i = 0; i < Ctrl->G.n; i++) {
 			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[i][0], "Syntax error -G option: Must specify drape file\n");
 		}
-		n_errors += gmt_M_check_condition (GMT, n_drape == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file,
 	                                 "Syntax error -I option: Must specify intensity file or value\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                       !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
+	                                       !Ctrl->C.file && Ctrl->G.n != 3, "Syntax error: Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
 	                                 "Syntax error -Qi option: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
@@ -639,7 +642,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid;
-	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
+	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
 	int i_inc, j_inc, way, bin_inc[4], ij_inc[4], error = 0;
@@ -702,14 +705,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
-	n_drape = (Ctrl->G.image) ? 3 : 1;
-
 	if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
 	if (Ctrl->G.active) {
-		for (k = 0; k < n_drape; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
+		for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -757,7 +758,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
-		for (k = 0; k < n_drape; k++) {
+		for (k = 0; k < Ctrl->G.n; k++) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
 
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
@@ -1806,7 +1807,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, y);
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, v);
-	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
+	if (Ctrl->G.active) for (k = 0; k < Ctrl->G.n; k++) {
 		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_OK) {

@@ -1044,17 +1044,13 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				            "api_process_keys: INTERNAL ERROR: Required runtime type-getting option (-%c) not given\n", s[k][K_FAMILY]);
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
 		}
-		else if (s[k][K_FAMILY] == '-') {	/* * Key letter Y missing: Means that -X, if given, changes the type of input|output to secondary (i.e., not required) */
+		else if (s[k][K_FAMILY] == '-') {	/* * Key letter Y missing: Means that -X, if given, changes primary input|output set by -Z to secondary (i.e., not required) */
 			if (GMT_Find_Option (API, s[k][K_OPT], head)) {	/* Got the option that removes the requirement of an input or output dataset */
 				for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
 					if (!s[kk]) continue;		/* A previously processed/freed key */
-					if (s[kk][K_DIR] == '{' && strchr ("-({", s[k][K_DIR])) s[kk][K_DIR] = '(';	/* No longer an implicit input */
-					else if (s[kk][K_DIR] == '}' && strchr ("-)}", s[k][K_DIR])) s[kk][K_DIR] = ')';	/* No longer an implicit output */
-					else if (!strchr ("-)}", s[k][K_DIR])) {	/* Neither input nor output, specified another option that we should make optional */
-						for (unsigned int kkk = 0; kkk < n; kkk++) {	/* Find the corresponding option and change to secondary input/output */
-							if (s[kkk][K_OPT] == s[k][K_DIR]) s[kkk][K_DIR] = (s[kkk][K_DIR] == '{') ? '(' : ')';
-						}
-					}
+					if (s[kk][K_OPT] != s[k][K_DIR]) continue;		/* Not the "-Z "option */
+					if (s[kk][K_DIR] == '{') s[kk][K_DIR] = '(';		/* No longer an implicit input */
+					else if (s[kk][K_DIR] == '}') s[kk][K_DIR] = ')';	/* No longer an implicit output */
 				}
 			}
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
@@ -1136,6 +1132,31 @@ GMT_LOCAL unsigned int api_found_marker (char *text, char marker) {
 	}
 	return 0;	/* Not found */
 }
+
+GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *text) {
+	/* Examine greenspline's -R option to learn the dimensionality of the domain (1,2,3) */
+	unsigned int n_slashes = 0;
+	size_t k;
+
+	for (k = 0; k < strlen (text); k++) if (text[k] == '/') n_slashes++;			/* Count slashes just in case */
+	if ((text[0] == 'g' || text[0] == 'd') && (text[1] == '\0' || text[1] == '/')) {	/* Got -Rg or -Rd and possibly /zmin/zmax */
+		if (text[1] == '\0') return 2;	/* Got -Rg or -Rd and no more */
+		if (n_slashes == 2) return 3;	/* Got -Rg/zmin/zmax or -Rd/zmin/zmax */
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates, a gridfile, or use -Rd|g[/zmin/zmax]\n");
+		return 0;
+	}
+	if (!gmt_access (API->GMT, text, R_OK)) {	/* Gave a readable file, we assume it is a grid */
+		return 2;
+	}
+	/* Only get here if the above cases did not trip */
+	for (k = 0; k < strlen (text); k++) if (text[k] == '/') n_slashes++;
+	if (!(n_slashes == 1 || n_slashes == 3 || n_slashes == 5)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
+		return 0;
+	}
+	return ((n_slashes + 1) / 2);
+}
+
 /* Mapping of internal [row][col] indices to a single 1-D index.
  * Internally, row and col starts at 0.  These will be accessed
  * via pointers to these functions, hence they are not macros.
@@ -7726,6 +7747,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (opt->next && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt->next)))	/* Found the next input file option */
 			opt->option = GMT_OPT_OUTFILE;	/* Switch it to an output option */
 	}
+	/* 1d. Check if this is the greenspline module, where output type is grid for dimension == 2 else it is dataset */
+	if (!strncmp (module, "greenspline", 11U) && (opt = GMT_Find_Option (API, 'R', *head))) {
+		/* Found the -R"domain" option; determine the dimensionality of the output */
+		unsigned dim = api_determine_dimension (API, opt->arg);
+		type = (dim == 2) ? 'G' : 'D';
+	}
+	
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
@@ -7756,11 +7784,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
 
 	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
-	/* Note: All implicit options must be given after all implicit matrices have been listed */
+	/* Note: All explicit objects must be given after all implicit matrices have been listed */
 	for (opt = *head, implicit_pos = n_explicit; opt; opt = opt->next) {	/* Process options */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
-		family = GMT_NOTSET;	/* Not set yet */
-		geometry = GMT_NOTSET;	/* Not set yet */
+		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		if (api_found_marker (opt->arg, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
@@ -7769,8 +7796,6 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
-			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
-			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required { becomes ( so we dont add it later */
 			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
 			/* Add this item to our list */
 			info[n_items].option    = opt;
@@ -7799,7 +7824,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				}
 			}
 			/* else there is no args, e.g., -G, which needs the marker */
-			if (skip) {	/* Not an explicit reference after all but a regular option */
+			if (skip) {	/* Not an explicit reference after all but a regular option such as -JM20c */
 				kind = GMT_FILE_NONE;
 				if (k >= 0 && !number) {	/* If this was a required input|output it has now been satisfied */
 					key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);
@@ -7891,10 +7916,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (n_items == 0) gmt_M_str_free (info);	/* No containers used */
 
 	gmt_M_memset (nn, 4, unsigned int);
-	for (k = 0; k < n_items; k++)	/* Count how many primary and secondary objects for input and output */
+	for (k = 0; k < n_items; k++)	/* Count how many primary and secondary objects each for input and output */
 		nn[info[k].direction][info[k].mode]++;
 	
-	for (k = 0; k < n_items; k++) {	/* Reorder so that primary objects are listed before secondary objects */
+	for (k = 0; k < n_items; k++) {	/* Reorder positions so that primary objects are listed before secondary objects */
 		if (info[k].mode == K_SECONDARY) info[k].pos += nn[info[k].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
 		else info[k].pos -= nn[info[k].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
@@ -7913,7 +7938,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 
 	/* Pass back the info array and the number of items */
-	*n = (n_items == 0) ? UINT_MAX : n_items;	/* n_keys = 0 for gmtset, gmtdefaults, gmtlogo */
+	*n = (n_items == 0) ? UINT_MAX : n_items;	/* E.g., n_keys = 0 for gmtset, gmtdefaults, gmtlogo */
 	return (info);
 }
 

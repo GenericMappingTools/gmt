@@ -49,7 +49,7 @@
 #define THIS_MODULE_NAME	"greenspline"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
-#define THIS_MODULE_KEYS	"<D{,AD(,ND(,TG(,CD),GG},RG-"
+#define THIS_MODULE_KEYS	"<D{,AD(,ND(,TG(,CD),G?},RG-,GDN"
 
 #include "gmt_dev.h"
 
@@ -307,9 +307,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.dimension = 2;
 					break;
 				}
+				if (opt->arg[0] == 'g' && opt->arg[1] == '/') {	/* Got -Rg/zmin/zmax */
+					Ctrl->R3.range[0] = 0.0;	Ctrl->R3.range[1] = 360.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
+					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
+					if (n_items != 2) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Rg/z0/z1 option: Append the z-range\n");
+						n_errors++;
+					}
+					Ctrl->R3.dimension = 3;
+					break;
+				}
 				if (opt->arg[0] == 'd' && opt->arg[1] == '\0') {	/* Got -Rd */
 					Ctrl->R3.range[0] = -180.0;	Ctrl->R3.range[1] = 180.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					Ctrl->R3.dimension = 2;
+					break;
+				}
+				if (opt->arg[0] == 'd' && opt->arg[1] == '/') {	/* Got -Rd/zmin/zmax */
+					Ctrl->R3.range[0] = -180.0;	Ctrl->R3.range[1] = 180.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
+					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
+					if (n_items != 2) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Rd/z0/z1 option: Append the z-range\n");
+						n_errors++;
+					}
+					Ctrl->R3.dimension = 3;
 					break;
 				}
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */

@@ -16,7 +16,7 @@ Synopsis
 **grdview** *relief_file* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*cpt*]]
-[ |-G|\ *drapefile* \| |-G|\ *grd_r*,\ *grd_g*,\ *grd_b* ]
+[ |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
 [ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
 [ |-Q|\ *args*\ [**+m**] ]
@@ -80,13 +80,13 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *drapefile* \| **-G**\ *grd_r*,\ *grd_g*,\ *grd_b*
+|-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
     Drape the image in *drapefile* on top of the relief provided by
     *relief_file*. [Default is *relief_file*]. Note that **-Jz** and
     **-N** always refers to the *relief_file*. The *drapefile* only
     provides the information pertaining to colors, which is looked-up
     via the CPT file (see **-C**). Alternatively, give three grid files
-    separated by commas. These files must contain the red, green, and
+    via separate **-G** options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT file is needed. The
     *drapefile* may be of higher resolution than the *relief_file*.
 
@@ -252,7 +252,7 @@ the topography and shade the result for good measure. The commands are
 
     gmt grd2rgb veggies.ras -Glayer_%c.nc
     gmt grdview topo.nc -JM6i -Qi -p140/30 -Itopo_intens.nc \
-               -Glayer_r.nc,layer_g.nc,layer_b.nc > image.ps
+               -Glayer_r.nc -Glayer_g.nc -Glayer_b.nc > image.ps
 
 Remarks
 -------
