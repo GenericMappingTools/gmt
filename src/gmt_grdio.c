@@ -373,76 +373,6 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL void grdio_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	/* Set input data types for columns 0, 1 and 2 based on unit strings for
-	   grid coordinates x, y and z.
-	   When "Time": transform the data scale and offset to match the current time system.
-	*/
-	unsigned int i;
-	char string[3][GMT_LEN256], *units = NULL;
-	double scale = 1.0, offset = 0.0;
-	struct GMT_TIME_SYSTEM time_system;
-
-	/* Copy unit strings */
-	strncpy (string[0], header->x_units, GMT_GRID_UNIT_LEN80);
-	strncpy (string[1], header->y_units, GMT_GRID_UNIT_LEN80);
-	strncpy (string[2], header->z_units, GMT_GRID_UNIT_LEN80);
-
-	/* Parse the unit strings one by one */
-	for (i = 0; i < 3; i++) {
-		/* Skip parsing when input data type is already set */
-		if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_GEO) continue;
-		if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_RATIME) {
-			GMT->current.proj.xyz_projection[i] = GMT_TIME;
-			continue;
-		}
-
-		/* Change name of variable and unit to lower case for comparison */
-		gmtlib_str_tolower (string[i]);
-
-		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
-			/* Input data type is longitude */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
-		}
-		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
-			/* Input data type is latitude */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
-		}
-		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6U)) {
-			/* Input data type is time */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
-			GMT->current.proj.xyz_projection[i] = GMT_TIME;
-
-			/* Determine coordinates epoch and units (default is internal system) */
-			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
-			units = strchr (string[i], '[');
-			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
-
-			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
-			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
-			offset = (time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0);
-			offset *= GMT_DAY2SEC_F * GMT->current.setting.time_system.i_scale;
-
-			/* Scale data scale and extremes based on scale and offset */
-			if (i == 0) {
-				header->wesn[XLO] = header->wesn[XLO] * scale + offset;
-				header->wesn[XHI] = header->wesn[XHI] * scale + offset;
-				header->inc[GMT_X] *= scale;
-			}
-			else if (i == 1) {
-				header->wesn[YLO] = header->wesn[YLO] * scale + offset;
-				header->wesn[YHI] = header->wesn[YHI] * scale + offset;
-				header->inc[GMT_Y] *= scale;
-			}
-			else {
-				header->z_add_offset = header->z_add_offset * scale + offset;
-				header->z_scale_factor *= scale;
-			}
-		}
-	}
-}
-
 GMT_LOCAL int grdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P) {
 	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
@@ -682,6 +612,76 @@ void gmt_grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex,
 }
 #endif
 #endif
+
+void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	/* Set input data types for columns 0, 1 and 2 based on unit strings for
+	   grid coordinates x, y and z.
+	   When "Time": transform the data scale and offset to match the current time system.
+	*/
+	unsigned int i;
+	char string[3][GMT_LEN256], *units = NULL;
+	double scale = 1.0, offset = 0.0;
+	struct GMT_TIME_SYSTEM time_system;
+
+	/* Copy unit strings */
+	strncpy (string[0], header->x_units, GMT_GRID_UNIT_LEN80);
+	strncpy (string[1], header->y_units, GMT_GRID_UNIT_LEN80);
+	strncpy (string[2], header->z_units, GMT_GRID_UNIT_LEN80);
+
+	/* Parse the unit strings one by one */
+	for (i = 0; i < 3; i++) {
+		/* Skip parsing when input data type is already set */
+		if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_GEO) continue;
+		if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_RATIME) {
+			GMT->current.proj.xyz_projection[i] = GMT_TIME;
+			continue;
+		}
+
+		/* Change name of variable and unit to lower case for comparison */
+		gmtlib_str_tolower (string[i]);
+
+		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
+			/* Input data type is longitude */
+			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
+		}
+		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
+			/* Input data type is latitude */
+			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
+		}
+		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6U)) {
+			/* Input data type is time */
+			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
+			GMT->current.proj.xyz_projection[i] = GMT_TIME;
+
+			/* Determine coordinates epoch and units (default is internal system) */
+			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
+			units = strchr (string[i], '[');
+			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
+
+			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
+			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
+			offset = (time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0);
+			offset *= GMT_DAY2SEC_F * GMT->current.setting.time_system.i_scale;
+
+			/* Scale data scale and extremes based on scale and offset */
+			if (i == 0) {
+				header->wesn[XLO] = header->wesn[XLO] * scale + offset;
+				header->wesn[XHI] = header->wesn[XHI] * scale + offset;
+				header->inc[GMT_X] *= scale;
+			}
+			else if (i == 1) {
+				header->wesn[YLO] = header->wesn[YLO] * scale + offset;
+				header->wesn[YHI] = header->wesn[YHI] * scale + offset;
+				header->inc[GMT_Y] *= scale;
+			}
+			else {
+				header->z_add_offset = header->z_add_offset * scale + offset;
+				header->z_scale_factor *= scale;
+			}
+		}
+	}
+}
 
 double * gmt_grd_coord (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, int dir) {
 	/* Allocate, compute, and return the x- or y-coordinates for a grid */
@@ -1126,7 +1126,7 @@ int gmt_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 	if (isfinite(invalid))
 		header->nan_value = invalid;
 
-	grdio_grd_get_units (GMT, header);
+	gmtlib_grd_get_units (GMT, header);
 	header->grdtype = gmtlib_get_grdtype (GMT, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
@@ -2286,7 +2286,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	if (dim) header->n_bands = n_layers;
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
-	grdio_grd_get_units (GMT, header);
+	gmtlib_grd_get_units (GMT, header);
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
 	header->grdtype = gmtlib_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
 	return (GMT_NOERROR);

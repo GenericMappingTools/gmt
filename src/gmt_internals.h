@@ -131,6 +131,7 @@ EXTERN_MSC char *gmtlib_file_unitscale (char *name);
 EXTERN_MSC void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void gmtlib_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data);
+EXTERN_MSC void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 EXTERN_MSC int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read);
 EXTERN_MSC uint64_t gmtlib_bin_colselect (struct GMT_CTRL *GMT);

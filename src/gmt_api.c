@@ -1870,6 +1870,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 			break;
 		case GMT_IS_GRID:	/* Grids need to update the grdtype setting and possibly rotate geographic grids */
 			G = api_get_grid_data (data);
+			gmtlib_grd_get_units (API->GMT, G->header);
 			G->header->grdtype = gmtlib_get_grdtype (API->GMT, G->header);
 			if (wesn && gmt_M_grd_is_global (API->GMT, G->header) && G->data) {	/* May have to rotate geographic grid since we are not reading from file */
 				double shift_amount = wesn[XLO] - G->header->wesn[XLO];
