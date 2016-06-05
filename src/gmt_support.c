@@ -6684,6 +6684,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	P->model = Pin->model;
 	P->categorical = Pin->categorical;
 	P->is_continuous = continuous;
+	P->is_bw = Pin->is_bw;
+	P->is_gray = Pin->is_gray;
 
 	/* Background, foreground, and nan colors */
 
