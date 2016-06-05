@@ -4389,7 +4389,7 @@ GMT_LOCAL int gmtinit_parse_V_option (struct GMT_CTRL *GMT, char arg) {
 	int mode = gmt_get_V (arg);
 	if (mode < 0) return true;	/* Error in parsing */
 	GMT->current.setting.verbose = (unsigned int)mode;
-	return false;
+	return 0;
 }
 
 /*! . */
@@ -10414,7 +10414,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/* These are because they are kept between module calls in a same session. So we need to reset them. */
 	if (GMT->hidden.func_level == 0) {	/* Only when top-level module ends */
-		GMT->current.setting.verbose = GMT_MSG_QUIET;
+		GMT->current.setting.verbose = GMT_MSG_COMPAT;
 		for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
 			GMT->PSL->internal.font[i].encoded = false;
 		GMT->PSL->current.fontsize = 0;
