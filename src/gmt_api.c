@@ -8250,12 +8250,12 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	va_list args;
 	/* GMT_Report may be called before GMT is set so take precautions */
 	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here */
-	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = api_get_api_ptr (V_API);
 	GMT = API->GMT;
 	g_level = (GMT) ? GMT->current.setting.verbose : 0;
 	if (level > MAX(API->verbose, g_level))
 		return 0;
+	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	if (GMT && GMT->current.setting.timer_mode > GMT_NO_TIMER) {
 		char *stamp = api_tictoc_string (API, GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
 		if (stamp) {
