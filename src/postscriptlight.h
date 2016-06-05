@@ -243,6 +243,7 @@ struct PSL_CTRL {
 		FILE *err;			/* Error stream (NULL means stderr)		*/
 		char *encoding;			/* The encoding name. e.g. ISO-8859-1		*/
 		char *session;			/* The session name (NULL)			*/
+		int runmode;			/* Nonzero if we are being called from a multi-module enviroment (0 for commandline)	*/
 		int unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
 		int copies;			/* Number of copies for this plot		*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/

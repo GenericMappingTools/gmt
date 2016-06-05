@@ -1266,8 +1266,12 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 }
 
 static int psl_pattern_cleanup (struct PSL_CTRL *PSL) {
-	int image_no;
+	int image_no, k = 0;
 
+	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++)
+		if (PSL->internal.pattern[image_no].status) k++;
+	if (k == 0) return (PSL_NO_ERROR);
+	PSL_comment (PSL, "Undefine patterns and images\n");
 	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
 		if (PSL->internal.pattern[image_no].status) {
 			PSL_command (PSL, "currentdict /image%d undef\n", image_no);
@@ -2041,6 +2045,7 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	/* Load image file. Store size, depth and bogus DPI setting */
 
 	if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
+    
 
 	PSL->internal.pattern[image_no].status = 1;
 	PSL->internal.pattern[image_no].nx = h.width;
@@ -3171,14 +3176,18 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session) {
 	return (PSL);
 }
 
-int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir) {
+int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, char *userdir) {
 	/* Allocate a new common control structure and initialize PSL session
-	 * If sharedir, userdir are NULL and search == 1 then we look for environmental parameters
+	 * If sharedir, userdir are NULL and flags&1 == 1 then we look for environmental parameters
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
+	 * If flags&2 == 2 then PSL is being called from an external interface so some things will live
+	 *	beyond the end of a module.
 	 */
-	unsigned int i;
+	unsigned int i, search;
 	char *this_c = NULL;
 
+	search = (flags & 1);	/* If 1 then we look for environmental parameters */
+	PSL->init.runmode = (flags & 2);	/* If 2 then we are being called from an environment where many modules can be called during a session */
 	/* Initialize the PSL structure to default values unless already set */
 
 	if (PSL->init.err == NULL) PSL->init.err = stderr;		/* Possible redirect of error messages */
@@ -3939,12 +3948,19 @@ int PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, int pen) {
 int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	/* Finalizes the current plot layer; see PSL_endsession for terminating PSL session. */
 
-	psl_pattern_cleanup (PSL);
+	if (PSL->init.runmode == 0) {
+		psl_pattern_cleanup (PSL);
+		memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
+	}
 	PSL_setdash (PSL, NULL, 0.0);
 	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
 
 	if (lastpage) {
 		PSL_command (PSL, "%%%%PageTrailer\n");
+		if (PSL->init.runmode) {
+			psl_pattern_cleanup (PSL);
+			memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
+		}
 		PSL_comment (PSL, "Reset transformations and call showpage\n");
 		PSL_command (PSL, "U\nshowpage\n");
 		PSL_command (PSL, "\n%%%%Trailer\n");
@@ -3964,7 +3980,6 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	else {	/* Dealing with files or stdout */
 		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
 	}
-	memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }

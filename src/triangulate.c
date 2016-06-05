@@ -220,7 +220,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
+	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && Ctrl->I.active, "Warning: -I not needed when -G is not set\n");
+	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active, "Warning: -R not needed when -G or -Q are not set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Syntax error -S option: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuk triangulation algorithm\n");
@@ -284,7 +287,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
-	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
+	n_output = (Ctrl->N.active) ? 3 : 2;
+	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	

@@ -7757,6 +7757,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		unsigned dim = api_determine_dimension (API, opt->arg);
 		type = (dim == 2) ? 'G' : 'D';
 	}
+	/* 1e. Check if this is the triangulate module, where primary dataset output should be turned off if -G given without -M,N,Q,S */
+	if (!strncmp (module, "triangulate", 11U) && (opt = GMT_Find_Option (API, 'G', *head))) {
+		/* Found the -G<grid> option; determine if any of -M,N,Q,S are also set */
+		if (!((opt = GMT_Find_Option (API, 'M', *head)) || (opt = GMT_Find_Option (API, 'N', *head))
+			|| (opt = GMT_Find_Option (API, 'Q', *head)) || (opt = GMT_Find_Option (API, 'S', *head))))
+				deactivate_output = true;	/* Turn off implicit output since none is in effect */
+	}
 	
 	gmt_M_str_free (module);
 
@@ -7773,7 +7780,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = api_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
-		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since we got an explicit output file already */
+		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit output file already specified or not required */
 
 	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
 	for (opt = *head; opt; opt = opt->next) {

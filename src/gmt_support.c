@@ -156,6 +156,54 @@ static struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths
 /* Local functions needed for public functions below */
 
 /*! . */
+GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, char *cpt_path) {
+	/* When a cpt is not in the current directory but given by relative or absolute path
+	 * AND that cpt refers to a user pattern file (which may bhavee relative or absolute path)
+	 * then unless that pattern file can be found we will try to prepend the path to the cpt
+	 * file and see if the pattern can be found that way.
+	 */
+	
+	int i = 0, j, pos, len, c;
+	char *name = NULL, path[PATH_MAX] = {""};
+	if (!((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1]))) return NULL;	/* Not an image specification */
+	len = (int)strlen (line);
+	while (i < len && line[i] != '/') i++;	/* Scan past the <dpi>/ setting */
+	if (i == len) return NULL;	/* Got nothing with a slash */
+	i++;	/* Start of pattern name */
+	/* Determine if it is one of the predefined patterns 1-92 patterns */
+	if (isdigit(line[i]) && (line[i+1] == '\0' || isdigit(line[i+1]))) return NULL;	/* Not a user image */
+	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>], then chop those off */
+	for (j = i, pos = -1; line[j] && pos == -1; j++) if (line[j] == ':' && i < len && (line[j+1] == 'B' || line[j+1] == 'F')) pos = j;
+	if (pos > -1) {	/* Temporarily chop off the colorization modifiers */
+		c = line[pos];
+		line[pos] = '\0';
+	}
+	/* Try the user's default directories */
+	if (gmtlib_getuserpath (GMT, &line[i], path)) return NULL;	/* Yes, found so no problems */
+	/* Now must put our faith in the cpt path and hope it has a path that can help us */
+	if (cpt_path == NULL || cpt_path[0] == '<') {	/* Without an actual file path we must warn and bail */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
+		if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+		return NULL;
+	}
+	j = (int)strlen (cpt_path);
+	while (j > 0 && cpt_path[j] != '/') j--;	/* Find last slash */
+	if (j > 0) {	/* OK, got the cpt directory */
+		cpt_path[j] = '\0';	/* Temporarily chop off the slash */
+		sprintf (path, "%s/%s", cpt_path, &line[i]);
+		cpt_path[j] = '/';	/* Restore the slash */
+		if (access (path, R_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
+			if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+			return NULL;
+		}
+		name = strdup (path);	/* Must use this image name instead as it contains the full working path */
+	}
+	if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+	return (name);
+}
+
+/*! . */
 GMT_LOCAL void support_rgb_to_hsv (double rgb[], double hsv[]) {
 	double diff;
 	unsigned int i, imax = 0, imin = 0;
@@ -5999,6 +6047,7 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
 	char T5[GMT_LEN64] = {""}, T6[GMT_LEN64] = {""}, T7[GMT_LEN64] = {""}, T8[GMT_LEN64] = {""}, T9[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[GMT_BUFSIZ] = {""};
+	char *name = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
@@ -6143,6 +6192,10 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 					return (NULL);
 				}
 				X->has_pattern = true;
+				if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
+					strcpy (X->patch[id].fill->pattern, name);
+					gmt_M_str_free (name);
+				}
 			}
 			else {	/* Shades, RGB, HSV, or CMYK */
 				if (nread == 1)	/* Gray shade */
@@ -6237,6 +6290,10 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 				return (NULL);
 			}
 			X->has_pattern = true;
+			if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
+				strcpy (X->range[n].fill->pattern, name);
+				gmt_M_str_free (name);
+			}
 		}
 		else {						/* Shades, RGB, HSV, or CMYK */
 			if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
