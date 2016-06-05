@@ -11977,7 +11977,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
-	PSL_beginsession (GMT->PSL, 0, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
+	PSL_beginsession (GMT->PSL, API->mode, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
 	PSL_setdefaults (GMT->PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 

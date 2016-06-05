@@ -2620,6 +2620,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	 */
 	int item, error, default_method;
 	uint64_t tbl, col, row_out, row, seg, ij;
+	bool save;
 	double value;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2683,6 +2684,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user matrix location\n");
 			M_obj = gmt_create_matrix (GMT, 1U, GMT_OUT);	/* 1-layer matrix (i.e., 2-D) */
 			/* Allocate final output space since we now know all dimensions */
+			save = GMT->current.io.multi_segments[GMT_OUT];
+			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
 			M_obj->n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of rows needed to hold the data [incl any segment headers] */
 			M_obj->n_columns = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;					/* Number of columns needed to hold the data records */
 			M_obj->dim = (M_obj->shape == GMT_IS_ROW_FORMAT) ? D_obj->n_columns : M_obj->n_rows;						/* Matrix layout order */
@@ -2715,6 +2718,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			assert (M_obj->n_rows == row_out);	/* Sanity check */
 			M_obj->alloc_level = S_obj->alloc_level;
 			S_obj->resource = M_obj;		/* Set resource pointer from object to this matrix */
+			GMT->current.io.multi_segments[GMT_OUT] = save;
 			break;
 
 		case GMT_IS_DUPLICATE_VIA_VECTOR:
@@ -2723,6 +2727,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			col = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			if ((V_obj = gmt_create_vector (GMT, col, GMT_OUT)) == NULL)
 				return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
+			save = GMT->current.io.multi_segments[GMT_OUT];
+			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
 			V_obj->n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
 			for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = GMT->current.setting.export_type;	/* Set same data type for all columns */
 			if ((error = api_alloc_vectors (GMT, V_obj, V_obj->n_rows)) != GMT_OK) return (gmtapi_report_error (API, error));	/* Allocate space for all columns */
@@ -2746,6 +2752,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			assert (V_obj->n_rows == row_out);	/* Sanity check */
 			V_obj->alloc_level = S_obj->alloc_level;
 			S_obj->resource = V_obj;
+			GMT->current.io.multi_segments[GMT_OUT] = save;
 			break;
 
 		default:
