@@ -26,7 +26,7 @@ gmt surface table_5.11 -R -I0.2 -Graws5.nc -T0.5
 gmt grdview raws5.nc -R -J -B -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i >> %ps%
 echo 3.25 7 surface (tension = 0.5) | gmt pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> %ps%
 REM
-gmt triangulate table_5.11 -Grawt.nc -R -I0.2 > NUL
+gmt triangulate table_5.11 -Grawt.nc -R -I0.2
 gmt grdfilter rawt.nc -Gfiltered.nc -D0 -Fc1
 gmt grdview filtered.nc -R -J -B -Cex16.cpt -Qs -O -K -X3.5i >> %ps%
 echo 3.25 7 triangulate @~\256@~ gmt grdfilter | gmt pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> %ps%
