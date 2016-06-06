@@ -445,15 +445,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_label_syntax (API->GMT, 7, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: Direction, major, and minor axis must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     axes in km, and convert azimuths based on map projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If projection is linear then we scale the axes by the map scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed diameter in km to -SE- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only its diameter given\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed diameter to -SE- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the axes [k].\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     For linear projection we scale the axes by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions in km and convert azimuths based on map projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with only diameter in km given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed diameter in km to -SJ- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions [in km] and convert azimuths based on map projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with one dimension given\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 3, or append a fixed dimension to -SJ- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the dimensions [k].\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     For linear projection we scale dimensions by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+p[<pen>]].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
@@ -493,7 +495,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     For geo-wedges, specify <size><unit> with units from %s.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
@@ -908,6 +911,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
 	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & GMT_VEC_JUST_S) == 0)
+		GMT->current.io.col_type[GMT_IN][ex2] = GMT_IS_GEODIMENSION;
+	else if ((S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) && S.convert_angles) {
+		if (S.n_required == 1) 
+			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_GEODIMENSION;
+		else
+			GMT->current.io.col_type[GMT_IN][ex2] = GMT->current.io.col_type[GMT_IN][ex3] = GMT_IS_GEODIMENSION;
+	}
 
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
@@ -1106,6 +1117,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			if (S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) {	/* Ellipses and rectangles */
+				fprintf (stderr, "nreg = %d\n", S.n_required);
 				if (S.n_required == 0) {	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
 					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				}

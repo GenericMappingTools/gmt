@@ -3605,6 +3605,44 @@ GMT_LOCAL int gmtio_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *
  */
 
 /*! . */
+int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val) {
+	/* Try to decode a value from s and store
+	in val.  s is a regular float with optional
+	unit info, e.g., 8.5d or 7.5n.  If a valid unit
+	is found we convert the number to km.
+	We also skip any trailing modifiers like +<mods>, e.g.
+	vector specifications like 0.5i+jc+b+s
+
+	We return GMT_IS_FLOAT and pass val in km.
+	*/
+	char *p;
+	if (isalpha ((int)s[0]) || (s[1] == 0 && (s[0] == '-' || s[0] == '+'))) {	/* Probably a symbol character; quietly return 0 */
+		*val = 0.0;
+		return GMT_IS_FLOAT;
+	}
+		
+	if ((p = strpbrk (s, GMT_LEN_UNITS))) {	/* Find location of first valid unit */
+		int c = p[0];	p[0] = '\0';	/* Chop off unit */
+		*val = atof (s);
+		p[0] = c;	/* Restore unit */
+		switch (c) {
+			case 'd': *val *= GMT->current.proj.DIST_KM_PR_DEG; break;			/* arc degree */
+			case 'm': *val *= GMT->current.proj.DIST_KM_PR_DEG * GMT_MIN2DEG; break;	/* arc minutes */
+			case 's': *val *= GMT->current.proj.DIST_KM_PR_DEG * GMT_SEC2DEG; break;	/* arc seconds */
+			case 'e': *val *= 0.001; break;						/* meters */
+			case 'f': *val *= (0.001 * METERS_IN_A_FOOT); break;					/* feet */
+			case 'M': *val *= (0.001 * METERS_IN_A_MILE); break;					/* miles */
+			case 'n': *val *= (0.001 * METERS_IN_A_NAUTICAL_MILE); break;				/* nautical miles */
+			case 'u': *val *= (0.001 * METERS_IN_A_SURVEY_FOOT); break;				/* survey feet */
+		}
+	}
+	else	/* No unit, must assume default km */
+		*val = atof (s);
+	
+	return (GMT_IS_FLOAT);
+}
+
+/*! . */
 void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
 	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_LON;
@@ -5744,6 +5782,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
 
+	int type;
 	char calstring[GMT_LEN64] = {""}, clockstring[GMT_LEN64] = {""}, *p = NULL;
 	double x;
 	int64_t rd;
@@ -5758,111 +5797,116 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 	}
 	else if (isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
-	if (expectation & GMT_IS_GEO) {
-		/* True if either a lat or a lon is expected  */
-		return (gmtio_scanf_geo (s, val));
-	}
+	switch (expectation) {
+		case GMT_IS_GEO: case GMT_IS_LON: case GMT_IS_LAT:
+			/* True if either a lat or a lon is expected  */
+			return (gmtio_scanf_geo (s, val));
+			break;
 
-	else if (expectation == GMT_IS_FLOAT) {
-		/* True if no special format is expected or allowed  */
-		return (gmtio_scanf_float (s, val));
-	}
+	 	case GMT_IS_FLOAT:
+			/* True if no special format is expected or allowed  */
+			return (gmtio_scanf_float (s, val));
+			break;
 
-	else if (expectation == GMT_IS_DIMENSION) {
-		/* True if units might be appended, e.g. 8.4i  */
-		return (gmtio_scanf_dim (GMT, s, val));
-	}
+	 	case GMT_IS_DIMENSION:
+			/* True if units might be appended, e.g. 8.4i  */
+			return (gmtio_scanf_dim (GMT, s, val));
+			break;
 
-	else if (expectation == GMT_IS_RELTIME) {
-		/* True if we expect to read a float with no special
-		formatting (except for an optional trailing 't'), and then
-		assume it is relative time in user's units since epoch.  */
-		callen = strlen (s) - 1;
-		if (s[callen] == 't') s[callen] = '\0';
-		if ((gmtio_scanf_float (s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
-		return (GMT_IS_ABSTIME);
-	}
+	 	case GMT_IS_GEODIMENSION:
+			/* True if geo-distance units might be appended, e.g. 8.4d  */
+			return (gmtlib_scanf_geodim (GMT, s, val));
+			break;
 
-	else if (expectation == GMT_IS_ABSTIME) {
-		/* True when we expect to read calendar and/or
-		clock strings in user-specified formats.  If both
-		are present, they must be in the form
-		<calendar_string>T<clock_string>.
-		If only a calendar string is present, then either
-		<calendar_string> or <calendar_string>T are valid.
-		If only a clock string is present, then it must
-		be preceded by a T:  T<clock_string>, and the time
-		will be treated as if on day one of our calendar.  */
+		case GMT_IS_RELTIME:
+			/* True if we expect to read a float with no special
+			   formatting (except for an optional trailing 't'), and then
+			   assume it is relative time in user's units since epoch.  */
+			callen = strlen (s) - 1;
+			if (s[callen] == 't') s[callen] = '\0';
+			if ((gmtio_scanf_float (s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
+			return (GMT_IS_ABSTIME);
+			break;
 
-		callen = strlen (s);
-		if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
+	 	case GMT_IS_ABSTIME:
+			/* True when we expect to read calendar and/or
+			   clock strings in user-specified formats.  If both
+			   are present, they must be in the form
+			   <calendar_string>T<clock_string>.
+			   If only a calendar string is present, then either
+			   <calendar_string> or <calendar_string>T are valid.
+			   If only a clock string is present, then it must
+			   be preceded by a T:  T<clock_string>, and the time
+			   will be treated as if on day one of our calendar.  */
+			callen = strlen (s);
+			if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
 
-		if (s[callen-1] == 'T') {	/* Got <date>T with no <clock> */
-			clocklen = 0;
-			if (GMT->current.io.date_input.watch)	/* Watch for shit like 2013-23-OCT */
-				strncpy (calstring, s, callen);
-			else
-				strncpy (calstring, s, callen-1);
-		}
-		else if (s[0] == 'T') {	/* Got T<clock> presumably, with no <date> */
-			strncpy (clockstring, &s[1], GMT_LEN64-1);
-			clocklen = callen - 1;
-			callen = 0;
-		}
-		else if ((p = strrchr (s, 'T'))) {	/* There is a T in there (but could be stuff like 2012-OCT-20 with no trailing T) */
-			char *p2 = NULL;
-			/* Watch for shit like 2013-OCT-23 with no trailing T */
-			if (GMT->current.io.date_input.mw_text && GMT->current.io.date_input.delimiter[0][0] && (p2 = strrchr (s, GMT->current.io.date_input.delimiter[0][0])) > p) {
-				/* Got a delimiter after that T, so assume it is a T in a name instead */
-				strncpy (calstring, s, GMT_LEN64-1);
+			if (s[callen-1] == 'T') {	/* Got <date>T with no <clock> */
 				clocklen = 0;
+				if (GMT->current.io.date_input.watch)	/* Watch for shit like 2013-23-OCT */
+					strncpy (calstring, s, callen);
+				else
+					strncpy (calstring, s, callen-1);
 			}
-			else {	/* Regular <date>T<clock> */
-				*p = ' ';	/* Temporarily replace T with space */
-				sscanf (s, "%s %s", calstring, clockstring);
-				clocklen = strlen (clockstring);
-				callen = strlen (calstring);
+			else if (s[0] == 'T') {	/* Got T<clock> presumably, with no <date> */
+				strncpy (clockstring, &s[1], GMT_LEN64-1);
+				clocklen = callen - 1;
+				callen = 0;
 			}
-		}
-		else {	/* There is no trailing T.  Put all of s in calstring.  */
-			clocklen = 0;
-			strncpy (calstring, s, GMT_LEN64-1);
-		}
-		x = 0.0;	/* Default to 00:00:00 if no clock is given */
-		if (clocklen && gmtio_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);
-		rd = GMT->current.time.today_rata_die;	/* Default to today if no date is given */
-		if (callen && gmtio_scanf_calendar (GMT, calstring, &rd)) return (GMT_IS_NAN);
-		*val = gmt_rdc2dt (GMT, rd, x);
-		if (GMT->current.setting.time_is_interval) {	/* Must truncate and center on time interval */
-			gmtlib_moment_interval (GMT, &GMT->current.time.truncate.T, *val, true);	/* Get the current interval */
-			if (GMT->current.time.truncate.direction) {	/* Actually need midpoint of previous interval... */
-				x = GMT->current.time.truncate.T.dt[0] - 0.5 * (GMT->current.time.truncate.T.dt[1] - GMT->current.time.truncate.T.dt[0]);
-				gmtlib_moment_interval (GMT, &GMT->current.time.truncate.T, x, true);	/* Get the current interval */
+			else if ((p = strrchr (s, 'T'))) {	/* There is a T in there (but could be stuff like 2012-OCT-20 with no trailing T) */
+				char *p2 = NULL;
+				/* Watch for shit like 2013-OCT-23 with no trailing T */
+				if (GMT->current.io.date_input.mw_text && GMT->current.io.date_input.delimiter[0][0] && (p2 = strrchr (s, GMT->current.io.date_input.delimiter[0][0])) > p) {
+					/* Got a delimiter after that T, so assume it is a T in a name instead */
+					strncpy (calstring, s, GMT_LEN64-1);
+					clocklen = 0;
+				}
+				else {	/* Regular <date>T<clock> */
+					*p = ' ';	/* Temporarily replace T with space */
+					sscanf (s, "%s %s", calstring, clockstring);
+					clocklen = strlen (clockstring);
+					callen = strlen (calstring);
+				}
 			}
-			/* Now get half-point of interval */
-			*val = 0.5 * (GMT->current.time.truncate.T.dt[1] + GMT->current.time.truncate.T.dt[0]);
-		}
-		return (GMT_IS_ABSTIME);
-	}
+			else {	/* There is no trailing T.  Put all of s in calstring.  */
+				clocklen = 0;
+				strncpy (calstring, s, GMT_LEN64-1);
+			}
+			x = 0.0;	/* Default to 00:00:00 if no clock is given */
+			if (clocklen && gmtio_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);
+			rd = GMT->current.time.today_rata_die;	/* Default to today if no date is given */
+			if (callen && gmtio_scanf_calendar (GMT, calstring, &rd)) return (GMT_IS_NAN);
+			*val = gmt_rdc2dt (GMT, rd, x);
+			if (GMT->current.setting.time_is_interval) {	/* Must truncate and center on time interval */
+				gmtlib_moment_interval (GMT, &GMT->current.time.truncate.T, *val, true);	/* Get the current interval */
+				if (GMT->current.time.truncate.direction) {	/* Actually need midpoint of previous interval... */
+					x = GMT->current.time.truncate.T.dt[0] - 0.5 * (GMT->current.time.truncate.T.dt[1] - GMT->current.time.truncate.T.dt[0]);
+					gmtlib_moment_interval (GMT, &GMT->current.time.truncate.T, x, true);	/* Get the current interval */
+				}
+				/* Now get half-point of interval */
+				*val = 0.5 * (GMT->current.time.truncate.T.dt[1] + GMT->current.time.truncate.T.dt[0]);
+			}
+			return (GMT_IS_ABSTIME);
+			break;
 
-	else if (expectation == GMT_IS_ARGTIME) {
-		return (gmtio_scanf_argtime (GMT, s, val));
-	}
+	 	case GMT_IS_ARGTIME:
+			return (gmtio_scanf_argtime (GMT, s, val));
+			break;
 
-	else if (expectation & GMT_IS_UNKNOWN) {
-		/* True if we dont know but must try both geographic or float formats  */
-		int type = gmtio_scanf_geo (s, val);
-		if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
-			GMT->current.io.warn_geo_as_cartesion = false;	/* OK, done with the warning */
-		}
-		return (type);
-	}
+		case  GMT_IS_UNKNOWN:
+			/* True if we dont know but must try both geographic or float formats  */
+			type = gmtio_scanf_geo (s, val);
+			if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
+				GMT->current.io.warn_geo_as_cartesion = false;	/* OK, done with the warning */
+			}
+			return (type);
+			break;
 
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG: gmt_scanf() called with invalid expectation.\n");
-		return (GMT_IS_NAN);
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG: gmt_scanf() called with invalid expectation.\n");
+			return (GMT_IS_NAN);
 	}
 }
 

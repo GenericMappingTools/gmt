@@ -60,12 +60,13 @@
         Same as **-Se**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
-        unchanged.) Furthermore, the axes lengths must be given in km instead of
+        unchanged.) Furthermore, the axes lengths must be given in geographical instead of
         plot-distance units. An exception occurs for a linear projection in
         which we assume the ellipse axes are given in the same units as **-R**.
-	For degenerate ellipses (circles) with diameter given in km, use **-SE-**.
+	For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
 	The diameter is excepted to be given in column 4.  Alternatively, append
-	the desired diameter in km to **-SE-** and this fixed diameter is used instead.
+	the desired diameter to **-SE-** and this fixed diameter is used instead.
+	For allowable geographical units, see UNITS.
 
     **-Sf**
         **f**\ ront.
@@ -105,9 +106,14 @@
         Same as **-Sj**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
-        unchanged.) Furthermore, the dimensions must be given in km instead of
-        plot-distance units. An exception occurs for a linear projection in
+        unchanged.) Furthermore, the dimensions must be given in geographical instead of
+        plot-distance units. 
+	For a degenerate rectangle (square) with one dimension given, use **-SJ-**.
+	The dimension is excepted to be given in column 4.  Alternatively, append
+	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
+	An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
+	For allowable geographical units, see UNITS.
 
     **-Sk**
         **k**\ ustom symbol. Append <name>/*size*, and we will look for a

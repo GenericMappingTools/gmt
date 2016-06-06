@@ -59,12 +59,13 @@
         Same as **-Se**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
-        unchanged.) Furthermore, the axes lengths must be given in km instead of
+        unchanged.)  Furthermore, the axes lengths must be given in geographical instead of
         plot-distance units. An exception occurs for a linear projection in
         which we assume the ellipse axes are given in the same units as **-R**.
-        For degenerate ellipses (circles) with diameter given in km, use **-SE-**.
+        For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
         The diameter is excepted to be given in column 3.  Alternatively, append
-        the desired diameter in km to **-SE-** and this fixed diameter is used instead.
+        the desired diameter to **-SE-** and this fixed diameter is used instead.
+	For allowable geographical units, see UNITS.
 
     **-Sf**\ *gap*\ [/*size*][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
@@ -104,9 +105,14 @@
         Same as **-Sj**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
-        unchanged.) Furthermore, the dimensions must be given in km instead of
-        plot-distance units. An exception occurs for a linear projection in
+        unchanged.) Furthermore, the dimensions must be given in geographical instead of
+        plot-distance units. 
+	For a degenerate rectangle (square) with one dimension given, use **-SJ-**.
+	The dimension is excepted to be given in column 3.  Alternatively, append
+	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
+	An exception occurs for a linear projection in
         which we assume the dimensions are given in the same units as **-R**.
+	For allowable geographical units, see UNITS.
 
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
@@ -333,7 +339,7 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged.)  For geo-wedges, specify *size* as a radial
-        distance and append a length *unit* from **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
+        geographical distance.  For allowable geographical units, see UNITS.
         Append **+a** to just draw the arc or **+r** to just draw the radial lines.
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.
@@ -341,12 +347,12 @@
         y-dash (\|). *size* is the length of a short vertical (y-dir) line
         segment.
     **-S=**
-        geovector. Azimuth (in degrees east from north) and length (in km)
+        geovector. Azimuth (in degrees east from north) and geographical length
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
         for specifying attributes.  Note: Geovector stems are drawn as thin
 	filled polygons and hence pen attributes like dashed and dotted are
-	not available.
+	not available.  For allowable geographical units, see UNITS.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append

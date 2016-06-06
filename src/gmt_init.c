@@ -10965,17 +10965,18 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					p->size_x = p->size_y = atof (diameter);	/* In km */
+					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+					p->size_x = p->size_y;
 				}
 				else {	/* Must read from data file */
 					p->n_required = 1;	/* Only expect diameter */
-					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in km, not inches or cm etc */
+					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in geo-units, not inches or cm etc */
 				}
 			}
 			else {
 				p->n_required = 3;
 				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
-				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
+				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in geo-units, not inches or cm etc */
 				p->nondim_col[p->n_nondim++] = 4 + mode;
 			}
 			check = false;
