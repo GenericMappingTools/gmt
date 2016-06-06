@@ -7694,7 +7694,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 */
 
 	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku,  n_out = 0, nn[2][2];
-	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
+	unsigned int output_pos = 0, input_pos = 0;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k, n_in_added = 0, n_to_add, e, n_per_family[GMT_N_FAMILIES];
@@ -7788,16 +7788,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	if (deactivate_output && (k = api_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
 		key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Since an explicit output file already specified or not required */
 
-	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
-	for (opt = *head; opt; opt = opt->next) {
-		if (strchr (opt->arg, marker)) n_explicit++;	/* Found an explicit dollar sign referring to an input matrix */
-		if (opt->option == GMT_OPT_OUTFILE) n_out++;	/* Count given output options when PS will be produced. */
-	}
+	/* 3. Count command line output files */
+	for (opt = *head; opt; opt = opt->next)
+		if (opt->option == GMT_OPT_OUTFILE) n_out++;
 	if (n_out > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Can only specify one main output object via command line\n");
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
-	n_alloc = n_explicit + n_keys;	/* Initial number of registrations needed (may be just n_explicit) */
+	n_alloc = n_keys;	/* Initial number of allocations */
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
 
 	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
@@ -7819,7 +7817,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
 			info[n_items].direction = direction;
-			info[n_items].pos = pos = (direction == GMT_IN) ? explicit_pos++ : output_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
+			info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
 			kind = GMT_FILE_EXPLICIT;
 			n_items++;
 			if (direction == GMT_IN) n_in_added++;
@@ -7857,12 +7855,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].direction = direction;
 				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
-				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
+				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
 				/* Excplicitly add the missing marker (e.g., $) to the option argument */
 				snprintf (txt, GMT_LEN16, "%s%c", opt->arg, marker);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
-				n_implicit++;
 				kind = GMT_FILE_EXPLICIT;
 				n_items++;
 				if (direction == GMT_IN) n_in_added++;
@@ -7911,7 +7908,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].family    = family;
 				info[n_items].geometry  = geometry;
 				info[n_items].direction = direction;
-				info[n_items].pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
+				info[n_items].pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
 				info[n_items].mode = K_PRIMARY;
 				GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
 					S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
@@ -7940,7 +7937,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (info[k].mode == K_SECONDARY) info[k].pos += nn[info[k].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
 		else info[k].pos -= nn[info[k].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", implicit_pos, output_pos);
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", input_pos, output_pos);
 	/* Just checking that the options were properly processed */
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		static char *omode[2] = {"Primary", "Secondary"};
