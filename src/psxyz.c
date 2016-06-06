@@ -788,12 +788,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
 
 			if (S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) {	/* Ellipses or rectangles */
-				if (S.n_required == 0) {	/* Degenerate ellipse or rectangle, Got diameter via S.size_x */
+				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, Got diameter via S.size_x */
 					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
-				}
-				else if (S.n_required == 1) {	/* Degenerate ellipse or rectangle, expect single diameter via input */
+				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
 					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
-				}
 			}
 
 			if (S.base_set == 2) {	/* Got base from input column */
