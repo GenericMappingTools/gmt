@@ -7803,7 +7803,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
 	/* Note: All explicit objects must be given after all implicit matrices have been listed */
-	for (opt = *head, implicit_pos = n_explicit; opt; opt = opt->next) {	/* Process options */
+	for (opt = *head; opt; opt = opt->next) {	/* Process options */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */

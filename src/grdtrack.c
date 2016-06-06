@@ -927,9 +927,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			struct GMT_DATASET *Stack = NULL;
 			struct GMT_DATASEGMENT *M = NULL;
 			uint64_t dim[4], n_rows, *stacked_n = NULL;
-			uint64_t colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
+			uint64_t colx, col_s, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
 			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
-			unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+			unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0, n_added_cols = 0;
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
 			dim[GMT_TBL] = 1;			/* One table */
 			dim[GMT_SEG] = Dout->n_tables;		/* Number of stacks */
@@ -943,7 +943,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			stacked_lo = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, double);
 			stacked_hi = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, double);
 			stacked_n = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, uint64_t);
-
+			if (Ctrl->S.selected[STACK_ADD_VAL]) n_added_cols++;
+			if (Ctrl->S.selected[STACK_ADD_DEV]) n_added_cols++;
+			if (Ctrl->S.selected[STACK_ADD_RES]) n_added_cols++;
 			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
 				T = Dout->table[tbl];
 				M = Stack->table[0]->segment[tbl];	/* Current stack */
@@ -985,7 +987,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					}
 					/* Here we have everything needed to populate output arrays */
 					M->coord[0][row] = T->segment[0]->coord[2][row];	/* Copy over distance value */
-					for (col = 4, colx = col0, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Place stacked, deviation, low, high [and lo_env hi_env] for each grid */
+					for (col = 4, colx = col0, k = 0; k < Ctrl->G.n_grids; k++, col++, colx += n_added_cols) {	/* Place stacked, deviation, low, high [and lo_env hi_env] for each grid */
 						M->coord[1+k*n_step][row] = stacked_val[k];	/* The stacked value */
 						M->coord[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
 						M->coord[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
@@ -993,9 +995,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 						if (Ctrl->S.mode >= STACK_LOWER) continue;
 						M->coord[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
 						M->coord[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
-						if (Ctrl->S.selected[STACK_ADD_VAL]) T->segment[seg]->coord[colx++][row] = stacked_val[k];	/* Place stacked value at end of profile */
-						if (Ctrl->S.selected[STACK_ADD_DEV]) T->segment[seg]->coord[colx++][row] = stacked_dev[k];	/* Place deviation at end of profile */
-						if (Ctrl->S.selected[STACK_ADD_RES]) T->segment[seg]->coord[colx++][row] = T->segment[seg]->coord[col][row] - stacked_val[k];	/* Place residuals(s) at end of profile */
+						if (n_added_cols == 0) continue;	/* No modification to profile outputs requested */
+						for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to append to */
+							col_s = colx;	/* Start over at this column */
+							if (Ctrl->S.selected[STACK_ADD_VAL]) T->segment[seg]->coord[col_s++][row] = stacked_val[k];	/* Place stacked value at end of profile */
+							if (Ctrl->S.selected[STACK_ADD_DEV]) T->segment[seg]->coord[col_s++][row] = stacked_dev[k];	/* Place deviation at end of profile */
+							if (Ctrl->S.selected[STACK_ADD_RES]) T->segment[seg]->coord[col_s++][row] = T->segment[seg]->coord[col][row] - stacked_val[k];	/* Place residuals(s) at end of profile */
+						}
 					}
 				}
 				for (k = 0; k < Ctrl->G.n_grids; k++) gmt_M_free (GMT, stack[k]);

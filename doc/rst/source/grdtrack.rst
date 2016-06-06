@@ -178,16 +178,16 @@ Optional Arguments
     envelope on stacked profile as +/- *fact* \*\ *deviation* [2].
     Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
     scale (**m** and **p**), or half-range (upper-lower)/2. (2) The
-    stacked profile file contains 1 plus groups of 4-6 columns, one
-    group for each sampled grid. The first column holds cross distance,
-    while the first 4 in a group hold stacked value, deviation, min
-    value, and max value. If *method* is one of
+    stacked profile file contains a leading column plus groups of 4-6 columns, with one
+    group for each sampled grid. The leading column holds cross distance,
+    while the first four columns in a group hold stacked value, deviation, min
+    value, and max value, respectively. If *method* is one of
     **a**\ \|\ **m**\ \|\ **p** then we also write the lower and upper
     confidence bounds (see **+c**). When one or more of **+a**, **+d**,
-    and **+r** are used then we append the results to the end of each
-    row for all cross-profiles. The order is always stacked value
-    (**+a**), followed by deviations (**+d**) and residuals (**+r**).
-    When more than one grid is sampled this sequence of 1-3 columns are
+    and **+r** are used then we also append the stacking results to the end of each
+    row, for all cross-profiles. The order is always stacked value
+    (**+a**), followed by deviations (**+d**) and finally residuals (**+r**).
+    When more than one grid is sampled this sequence of 1-3 columns is
     repeated for each grid.
 
 .. _-T:
