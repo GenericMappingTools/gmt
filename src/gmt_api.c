@@ -1151,7 +1151,6 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 		return 2;
 	}
 	/* Only get here if the above cases did not trip */
-	for (k = 0; k < strlen (text); k++) if (text[k] == '/') n_slashes++;
 	if (!(n_slashes == 1 || n_slashes == 3 || n_slashes == 5)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
 		return 0;
