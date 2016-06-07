@@ -7464,6 +7464,25 @@ int gmt_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 }
 
 /*! . */
+unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out) {
+	/* Used when we read records from GMT_TEXTSETs and need to obtain doubles */
+	/* Convert the first ncols fields in the record string to numbers that we
+	 * store in GMT->current.io.curr_rec, which is what normal GMT_DATASET processing do.
+	 * We stop if we run out of fields and ignore conversion errors.  */
+
+	unsigned int k = 0, pos = 0;
+	char p[GMT_BUFSIZ];
+
+	while (k < ncols && gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
+		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
+		if (strchr (p, '/')) continue;	/* Somehow got to a color triplet? */
+		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &out[k]);	/* Be tolerant of errors */
+		k++;
+	}
+	return (k);
+}
+
+//*! . */
 int gmtlib_ogr_get_type (char *item) {
 	if (!strcmp (item, "double") || !strcmp (item, "DOUBLE")) return (GMT_DOUBLE);
 	if (!strcmp (item, "float") || !strcmp (item, "FLOAT")) return (GMT_FLOAT);

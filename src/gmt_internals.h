@@ -150,6 +150,7 @@ EXTERN_MSC unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT
 EXTERN_MSC void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image);
 EXTERN_MSC struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);
 EXTERN_MSC int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val);
+EXTERN_MSC unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out);
 
 /* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
 
