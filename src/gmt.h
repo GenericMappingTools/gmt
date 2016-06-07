@@ -28,7 +28,7 @@
  */
 /*
  * Author: 	Paul Wessel
- * Date:	11-NOV-2015
+ * Date:	6-JUN-2016
  * Version:	5.3 API
  */
 
@@ -64,7 +64,7 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 22 Primary API functions */
+/* 23 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session(const char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 EXTERN_MSC void * GMT_Create_Data   (void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[],
                                      double *wesn, double *inc, unsigned int registration, int pad, void *data);
@@ -73,6 +73,7 @@ EXTERN_MSC void * GMT_Read_Data     (void *API, unsigned int family, unsigned in
                                      unsigned int mode, double wesn[], const char *input, void *data);
 EXTERN_MSC void * GMT_Retrieve_Data (void *API, int object_ID);
 EXTERN_MSC void * GMT_Duplicate_Data(void *API, unsigned int family, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Convert_Data  (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int dim, unsigned int mode);
 EXTERN_MSC void * GMT_Get_Record    (void *API, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session  (void *API);
 EXTERN_MSC int GMT_Register_IO      (void *API, unsigned int family, unsigned int method, unsigned int geometry,
