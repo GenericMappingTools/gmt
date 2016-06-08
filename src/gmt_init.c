@@ -4581,6 +4581,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.format_time[GMT_SECONDARY], "full");
 	/* FORMAT_FLOAT_OUT */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");
+	strcpy (GMT->current.setting.format_float_out_orig, "%.12g");
 	/* FORMAT_FLOAT_MAP */
 	strcpy (GMT->current.setting.format_float_map, "%.12g");
 	/* FORMAT_TIME_STAMP */
