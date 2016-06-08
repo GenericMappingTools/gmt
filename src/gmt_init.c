@@ -4591,25 +4591,33 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 	/* FONT_ANNOT_PRIMARY */
 	error += gmt_getfont (GMT, "12p,Helvetica,black", &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_PRIMARY] = 'p';
 	/* FONT_ANNOT_SECONDARY */
 	error += gmt_getfont (GMT, "14p,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
+	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);
+	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
 	/* FONT_LABEL */
 	error += gmt_getfont (GMT, "16p,Helvetica,black", &GMT->current.setting.font_label);
+	GMT->current.setting.given_unit[GMTCASE_FONT_LABEL] = 'p';
 	/* FONT_LOGO */
 	error += gmt_getfont (GMT, "8p,Helvetica,black", &GMT->current.setting.font_logo);
+	GMT->current.setting.given_unit[GMTCASE_FONT_LOGO] = 'p';
 
 		/* MAP group */
 
 	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 5 * pt; /* 5p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_ANNOT_OBLIQUE */
 	GMT->current.setting.map_annot_oblique = 1;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
 	GMT->current.setting.map_annot_min_spacing = 0; /* 0p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (ring) */
@@ -4627,40 +4635,53 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
 	GMT->current.setting.map_frame_width = 5 * pt; /* 5p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
 	/* MAP_GRID_CROSS_SIZE_PRIMARY, MAP_GRID_CROSS_SIZE_SECONDARY */
 	GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = 0; /* 0p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY] = 'p';
+	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY] = 'p';
 	/* MAP_GRID_PEN_PRIMARY */
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 	/* MAP_GRID_PEN_SECONDARY */
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 	/* MAP_LABEL_OFFSET */
 	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p'; 
 	/* MAP_LINE_STEP */
 	GMT->current.setting.map_line_step = 0.75 * pt;	/* 0.75p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_LINE_STEP] = 'p'; 
 	/* MAP_LOGO */
 	GMT->current.setting.map_logo = false;
 	/* MAP_LOGO_POS */
 	GMT->current.setting.map_logo_justify = PSL_BL;	/* BL */
 	GMT->current.setting.map_logo_pos[GMT_X] = GMT->current.setting.map_logo_pos[GMT_Y] = -54 * pt;	/* -54p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_LOGO_POS] = 'p'; 
 	/* MAP_ORIGIN_X, MAP_ORIGIN_Y */
 	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 1;	/* 1i */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'i';
+	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_Y] = 'i';
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p'; 
+	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
 	/* MAP_TICK_LENGTH_PRIMARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 5 * pt;	/* 5p */
 	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 2.5 * pt;	/* 2.5p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TICK_LENGTH_PRIMARY] = 'p';
 	/* MAP_TICK_LENGTH_SECONDARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 15 * pt;	/* 15p */
 	GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3.75 * pt;	/* 3.75p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TICK_LENGTH_SECONDARY] = 'p';
 	/* MAP_TICK_PEN_PRIMARY */
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 	/* MAP_TICK_PEN_SECONDARY */
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 	/* MAP_TITLE_OFFSET */
 	GMT->current.setting.map_title_offset = 14 * pt;	/* 14p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TITLE_OFFSET] = 'p';
 	/* MAP_VECTOR_SHAPE */
 	GMT->current.setting.map_vector_shape = 0;
 
