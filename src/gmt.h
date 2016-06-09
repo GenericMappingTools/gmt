@@ -95,9 +95,9 @@ EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned in
 EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 /* These 4 functions are being tested */
-EXTERN_MSC int GMT_Create_MemoryFile	(void *API, unsigned int family, unsigned int geometry, char *string);
-EXTERN_MSC int GMT_Open_MemoryFile	(void *API, unsigned int family, unsigned int geometry, void *data, char *string);
-EXTERN_MSC void * GMT_Read_MemoryFile	(void *API, const char *string);
+EXTERN_MSC int GMT_Create_VirtualFile	(void *API, unsigned int family, unsigned int geometry, char *string);
+EXTERN_MSC int GMT_Open_VirtualFile	(void *API, unsigned int family, unsigned int geometry, void *data, char *string);
+EXTERN_MSC void * GMT_Read_VirtualFile	(void *API, const char *string);
 EXTERN_MSC void * GMT_Read_Group		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
 										unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
 EXTERN_MSC void * GMT_Convert_Data  (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);

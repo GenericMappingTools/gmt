@@ -805,127 +805,127 @@ Next table gives a list of all the functions and their purpose.
 
 .. _tbl-API:
 
-+-------------------------+-------------------------------------------------------+
-| constant                | description                                           |
-+=========================+=======================================================+
-| GMT_Append_Option_      | Append new option structure to linked list            |
-+-------------------------+-------------------------------------------------------+
-| GMT_Begin_IO_           | Enable record-by-record i/o                           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Call_Module_        | Call any of the GMT modules                           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Convert_Data_       | Convert between compatible data types                 |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_Args_        | Convert linked list of options to text array          |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_Cmd_         | Convert linked list of options to command line        |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_Data_        | Create an empty data resource                         |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_MemoryFile_  | Create memory location to accept output from a module |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_Options_     | Convert command line options to linked list           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Create_Session_     | Initialize a new GMT session                          |
-+-------------------------+-------------------------------------------------------+
-| GMT_Delete_Option_      | Delete an option structure from the linked list       |
-+-------------------------+-------------------------------------------------------+
-| GMT_Destroy_Args_       | Delete text array of arguments                        |
-+-------------------------+-------------------------------------------------------+
-| GMT_Destroy_Cmd_        | Delete text command of arguments                      |
-+-------------------------+-------------------------------------------------------+
-| GMT_Destroy_Data_       | Delete a data resource                                |
-+-------------------------+-------------------------------------------------------+
-| GMT_Destroy_Options_    | Delete the linked list of option structures           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Destroy_Session_    | Terminate a GMT session                               |
-+-------------------------+-------------------------------------------------------+
-| GMT_Duplicate_Data_     | Make an identical copy of a data resources            |
-+-------------------------+-------------------------------------------------------+
-| GMT_Encode_ID_          | Encode a resources ID as a special filename           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Encode_Options_     | Encode option arguments for external interfaces       |
-+-------------------------+-------------------------------------------------------+
-| GMT_Expand_Option_      | Expand option with explicit memory references         |
-+-------------------------+-------------------------------------------------------+
-| GMT_End_IO_             | Disable further record-by-record i/o                  |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_                | Take the Fast Fourier Transform of data object        |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_1D_             | Take the Fast Fourier Transform of 1-D float data     |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_2D_             | Take the Fast Fourier Transform of 2-D float data     |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_Create_         | Initialize the FFT machinery                          |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_Destroy_        | Terminate the FFT machinery                           |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_Option_         | Explain the FFT options and modifiers                 |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_Parse_          | Parse argument with FFT options and modifiers         |
-+-------------------------+-------------------------------------------------------+
-| GMT_FFT_Wavenumber_     | Return wavenumber given data index                    |
-+-------------------------+-------------------------------------------------------+
-| GMT_Find_Option_        | Find an option in the linked list                     |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Common_         | Determine if a GMT common option was set              |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Coord_          | Create a coordinate array                             |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Data_           | Import a registered data resources                    |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Default_        | Obtain one of the API or GMT default settings         |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_ID_             | Obtain the ID of a given resource                     |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Index_          | Convert row, col into a grid or image index           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Record_         | Import a single data record                           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Row_            | Import a single grid row                              |
-+-------------------------+-------------------------------------------------------+
-| GMT_Get_Values_         | Convert string into coordinates or dimensions         |
-+-------------------------+-------------------------------------------------------+
-| GMT_Init_IO_            | Initialize i/o given registered resources             |
-+-------------------------+-------------------------------------------------------+
-| GMT_Make_Option_        | Create an option structure                            |
-+-------------------------+-------------------------------------------------------+
-| GMT_Message_            | Issue a message, optionally with time stamp           |
-+-------------------------+-------------------------------------------------------+
-| GMT_Open_MemoryFile_    | Select memory location to serve as input for a module |
-+-------------------------+-------------------------------------------------------+
-| GMT_Option_             | Explain one or more GMT common options                |
-+-------------------------+-------------------------------------------------------+
-| GMT_Parse_Common_       | Parse the GMT common options                          |
-+-------------------------+-------------------------------------------------------+
-| GMT_Put_Data_           | Export to a registered data resource given by ID      |
-+-------------------------+-------------------------------------------------------+
-| GMT_Put_Record_         | Export a data record                                  |
-+-------------------------+-------------------------------------------------------+
-| GMT_Put_Row_            | Export a grid row                                     |
-+-------------------------+-------------------------------------------------------+
-| GMT_Read_Data_          | Import a data resource or file                        |
-+-------------------------+-------------------------------------------------------+
-| GMT_Read_Group_         | Import a group of data resources or files             |
-+-------------------------+-------------------------------------------------------+
-| GMT_Read_MemoryFile_    | Copy the result from a module into memory             |
-+-------------------------+-------------------------------------------------------+
-| GMT_Register_IO_        | Register a resources for i/o                          |
-+-------------------------+-------------------------------------------------------+
-| GMT_Report_             | Issue a message contingent upon verbosity level       |
-+-------------------------+-------------------------------------------------------+
-| GMT_Retrieve_Data_      | Obtained link to data in memory via ID                |
-+-------------------------+-------------------------------------------------------+
-| GMT_Set_Comment_        | Assign a comment to a data resource                   |
-+-------------------------+-------------------------------------------------------+
-| GMT_Set_Default_        | Set one of the API or GMT default settings            |
-+-------------------------+-------------------------------------------------------+
-| GMT_Status_IO_          | Check status of record-by-record i/o                  |
-+-------------------------+-------------------------------------------------------+
-| GMT_Update_Option_      | Modify an option structure                            |
-+-------------------------+-------------------------------------------------------+
-| GMT_Write_Data_         | Export a data resource                                |
-+-------------------------+-------------------------------------------------------+
++--------------------------+-------------------------------------------------------+
+| constant                 | description                                           |
++==========================+=======================================================+
+| GMT_Append_Option_       | Append new option structure to linked list            |
++--------------------------+-------------------------------------------------------+
+| GMT_Begin_IO_            | Enable record-by-record i/o                           |
++--------------------------+-------------------------------------------------------+
+| GMT_Call_Module_         | Call any of the GMT modules                           |
++--------------------------+-------------------------------------------------------+
+| GMT_Convert_Data_        | Convert between compatible data types                 |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_Args_         | Convert linked list of options to text array          |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_Cmd_          | Convert linked list of options to command line        |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_Data_         | Create an empty data resource                         |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_VirtualFile_  | Create memory location to accept output from a module |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_Options_      | Convert command line options to linked list           |
++--------------------------+-------------------------------------------------------+
+| GMT_Create_Session_      | Initialize a new GMT session                          |
++--------------------------+-------------------------------------------------------+
+| GMT_Delete_Option_       | Delete an option structure from the linked list       |
++--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Args_        | Delete text array of arguments                        |
++--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Cmd_         | Delete text command of arguments                      |
++--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Data_        | Delete a data resource                                |
++--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Options_     | Delete the linked list of option structures           |
++--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Session_     | Terminate a GMT session                               |
++--------------------------+-------------------------------------------------------+
+| GMT_Duplicate_Data_      | Make an identical copy of a data resources            |
++--------------------------+-------------------------------------------------------+
+| GMT_Encode_ID_           | Encode a resources ID as a special filename           |
++--------------------------+-------------------------------------------------------+
+| GMT_Encode_Options_      | Encode option arguments for external interfaces       |
++--------------------------+-------------------------------------------------------+
+| GMT_Expand_Option_       | Expand option with explicit memory references         |
++--------------------------+-------------------------------------------------------+
+| GMT_End_IO_              | Disable further record-by-record i/o                  |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_                 | Take the Fast Fourier Transform of data object        |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_1D_              | Take the Fast Fourier Transform of 1-D float data     |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_2D_              | Take the Fast Fourier Transform of 2-D float data     |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_Create_          | Initialize the FFT machinery                          |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_Destroy_         | Terminate the FFT machinery                           |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_Option_          | Explain the FFT options and modifiers                 |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
++--------------------------+-------------------------------------------------------+
+| GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
++--------------------------+-------------------------------------------------------+
+| GMT_Find_Option_         | Find an option in the linked list                     |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Common_          | Determine if a GMT common option was set              |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Coord_           | Create a coordinate array                             |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Data_            | Import a registered data resources                    |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Default_         | Obtain one of the API or GMT default settings         |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_ID_              | Obtain the ID of a given resource                     |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Index_           | Convert row, col into a grid or image index           |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Record_          | Import a single data record                           |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Row_             | Import a single grid row                              |
++--------------------------+-------------------------------------------------------+
+| GMT_Get_Values_          | Convert string into coordinates or dimensions         |
++--------------------------+-------------------------------------------------------+
+| GMT_Init_IO_             | Initialize i/o given registered resources             |
++--------------------------+-------------------------------------------------------+
+| GMT_Make_Option_         | Create an option structure                            |
++--------------------------+-------------------------------------------------------+
+| GMT_Message_             | Issue a message, optionally with time stamp           |
++--------------------------+-------------------------------------------------------+
+| GMT_Open_VirtualFile_    | Select memory location to serve as input for a module |
++--------------------------+-------------------------------------------------------+
+| GMT_Option_              | Explain one or more GMT common options                |
++--------------------------+-------------------------------------------------------+
+| GMT_Parse_Common_        | Parse the GMT common options                          |
++--------------------------+-------------------------------------------------------+
+| GMT_Put_Data_            | Export to a registered data resource given by ID      |
++--------------------------+-------------------------------------------------------+
+| GMT_Put_Record_          | Export a data record                                  |
++--------------------------+-------------------------------------------------------+
+| GMT_Put_Row_             | Export a grid row                                     |
++--------------------------+-------------------------------------------------------+
+| GMT_Read_Data_           | Import a data resource or file                        |
++--------------------------+-------------------------------------------------------+
+| GMT_Read_Group_          | Import a group of data resources or files             |
++--------------------------+-------------------------------------------------------+
+| GMT_Read_VirtualFile_    | Copy the result from a module into memory             |
++--------------------------+-------------------------------------------------------+
+| GMT_Register_IO_         | Register a resources for i/o                          |
++--------------------------+-------------------------------------------------------+
+| GMT_Report_              | Issue a message contingent upon verbosity level       |
++--------------------------+-------------------------------------------------------+
+| GMT_Retrieve_Data_       | Obtained link to data in memory via ID                |
++--------------------------+-------------------------------------------------------+
+| GMT_Set_Comment_         | Assign a comment to a data resource                   |
++--------------------------+-------------------------------------------------------+
+| GMT_Set_Default_         | Set one of the API or GMT default settings            |
++--------------------------+-------------------------------------------------------+
+| GMT_Status_IO_           | Check status of record-by-record i/o                  |
++--------------------------+-------------------------------------------------------+
+| GMT_Update_Option_       | Modify an option structure                            |
++--------------------------+-------------------------------------------------------+
+| GMT_Write_Data_          | Export a data resource                                |
++--------------------------+-------------------------------------------------------+
 
 
 The GMT C Application Program Interface
@@ -1631,15 +1631,15 @@ Let module read input from a memory location
 
 If you have read in or otherwise obtained a data object in memory and you
 now wish it to become the input to another module, you have to associate
-that object with a "MemoryFile".  This will assign a filename to the
+that object with a "VirtualFile".  This will assign a filename to the
 memory location and you can then pass this filename to any module that
 needs to read that data.  The syntax is
 
-.. _GMT_Open_MemoryFile:
+.. _GMT_Open_VirtualFile:
 
   ::
 
-    void *GMT_Open_MemoryFile (void *API, unsigned int family, unsigned int geometry,
+    void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
 	                             void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
@@ -1651,25 +1651,25 @@ Let module write output to a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Likewise, if you want the module to write its result to memory (rather than file),
-you have to associate that memory object with another MemoryFile.  At this point
+you have to associate that memory object with another VirtualFile.  At this point
 you have no memory variable yet we need another function.  The syntax is
 
-.. _GMT_Create_MemoryFile:
+.. _GMT_Create_VirtualFile:
 
   ::
 
-    void *GMT_Create_MemoryFile (void *API, unsigned int family, unsigned int geometry,
+    void *GMT_Create_VirtualFile (void *API, unsigned int family, unsigned int geometry,
 	                               char *string);
 
 The function returns the desired output filename via ``string``. The other
 arguments have been discussed earlier.  Simply use this filename in
 the calling sequence to the module to set the output destination.
 
-.. _GMT_Read_MemoryFile:
+.. _GMT_Read_VirtualFile:
 
   ::
 
-    void *GMT_Read_MemoryFile (void *API, void *string);
+    void *GMT_Read_VirtualFile (void *API, void *string);
 
 
 Import from a memory location, version 2

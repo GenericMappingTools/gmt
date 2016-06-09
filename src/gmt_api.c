@@ -5099,8 +5099,8 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 #endif
 
  /*! . */
-int GMT_Create_MemoryFile (void *V_API, unsigned int family, unsigned int geometry, char *string) {
-	/* Create a MemoryFile that a module may write its output if type family to. */
+int GMT_Create_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, char *string) {
+	/* Create a VirtualFile that a module may write its output if type family to. */
 	int object_ID;
 	struct GMTAPI_CTRL *API = NULL;
 	void *object = NULL;
@@ -5113,22 +5113,22 @@ int GMT_Create_MemoryFile (void *V_API, unsigned int family, unsigned int geomet
 	/* Obtain the object's ID */
 	if ((object_ID = GMT_Get_ID (API, family, GMT_OUT, object)) == GMT_NOTSET)
 		return (API->error);
-	/* Format the unique MemoryFile name */
+	/* Format the unique VirtualFile name */
 	if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
 		return (API->error);
 	return (GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
-int GMT_Create_MemoryFile_ (unsigned int *family, unsigned int *geometry, char *string, int len) {
+int GMT_Create_VirtualFile_ (unsigned int *family, unsigned int *geometry, char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Create_MemoryFile (GMT_FORTRAN, *family, *geometry, string));
+	return (GMT_Create_VirtualFile (GMT_FORTRAN, *family, *geometry, string));
 }
 #endif
 
  /*! . */
-int GMT_Open_MemoryFile (void *V_API, unsigned int family, unsigned int geometry, void *data, char *string) {
-	/* Open up a MemoryFile for an existing resource that a module may read its input from. */
+int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, void *data, char *string) {
+	/* Open up a VirtualFile for an existing resource that a module may read its input from. */
 	int object_ID;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -5138,21 +5138,21 @@ int GMT_Open_MemoryFile (void *V_API, unsigned int family, unsigned int geometry
 	/* Re-register the object for reading [GMT_IN] and reset its status to unread */
 	if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
 		return (API->error);
-	/* Obtain the unique MemoryFile name */
+	/* Obtain the unique VirtualFile name */
 	if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
 		return (API->error);
 	return (GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
-int GMT_Open_MemoryFile_ (unsigned int *family, unsigned int *geometry, void *data, char *string, int len) {
+int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, void *data, char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Open_MemoryFile (GMT_FORTRAN, *family, *geometry, data, string));
+	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, data, string));
 }
 #endif
 
-void * GMT_Read_MemoryFile (void *V_API, const char *string) {
-	/* Given a MemoryFile name, retrieve the resulting "file" */
+void * GMT_Read_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, retrieve the resulting "file" */
 	int object_ID;
 	void *object = NULL;
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
@@ -5165,9 +5165,9 @@ void * GMT_Read_MemoryFile (void *V_API, const char *string) {
 }
 
 #ifdef FORTRAN_API
-void * GMT_Read_MemoryFile_ (char *string, int len) {
+void * GMT_Read_VirtualFile_ (char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Read_MemoryFile (GMT_FORTRAN, string));
+	return (GMT_Read_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
 
