@@ -46,6 +46,18 @@
 
 #define GMT_PROG_OPTIONS "-:>JRVbdfghiops" GMT_OPT("HMm")
 
+enum GMT_mp_Gcodes {	/* Support for -G parsing */
+	GMT_MP_FIXED_DIST = 1,	/* Compute distances from data to fixed point given by -Gx0/y0[...] */
+	GMT_MP_CUMUL_DIST = 2,	/* Compute cumulative distances along track given by input data */
+	GMT_MP_INCR_DIST  = 3,	/* Compute incremental distances along track given by input data */
+	GMT_MP_PAIR_DIST  = 4	/* Compute distances from data to paired point given in data columns 3&4 */
+};
+
+enum GMT_mp_Lcodes {	/* Support for -L parsing */
+	GMT_MP_GIVE_CORD = 2,	/* Return the coordinates of the nearest point on the line */
+	GMT_MP_GIVE_FRAC = 3	/* Return the fractional line/point number of the nearest point on the line */
+};
+
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
@@ -121,10 +133,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->G.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
-	C->G.sph = 1;			/* Default is great-circle distances */
-	C->L.mode = 2;			/* Default returns coordinates of nearest point */
+	C->G.sph = GMT_GREATCIRCLE;	/* Default is great-circle distances */
+	C->L.mode = GMT_MP_GIVE_CORD;	/* Default returns coordinates of nearest point */
 	C->L.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
-	C->L.sph = 1;			/* Default is great-circle distances */
+	C->L.sph = GMT_GREATCIRCLE;	/* Default is great-circle distances */
 	C->N.mode = GMT_LATSWAP_G2O;	/* Default is geodetic<->geocentric, if -N is used */
 
 	return (C);
@@ -213,7 +225,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	int n;
 	size_t last;
 	bool geodetic_calc = false,  g_dist = false;
-	char c, d, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
+	char c, d, sign, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -282,16 +294,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
 				break;
-			case 'G':
+			case 'G':	/* Syntax -G[<lon0/lat0>][/[+|-]units] */
 				Ctrl->G.active = true;
 				for (n_slash = k = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 				last = strlen (opt->arg) - 1;
-				if (n_slash == 2 || n_slash == 1) {	/* Got -G[+|-]lon0/lat0[/[+|-]units] */
-					Ctrl->G.mode = 1;
-					n = sscanf (opt->arg, "%[^/]/%[^/]/%c%c", txt_a, txt_b, &c, &d);
-					if (n_slash == 2) {
-						Ctrl->G.sph = (c == '-') ? 0 : ((c == '+') ? 2 : 1);
-						Ctrl->G.unit = (c == '-' || c == '+') ? d : c;
+				if (n_slash == 2 || n_slash == 1) {	/* Got -G<lon0/lat0>[/[+|-]unit] */
+					Ctrl->G.mode = GMT_MP_FIXED_DIST;
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%c%c", txt_a, txt_b, &sign, &d);
+					if (n_slash == 2) {	/* Got -G<lon0/lat0>/[+|-]unit */
+						Ctrl->G.sph  = (sign == '-') ? GMT_FLATEARTH : ((sign == '+') ? GMT_GEODESIC : GMT_GREATCIRCLE);	/* If sign is not +|- then it was not given */
+						Ctrl->G.unit = (sign == '-' || sign == '+') ? d : sign;	/* If no sign the unit is the 3rd item read by sscanf */
 						n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->G.unit),
 						                                 "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					}
@@ -301,19 +313,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
 				}
 				else if (opt->arg[last] == '+') {				/* Got -G[[+|-]units]+ */
-					Ctrl->G.mode = 4;
-					Ctrl->G.sph = (opt->arg[0] == '-') ? 0 : ((opt->arg[0] == '+') ? 2 : 1);
+					Ctrl->G.mode = GMT_MP_PAIR_DIST;
+					Ctrl->G.sph = (opt->arg[0] == '-') ? GMT_FLATEARTH : ((opt->arg[0] == '+') ? GMT_GEODESIC : GMT_GREATCIRCLE);
 					Ctrl->G.unit = (opt->arg[0] == '-' || opt->arg[0] == '+') ? opt->arg[1] : opt->arg[0];
 				}
 				else if (opt->arg[last] == '-') {				/* Got -G[[+|-]units]- */
-					Ctrl->G.mode = 3;
-					Ctrl->G.sph = (opt->arg[0] == '-') ? 0 : ((opt->arg[0] == '+') ? 2 : 1);
+					Ctrl->G.mode = GMT_MP_INCR_DIST;
+					Ctrl->G.sph = (opt->arg[0] == '-') ? GMT_FLATEARTH : ((opt->arg[0] == '+') ? GMT_GEODESIC : GMT_GREATCIRCLE);
 					Ctrl->G.unit = (opt->arg[0] == '-' || opt->arg[0] == '+') ? opt->arg[1] : opt->arg[0];
 				}
 				else {				/* Got -G[[+|-]units] only */
-					Ctrl->G.mode = 2;
-					Ctrl->G.sph = (opt->arg[0] == '-') ? 0 : ((opt->arg[0] == '+') ? 2 : 1);
-					k = (Ctrl->G.sph == 1) ? 0 : 1;	/* Position of unit, if given */
+					Ctrl->G.mode = GMT_MP_CUMUL_DIST;
+					Ctrl->G.sph = (opt->arg[0] == '-') ? GMT_FLATEARTH : ((opt->arg[0] == '+') ? GMT_GEODESIC : GMT_GREATCIRCLE);
+					k = (Ctrl->G.sph == GMT_GREATCIRCLE) ? 0 : 1;	/* k is the position of unit (which depends on any -|+), if given */
 					if (opt->arg[k]) Ctrl->G.unit = opt->arg[k];
 				}
 				if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
@@ -326,7 +338,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				Ctrl->L.file = strdup (opt->arg);
 				k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
 				if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
-					Ctrl->L.mode = 3;
+					Ctrl->L.mode = GMT_MP_GIVE_FRAC;
 					Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */
 					k--;	/* Now points to unit */
 				}
@@ -334,8 +346,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (slash && ((k - slash) < 3)) {	/* User appended /[+|-]<unit>[+].  (k-slash) should be either 1 or 2 unless we are confused by files with subdirs */
 					Ctrl->L.unit = Ctrl->L.file[k];
 					k--;	/* Now points to either / or the optional -/+ mode setting */
-					Ctrl->L.sph = 1;	/* Great circle distances */
-					if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? 0 : 2;	/* Gave [-|+]unit */
+					Ctrl->L.sph = GMT_GREATCIRCLE;	/* Great circle distances */
+					if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
 					Ctrl->L.file[slash] = '\0';
 					n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
 					                                 "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
@@ -360,8 +372,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
-				if (opt->arg[0] == 'e') Ctrl->Q.mode |= 1;
-				if (opt->arg[0] == 'd') Ctrl->Q.mode |= 2;
+				if (opt->arg[0] == 'e')  Ctrl->Q.mode |= 1;
+				if (opt->arg[0] == 'd')  Ctrl->Q.mode |= 2;
 				if (opt->arg[0] == '\0') Ctrl->Q.mode = 3;
 				break;
 			case 'S':
@@ -535,11 +547,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
 	}
 	if (Ctrl->G.active) {
-		way = gmt_M_is_geographic (GMT, GMT_IN) ? 1 + Ctrl->G.sph: 0;
+		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->G.sph : 0;
 		proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST);
 	}
 	if (Ctrl->L.active) {
-		way = gmt_M_is_geographic (GMT, GMT_IN) ? 1 + Ctrl->L.sph: 0;
+		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->L.sph: 0;
 		proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
 	}
 	if (Ctrl->E.active) gmt_ECEF_init (GMT, &Ctrl->E.datum);
@@ -763,7 +775,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing *= u_scale;
 	}
 
-	if (Ctrl->L.mode == 3)	/* Want fractional point locations */
+	if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
 		fmt[0] = fmt[1] = GMT_Z;
 	else {			/* Want nearest point */
 		fmt[0] = GMT_X;
@@ -971,15 +983,15 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			if (geodetic_calc) {	/* Get either distances or azimuths */
 				double s;
 				if (Ctrl->G.mode) {	/* Distances of some sort */
-					if (Ctrl->G.mode == 4)	/* Segment distances from each data record using 2 points */
+					if (Ctrl->G.mode == GMT_MP_PAIR_DIST)	/* Segment distances from each data record using 2 points */
 						s = gmt_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
-					else if (Ctrl->G.mode >= 2 && line_start)	/* Reset cumulative distances */
+					else if (Ctrl->G.mode >= GMT_MP_CUMUL_DIST && line_start)	/* Reset cumulative distances */
 						s = d = 0.0;
 					else						/* Incremental distance */
 						s = gmt_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
-					if (Ctrl->G.mode >= 2) {	/* Along-track calculation */
+					if (Ctrl->G.mode >= GMT_MP_CUMUL_DIST) {	/* Along-track calculation */
 						line_start = false;
-						d = (Ctrl->G.mode >= 3) ? s : d + s;	/* Increments or cumulative */
+						d = (Ctrl->G.mode >= GMT_MP_INCR_DIST) ? s : d + s;	/* Increments or cumulative */
 						Ctrl->G.lon = in[GMT_X];	/* Save last point in G */
 						Ctrl->G.lat = in[GMT_Y];
 					}
@@ -989,7 +1001,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				else if (Ctrl->L.active) {	/* Compute closest distance to line */
 					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*coord)[GMT_Y], GMT_LATSWAP_G2O) : (*coord)[GMT_Y];	/* Convert to geocentric */
 					(void) gmt_near_lines (GMT, (*coord)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
-					if (do_geo_conv && Ctrl->L.mode != 3) ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					if (do_geo_conv && Ctrl->L.mode != GMT_MP_GIVE_FRAC) ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				}
 				else if (Ctrl->A.azims) {	/* Azimuth from previous point */
 					if (n_read_in_seg == 1)	/* First point has undefined azimuth since there is no previous point */

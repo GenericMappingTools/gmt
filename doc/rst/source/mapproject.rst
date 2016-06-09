@@ -130,14 +130,15 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**]
-    Calculate distances along track *or* to the optional point set with
-    **-G**\ *x0/y0*. Append the distance unit (see UNITS), including
+    Calculate distances along track *or* to the optional *fixed* point set
+    with **-G**\ *x0/y0*. Append the distance unit (see UNITS), including
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
-    requires **-R** and **-J** to be set. With no fixed point is given
-    we calculate cumulate distances along track. Append **-** to obtain
-    incremental distance between successive points. Append **+** to
-    specify the 2nd point via two extra columns in the input file.
+    requires **-R** and **-J** to be set. When no fixed point is given
+    we calculate cumulative distances along the track defined by the input
+    points. Append **-** to obtain *incremental* distances between
+    successive points instead. Finally, append **+** to use obtain a
+    *variable* 2nd point (*x0*/*y0*) via columns 3-4 in the input file.
 
 .. _-I:
 

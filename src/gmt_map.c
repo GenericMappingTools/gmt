@@ -255,7 +255,7 @@ enum GMT_side {
 /* Note by P. Wessel, 18-Oct-2012, updated 08-JAN-2014:
  * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
  * distances by Rudoe's formula as given in Bomford [1971].  However, that geodesic is not
- * exactly what we wanted as it is a normal section and do not strictly follow the geodesic.
+ * exactly what we wanted as it is a normal section and does not strictly follow the geodesic.
  * Other candidates are Vincenty [1975], which is widely used and Karney [2012], which is super-
  * accurate.  At this point their differences are in the micro-meter level.  For GMT 5 we have
  * now switched to the Vincenty algorithm as provided by Gerald Evenden, USGS [author of proj4],
