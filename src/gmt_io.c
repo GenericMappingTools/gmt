@@ -7654,6 +7654,7 @@ char **gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 #endif /* HAVE_DIRENT_H_ */
 
 	list = gmt_M_memory (GMT, list, n + 1, char *);	/* The final entry is NULL, indicating end of list */
+	list[n] = NULL;	/* Since the realloc will not necessarily have set it to NULL */
 	return (list);
 }
 

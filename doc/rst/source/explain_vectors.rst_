@@ -63,7 +63,7 @@ In addition, all but circular vectors may take these modifiers:
     **+j**\ *just* determines how the input *x*,\ *y* point relates to the
     vector. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
 
-    **+s** means the input *angle*, *length* is instead the *x*, *y*
+    **+s** means the input *angle*, *length* are instead the *x*, *y*
     coordinates of the vector end point.
 
 Finally, Cartesian vectors may take these modifiers:
