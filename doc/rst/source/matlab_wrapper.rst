@@ -238,7 +238,7 @@ Definition of the *image structure* that holds a image and its metadata.
 
 Definition of the *CPT structure* that holds the color palette.
 
-.. _cpt-struct:
+.. _PS-struct:
 
 .. code-block:: c
 

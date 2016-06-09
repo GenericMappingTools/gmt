@@ -1385,7 +1385,7 @@ In this case you will use
   ::
 
     void *GMT_Convert_Data (void *API, void *In, unsigned int family_in,
-	void *Out, unsigned int family_out, unsigned int flag[]);
+	                          void *Out, unsigned int family_out, unsigned int flag[]);
 
 which returns a pointer to the converted resource. Specify which
 :ref:`family <tbl-family>` for both the old and new resource and set the
@@ -1597,9 +1597,9 @@ To read a group or resource from files, use
 
   ::
 
-    void *_GMT_Read_Group (void *API, unsigned int family, unsigned int method,
-                         unsigned int geometry, unsigned int mode, double wesn[],
-                         void *input, unsigned int *n_items, void *ptr);
+    void *GMT_Read_Group (void *API, unsigned int family, unsigned int method,
+                          unsigned int geometry, unsigned int mode, double wesn[],
+                          void *input, unsigned int *n_items, void *ptr);
 
 * :ref:`API <GMT_Create_Session>`
 * :ref:`family <tbl-family>`
@@ -1607,10 +1607,10 @@ To read a group or resource from files, use
 * :ref:`geometry <tbl-geometry>`
 * mode -- *see below*
 * :ref:`wesn <tbl-wesn>`
-* input -- Contents depends on the value of *n_items.  If it is zero then we expect
+* input -- Contents depends on the value of *n_items*.  If it is zero then we expect
   a pointer to char holding UNIX wildcard file name(s) to read, otherwise we expect
-  a pointer to an array of character strings (*n_items in total) with names of all
-  the files to read.  If n_items is NULL then we assume 0 but cannot return the number
+  a pointer to an array of character strings (*n_items* in total) with names of all
+  the files to read.  If *n_items* is NULL then we assume 0 but cannot return the number
   found.
 * ptr -- NULL or the pointer returned by this function after a first call (when reading grids or images in two steps)
 * Return: Pointer to array of data container, or NULL if there were errors (passed back via API->error)
@@ -1640,7 +1640,7 @@ needs to read that data.  The syntax is
   ::
 
     void *GMT_Open_MemoryFile (void *API, unsigned int family, unsigned int geometry,
-	void *data, char *string);
+	                             void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``string``.  The other
@@ -1659,12 +1659,17 @@ you have no memory variable yet we need another function.  The syntax is
   ::
 
     void *GMT_Create_MemoryFile (void *API, unsigned int family, unsigned int geometry,
-	char *string);
+	                               char *string);
 
-The function returns the
-desired output filename via ``string``.  The other
+The function returns the desired output filename via ``string``. The other
 arguments have been discussed earlier.  Simply use this filename in
 the calling sequence to the module to set the output destination.
+
+.. _GMT_Read_MemoryFile:
+
+  ::
+
+    void *GMT_Read_MemoryFile (void *API, void *string);
 
 
 Import from a memory location, version 2

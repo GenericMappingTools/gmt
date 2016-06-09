@@ -13,17 +13,17 @@ end point of the segment:
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain arrow,
     and **I** for plain tail.
-    Further append **l**\ |\ **r** to only draw the left or right
+    Further append **l**\ \|\ **r** to only draw the left or right
     side of this head [both sides].
 
     **+e** places a vector head at the end of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain arrow,
     and **I** for plain tail.
-    Further append **l**\ |\ **r** to only draw the left or right
+    Further append **l**\ \|\ **r** to only draw the left or right
     side of this head [both sides].
 
-    **+g**-\ |\ *fill* turns off vector head fill (if -) or sets the vector
+    **+g**-\ \|\ *fill* turns off vector head fill (if -) or sets the vector
     head fill [Default fill is used, which may be no fill].
 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
