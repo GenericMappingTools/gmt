@@ -73,7 +73,6 @@ EXTERN_MSC void * GMT_Read_Data     (void *API, unsigned int family, unsigned in
                                      unsigned int mode, double wesn[], const char *input, void *data);
 EXTERN_MSC void * GMT_Retrieve_Data (void *API, int object_ID);
 EXTERN_MSC void * GMT_Duplicate_Data(void *API, unsigned int family, unsigned int mode, void *data);
-EXTERN_MSC void * GMT_Convert_Data  (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
 EXTERN_MSC void * GMT_Get_Record    (void *API, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session  (void *API);
 EXTERN_MSC int GMT_Register_IO      (void *API, unsigned int family, unsigned int method, unsigned int geometry,
@@ -95,10 +94,13 @@ EXTERN_MSC int GMT_Set_Comment      (void *API, unsigned int family, unsigned in
 EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
-/* These 3 functions are being tested */
+/* These 4 functions are being tested */
 EXTERN_MSC int GMT_Create_MemoryFile	(void *API, unsigned int family, unsigned int geometry, char *string);
 EXTERN_MSC int GMT_Open_MemoryFile	(void *API, unsigned int family, unsigned int geometry, void *data, char *string);
 EXTERN_MSC void * GMT_Read_MemoryFile	(void *API, const char *string);
+EXTERN_MSC void * GMT_Read_Group		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
+										unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
+EXTERN_MSC void * GMT_Convert_Data  (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 

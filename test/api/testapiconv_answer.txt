@@ -1,0 +1,264 @@
+# This header will cause test to fail until we decide what to do about output header records
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+> Another header for A
+6	7
+7	8
+> Some header for B
+11	2
+21	3
+31	4
+> Another header for B
+61	7
+71	8
+> Some header for A
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8

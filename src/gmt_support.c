@@ -84,6 +84,9 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include <locale.h>
+#ifndef WIN32
+#include <glob.h>
+#endif
 
 /*! . */
 enum GMT_profmode {
@@ -4706,12 +4709,149 @@ GMT_LOCAL uint64_t support_read_list (struct GMT_CTRL *GMT, char *file, char ***
 }
 
 /*! . */
-GMT_LOCAL void support_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
+void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 	/* Properly free memory allocated by support_read_list */
 	uint64_t i;
 	for (i = 0; i < n; i++) gmt_M_str_free (list[i]);
 	gmt_M_free (GMT, list);
 }
+
+#ifndef WIN32
+/*! . */
+GMT_LOCAL int support_globerr (const char *path, int eerrno)
+{
+	fprintf (stderr, "gmtlib_glob_list: %s: %s\n", path, strerror(eerrno));
+	return 0;	/* let glob() keep going */
+}
+#else
+/* Build our own glob for Windows, using tips and code from
+   http://www.thecodingforums.com/threads/globing-on-windows-in-c-c-language.739310/
+
+  match a character.
+  Parmas: target - target string, pat - pattern string.
+  Returns: number of pat character matched.
+  Notes: means that a * in pat will return zero
+*/
+static int chmatch (const char *target, const char *pat) {
+	char *end = NULL, *ptr = NULL;
+	if (*pat == '[' && (end = strchr (pat, ']')) ) {
+		/* treat close bracket following open bracket as character */
+		if (end == pat + 1) {
+			end = strchr (pat+2, ']');
+			/* make "[]" with no close mismatch all */
+			if (end == 0) return 0;
+		}
+		/* allow [A-Z] and like syntax */
+		if (end - pat == 4 && pat[2] == '-' && pat[1] <= pat[3]) {
+			if(*target >= pat[1] && *target <= pat[3])
+				return 5;
+			else
+				return 0;
+		}
+
+		/* search for character list contained within brackets */
+		ptr = strchr (pat+1, *target);
+		if (ptr != 0 && ptr < end)
+			return end - pat + 1;
+		else
+			return 0;
+	}
+	if (*pat == '?' && *target != 0)return 1;
+	if (*pat == '*') return 0;
+	if (*target == 0 || *pat == 0)return 0;
+	if (*target == *pat) return 1;
+	return 0;
+}
+/* wildcard matcher.  Params: str - the target string
+   pattern - pattern to match
+   Returns: 1 if match, 0 if not.
+   Notes: ? - match any character
+   * - match zero or more characters
+   [?], [*], escapes,
+   [abc], match a, b or c.
+   [A-Z] [0-9] [*-x], match range.
+   [[] - match '['.
+   [][abc] match ], [, a, b or c
+*/
+int matchwild (const char *str, const char *pattern) {
+	const char *target = str;
+	const char *pat = pattern;
+	int gobble;
+
+	while( (gobble = chmatch(target, pat)) ) {
+		target++;
+		pat += gobble;
+	}
+	if (*target == 0 && *pat == 0)
+		return 1;
+	else if (*pat == '*') {
+		while (pat[1] == '*') pat++;
+		if (pat[1] == 0) return 1;
+		while (*target)
+			if (matchwild (target++, pat+1)) return 1;
+	}
+	return 0;
+}
+#endif
+
+/*! . */
+uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list) {
+#ifdef WIN32
+	uint64_t k = 0, n = 0;
+	size_t n_alloc = GMT_SMALL_CHUNK;
+	char **p = NULL, **file = NULL;
+	if ((p = gmt_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
+	
+	file = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	
+	while (p[k]) {	/* A NULL marks the end for us */
+		if (matchwild (p[k], pattern)) {	/* Found a match */
+			file[n++] = strdup (p[k]);
+			if (n == n_alloc) {
+				n_alloc <<= 1;
+				file = gmt_M_memory (GMT, file, n_alloc, char *);
+			}
+		}
+		k++;
+	}
+	gmt_free_dir_list (GMT, &p);
+	if (n < n_alloc) file = gmt_M_memory (GMT, file, n, char *);
+	*list = file;
+	return n;
+}
+#else	/* Standard UNIX glob use */
+	unsigned int pos = 0, k = 0;
+	int ret, flags = 0;
+	char **p = NULL, item[GMT_LEN256] = {""};
+	glob_t results;
+
+	if (!pattern || pattern[0] == '\0') return 0;	/* Nothing passed */
+
+	while ((gmt_strtok (pattern, " \t", &pos, item))) {	/* For all separate arguments */
+		flags |= (k > 1 ? GLOB_APPEND : 0);
+		ret = glob (item, flags, support_globerr, &results);
+		if (ret != 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_glob_list: problem with wildcard expansion of (%s), stopping early [%s]\n",
+				item,
+		/* ugly: */	(ret == GLOB_ABORTED ? "filesystem problem" :
+				 ret == GLOB_NOMATCH ? "no match of pattern" :
+				 ret == GLOB_NOSPACE ? "no dynamic memory" :
+				 "unknown problem"));
+			break;
+		}
+		k++;
+	}
+
+	if (results.gl_pathc) p = gmt_M_memory (GMT, NULL, results.gl_pathc, char *);
+	for (k = 0; k < results.gl_pathc; k++)
+		p[k] = strdup (results.gl_pathv[k]);
+
+	globfree (&results);
+	
+	*list = p;
+	return (uint64_t)results.gl_pathc;
+}
+#endif
 
 GMT_LOCAL int support_find_mod_syntax_start (char *arg, int k) {
 	/* Either arg[n] == '+' or not found so arg[n] == 0 */
@@ -12755,7 +12895,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 		while ((gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) {
 				gmt_free_int_selection (GMT, &select);
-				support_free_list (GMT, list, n_items);
+				gmtlib_free_list (GMT, list, n_items);
 				return (NULL);
 			}
 
@@ -12765,7 +12905,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 			for (i = start; i <= stop; i += step, n++) select->item[n] = i;
 		}
 	}
-	support_free_list (GMT, list, n_items);	/* Done with the list */
+	gmtlib_free_list (GMT, list, n_items);	/* Done with the list */
 	/* Here we got something to return */
 	select->n = n;							/* Total number of items */
 	select->item = gmt_M_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
@@ -12785,7 +12925,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
-	if ((*S)->pattern) support_free_list (GMT, (*S)->pattern, (*S)->n);
+	if ((*S)->pattern) gmtlib_free_list (GMT, (*S)->pattern, (*S)->n);
 	gmt_M_free (GMT, (*S)->regexp);
 	gmt_M_free (GMT, (*S)->caseless);
 	gmt_M_free (GMT, *S);

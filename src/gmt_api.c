@@ -447,6 +447,22 @@ struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 	return (ptr);
 }
 
+/*! api_return_address is a convenience function that, given type, calls the correct converter */
+GMT_LOCAL void *api_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_items, unsigned int type) {
+	void *p = NULL;
+	switch (type) {
+		case GMT_IS_GRID:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_GRID *);		break;
+		case GMT_IS_DATASET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_DATASET *);	break;
+		case GMT_IS_TEXTSET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_TEXTSET *);	break;
+		case GMT_IS_CPT:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_CPT *);		break;
+		case GMT_IS_PS:		p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_PS *);		break;
+		case GMT_IS_IMAGE:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_IMAGE *);		break;
+		case GMT_IS_MATRIX:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_MATRIX *);	break;
+		case GMT_IS_VECTOR:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_VECTOR *);	break;
+	}
+	return (p);
+}
+
 /*! p_func_size_t is used as a pointer to functions that returns a size_t dimension */
 typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
 
@@ -4478,6 +4494,19 @@ GMT_LOCAL int api_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_fami
 	return (object_ID);	/* resource is a registered and valid item */
 }
 
+/*! Determine if file contains a netCDF directive to a specific variable, e.g., table.nc?time[2] */
+GMT_LOCAL bool api_file_with_netcdf_directive (struct GMTAPI_CTRL *API, const char *file) {
+	char *duplicate = NULL, *c = NULL;
+	if (!strchr (file, '?')) return false;	/* No question mark found */
+	duplicate = strdup (file);		/* Found a ?, duplicate this const char string and chop off the end */
+	c = strchr (duplicate, '?');		/* Locate the location of ? again */
+	c[0] = '\0';				/* Chop off text from ? onwards */
+	if (gmt_access (API->GMT, duplicate, F_OK))	/* No such file, presumably */
+		return false;
+	else
+		return true;
+}
+
 /* Several lower-level API function are needed in a few other gmt_*.c library codes and are thus NOT local.
  * They are listed here and declared via MSC_EXTERN where they occur:
  *   gmtapi_report_error
@@ -5578,7 +5607,32 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
 	family -= module_input;
 	API->module_input = (module_input) ? true : false;
-	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
+	if (infile && strpbrk (infile, "*?[]") && !api_file_with_netcdf_directive (API, infile)) {	/* Gave a wildcard filename */
+		uint64_t n_files;
+		unsigned int k;
+		char **filelist = NULL;
+		if (!multiple_files_ok (family)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET.  Use GMT_Read_Group to read groups of other data types\n");
+			return_null (API, GMT_ONLY_ONE_ALLOWED);
+		}
+		if ((n_files = gmtlib_glob_list (API->GMT, infile, &filelist)) == 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Expansion of \"%s\" gave no results\n", infile);
+			return_null (API, GMT_OBJECT_NOT_FOUND);
+		}
+		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
+		API->module_input = true;	/* Since we are passing NULL as file name we must loop over registered resources */
+		for (k = 0; k < n_files; k++) {
+			if ((in_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, NULL, filelist[k])) == GMT_NOTSET) {
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Could not register file for input: \n", filelist[k]);
+				return_null (API, API->error);
+			}
+			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			API->object[item]->selected = true;
+		}
+		gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
+		in_ID = GMT_NOTSET;
+	}
+	else if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
 		if ((in_ID = api_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) {
 			if (input) gmt_M_str_free (input);
 			return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
@@ -5667,6 +5721,58 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
+}
+#endif
+
+/*! . */
+void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data) {
+	/* Function to read a group of data files directly into program memory givin an array of objects.
+	 * data is pointer to an existing array of grid container when we read a grid in two steps, otherwise use NULL.
+	 * *n_items = 0: sources is a character string with wildcard-specification for file names.
+	 * *n_items > 0: sources is an array of *n_items character strings with filenames.
+	 * If n_items == NULL then it means 0 but we do not return back the number of items.
+	 * Note: For DATASET and TEXTSET you can also use wildcard expressions in GMT_Read_Data but there we combine then into one data|test-set.
+	 * Return: Pointer to array of data container, or NULL if there were errors (passed back via API->error).
+	 */
+	unsigned int n_files, k;
+	char **file = NULL, *pattern = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	void **object = NULL;
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	if (data && !(family == GMT_IS_GRID || family == GMT_IS_IMAGE)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Group: data pointer must be NULL except for GRID and IMAGE\n");
+		return_null (API, GMT_PTR_NOT_NULL);
+	}
+	if (n_items && *n_items > 0) {	/* Gave list of files */
+		n_files = *n_items;
+		file = (char **)sources;
+	}
+	else {	/* Gave wildcard espression(s) */
+		pattern = (void *)sources;
+		if ((n_files = gmtlib_glob_list (API->GMT, pattern, &file)) == 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Group: Expansion of \"%s\" gave no results\n", pattern);
+			return_null (API, GMT_OBJECT_NOT_FOUND);
+		}
+	}
+	/* Reuse data or allocate empty array of containers */
+	object = (data == NULL) ? api_alloc_object_array (API, n_files, family) : data;
+	for (k = 0; k < n_files; k++) {
+		if ((object[k] = GMT_Read_Data (API, family, method, geometry, mode, wesn, file[k], object[k])) == NULL)
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Group: Reading of %s failed, returning NULL\n", file[k]);
+	}
+	gmtlib_free_list (API->GMT, file, n_files);	/* Free the file list */
+	if (n_items) *n_items = n_files;	/* Return how many items we allocated, if n_items is not NULL */
+	return (object);	/* Return pointer to the data containers */
+}
+
+#ifdef FORTRAN_API
+void * GMT_Read_Group_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, void *sources, unsigned int *n_items, void *data) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Read_Group (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, sources, n_items, data));
 }
 #endif
 

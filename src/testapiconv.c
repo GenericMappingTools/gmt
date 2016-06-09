@@ -28,25 +28,50 @@
 #include <string.h>
 
 int main (int argc, char *argv[]) {
+	unsigned int k, n = 0;
 	void *API = NULL;
 	struct GMT_DATASET *D = NULL, *D2 = NULL;
 	struct GMT_TEXTSET *T = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
+	struct GMT_GRID **G = NULL;
+	struct GMT_PALETTE **C = NULL;
+	struct GMT_IMAGE **I = NULL;
+	struct GMT_PS **P = NULL;
 	unsigned int flag[3] = {0, 0, 0};
-	char string[GMT_STR16] = {""}, cmd[128] = {""};
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	/* 0. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
-	/* 1. Read in two DATASET tables; this dataset is our starting point */
+	/* Test reading several grid headers */
+	
+	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, "*.nc", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	/* Then read grid data */
+	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
+	for (k = 0; k < n; k++)
+		if (GMT_Destroy_Data (API, &G[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	/* Test reading several CPT files */
+	n = 0;
+	if ((C = GMT_Read_Group (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	for (k = 0; k < n; k++)
+		if (GMT_Destroy_Data (API, &C[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	/* Test reading several image files but allow for this to fail due to GDAL etc */
+	n = 0;
+	if ((I = GMT_Read_Group (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "*.png", &n, NULL)) != NULL) {
+		for (k = 0; k < n; k++)
+			if (GMT_Destroy_Data (API, &I[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	}
+	/* Test reading several Postscript files */
+	n = 0;
+	if ((P = GMT_Read_Group (API, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	for (k = 0; k < n; k++)
+		if (GMT_Destroy_Data (API, &P[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	
+	/* 1. Read in two data tables; this DATASET is our starting point */
 
-	if (GMT_Create_MemoryFile (API, GMT_IS_DATASET, GMT_IS_PLP, string)) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	sprintf (cmd, "A.txt B.txt ->%s", string);
-	if (GMT_Call_Module (API, "gmtconvert", GMT_MODULE_CMD, cmd)) exit (EXIT_FAILURE);	/* Run module */
-	D = GMT_Read_MemoryFile (API, string);
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "[AB].txt", NULL)) == NULL) exit (EXIT_FAILURE);
 	
 	/* 2. Convert to textset with different modes.  First default mode */
 	if ((T = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_TEXTSET, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to text */
