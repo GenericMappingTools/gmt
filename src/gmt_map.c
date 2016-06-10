@@ -6706,7 +6706,7 @@ double gmt_mindist_to_point (struct GMT_CTRL *GMT, double lon, double lat, struc
 
 int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay, double Ar, double Bx, double By, double Br, double Xx[2], double Yy[2]) {
 	/* Let (Ax,Ay) and (Bx,By) be the poles of two small circles, each with radius Ar and Br, respectively, in degrees.
-	 * Pass out the 0-2 intersections via Xx, Yx and return the nubmer of intersections 0-2.
+	 * Pass out the 0-2 intersections via Xx, Yx and return the number of intersections 0-2.
 	 * Modified from http://gis.stackexchange.com/questions/48937/how-to-calculate-the-intersection-of-2-circles
 	 */
 	unsigned int k;
