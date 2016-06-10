@@ -16,9 +16,9 @@ int main (int argc, char *argv[]) {
     /* Create a virtual file to hold the resulting grid */
     GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, output);
     /* Prepare the module arguments */
-    sprintf (args, "-R0/7/0/7 -I0.2 -D1 -St0.3 %s > %s", input, output);
+    sprintf (args, "-R0/7/0/7 -I0.2 -D1 -St0.3 %s -G%s", input, output);
     /* Call the greenspline module */
-    GMT_Call_Module (API, "grenspline", GMT_MODULE_CMD, args);
+    GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args);
     /* Obtain the grid from the virtual file */
     G = GMT_Read_VirtualFile (API, output);
     /* Write the grid to file */
