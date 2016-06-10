@@ -535,6 +535,9 @@ the return codes of the modules for now.  We will call our program
 
 #. We terminate the GMT session by calling GMT_Destroy_Session_.
 
+Example code
+------------
+
 As a code example, make sure the data table "table_5.11" from gallery
 example 14 is placed in the current directory, then compile and run
 this program:
@@ -571,6 +574,9 @@ this program:
       /* Destroy the GMT session */
       GMT_Destroy_Session (API);
   };
+
+Compilation
+-----------
 
 To compile this program (let us assume it is called example1.c), we use the
 gmt-config script to determine the correct compile and link flags and then run
@@ -635,6 +641,9 @@ svn checkout svn://gmtserver.soest.hawaii.edu/gmt-custom/trunk gmt-custom
 #. We terminate the GMT session by calling GMT_Destroy_Session_.
 
 The steps a–d collapse into a single step if data are simply read from files.
+
+API functions
+-------------
 
 Advanced programs may be calling more than one GMT session and thus
 run several sessions, perhaps concurrently as different threads on
