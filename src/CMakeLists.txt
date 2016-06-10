@@ -227,7 +227,7 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 # These lines are temporarily here for the beta release
-set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt5.c testgmtio.c testgrdio.c testio.c testapiconv.c)
+set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt5.c testgmtio.c testgrdio.c testio.c testapiconv.c example1.c)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
