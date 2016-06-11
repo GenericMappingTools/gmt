@@ -57,12 +57,14 @@ int main (int argc, char *argv[]) {
 	if ((C = GMT_Read_Group (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	for (k = 0; k < n; k++)
 		if (GMT_Destroy_Data (API, &C[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+#if 0
 	/* Test reading several image files but allow for this to fail due to GDAL etc */
 	n = 0;
 	if ((I = GMT_Read_Group (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "*.png", &n, NULL)) != NULL) {
 		for (k = 0; k < n; k++)
 			if (GMT_Destroy_Data (API, &I[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
 	}
+#endif
 	/* Test reading several Postscript files */
 	n = 0;
 	if ((P = GMT_Read_Group (API, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);

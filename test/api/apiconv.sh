@@ -37,6 +37,6 @@ gmt makecpt -Cgray -T0/1000/100 > last.cpt
 gmt psbasemap -R0/20/0/20 -JM6i -P -Baf > first.ps
 gmt psbasemap -R0/20/20/40 -JM6i -P -Baf > second.ps
 gmt psbasemap -R0/20/40/60 -JM6i -P -Baf > third.ps
-/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5-dev/trunk/dbuild/src/testapiconv
-cp *AB*.txt results.txt
-diff -q --strip-trailing-cr results.txt testapiconv_answer.txt > fail
+testapiconv
+cat *AB*.txt > results.txt
+diff -q --strip-trailing-cr results.txt "${src:-.}"/testapiconv_answer.txt > fail

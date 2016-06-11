@@ -9571,7 +9571,7 @@ EXTERN_MSC void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_i
 	 * 	1 : Headers are not copied, segment headers are preserved
 	 * 	2 : Headers are preserved, segment headers are blank
 	 * 	3 : All headers headers are eliminated
-	 *	    Note: These flags will override any GMT Default settings in effect.
+	 *	    The GMT Default settings in effect will control any output to files later.
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
 	 *  >0: We use this value as the number of columns to decode and report.
