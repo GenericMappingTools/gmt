@@ -447,14 +447,14 @@ struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 	return (ptr);
 }
 
-/*! api_return_address is a convenience function that, given type, calls the correct converter */
+/*! api_alloc_object_array is a convenience function that, given type, allocates an array of the corresponding container */
 GMT_LOCAL void *api_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_items, unsigned int type) {
 	void *p = NULL;
 	switch (type) {
 		case GMT_IS_GRID:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_GRID *);		break;
 		case GMT_IS_DATASET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_DATASET *);	break;
 		case GMT_IS_TEXTSET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_TEXTSET *);	break;
-		case GMT_IS_CPT:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_CPT *);		break;
+		case GMT_IS_CPT:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_PALETTE *);	break;
 		case GMT_IS_PS:		p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_PS *);		break;
 		case GMT_IS_IMAGE:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_IMAGE *);		break;
 		case GMT_IS_MATRIX:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_MATRIX *);	break;

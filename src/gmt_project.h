@@ -454,7 +454,7 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int id;		/* 0 (x), 1(y), or 2(z) */
 	unsigned int type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
-	unsigned int special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	unsigned int special;		/* See gmt_enum_annot values */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
