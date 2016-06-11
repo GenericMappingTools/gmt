@@ -1248,8 +1248,9 @@ E.g., converting a DATASET to MATRIX always means table headers are
 skipped whereas segment headers are converted to NaN-records. Other
 values for this flag is 1 (Table headers are not copied, segment headers are preserved),
 2 (Headers are preserved, segment headers are reset to blank), or
-3 (All headers headers are eliminated).  The second flag[1] controls
-how many columns to expect when converting TEXTSETS only.  If 0 then
+3 (All headers headers are eliminated).  Note that this flag overrides
+any related GMT default setting that may be in effect. The second flag[1] controls
+how many columns to expect when converting TEXTSETs only.  If 0 then
 we try to determine the number of columns from the first text record.
 If family_in is not GMT_IS_TEXTSET then flag[1] is ignored.
 The third flag[2] controls restructuring of tables and segments within

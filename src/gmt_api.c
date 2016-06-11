@@ -6883,7 +6883,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	if (dim == NULL && range == NULL && inc == NULL) {	/* If nothing is known then it must be output */
-		def_direction = GMT_OUT;	/* Set output as default direction */
+		def_direction = (data) ? GMT_IN : GMT_OUT;	/* Set output as default direction unless 2nd time we call it*/
 		this_dim = zero_dim;		/* Provide dimensions set to zero */
 	}
 
@@ -9028,7 +9028,7 @@ GMT_LOCAL void * api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASE
 	unsigned int hdr, fmt;
 	uint64_t tbl, seg, row, col, tbl_out = 0, row_out = 0, seg_out = 0;
 	char record[BUFSIZ] = {""};
-	bool s_alloc, t_alloc, alloc;
+	bool s_alloc, t_alloc, alloc, was;
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATATABLE *D = NULL;
 	struct GMT_TEXTTABLE *T = NULL;
@@ -9040,6 +9040,8 @@ GMT_LOCAL void * api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASE
 		Out->n_tables = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : In->n_tables;
 		Out->table = gmt_M_memory (GMT, NULL, Out->n_tables, struct GMT_TEXTTABLE *);
 	}
+	was = GMT->current.setting.io_header[GMT_OUT];
+	GMT->current.setting.io_header[GMT_OUT] = do_tbl_header (header);
 	Out->n_segments = (mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : ((mode == GMT_WRITE_SEGMENT) ? In->n_tables : In->n_segments);
 	Out->n_records  = In->n_records;
 	for (tbl = 0; tbl < In->n_tables; tbl++) {
@@ -9085,6 +9087,7 @@ GMT_LOCAL void * api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASE
 		if (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) t_alloc = false;	/* Only allocate this single table */
 		if (mode == 0 || mode == GMT_WRITE_SEGMENT) tbl_out++;	/* More than one segment on output */
 	}
+	GMT->current.setting.io_header[GMT_OUT] = was;
 	return Out;
 }
 
@@ -9191,7 +9194,7 @@ GMT_LOCAL void * api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSE
 	 */
 	unsigned int hdr;
 	uint64_t tbl, seg, row, col, tbl_out = 0, row_out = 0, seg_out = 0;
-	bool s_alloc, t_alloc, alloc;
+	bool s_alloc, t_alloc, alloc, was;
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATATABLE *D = NULL;
 	struct GMT_TEXTTABLE *T = NULL;
@@ -9210,6 +9213,8 @@ GMT_LOCAL void * api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSE
 		else
 			Out->n_columns = dim;
 	}
+	was = GMT->current.setting.io_header[GMT_OUT];
+	GMT->current.setting.io_header[GMT_OUT] = do_tbl_header (header);
 	Out->n_segments = (mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : ((mode == GMT_WRITE_SEGMENT) ? In->n_tables : In->n_segments);
 	Out->n_records  = In->n_records;
 	for (tbl = 0; tbl < In->n_tables; tbl++) {
@@ -9252,6 +9257,7 @@ GMT_LOCAL void * api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSE
 		if (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) t_alloc = false;	/* Only allocate this single table */
 		if (mode == 0 || mode == GMT_WRITE_SEGMENT) tbl_out++;	/* More than one segment on output */
 	}
+	GMT->current.setting.io_header[GMT_OUT] = was;
 	return Out;
 }
 
@@ -9565,6 +9571,7 @@ EXTERN_MSC void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_i
 	 * 	1 : Headers are not copied, segment headers are preserved
 	 * 	2 : Headers are preserved, segment headers are blank
 	 * 	3 : All headers headers are eliminated
+	 *	    Note: These flags will override any GMT Default settings in effect.
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
 	 *  >0: We use this value as the number of columns to decode and report.
