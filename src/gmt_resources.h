@@ -16,19 +16,19 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_resources.h contains the definitions for the GMT resources
- * GMT_GRID, GMT_DATASET, GMT_TEXTSET, GMT_PALETTE, GMT_IMAGE, and
- * GMT_POSTSCRIPT as well as the auxilliary resources GMT_VECTOR and GMT_MATRIX,
- * as well as all named constants.
+ * gmt_resources.h contains the definitions for the six GMT resources
+ * GMT_DATASET, GMT_GRID, GMT_IMAGE, GMT_PALETTE, GMT_POSTSCRIPT, GMT_TEXTSET
+ * as well as the two auxilliary resources GMT_VECTOR and GMT_MATRIX,
+ * as well as all named enums.
  *
  * Author:	Paul Wessel
- * Date:	13-NOV-2015
+ * Date:	11-JUN-2016
  * Version:	5 API
  */
 
 /*!
  * \file gmt_resources.h
- * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET etc...)
+ * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET, etc...)
  */
 
 #ifndef _GMT_RESOURCES_H
@@ -41,10 +41,11 @@
 /* Here are structure definitions and constants (enums) needed by the
  * public GMT API. Note: As this is C, some structures will contain
  * members we do not disclose in the API documentation but of course
- * the variables are accessible just like the "public" ones.
+ * the variables are accessible just like the "public" ones.  There
+ * is no guarantee that the "private" members cannot change over time.
  */
 
-/*! Session modes */
+/*! Session modes for GMT_Create_Session */
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL   = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT   = 1,	/* Call return and not exit when error */
@@ -87,7 +88,7 @@ enum GMT_enum_method {
 	GMT_IS_DUPLICATE_VIA_MATRIX = 203,	/* Entity is a memory location that should be duplicated via a matrix intermediary */
 	GMT_IS_REFERENCE_VIA_MATRIX = 204};	/* Entity is a memory location and we just pass the ref (no copying) via a matrix intermediary */
 
-/* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
+/* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_NONE = 0,	/* No via anything */
@@ -98,14 +99,14 @@ enum GMT_enum_via {
 /*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is a data table */
-	GMT_IS_TEXTSET,		/* Entity is a text table */
 	GMT_IS_GRID,		/* Entity is a grid */
-	GMT_IS_PALETTE,		/* Entity is a color pallete table */
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
-	GMT_IS_VECTOR,		/* Entity is set of user vectors */
-	GMT_IS_MATRIX,		/* Entity is user matrix */
-	GMT_IS_COORD,		/* Entity is a double coordinate array */
+	GMT_IS_PALETTE,		/* Entity is a color pallete table */
 	GMT_IS_POSTSCRIPT,	/* Entity is a PostScript content struct */
+	GMT_IS_TEXTSET,		/* Entity is a text table */
+	GMT_IS_MATRIX,		/* Entity is user matrix */
+	GMT_IS_VECTOR,		/* Entity is set of user vectors */
+	GMT_IS_COORD,		/* Entity is a double coordinate array */
 	GMT_N_FAMILIES};	/* Total number of families [API Developers only]  */
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwardness for now */
@@ -762,10 +763,10 @@ struct GMT_OPTION {              /* Structure for a single GMT command option */
 };
 
 /*============================================================ */
-/* struct GMT_INFO is for API Developers only ========= */
+/* struct GMT_RESOURCE is for API Developers only ========= */
 /*============================================================ */
 
-struct GMT_RESOURCE {	/* Information related to passing resources between GMT and external API */
+struct GMT_RESOURCE {	/* Information related to passing resources between GMT and external APIs */
 	enum GMT_enum_family family;	/* GMT data family, i.e., GMT_IS_DATASET, GMT_IS_GRID, etc. */
 	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
 	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */

@@ -173,9 +173,10 @@ Recognized resources
 --------------------
 
 The GMT API knows how to read and write six types of data common to
-GMT operations: Color palette tables (CPT), data tables (ASCII or binary),
-text tables (ASCII), GMT grids, PostScript text, and images. In addition, we
-present two data types to facilitate the passing of simple user arrays
+GMT operations: Data tables (ASCII or binary), grids, images, color
+palette tables (known as CPT), PostScript text, and text tables (ASCII).
+In addition, we
+provide two data types to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
 organization [3]_). We refer to these data types as GMT *resources*.
@@ -253,57 +254,6 @@ For the full definition, see :ref:`GMT_DATASET <struct-dataset>`.
        char    *header;           /* Segment header (if applicable) */
     };
 
-
-Text tables
-~~~~~~~~~~~
-
-Some data needed by GMT are simply free-form ASCII text tables. In many respects these
-are handled similarly to data tables. E.g., they may have any number of
-header records and even segment headers, and GMT programs can read one
-or more tables or get text records one at the time. A
-``struct GMT_TEXTSET`` may contain any number of ``struct GMT_TEXTTABLE``, each with any
-number of ``struct GMT_TEXTSEGMENT``, and each segment with any number of text records. Thus,
-the arguments to GMT API functions that handle such data sets expect
-this type of variable. The user's program may then parse and process
-such text records as required. This resources is particularly useful
-when your data consist of a mix or data coordinates and ordinary text
-since regular data tables will be parsed for floating-point columns
-only.  For the full definition, see :ref:`GMT_TEXTSET <struct-textset>`.
-
-.. _struct-textset2:
-
-.. code-block:: c
-
-   struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
-       uint64_t               n_tables;     /* The total number of tables in the set */
-       uint64_t               n_segments;   /* The total number of segments in the set */
-       uint64_t               n_records;    /* The total number of data records in the set */
-       struct GMT_TEXTTABLE **table;        /* Pointer to array of tables */
-   };
-
-
-.. _struct-texttable2:
-
-.. code-block:: c
-
-   struct GMT_TEXTTABLE {  /* Single container for an array of text segments */
-       unsigned int n_headers;   /* Number of table header records (0 if no header) */
-       uint64_t n_segments;      /* Number of segments in the table */
-       uint64_t n_records;       /* Total number of data records in the table */
-       char   **header;          /* Array with all table header records, if any) */
-       struct GMT_TEXTSEGMENT **segment; /* Pointer to array of segments */
-   };
-
-.. _struct-textsegment2:
-
-.. code-block:: c
-
-   struct GMT_TEXTSEGMENT {      /* For holding segment text records in memory */
-       uint64_t n_rows;          /* Number of rows in this segment */
-       char   **record;          /* Array of text records */
-       char    *label;           /* Label string (if applicable) */
-       char    *header;          /* Segment header (if applicable) */
-   };
 
 GMT grids
 ~~~~~~~~~
@@ -395,7 +345,7 @@ the full definition can be found in :ref:`GMT_PALETTE <struct-palette>`.
 
 .. code-block:: c
 
-   struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
+   struct GMT_PALETTE {	/* Holds all pen, color, and fill-related parameters */
        unsigned int          n_headers;     /* Number of CPT header records (0 if no header) */
        unsigned int          n_colors;      /* Number of colors in the range array */
        unsigned int          cpt_flags;     /* Flags controlling use of BFN colors */
@@ -419,9 +369,60 @@ The full structure definition can be found in :ref:`GMT_POSTSCRIPT <struct-posts
 
    struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
        size_t n_alloc;                  /* Size of array allocated so far */
-       size_t n;                        /* Length of data array so far */
+       size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to actual PostScript text */
+   };
+
+Text tables
+~~~~~~~~~~~
+
+Some data needed by GMT are simply free-form ASCII text tables. In many respects these
+are handled similarly to data tables. E.g., they may have any number of
+header records and even segment headers, and GMT programs can read one
+or more tables or get text records one at the time. A
+``struct GMT_TEXTSET`` may contain any number of ``struct GMT_TEXTTABLE``, each with any
+number of ``struct GMT_TEXTSEGMENT``, and each segment with any number of text records. Thus,
+the arguments to GMT API functions that handle such data sets expect
+this type of variable. The user's program may then parse and process
+such text records as required. This resources is particularly useful
+when your data consist of a mix or data coordinates and ordinary text
+since regular data tables will be parsed for floating-point columns
+only.  For the full definition, see :ref:`GMT_TEXTSET <struct-textset>`.
+
+.. _struct-textset2:
+
+.. code-block:: c
+
+   struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
+       uint64_t               n_tables;     /* The total number of tables in the set */
+       uint64_t               n_segments;   /* The total number of segments in the set */
+       uint64_t               n_records;    /* The total number of data records in the set */
+       struct GMT_TEXTTABLE **table;        /* Pointer to array of tables */
+   };
+
+
+.. _struct-texttable2:
+
+.. code-block:: c
+
+   struct GMT_TEXTTABLE {  /* Single container for an array of text segments */
+       unsigned int n_headers;   /* Number of table header records (0 if no header) */
+       uint64_t n_segments;      /* Number of segments in the table */
+       uint64_t n_records;       /* Total number of data records in the table */
+       char   **header;          /* Array with all table header records, if any) */
+       struct GMT_TEXTSEGMENT **segment; /* Pointer to array of segments */
+   };
+
+.. _struct-textsegment2:
+
+.. code-block:: c
+
+   struct GMT_TEXTSEGMENT {      /* For holding segment text records in memory */
+       uint64_t n_rows;          /* Number of rows in this segment */
+       char   **record;          /* Array of text records */
+       char    *label;           /* Label string (if applicable) */
+       char    *header;          /* Segment header (if applicable) */
    };
 
 User data columns (GMT vectors)
@@ -913,78 +914,78 @@ it returns 0.
 
 .. _tbl-family:
 
-+-------------------+------------------------------+
-| family            | source points to             |
-+===================+==============================+
-| GMT_IS_DATASET    | A [multi-segment] table file |
-+-------------------+------------------------------+
-| GMT_IS_TEXTSET    | A [multi-segment] text file  |
-+-------------------+------------------------------+
-| GMT_IS_GRID       | A GMT grid file              |
-+-------------------+------------------------------+
-| GMT_IS_PALETTE    | A CPT file                   |
-+-------------------+------------------------------+
-| GMT_IS_IMAGE      | A GMT image                  |
-+-------------------+------------------------------+
-| GMT_IS_POSTSCRIPT | A GMT PostScript object      |
-+-------------------+------------------------------+
++-------------------+-----------------------------+
+| family            | source points to            |
++===================+=============================+
+| GMT_IS_DATASET    | A [multi-segment] data file |
++-------------------+-----------------------------+
+| GMT_IS_GRID       | A grid file                 |
++-------------------+-----------------------------+
+| GMT_IS_IMAGE      | An image                    |
++-------------------+-----------------------------+
+| GMT_IS_PALETTE    | A color pallete table [CPT] |
++-------------------+-----------------------------+
+| GMT_IS_POSTSCRIPT | A GMT PostScript object     |
++-------------------+-----------------------------+
+| GMT_IS_TEXTSET    | A [multi-segment] text file |
++-------------------+-----------------------------+
 
 
 .. _tbl-methods:
 
-+-------------------------------+-------+--------------------------------------------------------------+
-| method                        | value | how to read/write data                                       |
-+===============================+=======+==============================================================+
-| GMT_IS_FILE                   | 0     | Pointer to name of a file                                    |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_STREAM                 | 1     | Pointer to open stream (or process)                          |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_FDESC                  | 2     | Pointer to integer file descriptor                           |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_DUPLICATE              | 3     | Pointer to memory we may *duplicate* data from               |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_REFERENCE              | 4     | Pointer to memory we may *reference* data from               |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_DUPLICATE_VIA_VECTOR   | 103   | Pointer to memory we may *duplicate* data from via vectors   |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_REFERENCE_VIA_VECTOR   | 104   | Pointer to memory we may *reference* data from via vectors   |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_DUPLICATE_VIA_MATRIX   | 203   | Pointer to memory we may *duplicate* data from via a matrix  |
-+-------------------------------+-------+--------------------------------------------------------------+
-| GMT_IS_REFERENCE_VIA_MATRIX   | 204   | Pointer to memory we may *reference* data from via a matrix  |
-+-------------------------------+-------+--------------------------------------------------------------+
++-------------------------------+-------+-------------------------------------------------------------+
+| method                        | value | how to read/write data                                      |
++===============================+=======+=============================================================+
+| GMT_IS_FILE                   | 0     | Pointer to name of a file                                   |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_STREAM                 | 1     | Pointer to open stream (or process)                         |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_FDESC                  | 2     | Pointer to integer file descriptor                          |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_DUPLICATE              | 3     | Pointer to memory we may *duplicate* data from              |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_REFERENCE              | 4     | Pointer to memory we may *reference* data from              |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_DUPLICATE_VIA_VECTOR   | 103   | Pointer to memory we may *duplicate* data from via vectors  |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_REFERENCE_VIA_VECTOR   | 104   | Pointer to memory we may *reference* data from via vectors  |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_DUPLICATE_VIA_MATRIX   | 203   | Pointer to memory we may *duplicate* data from via a matrix |
++-------------------------------+-------+-------------------------------------------------------------+
+| GMT_IS_REFERENCE_VIA_MATRIX   | 204   | Pointer to memory we may *reference* data from via a matrix |
++-------------------------------+-------+-------------------------------------------------------------+
 
 
 
 .. _tbl-via:
 
-+------------------+--------------------------------------------------------------+
-| approach         | how method is modified                                       |
-+==================+==============================================================+
-| GMT_VIA_VECTOR   | User's data columns are accessed via a GMT_VECTOR structure  |
-+------------------+--------------------------------------------------------------+
-| GMT_VIA_MATRIX   | User's matrix is accessed via a GMT_MATRIX structure         |
-+------------------+--------------------------------------------------------------+
++------------------+-------------------------------------------------------------+
+| approach         | how method is modified                                      |
++==================+=============================================================+
+| GMT_VIA_VECTOR   | User's data columns are accessed via a GMT_VECTOR structure |
++------------------+-------------------------------------------------------------+
+| GMT_VIA_MATRIX   | User's matrix is accessed via a GMT_MATRIX structure        |
++------------------+-------------------------------------------------------------+
 
 
 
 .. _tbl-geometry:
 
-+------------------+-------------------------------------------+
-| geometry         |  description                              |
-+==================+===========================================+
-| GMT_IS_NONE      | Not a geographic feature                  |
-+------------------+-------------------------------------------+
-| GMT_IS_POINT     | Multi-dimensional point data              |
-+------------------+-------------------------------------------+
-| GMT_IS_LINE      | Geographic or Cartesian line segments     |
-+------------------+-------------------------------------------+
-| GMT_IS_POLYGON   | Geographic or Cartesian closed polygons   |
-+------------------+-------------------------------------------+
-| GMT_IS_PLP       | Either points, lines, or polygons         |
-+------------------+-------------------------------------------+
-| GMT_IS_SURFACE   | 2-D gridded surface                       |
-+------------------+-------------------------------------------+
++------------------+------------------------------------------+
+| geometry         |  description                             |
++==================+==========================================+
+| GMT_IS_NONE      | Not a geographic feature                 |
++------------------+------------------------------------------+
+| GMT_IS_POINT     | Multi-dimensional point data             |
++------------------+------------------------------------------+
+| GMT_IS_LINE      | Geographic or Cartesian line segments    |
++------------------+------------------------------------------+
+| GMT_IS_POLYGON   | Geographic or Cartesian closed polygons  |
++------------------+------------------------------------------+
+| GMT_IS_PLP       | Either points, lines, or polygons        |
++------------------+------------------------------------------+
+| GMT_IS_SURFACE   | 2-D gridded surface                      |
++------------------+------------------------------------------+
 
 
 .. _tbl-wesn:
@@ -1288,7 +1289,7 @@ Import Data
 -----------
 
 If your main program needs to read any of the six recognized data types
-(CPTs, data tables, text tables, grids, images, or PostScript) you will
+(data tables, grids, CPTs, images, PostScript, or text tables) you will
 use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
 return entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
@@ -1350,7 +1351,7 @@ Import a data set
 ~~~~~~~~~~~~~~~~~
 
 If your program needs to import any of the six recognized data types
-(CPT, data table, text table, grid, image, or PostScript) you will use
+(data table, grid, image, CPT, PostScript, or text table) you will use
 either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used with a registered
@@ -3082,7 +3083,7 @@ this means array will have been transposed when the function returns.
 Appendix A: GMT resources
 -------------------------
 
-We earlier introduced the six standard GMT resources (dataset, textset, grid, image, color palette table, PostScript)
+We earlier introduced the six standard GMT resources (dataset, grid, image, color palette table, PostScript, textset)
 as well as the user vector and matrix.  Here are the complete definitions of these structures, including
 all variables accessible via the structures.
 
@@ -3203,76 +3204,6 @@ structure per segment.
         char         **tvalue;     /* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
         double *dvalue;            /* @D: Same but converted to double (assumed possible) */
     };
-
-Text set
-~~~~~~~~
-
-Each text set is represented by a :ref:`GMT_TEXTSET <struct-textset>` that consists of one or more text
-tables represented by a :ref:`GMT_TEXTTABLE <struct-texttable>`, and each table consists of one or more
-segments represented by a :ref:`GMT_TEXTSEGMENT <struct-textsegment>`, and each segment contains one or
-more rows of strings.
-
-.. _struct-textset:
-
-.. code-block:: c
-
-   struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
-       /* Variables we document for the API: */
-       uint64_t               n_tables;     /* The total number of tables (files) contained */
-       uint64_t               n_segments;   /* The total number of segments across all tables */
-       uint64_t               n_records;    /* The total number of data records across all tables */
-       struct GMT_TEXTTABLE **table;        /* Pointer to array of tables */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t               id;           /* The internal number of the data set */
-       size_t                 n_alloc;      /* The current allocation length of tables */
-       unsigned int           geometry;     /* The geometry of this dataset */
-       unsigned int           alloc_level;  /* The level it was allocated at */
-       enum GMT_enum_dest     io_mode;      /*-1 means write OGR format (requires proper -a),
-                                               0 means write everything to one destination [Default],
-                                               1 means use table->file[GMT_OUT] to write separate table,
-                                               2 means use segment->file[GMT_OUT] to write separate segments.
-                                               3 is same as 2 but with no filenames we create filenames
-                                                 from tbl and seg numbers */
-       enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
-       char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
-   };
-
-
-.. _struct-texttable:
-
-.. code-block:: c
-
-   struct GMT_TEXTTABLE {  /* To hold an array of text segment structures and header information in one container */
-       /* Variables we document for the API: */
-       unsigned int n_headers;   /* Number of file header records (0 if no header) */
-       uint64_t n_segments;      /* Number of segments in the array */
-       uint64_t n_records;       /* Total number of data records across all segments */
-       char   **header;          /* Array with all file header records, if any) */
-       struct GMT_TEXTSEGMENT **segment; /* Pointer to array of segments */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t id;              /* The internal number of the table */
-       size_t   n_alloc;         /* The current allocation length of segments */
-       enum GMT_enum_write mode; /* 0 = output table, 1 = output header only, 2 = skip table */
-       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
-   };
-
-.. _struct-textsegment:
-
-.. code-block:: c
-
-   struct GMT_TEXTSEGMENT {      /* For holding segment text records in memory */
-       /* Variables we document for the API: */
-       uint64_t n_rows;          /* Number of rows in this segment */
-       char   **record;          /* Array of text records */
-       char    *label;           /* Label string (if applicable) */
-       char    *header;          /* Segment header (if applicable) */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t id;              /* The internal number of the table */
-       enum GMT_enum_write mode; /* 0 = output segment, 1 = output header only, 2 = skip segment */
-       size_t   n_alloc;         /* Number of rows allocated for this segment */
-       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
-       char   **tvalue;          /* The values of the OGR/GMT aspatial fields */
-   };
 
 GMT grid
 ~~~~~~~~
@@ -3481,23 +3412,93 @@ PostScript text
 ~~~~~~~~~~~~~~~
 
 Bulk PostScript is represented by a :ref:`GMT_POSTSCRIPT <struct-postscript>` structure that contains
-``data`` that points to the text array containing ``n`` bytes of raw PostScript code.  The
+``data`` that points to the text array containing ``n_bytes`` bytes of raw PostScript code.  The
 ``mode`` parameter reflects the status of the PostScript document.
 
 .. _struct-postscript:
 
 .. code-block:: c
 
-   struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
+   struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript code */
        /* Variables we document for the API: */
        size_t n_alloc;                  /* Length of array allocated so far */
-       size_t n;                        /* Length of data array so far */
+       size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
-       char *data;                      /* Pointer to actual PS text */
+       char *data;                      /* Pointer to PostScript code */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t id;                     /* The internal number of the data set */
        unsigned int alloc_level;        /* The level it was allocated at */
        enum GMT_enum_alloc alloc_mode;  /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+   };
+
+Text set
+~~~~~~~~
+
+Each text set is represented by a :ref:`GMT_TEXTSET <struct-textset>` that consists of one or more text
+tables represented by a :ref:`GMT_TEXTTABLE <struct-texttable>`, and each table consists of one or more
+segments represented by a :ref:`GMT_TEXTSEGMENT <struct-textsegment>`, and each segment contains one or
+more rows of strings.
+
+.. _struct-textset:
+
+.. code-block:: c
+
+   struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
+       /* Variables we document for the API: */
+       uint64_t               n_tables;     /* The total number of tables (files) contained */
+       uint64_t               n_segments;   /* The total number of segments across all tables */
+       uint64_t               n_records;    /* The total number of data records across all tables */
+       struct GMT_TEXTTABLE **table;        /* Pointer to array of tables */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t               id;           /* The internal number of the data set */
+       size_t                 n_alloc;      /* The current allocation length of tables */
+       unsigned int           geometry;     /* The geometry of this dataset */
+       unsigned int           alloc_level;  /* The level it was allocated at */
+       enum GMT_enum_dest     io_mode;      /*-1 means write OGR format (requires proper -a),
+                                               0 means write everything to one destination [Default],
+                                               1 means use table->file[GMT_OUT] to write separate table,
+                                               2 means use segment->file[GMT_OUT] to write separate segments.
+                                               3 is same as 2 but with no filenames we create filenames
+                                                 from tbl and seg numbers */
+       enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
+       char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
+   };
+
+
+.. _struct-texttable:
+
+.. code-block:: c
+
+   struct GMT_TEXTTABLE {  /* To hold an array of text segment structures and header information in one container */
+       /* Variables we document for the API: */
+       unsigned int n_headers;   /* Number of file header records (0 if no header) */
+       uint64_t n_segments;      /* Number of segments in the array */
+       uint64_t n_records;       /* Total number of data records across all segments */
+       char   **header;          /* Array with all file header records, if any) */
+       struct GMT_TEXTSEGMENT **segment; /* Pointer to array of segments */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t id;              /* The internal number of the table */
+       size_t   n_alloc;         /* The current allocation length of segments */
+       enum GMT_enum_write mode; /* 0 = output table, 1 = output header only, 2 = skip table */
+       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
+   };
+
+.. _struct-textsegment:
+
+.. code-block:: c
+
+   struct GMT_TEXTSEGMENT {      /* For holding segment text records in memory */
+       /* Variables we document for the API: */
+       uint64_t n_rows;          /* Number of rows in this segment */
+       char   **record;          /* Array of text records */
+       char    *label;           /* Label string (if applicable) */
+       char    *header;          /* Segment header (if applicable) */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t id;              /* The internal number of the table */
+       enum GMT_enum_write mode; /* 0 = output segment, 1 = output header only, 2 = skip segment */
+       size_t   n_alloc;         /* Number of rows allocated for this segment */
+       char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
+       char   **tvalue;          /* The values of the OGR/GMT aspatial fields */
    };
 
 Vectors

@@ -28,7 +28,7 @@
  */
 /*
  * Author: 	Paul Wessel
- * Date:	6-JUN-2016
+ * Date:	11-JUN-2016
  * Version:	5.3 API
  */
 
@@ -98,9 +98,9 @@ EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT
 EXTERN_MSC int GMT_Create_VirtualFile	(void *API, unsigned int family, unsigned int geometry, char *string);
 EXTERN_MSC int GMT_Open_VirtualFile	(void *API, unsigned int family, unsigned int geometry, void *data, char *string);
 EXTERN_MSC void * GMT_Read_VirtualFile	(void *API, const char *string);
-EXTERN_MSC void * GMT_Read_Group		(void *API, unsigned int family, unsigned int method, unsigned int geometry,
-										unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
-EXTERN_MSC void * GMT_Convert_Data  (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
+EXTERN_MSC void * GMT_Read_Group	(void *API, unsigned int family, unsigned int method, unsigned int geometry,
+						unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
+EXTERN_MSC void * GMT_Convert_Data	(void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
@@ -157,7 +157,7 @@ EXTERN_MSC int GMT_F77_readgrd_		(float *array, unsigned int dim[], double wesn[
 EXTERN_MSC int GMT_F77_writegrd_	(float *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file);
 
 /* 2 for external API developers only */
-EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options	(void *V_API, const char *module, char marker, int n_in, struct GMT_OPTION **head, unsigned int *n);
+EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options	(void *API, const char *module, char marker, int n_in, struct GMT_OPTION **head, unsigned int *n);
 EXTERN_MSC int GMT_Expand_Option			(void *API, struct GMT_OPTION *current, char marker, const char *txt);
 
 #ifdef __cplusplus
