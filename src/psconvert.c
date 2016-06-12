@@ -826,7 +826,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
 	FILE     *fp = NULL;
-	struct GMT_PS *PS = NULL;
+	struct GMT_POSTSCRIPT *PS = NULL;
 
 #ifdef _WIN32
 	if (_pipe(fd, 512, O_BINARY) == -1) {
@@ -848,15 +848,15 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		return EXIT_FAILURE;
 	}
 
-	/* Allocate GMT_PS struct to hold the string that lives inside GMT->PSL */
-	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
-	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the internal plot buffer */
-	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+	/* Allocate GMT_POSTSCRIPT struct to hold the string that lives inside GMT->PSL */
+	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_POSTSCRIPT);
+	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the internal plot buffer */
+	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
 	sprintf (cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);	/* Set up gs command */
 
 	if ((fp = popen (cmd, "w")) != NULL) {	/* Successful pipe-job, now shove PS into it */
-		fwrite (PS->data, sizeof(char), PS->n, fp);
+		fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
 		fflush (fp);
 		if (pclose (fp) == -1)
 			GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
@@ -954,7 +954,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
-	struct GMT_PS *PS = NULL;
+	struct GMT_POSTSCRIPT *PS = NULL;
 
 	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
 	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
@@ -987,11 +987,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	else
 		strncat (cmd, out_file, 1023);
 
-	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
-	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
-	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_POSTSCRIPT);
+	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
+	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 	if ((fp = popen (cmd, "w")) != NULL) {
-		if (fwrite (PS->data, sizeof(char), PS->n, fp) != PS->n) {
+		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
 		}
 		if (fflush (fp) == EOF) {
@@ -1120,7 +1120,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	struct { int major, minor; } gsVersion = {0, 0};
-	struct GMT_PS *PS = NULL;
+	struct GMT_POSTSCRIPT *PS = NULL;
 
 	int64_t (*read_source) (struct GMT_CTRL *, char **, size_t *, FILE *, char *, uint64_t *);	/* Pointer to source reader function */
 	void (*rewind_source) (FILE *, uint64_t *);	/* Pointer to source rewind function */
@@ -1324,7 +1324,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 	/* ----------------------------------------------------------------------------------------------- */
 
-	PS = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
+	PS = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);	/* Only used if API passes = */
 
 	/* Loop over all input files */
 
@@ -1333,7 +1333,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		*out_file = '\0'; /* truncate string */
 		if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
 			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
-			if (gmt_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
+			if (gmt_copy (API, GMT_IS_POSTSCRIPT, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s. Skipping.\n", ps_file, ps_names[k]);
 				continue;
 			}
@@ -1537,7 +1537,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Seeking to start of last 256 bytes failed\n");
 				}
 				else {	/* Get towards end of string */
-					pos = (PS->n > 256) ? PS->n - 256 : 0;
+					pos = (PS->n_bytes > 256) ? PS->n_bytes - 256 : 0;
 				}
 			}
 		}

@@ -536,7 +536,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	gmt_M_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
-		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}

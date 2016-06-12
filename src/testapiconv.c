@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID **G = NULL;
 	struct GMT_PALETTE **C = NULL;
 	//struct GMT_IMAGE **I = NULL;
-	struct GMT_PS **P = NULL;
+	struct GMT_POSTSCRIPT **P = NULL;
 	unsigned int flag[3] = {0, 0, 0};
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 		if (GMT_Destroy_Data (API, &G[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
 	/* Test reading several CPT files */
 	n = 0;
-	if ((C = GMT_Read_Group (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((C = GMT_Read_Group (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	for (k = 0; k < n; k++)
 		if (GMT_Destroy_Data (API, &C[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
 #if 0
@@ -67,7 +67,7 @@ int main (int argc, char *argv[]) {
 #endif
 	/* Test reading several Postscript files */
 	n = 0;
-	if ((P = GMT_Read_Group (API, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((P = GMT_Read_Group (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	for (k = 0; k < n; k++)
 		if (GMT_Destroy_Data (API, &P[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
 	

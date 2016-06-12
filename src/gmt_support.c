@@ -6617,7 +6617,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	struct GMT_PALETTE *P = NULL;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT file to be present; GMT_Read_Data will work or fail accordingly */
-		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
+		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 		return (P);
 	}
 
@@ -6630,7 +6630,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	*/
 
 	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT file was given and exists or is memory location */
-		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
+		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Take master cpt and stretch to fit data range */
 		char *master = NULL;
@@ -6649,7 +6649,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 		zmin -= noise;	zmax += noise;
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
-		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, master, NULL);
+		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* New z = new_z_min + (old_z - old_z_min)*[(new_z_max - new_z_min)/(old_z_max - old_z_min)] */
 		old_z_min = P->range[0].z_low;	old_z_max = P->range[P->n_colors-1].z_high;
@@ -6707,7 +6707,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		nz = nz_in;
 
 	dim_nz[0] = nz - 1;
-	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_CPT, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
+	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
 
 	//P = gmtlib_create_palette (GMT, nz - 1);
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);

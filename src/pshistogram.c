@@ -660,7 +660,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (GMT_DATA_READ_ERROR);
 	}
 

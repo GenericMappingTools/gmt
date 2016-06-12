@@ -85,7 +85,7 @@ struct GMTAPI_DATA_OBJECT {
 	bool module_input;			/* true for input objects that will serve as module input(s) and not option inputs */
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
 	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
-	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
+	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|PALETTE|IMAGE|GRID|POSTSCRIPT|MATRIX|VECTOR|COORD} */
 	enum GMT_enum_family actual_family;	/* May be GMT_IS_MATRIX|VECTOR when one of the others are created via those */
 	unsigned method;			/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
@@ -100,7 +100,7 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_DATASET *D;
 	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
-	struct GMT_PS *P;
+	struct GMT_POSTSCRIPT *P;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
 	struct GMT_IMAGE *I;

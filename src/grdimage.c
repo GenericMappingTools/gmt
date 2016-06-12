@@ -721,7 +721,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else if (Ctrl->D.active) {
 			uint64_t dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
-			if ((P = GMT_Create_Data (API, GMT_IS_CPT, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
 			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
 				r_table = gmt_M_memory (GMT, NULL, 256, double);

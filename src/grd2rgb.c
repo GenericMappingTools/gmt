@@ -426,7 +426,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		

@@ -724,7 +724,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 
 	if (Ctrl->C.active) {	/* Process CPT file */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (P->is_continuous) {

@@ -667,7 +667,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (P && GMT_Destroy_Data (API, &P) != GMT_OK)	/* Remove the previous CPT from registration */
 							Return (API->error);
 						for (col = 1; line[col] == ' '; col++);	/* Wind past spaces */
-						if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &line[col], NULL)) == NULL)
+						if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &line[col], NULL)) == NULL)
 							Return (API->error);
 						GMT->current.setting.color_model = GMT_RGB;	/* Since we will be interpreting r/g/b triplets via z=<value> */
 						break;

@@ -5565,12 +5565,12 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	PSL_endplot (PSL, !GMT->common.K.active);
 	
 	if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
-		struct GMT_PS *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
+		struct GMT_POSTSCRIPT *P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
-		P->n = PSL->internal.n;         /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
-		P->mode = PSL->internal.pmode;  /* Mode of plot (1,2,3) */
+		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
+		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
@@ -6273,25 +6273,25 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	GMT->current.proj.z_project.plane = plane;
 }
 
-/* All functions involved in reading, writing, duplicating GMT_PS structs and their PostScript content */
+/* All functions involved in reading, writing, duplicating GMT_POSTSCRIPT structs and their PostScript content */
 
 /*! . */
-struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
-	/* Makes an empty GMT_PS struct - If length > 0 then we also allocate the string */
-	struct GMT_PS *P = NULL;
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
+struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
+	/* Makes an empty GMT_POSTSCRIPT struct - If length > 0 then we also allocate the string */
+	struct GMT_POSTSCRIPT *P = NULL;
+	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	if (length) {	/* Allocate a blank string */
 		P->data = gmt_M_memory (GMT, NULL, length, char);
-		P->n_alloc = length;	/* But P->n = 0 since nothing was placed there */
+		P->n_alloc = length;	/* But P->n_bytes = 0 since nothing was placed there */
 	}
 	return (P);
 }
 
 /*! . */
-void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
+void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	/* Free the memory allocated to hold a PostScript plot (which is pointed to by P->data) */
 	if (P->n_alloc && P->data) {
 		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
@@ -6299,21 +6299,21 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 		/* Note: We never need to free the array allocated inside PSL since PSL always destroys it */
 	}
 	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
-	P->n_alloc = P->n = 0;
-	P->mode = 0;
+	P->n_alloc = P->n_bytes = 0;
+	P->mode = GMT_PS_EMPTY;
 }
 
 /*! . */
-void gmtlib_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
+void gmtlib_free_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT **P) {
 	/* Free the memory allocated to hold a PostScript plot (which is pointed to by P->data) */
 	gmtlib_free_ps_ptr (GMT, *P);
 	gmt_M_free (GMT, *P);
 	*P = NULL;
 }
 
-struct GMT_PS * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode) {
+struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode) {
 	/* Opens and reads a PostScript file.
-	 * Return the result as a GMT_PS struct.
+	 * Return the result as a GMT_POSTSCRIPT struct.
 	 * source_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not yet used.
 	 */
@@ -6322,7 +6322,7 @@ struct GMT_PS * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
-	struct GMT_PS *P = NULL;
+	struct GMT_POSTSCRIPT *P = NULL;
 	FILE *fp = NULL;
 	gmt_M_unused(mode);
 	
@@ -6381,33 +6381,33 @@ struct GMT_PS * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading PostScript from %s\n", ps_file);
 
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
+	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
 
 	if (n_alloc) P->data = gmt_M_memory (GMT, NULL, n_alloc, char);
 	
 	/* Start reading PostScript from fp */
 
 	while ((c = fgetc (fp)) != EOF ) {
-		if (P->n >= n_alloc) {
+		if (P->n_bytes >= n_alloc) {
 			n_alloc = (n_alloc == 0) ? GMT_INITIAL_MEM_ROW_ALLOC : n_alloc << 1;	/* Start at 2 Mb, then double */
 			P->data = gmt_M_memory (GMT, P->data, n_alloc, char);
 		}
-		P->data[P->n++] = (char)c;
+		P->data[P->n_bytes++] = (char)c;
 	}
 	if (close_file) fclose (fp);
-	if (P->n > n_alloc)
-		P->data = gmt_M_memory (GMT, P->data, P->n, char);
-	P->n_alloc = P->n;
+	if (P->n_bytes > n_alloc)
+		P->data = gmt_M_memory (GMT, P->data, P->n_bytes, char);
+	P->n_alloc = P->n_bytes;
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 	/* Determine the mode by checking for typical starts and ends of PS */
-	if (P->n > 4 && !strncmp (P->data, "%!PS", 4U))
-		P->mode = 1;	/* Found start of PS header */
-	if (P->n > 10 && !strncmp (&P->data[P->n-10], "end\n%%EOF\n", 10U))
-		P->mode += 2;	/* Found end of PS trailer */
+	if (P->n_bytes > 4 && !strncmp (P->data, "%!PS", 4U))
+		P->mode = GMT_PS_HEADER;	/* Found start of PS header */
+	if (P->n_bytes > 10 && !strncmp (&P->data[P->n_bytes-10], "end\n%%EOF\n", 10U))
+		P->mode += GMT_PS_TRAILER;	/* Found end of PS trailer */
 	return (P);
 }
 
-int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P) {
+int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_POSTSCRIPT *P) {
 	/* We write the PostScript file to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.
@@ -6460,7 +6460,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	
 	/* Start writing PostScript to fp */
 
-	if (fwrite (P->data, 1U, P->n, fp) != P->n) {
+	if (fwrite (P->data, 1U, P->n_bytes, fp) != P->n_bytes) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s PostScript to %s\n", msg1[append], &ps_file[append]);
 		if (close_file) fclose (fp);
 		return (EXIT_FAILURE);
@@ -6470,19 +6470,19 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 }
 
 /*! . */
-struct GMT_PS * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode) {
-	/* Duplicates a GMT_PS structure.  Mode not used yet */
-	struct GMT_PS *P = gmtlib_create_ps (GMT, P_from->n);
+struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_from, unsigned int mode) {
+	/* Duplicates a GMT_POSTSCRIPT structure.  Mode not used yet */
+	struct GMT_POSTSCRIPT *P = gmtlib_create_ps (GMT, P_from->n_bytes);
 	gmt_M_unused(mode);
 	gmtlib_copy_ps (GMT, P, P_from);
 	return (P);
 }
 
-void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj) {
+void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
-	if (P_obj->n > P_copy->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n, char);
-	gmt_M_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
-	P_copy->n_alloc = P_copy->n = P_obj->n;
+	if (P_obj->n_bytes > P_copy->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
+	gmt_M_memcpy (P_copy->data, P_obj->data, P_obj->n_bytes, char);
+	P_copy->n_alloc = P_copy->n_bytes = P_obj->n_bytes;
 	P_copy->mode = P_obj->mode;
 	P_copy->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 }

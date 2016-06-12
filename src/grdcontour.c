@@ -928,7 +928,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		aval = G->header->z_max + 1.0;
 
 	if (Ctrl->C.cpt) {	/* Presumably got a CPT file */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (P->categorical) {

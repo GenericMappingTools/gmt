@@ -173,7 +173,7 @@ Recognized resources
 --------------------
 
 The GMT API knows how to read and write six types of data common to
-GMT operations: CPT palette tables, data tables (ASCII or binary),
+GMT operations: Color palette tables (CPT), data tables (ASCII or binary),
 text tables (ASCII), GMT grids, PostScript text, and images. In addition, we
 present two data types to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
@@ -375,20 +375,20 @@ For the full definition, see :ref:`GMT_IMAGE <struct-image>`.
       unsigned char          *data;           /* Pointer to actual image */
   };
 
-CPT palette tables
-~~~~~~~~~~~~~~~~~~
+Color palette tables (CPT)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The color palette table files, or just CPT files, contain colors and
+The color palette table files, or just CPTs, contain colors and
 patterns used for plotting data such as surfaces (i.e., GMT grids) or
 symbols, lines and polygons (i.e., GMT tables). GMT programs will
-generally read in a CPT palette table, make it the current palette, do
+generally read in a colr palette table, make it the current palette, do
 the plotting, and destroy the table when done. The information is
 referred to via a pointer to ``struct GMT_PALETTE``. Thus, the arguments
 to GMT API functions that handle palettes expect this type of
-variable. It is not expected that users will wish to manipulate a CPT
-table directly, but rather use this mechanism to hold them in memory and
+variable. It is not expected that users will wish to manipulate the CPT
+directly, but rather use this mechanism to hold them in memory and
 pass as arguments to GMT modules.  Developers are unlikely to actually
-maniuplate the contents of CPT structures but if we must then
+manipulate the contents of CPT structures but if we must then
 the full definition can be found in :ref:`GMT_PALETTE <struct-palette>`.
 
 .. _struct-palette2:
@@ -411,13 +411,13 @@ Normally, GMT modules producing PostScript will write to standard output
 or a designated file.  Alternatively, you can tell PSL to write to a
 memory buffer instead and then receive a structure with the final
 plot (or partial plot) containing a long text string.
-The full structure definition can be found in :ref:`GMT_PS <struct-postscript>`.
+The full structure definition can be found in :ref:`GMT_POSTSCRIPT <struct-postscript>`.
 
 .. _struct-postscript2:
 
 .. code-block:: c
 
-   struct GMT_PS {	/* Single container for a chunk of PostScript text */
+   struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
        size_t n_alloc;                  /* Size of array allocated so far */
        size_t n;                        /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
@@ -913,21 +913,21 @@ it returns 0.
 
 .. _tbl-family:
 
-+------------------+--------------------------------+
-| family           | source points to               |
-+==================+================================+
-| GMT_IS_DATASET   | A [multi-segment] table file   |
-+------------------+--------------------------------+
-| GMT_IS_TEXTSET   | A [multi-segment] text file    |
-+------------------+--------------------------------+
-| GMT_IS_GRID      | A GMT grid file                |
-+------------------+--------------------------------+
-| GMT_IS_CPT       | A CPT file                     |
-+------------------+--------------------------------+
-| GMT_IS_IMAGE     | A GMT image                    |
-+------------------+--------------------------------+
-| GMT_IS_PS        | A GMT PostScript object        |
-+------------------+--------------------------------+
++-------------------+------------------------------+
+| family            | source points to             |
++===================+==============================+
+| GMT_IS_DATASET    | A [multi-segment] table file |
++-------------------+------------------------------+
+| GMT_IS_TEXTSET    | A [multi-segment] text file  |
++-------------------+------------------------------+
+| GMT_IS_GRID       | A GMT grid file              |
++-------------------+------------------------------+
+| GMT_IS_PALETTE    | A CPT file                   |
++-------------------+------------------------------+
+| GMT_IS_IMAGE      | A GMT image                  |
++-------------------+------------------------------+
+| GMT_IS_POSTSCRIPT | A GMT PostScript object      |
++-------------------+------------------------------+
 
 
 .. _tbl-methods:
@@ -1118,7 +1118,7 @@ etc.), then you can obtain a "blank slate" by calling
 
 which returns a pointer to the allocated resource. Pass :ref:`family <tbl-family>` as
 one of ``GMT_IS_GRID``, ``GMT_IS_IMAGE``, ``GMT_IS_DATASET``,
-``GMT_IS_TEXTSET``, or ``GMT_IS_CPT``, or via the modifiers ``GMT_IS_VECTOR``
+``GMT_IS_TEXTSET``, or ``GMT_IS_PALETTE``, or via the modifiers ``GMT_IS_VECTOR``
 or ``GMT_IS_MATRIX`` when handling user data. Also pass a compatible
 :ref:`geometry <tbl-geometry>`. Depending on the family and your particular way of
 representing dimensions you may pass the additional parameters in one of
@@ -1152,12 +1152,12 @@ and pass the ``par`` array as indicated below:
     each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
-  **GMT_IS_CPT**
+  **GMT_IS_PALETTE**
     An empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
-  **GMT_IS_PS**
-    An empty :ref:`GMT_PS <struct-postscript>` structure with ``par[0]`` text buffer length allocated.
+  **GMT_IS_POSTSCRIPT**
+    An empty :ref:`GMT_POSTSCRIPT <struct-postscript>` structure with ``par[0]`` text buffer length allocated.
     Give ``par[0]`` = 0 if the PostScript string is allocated or obtained by other means.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
@@ -1260,7 +1260,7 @@ a set.  For flag[2] = 0 we retain the original layout.  Other selections
 are GMT_WRITE_TABLE_SEGMENT (combine all segments into a *single* segment in a *single* table),
 GMT_WRITE_TABLE (collect all segments into a *single* table), and GMT_WRITE_SEGMENT
 (combine segments into *one* segment per table).
-Many family combinations are simply not allowed, such as grid to cpt, dataset to image,
+Many family combinations are simply not allowed, such as grid to color palette, dataset to image,
 etc., etc.
 
 Get resource ID
@@ -1288,7 +1288,7 @@ Import Data
 -----------
 
 If your main program needs to read any of the six recognized data types
-(CPT files, data tables, text tables, GMT grids, images, or PostScript) you will
+(CPTs, data tables, text tables, grids, images, or PostScript) you will
 use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
 return entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
@@ -1350,7 +1350,7 @@ Import a data set
 ~~~~~~~~~~~~~~~~~
 
 If your program needs to import any of the six recognized data types
-(CPT table, data table, text table, GMT grid, image, or PostScript) you will use
+(CPT, data table, text table, grid, image, or PostScript) you will use
 either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used with a registered
@@ -1407,10 +1407,10 @@ the object is returned. If there are errors we simply return NULL and
 report the error. The ``mode`` parameter has different meanings for
 different data types.
 
-**CPT table**
-    ``mode`` contains bit-flags that control how the CPT file's back-,
-    fore-, and NaN-colors should be initialized. Select 0 to use the CPT
-    file's back-, fore-, and NaN-colors, 2 to replace these with the
+**Color palette table**
+    ``mode`` contains bit-flags that control how the CPT's back-,
+    fore-, and NaN-colors should be initialized. Select 0 to use the
+    CPT's back-, fore-, and NaN-colors, 2 to replace these with the
     GMT default values, or 4 to replace them with the color table's
     entries for highest and lowest value.
 
@@ -2534,8 +2534,8 @@ encoded in the headers.
 Exporting Data
 --------------
 
-If your program needs to write any of the four recognized data types
-(CPT files, data tables, text tables, or GMT grids) you can use the
+If your program needs to write any of the six recognized data types
+(CPTs, data tables, text tables, grids, images, or PostScript) you can use the
 GMT_Put_Data_. In the case of data and text tables, you may also
 consider the GMT_Put_Record_ function. As a general rule, your
 program organization may simplify if you can write and export the entire
@@ -2599,8 +2599,8 @@ The prototype for writing to a file (via name, stream, or file handle) is
 
 where ``data`` is a pointer to any of the four structures discussed previously.
 
-**CPT table**
-    ``mode`` controls if the CPT table's back-, fore-, and NaN-colors
+**Color palette table**
+    ``mode`` controls if the CPT's back-, fore-, and NaN-colors
     should be written (1) or not (0).
 
 **Data table**
@@ -3082,7 +3082,7 @@ this means array will have been transposed when the function returns.
 Appendix A: GMT resources
 -------------------------
 
-We earlier introduced the six standard GMT resources (dataset, textset, grid, image, CPT, PostScript)
+We earlier introduced the six standard GMT resources (dataset, textset, grid, image, color palette table, PostScript)
 as well as the user vector and matrix.  Here are the complete definitions of these structures, including
 all variables accessible via the structures.
 
@@ -3480,7 +3480,7 @@ the :ref:`GMT_FILL <struct-fill>` structure.
 PostScript text
 ~~~~~~~~~~~~~~~
 
-Bulk PostScript is represented by a :ref:`GMT_PS <struct-postscript>` structure that contains
+Bulk PostScript is represented by a :ref:`GMT_POSTSCRIPT <struct-postscript>` structure that contains
 ``data`` that points to the text array containing ``n`` bytes of raw PostScript code.  The
 ``mode`` parameter reflects the status of the PostScript document.
 
@@ -3488,7 +3488,7 @@ Bulk PostScript is represented by a :ref:`GMT_PS <struct-postscript>` structure 
 
 .. code-block:: c
 
-   struct GMT_PS {	/* Single container for a chunk of PostScript text */
+   struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
        /* Variables we document for the API: */
        size_t n_alloc;                  /* Length of array allocated so far */
        size_t n;                        /* Length of data array so far */

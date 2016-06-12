@@ -122,9 +122,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
 					case 't': Ctrl->T.mode = GMT_IS_TEXTSET; break;
 					case 'g': Ctrl->T.mode = GMT_IS_GRID;	 break;
-					case 'c': Ctrl->T.mode = GMT_IS_CPT;	 break;
+					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
-					case 'p': Ctrl->T.mode = GMT_IS_PS;	 break;
+					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
 					default:
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, p and t\n");
 						n_errors++;

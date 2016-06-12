@@ -568,7 +568,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {

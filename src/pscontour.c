@@ -754,7 +754,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.cpt) {	/* Presumably got a CPT file; read it here so we can crash if no-such-file before we process input data */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Ctrl->I.active && P->is_continuous) {

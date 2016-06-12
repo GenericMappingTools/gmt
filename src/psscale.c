@@ -1312,7 +1312,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input CPT table\n");
-	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->G.active) P = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */

@@ -33,14 +33,14 @@ int main () {
 	char cmd[BUFSIZ] = {""};		/* Command string */
 	char string[GMT_STR16] = {""};		/* Encoded ID */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
-	struct GMT_PS *PS = NULL;		/* Holds our plot */
+	struct GMT_POSTSCRIPT *PS = NULL;	/* Holds our plot */
 
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("PSLTEST", GMT_NOTSET, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Create a PS container to be the destination allocated and written to by pscoast */
-	if ((PS = GMT_Create_Data (API, GMT_IS_PS, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
-	if ((ID = GMT_Get_ID (API, GMT_IS_PS, GMT_OUT, PS)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	if ((PS = GMT_Create_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((ID = GMT_Get_ID (API, GMT_IS_POSTSCRIPT, GMT_OUT, PS)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, string, ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);			/* Create command for pscoast */
 
@@ -63,7 +63,7 @@ int main () {
 	if ((PS = GMT_Retrieve_Data (API, ID)) == NULL) exit (EXIT_FAILURE);
 
 	/* 6. Write the plot to file */
-	if (GMT_Write_Data (API, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Write_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 7. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

@@ -813,7 +813,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
 
 	if (Ctrl->C.active) {
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (get_rgb) n_cols_start++;

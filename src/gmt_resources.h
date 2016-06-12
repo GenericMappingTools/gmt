@@ -18,7 +18,7 @@
 /*
  * gmt_resources.h contains the definitions for the GMT resources
  * GMT_GRID, GMT_DATASET, GMT_TEXTSET, GMT_PALETTE, GMT_IMAGE, and
- * GMT_PS as well as the auxilliary resources GMT_VECTOR and GMT_MATRIX,
+ * GMT_POSTSCRIPT as well as the auxilliary resources GMT_VECTOR and GMT_MATRIX,
  * as well as all named constants.
  *
  * Author:	Paul Wessel
@@ -98,15 +98,17 @@ enum GMT_enum_via {
 /*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is a data table */
-	GMT_IS_TEXTSET,		/* Entity is a Text table */
-	GMT_IS_GRID,		/* Entity is a GMT grid */
-	GMT_IS_CPT,			/* Entity is a CPT table */
+	GMT_IS_TEXTSET,		/* Entity is a text table */
+	GMT_IS_GRID,		/* Entity is a grid */
+	GMT_IS_PALETTE,		/* Entity is a color pallete table */
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* Entity is set of user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
 	GMT_IS_COORD,		/* Entity is a double coordinate array */
-	GMT_IS_PS,			/* Entity is a PostScript content struct */
+	GMT_IS_POSTSCRIPT,	/* Entity is a PostScript content struct */
 	GMT_N_FAMILIES};	/* Total number of families [API Developers only]  */
+
+#define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwardness for now */
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
@@ -398,14 +400,14 @@ enum GMT_enum_geometry {
 	GMT_IS_POLY	= 4U,
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
-	GMT_IS_NONE	= 16U};	/* Non-geographical items like CPT and text */
+	GMT_IS_NONE	= 16U};	/* Non-geographical items like color palettes and textsets */
 
 /* These are two polygon modes */
 enum GMT_enum_pol {
 	GMT_IS_PERIMETER = 0,
 	GMT_IS_HOLE = 1U};
 
-/* Return codes for GMT_ascii_input: */
+/* Return codes for GMT_Get_Record: */
 
 enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */
 	GMT_IO_DATA_RECORD 	=  0,		/* Read a data record and had no issues */
@@ -603,7 +605,7 @@ struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
 
 struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	/* Variables we document for the API: */
-	unsigned int n_headers;		/* Number of CPT file header records (0 if no header) */
+	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
 	unsigned int n_colors;		/* Number of colors in CPT lookup table */
 	unsigned int cpt_flags;		/* Flags controling use of BFN colors */
 	struct GMT_LUT *range;		/* CPT lookup table read by gmtlib_read_cpt */
@@ -618,7 +620,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int is_gray;		/* true if only grayshades are needed */
 	unsigned int is_bw;		/* true if only black and white are needed */
 	unsigned int is_continuous;	/* true if continuous color tables have been given */
-	unsigned int has_pattern;	/* true if CPT file contains any patterns */
+	unsigned int has_pattern;	/* true if CPT contains any patterns */
 	unsigned int skip;		/* true if current z-slice is to be skipped */
 	unsigned int categorical;	/* true if CPT applies to categorical data */
 	unsigned int z_adjust[2];	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
@@ -648,16 +650,21 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 };
 
 /*============================================================ */
-/*================= GMT_PS Public Declaration ================ */
+/*================= GMT_POSTSCRIPT Public Declaration ================ */
 /*============================================================ */
 
-/* The GMT_PS container is used to pass PostScript objects */
+/* The GMT_POSTSCRIPT container is used to pass PostScript objects */
 
-struct GMT_PS {	/* Single container for a chunk of PostScript */
+enum GMT_enum_ps {GMT_PS_EMPTY=0,
+	GMT_PS_HEADER,
+	GMT_PS_TRAILER,
+	GMT_PS_COMPLETE};
+
+struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 	/* Variables we document for the API: */
-	size_t n_alloc;             /* Length of array allocated so far */
-	size_t n;                   /* Length of data array so far */
-	unsigned int mode;          /* 1 = Has header, 2 = Has trailer, 3 = Has both */
+	size_t n_alloc;             /* Memory allocated so far */
+	size_t n_bytes;             /* Length of data array */
+	unsigned int mode;          /* GMT_PS_HEADER = Has header, GMT_PS_TRAILER = Has trailer, GMT_PS_COMPLETE = Has both */
 	char *data;		    /* Pointer to actual PS text */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;                /* The internal number of the data set */
