@@ -281,12 +281,12 @@ GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
 
 	strncpy (name, name_units, GMT_GRID_UNIT_LEN80-1);
 	units[0] = '\0';
-	for (i = 0; i < GMT_GRID_UNIT_LEN80 && units[i]; i++) {
+	for (i = 0; i < GMT_GRID_UNIT_LEN80 && name[i]; i++) {
 		if (name[i] == ']') copy = false, units[j] = '\0';
 		if (copy) units[j++] = name[i];
 		if (name[i] == '[') {
 			name[i] = '\0';
-			if (i > 0 && name[i-1] == ' ') name[i] = '\0';
+			if (i > 0 && name[i-1] == ' ') name[i-1] = '\0';
 			copy = true;
 		}
 	}
