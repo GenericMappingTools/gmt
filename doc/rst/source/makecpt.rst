@@ -183,6 +183,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_transparency.rst_
+
 Examples
 --------
 

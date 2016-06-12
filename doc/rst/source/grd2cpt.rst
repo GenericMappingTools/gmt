@@ -209,6 +209,8 @@ Optional Arguments
 
 .. include:: explain_grd_inout_short.rst_
 
+.. include:: explain_transparency.rst_
+
 Examples
 --------
 
