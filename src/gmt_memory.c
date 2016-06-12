@@ -27,7 +27,7 @@
 /* Two functions called elsewhere:
    gmt_prep_tmp_arrays	: Called wherever temporary column vectors are needed, such
 			  as in data reading and fix_up_path and elsewhere.
-   gmt_free_tmp_arrays  : Called when ready to free up stuff
+   gmtlib_free_tmp_arrays  : Called when ready to free up stuff
    gmt_M_malloc              Memory management
    gmt_M_memory              Memory allocation/reallocation
    gmt_M_free                Memory deallocation
@@ -79,9 +79,9 @@ GMT_LOCAL int memory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t 
 	unsigned int k = 0;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-	gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
+	gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-	gmt_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory [realloc] called\n");
+	gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory [realloc] called\n");
 #endif
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
@@ -332,14 +332,14 @@ static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 
 	M->n_freed++; /* Increment first to also count multiple frees on same address */
 	if (!entry) {
-		/* Error, trying to free something not allocated by gmt_M_memory_func */
-		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
+		/* Error, trying to free something not allocated by gmt_memory_func */
+		gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		if (M->do_log)
 			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s @%s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, where);
 		return false; /* Notify calling function that something went wrong */
 	}
 	if (entry->size > M->current) {
-		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
+		gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
@@ -430,7 +430,7 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 }
 #endif
 
-void gmt_free_tmp_arrays (struct GMT_CTRL *GMT) {
+void gmtlib_free_tmp_arrays (struct GMT_CTRL *GMT) {
 	/* Free temporary coordinate memory used by this session */
 	size_t col;
 
@@ -471,7 +471,7 @@ void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols) {
 	/* Note: Any additions to these arrays are not guaranteed to be set to zero */
 }
 
-void *gmt_M_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where) {
+void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where) {
 	/* Multi-functional memory allocation subroutine.
 	   If prev_addr is NULL, allocate new memory of nelem elements of size bytes.
 		Ignore when nelem == 0.
@@ -483,9 +483,9 @@ void *gmt_M_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, si
 	void *tmp = NULL;
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
-		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
+		gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
-		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory called\n");
+		gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory called\n");
 #endif
 		GMT_exit (GMT, EXIT_FAILURE); return NULL;
 	}
@@ -551,7 +551,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	if (addr == NULL) {
 #ifndef DEBUG
 		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
-		gmt_report_func (GMT, GMT_MSG_DEBUG, where,
+		gmtlib_report_func (GMT, GMT_MSG_DEBUG, where,
 				"tried to free unallocated memory\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */
@@ -561,7 +561,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	if (GMT->hidden.mem_keeper->active) {
 		bool is_safe_to_free = gmt_memtrack_sub (GMT, where, addr);
 		if (is_safe_to_free == false)
-			return; /* Address addr was not allocated by gmt_M_memory_func before */
+			return; /* Address addr was not allocated by gmt_memory_func before */
 	}
 #endif
 
@@ -583,7 +583,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	addr = NULL;
 }
 
-void * gmt_M_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where) {
+void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where) {
 	/* gmt_M_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
 	 * A) Initial allocation of memory:
@@ -627,7 +627,7 @@ void * gmt_M_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_a
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation for non-aligned memory */
 
-	ptr = gmt_M_memory_func (GMT, ptr, in_n_alloc, element_size, false, where);
+	ptr = gmt_memory_func (GMT, ptr, in_n_alloc, element_size, false, where);
 	if (n_alloc) *n_alloc = in_n_alloc;	/* Pass allocated count back out unless given NULL */
 
 	return (ptr);

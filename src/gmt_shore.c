@@ -1314,7 +1314,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
 
-	D = gmt_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
+	D = gmtlib_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
 	D->table = gmt_M_memory (GMT, NULL, c.nb, struct GMT_DATATABLE *);
 
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */

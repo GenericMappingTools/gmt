@@ -34,11 +34,11 @@
  * Public functions (41 [+2]):
  *
  *  gmt_grd_get_format      : Get format id, scale, offset and missing value for grdfile
- *  gmt_read_grd_info       : Read header from file
- *  gmt_read_grd            : Read data set from file (must be preceded by gmt_read_grd_info)
- *  gmt_update_grd_info     : Update header in existing file (must be preceded by gmt_read_grd_info)
- *  gmt_write_grd_info      : Write header to new file
- *  gmt_write_grd           : Write header and data set to new file
+ *  gmtlib_read_grd_info       : Read header from file
+ *  gmtlib_read_grd            : Read data set from file (must be preceded by gmtlib_read_grd_info)
+ *  gmt_update_grd_info     : Update header in existing file (must be preceded by gmtlib_read_grd_info)
+ *  gmtlib_write_grd_info      : Write header to new file
+ *  gmtlib_write_grd           : Write header and data set to new file
  *  gmt_grd_coord           :
  *  gmtlib_grd_real_interleave :
  *  gmt_grd_mux_demux       :
@@ -55,7 +55,7 @@
  *  gmt_grd_pad_on          :
  *  gmt_grd_pad_zero        :
  *  gmt_create_grid         :
- *  gmt_duplicate_grid      :
+ *  gmtlib_duplicate_grid      :
  *  gmt_free_grid           :
  *  gmt_set_outgrid         :
  *  gmt_change_grdreg       :
@@ -77,8 +77,8 @@
  *  grdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
  *
  *  Reading images via GDAL (if enabled):
- *  gmt_read_image          : Read [subset of] an image via GDAL
- *  gmt_read_image_info     : Get information for an image via GDAL
+ *  gmtlib_read_image          : Read [subset of] an image via GDAL
+ *  gmtlib_read_image_info     : Get information for an image via GDAL
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -163,7 +163,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 	name = (file) ? file : h->name;
 	if ((c = gmtlib_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
-	u_number = gmt_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
+	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return;
@@ -1093,11 +1093,11 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	return (GMT_GRID_CARTESIAN);
 }
 
-int gmt_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header) {
+int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header) {
 	/* file:	File name
 	 * header:	grid structure header
 	 * Note: The header reflects what is actually in the file, and all the dimensions
-	 * reflect the number of rows, cols, size, pads etc.  However, if gmt_read_grd is
+	 * reflect the number of rows, cols, size, pads etc.  However, if gmtlib_read_grd is
 	 * called requesting a subset then these will be reset accordingly.
 	 */
 
@@ -1156,7 +1156,7 @@ int gmt_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 	return (GMT_NOERROR);
 }
 
-int gmt_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header) {
+int gmtlib_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header) {
 	/* file:	File name
 	 * header:	grid structure header
 	 */
@@ -1184,7 +1184,7 @@ int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADE
 	return ((*GMT->session.updateinfo[header->type]) (GMT, header));
 }
 
-int gmt_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode) {
+int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode) {
 	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -1221,7 +1221,7 @@ int gmt_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *head
 	return (GMT_NOERROR);
 }
 
-int gmt_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode) {
+int gmtlib_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode) {
 	/* file:	File name
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -1650,7 +1650,7 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 }
 
 int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant) {
-	/* gmt_grd_setregion determines what w,e,s,n should be passed to gmt_read_grd.
+	/* gmt_grd_setregion determines what w,e,s,n should be passed to gmtlib_read_grd.
 	 * It does so by using GMT->common.R.wesn which have been set correctly by map_setup.
 	 * Use interpolant to indicate if (and how) the grid is interpolated after this call.
 	 * This determines possible extension of the grid to allow interpolation (without padding).
@@ -2163,7 +2163,7 @@ struct GMT_GRID * gmt_create_grid (struct GMT_CTRL *GMT) {
 	return (G);
 }
 
-struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode) {
+struct GMT_GRID *gmtlib_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode) {
 	/* Duplicates an entire grid, including data if requested. */
 	struct GMT_GRID *Gnew = NULL;
 
@@ -2564,7 +2564,7 @@ GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTR
 	if (from_gdalread->ColorMap) gmt_M_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 }
 
-int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
+int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
 	size_t k;
 	double dumb;
 	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
@@ -2579,7 +2579,7 @@ int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	k = strlen (file) - 1;
 	while (k && file[k] && file[k] != '+') k--;	/* See if we have a band request */
 	if (k && file[k+1] == 'b') {
-		/* Yes we do. Put the band string into the 'pocket' where gmt_read_image will look and finish the request */
+		/* Yes we do. Put the band string into the 'pocket' where gmtlib_read_image will look and finish the request */
 		I->header->pocket = strdup (&file[k+2]);
 		file[k] = '\0';
 	}
@@ -2630,7 +2630,7 @@ int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	return (GMT_NOERROR);
 }
 
-int gmt_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int complex_mode) {
+int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn, unsigned int *pad, unsigned int complex_mode) {
 	/* file:	- IGNORED -
 	 * image:	array with final image
 	 * wesn:	Sub-region to extract  [Use entire file if NULL or contains 0,0,0,0]

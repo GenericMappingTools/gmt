@@ -31,22 +31,22 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 
 /*! Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define gmt_M_malloc(C,a,n,n_alloc,type) gmt_M_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
+#define gmt_M_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
 #else
-#define gmt_M_malloc(C,a,n,n_alloc,type) gmt_M_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
+#define gmt_M_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
 #endif
 /* The __kp = n_alloc below is needed since NULL may be passed. __k is used to ensure only the final gmt_M_malloc call changes n_alloc (unless it is NULL) */
 #define gmt_M_malloc2(C,a,b,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_M_malloc(C,a,n,&__k,type); b = gmt_M_malloc(C,b,n,n_alloc,type); }
 #define gmt_M_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_M_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = gmt_M_malloc(C,b,n,&__k,type); c = gmt_M_malloc(C,c,n,n_alloc,type); }
 #define gmt_M_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_M_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = gmt_M_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = gmt_M_malloc(C,c,n,&__k,type); d = gmt_M_malloc(C,d,n,n_alloc,type); }
 
-/*! Convenience macro for gmt_M_memory_func */
+/*! Convenience macro for gmt_memory_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define gmt_M_memory(C,ptr,n,type) gmt_M_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
-#define gmt_M_memory_aligned(C,ptr,n,type) gmt_M_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
+#define gmt_M_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
+#define gmt_M_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
 #else
-#define gmt_M_memory(C,ptr,n,type) gmt_M_memory_func(C,ptr,n,sizeof(type),false,__func__)
-#define gmt_M_memory_aligned(C,ptr,n,type) gmt_M_memory_func(C,ptr,n,sizeof(type),true,__func__)
+#define gmt_M_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__func__)
+#define gmt_M_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
 /*! Convenience macro for gmt_free_func */

@@ -73,7 +73,7 @@
  *
  *	gmt_bcr_get_z	   : Get interpolated grid value by convolution
  *	gmt_bcr_get_z_fast : Same, but skips NaN or outside checking
- *	gmt_bcr_get_img	   : Get interpolated image value(s) by convolution
+ *	gmtlib_bcr_get_img	   : Get interpolated image value(s) by convolution
  */
 
 #include "gmt_dev.h"
@@ -312,7 +312,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	return (GMT->session.d_NaN);
 }
 
-int gmt_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z) {
+int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z) {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */

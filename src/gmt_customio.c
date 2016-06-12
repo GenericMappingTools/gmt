@@ -45,8 +45,8 @@
  *
  * where * is a tag specific to a particular data format
  *
- * NOTE:  1. GMT assumes that gmt_read_grd_info has been called before calls
- *	     to gmt_read_grd.  This normally is done via GMT_Read_Data.
+ * NOTE:  1. GMT assumes that gmtlib_read_grd_info has been called before calls
+ *	     to gmtlib_read_grd.  This normally is done via GMT_Read_Data.
  *	  2. Some formats may permit pipes to be used.  In that case GMT
  *	     expects the filename to be "=" (the equal sign).  It is the
  *	     responsibility of the custom routines to test for "=" and

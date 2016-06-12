@@ -63,11 +63,11 @@
  *	gmt_geo_vector           :
  *	gmtlib_create_ps            :
  *	gmtlib_free_ps_ptr          :
- *	gmt_free_ps              :
- *	gmt_read_ps              :
- *	gmt_write_ps             :
- *	gmt_duplicate_ps         :
- *	gmt_copy_ps              :
+ *	gmtlib_free_ps              :
+ *	gmtlib_read_ps              :
+ *	gmtlib_write_ps             :
+ *	gmtlib_duplicate_ps         :
+ *	gmtlib_copy_ps              :
  *
  */
 
@@ -3065,7 +3065,7 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = gmt_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmtlib_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		plot_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -4586,7 +4586,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km, dim[4];
 	double XL, YL, XR, YR, dist, scl, bar_width, dx, x0_scl, y0_scl;
 	char txt[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, *this_label = NULL;
-	/* inch, cm, pt is not used here but in the array since gmt_get_unit_number uses this sequence */
+	/* inch, cm, pt is not used here but in the array since gmtlib_get_unit_number uses this sequence */
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -4597,7 +4597,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	if (!gmt_M_is_geographic (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
-	if ((unit = gmt_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
+	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -4986,7 +4986,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_ARC:	/* Append a circular arc to the path */
 				flush = true;
-				na = gmt_get_arc (GMT, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
+				na = gmtlib_get_arc (GMT, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
 					if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 					xx[n] = xp[i], yy[n] = yp[i], n++;
@@ -5604,7 +5604,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = gmt_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmtlib_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		plot_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -5821,7 +5821,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 	double d_az, px, py, qx, qy, L, plat, plon, qlon, qlat, az, rot_start, E[3], P[3], Q[3], R[3][3];
 	struct GMT_DATASEGMENT *S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
-	radius = gmt_conv_distance (GMT, radius, unit, 'd');	/* Convert to degrees */
+	radius = gmtlib_conv_distance (GMT, radius, unit, 'd');	/* Convert to degrees */
 
 	/* Get a point P that is radius degrees away along the meridian through our point X */
 	plat = xlat + radius;
@@ -6304,14 +6304,14 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 }
 
 /*! . */
-void gmt_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
+void gmtlib_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
 	/* Free the memory allocated to hold a PostScript plot (which is pointed to by P->data) */
 	gmtlib_free_ps_ptr (GMT, *P);
 	gmt_M_free (GMT, *P);
 	*P = NULL;
 }
 
-struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode) {
+struct GMT_PS * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode) {
 	/* Opens and reads a PostScript file.
 	 * Return the result as a GMT_PS struct.
 	 * source_type can be GMT_IS_[FILE|STREAM|FDESC]
@@ -6363,7 +6363,7 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 			return (NULL);
 		}
 		if ((fp = fdopen (*fd, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmt_read_ps\n", *fd);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmtlib_read_ps\n", *fd);
 			return (NULL);
 		}
 		else
@@ -6375,7 +6375,7 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 			strcpy (ps_file, "<input file descriptor>");
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmt_read_ps\n", source_type);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmtlib_read_ps\n", source_type);
 		return (NULL);
 	}
 
@@ -6407,7 +6407,7 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	return (P);
 }
 
-int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P) {
+int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P) {
 	/* We write the PostScript file to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.
@@ -6442,7 +6442,7 @@ int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmt_write_ps\n", *fd);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmtlib_write_ps\n", *fd);
 			return (EXIT_FAILURE);
 		}
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
@@ -6453,7 +6453,7 @@ int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 		close_file = true;	/* since fdopen allocates space */
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmt_write_ps\n", dest_type);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmtlib_write_ps\n", dest_type);
 		return (EXIT_FAILURE);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s PostScript to %s\n", msg1[append], &ps_file[append]);
@@ -6470,15 +6470,15 @@ int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 }
 
 /*! . */
-struct GMT_PS * gmt_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode) {
+struct GMT_PS * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode) {
 	/* Duplicates a GMT_PS structure.  Mode not used yet */
 	struct GMT_PS *P = gmtlib_create_ps (GMT, P_from->n);
 	gmt_M_unused(mode);
-	gmt_copy_ps (GMT, P, P_from);
+	gmtlib_copy_ps (GMT, P, P_from);
 	return (P);
 }
 
-void gmt_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj) {
+void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
 	if (P_obj->n > P_copy->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n, char);
 	gmt_M_memcpy (P_copy->data, P_obj->data, P_obj->n, char);

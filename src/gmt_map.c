@@ -1366,8 +1366,8 @@ GMT_LOCAL uint64_t map_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 		j += map_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	*x = gmt_assign_vector (GMT, j, GMT_X);
-	*y = gmt_assign_vector (GMT, j, GMT_Y);
+	*x = gmtlib_assign_vector (GMT, j, GMT_X);
+	*y = gmtlib_assign_vector (GMT, j, GMT_Y);
 
 	return (j);
 }
@@ -1619,8 +1619,8 @@ GMT_LOCAL uint64_t map_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 		j += map_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	*x = gmt_assign_vector (GMT, j, GMT_X);
-	*y = gmt_assign_vector (GMT, j, GMT_Y);
+	*x = gmtlib_assign_vector (GMT, j, GMT_X);
+	*y = gmtlib_assign_vector (GMT, j, GMT_Y);
 
 #ifdef CRAP
 {
@@ -7622,7 +7622,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			if (gmt_bcr_get_img (GMT, I, x_proj, y_proj, z_int))		/* So that nodes outside will have the NaN color */
+			if (gmtlib_bcr_get_img (GMT, I, x_proj, y_proj, z_int))		/* So that nodes outside will have the NaN color */
 				for (b = 0; b < 4; b++) z_int[b] = z_int_bg[b];
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */

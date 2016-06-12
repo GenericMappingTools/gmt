@@ -324,7 +324,7 @@ struct GMT_CTRL {
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
- * and is used to declare GMT_get_io_ptr in gmt_io.c and gmt_prototypes.h */
+ * and is used to declare gmtlib_get_io_ptr in gmt_io.c and gmt_prototypes.h */
 typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
 
 /* Exit or return:  For some environments (e.g., Matlab) we do not

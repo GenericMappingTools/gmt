@@ -175,7 +175,7 @@ void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny,
 	return;
 }
 
-void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print) {
+void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print) {
 	unsigned int f[32], xstop, ystop;
 	unsigned int nx_best_t, ny_best_t;
 	unsigned int nx_best_e, ny_best_e;
@@ -1695,7 +1695,7 @@ int GMT_FFT_2D_ (float *data, unsigned int *nx, unsigned int *ny, int *direction
 void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 	/* Called by gmt_begin and sets up pointers to the available FFT calls */
 #if defined HAVE_FFTW3F_THREADS
-	int n_cpu = gmt_get_num_processors();
+	int n_cpu = gmtlib_get_num_processors();
 
 	if (n_cpu > 1 && !GMT->current.setting.fftwf_threads) {
 		/* one-time initialization required to use FFTW3 threads */

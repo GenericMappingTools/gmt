@@ -27,7 +27,7 @@
  *
  * The PUBLIC functions (68) are:
  *
- *	gmt_explain_options		Prints explanations for the common options\n
+ *	gmtlib_explain_options		Prints explanations for the common options\n
  *	gmt_parse_common_options	Interprets common options, such as -B, -R, --\n
  *	gmt_getdefaults			Initializes the GMT global parameters\n
  *	gmt_putdefaults			Dumps the GMT global parameters\n
@@ -39,11 +39,11 @@
  *	gmt_end				Cleans up and returns\n
  *	gmt_putcolor			Encode color argument into textstring\n
  *	gmt_putrgb			Encode color argument into r/g/b textstring\n
- *	gmt_puthsv			Encode color argument into h-s-v textstring\n
- *	gmt_putcmyk			Encode color argument into c/m/y/k textstring
- *	gmt_putfill
- *	gmt_setparameter		Sets a default value given keyword,value-pair\n
- *	gmt_putparameter
+ *	gmtlib_puthsv			Encode color argument into h-s-v textstring\n
+ *	gmtlib_putcmyk			Encode color argument into c/m/y/k textstring
+ *	gmtlib_putfill
+ *	gmtlib_setparameter		Sets a default value given keyword,value-pair\n
+ *	gmtlib_putparameter
  *	gmt_GSHHG_syntax
  *	gmt_label_syntax
  *	gmt_cont_syntax
@@ -83,15 +83,15 @@
  *	gmt_parse_vector
  *	gmt_parse_symbol_option
  *	gmt_init_scales
- *	gmt_get_unit_number
+ *	gmtlib_get_unit_number
  *	gmt_check_scalingopt
  *	gmt_set_measure_unit
  *	gmt_set_pad
  *	gmt_check_filearg
  *	gmt_setmode
  *	gmt_message
- *	gmt_report_func
- *	gmt_get_num_processors
+ *	gmtlib_report_func
+ *	gmtlib_get_num_processors
  *	gmt_loaddefaults		Reads the GMT global parameters from gmt.conf\n
  *	gmt_get_ellipsoid		Returns ellipsoid id based on name\n
  *	gmt_init_time_system_structure  Does what it says\n
@@ -658,10 +658,10 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 					}
 					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
-						GMT->current.io.fmt[id][col].io = GMT_get_io_ptr (GMT, id, swap_flag, c);
+						GMT->current.io.fmt[id][col].io = gmtlib_get_io_ptr (GMT, id, swap_flag, c);
 						GMT->current.io.fmt[id][col].type = gmt_get_io_type (GMT, c);
 						if (!i_or_o) {	/* Must also set output */
-							GMT->current.io.fmt[GMT_OUT][col].io = GMT_get_io_ptr (GMT, GMT_OUT, swap_flag, c);
+							GMT->current.io.fmt[GMT_OUT][col].io = gmtlib_get_io_ptr (GMT, GMT_OUT, swap_flag, c);
 							GMT->current.io.fmt[GMT_OUT][col].type = gmt_get_io_type (GMT, c);
 						}
 					}
@@ -706,10 +706,10 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	if (col && !set) {
 		for (col = 0; col < GMT->common.b.ncol[id]; col++) {
 			/* Default binary type is double */
-			GMT->current.io.fmt[id][col].io   = GMT_get_io_ptr (GMT, id, swab, 'd');
+			GMT->current.io.fmt[id][col].io   = gmtlib_get_io_ptr (GMT, id, swab, 'd');
 			GMT->current.io.fmt[id][col].type = gmt_get_io_type (GMT, 'd');
 			if (!i_or_o) {	/* Must also set output */
-				GMT->current.io.fmt[GMT_OUT][col].io   = GMT_get_io_ptr (GMT, GMT_OUT, swab, 'd');
+				GMT->current.io.fmt[GMT_OUT][col].io   = gmtlib_get_io_ptr (GMT, GMT_OUT, swab, 'd');
 				GMT->current.io.fmt[GMT_OUT][col].type = gmt_get_io_type (GMT, 'd');
 			}
 		}
@@ -779,7 +779,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (copy[0] == 'p') {	/* Got -f[i|o]p[<unit>] for projected floating point map coordinates (e.g., UTM meters) */
 		if (copy[1] && strchr (GMT_LEN_UNITS2, copy[1])) {	/* Given a unit via -fp<unit>*/
-			if ((unit = gmt_get_unit_number (GMT, copy[1])) == GMT_IS_NOUNIT) {
+			if ((unit = gmtlib_get_unit_number (GMT, copy[1])) == GMT_IS_NOUNIT) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
 				return 1;
 			}
@@ -862,12 +862,12 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	if ((this_c = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
 		this_c[0] = '\0';	/* Temporarily remove the '=' character */
-		n = gmt_setparameter (GMT, text, &this_c[1]);
+		n = gmtlib_setparameter (GMT, text, &this_c[1]);
 		this_c[0] = '=';	/* Put it back were it was */
 	}
 	else
 		/* Got --PAR */
-		n = gmt_setparameter (GMT, text, "true");
+		n = gmtlib_setparameter (GMT, text, "true");
 	return (n);
 }
 
@@ -1446,14 +1446,14 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	GMT->common.x.active = true;
 	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
 	if (arg[0] == '\0')                     /* Use all processors */
-		GMT->common.x.n_threads = gmt_get_num_processors();
+		GMT->common.x.n_threads = gmtlib_get_num_processors();
 	else
 		GMT->common.x.n_threads = atoi (arg);
 
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(gmt_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
 	return (GMT_NOERROR);
 }
 #endif
@@ -1938,7 +1938,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 
 		/* Write things out (with possible tabs, spaces) */
 		sscanf (line, "%[^=]", string);
-		fprintf (fpo, "%s= %s\n", string, gmt_putparameter (GMT, keyword));
+		fprintf (fpo, "%s= %s\n", string, gmtlib_putparameter (GMT, keyword));
 	}
 
 	fclose (fpi);
@@ -5153,13 +5153,13 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
  * although in some cases they do (e.g., case 'B' explains -B). For instance, to
  * display the help for the -r (registration setting for grid) option we use case F.
  * Part of this is historic and part is multiple flavor of output for same option.
- * However, gmt_explain_options is not called directly but via GMT_Option which
+ * However, gmtlib_explain_options is not called directly but via GMT_Option which
  * do accept a list of comma-separated options and there are the normal GMT common
  * option letters, sometimes with modifiers, and it translate between those and the
  * crazy cases below.\n
  * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
  */
-void gmt_explain_options (struct GMT_CTRL *GMT, char *options) {
+void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
 	double s;
@@ -5589,7 +5589,7 @@ void gmt_explain_options (struct GMT_CTRL *GMT, char *options) {
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
 			gmt_message (GMT, "\t-x Limit the number of cores used in multi-threaded algorithms.\n");
-			gmt_message (GMT, "\t   Default uses all available cores [%d].\n", gmt_get_num_processors());
+			gmt_message (GMT, "\t   Default uses all available cores [%d].\n", gmtlib_get_num_processors());
 			gmt_message (GMT, "\t   -x<n>  Select <n> cores (up to all available).\n");
 			gmt_message (GMT, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
 			break;
@@ -6784,7 +6784,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
 		double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch;
 		int k_unit;
-		k_unit = gmt_get_unit_number (GMT, item[0]);
+		k_unit = gmtlib_get_unit_number (GMT, item[0]);
 		gmt_init_scales (GMT, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
@@ -7316,7 +7316,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		error += gmt_setparameter (GMT, keyword, value);
+		error += gmtlib_setparameter (GMT, keyword, value);
 	}
 
 	fclose (fp);
@@ -7340,13 +7340,13 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 			p = 0;
 			while (opt->arg[p] && opt->arg[p] != '=') p++;
 			opt->arg[p] = '\0';	/* Temporarily remove the equal sign */
-			n_errors += gmt_setparameter (GMT, opt->arg, &opt->arg[p+1]);
+			n_errors += gmtlib_setparameter (GMT, opt->arg, &opt->arg[p+1]);
 			opt->arg[p] = '=';	/* Restore the equal sign */
 		}
 		else if (!param)			/* Keep parameter name */
 			param = opt->arg;
 		else {					/* This must be value */
-			n_errors += gmt_setparameter (GMT, param, opt->arg);
+			n_errors += gmtlib_setparameter (GMT, param, opt->arg);
 			param = NULL;	/* Get ready for next parameter */
 		}
 	}
@@ -7359,7 +7359,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 }
 
 /*! . */
-unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value) {
+unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value) {
 	unsigned int pos;
 	size_t len;
 	int i, ival, case_val, manual;
@@ -8851,7 +8851,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 }
 
 /*! . */
-char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
+char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_LEN256] = {""}, txt[8];
 	int case_val;
@@ -9871,7 +9871,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 		if (lines) record[0] = '\0';	/* Start over */
 		if (!lines && n)
 			strcat (record, " ");	/* Separate by spaces */
-		param = gmt_putparameter (GMT, opt->arg);
+		param = gmtlib_putparameter (GMT, opt->arg);
 		if (*param == '\0') {
 			/* if keyword unknown */
 			error = GMT_OPTION_NOT_FOUND;
@@ -9918,9 +9918,9 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 }
 
 /*! Creates the name (if equivalent) or the string r[/g/b] corresponding to the RGB triplet or a pattern.
- * Example: gmt_putfill (GMT, fill) may produce "white" or "1/2/3" or "p300/7"
+ * Example: gmtlib_putfill (GMT, fill) may produce "white" or "1/2/3" or "p300/7"
  */
-char *gmt_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
+char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 
 	static char text[GMT_LEN256] = {""};
 	int i;
@@ -9978,7 +9978,7 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 }
 
 /*! Creates the string c/m/y/k corresponding to the CMYK quadruplet */
-char *gmt_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
+char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
@@ -9992,7 +9992,7 @@ char *gmt_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 }
 
 /*! Creates the string h/s/v corresponding to the HSV triplet */
-char *gmt_puthsv (struct GMT_CTRL *GMT, double *hsv) {
+char *gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
@@ -10272,7 +10272,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmt_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmtlib_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
@@ -10299,7 +10299,7 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 
 	Csave = calloc (1U, sizeof (struct GMT_CTRL));
 
-	gmt_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
+	gmtlib_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
 
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 
@@ -10414,7 +10414,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* GMT_IO */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmt_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmtlib_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_reset_colformats (GMT);			/* Wipe previous settings */
 
 	gmt_fft_cleanup (GMT); /* Clean FFT resources */
@@ -11379,9 +11379,9 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
 			if (colon) {	/* Gave :<symbolinfo> */
 				text[colon] = 0;
-				gmt_decorate_init (GMT, &p->D, 0);
-				decode_error += gmt_decorate_info (GMT, 'S', &text[1], &p->D);
-				decode_error += gmt_decorate_specs (GMT, &text[colon+1], &p->D);
+				gmtlib_decorate_init (GMT, &p->D, 0);
+				decode_error += gmtlib_decorate_info (GMT, 'S', &text[1], &p->D);
+				decode_error += gmtlib_decorate_specs (GMT, &text[colon+1], &p->D);
 				if (!cmd && gmt_decorate_prep (GMT, &p->D, NULL)) decode_error++;
 			}
 			else {
@@ -11461,7 +11461,7 @@ int gmt_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale,
 }
 
 /*! Converts character unit (e.g., 'k') to unit number (e.g., GMT_IS_KM) */
-enum gmt_enum_units gmt_get_unit_number (struct GMT_CTRL *GMT, char unit) {
+enum gmt_enum_units gmtlib_get_unit_number (struct GMT_CTRL *GMT, char unit) {
 	enum gmt_enum_units mode;
 	gmt_M_unused(GMT);
 
@@ -11506,7 +11506,7 @@ unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit,
 	int smode;
 	unsigned int mode;
 
-	if ((smode = gmt_get_unit_number (GMT, unit)) == GMT_IS_NOUNIT) {
+	if ((smode = gmtlib_get_unit_number (GMT, unit)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT ERROR Option -%c: Only append one of %s|%s\n",
 		            option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -12142,7 +12142,7 @@ int gmt_message (struct GMT_CTRL *GMT, char *format, ...) {
 }
 
 /*! . */
-int gmt_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...) {
+int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...) {
 	char message[GMT_BUFSIZ];
 	size_t source_info_len;
 	va_list args;
@@ -12160,7 +12160,7 @@ int gmt_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *sourc
 }
 
 /*! Return the number of CPU cores */
-int gmt_get_num_processors() {
+int gmtlib_get_num_processors() {
 	static int n_cpu = 0;
 
 	if (n_cpu > 0)
