@@ -286,7 +286,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, mrk = 0;
-	bool error = false;
 	int j;
 	char ms[GMT_LEN64] = {""}, mc[GMT_LEN64] = {""}, tmp[GMT_LEN64] = {""}, mfs[GMT_LEN64] = {""}, mf[GMT_LEN64] = {""};
 	char comment[GMT_BUFSIZ] = {""}, mfc[GMT_LEN64] = {""}, *t = NULL;
@@ -304,13 +303,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				Ctrl->A.active = true;
 				Ctrl->A.mode = 1;
 				j = 0;
 				if (opt->arg[0] == 'c') j++, Ctrl->A.mode = 2;
-				if (opt->arg[j] && opt->arg[j] != ',') Ctrl->A.size = atof (&opt->arg[j]) * GMT->session.u2u[GMT_PT][GMT_INCH];
-				if ((t = strchr (&opt->arg[2], ',')) != NULL) {	/* Want label at regular spacing */
-					t++;	/* Skip the comma */
-					error += (bool)get_annotinfo (t, &Ctrl->A.info);
+				if (opt->arg[j] && opt->arg[j] != ',')
+					Ctrl->A.size = atof (&opt->arg[j]) * GMT->session.u2u[GMT_PT][GMT_INCH];
+				if ((t = strchr (opt->arg, ','))) {	/* Want label at regular spacing */
+					if (get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
 					Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 				}
 				break;
@@ -409,7 +409,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				error += (bool)get_annotinfo (opt->arg, &Ctrl->L.info);
+				if (get_annotinfo (opt->arg, &Ctrl->L.info)) n_errors++;
 				break;
 
 			case 'N':
@@ -443,12 +443,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						mrk = MGD77TRACK_MARK_DIST;
 						break;
 					default:
-						error = true;
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
+						n_errors++;
 						break;
-				}
-				if (error) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
-					n_errors++;
 				}
 				strncpy (comment, &opt->arg[1], GMT_BUFSIZ-1);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
