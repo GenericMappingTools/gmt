@@ -454,52 +454,52 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
 			if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
-				S->coord = gmt_M_memory (GMT, S->coord, n_columns, double *);
+				S->data = gmt_M_memory (GMT, S->data, n_columns, double *);
 				S->min = gmt_M_memory (GMT, S->min, n_columns, double);
 				S->max = gmt_M_memory (GMT, S->max, n_columns, double);
-				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->coord[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
+				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 			}
 			
-			if (Ctrl->S.active) S->coord[h_col][0] = D2R * (90.0 - S->coord[h_col][0]);	/* Angles are stored as CCW angles in radians */
+			if (Ctrl->S.active) S->data[h_col][0] = D2R * (90.0 - S->data[h_col][0]);	/* Angles are stored as CCW angles in radians */
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
-					dy = S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1];
+					dy = S->data[GMT_Y][row] - S->data[GMT_Y][row-1];
 					if (gmt_M_is_geographic (GMT, GMT_IN)) {
-						gmt_M_set_delta_lon (S->coord[GMT_X][row-1], S->coord[GMT_X][row], dx);
+						gmt_M_set_delta_lon (S->data[GMT_X][row-1], S->data[GMT_X][row], dx);
 						dy *= GMT->current.proj.DIST_KM_PR_DEG;
-						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->coord[GMT_Y][row] + S->coord[GMT_Y][row-1])));
+						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->data[GMT_Y][row] + S->data[GMT_Y][row-1])));
 					}
 					else
-						dx = S->coord[GMT_X][row] - S->coord[GMT_X][row-1];
+						dx = S->data[GMT_X][row] - S->data[GMT_X][row-1];
 					if (dy == 0.0 && dx == 0.0) {
-						S->coord[d_col][row] = S->coord[d_col][row-1];
-						S->coord[h_col][row] = S->coord[h_col][row-1];
+						S->data[d_col][row] = S->data[d_col][row-1];
+						S->data[h_col][row] = S->data[h_col][row-1];
 					}
 					else {
-						S->coord[d_col][row] = S->coord[d_col][row-1] + hypot (dx,dy);
-						S->coord[h_col][row] = d_atan2(dy,dx);	/* Angles are stored as CCW angles in radians */
+						S->data[d_col][row] = S->data[d_col][row-1] + hypot (dx,dy);
+						S->data[h_col][row] = d_atan2(dy,dx);	/* Angles are stored as CCW angles in radians */
 					}
 				}
 				else 
-					S->coord[h_col][row] = D2R * (90.0 - S->coord[h_col][row]);	/* Angles are stored as CCW angles in radians */
+					S->data[h_col][row] = D2R * (90.0 - S->data[h_col][row]);	/* Angles are stored as CCW angles in radians */
 			}
-			if (!Ctrl->S.active) S->coord[h_col][0] = S->coord[h_col][1];
+			if (!Ctrl->S.active) S->data[h_col][0] = S->data[h_col][1];
 			
 			/* Here a complete segment is ready for further processing */
 			/* Now we have read the data and can filter z, if necessary.  */
 
-			if (Ctrl->F.active) filter_cols (GMT, S->coord, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
+			if (Ctrl->F.active) filter_cols (GMT, S->data, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
 
 			/* Now we are ready to search for segments.  */
 
 			begin = end = 0;
 			while (end < S->n_rows-1) {
-				sincos (S->coord[h_col][begin], &last_s, &last_c);
+				sincos (S->data[h_col][begin], &last_s, &last_c);
 				csum = last_c;	ssum = last_s;
 				ok = true;
 				while (ok && end < S->n_rows-1) {
 					end++;
-					sincos (S->coord[h_col][end], &this_s, &this_c);
+					sincos (S->data[h_col][end], &this_s, &this_c);
 					dotprod = this_c * last_c + this_s * last_s;
 					if (fabs (dotprod) > 1.0) dotprod = copysign (1.0, dotprod);
 					if (d_acos (dotprod) > Ctrl->C.value) {	/* Fails due to too much change in azimuth  */
@@ -518,13 +518,13 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				if (ok) end++;	/* Last point in input should be included in this segment  */
 
 				if (end - begin - 1) { /* There are at least two points in the list.  */
-					if ((S->coord[d_col][end-1] - S->coord[d_col][begin]) >= Ctrl->D.value) {
+					if ((S->data[d_col][end-1] - S->data[d_col][begin]) >= Ctrl->D.value) {
 						/* List is long enough.  Check strike. Compute mean_azim in range [-pi/2, pi/2] */
 
 						mean_azim = d_atan2 (ssum, csum);
 						mean_azim = fabs (mean_azim - Ctrl->A.azimuth);
 						if (mean_azim <= Ctrl->A.tolerance) {	/* List has acceptable strike.  */
-							if (Ctrl->F.active) filter_cols (GMT, S->coord, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
+							if (Ctrl->F.active) filter_cols (GMT, S->data, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
 							nprofiles++;
 
 							n_out = end - begin;
@@ -536,7 +536,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 							for (row = begin; row < end; row++, k++) {
 								for (j = 0; j < n_outputs; j++) {	/* Remember to convert CCW angles back to azimuths */
-									S_out->coord[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->coord[h_col][row] : S->coord[output_choice[j]][row];
+									S_out->data[j][k] = (output_choice[j] == h_col) ? 90.0 - R2D * S->data[h_col][row] : S->data[output_choice[j]][row];
 								}
 							}
 							if (seg2 == n_alloc_seg) {
@@ -551,8 +551,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				begin = end;
 			}
 			if (!Ctrl->S.active) {	/* Must remove the 2 cols we added  */
-				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) gmt_M_free (GMT, S->coord[col]);
-				S->coord = gmt_M_memory (GMT, S->coord, S->n_columns, double *);
+				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) gmt_M_free (GMT, S->data[col]);
+				S->data = gmt_M_memory (GMT, S->data, S->n_columns, double *);
 				S->min = gmt_M_memory (GMT, S->min, S->n_columns, double);
 				S->max = gmt_M_memory (GMT, S->max, S->n_columns, double);
 			}
@@ -575,11 +575,11 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);	/* An empty table */
 	}
-	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the coord pointers to point to various points in our single S_out arrays */
+	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the data pointers to point to various points in our single S_out arrays */
 		S = D[GMT_OUT]->table[0]->segment[seg];
 		k = (seg == 0) ? 0 : rec[seg-1];
 		n = (seg == 0) ? rec[seg] : rec[seg] - rec[seg-1];
-		for (j = 0; j < n_outputs; j++) S->coord[j] = &(S_out->coord[j][k]);
+		for (j = 0; j < n_outputs; j++) S->data[j] = &(S_out->data[j][k]);
 		S->n_rows = n;
 		sprintf (header, "Profile %" PRIu64" -I%" PRIu64, seg, seg);
 		S->header = strdup (header);
@@ -601,9 +601,9 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	/* Must set coord pointers to NULL since they were not allocated */
+	/* Must set data pointers to NULL since they were not allocated */
 	for (seg = 0; seg < seg2; seg++)
-		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
+		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->data[j] = NULL;
 	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 
 	Return (GMT_OK);

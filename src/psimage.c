@@ -39,7 +39,7 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<nx>[/<ny>]][+o<off[GMT_X]>[/<dy>]][+r<dpi>] */
+	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<off[GMT_X]>[/<dy>]][+r<dpi>] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
@@ -47,7 +47,7 @@ struct PSIMAGE_CTRL {
 		bool interpolate;
 		double dim[2];
 		double dpi;
-		unsigned int nx, ny;
+		unsigned int n_columns, n_rows;
 	} D;
 	struct PSIMG_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
@@ -74,7 +74,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
-	C->D.nx = C->D.ny = 1;
+	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
 
@@ -91,7 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<nx>[/<ny>]]%s+r<dpi>]\n", GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>]\n", GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value as width and interpolate image in PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <nx> by <ny> times [Default is no replication].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <n_columns> by <n_rows> times [Default is no replication].\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
@@ -163,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
-				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<nx>[/<ny>]][+r<dpi>] */
+				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
 					/* Required modifier +w OR +r */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
@@ -181,8 +181,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
-						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
-						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
+						n = sscanf (string, "%d/%d", &Ctrl->D.n_columns, &Ctrl->D.n_rows);
+						if (n == 1) Ctrl->D.n_rows = Ctrl->D.n_columns;
 					}
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
@@ -253,8 +253,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':	/* Replicate image */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D modifier +n instead.\n");
-				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
-				if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.n_columns, &Ctrl->D.n_rows);
+				if (n == 1) Ctrl->D.n_rows = Ctrl->D.n_columns;
 				n_errors += gmt_M_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.nx < 1 || Ctrl->D.ny < 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Syntax error -D option: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
@@ -441,9 +441,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		/* Handle transparent images */
-		if (I->ColorMap != NULL) {	/* Image has a color map */
+		if (I->colormap != NULL) {	/* Image has a color map */
 			/* Convert colormap from integer to unsigned char and count colors */
-			for (n = 0; n < 4 * 256 && I->ColorMap[n] >= 0; n++) colormap[n] = (unsigned char)I->ColorMap[n];
+			for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
@@ -479,8 +479,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		}
 
 		picture = (unsigned char *)I->data;
-		header.width = I->header->nx;
-		header.height = I->header->ny;
+		header.width = I->header->n_columns;
+		header.height = I->header->n_rows;
 		header.depth = (int)I->header->n_bands * 8;
 	}
 #else
@@ -540,8 +540,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.n_columns * Ctrl->D.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
@@ -580,8 +580,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
-		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
-		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
+		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.n_columns * Ctrl->D.dim[GMT_X];
+		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
@@ -593,14 +593,14 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
-		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
+		Ctrl->F.panel->width = Ctrl->D.n_columns * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 
-	for (row = 0; row < Ctrl->D.ny; row++) {
+	for (row = 0; row < Ctrl->D.n_rows; row++) {
 		y = Ctrl->D.refpoint->y + row * Ctrl->D.dim[GMT_Y];
-		if (Ctrl->D.ny > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.nx, row);
-		for (col = 0; col < Ctrl->D.nx; col++) {
+		if (Ctrl->D.n_rows > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.n_columns, row);
+		for (col = 0; col < Ctrl->D.n_columns; col++) {
 			x = Ctrl->D.refpoint->x + col * Ctrl->D.dim[GMT_X];
 			if (header.depth == 0)
 				PSL_plotepsimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture, &header);

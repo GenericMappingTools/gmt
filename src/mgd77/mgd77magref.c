@@ -590,17 +590,17 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			}
 
 			if (!Ctrl->A.fixed_alt) {	/* Assign the alt_array to the provided altitude array */
-				alt_array = T->segment[s]->coord[GMT_Z];
+				alt_array = T->segment[s]->data[GMT_Z];
 				Ctrl->CM4->CM4_DATA.n_altitudes = (int)T->segment[s]->n_rows;
 			}
 
 			if (!Ctrl->A.fixed_time) {	/* Assign the time_array to the provided time array */
 				Ctrl->CM4->CM4_DATA.n_times = (int)T->segment[s]->n_rows;
 				if (Ctrl->A.years)
-					time_array = T->segment[s]->coord[t_col];
+					time_array = T->segment[s]->data[t_col];
 				else {	/* Must convert internal GMT time to decimal years first */
 					for (i = 0; i < T->segment[s]->n_rows; i++)
-						time_years[i] = MGD77_time_to_fyear (GMT, &M, T->segment[s]->coord[t_col][i]);
+						time_years[i] = MGD77_time_to_fyear (GMT, &M, T->segment[s]->data[t_col][i]);
 					time_array = time_years;
 				}
 			}
@@ -619,8 +619,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 					the_altitude = (Ctrl->A.fixed_alt) ? alt_array[0] : alt_array[i];
 					the_time = (Ctrl->A.fixed_time) ? time_array[0] : time_array[i];
 					if (type == 2) the_altitude += 6371.2;
-					MGD77_igrf10syn (GMT, 0, the_time, type, the_altitude, T->segment[s]->coord[GMT_X][i],
-							T->segment[s]->coord[GMT_Y][i], IGRF);
+					MGD77_igrf10syn (GMT, 0, the_time, type, the_altitude, T->segment[s]->data[GMT_X][i],
+							T->segment[s]->data[GMT_Y][i], IGRF);
 					if (!Ctrl->joint_IGRF_CM4) {		/* IGRF only */
 						int jj;
 						for (jj = 0; jj < Ctrl->CM4->CM4_F.n_field_components; jj++)
@@ -635,8 +635,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 			if (Ctrl->do_CM4) {				/* DO CM4 only. Eval CM4 at all points */
 				int err;
-				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->coord[GMT_X],
-							T->segment[s]->coord[GMT_Y], alt_array, time_array)) != 0) {
+				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->data[GMT_X],
+							T->segment[s]->data[GMT_Y], alt_array, time_array)) != 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating an error.\n"
 						"Unfortunately, this means all other eventually good\n"
 						"records are also ignored. Fix the bad record and rerun the command.\n");
@@ -647,7 +647,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			if ((Ctrl->do_CM4 || Ctrl->do_IGRF) && !Ctrl->joint_IGRF_CM4) {	/* DID CM4 or (exclusive) IGRF only. */
 				for (i = 0; i < T->segment[s]->n_rows; i++) {	/* Output the requested columns */
 					n_out = 0;
-					if (Ctrl->copy_input) for (j = 0; j < T->segment[s]->n_columns; j++) out[n_out++] = T->segment[s]->coord[j][i];
+					if (Ctrl->copy_input) for (j = 0; j < T->segment[s]->n_columns; j++) out[n_out++] = T->segment[s]->data[j][i];
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
@@ -658,7 +658,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				double x, y, z;
 				for (i = 0; i < T->segment[s]->n_rows; i++) {	/* Output the requested columns */
 					n_out = 0;
-					if (Ctrl->copy_input) for (j = 0; j < T->segment[s]->n_columns; j++) out[n_out++] = T->segment[s]->coord[j][i];
+					if (Ctrl->copy_input) for (j = 0; j < T->segment[s]->n_columns; j++) out[n_out++] = T->segment[s]->data[j][i];
 					if (cm4_igrf_T) {
 						x = Ctrl->CM4->CM4_DATA.out_field[i*3  ] + igrf_xyz[i*3  ];
 						y = Ctrl->CM4->CM4_DATA.out_field[i*3+1] + igrf_xyz[i*3+1];

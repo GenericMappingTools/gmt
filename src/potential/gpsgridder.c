@@ -759,8 +759,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			gmt_sort_array (GMT, eig, n2, GMT_DOUBLE);
 			eig_max = eig[n-1];
 			for (i = 0, j = n2-1; i < n2; i++, j--) {
-				E->table[0]->segment[0]->coord[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
-				E->table[0]->segment[0]->coord[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
+				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
+				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
 			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_OK) {
 				gmt_M_free (GMT, eig);
@@ -847,8 +847,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		 * save to memory and THEN write the output via GMT_Write_Data */
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				out[GMT_X] = T->segment[seg]->coord[GMT_X][row];
-				out[GMT_Y] = T->segment[seg]->coord[GMT_Y][row];
+				out[GMT_X] = T->segment[seg]->data[GMT_X][row];
+				out[GMT_Y] = T->segment[seg]->data[GMT_Y][row];
 				out[GMT_U] = out[GMT_V] = 0.0;
 				for (p = 0; p < n; p++) {
 					get_gps_dxdy (GMT, out, X[p], &dx, &dy, geo);
@@ -879,9 +879,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n,normalize,geo)
 #endif
-		for (row = 0; row < Out[GMT_X]->header->ny; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+		for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 			V[GMT_Y] = yp[row];
-			for (col = 0; col < Out[GMT_X]->header->nx; col++) {	/* This loop is always active for 1,2,3D */
+			for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
 				ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
 				if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only do solution where mask is not NaN */
 				V[GMT_X] = xp[col];

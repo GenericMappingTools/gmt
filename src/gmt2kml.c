@@ -610,15 +610,15 @@ GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int 
 	/* Special version of gmt_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
-		gmt_M_rgb_copy (rgb, P->patch[index+3].rgb);
-		P->skip = P->patch[index+3].skip;
+		gmt_M_rgb_copy (rgb, P->bfn[index+3].rgb);
+		P->skip = P->bfn[index+3].skip;
 	}
-	else if (P->range[index].skip) {		/* Set to page color for now */
+	else if (P->data[index].skip) {		/* Set to page color for now */
 		gmt_M_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
 		P->skip = true;
 	}
 	else {	/* Return low color */
-		gmt_M_memcpy (rgb, P->range[index].rgb_low, 4, double);
+		gmt_M_memcpy (rgb, P->data[index].rgb_low, 4, double);
 		P->skip = false;
 	}
 }
@@ -635,7 +635,7 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
-				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
+				sscanf (D->table[tbl]->segment[seg]->data[row], "%s %s", T[ix], T[iy]);
 				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
 					gmt_M_free (GMT, Q);
@@ -840,7 +840,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* If binary input or the user selected input columns with -i then call open file as GMT_IS_DATASET;
 	   TEXTSET otherwise, then handle the differenes below n_tables = (binary) ? Dd->n_tables : Dt->n_tables;
-	   same for n_segments, and n_rows, then additional if-test on parsing text record or using coord as is. */
+	   same for n_segments, and n_rows, then additional if-test on parsing text record or using data as is. */
 
 	if (no_text) {	/* Treat input as a data set (no texts) */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -970,7 +970,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				if (no_text) {	/* Data values only, just copy as is */
 					unsigned int col;
 					for (col = 0; col < n_coord; col++)
-						out[col] = Dd->table[tbl]->segment[seg]->coord[col][row];
+						out[col] = Dd->table[tbl]->segment[seg]->data[col][row];
 					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					pos = 0;
 					if (get_z) {
@@ -981,16 +981,16 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				else {	/* Parse text records separately */
 					switch (n_coord) {	/* Sort out input coordinates from remaining items which may be text */
 						case 2:	/* Just lon, lat, label */
-							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %[^\n]", C[ix], C[iy], extra);
+							sscanf (Dt->table[tbl]->segment[seg]->data[row], "%s %s %[^\n]", C[ix], C[iy], extra);
 							break;
 						case 3:	/* Just lon, lat, a, extra */
-							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %[^\n]", C[ix], C[iy], C[2], extra);
+							sscanf (Dt->table[tbl]->segment[seg]->data[row], "%s %s %s %[^\n]", C[ix], C[iy], C[2], extra);
 							break;
 						case 4:	/* Just lon, lat, a, b, extra */
-							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], extra);
+							sscanf (Dt->table[tbl]->segment[seg]->data[row], "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], extra);
 							break;
 						case 5:	/* Just lon, lat, z, t1, t2, extra */
-							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
+							sscanf (Dt->table[tbl]->segment[seg]->data[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
 							break;
 					}
 					if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {

@@ -189,7 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,
 							"Syntax error -M option: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
-			case 'N':	/* GMT4 Backwards compatible.  nx/ny can now be set with -D */
+			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
 					Ctrl->D.active = true;
@@ -411,8 +411,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Rect->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 		if (set_n) {
-			use_nx = Rect->header->nx;
-			use_ny = Rect->header->ny;
+			use_nx = Rect->header->n_columns;
+			use_ny = Rect->header->n_rows;
 		}
 		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Geo->header);
@@ -489,8 +489,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			Ctrl->D.inc[GMT_Y] *= unit_to_inch;
 		}
 		if (set_n) {
-			use_nx = Geo->header->nx;
-			use_ny = Geo->header->ny;
+			use_nx = Geo->header->n_columns;
+			use_ny = Geo->header->n_rows;
 		}
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {

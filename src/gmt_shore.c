@@ -1338,8 +1338,8 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 				/* Allocate segment to hold this line segment and memcpy over the coordinates */
 				S = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT);
 				gmt_alloc_segment (GMT, S, p[k].n, 2U, true);
-				gmt_M_memcpy (S->coord[GMT_X], p[k].lon, S->n_rows, double);
-				gmt_M_memcpy (S->coord[GMT_Y], p[k].lat, S->n_rows, double);
+				gmt_M_memcpy (S->data[GMT_X], p[k].lon, S->n_rows, double);
+				gmt_M_memcpy (S->data[GMT_Y], p[k].lat, S->n_rows, double);
 				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */
 				D->table[tbl]->n_records += S->n_rows;	/* Add up records in this table */
 			}

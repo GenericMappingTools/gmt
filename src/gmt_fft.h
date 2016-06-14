@@ -77,20 +77,20 @@ struct GMT_FFT_INFO {
 					/* save[GMT_OUT] means save the complex output grid just after calling the FFT */
 	bool polar;			/* true if we are to save the complex output grid in polar form */
 	char suffix[GMT_LEN64];		/* Suffix used to form output names if save[GMT_IN] is true [tapered] */
-	unsigned int nx;		/* Desired hard FFT nx dimensionl or 0 if free to adjust */
-	unsigned int ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
+	unsigned int n_columns;		/* Desired hard FFT n_columns dimensionl or 0 if free to adjust */
+	unsigned int n_rows;		/* Desired hard FFT n_rows dimensionl or 0 if free to adjust */
 	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
-	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting nx/ny or inquire */
+	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting n_columns/n_rows or inquire */
 	int trend_mode;			/* One of the GMT_FFT_TREND for handling detrending */
 	double taper_width;		/* Amount of tapering in percent */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to wavenumber structure */
 };
 
 struct GMT_FFT_SUGGESTION {
-	unsigned int nx;
-	unsigned int ny;
+	unsigned int n_columns;
+	unsigned int n_rows;
 	size_t worksize;	/* # single-complex elements needed in work array  */
-	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
+	size_t totalbytes;	/* (8*(n_columns*n_rows + worksize))  */
 	double run_time;
 	double rms_rel_err;
 }; /* [0] holds fastest, [1] most accurate, [2] least storage  */

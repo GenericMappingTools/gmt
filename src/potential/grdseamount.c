@@ -634,7 +634,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
+				if (parse_the_record (GMT, Ctrl, S->data[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
@@ -684,7 +684,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	nx1 = Grid->header->nx + Grid->header->registration - 1;
+	nx1 = Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
@@ -710,7 +710,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
+					if (parse_the_record (GMT, Ctrl, S->data[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
 					
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
@@ -767,10 +767,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
-					if ((col_0 = scol_0) >= Grid->header->nx) continue;	/* Still outside x-range */
+					if ((col_0 = scol_0) >= Grid->header->n_columns) continue;	/* Still outside x-range */
 					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
-					if ((row_0 = srow_0) >= Grid->header->ny) continue;	/* Still outside y-range */
+					if ((row_0 = srow_0) >= Grid->header->n_rows) continue;	/* Still outside y-range */
 					
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
@@ -819,17 +819,17 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
-						if ((row = srow) >= Grid->header->ny) continue;
+						if ((row = srow) >= Grid->header->n_rows) continue;
 						y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 						first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
 						for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
 							if (!periodic) {
 								if (scol < 0) continue;
-								if ((col = scol) >= Grid->header->nx) continue;
+								if ((col = scol) >= Grid->header->n_columns) continue;
 							}
 							if (scol < 0)	/* Periodic grid: Break on through to other side! */
 								col = scol + nx1;
-							else if ((col = scol) >= Grid->header->nx) 	/* Periodic grid: Wrap around to other side */
+							else if ((col = scol) >= Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
 								col -= nx1;
 							/* "silent" else we are inside w/e */
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
@@ -912,7 +912,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 			else
 				strcpy (record, file);
-			L->table[0]->segment[0]->record[t_use++] = strdup (record);
+			L->table[0]->segment[0]->data[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
 		

@@ -447,12 +447,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRID_NODE_REG;
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
-		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
+		if (sscanf (line, "%*s %d", &Grid->header->n_columns) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
-		if (sscanf (line, "%*s %d", &Grid->header->ny) != 1) {
+		if (sscanf (line, "%*s %d", &Grid->header->n_rows) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
@@ -475,12 +475,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 		Grid->header->inc[GMT_Y] = Grid->header->inc[GMT_X];
 		Grid->header->xy_off = 0.5 * Grid->header->registration;
-		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->nx - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
-		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->ny - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
+		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->n_columns - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
+		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->n_rows - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
 		gmt_set_grddim (GMT, Grid->header);
 		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
 
 		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
@@ -506,13 +506,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			ij = gmt_M_ijp (Grid->header, row, col);
 			value = atof (line);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
-			if (++col == Grid->header->nx) col = 0, row++;
+			if (++col == Grid->header->n_columns) col = 0, row++;
 			n_left--;
 		}
 		while (fscanf (fp, "%lf", &value) == 1 && n_left) {
 			ij = gmt_M_ijp (Grid->header, row, col);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
-			if (++col == Grid->header->nx) col = 0, row++;
+			if (++col == Grid->header->n_columns) col = 0, row++;
 			n_left--;
 		}
 		gmt_fclose (GMT, fp);
@@ -547,7 +547,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
+	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
 	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
@@ -623,11 +623,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			scol = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 			if (scol == -1) scol++, n_confused++;
 			col = scol;
-			if (col == Grid->header->nx) col--, n_confused++;
+			if (col == Grid->header->n_columns) col--, n_confused++;
 			srow = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 			if (srow == -1) srow++, n_confused++;
 			row = srow;
-			if (row == Grid->header->ny) row--, n_confused++;
+			if (row == Grid->header->n_rows) row--, n_confused++;
 			ij = gmt_M_ij0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
 			if (Amode == 'f') {	/* Want the first value to matter only */
 				if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
@@ -688,9 +688,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			uint64_t ij_west, ij_east;
 			bool first_bad = true;
 
-			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
+			for (row = 0; row < Grid->header->n_rows; row++) {	/* For each row, look at west and east bin */
 				ij_west = gmt_M_ij0 (Grid->header, row, 0);
-				ij_east = gmt_M_ij0 (Grid->header, row, Grid->header->nx - 1);
+				ij_east = gmt_M_ij0 (Grid->header, row, Grid->header->n_columns - 1);
 				
 				if (flag[ij_west] && !flag[ij_east]) {		/* Nothing in east bin, just copy from west */
 					Grid->data[ij_east] = Grid->data[ij_west];

@@ -370,17 +370,17 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		for (seg_in = seg_out = 0; seg_in < D[GMT_IN]->table[tbl]->n_segments; seg_in++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg_in];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
-			poly = (!gmt_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
+			poly = (!gmt_polygon_is_open (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows));
 			index = gmt_M_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
-			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
-			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->coord[GMT_X][index[0]] == S[GMT_IN]->coord[GMT_X][index[1]] && S[GMT_IN]->coord[GMT_Y][index[0]] == S[GMT_IN]->coord[GMT_Y][index[1]]));
+			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
+			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->data[GMT_X][index[0]] == S[GMT_IN]->data[GMT_X][index[1]] && S[GMT_IN]->data[GMT_Y][index[0]] == S[GMT_IN]->data[GMT_Y][index[1]]));
 			if (!skip) {	/* Must allocate output */
 				D[GMT_OUT]->table[tbl]->segment[seg_out] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
 				S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg_out];
 				gmt_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
 				for (row = 0; row < np_out; row++)
 					for (col = 0; col < S[GMT_IN]->n_columns; col++) {	/* Copy coordinates via index lookup */
-						S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
+						S[GMT_OUT]->data[col][row] = S[GMT_IN]->data[col][index[row]];
 					}
 				seg_out++;		/* Move on to next output segment */
 				ns_in++;		/* Input segment with points */

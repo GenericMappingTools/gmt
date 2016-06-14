@@ -619,8 +619,8 @@ GMT_LOCAL void grd_BPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev2]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			p = (stack[prev2]->constant) ? stack[prev2]->factor : (double)stack[prev2]->G->data[node];
 			n = (stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node];
 			x = (stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node];
@@ -975,8 +975,8 @@ GMT_LOCAL void grd_CHI2CDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHI2CDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHI2CDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			gmt_chi2 (GMT, a, b, &q);
@@ -994,8 +994,8 @@ GMT_LOCAL void grd_CHI2PDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHI2PDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHI2PDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			c = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			nu = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_chi2_pdf (GMT, c, nu);
@@ -1023,8 +1023,8 @@ GMT_LOCAL void grd_COMB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_combination (GMT, irint(a), irint(b));
@@ -1127,8 +1127,8 @@ GMT_LOCAL void grd_PCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	double a, b, prob;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			gmt_poisson_cdf (GMT, a, b, &prob);
@@ -1145,8 +1145,8 @@ GMT_LOCAL void grd_PPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	double a, b;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PPDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_poissonpdf (GMT, a, b);
@@ -1214,14 +1214,14 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
 
 	z = gmt_M_memory (GMT, NULL, info->size, float);
-	cx = gmt_M_memory (GMT, NULL, info->G->header->ny, double);
+	cx = gmt_M_memory (GMT, NULL, info->G->header->n_rows, double);
 	gmt_M_row_loop (GMT, info->G, row) cx[row] = 1.0 / (info->dx[row] * info->dx[row]);
 
 	mx = info->G->header->mx;
 	cy = 1.0 / (info->dy * info->dy);
 
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 		z[node] = (float)(cx[row] * (stack[last]->G->data[node+1] - 2.0 * stack[last]->G->data[node] + stack[last]->G->data[node-1]) + \
 			cy * (stack[last]->G->data[node+mx] - 2.0 * stack[last]->G->data[node] + stack[last]->G->data[node-mx]));
 		}
@@ -1254,7 +1254,7 @@ GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
-		ij = gmt_M_ijp (info->G->header, row, info->G->header->nx-1);	/* Last col */
+		ij = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-1);	/* Last col */
 		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
@@ -1288,7 +1288,7 @@ GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);	/* Set top node via BC curv = 0 */
 		next_bottom = stack[last]->G->data[node-mx];
-		ij = gmt_M_ijp (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
+		ij = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
 		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);	/* Set bottom node via BC curv = 0 */
 		gmt_M_row_loop (GMT, info->G, row) { /* Cannot use node inside here and must get ij separately */
@@ -1328,7 +1328,7 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
 
 	z = gmt_M_memory (GMT, NULL, info->size, float);
-	cx = gmt_M_memory (GMT, NULL, info->G->header->ny, double);
+	cx = gmt_M_memory (GMT, NULL, info->G->header->n_rows, double);
 	gmt_M_row_loop (GMT, info->G, row) cx[row] = 0.5 / (info->dx[row] * info->dx[row]);
 
 	mx = info->G->header->mx;
@@ -1378,7 +1378,7 @@ GMT_LOCAL void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
-		ij = gmt_M_ijp (info->G->header, row, info->G->header->nx-1);	/* Last col */
+		ij = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-1);	/* Last col */
 		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
@@ -1411,7 +1411,7 @@ GMT_LOCAL void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA) 	/* Set top node via BC curv = 0 */
 			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);
 		next_bottom = stack[last]->G->data[node-mx];
-		ij = gmt_M_ijp (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
+		ij = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
 		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 	/* Set bottom node via BC curv = 0 */
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);
 		gmt_M_row_loop (GMT, info->G, row) {
@@ -1747,8 +1747,8 @@ GMT_LOCAL void grd_FCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (stack[prev2]->constant && stack[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for FCRIT!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCRIT!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCRIT!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			alpha = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = irint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = irint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -1768,8 +1768,8 @@ GMT_LOCAL void grd_FCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	prev2 = last - 2;
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCDF!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			F = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -1861,8 +1861,8 @@ GMT_LOCAL void grd_FPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	if (stack[prev2]->constant && stack[prev2]->factor < 0.0)  GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one < 0 for FCDF!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCDF!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			F = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -2958,8 +2958,8 @@ GMT_LOCAL void grd_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_permutation (GMT, irint(a), irint(b));
@@ -3047,14 +3047,14 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		size_t n_alloc = 0;
 		gmt_M_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
 		for (seg = 0; seg < T->n_segments; seg++) {
-			gmt_M_memcpy (&x[n], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
-			gmt_M_memcpy (&y[n], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows, double);
+			gmt_M_memcpy (&x[n], T->segment[seg]->data[GMT_X], T->segment[seg]->n_rows, double);
+			gmt_M_memcpy (&y[n], T->segment[seg]->data[GMT_Y], T->segment[seg]->n_rows, double);
 			n += T->segment[seg]->n_rows;
 		}
 	}
 	else {	/* Just a single segment, use pointers */
-		x = T->segment[0]->coord[GMT_X];
-		y = T->segment[0]->coord[GMT_Y];
+		x = T->segment[0]->data[GMT_X];
+		y = T->segment[0]->data[GMT_Y];
 		n = T->segment[0]->n_rows;
 	}
 	gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
@@ -3356,7 +3356,7 @@ GMT_LOCAL void grd_ROLL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 GMT_LOCAL void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ROTX 2 1 Rotate A by the (constant) shift B in x-direction.  */
 	uint64_t node;
-	unsigned int col, row, prev = last - 1, *new_col = NULL, nx;
+	unsigned int col, row, prev = last - 1, *new_col = NULL, n_columns;
 	int colx, shift;
 	float *z = NULL;
 
@@ -3369,17 +3369,17 @@ GMT_LOCAL void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	shift = irint (stack[last]->factor * info->G->header->r_inc[GMT_X]);	/* Shift of nodes */
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
-	if (shift < 0) shift += info->G->header->nx;	/* Same thing */
-	nx = info->G->header->nx;
+	if (shift < 0) shift += info->G->header->n_columns;	/* Same thing */
+	n_columns = info->G->header->n_columns;
 	/* Set up permutation vector */
 
-	new_col = gmt_M_memory (GMT, NULL, nx, unsigned int);
-	z = gmt_M_memory (GMT, NULL, nx, float);
-	for (col = colx = 0; col < info->G->header->nx; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->nx;	/* Move by shift but rotate around */
+	new_col = gmt_M_memory (GMT, NULL, n_columns, unsigned int);
+	z = gmt_M_memory (GMT, NULL, n_columns, float);
+	for (col = colx = 0; col < info->G->header->n_columns; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->n_columns;	/* Move by shift but rotate around */
 	gmt_M_row_loop (GMT, info->G, row) {	/* For each row */
 		gmt_M_col_loop (GMT, info->G, row, col, node) z[new_col[col]] = stack[prev]->G->data[node];	/* Copy one row of data to z with shift */
 		node = gmt_M_ijp (info->G->header, row, 0);		/* First col */
-		gmt_M_memcpy (&stack[prev]->G->data[node], z, nx, float);	/* Replace this row */
+		gmt_M_memcpy (&stack[prev]->G->data[node], z, n_columns, float);	/* Replace this row */
 	}
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, new_col);
@@ -3400,15 +3400,15 @@ GMT_LOCAL void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	shift = irint (stack[last]->factor / info->G->header->inc[GMT_Y]);	/* Shift of nodes */
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
-	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
+	if (shift < 0) shift += info->G->header->n_rows;	/* Same thing */
 	/* Set up permutation vector */
 
-	new_row = gmt_M_memory (GMT, NULL, info->G->header->ny, unsigned int);
-	z = gmt_M_memory (GMT, NULL, info->G->header->ny, float);
-	for (row = rowx = 0; row < info->G->header->ny; row++, rowx++) new_row[rowx] = (rowx + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
-	for (col = 0; col < info->G->header->nx; col++) {	/* For each column */
-		for (row = 0; row < info->G->header->ny; row++) z[new_row[row]] = stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)];	/* Copy one column of data to z with shift */
-		for (row = 0; row < info->G->header->ny; row++) stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)] = z[row];	/* Replace this column */
+	new_row = gmt_M_memory (GMT, NULL, info->G->header->n_rows, unsigned int);
+	z = gmt_M_memory (GMT, NULL, info->G->header->n_rows, float);
+	for (row = rowx = 0; row < info->G->header->n_rows; row++, rowx++) new_row[rowx] = (rowx + info->G->header->n_rows - shift) % info->G->header->n_rows;	/* Move by shift but rotate around */
+	for (col = 0; col < info->G->header->n_columns; col++) {	/* For each column */
+		for (row = 0; row < info->G->header->n_rows; row++) z[new_row[row]] = stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)];	/* Copy one column of data to z with shift */
+		for (row = 0; row < info->G->header->n_rows; row++) stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)] = z[row];	/* Replace this column */
 	}
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, new_row);
@@ -3878,8 +3878,8 @@ GMT_LOCAL void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TCRIT!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCRIT!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = irint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_tcrit (GMT, a, (double)b);
@@ -3897,8 +3897,8 @@ GMT_LOCAL void grd_TCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TCDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_t_cdf (GMT, a, b);
@@ -3916,8 +3916,8 @@ GMT_LOCAL void grd_TPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TCDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCDF!\n");
-	for (row = 0; row < info->G->header->ny; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->nx; col++, node++) {
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_t_pdf (GMT, a, b);
@@ -4543,11 +4543,11 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMIN]  = info.G->header->wesn[XLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XMAX]  = info.G->header->wesn[XHI];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_XINC]  = info.G->header->inc[GMT_X];
-	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NX]    = info.G->header->nx;
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NX]    = info.G->header->n_columns;
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMIN]  = info.G->header->wesn[YLO];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMAX]  = info.G->header->wesn[YHI];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YINC]  = info.G->header->inc[GMT_Y];
-	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY]    = info.G->header->ny;
+	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY]    = info.G->header->n_rows;
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "");
 

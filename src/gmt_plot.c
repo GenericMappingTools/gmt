@@ -2674,7 +2674,7 @@ GMT_LOCAL void plot_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
 			pen = gmt_M_memory (GMT, NULL, G->xp->segment[seg]->n_rows, unsigned int);
 			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
-			gmt_plot_line (GMT, G->xp->segment[seg]->coord[GMT_X], G->xp->segment[seg]->coord[GMT_Y], pen, G->xp->segment[seg]->n_rows, PSL_LINEAR);
+			gmt_plot_line (GMT, G->xp->segment[seg]->data[GMT_X], G->xp->segment[seg]->data[GMT_Y], pen, G->xp->segment[seg]->n_rows, PSL_LINEAR);
 			gmt_M_free (GMT, pen);
 		}
 	}
@@ -3040,8 +3040,8 @@ GMT_LOCAL void plot_reverse_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMEN
 	/* Reverse the direction of this polygon, i.e, swap points n-1-k and k */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Make polygon to clockwise\n");
 	for (k = 0; k < S->n_rows/2; k++) {
-		double_swap (S->coord[GMT_X][k], S->coord[GMT_X][n1-k]);
-		double_swap (S->coord[GMT_Y][k], S->coord[GMT_Y][n1-k]);
+		double_swap (S->data[GMT_X][k], S->data[GMT_X][n1-k]);
+		double_swap (S->data[GMT_Y][k], S->data[GMT_Y][n1-k]);
 	}
 }
 
@@ -3063,9 +3063,9 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 	
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = gmtlib_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmtlib_determine_pole (GMT, S->data[GMT_X], S->data[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		plot_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -3074,15 +3074,15 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 	stop_lon  = GMT->common.R.wesn[XLO];
 		
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
-		if (k && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k-1]) <= 0.0) k0 = k;
+		if (k && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
 	}
 	/* Determine the latitude of that crossing */
 	if (k0) {	/* Occurred somewhere along the perimeter between points k0 and k0-1 */
-		gmt_M_set_delta_lon (S->coord[GMT_X][k0-1], S->coord[GMT_X][k0], dx);	/* Handles the 360 jump cases */
-		yc = S->coord[GMT_Y][k0-1] - (S->coord[GMT_Y][k0] - S->coord[GMT_Y][k0-1]) * (S->coord[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
+		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], S->data[GMT_X][k0], dx);	/* Handles the 360 jump cases */
+		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * (S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
 	}
 	else	/* Very first point is at the right longitude */
-		yc = S->coord[GMT_Y][k0];
+		yc = S->data[GMT_Y][k0];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Crossing at %g,%g\n", GMT->common.R.wesn[XLO], yc);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "k at point closest to lon %g is = %d [n = %d]\n", GMT->common.R.wesn[XLO], (int)k0, (int)n);
 	/* Then, add path from pole to start longitude, then copy perimeter path, then add path from stop longitude back to pole */
@@ -3103,12 +3103,12 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 	m = perim_n;	/* Index of next output point */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add perimeter data from k0->n [%d->%d], then 0->k0 [%d]\n", k0, n, k0);
 	for (k = k0; k < n; k++, m++) {
-		plon[m] = S->coord[GMT_X][k];
-		plat[m] = S->coord[GMT_Y][k];
+		plon[m] = S->data[GMT_X][k];
+		plat[m] = S->data[GMT_Y][k];
 	}
 	for (k = 0; k < k0; k++, m++) {
-		plon[m] = S->coord[GMT_X][k];
-		plat[m] = S->coord[GMT_Y][k];
+		plon[m] = S->data[GMT_X][k];
+		plat[m] = S->data[GMT_Y][k];
 	}
 	/* Then add the opposite path to the pole, swithing the longitude to stop_lon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add path from %g/%g to %g/%g [%d points]\n", stop_lon, yc, stop_lon, pole_lat, perim_n);
@@ -3140,7 +3140,7 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	 * That detour will not be drawn, only used for fill. */
 
 	uint64_t n = S->n_rows, k;
-	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
+	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y];
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
 	if (add_pole) {
@@ -3150,10 +3150,10 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 			plon = gmt_M_memory (GMT, NULL, n, double);
 			plat = gmt_M_memory (GMT, NULL, n, double);
 			plat[0] = plat[n-1] = S->pole * 90.0;
-			plon[0] = S->coord[GMT_X][0];
-			plon[n-1] = S->coord[GMT_X][S->n_rows-1];
-			gmt_M_memcpy (&plon[1], S->coord[GMT_X], S->n_rows, double);
-			gmt_M_memcpy (&plat[1], S->coord[GMT_Y], S->n_rows, double);
+			plon[0] = S->data[GMT_X][0];
+			plon[n-1] = S->data[GMT_X][S->n_rows-1];
+			gmt_M_memcpy (&plon[1], S->data[GMT_X], S->n_rows, double);
+			gmt_M_memcpy (&plat[1], S->data[GMT_Y], S->n_rows, double);
 			if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) n = gmt_fix_up_path (GMT, &plon, &plat, n, 0.0, 0);
 		}
 	}
@@ -3278,13 +3278,13 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 		gmtlib_load_rot_matrix (w, R, C->P);			/* Build the actual rotation matrix for this angle */
 		//gmt_matrix_vect_mult (R, Ai, X);		/* Rotate point Ai towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, Ai, X);		/* Rotate point Ai towards B and get X */
-		gmt_cart_to_geo (GMT, &L->coord[GMT_Y][k], &L->coord[GMT_X][k], X, true);	/* Get lon/lat of this point along arc */
+		gmt_cart_to_geo (GMT, &L->data[GMT_Y][k], &L->data[GMT_X][k], X, true);	/* Get lon/lat of this point along arc */
 		//gmt_matrix_vect_mult (R, Ao, X);		/* Rotate point Ai towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, Ao, X);		/* Rotate point Ai towards B and get X */
-		gmt_cart_to_geo (GMT, &L->coord[GMT_Y][n2-k], &L->coord[GMT_X][n2-k], X, true);	/* Get lon/lat of this point along arc */
+		gmt_cart_to_geo (GMT, &L->data[GMT_Y][n2-k], &L->data[GMT_X][n2-k], X, true);	/* Get lon/lat of this point along arc */
 	}
-	L->coord[GMT_X][2*n] = L->coord[GMT_X][0];	/* Explicitly close the polygon */
-	L->coord[GMT_Y][2*n] = L->coord[GMT_Y][0];
+	L->data[GMT_X][2*n] = L->data[GMT_X][0];	/* Explicitly close the polygon */
+	L->data[GMT_Y][2*n] = L->data[GMT_Y][0];
 
 	/* Plot pen as a closed filled polygon without outline */
 	PSL_command (GMT->PSL, "V\n");
@@ -4543,7 +4543,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			struct GMT_DATASEGMENT *S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			gmt_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
-			S->coord[GMT_X] = lon;	S->coord[GMT_Y] = lat;
+			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
 			outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 			if ((panel->mode & 1)) gmt_setfill (GMT, &panel->fill, outline);
@@ -5604,7 +5604,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = gmtlib_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmtlib_determine_pole (GMT, S->data[GMT_X], S->data[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		plot_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -5613,18 +5613,18 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	stop_lon  = GMT->common.R.wesn[XLO];
 	
 	for (k = 0; k < n; k++) 	/* Make negative longitudes only */
-		if (S->coord[GMT_X][k] >= 180.0) S->coord[GMT_X][k] -= 360.0;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
+		if (S->data[GMT_X][k] >= 180.0) S->data[GMT_X][k] -= 360.0;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
-		if (k && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k-1]) <= 0.0) k0 = k;
+		if (k && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
 	}
 	/* Determine the latitude of that crossing */
 	if (k0) {	/* Occurred somewhere along the perimeter between points k0 and k0-1 */
-		gmt_M_set_delta_lon (S->coord[GMT_X][k0-1], S->coord[GMT_X][k0], dx);	/* Handles the 360 jump cases */
-		yc = S->coord[GMT_Y][k0-1] - (S->coord[GMT_Y][k0] - S->coord[GMT_Y][k0-1]) * (S->coord[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
+		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], S->data[GMT_X][k0], dx);	/* Handles the 360 jump cases */
+		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * (S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
 	}
 	else	/* Very first point is at the right longitude */
-		yc = S->coord[GMT_Y][k0];
+		yc = S->data[GMT_Y][k0];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Crossing at %g,%g\n", GMT->common.R.wesn[XLO], yc);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "k at point closest to lon %g is = %d [n = %d]\n", GMT->common.R.wesn[XLO], (int)k0, (int)n);
 	/* Then, add path from pole to start longitude, then copy perimeter path, then add path from stop longitude back to pole */
@@ -5645,12 +5645,12 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	m = perim_n;	/* Index of next output point */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add perimeter data from k0->n [%d->%d], then 0->k0 [%d]\n", k0, n, k0);
 	for (k = k0; k < n; k++, m++) {
-		plon[m] = S->coord[GMT_X][k];
-		plat[m] = S->coord[GMT_Y][k];
+		plon[m] = S->data[GMT_X][k];
+		plat[m] = S->data[GMT_Y][k];
 	}
 	for (k = 0; k < k0; k++, m++) {
-		plon[m] = S->coord[GMT_X][k];
-		plat[m] = S->coord[GMT_Y][k];
+		plon[m] = S->data[GMT_X][k];
+		plat[m] = S->data[GMT_Y][k];
 	}
 	/* Then add the opposite path to the pole, swithing the longitude to stop_lon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add path from %g/%g to %g/%g [%d points]\n", stop_lon, yc, stop_lon, pole_lat, perim_n);
@@ -5695,11 +5695,11 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	/* CASE 1: NO FILL REQUESTED -- JUST DRAW OUTLINE */
 
 	if (gmt_M_eq (PSL->current.rgb[PSL_IS_FILL][0], -1.0)) {
-		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
+		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
 		PSL_comment (PSL, "Perimeter polygon for outline only\n");
 		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
 		for (S2 = S->next; S2; S2 = S2->next) {
-			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
+			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
 		}
@@ -5729,13 +5729,13 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 		PSL_command (PSL, "/FO {fs os}!\nFO\n");	/* Reset FO to its original settings, then force the fill */
 	}
 	if (separate) {	/* Must draw outline separately */
-		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
+		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
 		PSL_command (PSL, "O1\n");	/* Switch on outline again */
 		PSL_comment (PSL, "%s polygon for outline only\n", type[add_pole]);
 		PSL->current.outline = outline;	/* Reset outline to what it was originally */
 		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
 		for (S2 = S->next; S2; S2 = S2->next) {
-			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
+			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
 		}
@@ -5797,7 +5797,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	
 	delta_azimuth = 2.0 * M_PI / N;
 	gmt_alloc_segment (GMT, S, N+1, 2, true);
-	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
+	px = S->data[GMT_X];	py = S->data[GMT_Y];
 
 	for (i = 0; i < N; i++)
 		ellipse_point (GMT, lon, lat, center, sinp, cosp, major, minor, cos_azimuth, sin_azimuth, i * delta_azimuth, &px[i], &py[i]);
@@ -5857,18 +5857,18 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		az = rot_start + k * d_az;
 		gmt_make_rot_matrix2 (GMT, E, az, R);	
 		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);
-		gmt_cart_to_geo (GMT, &S->coord[GMT_Y][kk], &S->coord[GMT_X][kk], Q, true);	/* rotated point */
+		gmt_cart_to_geo (GMT, &S->data[GMT_Y][kk], &S->data[GMT_X][kk], Q, true);	/* rotated point */
 		if (mode == 2 && k == 0) {	/* Add in the apex now */
-			S->coord[GMT_X][++kk] = xlon;			S->coord[GMT_Y][kk] = xlat;
+			S->data[GMT_X][++kk] = xlon;			S->data[GMT_Y][kk] = xlat;
 		}
 	}
 	if (mode == 3) {
 		/* Add apex of wedge */
-		S->coord[GMT_X][kk] = xlon;			S->coord[GMT_Y][kk++] = xlat;
+		S->data[GMT_X][kk] = xlon;			S->data[GMT_Y][kk++] = xlat;
 		/* Close polygon */
-		S->coord[GMT_X][kk] = S->coord[GMT_X][0];	S->coord[GMT_Y][kk] = S->coord[GMT_Y][0];
+		S->data[GMT_X][kk] = S->data[GMT_X][0];	S->data[GMT_Y][kk] = S->data[GMT_Y][0];
 	}
-	S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, 0.0, 0);
+	S->n_rows = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0);
 	gmt_set_seg_minmax (GMT, S);	/* Set min/max */
 	if (mode == 3) gmt_set_seg_polar (GMT, S);
 

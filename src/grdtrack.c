@@ -356,7 +356,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						char file[GMT_BUFSIZ] = {""};
 						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 							for (row = 0; n_errors == 0 && row < Tin->table[0]->segment[seg]->n_rows; row++) {
-								record = Tin->table[0]->segment[seg]->record[row];
+								record = Tin->table[0]->segment[seg]->data[row];
 								gmt_M_memset (file, GMT_BUFSIZ, char);
 								if (sscanf (record, "%s", file) != 1) {
 									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Could not extract file namke from entry: %s\n", record);
@@ -603,9 +603,9 @@ GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t 
 	int64_t col, node;
 	double r;
 	struct GMT_GRID_HEADER *h = S->C->G->header;
-	if (row < 0 || row >= h->ny) return 2;	/* Outside grid */
+	if (row < 0 || row >= h->n_rows) return 2;	/* Outside grid */
 	if (l_col < 0) l_col = 0;	/* Start inside grid */
-	if (r_col >= h->nx) r_col = h->nx - 1;	/* End inside grid */
+	if (r_col >= h->n_columns) r_col = h->n_columns - 1;	/* End inside grid */
 	for (col = l_col; col <= r_col; col++) {	/* Search along this row */
 		node = gmt_M_ijp (h, row, col);
 		if (gmt_M_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
@@ -627,9 +627,9 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
 	int64_t row, node;
 	double r;
 	struct GMT_GRID_HEADER *h = S->C->G->header;
-	if (col < 0 || col >= h->nx) return 2;	/* Outside grid */
+	if (col < 0 || col >= h->n_columns) return 2;	/* Outside grid */
 	if (t_row < 0) t_row = 0;	/* Start inside grid */
-	if (b_row >= h->ny) b_row = h->ny - 1;	/* End inside grid */
+	if (b_row >= h->n_rows) b_row = h->n_rows - 1;	/* End inside grid */
 	for (row = t_row; row <= b_row; row++) {	/* Search along this column */
 		node = gmt_M_ijp (h, row, col);
 		if (gmt_M_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
@@ -701,8 +701,8 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 		else if (S->max_radius < DBL_MAX) /* Nothing was found so use radius limit as max distance for searching along this row */
 			d_col = lrint (ceil (S->max_radius / dx));
 		else	/* Must search the entire row */
-			d_col = S->C->G->header->nx;	/* This is obviously too large but will get truncated later */
-		l_col = col0 - d_col;	/* Go to both sides, scan_grd_row will truncate to 0,nx-1 anyway */
+			d_col = S->C->G->header->n_columns;	/* This is obviously too large but will get truncated later */
+		l_col = col0 - d_col;	/* Go to both sides, scan_grd_row will truncate to 0,n_columns-1 anyway */
 		r_col = col0 + d_col;
 		C = scan_grd_row (GMT, row0, l_col, r_col, S);	/* C is nonzero if we found a non-NaN node */
 		if (C) return (1);	/* Did pick up a closer node along this row */
@@ -874,9 +874,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
+						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
 						if (status < 0) some_outside = true;
-						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
+						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					}
 				}
 			}
@@ -911,8 +911,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 				S = T->segment[seg];
 				for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
-					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
+					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
+					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					if (status < 0)
 						some_outside = true;
 					else
@@ -959,8 +959,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
 					for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Collect sampled values across all profiles for same row into temp array */
-							if (gmt_M_is_dnan (T->segment[seg]->coord[col][row])) continue;	/* Must skip any NaN entries in any profile */
-							stack[k][stacked_n[k]] = T->segment[seg]->coord[col][row];
+							if (gmt_M_is_dnan (T->segment[seg]->data[col][row])) continue;	/* Must skip any NaN entries in any profile */
+							stack[k][stacked_n[k]] = T->segment[seg]->data[col][row];
 							if (stack[k][stacked_n[k]] > stacked_hi[k]) stacked_hi[k] = stack[k][stacked_n[k]];
 							if (stack[k][stacked_n[k]] < stacked_lo[k]) stacked_lo[k] = stack[k][stacked_n[k]];
 							stacked_n[k]++;	/* Number of segments with non-NaN entries so far for this grid */
@@ -986,21 +986,21 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 						for (k = 0; k < Ctrl->G.n_grids; k++) stacked_dev[k] = 0.5 * (stacked_hi[k] - stacked_lo[k]);
 					}
 					/* Here we have everything needed to populate output arrays */
-					M->coord[0][row] = T->segment[0]->coord[2][row];	/* Copy over distance value */
+					M->data[0][row] = T->segment[0]->data[2][row];	/* Copy over distance value */
 					for (col = 4, colx = col0, k = 0; k < Ctrl->G.n_grids; k++, col++, colx += n_added_cols) {	/* Place stacked, deviation, low, high [and lo_env hi_env] for each grid */
-						M->coord[1+k*n_step][row] = stacked_val[k];	/* The stacked value */
-						M->coord[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
-						M->coord[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
-						M->coord[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
+						M->data[1+k*n_step][row] = stacked_val[k];	/* The stacked value */
+						M->data[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
+						M->data[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
+						M->data[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
 						if (Ctrl->S.mode >= STACK_LOWER) continue;
-						M->coord[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
-						M->coord[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
 						if (n_added_cols == 0) continue;	/* No modification to profile outputs requested */
 						for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to append to */
 							col_s = colx;	/* Start over at this column */
-							if (Ctrl->S.selected[STACK_ADD_VAL]) T->segment[seg]->coord[col_s++][row] = stacked_val[k];	/* Place stacked value at end of profile */
-							if (Ctrl->S.selected[STACK_ADD_DEV]) T->segment[seg]->coord[col_s++][row] = stacked_dev[k];	/* Place deviation at end of profile */
-							if (Ctrl->S.selected[STACK_ADD_RES]) T->segment[seg]->coord[col_s++][row] = T->segment[seg]->coord[col][row] - stacked_val[k];	/* Place residuals(s) at end of profile */
+							if (Ctrl->S.selected[STACK_ADD_VAL]) T->segment[seg]->data[col_s++][row] = stacked_val[k];	/* Place stacked value at end of profile */
+							if (Ctrl->S.selected[STACK_ADD_DEV]) T->segment[seg]->data[col_s++][row] = stacked_dev[k];	/* Place deviation at end of profile */
+							if (Ctrl->S.selected[STACK_ADD_RES]) T->segment[seg]->data[col_s++][row] = T->segment[seg]->data[col][row] - stacked_val[k];	/* Place residuals(s) at end of profile */
 						}
 					}
 				}
@@ -1044,11 +1044,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */
 			Sin  = Din->table[0]->segment[seg];	/* Shorthand */
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
-			for (col = 0; col < Din->n_columns; col++) gmt_M_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
+			for (col = 0; col < Din->n_columns; col++) gmt_M_memcpy (Sout->data[col], Sin->data[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
-				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
+				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
-				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->coord[col][row] = value[k];
+				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->data[col][row] = value[k];
 				n_points++;
 			}
 		}
@@ -1204,7 +1204,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* Clean up */
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
-			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
+			n_points, Ctrl->G.file[g], GC[g].G->header->n_columns, GC[g].G->header->n_rows);
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grid */
 			if (GMT_Destroy_Data (API, &GC[g].G) != GMT_OK)
 				Return (API->error);

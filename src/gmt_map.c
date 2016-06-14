@@ -5314,8 +5314,8 @@ GMT_LOCAL bool map_near_a_point_spherical (struct GMT_CTRL *GMT, double x, doubl
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
 	for (seg = 0; seg < T->n_segments; seg++) {
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
-			d = gmt_distance (GMT, x, y, T->segment[seg]->coord[GMT_X][row], T->segment[seg]->coord[GMT_Y][row]);
-			if (each_point_has_distance) dist = T->segment[seg]->coord[GMT_Z][row];
+			d = gmt_distance (GMT, x, y, T->segment[seg]->data[GMT_X][row], T->segment[seg]->data[GMT_Y][row]);
+			if (each_point_has_distance) dist = T->segment[seg]->data[GMT_Z][row];
 			if (d <= dist) return (true);
 		}
 	}
@@ -5334,10 +5334,10 @@ GMT_LOCAL bool map_near_a_point_cartesian (struct GMT_CTRL *GMT, double x, doubl
 	/* Assumes the points have been sorted so xp[0] is xmin and xp[n-1] is xmax] !!! */
 
 	/* See if we are safely outside the range */
-	x0 = T->segment[0]->coord[GMT_X][0];
-	d0 = (each_point_has_distance) ? T->segment[0]->coord[GMT_Z][0] : dist;
-	xn = T->segment[T->n_segments-1]->coord[GMT_X][T->segment[T->n_segments-1]->n_rows-1];
-	dn = (each_point_has_distance) ? T->segment[T->n_segments-1]->coord[GMT_Z][T->segment[T->n_segments-1]->n_rows-1] : dist;
+	x0 = T->segment[0]->data[GMT_X][0];
+	d0 = (each_point_has_distance) ? T->segment[0]->data[GMT_Z][0] : dist;
+	xn = T->segment[T->n_segments-1]->data[GMT_X][T->segment[T->n_segments-1]->n_rows-1];
+	dn = (each_point_has_distance) ? T->segment[T->n_segments-1]->data[GMT_Z][T->segment[T->n_segments-1]->n_rows-1] : dist;
 	if ((x < (x0 - d0)) || (x > (xn) + dn)) return (false);
 
 	/* No, must search the points */
@@ -5345,10 +5345,10 @@ GMT_LOCAL bool map_near_a_point_cartesian (struct GMT_CTRL *GMT, double x, doubl
 
 	for (seg = 0; seg < T->n_segments; seg++) {
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
-			x0 = T->segment[seg]->coord[GMT_X][row];
-			d0 = (each_point_has_distance) ? T->segment[seg]->coord[GMT_Z][row] : dist;
+			x0 = T->segment[seg]->data[GMT_X][row];
+			d0 = (each_point_has_distance) ? T->segment[seg]->data[GMT_Z][row] : dist;
 			if (fabs (x - x0) <= d0) {	/* Simple x-range test first */
-				y0 = T->segment[seg]->coord[GMT_Y][row];
+				y0 = T->segment[seg]->data[GMT_Y][row];
 				if (fabs (y - y0) <= d0) {	/* Simple y-range test next */
 					/* Here we must compute distance */
 					if (each_point_has_distance) d02 = d0 * d0;
@@ -5402,10 +5402,10 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 	/* Find nearest point on this line */
 
 	for (row0 = 0; row0 < S->n_rows; row0++) {	/* loop over nodes on current line */
-		d = gmt_distance (GMT, lon, lat, S->coord[GMT_X][row0], S->coord[GMT_Y][row0]);	/* Distance between our point and j'th node on seg'th line */
+		d = gmt_distance (GMT, lon, lat, S->data[GMT_X][row0], S->data[GMT_Y][row0]);	/* Distance between our point and j'th node on seg'th line */
 		if (return_mindist && d < (*dist_min)) {	/* Update min distance */
 			*dist_min = d;
-			if (return_mindist == 2) { *x_near = S->coord[GMT_X][row0]; *y_near = S->coord[GMT_Y][row0]; }	/* Also update (x,y) of nearest point on the line */
+			if (return_mindist == 2) { *x_near = S->data[GMT_X][row0]; *y_near = S->data[GMT_Y][row0]; }	/* Also update (x,y) of nearest point on the line */
 			else if (return_mindist == 3) { *x_near = (double)seg; *y_near = (double)row0;}		/* Instead update (seg, pt) of nearest point on the line */
 		}
 		interior = (row0 > 0 && row0 < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
@@ -5422,42 +5422,42 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 	for (row0 = 0, row1 = 1, within = false; row1 < S->n_rows; row0++, row1++) {	/* loop over straight segments on current line */
 		if (!return_mindist) {
 			edge = lon - S->dist;
-			if (S->coord[GMT_X][row0] < edge && S->coord[GMT_X][row1] < edge) continue;	/* Left of square */
+			if (S->data[GMT_X][row0] < edge && S->data[GMT_X][row1] < edge) continue;	/* Left of square */
 			edge = lon + S->dist;
-			if (S->coord[GMT_X][row0] > edge && S->coord[GMT_X][row1] > edge) continue;	/* Right of square */
+			if (S->data[GMT_X][row0] > edge && S->data[GMT_X][row1] > edge) continue;	/* Right of square */
 			edge = lat - S->dist;
-			if (S->coord[GMT_Y][row0] < edge && S->coord[GMT_Y][row1] < edge) continue;	/* Below square */
+			if (S->data[GMT_Y][row0] < edge && S->data[GMT_Y][row1] < edge) continue;	/* Below square */
 			edge = lat + S->dist;
-			if (S->coord[GMT_Y][row0] > edge && S->coord[GMT_Y][row1] > edge) continue;	/* Above square */
+			if (S->data[GMT_Y][row0] > edge && S->data[GMT_Y][row1] > edge) continue;	/* Above square */
 		}
 
 		/* Here there is potential for the line segment crossing inside the circle */
 
-		dx = S->coord[GMT_X][row1] - S->coord[GMT_X][row0];
-		dy = S->coord[GMT_Y][row1] - S->coord[GMT_Y][row0];
+		dx = S->data[GMT_X][row1] - S->data[GMT_X][row0];
+		dy = S->data[GMT_Y][row1] - S->data[GMT_Y][row0];
 		if (dx == 0.0) {		/* Line segment is vertical, our normal is thus horizontal */
 			if (dy == 0.0) continue;	/* Dummy segment with no length */
-			xc = S->coord[GMT_X][row0];
+			xc = S->data[GMT_X][row0];
 			yc = lat;
-			if (S->coord[GMT_Y][row0] < yc && S->coord[GMT_Y][row1] < yc ) continue;	/* Cross point is on extension */
-			if (S->coord[GMT_Y][row0] > yc && S->coord[GMT_Y][row1] > yc ) continue;	/* Cross point is on extension */
+			if (S->data[GMT_Y][row0] < yc && S->data[GMT_Y][row1] < yc ) continue;	/* Cross point is on extension */
+			if (S->data[GMT_Y][row0] > yc && S->data[GMT_Y][row1] > yc ) continue;	/* Cross point is on extension */
 		}
 		else {	/* Line segment is not vertical */
 			if (dy == 0.0) {	/* Line segment is horizontal, our normal is thus vertical */
 				xc = lon;
-				yc = S->coord[GMT_Y][row0];
+				yc = S->data[GMT_Y][row0];
 			}
 			else {	/* General case of oblique line */
 				s = dy / dx;
 				s_inv = -1.0 / s;
-				xc = (lat - S->coord[GMT_Y][row0] + s * S->coord[GMT_X][row0] - s_inv * lon ) / (s - s_inv);
-				yc = S->coord[GMT_Y][row0] + s * (xc - S->coord[GMT_X][row0]);
+				xc = (lat - S->data[GMT_Y][row0] + s * S->data[GMT_X][row0] - s_inv * lon ) / (s - s_inv);
+				yc = S->data[GMT_Y][row0] + s * (xc - S->data[GMT_X][row0]);
 
 			}
 			/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
 
-			if (S->coord[GMT_X][row0] < xc && S->coord[GMT_X][row1] < xc ) continue;	/* Cross point is on extension */
-			if (S->coord[GMT_X][row0] > xc && S->coord[GMT_X][row1] > xc ) continue;	/* Cross point is on extension */
+			if (S->data[GMT_X][row0] < xc && S->data[GMT_X][row1] < xc ) continue;	/* Cross point is on extension */
+			if (S->data[GMT_X][row0] > xc && S->data[GMT_X][row1] > xc ) continue;	/* Cross point is on extension */
 		}
 
 		/* OK, here we must check how close the crossing point is */
@@ -5468,8 +5468,8 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 			if (return_mindist == 2) { *x_near = xc; *y_near = yc;}	/* Also update nearest point on the line */
 			else if (return_mindist == 3) {	/* Instead update (seg, pt) of nearest point on the line */
 				*x_near = (double)seg;
-				dist_AB = gmt_distance (GMT, S->coord[GMT_X][row0], S->coord[GMT_Y][row0], S->coord[GMT_X][row1], S->coord[GMT_Y][row1]);
-				fraction = (dist_AB > 0.0) ? gmt_distance (GMT, S->coord[GMT_X][row0], S->coord[GMT_Y][row0], xc, yc) / dist_AB : 0.0;
+				dist_AB = gmt_distance (GMT, S->data[GMT_X][row0], S->data[GMT_Y][row0], S->data[GMT_X][row1], S->data[GMT_Y][row1]);
+				fraction = (dist_AB > 0.0) ? gmt_distance (GMT, S->data[GMT_X][row0], S->data[GMT_Y][row0], xc, yc) / dist_AB : 0.0;
 				*y_near = (double)row0 + fraction;
 			}
 			within = true;
@@ -5539,10 +5539,10 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 	if (return_mindist) S->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
 	for (row = 0; row < S->n_rows; row++) {	/* loop over nodes on current line */
-		d = gmt_distance (P, lon, lat, S->coord[GMT_X][row], S->coord[GMT_Y][row]);	/* Distance between our point and row'th node on seg'th line */
+		d = gmt_distance (P, lon, lat, S->data[GMT_X][row], S->data[GMT_Y][row]);	/* Distance between our point and row'th node on seg'th line */
 		if (return_mindist && d < (*dist_min)) {	/* Update minimum distance */
 			*dist_min = d;
-			if (return_mindist == 2) *x_near = S->coord[GMT_X][row], *y_near = S->coord[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
+			if (return_mindist == 2) *x_near = S->data[GMT_X][row], *y_near = S->data[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
 			if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
 		}
 		interior = (row > 0 && row < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
@@ -5559,11 +5559,11 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 		cos_dist = cosd (S->dist / P->current.map.dist[GMT_MAP_DIST].scale);
 	else	/* Used distance units (e.g., meter, km). Conv to meters, then to degrees */
 		cos_dist = cosd ((S->dist / P->current.map.dist[GMT_MAP_DIST].scale) / P->current.proj.DIST_M_PR_DEG);
-	gmt_geo_to_cart (P, S->coord[GMT_Y][0], S->coord[GMT_X][0], B, true);		/* 3-D vector of end of last segment */
+	gmt_geo_to_cart (P, S->data[GMT_Y][0], S->data[GMT_X][0], B, true);		/* 3-D vector of end of last segment */
 
 	for (row = 1, within = false; row < S->n_rows; row++) {				/* loop over great circle segments on current line */
 		gmt_M_memcpy (A, B, 3, double);	/* End of last segment is start of new segment */
-		gmt_geo_to_cart (P, S->coord[GMT_Y][row], S->coord[GMT_X][row], B, true);	/* 3-D vector of end of this segment */
+		gmt_geo_to_cart (P, S->data[GMT_Y][row], S->data[GMT_X][row], B, true);	/* 3-D vector of end of this segment */
 		if (gmtlib_great_circle_intersection (P, A, B, GMT, X, &cx_dist)) continue;	/* X not between A and B */
 		if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
 			gmt_cart_to_geo (P, &xlat, &xlon, X, true);
@@ -5574,8 +5574,8 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 				else if (return_mindist == 3) {	/* Also update (seg, pt) of nearest point on the line */
 					*x_near = (double)seg;
 					prev_row = row - 1;
-					dist_AB = gmt_distance (P, S->coord[GMT_X][prev_row], S->coord[GMT_Y][prev_row], S->coord[GMT_X][row], S->coord[GMT_Y][row]);
-					fraction = (dist_AB > 0.0) ? gmt_distance (P, S->coord[GMT_X][prev_row], S->coord[GMT_Y][prev_row], xlon, xlat) / dist_AB : 0.0;
+					dist_AB = gmt_distance (P, S->data[GMT_X][prev_row], S->data[GMT_Y][prev_row], S->data[GMT_X][row], S->data[GMT_Y][row]);
+					fraction = (dist_AB > 0.0) ? gmt_distance (P, S->data[GMT_X][prev_row], S->data[GMT_Y][prev_row], xlon, xlat) / dist_AB : 0.0;
 					*y_near = (double)prev_row + fraction;
 				}
 				within = true;	/* Found at least one segment with a valid inside distance */
@@ -6103,7 +6103,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
 	L = gmt_M_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
-	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
@@ -6113,17 +6113,17 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		m = 0;		/* Start with nuthin' */
 
 		/* Must ensure we copy the very first point if it is left of the Dateline */
-		if (S->coord[GMT_X][0] < 180.0) { L[side]->coord[GMT_X][0] = S->coord[GMT_X][0]; L[side]->coord[GMT_Y][0] = S->coord[GMT_Y][0]; }	/* First point is inside; add it */
+		if (S->data[GMT_X][0] < 180.0) { L[side]->data[GMT_X][0] = S->data[GMT_X][0]; L[side]->data[GMT_Y][0] = S->data[GMT_Y][0]; }	/* First point is inside; add it */
 		for (row = 1; row < S->n_rows; row++) {	/* For each line segment */
-			np = map_clip_we (S->coord[GMT_X][row-1], S->coord[GMT_Y][row-1], S->coord[GMT_X][row], S->coord[GMT_Y][row], xx, yy, 180.0, inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
+			np = map_clip_we (S->data[GMT_X][row-1], S->data[GMT_Y][row-1], S->data[GMT_X][row], S->data[GMT_Y][row], xx, yy, 180.0, inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				if (m == n_alloc) gmt_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
-				L[side]->coord[GMT_X][m] = xx[j]; L[side]->coord[GMT_Y][m] = yy[j]; m++;
+				L[side]->data[GMT_X][m] = xx[j]; L[side]->data[GMT_Y][m] = yy[j]; m++;
 			}
 		}
-		if (gmt_polygon_is_open (GMT, L[side]->coord[GMT_X], L[side]->coord[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
+		if (gmt_polygon_is_open (GMT, L[side]->data[GMT_X], L[side]->data[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
 			if (m == n_alloc) gmt_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
-			L[side]->coord[GMT_X][m] = L[side]->coord[GMT_X][0];	L[side]->coord[GMT_Y][m] = L[side]->coord[GMT_Y][0];	m++;	/* Yes. */
+			L[side]->data[GMT_X][m] = L[side]->data[GMT_X][0];	L[side]->data[GMT_Y][m] = L[side]->data[GMT_Y][0];	m++;	/* Yes. */
 		}
 		if (m != n_alloc) gmt_alloc_segment (GMT, L[side], m, S->n_columns, false);
 		L[side]->n_rows = m;
@@ -6695,7 +6695,7 @@ double gmt_mindist_to_point (struct GMT_CTRL *GMT, double lon, double lat, struc
 	d_min = DBL_MAX;
 	for (seg = 0; seg < T->n_segments; seg++) {
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
-			d = gmt_distance (GMT, lon, lat, T->segment[seg]->coord[GMT_X][row], T->segment[seg]->coord[GMT_Y][row]);
+			d = gmt_distance (GMT, lon, lat, T->segment[seg]->data[GMT_X][row], T->segment[seg]->data[GMT_Y][row]);
 			if (d < d_min) {	/* Update the shortest distance and the point responsible */
 				d_min = d;	id[0] = seg;	id[1] = row;
 			}
@@ -7254,9 +7254,9 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 /* Routines to transform grdfiles to/from map projections */
 
 /*! . */
-int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset) {
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: IN: Inc [%.12g/%.12g] nx/ny [%u/%u] dpi = %u offset = %u\n",
-		inc[0], inc[1], nx, ny, dpi, offset);
+int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int n_columns, unsigned int n_rows, unsigned int dpi, unsigned int offset) {
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: IN: Inc [%.12g/%.12g] n_columns/n_rows [%u/%u] dpi = %u offset = %u\n",
+		inc[0], inc[1], n_columns, n_rows, dpi, offset);
 	
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		if (GMT->current.io.inc_code[GMT_X] || GMT->current.io.inc_code[GMT_Y]) {	/* Must convert from distance units to degrees */
@@ -7271,36 +7271,36 @@ int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 			header->wesn[YHI] = ceil  (header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
 		}
 #endif
-		header->nx = gmt_M_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
-		header->ny = gmt_M_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
-		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+		header->n_columns = gmt_M_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
+		header->n_rows = gmt_M_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
+		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->n_columns, offset);
+		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, offset);
 	}
-	else if (nx > 0 && ny > 0) {
-		header->nx = nx;	header->ny = ny;
-		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+	else if (n_columns > 0 && n_rows > 0) {
+		header->n_columns = n_columns;	header->n_rows = n_rows;
+		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->n_columns, offset);
+		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, offset);
 	}
 	else if (dpi > 0) {
-		header->nx = urint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - offset;
-		header->ny = urint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - offset;
-		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
-		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
+		header->n_columns = urint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - offset;
+		header->n_rows = urint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - offset;
+		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->n_columns, offset);
+		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, offset);
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_project_init: Necessary arguments not set\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	header->registration = offset;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: OUT: Inc [%.12g/%.12g] nx/ny [%u/%u] dpi = %u offset = %u\n",
-		inc[0], inc[1], nx, ny, dpi, offset);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: OUT: Inc [%.12g/%.12g] n_columns/n_rows [%u/%u] dpi = %u offset = %u\n",
+		inc[0], inc[1], n_columns, n_rows, dpi, offset);
 
-	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny */
+	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set n_columns, n_rows */
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);			/* Assign default pad */
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid projection from size %dx%d to %dx%d\n", nx, ny, header->nx, header->ny);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid projection from size %dx%d to %dx%d\n", n_columns, n_rows, header->n_columns, header->n_rows);
 	return (GMT_NOERROR);
 }
 
@@ -7351,10 +7351,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = gmt_M_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = gmt_M_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
+		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double);
+		x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double);
+		y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double);
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7381,7 +7381,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
-		int nx = O->header->nx, ny = O->header->ny;
+		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
@@ -7398,9 +7398,9 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
 				row_out = gmt_M_grd_y_to_row (GMT, y_proj, O->header);
-				if (row_out < 0 || row_out >= ny) continue;	/* Outside our grid region */
+				if (row_out < 0 || row_out >= n_rows) continue;	/* Outside our grid region */
 				col_out = gmt_M_grd_x_to_col (GMT, x_proj, O->header);
-				if (col_out < 0 || col_out >= nx) continue;	/* Outside our grid region */
+				if (col_out < 0 || col_out >= n_columns) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
 
@@ -7532,10 +7532,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = gmt_M_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = gmt_M_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
+		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double);
+		x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double);
+		y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double);
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7563,7 +7563,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	/* PART 1: Project input image points and do a blockmean operation */
 
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
-		int nx = O->header->nx, ny = O->header->ny;
+		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
@@ -7580,9 +7580,9 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
 				row_out = (int)gmt_M_grd_y_to_row (GMT, y_proj, O->header);
-				if (row_out < 0 || row_out >= ny) continue;	/* Outside our grid region */
+				if (row_out < 0 || row_out >= n_rows) continue;	/* Outside our grid region */
 				col_out = (int)gmt_M_grd_x_to_col (GMT, x_proj, O->header);
-				if (col_out < 0 || col_out >= nx) continue;	/* Outside our grid region */
+				if (col_out < 0 || col_out >= n_columns) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
 
@@ -8813,21 +8813,21 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 				dx = copysign (360.0 - fabs (dx), -dx);
 				xx = (fabs (last_x) > 270 || fabs(last_x) < 90.0) ? 0.0 : copysign (180.0, last_x);
 				yy = last_y + (y - last_y) * (xx - last_x) / dx;
-				S->coord[GMT_X][n] = xx;	S->coord[GMT_Y][n++] = yy;	/* Assign the extra element */
+				S->data[GMT_X][n] = xx;	S->data[GMT_Y][n++] = yy;	/* Assign the extra element */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_get_smallcircle: Added extra point at %g/%g\n", xx, yy);
 			}
 			else if ((x > 0.0 && last_x < 0.0) || (x < 0.0 && last_x > 0.0)) {	/* Crossing Greenwhich */
 				xx = 0.0;
 				yy = last_y + (y - last_y) * (xx - last_x) / dx;
-				S->coord[GMT_X][n] = xx;	S->coord[GMT_Y][n++] = yy;	/* Assign the extra element */
+				S->data[GMT_X][n] = xx;	S->data[GMT_Y][n++] = yy;	/* Assign the extra element */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_get_smallcircle: Added extra point at %g/%g\n", xx, yy);
 			}
 		}
-		S->coord[GMT_X][n] = x;	S->coord[GMT_Y][n] = y;	/* Assign the array elements */
+		S->data[GMT_X][n] = x;	S->data[GMT_Y][n] = y;	/* Assign the array elements */
 		last_x = x;	last_y = y;
 	}
-	S->coord[GMT_X][n - 1] = S->coord[GMT_X][0];		/* Make really sure the polygon is closed */
-	S->coord[GMT_Y][n - 1] = S->coord[GMT_Y][0];
+	S->data[GMT_X][n - 1] = S->data[GMT_X][0];		/* Make really sure the polygon is closed */
+	S->data[GMT_Y][n - 1] = S->data[GMT_Y][0];
 	S->n_rows = n;
 	gmt_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
 	return (S);	/* Pass out the results */

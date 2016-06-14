@@ -726,8 +726,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
 			n_modes = (unsigned int)P->n_records;
-			mode_direction = P->segment[0]->coord[GMT_X];
-			mode_length = P->segment[0]->coord[GMT_Y];
+			mode_direction = P->segment[0]->data[GMT_X];
+			mode_length = P->segment[0]->data[GMT_Y];
 		}
 		if (!Ctrl->M.active) {	/* Must supply defaults for the vector attributes */
 			Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */

@@ -477,8 +477,8 @@ GMT_LOCAL double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned
 
 	tmp = width[0];
 	while (i < n && x > tmp) tmp += width[++i];
-	if (i == n) return (P->range[P->n_colors-1].z_high);
-	return (P->range[i].z_low + (x - tmp + width[i]) * (P->range[i].z_high - P->range[i].z_low) / width[i]);
+	if (i == n) return (P->data[P->n_colors-1].z_high);
+	return (P->data[i].z_low + (x - tmp + width[i]) * (P->data[i].z_high - P->data[i].z_low) / width[i]);
 }
 
 GMT_LOCAL void fix_format (char *unit, char *format) {
@@ -558,28 +558,28 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 	/* Find max decimals needed */
 
-	start_val = P->range[0].z_low;
-	stop_val  = P->range[P->n_colors-1].z_high;
+	start_val = P->data[0].z_low;
+	stop_val  = P->data[P->n_colors-1].z_high;
 	if (B_set) {	/* Let the general -B machinery do the annotation labeling */
 		if (Ctrl->Q.active) {	/* Must set original start/stop values for axis */
-			start_val = pow (10.0, P->range[0].z_low);
-			stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
+			start_val = pow (10.0, P->data[0].z_low);
+			stop_val  = pow (10.0, P->data[P->n_colors-1].z_high);
 		}
 		ndec = gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
 	else {	/* Do annotations explicitly, one by one.  Try automatic guessing of decimals if equidistant cpt */
 		bool const_interval = true, exp_notation = false;
 		for (i = 0; i < P->n_colors; i++) {
-			if (P->range[i].label) n_use_labels++;
-			if (P->range[i].annot & 1) {
-				z = P->range[i].z_low;
+			if (P->data[i].label) n_use_labels++;
+			if (P->data[i].annot & 1) {
+				z = P->data[i].z_low;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
 			}
-			if (P->range[i].annot & 2) {
-				z = P->range[i].z_high;
+			if (P->data[i].annot & 2) {
+				z = P->data[i].z_high;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
@@ -590,9 +590,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				if (strchr (text, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
 			}
 			prev_del_z = this_del_z;
-			this_del_z = P->range[i].z_high - P->range[i].z_low;
+			this_del_z = P->data[i].z_high - P->data[i].z_low;
 			if (i && !doubleAlmostEqualZero (this_del_z, prev_del_z)) const_interval = false;
-			if (P->range[i].annot) all = false;
+			if (P->data[i].annot) all = false;
 		}
 		if (!const_interval) {	/* May have to abandon automatic format guessing */
 			if (exp_notation && !strchr (GMT->current.setting.format_float_map, 'e')) {	/* Unwanted exponential notation: Abandon automatic format detection and use FORMAT_FLOAT_MAP */
@@ -662,7 +662,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		/* Load bar image */
 
 		for (i = 0; i < nx; i++) {
-			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
+			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
 			gmt_get_rgb_from_z (GMT, P, z, rrggbb);
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
@@ -691,8 +691,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Must guesstimate the width of the largest horizontal annotation */
-		sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
-		sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+		sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
+		sprintf (test, "%ld", lrint (ceil (center ? P->data[P->n_colors-1].z_low : P->data[P->n_colors-1].z_high)));
 		off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
 			((ndec > 0) ? GMT_PER_WIDTH : 0.0))
 			* GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
@@ -828,7 +828,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
-				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
+				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
@@ -843,7 +843,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
-					gmt_M_rgb_copy (rgb, P->range[ii].rgb_low);
+					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 					PSL_setfill (PSL, rgb, center);
@@ -866,10 +866,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 3; i++) xp[i] += xd;
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
-			if ((f = P->patch[id].fill) != NULL)
+			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
@@ -882,10 +882,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, Ctrl->D.elength);
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
-			if ((f = P->patch[GMT_NAN].fill) != NULL)
+			if ((f = P->bfn[GMT_NAN].fill) != NULL)
 				gmt_setfill (GMT, f, true);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, true);
 			}
@@ -898,10 +898,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 3; i++) xp[i] -= xd;
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
-			if ((f = P->patch[id].fill) != NULL)
+			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
@@ -928,7 +928,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
+				gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
@@ -945,11 +945,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
-					t_len = (all || (P->range[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
 				if (!use_labels) {	/* Finally do last slice z_high boundary */
-					t_len = (all || (P->range[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
 			}
@@ -961,42 +961,42 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->range[i].annot & 1)) {	/* Annotate this */
+				if (all || (P->data[i].annot & 1)) {	/* Annotate this */
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && P->range[i].label) {
-						strncpy (text, P->range[i].label, GMT_LEN256-1);
+					if (use_labels && P->data[i].label) {
+						strncpy (text, P->data[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
 					else if (center && Ctrl->L.interval)
-						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
+						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
 					else if (Ctrl->Q.active) {
-						p_val = irint (P->range[i].z_low);
-						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
+						p_val = irint (P->data[i].z_low);
+						if (doubleAlmostEqualZero (P->data[i].z_low, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = false;
 					}
 					else
-						gmt_sprintf_float (text, format, P->range[i].z_low);
+						gmt_sprintf_float (text, format, P->data[i].z_low);
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 				x1 += z_width[i];
 			}
 			if (!center && !use_labels) {
 				i = P->n_colors-1;
-				if (all || (P->range[i].annot & 2)) {
+				if (all || (P->data[i].annot & 2)) {
 					this_just = justify;
 					do_annot = true;
 					if (Ctrl->Q.active) {
-						p_val = irint (P->range[i].z_high);
-						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
+						p_val = irint (P->data[i].z_high);
+						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = false;
 					}
 					else
-						gmt_sprintf_float (text, format, P->range[i].z_high);
+						gmt_sprintf_float (text, format, P->data[i].z_high);
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 			}
@@ -1023,7 +1023,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
-				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
+				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
@@ -1038,12 +1038,12 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
-					gmt_M_rgb_copy (rgb, P->range[ii].rgb_low);
+					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 					PSL_setfill (PSL, rgb, center);
 				}
-				if (P->range[ii].fill) {	/* Must undo rotation so patterns remain aligned with original setup */
+				if (P->data[ii].fill) {	/* Must undo rotation so patterns remain aligned with original setup */
 					PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
 					PSL_plotbox (PSL, -width, 0.0, 0.0, x1 - x0 - 2.0 * gap);
 					PSL_setorigin (PSL, -(x0 + gap), 0.0, 90.0, PSL_INV);
@@ -1055,15 +1055,15 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 
 		if (center && Ctrl->L.interval) {
-			sprintf (text, "%ld - %ld", lrint (floor (P->range[0].z_low)), lrint (ceil (P->range[0].z_high)));
-			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld - %ld", lrint (floor (P->data[0].z_low)), lrint (ceil (P->data[0].z_high)));
+			sprintf (test, "%ld - %ld", lrint (floor (P->data[P->n_colors-1].z_low)), lrint (ceil (P->data[P->n_colors-1].z_high)));
 			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_WIDTH - 0.4 +
 				((ndec > 0) ? 2*GMT_PER_WIDTH : 0.0))
 				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 		else {
-			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
-			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->data[P->n_colors-1].z_low : P->data[P->n_colors-1].z_high)));
 			off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
 				((ndec > 0) ? GMT_PER_WIDTH : 0.0))
 				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -1083,10 +1083,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 3; i++) xp[i] += xd;
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
-			if ((f = P->patch[id].fill) != NULL)
+			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
@@ -1099,10 +1099,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, Ctrl->D.elength);
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
-			if ((f = P->patch[GMT_NAN].fill) != NULL)
+			if ((f = P->bfn[GMT_NAN].fill) != NULL)
 				gmt_setfill (GMT, f, true);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, true);
 			}
@@ -1115,10 +1115,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 3; i++) xp[i] -= xd;
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
-			if ((f = P->patch[id].fill) != NULL)
+			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
@@ -1146,7 +1146,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
+				gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since gmt_end_module will restore it for us */
@@ -1174,11 +1174,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (!center) {
 				gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
-					t_len = (all || (P->range[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
 				if (!use_labels) {
-					t_len = (all || (P->range[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
 			}
@@ -1191,25 +1191,25 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->range[i].annot & 1)) {
+				if (all || (P->data[i].annot & 1)) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && P->range[i].label) {
-						strncpy (text, P->range[i].label, GMT_LEN256-1);
+					if (use_labels && P->data[i].label) {
+						strncpy (text, P->data[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
 					else if (center && Ctrl->L.interval)
-						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
+						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
 					else if (Ctrl->Q.active) {
-						p_val = irint (P->range[i].z_low);
-						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
+						p_val = irint (P->data[i].z_low);
+						if (doubleAlmostEqualZero (P->data[i].z_low, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = false;
 						this_just = l_justify;
 					}
 					else
-						sprintf (text, format, P->range[i].z_low);
+						sprintf (text, format, P->data[i].z_low);
 					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
@@ -1217,19 +1217,19 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			}
 			if (!center && !use_labels) {
 				i = P->n_colors-1;
-				if (all || (P->range[i].annot & 2)) {
+				if (all || (P->data[i].annot & 2)) {
 					this_just = justify;
 					do_annot = true;
 					if (Ctrl->Q.active) {
-						p_val = irint (P->range[i].z_high);
-						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
+						p_val = irint (P->data[i].z_high);
+						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = false;
 						this_just = l_justify;
 					}
 					else
-						gmt_sprintf_float (text, format, P->range[i].z_high);
+						gmt_sprintf_float (text, format, P->data[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
@@ -1322,17 +1322,17 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "CPT is for categorical data.\n");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
+	GMT_Report (API, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
-			if (P->range[i].z_low <= 0.0 || P->range[i].z_high <= 0.0) {
+			if (P->data[i].z_low <= 0.0 || P->data[i].z_high <= 0.0) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
 				Return (EXIT_FAILURE);
 			}
-			P->range[i].z_low = d_log10 (GMT, P->range[i].z_low);
-			P->range[i].z_high = d_log10 (GMT, P->range[i].z_high);
-			P->range[i].i_dz = 1.0 / (P->range[i].z_high - P->range[i].z_low);
+			P->data[i].z_low = d_log10 (GMT, P->data[i].z_low);
+			P->data[i].z_high = d_log10 (GMT, P->data[i].z_high);
+			P->data[i].i_dz = 1.0 / (P->data[i].z_high - P->data[i].z_low);
 		}
 	}
 
@@ -1342,7 +1342,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, &D)) {
 			Return (API->error);
 		}
-		z_width = D->table[0]->segment[0]->coord[GMT_X];
+		z_width = D->table[0]->segment[0]->data[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (EXIT_FAILURE);
@@ -1355,7 +1355,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	}
 	else {
 		z_width = gmt_M_memory (GMT, NULL, P->n_colors, double);
-		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.dim[GMT_X]) * (P->range[i].z_high - P->range[i].z_low) / (P->range[P->n_colors-1].z_high - P->range[0].z_low);
+		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.dim[GMT_X]) * (P->data[i].z_high - P->data[i].z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 	}
 
 	/* Because psscale uses -D to position things we need to make some
@@ -1363,13 +1363,13 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active && GMT->current.map.frame.draw) {
 		sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
-		start_val = pow (10.0, P->range[0].z_low);
-		stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
+		start_val = pow (10.0, P->data[0].z_low);
+		stop_val  = pow (10.0, P->data[P->n_colors-1].z_high);
 	}
 	else {
 		sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
-		start_val = P->range[0].z_low;
-		stop_val  = P->range[P->n_colors-1].z_high;
+		start_val = P->data[0].z_low;
+		stop_val  = P->data[P->n_colors-1].z_high;
 	}
 
 	gmt_M_memset (wesn, 4, double);

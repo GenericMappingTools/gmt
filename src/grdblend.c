@@ -304,9 +304,9 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			wesn[XLO] = gmt_M_grd_col_to_x (GMT, k, h);
 			k = (unsigned int)ceil  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, k, h);
-			k = h->ny - 1 - (unsigned int)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->n_rows - 1 - (unsigned int)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, k, h);
-			k = h->ny - 1 - (unsigned int)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->n_rows - 1 - (unsigned int)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YHI] = gmt_M_grd_row_to_y (GMT, k, h);
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
@@ -388,7 +388,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		if (B[n].out_j0 < 0) {	/* Must skip to first row inside the present -R */
 			type = GMT->session.grdformat[B[n].G->header->type][0];
 			if (type == 'c')	/* Old-style, 1-D netcdf grid */
-				B[n].offset = B[n].G->header->nx * abs (B[n].out_j0);
+				B[n].offset = B[n].G->header->n_columns * abs (B[n].out_j0);
 			else if (type == 'n')	/* New, 2-D netcdf grid */
 				B[n].offset = B[n].out_j0;
 			else
@@ -397,7 +397,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 		/* Allocate space for one entire row */
 
-		B[n].z = gmt_M_memory (GMT, NULL, B[n].G->header->nx, float);
+		B[n].z = gmt_M_memory (GMT, NULL, B[n].G->header->n_columns, float);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].G->header->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
@@ -691,9 +691,9 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	/* Initialize header structure for output blend grid */
 
-	n_tot = gmt_M_get_nm (GMT, Grid->header->nx, Grid->header->ny);
+	n_tot = gmt_M_get_nm (GMT, Grid->header->n_columns, Grid->header->n_rows);
 
-	z = gmt_M_memory (GMT, NULL, Grid->header->nx, float);	/* Memory for one output row */
+	z = gmt_M_memory (GMT, NULL, Grid->header->n_columns, float);	/* Memory for one output row */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 		gmt_M_free (GMT, z);
@@ -736,13 +736,13 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	wrap_x = (gmt_M_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = urint (360.0 * Grid->header->r_inc[GMT_X]);
 
-	for (row = 0; row < Grid->header->ny; row++) {	/* For every output row */
+	for (row = 0; row < Grid->header->n_rows; row++) {	/* For every output row */
 
-		gmt_M_memset (z, Grid->header->nx, float);	/* Start from scratch */
+		gmt_M_memset (z, Grid->header->n_columns, float);	/* Start from scratch */
 
 		sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
 
-		for (col = 0; col < Grid->header->nx; col++) {	/* For each output node on the current row */
+		for (col = 0; col < Grid->header->n_columns; col++) {	/* For each output node on the current row */
 
 			w = 0.0;	/* Reset weight */
 			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid; m will be the number of contributing grids to this node  */
@@ -807,16 +807,16 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		}
 		if (write_all_at_once) {	/* Must copy entire row to grid */
 			ij = gmt_M_ijp (Grid->header, row, 0);
-			gmt_M_memcpy (&(Grid->data[ij]), z, Grid->header->nx, float);
+			gmt_M_memcpy (&(Grid->data[ij]), z, Grid->header->n_columns, float);
 		}
 		else
 			GMT_Put_Row (API, row, Grid, z);
 
-		if (row%10 == 0)  GMT_Report (API, GMT_MSG_VERBOSE, "Processed row %7ld of %d\r", row, Grid->header->ny);
+		if (row%10 == 0)  GMT_Report (API, GMT_MSG_VERBOSE, "Processed row %7ld of %d\r", row, Grid->header->n_rows);
 
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processed row %7ld\n", row);
-	nx_final = Grid->header->nx;	ny_final = Grid->header->ny;
+	nx_final = Grid->header->n_columns;	ny_final = Grid->header->n_rows;
 
 	if (write_all_at_once) {	/* Must write entire grid */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {

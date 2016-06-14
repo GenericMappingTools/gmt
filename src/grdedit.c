@@ -360,8 +360,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			n_use++;
 			if (gmt_M_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
-				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->nx-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->nx-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->n_columns-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				else if (col == (G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
 			}
 		} while (true);
 
@@ -415,7 +415,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			h_tr->wesn[YHI] = G->header->wesn[XHI];
 			h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
 			strncpy (h_tr->y_units, G->header->x_units, GMT_GRID_UNIT_LEN80);
-			gmt_set_grddim (GMT, h_tr);	/* Recompute nx, ny, mx, size, etc */
+			gmt_set_grddim (GMT, h_tr);	/* Recompute n_columns, n_rows, mx, size, etc */
 		}
 
 		/* Now transpose the matrix */
@@ -424,22 +424,22 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		gmt_M_grd_loop (GMT, G, row, col, ij) {
 			switch (Ctrl->E.mode) {
 				case 'a': /* Rotate grid around 180 degrees */
-					ij_tr = gmt_M_ijp (h_tr, G->header->ny-1-row, G->header->nx-1-col);
+					ij_tr = gmt_M_ijp (h_tr, G->header->n_rows-1-row, G->header->n_columns-1-col);
 					break;
 				case 'h': /* Flip horizontally (FLIPLR) */
-					ij_tr = gmt_M_ijp (h_tr, row, G->header->nx-1-col);
+					ij_tr = gmt_M_ijp (h_tr, row, G->header->n_columns-1-col);
 					break;
 				case 'l': /* Rotate 90 CCW */
-					ij_tr = gmt_M_ijp (h_tr, G->header->nx-1-col, row);
+					ij_tr = gmt_M_ijp (h_tr, G->header->n_columns-1-col, row);
 					break;
 				case 'r': /* Rotate 90 CW */
-					ij_tr = gmt_M_ijp (h_tr, col, G->header->ny-1-row);
+					ij_tr = gmt_M_ijp (h_tr, col, G->header->n_rows-1-row);
 					break;
 				case 't': 	/* Transpose */
 					ij_tr = gmt_M_ijp (h_tr, col, row);
 					break;
 				case 'v': /* Flip vertically (FLIPUD) */
-					ij_tr = gmt_M_ijp (h_tr, G->header->ny-1-row, col);
+					ij_tr = gmt_M_ijp (h_tr, G->header->n_rows-1-row, col);
 					break;
 			}
 			a_tr[ij_tr] = G->data[ij];
@@ -472,8 +472,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			Ctrl->A.active = true;	/* Must ensure -R -I compatibility */
 		}
 		if (Ctrl->A.active) {
-			G->header->inc[GMT_X] = gmt_M_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
-			G->header->inc[GMT_Y] = gmt_M_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
+			G->header->inc[GMT_X] = gmt_M_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->n_columns, G->header->registration);
+			G->header->inc[GMT_Y] = gmt_M_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->n_rows, G->header->registration);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset grid-spacing in file %s to %g/%g\n",
 				Ctrl->In.file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}

@@ -97,9 +97,9 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	/* Then loop over points to accumulate sums */
 
 	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
-		gmt_M_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
+		gmt_M_set_delta_lon (P->data[GMT_X][row-1], P->data[GMT_X][row], dlon);
 		lon_sum += dlon;
-		lat_sum += P->coord[GMT_Y][row];
+		lat_sum += P->data[GMT_Y][row];
 	}
 	P->pole = 0;
 	if (gmt_M_360_range (lon_sum, 0.0)) {	/* Contains a pole */
@@ -358,8 +358,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			gmt_M_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
-			gmt_M_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
+			gmt_M_memcpy (lon, NTable->segment[0]->data[GMT_X], NTable->n_records, double);
+			gmt_M_memcpy (lat, NTable->segment[0]->data[GMT_Y], NTable->n_records, double);
 			if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
 				Return (API->error);
 			}
@@ -478,7 +478,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
 	grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
-	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->nx : Grid->header->nx - 1;
+	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
 	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 
@@ -499,11 +499,11 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
 				P = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
-				P->coord = gmt_M_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
+				P->data = gmt_M_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 				P->min = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 				P->max = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
 				P->n_columns = 2;	p_alloc = 0;
-				gmt_M_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
+				gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
 			}
 			node_new = node_stop = V->lend[node];
 			vertex_new = V->listc[node_new];
@@ -518,18 +518,18 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 				vertex_last = vertex_new;
 				vertex_new = V->listc[node_new];
 
-				P->coord[GMT_X][vertex] = V->lon[vertex_last];
-				P->coord[GMT_Y][vertex] = V->lat[vertex_last];
-				if (P->coord[GMT_X][vertex] < 0.0) P->coord[GMT_X][vertex] += 360.0;
-				if (P->coord[GMT_X][vertex] == 360.0) P->coord[GMT_X][vertex] = 0.0;
+				P->data[GMT_X][vertex] = V->lon[vertex_last];
+				P->data[GMT_Y][vertex] = V->lat[vertex_last];
+				if (P->data[GMT_X][vertex] < 0.0) P->data[GMT_X][vertex] += 360.0;
+				if (P->data[GMT_X][vertex] == 360.0) P->data[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) gmt_M_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+				if (vertex == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
-			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
-			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+			P->data[GMT_X][vertex] = P->data[GMT_X][0];	/* Close polygon explicitly */
+			P->data[GMT_Y][vertex] = P->data[GMT_Y][0];
+			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
 				case SPHD_NODES:	f_val = (float)node;	break;
@@ -541,7 +541,7 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 
 		/* Here we have the polygon in P */
 
-		P->n_rows = gmt_fix_up_path (GMT, &P->coord[GMT_X], &P->coord[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
+		P->n_rows = gmt_fix_up_path (GMT, &P->data[GMT_X], &P->data[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
@@ -555,9 +555,9 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 		/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */
 		for (s_row = north_row; s_row <= south_row; s_row++) {	/* For each scanline intersecting this polygon */
 			if (s_row < 0) continue;	/* North of region */
-			row = s_row; if (row >= Grid->header->ny) continue;	/* South of region */
+			row = s_row; if (row >= Grid->header->n_rows) continue;	/* South of region */
 			for (p_col = west_col; p_col <= east_col; p_col++) {	/* March along the scanline using col >= 0 */
-				if (p_col >= Grid->header->nx) {	/* Off the east end of the grid */
+				if (p_col >= Grid->header->n_columns) {	/* Off the east end of the grid */
 					if (periodic)	/* Just shuffle to the corresponding point inside the global grid */
 						col = p_col - nx1;
 					else		/* Sorry, really outside the region */
@@ -584,11 +584,11 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\n", node);
 
 	if (!Ctrl->Q.active) {
-		gmt_M_free (GMT, P->coord[GMT_X]);
-		gmt_M_free (GMT, P->coord[GMT_Y]);
+		gmt_M_free (GMT, P->data[GMT_X]);
+		gmt_M_free (GMT, P->data[GMT_Y]);
 		gmt_M_free (GMT, P->min);
 		gmt_M_free (GMT, P->max);
-		gmt_M_free (GMT, P->coord);
+		gmt_M_free (GMT, P->data);
 		gmt_M_free (GMT, P);
 		gmt_M_free (GMT, T.V.lon);
 		gmt_M_free (GMT, T.V.lat);

@@ -107,7 +107,7 @@ struct GRDFILTER_CTRL {
 #define IMG2LAT(img) (2.0*atand(exp((img)*D2R))-90.0)
 #define LAT2IMG(lat) (R2D*log(tand(0.5*((lat)+90.0))))
 /* Local ij calculation for weight matrix */
-#define WT_IJ(F,jj,ii) ((jj) + F.y_half_width) * F.nx + (ii) + F.x_half_width
+#define WT_IJ(F,jj,ii) ((jj) + F.y_half_width) * F.n_columns + (ii) + F.x_half_width
 
 #define GRDFILTER_N_PARS	7
 #define GRDFILTER_WIDTH		0
@@ -153,8 +153,8 @@ struct GRDFILTER_CTRL {
 
 
 struct FILTER_INFO {
-	unsigned int nx;		/* The max number of filter weights in x-direction */
-	unsigned int ny;		/* The max number of filter weights in y-direction */
+	unsigned int n_columns;		/* The max number of filter weights in x-direction */
+	unsigned int n_rows;		/* The max number of filter weights in y-direction */
 	int x_half_width;		/* Number of filter nodes to either side needed at this latitude */
 	int y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
 	unsigned int d_flag;
@@ -235,14 +235,14 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 	for (j = -F->y_half_width; j <= F->y_half_width; j++) {
 		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row */
 		if (F->d_flag > GRDFILTER_GEO_FLATEARTH1 && (y < F->y_min || y > F->y_max)) {		/* This filter row is outside input grid domain */
-			for (i = -F->x_half_width, ij = (j + F->y_half_width) * F->nx; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
+			for (i = -F->x_half_width, ij = (j + F->y_half_width) * F->n_columns; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
 			continue;	/* Done with this row */
 		}
 		if (F->d_flag == GRDFILTER_GEO_MERCATOR) y = IMG2LAT (y);	/* Recover actual latitudes */
 		if (F->rect) ry = inv_y_half_width * j;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];
-			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
+			ij = (j + F->y_half_width) * F->n_columns + i + F->x_half_width;
 			assert (ij >= 0);
 			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/x_half_width and ry instead */
 				weight[ij] = F->weight_func (inv_x_half_width * i, par) * F->weight_func (ry, par);
@@ -356,12 +356,12 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 			}
 		}
 		else {	/* If Cartesian then row_weight is a constant 1 except for gridline-registered grids at top or bottom row */
-			row_weight = (A->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == (A->header->ny-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
+			row_weight = (A->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == (A->header->n_rows-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
 			row_weight *= A->header->inc[GMT_Y];
 		}
 
 		gmt_M_col_loop (GMT, A, row, col, ij) {	/* Now loop over the columns */
-			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (A->header->nx-1))) ? 0.5 : 1.0);
+			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (A->header->n_columns-1))) ? 0.5 : 1.0);
 			A->data[ij] = (float)(row_weight * col_weight);
 		}
 	}
@@ -742,8 +742,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	col_origin = gmt_M_memory (GMT, NULL, Gout->header->nx, int);
-	if (!fast_way) x_shift = gmt_M_memory (GMT, NULL, Gout->header->nx, double);
+	col_origin = gmt_M_memory (GMT, NULL, Gout->header->n_columns, int);
+	if (!fast_way) x_shift = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
 
 	if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple of grid spacings but one is pix, other is grid so adjust for 1/2 cell */
 		x_fix = 0.5 * Gin->header->inc[GMT_X];
@@ -751,7 +751,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {	/* Data on a sphere so must check for both periodic and polar wrap-arounds */
 		spherical = true;
-		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
+		/* Compute the wrap-around delta_nx to use [may differ from n_columns unless a 360 grid] */
 		nx_wrap = (int)gmt_M_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
 	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->A.file)) == NULL) Return (API->error);	/* Precalculate area weights, optionally save debug grid */
@@ -763,12 +763,12 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if ((Fin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, NULL)) == NULL) {	/* Get filter-weight grid */
 			Return (API->error);
 		}
-		F.nx = Fin->header->nx;	F.ny = Fin->header->ny;
-		if ((F.nx % 2) == 0 || (F.ny % 2) == 0) {
+		F.n_columns = Fin->header->n_columns;	F.n_rows = Fin->header->n_rows;
+		if ((F.n_columns % 2) == 0 || (F.n_rows % 2) == 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ff|o requires an odd number of rows and columns for filter|operator weight grid,\n");
 			Return (API->error);
 		}
-		F.x_half_width = (F.nx - 1) / 2;	F.y_half_width = (F.ny - 1) / 2;
+		F.x_half_width = (F.n_columns - 1) / 2;	F.y_half_width = (F.n_rows - 1) / 2;
 	}
 
 	switch (Ctrl->D.mode) {
@@ -839,27 +839,27 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (!Ctrl->F.custom) {	/* Parameters computed from width and other settings */
 		F.x_half_width = irint (ceil (x_width / 2.0));
 		F.y_half_width = irint (ceil (y_width / 2.0));
-		F.nx = 2 * F.x_half_width + 1;
-		F.ny = 2 * F.y_half_width + 1;
-		if (gmt_M_is_zero (x_scale) || F.x_half_width < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
-			F.nx = Gin->header->nx;
-			F.x_half_width = (F.nx - 1) / 2;
-			if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;		/* When nx is even we may come up short by 1 */
-			F.nx = 2 * F.x_half_width + 1;
+		F.n_columns = 2 * F.x_half_width + 1;
+		F.n_rows = 2 * F.y_half_width + 1;
+		if (gmt_M_is_zero (x_scale) || F.x_half_width < 0 || F.n_columns > Gin->header->n_columns) {	/* Safety valve when x_scale -> 0.0 */
+			F.n_columns = Gin->header->n_columns;
+			F.x_half_width = (F.n_columns - 1) / 2;
+			if ((F.n_columns - 2 * F.x_half_width - 1) > 0) F.x_half_width++;		/* When n_columns is even we may come up short by 1 */
+			F.n_columns = 2 * F.x_half_width + 1;
 		}
-		if (gmt_M_is_zero (y_scale) || F.y_half_width < 0 || F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
-			F.ny = Gin->header->ny;
-			F.y_half_width = (F.ny - 1) / 2;
+		if (gmt_M_is_zero (y_scale) || F.y_half_width < 0 || F.n_rows > Gin->header->n_rows) {	/* Safety valve when y_scale -> 0.0 */
+			F.n_rows = Gin->header->n_rows;
+			F.y_half_width = (F.n_rows - 1) / 2;
 		}
 	}
-	visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+	visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->n_columns);	/* Must make sure we only visit each node once along a row */
 	F.x = gmt_M_memory (GMT, NULL, F.x_half_width+1, double);
 	F.y = gmt_M_memory (GMT, NULL, F.y_half_width+1, double);
-	if (visit_check) F.visit = gmt_M_memory (GMT, NULL, Gin->header->nx, char);
+	if (visit_check) F.visit = gmt_M_memory (GMT, NULL, Gin->header->n_columns, char);
 	for (ii = 0; ii <= F.x_half_width; ii++) F.x[ii] = ii * F.dx;
 	for (jj = 0; jj <= F.y_half_width; jj++) F.y[jj] = jj * F.dy;
 	
-	weight = gmt_M_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
+	weight = gmt_M_memory (GMT, NULL, F.n_columns*F.n_rows, double);	/* Allocate space for convolution grid */
 	
 	if (Ctrl->F.custom) {	/* Read convolution grid from file */
 		ij_wt = 0;	wt_sum = 0.0;
@@ -887,8 +887,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n",
-				Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter (max)n_columns,n_rows = (%d %d)\n",
+				Gin->header->n_columns, Gin->header->n_rows, Gout->header->n_columns, Gout->header->n_rows, F.n_columns, F.n_rows);
 		if (Ctrl->F.quantile != 0.5)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n",
 					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
@@ -909,7 +909,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 	/* Compute nearest xoutput i-indices and shifts once */
 
-	for (col_out = 0; col_out < Gout->header->nx; col_out++) {
+	for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 		x_out = gmt_M_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
 		col_origin[col_out] = (int)gmt_M_grd_x_to_col (GMT, x_out, Gin->header);
 		if (!fast_way) x_shift[col_out] = x_out - gmt_M_grd_col_to_x (GMT, col_origin[col_out], Gin->header);
@@ -968,19 +968,19 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
    		threadArg[i].nx_wrap    = nx_wrap;
    		threadArg[i].effort_level = effort_level;
    		threadArg[i].filter_type  = filter_type;
-   		threadArg[i].r_start    = i * irint((Gout->header->ny) / Ctrl->z.n_threads);
+   		threadArg[i].r_start    = i * irint((Gout->header->n_rows) / Ctrl->z.n_threads);
    		threadArg[i].thread_num = i;
 
 		if (Ctrl->z.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
-   			threadArg[i].r_stop = Gout->header->ny;
+   			threadArg[i].r_stop = Gout->header->n_rows;
 			threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
 #ifndef HAVE_GLIB_GTHREAD
 	}
 #else
-   		threadArg[i].r_stop = (i + 1) * irint((Gout->header->ny) / Ctrl->z.n_threads);
-   		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->ny;	/* Make sure last row is not left behind */
+   		threadArg[i].r_stop = (i + 1) * irint((Gout->header->n_rows) / Ctrl->z.n_threads);
+   		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->n_rows;	/* Make sure last row is not left behind */
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
@@ -1128,9 +1128,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
-			work_data = gmt_M_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
+			work_data = gmt_M_memory (GMT, NULL, F.n_columns*F.n_rows, struct GMT_OBSERVATION);
 		else
-			work_array = gmt_M_memory (GMT, NULL, F.nx*F.ny, double);
+			work_array = gmt_M_memory (GMT, NULL, F.n_columns*F.n_rows, double);
 	}
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
@@ -1156,15 +1156,15 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			if (Ctrl->D.mode == GRDFILTER_GEO_SPHERICAL)
 				y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
 			test_nx = urint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));
-			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, test_nx) : (F.nx - 1) / 2;
-			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
-			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
+			F.x_half_width = (y < 90.0) ? MIN ((F.n_columns - 1) / 2, test_nx) : (F.n_columns - 1) / 2;
+			if (y > 90.0 && (F.n_columns - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When n_columns is even we may come up short by 1 */
+			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->n_columns);	/* Must make sure we only visit each node once along a row */
 		}
 			
 		if (effort_level == 2) set_weight_matrix (GMT, &F, weight, y_out, par, x_fix, y_fix);	/* Compute new weights for this latitude */
 		if (!fast_way) y_shift = y_out - gmt_M_grd_row_to_y (GMT, row_origin, Gin->header);
 
-		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
+		for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 
 #ifdef DEBUG
 			if (Ctrl->A.active && col_out != Ctrl->A.COL) continue;	/* Not at our selected column for testing */
@@ -1187,15 +1187,15 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 			for (jj = -F.y_half_width; go_on && jj <= F.y_half_width; jj++) {	/* Possible -/+ rows to consider for filter input */
 				row_in = row_origin + jj;		/* Current input data row number */
-				if (row_in < 0 || (row_in >= (int)Gin->header->ny)) continue;	/* Outside input y-range */
-				if (visit_check) gmt_M_memset (F.visit, Gin->header->nx, char);	/* Reset our longitude visit counter */
+				if (row_in < 0 || (row_in >= (int)Gin->header->n_rows)) continue;	/* Outside input y-range */
+				if (visit_check) gmt_M_memset (F.visit, Gin->header->n_columns, char);	/* Reset our longitude visit counter */
 				for (ii = -F.x_half_width; go_on && ii <= F.x_half_width; ii++) {	/* Possible -/+ columns to consider on both sides of input point */
 					col_in = col_origin[col_out] + ii;	/* Input column to consider */
 					if (spherical) {			/* Must handle wrapping around the globe */
 						if (col_in < 0) col_in += nx_wrap;	/* "Left" of west means we might reappear in the east */
 						else if (col_in >= nx_wrap) col_in -= nx_wrap;	/* Likewise if we are "right" of east */
 					}
-					if (col_in < 0 || (col_in >= (int)Gin->header->nx)) continue;	/* Still outside range of original input grid */
+					if (col_in < 0 || (col_in >= (int)Gin->header->n_columns)) continue;	/* Still outside range of original input grid */
 					if (visit_check) {	/* Make sure we never include the same node twice along a given row */
 						if (F.visit[col_in]) continue;		/* Already been used */
 						F.visit[col_in] = 1;			/* Now marked as visited */

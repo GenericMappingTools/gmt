@@ -310,7 +310,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 			}
 			else if (cpt) {
 				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
-				if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
+				if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))	/* Pattern */
 					gmt_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);
@@ -796,8 +796,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 					yy = d_log101p (GMT, 100.0 * F.boxh[ibox] / F.n_counted );
 				else
 					yy = (double)F.boxh[ibox];
-				S->coord[GMT_X][row] = xx;
-				S->coord[GMT_Y][row] = yy;
+				S->data[GMT_X][row] = xx;
+				S->data[GMT_Y][row] = yy;
 				row++;
 			}
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {

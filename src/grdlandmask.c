@@ -323,10 +323,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	gmt_set_geographic (GMT, GMT_OUT);
 	/* All data nodes are thus initialized to 0 */
-	x = gmt_M_memory (GMT, NULL, Grid->header->nx, double);
-	y = gmt_M_memory (GMT, NULL, Grid->header->ny, double);
+	x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
+	y = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
 
-	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
+	nx1 = Grid->header->n_columns - 1;	ny1 = Grid->header->n_rows - 1;
 
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
@@ -435,7 +435,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			if (wrap) {	/* Handle jumps */
 				col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
 				col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
-				if (col_max < col_min) col_max += Grid->header->nx;
+				if (col_max < col_min) col_max += Grid->header->n_columns;
 			}
 			else {	/* Make sure we are inside our grid */
 				double lon_w, lon_e;
@@ -456,7 +456,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #endif
 			for (row = row_min; row <= row_max; row++) {
 				for (col = col_min; col <= col_max; col++) {
-					ii = (wrap) ? col % (int)Grid->header->nx : col;
+					ii = (wrap) ? col % (int)Grid->header->n_columns : col;
 					if (ii < 0 || ii > nx1) continue;
 					ij = gmt_M_ijp (Grid->header, row, ii);
 					Grid->data[ij] = f_level;
@@ -481,7 +481,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	if (wrap && Grid->header->registration == GMT_GRID_NODE_REG) { /* Copy over values to the repeating right column */
 		unsigned int row_l;
-		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->ny; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
+		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 	
 	if (temp_shift) {

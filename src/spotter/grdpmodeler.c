@@ -400,15 +400,15 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	}
 
-	grd_x  = gmt_M_memory (GMT, NULL, G->header->nx, double);
-	grd_y  = gmt_M_memory (GMT, NULL, G->header->ny, double);
-	grd_yc = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	grd_x  = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
+	grd_y  = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
+	grd_yc = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G->header->ny; row++) {
+	for (row = 0; row < G->header->n_rows; row++) {
 		grd_y[row]  = gmt_M_grd_row_to_y (GMT, row, G->header);
 		grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 	}
-	for (col = 0; col < G->header->nx; col++) grd_x[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
+	for (col = 0; col < G->header->n_columns; col++) grd_x[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 

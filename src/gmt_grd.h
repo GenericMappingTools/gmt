@@ -95,23 +95,23 @@ enum gmt_enum_wesnids {
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no
- * overhead.  Note: gmt_M_x_to_col does not need nx but we included it for symmetry reasons.
+ * overhead.  Note: gmt_M_x_to_col does not need n_columns but we included it for symmetry reasons.
  * gmt_M_y_to_row must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
- * by flipping: j = ny - 1 - j'.
+ * by flipping: j = n_rows - 1 - j'.
  * Note that input col, row _may_ be negative, hence we do the cast to (int) here. */
 
-#define gmt_M_x_to_col(x,x0,dx,off,nx) (irint((((x) - (x0)) / (dx)) - (off)))
-#define gmt_M_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
-#define gmt_M_col_to_x(C,col,x0,x1,dx,off,nx) (((int)(col) == (int)((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
-#define gmt_M_row_to_y(C,row,y0,y1,dy,off,ny) (((int)(row) == (int)((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
+#define gmt_M_x_to_col(x,x0,dx,off,n_columns) (irint((((x) - (x0)) / (dx)) - (off)))
+#define gmt_M_y_to_row(y,y0,dy,off,n_rows) ((n_rows) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
+#define gmt_M_col_to_x(C,col,x0,x1,dx,off,n_columns) (((int)(col) == (int)((n_columns)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
+#define gmt_M_row_to_y(C,row,y0,y1,dy,off,n_rows) (((int)(row) == (int)((n_rows)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
 /*! The follow macros simplify using the 4 above macros when all info is in the struct header h. */
 
-#define gmt_M_grd_col_to_x(C,col,h) gmt_M_col_to_x(C,col,h->wesn[XLO],h->wesn[XHI],h->inc[GMT_X],h->xy_off,h->nx)
-#define gmt_M_grd_row_to_y(C,row,h) gmt_M_row_to_y(C,row,h->wesn[YLO],h->wesn[YHI],h->inc[GMT_Y],h->xy_off,h->ny)
-#define gmt_M_grd_x_to_col(C,x,h) gmt_M_x_to_col(x,h->wesn[XLO],h->inc[GMT_X],h->xy_off,h->nx)
-#define gmt_M_grd_y_to_row(C,y,h) gmt_M_y_to_row(y,h->wesn[YLO],h->inc[GMT_Y],h->xy_off,h->ny)
+#define gmt_M_grd_col_to_x(C,col,h) gmt_M_col_to_x(C,col,h->wesn[XLO],h->wesn[XHI],h->inc[GMT_X],h->xy_off,h->n_columns)
+#define gmt_M_grd_row_to_y(C,row,h) gmt_M_row_to_y(C,row,h->wesn[YLO],h->wesn[YHI],h->inc[GMT_Y],h->xy_off,h->n_rows)
+#define gmt_M_grd_x_to_col(C,x,h) gmt_M_x_to_col(x,h->wesn[XLO],h->inc[GMT_X],h->xy_off,h->n_columns)
+#define gmt_M_grd_y_to_row(C,y,h) gmt_M_y_to_row(y,h->wesn[YLO],h->inc[GMT_Y],h->xy_off,h->n_rows)
 
 /*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
@@ -125,13 +125,13 @@ enum gmt_enum_wesnids {
 
 /*! The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
 
-#define gmt_M_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
-#define gmt_M_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
+#define gmt_M_grd_get_nxpad(h,pad) ((h->n_columns) + pad[XLO] + pad[XHI])
+#define gmt_M_grd_get_nypad(h,pad) ((h->n_rows) + pad[YLO] + pad[YHI])
 
 /*! 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
-#define gmt_M_get_nm(C,nx,ny) (((uint64_t)(nx)) * ((uint64_t)(ny)))
-#define gmt_M_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
+#define gmt_M_get_nm(C,n_columns,n_rows) (((uint64_t)(n_columns)) * ((uint64_t)(n_rows)))
+#define gmt_M_grd_get_nm(h) (((uint64_t)(h->n_columns)) * ((uint64_t)(h->n_rows)))
 
 /*! gmt_M_grd_setpad copies the given pad into the header */
 
@@ -147,7 +147,7 @@ enum gmt_enum_wesnids {
 /*! IJP macro using h and the pad info */
 #define gmt_M_ijp(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx)+(int64_t)(col)+(int64_t)h->pad[XLO]))
 /*! IJ0 macro using h but ignores the pad info */
-#define gmt_M_ij0(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->nx)+(int64_t)(col)))
+#define gmt_M_ij0(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->n_columns)+(int64_t)(col)))
 /*! IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
 #define gmt_M_ij(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->mx)+(int64_t)(col)))
 /*! IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
@@ -161,11 +161,11 @@ enum gmt_enum_wesnids {
 /* Note: All arguments must be actual variables and not expressions.
  * Note: that input col, row _may_ be signed, hence we do the cast to (int) here. */
 
-#define gmt_M_row_loop(C,G,row) for (row = 0; (int)row < (int)G->header->ny; row++)
-#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); (int)col < (int)G->header->nx; col++, ij++)
+#define gmt_M_row_loop(C,G,row) for (row = 0; (int)row < (int)G->header->n_rows; row++)
+#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); (int)col < (int)G->header->n_columns; col++, ij++)
 #define gmt_M_grd_loop(C,G,row,col,ij) gmt_M_row_loop(C,G,row) gmt_M_col_loop(C,G,row,col,ij)
 /*! Just a loop over columns */
-#define gmt_M_col_loop2(C,G,col) for (col = 0; (int)col < (int)G->header->nx; col++)
+#define gmt_M_col_loop2(C,G,col) for (col = 0; (int)col < (int)G->header->n_columns; col++)
 
 /* The usage could be:
 	gmt_M_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
@@ -181,7 +181,7 @@ enum gmt_enum_wesnids {
 /*! gmt_M_grd_same_inc is true if two grids have the exact same grid increments */
 #define gmt_M_grd_same_inc(C,G1,G2) (G1->header->inc[GMT_X] == G2->header->inc[GMT_X] && G1->header->inc[GMT_Y] == G2->header->inc[GMT_Y])
 /*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
-#define gmt_M_grd_same_shape(C,G1,G2) (G1->header->nx == G2->header->nx && G1->header->ny == G2->header->ny && G1->header->registration == G2->header->registration)
+#define gmt_M_grd_same_shape(C,G1,G2) (G1->header->n_columns == G2->header->n_columns && G1->header->n_rows == G2->header->n_rows && G1->header->registration == G2->header->registration)
 /*! gmt_M_y_is_outside is true if y is outside the given range */
 #define gmt_M_y_is_outside(C,y,bottom,top) ((gmt_M_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 /*! gmt_M_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */

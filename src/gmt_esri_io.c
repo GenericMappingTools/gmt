@@ -37,7 +37,7 @@ GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_H
 	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
 	char record[GMT_BUFSIZ] = {""}, item[GMT_LEN64] = {""};
 
-	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
+	sprintf (record, "ncols %d\nnrows %d\n", header->n_columns, header->n_rows);
 	gmt_M_fputs (record, fp);		/* Write a text record */
 	if (header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 		sprintf (record, "xllcorner ");
@@ -88,13 +88,13 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BYTEORDER */ 
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* LAYOUT */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %d", &header->ny) != 1) {
+	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NROWS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %d", &header->nx) != 1) {
+	if (sscanf (record, "%*s %d", &header->n_columns) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NCOLS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
@@ -159,8 +159,8 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 			
 	gmt_fclose (GMT, fp);
 
-	header->wesn[XHI] = header->wesn[XLO] + (header->nx - 1 + header->registration) * header->inc[GMT_X];
-	header->wesn[YLO] = header->wesn[YHI] - (header->ny - 1 + header->registration) * header->inc[GMT_Y];
+	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
+	header->wesn[YLO] = header->wesn[YHI] - (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
 	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
 
@@ -198,14 +198,14 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		if (header->wesn[YHI] > -60) {
 			header->wesn[YLO] = header->wesn[YHI] - 50; 
 			header->wesn[XHI] = header->wesn[XLO] + 40; 
-			header->nx = 4800;
-			header->ny = 6000;
+			header->n_columns = 4800;
+			header->n_rows = 6000;
 		}
 		else {	/* Antarctica tiles cover 30 degrees of latitude and 60 degrees of longitude each have 3,600 rows and 7,200 columns */
 			header->wesn[YLO] = -90; 
 			header->wesn[XHI] = header->wesn[XLO] + 60; 
-			header->nx = 7200;
-			header->ny = 3600;
+			header->n_columns = 7200;
+			header->n_rows = 3600;
 		}
 		header->registration = GMT_GRID_PIXEL_REG;
 		gmt_set_geographic (GMT, GMT_IN);
@@ -259,14 +259,14 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	}
 
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %d", &header->nx) != 1) {
+	if (sscanf (record, "%*s %d", &header->n_columns) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding ncols record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %d", &header->ny) != 1) {
+	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nrows record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
@@ -309,8 +309,8 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		}
 	}
 	header->inc[GMT_Y] = header->inc[GMT_X];
-	header->wesn[XHI] = header->wesn[XLO] + (header->nx - 1 + header->registration) * header->inc[GMT_X];
-	header->wesn[YHI] = header->wesn[YLO] + (header->ny - 1 + header->registration) * header->inc[GMT_Y];
+	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
+	header->wesn[YHI] = header->wesn[YLO] + (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
 	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
 
@@ -509,7 +509,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	n_expected = header->nx;
+	n_expected = header->n_columns;
 
 	if (nBits == 32)		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
 		tmp = gmt_M_memory (GMT, NULL, n_expected, float);
@@ -519,8 +519,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	if (is_binary) {
-		int ny = header->ny;
-		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
+		int n_rows = header->n_rows;
+		if (last_row - first_row + 1 != n_rows)		/* We have a sub-region */
 			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) {
 				gmt_fclose (GMT, fp);
 				gmt_M_free (GMT, actual_col);
@@ -586,8 +586,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		col = row = 0;		/* For the entire file */
 		row2 = 0;	/* For the inside region */
 		check = !isnan (header->nan_value);
-		in_nx = header->nx;
-		header->nx = width_in;	/* Needed to be set here due to gmt_M_ijp below */
+		in_nx = header->n_columns;
+		header->n_columns = width_in;	/* Needed to be set here due to gmt_M_ijp below */
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
 			tmp[col] = value;	/* Build up a single input row */
 			col++;
@@ -623,8 +623,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->n_columns = width_in;
+	header->n_rows = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	return (GMT_NOERROR);

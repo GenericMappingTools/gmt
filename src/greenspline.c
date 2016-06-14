@@ -1020,7 +1020,7 @@ GMT_LOCAL void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double p
 }
 
 GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
-	uint64_t i, nx;
+	uint64_t i, n_columns;
 	double *x = NULL;
 #ifdef DUMP
 	FILE *fp = NULL;
@@ -1029,15 +1029,15 @@ GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], 
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (Lg) ? 3 : 2;
 #endif
-	nx = lrint (par[7]);
-	Lz->n = nx;
-	x = gmt_M_memory (GMT, NULL, nx, double);
-	Lz->y = gmt_M_memory (GMT, NULL, nx, double);
+	n_columns = lrint (par[7]);
+	Lz->n = n_columns;
+	x = gmt_M_memory (GMT, NULL, n_columns, double);
+	Lz->y = gmt_M_memory (GMT, NULL, n_columns, double);
 	if (Lg) {
-		Lg->y = gmt_M_memory (GMT, NULL, nx, double);
-		Lg->n = nx;
+		Lg->y = gmt_M_memory (GMT, NULL, n_columns, double);
+		Lg->n = n_columns;
 	}
-	for (i = 0; i < nx; i++) {
+	for (i = 0; i < n_columns; i++) {
 		x[i] = par[10] + i * par[8];
 		Lz->y[i] = spline2d_Wessel_Becker_Revised (GMT, x[i], par, Lz);
 		if (Lg) Lg->y[i] = gradspline2d_Wessel_Becker_Revised (GMT, x[i], par, Lg);
@@ -1315,7 +1315,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, unit = 0, n_cols, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
-	int error, out_ID, way, nx;
+	int error, out_ID, way, n_columns;
 	bool delete_grid = false, check_longitude, skip;
 
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
@@ -1582,33 +1582,33 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		n_skip = n_read = 0;
 		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
 			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
-				for (ii = 0; ii < n_cols; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
+				for (ii = 0; ii < n_cols; ii++) X[p][ii] = S->segment[seg]->data[ii][row];
 				switch (dimension) {
 					case 1:	/* 1-D: x, slope */
 						D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-						obs[p] = S->segment[seg]->coord[dimension][row];
+						obs[p] = S->segment[seg]->data[dimension][row];
 						break;
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
 							case 1:	/* (x, y, az, gradient) */
-								az = D2R * S->segment[seg]->coord[2][row];
-								obs[p] = S->segment[seg]->coord[3][row];
+								az = D2R * S->segment[seg]->data[2][row];
+								obs[p] = S->segment[seg]->data[3][row];
 								break;
 							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * S->segment[seg]->coord[3][row];
-								obs[p] = S->segment[seg]->coord[2][row];
+								az = D2R * S->segment[seg]->data[3][row];
+								obs[p] = S->segment[seg]->data[2][row];
 								break;
 							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * S->segment[seg]->coord[2][row];
-								obs[p] = S->segment[seg]->coord[3][row];
+								az = M_PI_2 - D2R * S->segment[seg]->data[2][row];
+								obs[p] = S->segment[seg]->data[3][row];
 								break;
 							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
-								obs[p] = hypot (S->segment[seg]->coord[3][row], S->segment[seg]->coord[3][row]);	/* Get magnitude of gradient */
+								az = atan2 (S->segment[seg]->data[2][row], S->segment[seg]->data[3][row]);		/* Get azimuth of gradient */
+								obs[p] = hypot (S->segment[seg]->data[3][row], S->segment[seg]->data[3][row]);	/* Get magnitude of gradient */
 								break;
 							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
-								obs[p] = S->segment[seg]->coord[4][row];	/* Magnitude of gradient */
+								az = atan2 (S->segment[seg]->data[2][row], S->segment[seg]->data[3][row]);		/* Get azimuth of gradient */
+								obs[p] = S->segment[seg]->data[4][row];	/* Magnitude of gradient */
 								break;
 						}
 						sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
@@ -1616,13 +1616,13 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 3:	/* 3-D */
 						switch (Ctrl->A.mode) {
 							case 4:	/* (x, y, z, gx, gy, gz) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the gradient vector */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->data[3+ii][row];	/* Get the gradient vector */
 								obs[p] = gmt_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
 								gmt_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
 								break;
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the unit vector */
-								obs[p] = S->segment[seg]->coord[6][row];	/* This is the gradient magnitude */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->data[3+ii][row];	/* Get the unit vector */
+								obs[p] = S->segment[seg]->data[6][row];	/* This is the gradient magnitude */
 								break;
 						}
 						break;
@@ -1747,11 +1747,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
 			Grid->header->registration = GMT->common.r.registration;
 			Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
-			Z.nz = Grid->header->ny = 1;	/* So that output logic will work for 1-D */
+			Z.nz = Grid->header->n_rows = 1;	/* So that output logic will work for 1-D */
 			if (dimension == 3) {
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
-				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
+				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set n_columns, n_rows */
 				gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 				gmt_set_grddim (GMT, Grid->header);
 				/* Also set nz */
@@ -1762,7 +1762,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 			}
 			else	/* Just 1-D */
-				n_ok = Grid->header->nx = gmt_M_grd_get_nx (GMT, Grid->header);
+				n_ok = Grid->header->n_columns = gmt_M_grd_get_nx (GMT, Grid->header);
 		}
 		Out = Grid;	/* Just point since we created Grid */
 	}
@@ -1852,13 +1852,13 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			series_prepare (GMT, par[0], L_Max, Lz, Lg);
 			/* Set up the cubic spline lookup/interpolation */
 			par[7] = Ctrl->S.value[3];
-			nx = irint (par[7]);
+			n_columns = irint (par[7]);
 			par[8] = (Ctrl->S.rval[1] - Ctrl->S.rval[0]) / (par[7] - 1.0);
 			par[9] = 1.0 / par[8];
 			par[10] = Ctrl->S.rval[0];
 			par[4] = par[8] * par[8];	/* Spline spacing squared, needed by csplint */
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -Sq lookup table with %d items from %g to %g\n", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -Sq lookup table with %d items from %g to %g\n", n_columns, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 			spline2d_Wessel_Becker_init (GMT, par, Lz, Lg);
 			G = &spline2d_Wessel_Becker_lookup;
 			dGdr = &gradspline2d_Wessel_Becker_lookup;
@@ -1960,8 +1960,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
-				E->table[0]->segment[0]->coord[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
-				E->table[0]->segment[0]->coord[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
+				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
+				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
 			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_OK) {
 				Return (API->error);
@@ -2039,7 +2039,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->coord[ii][row];
+				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->data[ii][row];
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = get_radius (GMT, out, X[p], dimension);
@@ -2085,7 +2085,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
-			if (dimension == 1) gmt_prep_tmp_arrays (GMT, Grid->header->nx, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
+			if (dimension == 1) gmt_prep_tmp_arrays (GMT, Grid->header->n_columns, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
 
 		} /* Else we are writing a grid */
 		gmt_M_memset (V, 4, double);
@@ -2096,12 +2096,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par,nz_off,z_level,nm,normalize)
 #endif
-			for (row = 0; row < Grid->header->ny; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+			for (row = 0; row < Grid->header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 				if (dimension > 1) {
 					V[GMT_Y] = yp[row];
 					if (dimension == 3) V[GMT_Z] = z_level;
 				}
-				for (col = 0; col < Grid->header->nx; col++) {	/* This loop is always active for 1,2,3D */
+				for (col = 0; col < Grid->header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
 					ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
 					if (dimension == 2 && gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 					V[GMT_X] = xp[col];
@@ -2125,7 +2125,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			/* Write output, in case of 3-D just a single slice */
 			if (dimension == 1) {	/* Must dump 1-D table */
-				for (col = 0; col < Grid->header->nx; col++) {
+				for (col = 0; col < Grid->header->n_columns; col++) {
 					V[GMT_X] = xp[col];
 					V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
@@ -2133,9 +2133,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
 				V[GMT_Z] = z_level;
-				for (row = 0; row < Grid->header->ny; row++) {
+				for (row = 0; row < Grid->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
-					for (col = 0; col < Grid->header->nx; col++) {
+					for (col = 0; col < Grid->header->n_columns; col++) {
 						V[GMT_X] = xp[col];
 						ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
 						V[dimension] = Out->data[ij];

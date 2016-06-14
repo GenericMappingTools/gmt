@@ -315,7 +315,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	uint64_t ij;
 
 	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
-	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
+	double x2, y2, wesn[4], value, vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
@@ -486,9 +486,9 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	
 	PSL_command (GMT->PSL, "V\n");
-	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
+	for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
 		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
-		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
+		for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
 
 			ij = gmt_M_ijp (Grid[0]->header, row, col);
 			if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
@@ -502,6 +502,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				vec_length = Grid[0]->data[ij];
 				if (vec_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim   = Grid[1]->data[ij];
+				value = vec_length;
 				if (vec_length < 0.0) {	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
 					vec_length = -vec_length;
 					vec_azim += 180.0;
@@ -512,10 +513,11 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
 				if (vec_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim = 90.0 - atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);	/* Convert dy,dx to azimuth */
+				value = vec_length;
 			}
 			
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
-				gmt_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
+				gmt_get_fill_from_z (GMT, P, value, &Ctrl->G.fill);
 				gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);

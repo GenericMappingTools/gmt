@@ -404,7 +404,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
-		int nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
+		int n_columns = Grid->header->n_columns, n_rows = Grid->header->n_rows;	/* Signed versions */
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
@@ -440,14 +440,14 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */
-			if ((col_max < 0) || (col_min >= nx)) continue;
+			if ((col_max < 0) || (col_min >= n_columns)) continue;
 			/* Triangle Above or below */
-			if ((row_max < 0) || (row_min >= ny)) continue;
+			if ((row_max < 0) || (row_min >= n_rows)) continue;
 
 			/* Triangle covers boundary, left or right. */
-			if (col_min < 0) col_min = 0;       if (col_max >= nx) col_max = Grid->header->nx - 1;
+			if (col_min < 0) col_min = 0;       if (col_max >= n_columns) col_max = Grid->header->n_columns - 1;
 			/* Triangle covers boundary, top or bottom. */
-			if (row_min < 0) row_min = 0;       if (row_max >= ny) row_max = Grid->header->ny - 1;
+			if (row_min < 0) row_min = 0;       if (row_max >= n_rows) row_max = Grid->header->n_rows - 1;
 
 			for (row = row_min; row <= row_max; row++) {
 				yp = gmt_M_grd_row_to_y (GMT, row, Grid->header);

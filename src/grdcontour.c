@@ -571,14 +571,14 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
-			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->nx - 1;
+			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->n_columns - 1;
 			row = (int)gmt_M_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
 			row += (int)gmt_M_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
 			row /= 2;
 		}
 		else if (abs (save[pol].kind) >= 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
-			col = G->header->nx / 2;
-			row = (save[pol].kind < 0) ? G->header->ny - 1 : 0;
+			col = G->header->n_columns / 2;
+			row = (save[pol].kind < 0) ? G->header->n_rows - 1 : 0;
 		}
 		else {
 			/* Loop around the contour and get min/max original x,y (longitude, latitude) coordinates */
@@ -594,7 +594,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			/* Pick the mid-latitude and march along that line from east to west */
 
 			this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
-			row = (int)MIN (G->header->ny - 1, gmt_M_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
+			row = (int)MIN (G->header->n_rows - 1, gmt_M_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
 			this_lat = gmt_M_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
 			col  = (int)gmt_M_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
 			stop = (int)gmt_M_grd_x_to_col (GMT, xmax, G->header);		/* Eastermost point */
@@ -696,7 +696,7 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 	/* Modify orientation of contours to have top of annotation facing the local hill top */
 	int col, row;
 	uint64_t k, seg, ij;
-	double nx, ny, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
+	double n_columns, n_rows, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
 	struct GMT_CONTOUR_LINE *C = NULL;
 
 	for (seg = 0; seg < G->n_segments; seg++) {
@@ -704,14 +704,14 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 		for (k = 0; k < C->n_labels; k++) {
 			gmt_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
 			row = (int)gmt_M_grd_y_to_row (GMT, y_on, Grid->header);
-			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
+			if (row < 0 || row >= (int)Grid->header->n_rows) continue;		/* Somehow, outside y range */
 			while (gmt_M_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
 			while (gmt_M_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
 			col = (int)gmt_M_grd_x_to_col (GMT, x_on, Grid->header);
-			if (col < 0 || col >= (int)Grid->header->nx) continue;		/* Somehow, outside x range */
+			if (col < 0 || col >= (int)Grid->header->n_columns) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
-			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
+			sincosd (angle + 90, &n_rows, &n_columns);	/* Coordinate of normal to label line */
 			x_node = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 			y_node = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 			gmt_geo_to_xy (GMT, x_node, y_node, &x_node_p, &y_node_p);	/* Projected coordinates of nearest node point */
@@ -727,7 +727,7 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to adjust hill label contour orientation (node value = contour value)\n");
 				continue;
 			}
-			dot = dx * nx + dy * ny;	/* 2-D Dot product of n and vector from contour to node. +ve if on same side of contour line */
+			dot = dx * n_columns + dy * n_rows;	/* 2-D Dot product of n and vector from contour to node. +ve if on same side of contour line */
 			if (lrint (copysign (1.0, dot * dz)) != G->hill_label) C->L[k].angle += 180.0;	/* Must turn upside-down */
 		}
 	}
@@ -940,11 +940,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_M_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 		gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 		for (i = c = 0; i < P->n_colors; i++) {
-			if (P->range[i].skip) continue;
-			contour[c] = P->range[i].z_low;
+			if (P->data[i].skip) continue;
+			contour[c] = P->data[i].z_low;
 			if (Ctrl->A.mode)
 				cont_type[c] = 'C';
-			else if (P->range[i].annot)
+			else if (P->data[i].annot)
 				cont_type[c] = 'A';
 			else
 				cont_type[c] = (Ctrl->contour.annot) ? 'A' : 'C';
@@ -952,10 +952,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont_do_tick[c] = (char)Ctrl->T.active;
 			c++;
 		}
-		contour[c] = P->range[P->n_colors-1].z_high;
+		contour[c] = P->data[P->n_colors-1].z_high;
 		if (Ctrl->A.mode)
 			cont_type[c] = 'C';
-		else if (P->range[P->n_colors-1].annot & 2)
+		else if (P->data[P->n_colors-1].annot & 2)
 			cont_type[c] = 'A';
 		else
 			cont_type[c] = (Ctrl->contour.annot) ? 'A' : 'C';
@@ -1101,7 +1101,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	 * original grid values and subtract the current contour value. */
 
  	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
-	n_edges = G->header->ny * (urint (ceil (G->header->nx / 16.0)));
+	n_edges = G->header->n_rows * (urint (ceil (G->header->n_columns / 16.0)));
 	edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {

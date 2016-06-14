@@ -96,7 +96,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/*
 	gmt_M_free (GMT, C);	
 }
 
-GMT_LOCAL double specular (double nx, double ny, double nz, double *s) {
+GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s) {
 	/* SPECULAR Specular reflectance.
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
@@ -109,9 +109,9 @@ GMT_LOCAL double specular (double nx, double ny, double nz, double *s) {
 
 	   Reduces to V[0] = 0;		V[1] = 0;	V[2] = 1 */
 
-	/*r = MAX(0,2*(s[0]*nx+s[1]*ny+s[2]*nz).*(v[0]*nx+v[1]*ny+v[2]*nz) - (v'*s)*ones(m,n)); */
+	/*r = MAX(0,2*(s[0]*n_columns+s[1]*n_rows+s[2]*nz).*(v[0]*n_columns+v[1]*n_rows+v[2]*nz) - (v'*s)*ones(m,n)); */
 
-	return (MAX(0, 2 * (s[0]*nx + s[1]*ny + s[2]*nz) * nz - s[2]));
+	return (MAX(0, 2 * (s[0]*n_columns + s[1]*n_rows + s[2]*nz) * nz - s[2]));
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -465,7 +465,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	reduction(+:ave_gradient)
 #endif
 #endif
-	for (row = 0, ij0 = 0ULL; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
+	for (row = 0, ij0 = 0ULL; row < Surf->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = gmt_M_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
@@ -479,7 +479,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 			x_factor = x_factor_set;
 			if (Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
-		for (col = 0; col < Surf->header->nx; col++, ij0++) {
+		for (col = 0; col < Surf->header->n_columns; col++, ij0++) {
 			ij = gmt_M_ijp (Surf->header, row, col);	/* Index into padded grid */
 			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Surf->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of star corners = NaN; assign NaN answers and skip to next node */
@@ -552,7 +552,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	if (!new_grid)	{	/* We got away with using the input grid by ignoring the pad.  Now we must put the pad back in */
 		gmt_M_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
-		Out->header->mx = Out->header->nx;	Out->header->my = Out->header->ny;	/* Since there is no pad */
+		Out->header->mx = Out->header->n_columns;	Out->header->my = Out->header->n_rows;	/* Since there is no pad */
 		gmt_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
 	}
 
@@ -560,14 +560,14 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		double sum;
 		/* If the N or S poles are included then we only want a single estimate at these repeating points */
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
-			sum /= Out->header->nx;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
+			sum /= Out->header->n_columns;	/* Average gradient */
+			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (float)sum;
 		}
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->ny - 1, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
-			sum /= Out->header->nx;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->ny - 1, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
+			sum /= Out->header->n_columns;	/* Average gradient */
+			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (float)sum;
 		}
 	}
 	

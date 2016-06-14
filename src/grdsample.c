@@ -199,9 +199,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
-			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
+			case 'N':	/* Backwards compatible.  n_columns/n_rows can now be set with -I */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<n_columns>/<n_rows> is deprecated; use -I<n_columns>+/<n_rows>+ instead.\n");
 					Ctrl->I.active = true;
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
 					if (jj == 0) jj = ii;
@@ -323,18 +323,18 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
+	sprintf (format, "Input  grid (%s/%s/%s/%s) n_columns = %%d n_rows = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
-		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->nx, Gin->header->ny,
+		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->n_columns, Gin->header->n_rows,
 		Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
 
 	memcpy (&format, "Output", 6);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
-		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny,
+		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->n_columns, Gout->header->n_rows,
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
@@ -348,8 +348,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Precalculate longitudes */
 
-	lon = gmt_M_memory (GMT, NULL, Gout->header->nx, double);
-	for (col = 0; col < (int)Gout->header->nx; col++) {
+	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
+	for (col = 0; col < (int)Gout->header->n_columns; col++) {
 		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
 		if (!Gin->header->nxp)
 			/* Nothing */;
@@ -366,7 +366,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
 #endif
-	for (row = 0; row < (int)Gout->header->ny; row++) {
+	for (row = 0; row < (int)Gout->header->n_rows; row++) {
 		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gin->header->nyp)
 			/* Nothing */;
@@ -374,7 +374,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
-		for (col = 0; col < (int)Gout->header->nx; col++) {
+		for (col = 0; col < (int)Gout->header->n_columns; col++) {
 			ij = gmt_M_ijp (Gout->header, row, col);
 			Gout->data[ij] = (float)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];

@@ -244,16 +244,16 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
 	if (common_y) {
 
-		C->header->ny = A->header->ny;
+		C->header->n_rows = A->header->n_rows;
 
 		if (way == 4 || fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < x_noise) {	/* A is on the left of B */
 			way = 4;
-			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
+			C->header->n_columns = A->header->n_columns + B->header->n_columns - one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else if (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < x_noise) {			/* A is on the right of B */
 			way = 3;
-			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
+			C->header->n_columns = A->header->n_columns + B->header->n_columns - one_or_zero;
 			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
 		}
 		else if ((fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < (C->header->inc[GMT_X] + x_noise)) ) {
@@ -262,7 +262,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				way = 32;
 			else                    /* Pixel registration - overlap */
 				way = 33;
-			C->header->nx = A->header->nx + B->header->nx - !one_or_zero;
+			C->header->n_columns = A->header->n_columns + B->header->n_columns - !one_or_zero;
 			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
 		}
 		else if ((fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < (C->header->inc[GMT_X] + x_noise)) ) {
@@ -271,7 +271,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				way = 43;
 			else                    /* Pixel registration - overlap */
 				way = 44;
-			C->header->nx = A->header->nx + B->header->nx - !one_or_zero;
+			C->header->n_columns = A->header->n_columns + B->header->n_columns - !one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
@@ -281,16 +281,16 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	}
 	else if (fabs (A->header->wesn[XLO] - B->header->wesn[XLO]) < x_noise && fabs (A->header->wesn[XHI] - B->header->wesn[XHI]) < x_noise) {
 
-		C->header->nx = A->header->nx;
+		C->header->n_columns = A->header->n_columns;
 
 		if (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < y_noise) {			/* B is exactly on top of A */
 			way = 1;
-			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
+			C->header->n_rows = A->header->n_rows + B->header->n_rows - one_or_zero;
 			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
 		}
 		else if (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < y_noise) {	/* A is exactly on top of B */
 			way = 2;
-			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
+			C->header->n_rows = A->header->n_rows + B->header->n_rows - one_or_zero;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else if ((fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
@@ -299,7 +299,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				way = 10;
 			else                    /* Pixel registration - overlap */
 				way = 11;
-			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
+			C->header->n_rows = A->header->n_rows + B->header->n_rows - !one_or_zero;
 			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
 		}
 		else if ((fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
@@ -308,7 +308,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				way = 21;
 			else                    /* Pixel registration - overlap */
 				way = 22;
-			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
+			C->header->n_rows = A->header->n_rows + B->header->n_rows - !one_or_zero;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
@@ -330,9 +330,9 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "%%s\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, "File\tW\tE\tS\tN\tdx\tdy\tnx\tny\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->nx, B->header->ny);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->n_columns, A->header->n_rows);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->n_columns, B->header->n_rows);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->n_columns, C->header->n_rows);
 	}
 
 	gmt_set_grddim (GMT, C->header);
@@ -347,14 +347,14 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 10:		/* B is on top of A but their grid reg limits underlap by one cell */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->data_offset = B->header->nx * (B->header->ny - one_or_zero);
+				A->header->data_offset = B->header->n_columns * (B->header->n_rows - one_or_zero);
 				if (way == 11)
-					A->header->data_offset -= B->header->nx;
+					A->header->data_offset -= B->header->n_columns;
 				else if (way == 10)
-					A->header->data_offset += B->header->nx;
+					A->header->data_offset += B->header->n_columns;
 			}
 			else {
-				GMT->current.io.pad[YHI] = B->header->ny - one_or_zero;
+				GMT->current.io.pad[YHI] = B->header->n_rows - one_or_zero;
 				if (way == 11)
 					GMT->current.io.pad[YHI]--;
 				else if (way == 10)
@@ -370,7 +370,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			else {
 				GMT->current.io.pad[YHI] = 0;
-				GMT->current.io.pad[YLO] = A->header->ny - one_or_zero;
+				GMT->current.io.pad[YLO] = A->header->n_rows - one_or_zero;
 				if (way == 11)
 					GMT->current.io.pad[YLO]--;
 				else if (way == 10)
@@ -386,7 +386,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 21:        /* A is on top of B but their grid reg limits underlap by one cell */
 		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
 			if (!is_nc_grid(A)) {
-				GMT->current.io.pad[YLO] = B->header->ny - one_or_zero;
+				GMT->current.io.pad[YLO] = B->header->n_rows - one_or_zero;
 				if (way == 22)
 					GMT->current.io.pad[YLO]--;
 				else if (way == 21)
@@ -399,15 +399,15 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->data_offset = A->header->nx * (A->header->ny - one_or_zero);
+				B->header->data_offset = A->header->n_columns * (A->header->n_rows - one_or_zero);
 				if (way == 22)
-					B->header->data_offset -= A->header->nx;
+					B->header->data_offset -= A->header->n_columns;
 				else if (way == 21)
-					B->header->data_offset += A->header->nx;
+					B->header->data_offset += A->header->n_columns;
 			}
 			else {
 				GMT->current.io.pad[YLO] = 0;
-				GMT->current.io.pad[YHI] = A->header->ny - one_or_zero;
+				GMT->current.io.pad[YHI] = A->header->n_rows - one_or_zero;
 				if (way == 22)
 					GMT->current.io.pad[YHI]--;
 				else if (way == 21)
@@ -423,15 +423,15 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 32:        /* A is on right of B but their grid reg limits underlap by one cell */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->stride = C->header->nx;
-				A->header->data_offset = B->header->nx - one_or_zero;
+				A->header->stride = C->header->n_columns;
+				A->header->data_offset = B->header->n_columns - one_or_zero;
 				if (way == 33)
 					A->header->data_offset--;
 				else if (way == 32)
 					A->header->data_offset++;
 			}
 			else {
-				GMT->current.io.pad[XLO] = B->header->nx - one_or_zero;
+				GMT->current.io.pad[XLO] = B->header->n_columns - one_or_zero;
 				if (way == 33)
 					GMT->current.io.pad[XLO]--;
 				else if (way == 32)
@@ -444,10 +444,10 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->stride = C->header->nx;
+				B->header->stride = C->header->n_columns;
 			}
 			else {
-				GMT->current.io.pad[XLO] = 0; GMT->current.io.pad[XHI] = A->header->nx - one_or_zero;
+				GMT->current.io.pad[XLO] = 0; GMT->current.io.pad[XHI] = A->header->n_columns - one_or_zero;
 				if (way == 33)
 					GMT->current.io.pad[XHI]--;
 				else if (way == 32)
@@ -463,10 +463,10 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 43:        /* A is on left of B but their grid reg limits underlap by one cell */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->stride = C->header->nx;
+				A->header->stride = C->header->n_columns;
 			}
 			else {
-				GMT->current.io.pad[XHI] = B->header->nx - one_or_zero;
+				GMT->current.io.pad[XHI] = B->header->n_columns - one_or_zero;
 				if (way == 44)
 					GMT->current.io.pad[XHI]--;
 				else if (way == 43)
@@ -479,8 +479,8 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->stride = C->header->nx;
-				B->header->data_offset = A->header->nx - one_or_zero;
+				B->header->stride = C->header->n_columns;
+				B->header->data_offset = A->header->n_columns - one_or_zero;
 				if (way == 44)
 					B->header->data_offset--;
 				else if (way == 43)
@@ -488,7 +488,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			else {
 				GMT->current.io.pad[XHI] = 0;
-				GMT->current.io.pad[XLO] = A->header->nx - one_or_zero;
+				GMT->current.io.pad[XLO] = A->header->n_columns - one_or_zero;
 				if (way == 44)
 					GMT->current.io.pad[XLO]--;
 				else if (way == 43)

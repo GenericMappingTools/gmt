@@ -279,15 +279,15 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 						S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 					}
 					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
-						S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						S->n_rows = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
 						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
 
 					for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
-						gmt_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
-						S->coord[GMT_X][row] = x0; S->coord[GMT_Y][row] = y0;
+						gmt_geo_to_xy (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], &x0, &y0);
+						S->data[GMT_X][row] = x0; S->data[GMT_Y][row] = y0;
 					}
-					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
+					PSL_beginclipping (PSL, S->data[GMT_X], S->data[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
 					if (duplicate)	/* Free duplicate segment */
 						gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);

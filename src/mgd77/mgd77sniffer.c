@@ -245,8 +245,8 @@ GMT_LOCAL void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, do
 
 		/* Get grid dimensions */
 		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
-		info->nx = urint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
-		info->ny = urint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
+		info->n_columns = urint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
+		info->n_rows = urint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, info->fname, info->G) == NULL) {	/* Get subset */
 			return;
@@ -256,7 +256,7 @@ GMT_LOCAL void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, do
 		if ((info->G = gmt_create_grid (GMT)) == NULL) return;
 		gmt_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
 	}
-	info->mx = info->G->header->nx + 4;
+	info->mx = info->G->header->n_columns + 4;
 }
 
 /* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */

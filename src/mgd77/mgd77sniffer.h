@@ -99,7 +99,7 @@ struct BAD_SECTION {	/* To flag a range of records as bad for given field */
 
 struct MGD77_GRID_INFO {
 	struct GMT_GRID *G;
-	unsigned int one_or_zero, nx, ny, col, g_pts, format, mode, mx, n_nan;
+	unsigned int one_or_zero, n_columns, n_rows, col, g_pts, format, mode, mx, n_nan;
 	int sign;
 	bool interpolate;
 	double scale, max_lat;

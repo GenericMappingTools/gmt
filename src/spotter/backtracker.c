@@ -441,7 +441,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
-		for (row = 0; row < H->n_rows; row++) H->coord[GMT_Y][row] = gmt_lat_swap (GMT, H->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+		for (row = 0; row < H->n_rows; row++) H->data[GMT_Y][row] = gmt_lat_swap (GMT, H->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
 
 	n_points = n_segments = 0;
@@ -535,8 +535,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->F.active) {	/* Must account for hotspot drift, use interpolation for given age */
-			gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &age, &lon, GMT->current.setting.interpolant);
-			gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &age, &lat, GMT->current.setting.interpolant);
+			gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &age, &lon, GMT->current.setting.interpolant);
+			gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &age, &lat, GMT->current.setting.interpolant);
 		}
 		else {	/* Use input location */
 			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
@@ -557,8 +557,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				t = (Ctrl->A.mode) ? t_low : 0.0;
 				t_end = (Ctrl->A.mode) ? t_high : age;
 				while (t <= t_end) {
-					gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
@@ -572,8 +572,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				}
 				t -= Ctrl->L.d_km;	/* Last time used in the loop */
 				if (!(doubleAlmostEqualZero (t_end, t))) {	/* One more point since t_end was not a multiple of d_km from t_start */
-					gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");

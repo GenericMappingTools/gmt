@@ -308,8 +308,8 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	unsigned int x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	unsigned int y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
 	unsigned int format;	/* Either GMT_IS_COL_FORMAT or GMT_IS_ROW_FORMAT */
-	unsigned int x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
-	unsigned int y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
+	unsigned int x_period;	/* length of a row in the input data ( <= n_columns, see x_missing) */
+	unsigned int y_period;	/* length of a col in the input data ( <= n_rows, see y_missing) */
 	unsigned int start_col;	/* First logical column in file */
 	unsigned int start_row;	/* First logical row in file */
 	unsigned int gmt_i;		/* Current column number in the GMT registered grid */

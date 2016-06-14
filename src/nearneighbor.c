@@ -311,7 +311,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of sectors = %d, minimum number of filled sectors = %d\n", Ctrl->N.sectors, Ctrl->N.min_sectors);
 
 	grid_node = gmt_M_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
@@ -341,8 +341,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	n = n_read = 0;
 	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
 	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
-	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
-	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
+	x_wrap = Grid->header->n_columns - 1;				/* Add to node index to go to right column */
+	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);		gmt_M_free (GMT, grid_node);

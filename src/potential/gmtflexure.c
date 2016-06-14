@@ -1284,12 +1284,12 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
 					S = Q->table[tbl]->segment[seg];	/* Current segment */
 					for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
-						if (Ctrl->M.active[1]) S->coord[GMT_Y][row] *= 1000;	/* Got topography in km so scale to meters */
-						if (Ctrl->W.active && S->coord[GMT_Y][row] > Ctrl->W.water_depth) {
-							S->coord[GMT_Y][row] = (float)(Ctrl->W.water_depth + (S->coord[GMT_Y][row] - Ctrl->W.water_depth) * boost);
+						if (Ctrl->M.active[1]) S->data[GMT_Y][row] *= 1000;	/* Got topography in km so scale to meters */
+						if (Ctrl->W.active && S->data[GMT_Y][row] > Ctrl->W.water_depth) {
+							S->data[GMT_Y][row] = (float)(Ctrl->W.water_depth + (S->data[GMT_Y][row] - Ctrl->W.water_depth) * boost);
 							n_subaerial++;
 						}
-						S->coord[GMT_Y][row] *= scale;
+						S->data[GMT_Y][row] *= scale;
 					}
 				}
 			}
@@ -1313,10 +1313,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
-					if (S->coord[GMT_Y][row] < 1e10) /* Got elastic thickness, convert to rigidity */
-						S->coord[GMT_Y][row] = te_2_d (Ctrl, scale * S->coord[GMT_Y][row]);
-					if (S->coord[GMT_Y][row] < d_min) d_min = S->coord[GMT_Y][row];
-					if (S->coord[GMT_Y][row] > d_max) d_max = S->coord[GMT_Y][row];
+					if (S->data[GMT_Y][row] < 1e10) /* Got elastic thickness, convert to rigidity */
+						S->data[GMT_Y][row] = te_2_d (Ctrl, scale * S->data[GMT_Y][row]);
+					if (S->data[GMT_Y][row] < d_min) d_min = S->data[GMT_Y][row];
+					if (S->data[GMT_Y][row] > d_max) d_max = S->data[GMT_Y][row];
 				}
 			}
 		}
@@ -1332,7 +1332,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < Q->n_tables; tbl++) {
 				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
 					S = Q->table[tbl]->segment[seg];	/* Current segment */
-					gmt_M_memset (S->coord[GMT_Y], S->n_rows, double);
+					gmt_M_memset (S->data[GMT_Y], S->n_rows, double);
 				}
 			}
 		}
@@ -1345,7 +1345,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			}
 			S = Q->table[0]->segment[0];	/* Only a single segment here */
 			for (row = 0; row < dim[GMT_ROW]; row++) {	/* Fill in x values */
-				S->coord[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->Q.max: Ctrl->Q.min + row * Ctrl->Q.inc;
+				S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->Q.max: Ctrl->Q.min + row * Ctrl->Q.inc;
 			}
 		}
 	}
@@ -1358,7 +1358,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++)	/* Set constant rigidity */
-					S->coord[GMT_Y][row] = d;
+					S->data[GMT_Y][row] = d;
 			}
 		}
 	}
@@ -1390,10 +1390,10 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < W->n_tables; tbl++) {
 		for (seg = 0; seg < W->table[tbl]->n_segments; seg++) {
 			S = Q->table[tbl]->segment[seg];
-			deflection = W->table[tbl]->segment[seg]->coord[GMT_Y];	/* Current flexure */
-			load = S->coord[GMT_Y];	/* Current load */
-			rigidity = E->table[tbl]->segment[seg]->coord[GMT_Y];	/* Current rigidities */
-			gmt_M_memcpy (W->table[tbl]->segment[seg]->coord[GMT_X], S->coord[GMT_X], S->n_rows, double);
+			deflection = W->table[tbl]->segment[seg]->data[GMT_Y];	/* Current flexure */
+			load = S->data[GMT_Y];	/* Current load */
+			rigidity = E->table[tbl]->segment[seg]->data[GMT_Y];	/* Current rigidities */
+			gmt_M_memcpy (W->table[tbl]->segment[seg]->data[GMT_X], S->data[GMT_X], S->n_rows, double);
 			sprintf (msg, "BCs > ");
 			if (Ctrl->A.bc[LEFT] == BC_INFINITY) strcat (msg, "infinity at left edge + ");
 			else if (Ctrl->A.bc[LEFT] == BC_PERIODIC) strcat (msg, "periodic at left edge + ");
@@ -1429,11 +1429,11 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure using Airy compensation\n");
 				for (row = 0; row < S->n_rows; row++) deflection[row] = load[row] / restore;
 			}
-			x_inc = S->coord[GMT_X][1] - S->coord[GMT_X][0];
+			x_inc = S->data[GMT_X][1] - S->data[GMT_X][0];
 			if (Ctrl->M.active[0]) x_inc *= 1000.0;	/* Got x in km */
 
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
-				double *w0 = T->table[tbl]->segment[seg]->coord[GMT_Y];
+				double *w0 = T->table[tbl]->segment[seg]->data[GMT_Y];
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
 				error = flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
@@ -1452,7 +1452,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->S.active) {	/* Compute curvatures */
-				double *curvature = W->table[tbl]->segment[seg]->coord[GMT_Z];
+				double *curvature = W->table[tbl]->segment[seg]->data[GMT_Z];
 				get_curvature (deflection, (int)S->n_rows, x_inc, curvature);
 			}
 

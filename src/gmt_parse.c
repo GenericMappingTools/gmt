@@ -201,7 +201,7 @@ GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 
 /*! . */
 GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
+	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<n_columns>/<ny> we need access
 	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
 	 * make sure that if such a -R option is given we first process -I */
 	
@@ -223,7 +223,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	}
 	if (GMT->common.API_I.active)
 		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny> requires grid spacings via -I\n");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;
 }
 

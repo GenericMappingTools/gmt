@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 					for (seg = t = 0; seg < T->table[0]->n_segments; seg++) {
 						S = T->table[0]->segment[seg];	/* Shorthand to current segment */
 						for (row = 0; row < S->n_rows; seg++, t++)
-							Ctrl->T.value[t] = S->coord[GMT_X][row];
+							Ctrl->T.value[t] = S->data[GMT_X][row];
 					}
 					if (GMT_Destroy_Data (API, &T) != GMT_OK)
 						n_errors++;
@@ -285,59 +285,59 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	/* Add south border w->e */
 	if (h->wesn[YLO] == -90.0) {	/* If at the S pole we just add it twice for end longitudes */
 		add = 2;
-		S->coord[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
-		S->coord[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
-		S->coord[GMT_X][0] = h->wesn[XLO];	S->coord[GMT_X][1] = h->wesn[XHI];
-		S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = h->wesn[YLO];
+		S->data[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
+		S->data[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
+		S->data[GMT_X][0] = h->wesn[XLO];	S->data[GMT_X][1] = h->wesn[XHI];
+		S->data[GMT_Y][0] = S->data[GMT_Y][1] = h->wesn[YLO];
 	}
 	else {				/* Loop along south border from west to east */
-		add = h->nx - !h->registration;
-		S->coord[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
-		S->coord[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
+		add = h->n_columns - !h->registration;
+		S->data[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
+		S->data[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
 		for (col = 0; col < add; col++) {
-			S->coord[GMT_X][col] = gmt_M_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][col] = h->wesn[YLO];
+			S->data[GMT_X][col] = gmt_M_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->n_columns);
+			S->data[GMT_Y][col] = h->wesn[YLO];
 		}
 	}
 	np += add;
 	/* Add east border s->n */
-	add = h->ny - !h->registration;
-	S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
-	S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
+	add = h->n_rows - !h->registration;
+	S->data[GMT_X] = gmt_M_memory (GMT, S->data[GMT_X], add + np, double);
+	S->data[GMT_Y] = gmt_M_memory (GMT, S->data[GMT_Y], add + np, double);
 	for (row = 0; row < add; row++) {	/* Loop along east border from south to north */
-		S->coord[GMT_X][np+row] = h->wesn[XHI];
-		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->data[GMT_X][np+row] = h->wesn[XHI];
+		S->data[GMT_Y][np+row] = gmt_M_row_to_y (GMT, h->n_rows - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->n_rows);
 	}
 	np += add;
 	/* Add north border e->w */
 	if (h->wesn[YHI] == 90.0) {	/* If at the N pole we just add it twice for end longitudes */
 		add = 2;
-		S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
-		S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
-		S->coord[GMT_X][np] = h->wesn[XHI];	S->coord[GMT_X][np+1] = h->wesn[XLO];
-		S->coord[GMT_Y][np] = S->coord[GMT_Y][np+1] = h->wesn[YHI];
+		S->data[GMT_X] = gmt_M_memory (GMT, S->data[GMT_X], add + np, double);
+		S->data[GMT_Y] = gmt_M_memory (GMT, S->data[GMT_Y], add + np, double);
+		S->data[GMT_X][np] = h->wesn[XHI];	S->data[GMT_X][np+1] = h->wesn[XLO];
+		S->data[GMT_Y][np] = S->data[GMT_Y][np+1] = h->wesn[YHI];
 	}
 	else {			/* Loop along north border from east to west */
-		add = h->nx - !h->registration;
-		S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
-		S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
+		add = h->n_columns - !h->registration;
+		S->data[GMT_X] = gmt_M_memory (GMT, S->data[GMT_X], add + np, double);
+		S->data[GMT_Y] = gmt_M_memory (GMT, S->data[GMT_Y], add + np, double);
 		for (col = 0; col < add; col++) {
-			S->coord[GMT_X][np+col] = gmt_M_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][np+col] = h->wesn[YHI];
+			S->data[GMT_X][np+col] = gmt_M_col_to_x (GMT, h->n_columns - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->n_columns);
+			S->data[GMT_Y][np+col] = h->wesn[YHI];
 		}
 	}
 	np += add;
 	/* Add west border n->s */
-	add = h->ny - !h->registration;
-	S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np + 1, double);
-	S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
+	add = h->n_rows - !h->registration;
+	S->data[GMT_X] = gmt_M_memory (GMT, S->data[GMT_X], add + np + 1, double);
+	S->data[GMT_Y] = gmt_M_memory (GMT, S->data[GMT_Y], add + np + 1, double);
 	for (row = 0; row < add; row++) {	/* Loop along west border from north to south */
-		S->coord[GMT_X][np+row] = h->wesn[XLO];
-		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->data[GMT_X][np+row] = h->wesn[XLO];
+		S->data[GMT_Y][np+row] = gmt_M_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->n_rows);
 	}
 	np += add;
-	S->coord[GMT_X][np] = S->coord[GMT_X][0];	/* Close polygon explicitly */
-	S->coord[GMT_Y][np] = S->coord[GMT_Y][0];
+	S->data[GMT_X][np] = S->data[GMT_X][0];	/* Close polygon explicitly */
+	S->data[GMT_Y][np] = S->data[GMT_Y][0];
 	np++;
 	S->n_rows = np;
 	S->n_columns = 2;
@@ -515,12 +515,12 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			S = pol->segment[seg];		/* Shorthand for current original segment */
 			Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
 			for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
-				Sr->coord[GMT_X][rec] = S->coord[GMT_X][rec];
-				Sr->coord[GMT_Y][rec] = gmt_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-				gmt_geo_to_cart (GMT, Sr->coord[GMT_Y][rec], Sr->coord[GMT_X][rec], P_original, true);	/* Convert to a Cartesian x,y,z vector; true since we have degrees */
+				Sr->data[GMT_X][rec] = S->data[GMT_X][rec];
+				Sr->data[GMT_Y][rec] = gmt_lat_swap (GMT, S->data[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				gmt_geo_to_cart (GMT, Sr->data[GMT_Y][rec], Sr->data[GMT_X][rec], P_original, true);	/* Convert to a Cartesian x,y,z vector; true since we have degrees */
 				gmt_matrix_vect_mult (GMT, 3U, R, P_original, P_rotated);				/* Rotate the vector */
-				gmt_cart_to_geo (GMT, &Sr->coord[GMT_Y][rec], &Sr->coord[GMT_X][rec], P_rotated, true);	/* Recover lon lat representation; true to get degrees */
-				Sr->coord[GMT_Y][rec] = gmt_lat_swap (GMT, Sr->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				gmt_cart_to_geo (GMT, &Sr->data[GMT_Y][rec], &Sr->data[GMT_X][rec], P_rotated, true);	/* Recover lon lat representation; true to get degrees */
+				Sr->data[GMT_Y][rec] = gmt_lat_swap (GMT, Sr->data[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			gmt_set_seg_polar (GMT, Sr);	/* Determine if it is a polar cap */
 		}
@@ -571,8 +571,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Precalculate node coordinates in both degrees and radians */
 		grd_x = gmt_grd_coord (GMT, G_rot->header, GMT_X);
 		grd_y = gmt_grd_coord (GMT, G_rot->header, GMT_Y);
-		grd_yc = gmt_M_memory (GMT, NULL, G_rot->header->ny, double);
-		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+		grd_yc = gmt_M_memory (GMT, NULL, G_rot->header->n_rows, double);
+		for (row = 0; row < G_rot->header->n_rows; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
@@ -602,19 +602,19 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		for (seg = 0; not_global && seg < pol->n_segments; seg++) {
 			for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
-				lon = pol->segment[seg]->coord[GMT_X][rec];
+				lon = pol->segment[seg]->data[GMT_X][rec];
 				while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
 				scol = (int)gmt_M_grd_x_to_col (GMT, lon, G_rot->header);
-				srow = (int)gmt_M_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+				srow = (int)gmt_M_grd_y_to_row (GMT, pol->segment[seg]->data[GMT_Y][rec], G_rot->header);
 				/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
 				start_row = (srow > PAD) ? srow - PAD : 0;
 				stop_row  = ((srow + PAD) >= 0) ? srow + PAD : 0;
 				start_col = (scol > PAD) ? scol - PAD : 0;
 				stop_col  = ((scol + PAD) >= 0) ? scol + PAD : 0;
 				for (row = start_row; row <= stop_row; row++) {
-					if (row >= G_rot->header->ny) continue;
+					if (row >= G_rot->header->n_rows) continue;
 					for (col = start_col; col <= stop_col; col++) {
-						if (col >= G_rot->header->nx) continue;
+						if (col >= G_rot->header->n_columns) continue;
 						ij_rot = gmt_M_ijp (G_rot->header, row, col);
 						if (!gmt_M_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
 						if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
@@ -624,10 +624,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 						scol = (int)gmt_M_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
-						col_o = scol;	if (col_o >= G->header->nx) continue;
+						col_o = scol;	if (col_o >= G->header->n_columns) continue;
 						srow = (int)gmt_M_grd_y_to_row (GMT, yy, G->header);
 						if (srow < 0) continue;
-						row_o = srow;	if (row_o >= G->header->ny) continue;
+						row_o = srow;	if (row_o >= G->header->n_rows) continue;
 						ij = gmt_M_ijp (G->header, row_o, col_o);
 						G_rot->data[ij_rot] = G->data[ij];
 					}

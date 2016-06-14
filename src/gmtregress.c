@@ -1110,9 +1110,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 			for (k = GMT_X; k <= GMT_Z; k++) {	/* Check in turn for sigma-x, sigma-y, r columns */
 				if (!Ctrl->W.col[k]) continue;	/* No such column was provided */
 				if (Ctrl->W.type || k == GMT_Z)	/* Got weights or dealing with the correlation column, so just copy the contents */
-					gmt_M_memcpy (w[k], S->coord[Ctrl->W.col[k]], S->n_rows, double);
+					gmt_M_memcpy (w[k], S->data[Ctrl->W.col[k]], S->n_rows, double);
 				else	/* Got sigma; convert to weights = 1/sigma */
-					for (row = 0; row < S->n_rows; row++) w[k][row] = 1.0 / S->coord[Ctrl->W.col[k]][row];
+					for (row = 0; row < S->n_rows; row++) w[k][row] = 1.0 / S->data[Ctrl->W.col[k]][row];
 				/* Square the weights here, except for correlations (if present) */
 				if (k < GMT_Z) for (row = 0; row < S->n_rows; row++) w[k][row] *= w[k][row];
 				col++;	/* Go to next potential input column */
@@ -1124,33 +1124,33 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				bool weighted = (Ctrl->E.mode == GMTREGRESS_X) ? (w[GMT_X]) : (w[GMT_Y]);	/* true if these pointers are not NULL */
 				
 				/* Determine x/y means, compute reduced coordinates U,V and return proper weights W once, unless orthogonal regression was selected */
-				if (Ctrl->E.mode != GMTREGRESS_XY) (void)gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
+				if (Ctrl->E.mode != GMTREGRESS_XY) (void)gmt_demeaning (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 				for (row = 0; row < n_try; row++) {	/* For each new slope candidate */
 					angle = Ctrl->A.min + row * Ctrl->A.inc;	/* Current slope in degrees */
 					if (Ctrl->E.mode == GMTREGRESS_XY) {	/* Since W depends on slope when doing orthogonal regression we must recompute W for each slope */
 						par[GMTREGRESS_SLOPE] = tand (angle);
-						(void)gmt_demeaning (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
+						(void)gmt_demeaning (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, par, U, V, W, NULL, NULL);
 					}
 					regress1D_sub (GMT, U, V, W, e, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, weighted, angle, par);	/* Solve for best intercept given this slope */
 					if (par[GMTREGRESS_MISFT] < min_E) {	/* Update best fit so far */
 						min_E = par[GMTREGRESS_MISFT];
 						min_row = row;
 					}
-					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) Sa->coord[k][row] = par[k];	/* Save the results into this row */
+					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) Sa->data[k][row] = par[k];	/* Save the results into this row */
 				}
 				/* Make segment header with the findings forthe overall best regression */
-				snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], Sa->coord[0][min_row],
-					Sa->coord[1][min_row], Sa->coord[2][min_row], Sa->coord[3][min_row]);
+				snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], Sa->data[0][min_row],
+					Sa->data[1][min_row], Sa->data[2][min_row], Sa->data[3][min_row]);
 				GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include result in segment header */
 				for (row = 0; row < n_try; row++) {	/* Write the saved results of the experiment */
-					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) out[k] = Sa->coord[k][row];
+					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) out[k] = Sa->data[k][row];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
 				}
 			}
 			else {	/* Here we are solving for the best regression */
 				bool outlier = false;
-				double *z_score = do_regression (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par, 0);	/* The heavy work happens here */
+				double *z_score = do_regression (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par, 0);	/* The heavy work happens here */
 				if (Ctrl->F.param) {	/* Just print the model parameters */
 					out[0] = (double)S->n_rows;
 					out[1] = par[GMTREGRESS_XMEAN];
@@ -1184,7 +1184,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 						n_t = Ctrl->T.n;
 					}
 					else {	/* Use the given data abscissae instead */
-						x = S->coord[GMT_X];
+						x = S->data[GMT_X];
 						n_t = S->n_rows;
 					}					
 				
@@ -1202,13 +1202,13 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 									out[col] = x[row];
 									break;
 								case 'y':	/* Input y */
-									out[col] = S->coord[GMT_Y][row];
+									out[col] = S->data[GMT_Y][row];
 									break;
 								case 'm':	/* Model prediction */
 									out[col] = model (x[row], par);
 									break;
 								case 'r':	/* Residual */
-									out[col] = S->coord[GMT_Y][row] - model (x[row], par);
+									out[col] = S->data[GMT_Y][row] - model (x[row], par);
 									break;
 								case 'c':	/* Model confidence limit (add x and y uncertainties in quadrature since uncorrelated) */
 									out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));

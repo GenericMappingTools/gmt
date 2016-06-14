@@ -249,10 +249,10 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	bool go_on = true;
 	 
 	 
-	n_edges = h->ny * (urint (ceil (h->nx / 16.0)));
+	n_edges = h->n_rows * (urint (ceil (h->n_columns / 16.0)));
 
 	if (first) {	/* Reset edge-flags to zero, if necessary */
-		int signed_nx = h->nx;	/* Needed to assign p[3] below */
+		int signed_nx = h->n_columns;	/* Needed to assign p[3] below */
 		info->offset = n_edges / 2;
 	 	i0 = 0;	/* Begin with upper left bin which is i = 0 and j = 1 */
 	 	j0 = 1;
@@ -267,12 +267,12 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	/* Loop over interior boxes */
 
 	if (side == 4) {
-		for (j = j0; go_on && j < h->ny; j++) {
+		for (j = j0; go_on && j < h->n_rows; j++) {
 			ij = gmt_M_ijp (h, j, i0);
-			for (i = i0; go_on && i < h->nx-1; i++, ij++) {	/* nx-1 since the last bin starts at nx-2 and ends at nx-1 */
+			for (i = i0; go_on && i < h->n_columns-1; i++, ij++) {	/* n_columns-1 since the last bin starts at n_columns-2 and ends at n_columns-1 */
 				edge_word = ij / 32 + info->offset;
 				edge_bit = (unsigned int)(ij % 32ULL);
-				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
+				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->n_columns]) == 1)) { /* Start tracing contour */
 					*x[0] = gmt_M_grd_col_to_x (GMT, i, h);
 					*y[0] = gmt_M_grd_row_to_y (GMT, j, h) + 0.5 * h->inc[GMT_Y];
 					edge[edge_word] |= info->bit[edge_bit];
@@ -291,9 +291,9 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 		}
 	}
 	if (n == 0 && side == 5) {	/* Look at horizontal interior gridlines */
-		for (j = j0; go_on && j < h->ny; j++) {
+		for (j = j0; go_on && j < h->n_rows; j++) {
 			ij = gmt_M_ijp (h, j, i0);
-			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
+			for (i = i0; go_on && i < h->n_columns-1; i++, ij++) {
 				edge_word = ij / 32;
 				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
@@ -768,10 +768,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 				j_start = (row > d_row) ? row - d_row : 0;
 				for (jj = j_start; jj <= row + d_row; jj++) {
-					if (jj >= Grid->header->ny) continue;
+					if (jj >= Grid->header->n_rows) continue;
 					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
 					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
-						if (ii >= Grid->header->nx) continue;
+						if (ii >= Grid->header->n_columns) continue;
 						distance = gmt_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
 						ij = gmt_M_ijp (Grid->header, jj, ii);
@@ -791,8 +791,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		/* Force perimeter nodes to be false; thus all contours will be closed */
 
-		for (col = 0, ij = (Grid->header->ny-1) * (uint64_t)Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = 0;
-		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = 0;
+		for (col = 0, ij = (Grid->header->n_rows-1) * (uint64_t)Grid->header->n_columns; col < Grid->header->n_columns; col++) grd[col] = grd[col+ij] = 0;
+		for (row = 0; row < Grid->header->n_rows; row++) grd[row*Grid->header->n_columns] = grd[(row+1)*Grid->header->n_columns-1] = 0;
 
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
@@ -825,7 +825,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			x = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 			y = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 
-			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
+			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
 			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
 
 			if (make_plot) gmt_map_basemap (GMT);
@@ -878,11 +878,11 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Tiling...\n");
 
-			for (row = 0; row < Grid->header->ny; row++) {
+			for (row = 0; row < Grid->header->n_rows; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
 				y_top = grd_y0[row] + inc2[GMT_Y];
 				ij = gmt_M_ijp (Grid->header, row, 0);
-				for (col = 0; col < Grid->header->nx; col++, ij++) {
+				for (col = 0; col < Grid->header->n_columns; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
 					np = gmt_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);

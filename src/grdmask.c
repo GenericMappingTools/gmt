@@ -237,7 +237,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
 	unsigned int side = 0, *d_col = NULL, d_row = 0, col_0, row_0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
-	int row, col, nx, ny, error = 0;
+	int row, col, n_columns, n_rows, error = 0;
 	
 	uint64_t ij, k, seg;
 	
@@ -308,7 +308,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		}
 	}
 
-	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
+	n_columns = Grid->header->n_columns;	n_rows = Grid->header->n_rows;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
@@ -355,7 +355,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */
-				S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+				S->n_rows = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
 			}
 		}
 	}
@@ -365,24 +365,24 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 			S = D->table[tbl]->segment[seg];		/* Current segment */
 			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constraints */
 				for (k = 0; k < S->n_rows; k++) {
-					if (gmt_M_y_is_outside (GMT, S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
-					xtmp = S->coord[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
+					if (gmt_M_y_is_outside (GMT, S->data[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
+					xtmp = S->data[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
 					if (gmt_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
 					col_0 = (unsigned int)gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
-					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
-					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
+					if (col_0 == Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
+					row_0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S->data[GMT_Y][k], Grid->header);
+					if (row_0 == Grid->header->n_rows) row_0--;	/* Was exactly on the ymin edge */
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
-					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (Grid->header->nx-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
-						col = (col_0 == 0) ? Grid->header->nx-1 : 0;
+					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (Grid->header->n_columns-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
+						col = (col_0 == 0) ? Grid->header->n_columns-1 : 0;
 						ij = gmt_M_ijp (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
 					}
-					if (Ctrl->S.variable_radius) radius = S->coord[GMT_Z][k];
+					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
@@ -392,14 +392,14 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					}
 					
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,ij,distance) shared(Grid,row_0,d_row,ny,col_0,d_col,nx,xtmp,S,grd_x0,grd_y0,radius,mask_val)
+#pragma omp parallel for private(row,col,ij,distance) shared(Grid,row_0,d_row,n_rows,col_0,d_col,n_columns,xtmp,S,grd_x0,grd_y0,radius,mask_val)
 #endif
 					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
-						if (row < 0 || row >= ny) continue;
+						if (row < 0 || row >= n_rows) continue;
 						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
-							if (col < 0 || col >= nx) continue;
+							if (col < 0 || col >= n_columns) continue;
 							ij = gmt_M_ijp (Grid->header, row, col);
-							distance = gmt_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
+							distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[col], grd_y0[row]);
 							if (distance > radius) continue;	/* Clearly outside */
 							Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 						}
@@ -421,7 +421,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
 
-				for (row = 0; row < ny; row++) {
+				for (row = 0; row < n_rows; row++) {
 
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 					
@@ -448,9 +448,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					/* Here we will have to consider the x coordinates as well */
 #ifdef _OPENMP
-#pragma omp parallel for private(col,xx,side,ij) shared(Grid,nx,do_test,yy,S,row,Ctrl,z_value,mask_val)
+#pragma omp parallel for private(col,xx,side,ij) shared(Grid,n_columns,do_test,yy,S,row,Ctrl,z_value,mask_val)
 #endif
-					for (col = 0; col < nx; col++) {
+					for (col = 0; col < n_columns; col++) {
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						side = 0;
 						if (do_test && (side = gmt_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */

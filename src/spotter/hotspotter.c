@@ -303,7 +303,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	unsigned int row, col, kx, ky, m;
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
-	int d_col, d_row, col_0, row_0, nx, ny;
+	int d_col, d_row, col_0, row_0, n_columns, n_rows;
 	int error = 0;			/* nonzero when arguments are wrong */
 	
 
@@ -408,10 +408,10 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	xpos = gmt_grd_coord (GMT, G_rad->header, GMT_X);
 	ypos = gmt_grd_coord (GMT, G_rad->header, GMT_Y);
 
-	latfactor  = gmt_M_memory (GMT, NULL, G->header->ny, double);
-	ilatfactor = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	latfactor  = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
+	ilatfactor = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 
-	for (row = 0; row < G->header->ny; row++) {
+	for (row = 0; row < G->header->n_rows; row++) {
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}
@@ -423,7 +423,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	/* Start to read input data */
 
 	n_smts = 0;
-	nx = G->header->nx;	ny = G->header->ny;	/* Signed integers */
+	n_columns = G->header->n_columns;	n_rows = G->header->n_rows;	/* Signed integers */
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
@@ -517,7 +517,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 				for (d_row = -node_y_width, row_0 = row - node_y_width; d_row <= node_y_width; d_row++, row_0++) {
 
-					if (row_0 < 0 || row_0 >= ny) continue;	/* Outside grid */
+					if (row_0 < 0 || row_0 >= n_rows) continue;	/* Outside grid */
 
 					y_part = d_row * G_rad->header->inc[GMT_Y] - dy;
 					y_part2 = y_part * y_part;
@@ -525,7 +525,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 					for (d_col = -node_x_width, col_0 = col - node_x_width; d_col <= node_x_width; d_col++, col_0++) {
 
-						if (col_0 < 0 || col_0 >= nx) continue;	/* Outside grid */
+						if (col_0 < 0 || col_0 >= n_columns) continue;	/* Outside grid */
 
 						x_part = d_col * latfactor[row] - dx;
 						r2 = (x_part * x_part + y_part2) * norm;

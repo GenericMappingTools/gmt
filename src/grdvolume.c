@@ -564,11 +564,11 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 			continue;
 		}
 
-		for (row = 1; row < Work->header->ny; row++) {
+		for (row = 1; row < Work->header->n_rows; row++) {
 
 			dv = da = 0.0;	/* Reset these for each row */
 
-			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < (Work->header->nx-1); col++, ij++) {
+			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < (Work->header->n_columns-1); col++, ij++) {
 
 				/* Find if a contour goes through this bin */
 
@@ -635,13 +635,13 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) vol[c] -= area[c] * this_base;
 	}
 	if (!Ctrl->C.active) {	/* Since no contours we can use columns with bilinear tops to get the volume */
-		for (row = 0; row < Work->header->ny; row++) {
+		for (row = 0; row < Work->header->n_rows; row++) {
 			dv = da = 0.0;
-			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < Work->header->nx; col++, ij++) {
+			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < Work->header->n_columns; col++, ij++) {
 				if (gmt_M_is_fnan (Work->data[ij])) continue;
 
 				/* Half the leftmost and rightmost cell */
-				if (Work->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == Work->header->nx-1)) {
+				if (Work->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == Work->header->n_columns-1)) {
 					dv += 0.5 * Work->data[ij];
 					da += 0.5;
 				}
@@ -655,7 +655,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 			/* Allow for shrinking of longitudes with latitude */
 			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - row * Work->header->inc[GMT_Y]);
 			/* Half the top and bottom row */
-			if (Work->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == Work->header->ny-1)) fact *= 0.5;
+			if (Work->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == Work->header->n_rows-1)) fact *= 0.5;
 
 			vol[0]  += dv * fact;
 			area[0] += da * fact;

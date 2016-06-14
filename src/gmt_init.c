@@ -369,10 +369,10 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	/* Create dataset to hold the rect coordinates */
 	if ((In = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT_MEMORY_ERROR);
 
-	In->table[0]->segment[0]->coord[GMT_X][0] = rect[XLO];
-	In->table[0]->segment[0]->coord[GMT_Y][0] = rect[YLO];
-	In->table[0]->segment[0]->coord[GMT_X][1] = rect[XHI];
-	In->table[0]->segment[0]->coord[GMT_Y][1] = rect[YHI];
+	In->table[0]->segment[0]->data[GMT_X][0] = rect[XLO];
+	In->table[0]->segment[0]->data[GMT_Y][0] = rect[YLO];
+	In->table[0]->segment[0]->data[GMT_X][1] = rect[XHI];
+	In->table[0]->segment[0]->data[GMT_Y][1] = rect[YHI];
 
 	/* Set up machinery to call mapproject */
 
@@ -439,10 +439,10 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	if ((Out = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
 		return (GMT->parent->error);
 	}
-	out_wesn[XLO] = Out->table[0]->segment[0]->coord[GMT_X][0];
-	out_wesn[YLO] = Out->table[0]->segment[0]->coord[GMT_Y][0];
-	out_wesn[XHI] = Out->table[0]->segment[0]->coord[GMT_X][1];
-	out_wesn[YHI] = Out->table[0]->segment[0]->coord[GMT_Y][1];
+	out_wesn[XLO] = Out->table[0]->segment[0]->data[GMT_X][0];
+	out_wesn[YLO] = Out->table[0]->segment[0]->data[GMT_Y][0];
+	out_wesn[XHI] = Out->table[0]->segment[0]->data[GMT_X][1];
+	out_wesn[YHI] = Out->table[0]->segment[0]->data[GMT_Y][1];
 
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 	                       "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n",
@@ -5524,7 +5524,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append r if -R specifies the coordinates of the lower left and\n");
 			gmt_message (GMT, "\t   upper right corners of a rectangular area.\n");
 			gmt_message (GMT, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
-			gmt_message (GMT, "\t   Or use -R<code><x0>/<y0>/<nx>/<ny> for origin and grid dimensions, where\n");
+			gmt_message (GMT, "\t   Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where\n");
 			gmt_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
 			gmt_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
 			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
@@ -6601,7 +6601,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 	if (!item || !item[0]) return (GMT_PARSE_ERROR);	/* Got nothing */
 
-	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<nx>/<ny> or -R[g|d]w/e/s/n[/z0/z1][r] */
+	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
 	for (i = 0; i < length; i++) if (item[i] == '/') n_slash++;
 
@@ -6610,14 +6610,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	if (strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2];
-		int nx, ny, just, part;
+		int n_columns, n_rows, just, part;
 		gmt_M_memcpy (code, item, 2, char);
 		if ((just = gmt_just_decode (GMT, code, PSL_NO_DEF)) == -99) {	/* Since justify not in correct format */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R: Unrecognized justification code %s\n", code);
 			return (GMT_PARSE_ERROR);
 		}
-		if (sscanf (&item[2], "%[^/]/%[^/]/%d/%d", X[0], X[1], &nx, &ny) != 4) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R%s<lon0>/<lat0>/<nx>/<ny>: Did not get 4 items\n", code);
+		if (sscanf (&item[2], "%[^/]/%[^/]/%d/%d", X[0], X[1], &n_columns, &n_rows) != 4) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Did not get 4 items\n", code);
 			return (GMT_PARSE_ERROR);
 		}
 		for (icol = GMT_X; icol <= GMT_Y; icol++) {
@@ -6634,17 +6634,17 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			}
 		}
 		if (error) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<nx>/<ny>: Could not parse coordinate pair\n", code);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Could not parse coordinate pair\n", code);
 			return (GMT_PARSE_ERROR);
 		}
-		if (nx <= 0 || ny <= 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<nx>/<ny>: Must have positive dimensions\n", code);
+		if (n_columns <= 0 || n_rows <= 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Must have positive dimensions\n", code);
 			return (GMT_PARSE_ERROR);
 		}
 		/* Finally set up -R */
-		if (!GMT->common.r.active) nx--, ny--;	/* Needed to get correct dimensions */
-		xdim = nx * GMT->common.API_I.inc[GMT_X];
-		ydim = ny * GMT->common.API_I.inc[GMT_Y];
+		if (!GMT->common.r.active) n_columns--, n_rows--;	/* Needed to get correct dimensions */
+		xdim = n_columns * GMT->common.API_I.inc[GMT_X];
+		ydim = n_rows * GMT->common.API_I.inc[GMT_Y];
 		part = just / 4;	/* Need any multiples of 4 in just */
 		GMT->common.R.wesn[XLO] = orig[GMT_X] - 0.5 * ((just%4)-1) * xdim;
 		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * part * ydim;

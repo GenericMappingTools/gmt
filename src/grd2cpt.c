@@ -420,7 +420,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			Return ((error) ? error : API->error);
 		}
 		grdfile[k] = strdup (opt->arg);
-		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
+		if (k && !(G[k]->header->n_columns == G[k-1]->header->n_columns && G[k]->header->n_rows == G[k-1]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Grids do not have the same domain!\n");
 			error = free_them_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);

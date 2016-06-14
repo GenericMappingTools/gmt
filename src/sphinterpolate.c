@@ -339,7 +339,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = (uint64_t)col * (uint64_t)Grid->header->ny + (uint64_t)row;	/* Fortran index */
+		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
 	}

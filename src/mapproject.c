@@ -475,7 +475,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
-	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
+	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **data = NULL, *in = NULL;
 
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
@@ -722,9 +722,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 			for (seg = 0; seg < xyline->n_segments; seg++) {
 				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
-					map_fwd (GMT, xyline->segment[seg]->coord[GMT_X][row], xyline->segment[seg]->coord[GMT_Y][row], &xtmp, &ytmp);
-					xyline->segment[seg]->coord[GMT_X][row] = xtmp;
-					xyline->segment[seg]->coord[GMT_Y][row] = ytmp;
+					map_fwd (GMT, xyline->segment[seg]->data[GMT_X][row], xyline->segment[seg]->data[GMT_Y][row], &xtmp, &ytmp);
+					xyline->segment[seg]->data[GMT_X][row] = xtmp;
+					xyline->segment[seg]->data[GMT_Y][row] = ytmp;
 				}
 			}
 		}
@@ -733,7 +733,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			/* Will need spherical trig so convert to geocentric latitudes if on an ellipsoid */
 			for (seg = 0; seg < xyline->n_segments; seg++) {
 				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
-					xyline->segment[seg]->coord[GMT_Y][row] = gmt_lat_swap (GMT, xyline->segment[seg]->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+					xyline->segment[seg]->data[GMT_Y][row] = gmt_lat_swap (GMT, xyline->segment[seg]->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 				}
 			}
 		}
@@ -799,7 +799,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
-	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
+	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
@@ -999,8 +999,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						d = s;
 				}
 				else if (Ctrl->L.active) {	/* Compute closest distance to line */
-					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*coord)[GMT_Y], GMT_LATSWAP_G2O) : (*coord)[GMT_Y];	/* Convert to geocentric */
-					(void) gmt_near_lines (GMT, (*coord)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
+					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*data)[GMT_Y], GMT_LATSWAP_G2O) : (*data)[GMT_Y];	/* Convert to geocentric */
+					(void) gmt_near_lines (GMT, (*data)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
 					if (do_geo_conv && Ctrl->L.mode != GMT_MP_GIVE_FRAC) ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				}
 				else if (Ctrl->A.azims) {	/* Azimuth from previous point */

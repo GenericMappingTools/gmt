@@ -134,8 +134,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		header->inc[GMT_X] = dummy[0];
 		header->inc[GMT_Y] = dummy[1];
 		GMT_err_trap (nc_get_var_int (ncid, nm_id, nm));
-		header->nx = nm[0];
-		header->ny = nm[1];
+		header->n_columns = nm[0];
+		header->n_rows = nm[1];
 		GMT_err_trap (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
@@ -166,7 +166,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		GMT_err_trap (nc_put_var_double (ncid, y_range_id, dummy));
 		dummy[0] = header->inc[GMT_X];	dummy[1] = header->inc[GMT_Y];
 		GMT_err_trap (nc_put_var_double (ncid, inc_id, dummy));
-		nm[0] = header->nx;	nm[1] = header->ny;
+		nm[0] = header->n_columns;	nm[1] = header->n_rows;
 		GMT_err_trap (nc_put_var_int (ncid, nm_id, nm));
 		if (header->z_min <= header->z_max) {
 			dummy[0] = header->z_min; dummy[1] = header->z_max;
@@ -221,8 +221,8 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 *
 	 * Reads a subset of a grid file and optionally pads the array with extra rows and columns
-	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
-	 * not the physical size (i.e., the padding is not counted in nx and ny)
+	 * header values for n_columns and n_rows are reset to reflect the dimensions of the logical array,
+	 * not the physical size (i.e., the padding is not counted in n_columns and n_rows)
 	 */
 
 	int  ncid;
@@ -257,16 +257,16 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	tmp = gmt_M_memory (GMT, NULL, header->nx, float);
+	tmp = gmt_M_memory (GMT, NULL, header->n_columns, float);
 
-	edge[0] = header->nx;
+	edge[0] = header->n_columns;
 	ij = imag_offset + pad[YHI] * width_out + pad[XLO];
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
-		start[0] = j * header->nx;
+		start[0] = j * header->n_columns;
 		if ((err = nc_get_vara_float (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
@@ -287,8 +287,8 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		}
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->n_columns = width_in;
+	header->n_rows = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_M_free (GMT, actual_col);
@@ -354,8 +354,8 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
-	header->nx = width_out;
-	header->ny = height_out;
+	header->n_columns = width_out;
+	header->n_rows = height_out;
 
 	/* Write grid header */
 

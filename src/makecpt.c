@@ -348,7 +348,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: No intervals in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		z = T->table[0]->segment[0]->coord[GMT_X];
+		z = T->table[0]->segment[0]->data[GMT_X];
 		nz = (int)T->table[0]->segment[0]->n_rows;
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
@@ -401,12 +401,12 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		z = gmt_M_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
 			/* Reverse the intervals (only relavant for non-equidistant color maps) */
-			for (i = 0; i < nz-1; i++) z[i] = Pin->range[0].z_low + Pin->range[Pin->n_colors-1].z_high - Pin->range[Pin->n_colors-1-i].z_high;
+			for (i = 0; i < nz-1; i++) z[i] = Pin->data[0].z_low + Pin->data[Pin->n_colors-1].z_high - Pin->data[Pin->n_colors-1-i].z_high;
 		}
 		else {
-			for (i = 0; i < nz-1; i++) z[i] = Pin->range[i].z_low;
+			for (i = 0; i < nz-1; i++) z[i] = Pin->data[i].z_low;
 		}
-		z[i] = Pin->range[i-1].z_high;
+		z[i] = Pin->data[i-1].z_high;
 	}
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */

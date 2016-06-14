@@ -37,7 +37,7 @@ struct GMT_GDALWRITE_CTRL {
 	char *title;
 	char *remark;
 	int  geog;
-	int  nx, ny;		/* Number of columns & rows of the region to be saved */
+	int  n_columns, n_rows;		/* Number of columns & rows of the region to be saved */
 	int  nXSizeFull;	/* Total number of columns of the data array including padding */
 	int  n_bands;
 	int  pad[4];

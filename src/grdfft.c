@@ -83,7 +83,7 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct GRDFFT_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
+	struct GRDFFT_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
@@ -400,14 +400,14 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 
 		col = 0;
 		/* Col 0 is the frequency (or wavelength) */
-		S->coord[col++][k] = freq;
+		S->data[col++][k] = freq;
 		/* Cols 1-2 are xpower and std.err estimate */
-		S->coord[col++][k] = X_pow[k];
-		S->coord[col++][k] = X_pow[k] * eps_pow;
+		S->data[col++][k] = X_pow[k];
+		S->data[col++][k] = X_pow[k] * eps_pow;
 
 		if (!GridY) {	/* Nothing more to do (except add nused[k] if true and debug) */
 #ifdef DEBUG
-			if (show_n) S->coord[col][k] = (double)nused[k];
+			if (show_n) S->data[col][k] = (double)nused[k];
 #endif
 			continue;
 		}
@@ -419,28 +419,28 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		coh_k = (co_spec[k] * co_spec[k] + quad_spec[k] * quad_spec[k]) / (X_pow[k] * Y_pow[k]);
 		sq_norm = sqrt ((1.0 - coh_k) / (2.0 * coh_k));	/* Save repetitive expression further down */
 		/* Cols 3-4 are ypower and std.err estimate */
-		S->coord[col++][k] = Y_pow[k];
-		S->coord[col++][k] = Y_pow[k] * eps_pow;
+		S->data[col++][k] = Y_pow[k];
+		S->data[col++][k] = Y_pow[k] * eps_pow;
 		/* Cols 5-6 are coherent power and std.err estimate */
-		S->coord[col++][k] = tmp = Y_pow[k] * coh_k;
-		S->coord[col++][k] = tmp * eps_pow * sqrt ((2.0 - coh_k) / coh_k);
+		S->data[col++][k] = tmp = Y_pow[k] * coh_k;
+		S->data[col++][k] = tmp * eps_pow * sqrt ((2.0 - coh_k) / coh_k);
 		/* Cols 7-8 are noise power and std.err estimate */
-		S->coord[col++][k] = tmp = Y_pow[k] * (1.0 - coh_k);
-		S->coord[col++][k] = tmp * eps_pow;
+		S->data[col++][k] = tmp = Y_pow[k] * (1.0 - coh_k);
+		S->data[col++][k] = tmp * eps_pow;
 		/* Cols 9-10 are phase and std.err estimate */
-		S->coord[col++][k] = tmp = d_atan2 (quad_spec[k], co_spec[k]);
-		S->coord[col++][k] = tmp * eps_pow * sq_norm;
+		S->data[col++][k] = tmp = d_atan2 (quad_spec[k], co_spec[k]);
+		S->data[col++][k] = tmp * eps_pow * sq_norm;
 		/* Cols 11-12 are admittance and std.err estimate */
-		S->coord[col++][k] = tmp = co_spec[k] / X_pow[k];
-		S->coord[col++][k] = tmp * eps_pow * fabs (sq_norm);
+		S->data[col++][k] = tmp = co_spec[k] / X_pow[k];
+		S->data[col++][k] = tmp * eps_pow * fabs (sq_norm);
 		/* Cols 13-14 are gain and std.err estimate */
-		S->coord[col++][k] = tmp = sqrt (quad_spec[k]) / X_pow[k];
-		S->coord[col++][k] = tmp * eps_pow * sq_norm;
+		S->data[col++][k] = tmp = sqrt (quad_spec[k]) / X_pow[k];
+		S->data[col++][k] = tmp * eps_pow * sq_norm;
 		/* Cols 15-16 are coherency and std.err estimate */
-		S->coord[col++][k] = coh_k;
-		S->coord[col++][k] = coh_k * eps_pow * (1.0 - coh_k) * sqrt (2.0 / coh_k);
+		S->data[col++][k] = coh_k;
+		S->data[col++][k] = coh_k * eps_pow * (1.0 - coh_k) * sqrt (2.0 / coh_k);
 #ifdef DEBUG
-		if (show_n) S->coord[col][k] = (double)nused[k];
+		if (show_n) S->data[col][k] = (double)nused[k];
 #endif
 	}
 

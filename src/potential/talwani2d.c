@@ -581,7 +581,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = lrint ((Ctrl->T.max - Ctrl->T.min) / Ctrl->T.inc) + 1;
 		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		S = Out->table[0]->segment[0];	/* Only one segment when -T is used */
-		for (row = 0; row < dim[GMT_ROW]; row++) S->coord[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
+		for (row = 0; row < dim[GMT_ROW]; row++) S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We dont really know */
@@ -717,9 +717,9 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 #pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
 #endif
 			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
-				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->coord[GMT_Y][srow] : Ctrl->Z.level;
-				answer = get_one_output2D (GMT, S->coord[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
-				S->coord[GMT_Y][srow] = answer;
+				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
+				answer = get_one_output2D (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				S->data[GMT_Y][srow] = answer;
 				if (answer < min_answer) min_answer = answer;
 				if (answer > max_answer) max_answer = answer;
 			}
@@ -731,7 +731,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
 				S = Out->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
-					S->coord[GMT_Y][row] -= off;
+					S->data[GMT_Y][row] -= off;
 				}
 			}
 		}

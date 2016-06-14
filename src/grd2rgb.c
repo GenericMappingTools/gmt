@@ -58,7 +58,7 @@ struct GRD2RGB_CTRL {
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
 		bool active;
-		unsigned int nx, ny;	/* Dimension of image */
+		unsigned int n_columns, n_rows;	/* Dimension of image */
 		unsigned int size;	/* Number of bytes per pixels */
 	} W;
 };
@@ -84,7 +84,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);	
 }
 
-GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int nx, int ny, unsigned char **P) {
+GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int n_columns, int n_rows, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
 	unsigned int k;
@@ -102,9 +102,9 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 	/* Lets pretend that the raw file is a sunraster file. This way the grd2rgb code
 	   can be used with very little changes */
 	header->depth = 24;
-	header->width = nx;
-	header->height = ny;
-	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
+	header->width = n_columns;
+	header->height = n_rows;
+	nm = (size_t)n_columns * (size_t)n_rows * (size_t)byte_per_pixel;
 	header->length = (int)nm;
 
 	buffer = gmt_M_memory (GMT, NULL, nm, unsigned char);
@@ -208,9 +208,9 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 	if (j > 0) *raw_nx = urint((float)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
-		/* Let's make another attempt to find the right nx * ny combination. The idea is that we
-	   	failed by a little, so we'll look arround the approximate solution by adding 1 to nx and
-	   	subtracting 1 to ny. Then we revert (subtract 1 to nx and add 1 to ny). Next apply the
+		/* Let's make another attempt to find the right n_columns * n_rows combination. The idea is that we
+	   	failed by a little, so we'll look arround the approximate solution by adding 1 to n_columns and
+	   	subtracting 1 to n_rows. Then we revert (subtract 1 to n_columns and add 1 to n_rows). Next apply the
 	   	same test with an offset of 2, and so on until the offset is 10. */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
@@ -333,10 +333,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 					if (ptr[0] != '=') {
 						switch (entry) {
 							case 0:
-								Ctrl->W.nx = atoi (ptr);
+								Ctrl->W.n_columns = atoi (ptr);
 								guess = false; break;
 							case 1:
-								Ctrl->W.ny = atoi (ptr); break;
+								Ctrl->W.n_rows = atoi (ptr); break;
 							case 2:
 								Ctrl->W.size = atoi (ptr); break;
 						}
@@ -359,10 +359,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] == 0.0 || Ctrl->I.inc[GMT_Y] == 0.0), "Syntax error: increments must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.size != 3 && Ctrl->W.size != 4, "Syntax error: byte_per_pixel must be either 3 or 4\n");
-		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.nx, &Ctrl->W.ny);
+		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.n_columns, &Ctrl->W.n_rows);
 
-		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.nx <= 0, "Syntax error: Witdth of raw raster file must be a positive integer. Not %d\n", Ctrl->W.nx);
-		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.ny <= 0, "Syntax error: Height of raw raster file must be a positive integer. Not %d\n", Ctrl->W.ny);
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.n_columns <= 0, "Syntax error: Witdth of raw raster file must be a positive integer. Not %d\n", Ctrl->W.n_columns);
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.n_rows <= 0, "Syntax error: Height of raw raster file must be a positive integer. Not %d\n", Ctrl->W.n_rows);
 	}
 	else {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input z grid file\n");
@@ -457,7 +457,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 		}
 	}
 	else {
-		int nx, ny;
+		int n_columns, n_rows;
 		if (gmt_access (GMT, Ctrl->In.file, R_OK)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
@@ -474,7 +474,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			if (loadraw (GMT, Ctrl->In.file, &header, Ctrl->W.size, Ctrl->W.nx, Ctrl->W.ny, &picture)) {
+			if (loadraw (GMT, Ctrl->In.file, &header, Ctrl->W.size, Ctrl->W.n_columns, Ctrl->W.n_rows, &picture)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading/converting RGB image!\n");
 				Return (EXIT_FAILURE);
 			}
@@ -498,21 +498,21 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		nx = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
-		ny = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
+		n_columns = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
+		n_rows = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
-			nx = Ctrl->W.nx;
-			ny = Ctrl->W.ny;
-			Ctrl->I.inc[GMT_X] = gmt_M_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], nx, GMT->common.r.registration);
-			Ctrl->I.inc[GMT_Y] = gmt_M_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], ny, GMT->common.r.registration);
+			n_columns = Ctrl->W.n_columns;
+			n_rows = Ctrl->W.n_rows;
+			Ctrl->I.inc[GMT_X] = gmt_M_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], n_columns, GMT->common.r.registration);
+			Ctrl->I.inc[GMT_Y] = gmt_M_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], n_rows, GMT->common.r.registration);
 		}
-		if (header.width != nx) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, nx);
+		if (header.width != n_columns) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, n_columns);
 			PSL_free (picture);
 			Return (EXIT_FAILURE);
 		}
-		if (header.height != ny) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, ny);
+		if (header.height != n_rows) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, n_rows);
 			PSL_free (picture);
 			Return (EXIT_FAILURE);
 		}
@@ -523,7 +523,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		
-		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 
 		/* Note: While the picture array has no pads, we must assume the output grid may have one */
 		

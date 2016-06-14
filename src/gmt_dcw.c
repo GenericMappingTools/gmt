@@ -434,16 +434,16 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			if (last == -1) last = np - 1;	/* End of last segment */
 			k--;	/* Back to last segment marker  which will be the next start marker */
 			P->n_rows = last - first + 1;	/* Number of points in this segment */
-			P->coord[GMT_X] = &lon[first];
-			P->coord[GMT_Y] = &lat[first];
+			P->data[GMT_X] = &lon[first];
+			P->data[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
 				sprintf (segment, " Segment %" PRIu64, seg);
 				strcpy (GMT->current.io.segment_header, msg);
 				strcat (GMT->current.io.segment_header, segment);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
-					out[GMT_X] = P->coord[GMT_X][kk];
-					out[GMT_Y] = P->coord[GMT_Y][kk];
+					out[GMT_X] = P->data[GMT_X][kk];
+					out[GMT_Y] = P->data[GMT_Y][kk];
 					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 				}
 				seg++;
@@ -451,9 +451,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			else if (mode & GMT_DCW_EXTRACT) {	/* Attach to dataset */
 				S = D->table[tbl]->segment[seg];
 				S->n_rows = P->n_rows;
-				gmt_M_malloc2 (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, NULL, double);
-				gmt_M_memcpy (S->coord[GMT_X], lon, S->n_rows, double);
-				gmt_M_memcpy (S->coord[GMT_Y], lat, S->n_rows, double);
+				gmt_M_malloc2 (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, NULL, double);
+				gmt_M_memcpy (S->data[GMT_X], lon, S->n_rows, double);
+				gmt_M_memcpy (S->data[GMT_Y], lat, S->n_rows, double);
 				seg++;
 			}
 			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
@@ -462,7 +462,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					gmt_geo_polygons (GMT, P);
 				}
 				else {	/* Plot outline only */
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, P->coord[GMT_X], P->coord[GMT_Y], P->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, P->data[GMT_X], P->data[GMT_Y], P->n_rows)) == 0) continue;
 					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
@@ -503,7 +503,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, dy);
 		gmt_M_free (GMT, lon);
 		gmt_M_free (GMT, lat);
-		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
+		P->data[GMT_X] = P->data[GMT_Y] = NULL;
 		gmt_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 	}
 	return (D);

@@ -762,15 +762,15 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
-			y = (C.y_given) ? S->coord[GMT_Y] : NULL;
-			if (compute_spectra (GMT, &C, S->coord[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
+			y = (C.y_given) ? S->data[GMT_Y] : NULL;
+			if (compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
 			if (!Ctrl->T.active) {
 				Sout = Tout->segment[seg];	/* Current output segment */
 				gmt_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, false);
-				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
+				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */
 				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))

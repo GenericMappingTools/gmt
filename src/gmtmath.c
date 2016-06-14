@@ -220,7 +220,7 @@ GMT_LOCAL void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_
 	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
-		gmt_M_memcpy (to->table[0]->segment[seg]->coord[to_col], from->segment[seg]->coord[from_col], from->segment[seg]->n_rows, double);
+		gmt_M_memcpy (to->table[0]->segment[seg]->data[to_col], from->segment[seg]->data[from_col], from->segment[seg]->n_rows, double);
 	}
 }
 
@@ -270,9 +270,9 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
 			for (j = 0; j < rhs; j++) {
 				if (skip[j]) continue;
-				fprintf (stderr, "%g\t", T->segment[seg]->coord[j][row]);
+				fprintf (stderr, "%g\t", T->segment[seg]->data[j][row]);
 			}
-			fprintf (stderr, "|\t%g\n", T->segment[seg]->coord[rhs][row]);
+			fprintf (stderr, "|\t%g\n", T->segment[seg]->data[rhs][row]);
 		}
 	}
 	fprintf (stderr, "------------------------------------------------------------------\n");
@@ -288,10 +288,10 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			for (seg = k = 0; seg < info->T->n_segments; seg++) {
 				for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
 					if (info->w_mode) {
-						w = pow (T->segment[seg]->coord[w_col][row], 2.0);
+						w = pow (T->segment[seg]->data[w_col][row], 2.0);
 						if (info->w_mode == GMTMATH_SIGMAS) w = 1.0 / w;	/* Got sigma */
 					}
-					N[k0] += w * T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[i2][row];
+					N[k0] += w * T->segment[seg]->data[j2][row] * T->segment[seg]->data[i2][row];
 				}
 			}
 			i++;
@@ -300,10 +300,10 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		for (seg = k = 0; seg < info->T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
 				if (info->w_mode) {
-					w = pow (T->segment[seg]->coord[w_col][row], 2.0);
+					w = pow (T->segment[seg]->data[w_col][row], 2.0);
 					if (info->w_mode == GMTMATH_SIGMAS) w = 1.0 / w;	/* Got sigma */
 				}
-				r[j] += w * T->segment[seg]->coord[j2][row] * T->segment[seg]->coord[rhs][row];
+				r[j] += w * T->segment[seg]->data[j2][row] * T->segment[seg]->data[rhs][row];
 			}
 		}
 		j++;
@@ -377,7 +377,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		dim[GMT_ROW] = n;
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 			return (GMT->parent->error);
-		for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
+		for (k = 0; k < n; k++) D->table[0]->segment[0]->data[GMT_X][k] = x[k];
 		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
 		if (GMT->common.h.add_colnames) {
 			char header[GMT_LEN16] = {""};
@@ -401,16 +401,16 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		load_column (D, 0, info->T, COL_T);	/* Place the time-column in first ouput column */
 		for (seg = k = 0; seg < info->T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
-				D->table[0]->segment[seg]->coord[1][row] = T->segment[seg]->coord[rhs][row];
+				D->table[0]->segment[seg]->data[1][row] = T->segment[seg]->data[rhs][row];
 				value = 0.0;
 				for (j2 = j = 0; j2 < n; j2++) {	/* j2 is table column, j is entry in x vector */
 					if (skip[j2]) continue;		/* Not included in the fit */
-					value += T->segment[seg]->coord[j2][row] * x[j];	/* Sum up the solution */
+					value += T->segment[seg]->data[j2][row] * x[j];	/* Sum up the solution */
 					j++;
 				}
-				D->table[0]->segment[seg]->coord[2][row] = value;
-				D->table[0]->segment[seg]->coord[3][row] = T->segment[seg]->coord[rhs][row] - value;
-				if (info->w_mode) D->table[0]->segment[seg]->coord[4][row] = T->segment[seg]->coord[w_col][row];
+				D->table[0]->segment[seg]->data[2][row] = value;
+				D->table[0]->segment[seg]->data[3][row] = T->segment[seg]->data[rhs][row] - value;
+				if (info->w_mode) D->table[0]->segment[seg]->data[4][row] = T->segment[seg]->data[w_col][row];
 			}
 		}
 		if (GMT->common.h.add_colnames) {
@@ -444,7 +444,7 @@ GMT_LOCAL void load_const_column (struct GMT_DATASET *to, uint64_t to_col, doubl
 	/* Sets all rows in a column to a constant factor */
 	uint64_t row, seg;
 	for (seg = 0; seg < to->n_segments; seg++) {
-		for (row = 0; row < to->table[0]->segment[seg]->n_rows; row++) to->table[0]->segment[seg]->coord[to_col][row] = factor;
+		for (row = 0; row < to->table[0]->segment[seg]->n_rows; row++) to->table[0]->segment[seg]->data[to_col][row] = factor;
 	}
 }
 
@@ -688,7 +688,7 @@ GMT_LOCAL int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
 	if (S[last]->constant) a = fabs (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : fabs (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : fabs (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -700,7 +700,7 @@ GMT_LOCAL int table_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOS!\n");
 	if (S[last]->constant) a = d_acos (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_acos (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_acos (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -713,7 +713,7 @@ GMT_LOCAL int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if (S[last]->constant && fabs (S[last]->factor) < 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand < 1 for ACOSH!\n");
 	if (S[last]->constant) a = acosh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : acosh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : acosh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -726,7 +726,7 @@ GMT_LOCAL int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOT!\n");
 	if (S[last]->constant) a = atan (1.0 / S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atan (1.0 / T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : atan (1.0 / T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -739,7 +739,7 @@ GMT_LOCAL int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if (S[last]->constant && fabs (S[last]->factor) <= 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| <= 1 for ACOTH!\n");
 	if (S[last]->constant) a = atanh (1.0/S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (1.0/T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : atanh (1.0/T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -752,7 +752,7 @@ GMT_LOCAL int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACSC!\n");
 	if (S[last]->constant) a = d_asin (1.0 / S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_asin (1.0 / T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (1.0 / T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -765,7 +765,7 @@ GMT_LOCAL int table_ACSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = asinh (1.0/S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : asinh (1.0/T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : asinh (1.0/T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -781,9 +781,9 @@ GMT_LOCAL int table_ADD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a + b;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a + b;
 	}
 	return 0;
 }
@@ -800,9 +800,9 @@ GMT_LOCAL int table_AND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (gmt_M_is_dnan (a)) ? b : a;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (gmt_M_is_dnan (a)) ? b : a;
 	}
 	return 0;
 }
@@ -816,7 +816,7 @@ GMT_LOCAL int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASEC!\n");
 	if (S[last]->constant) a = d_acos (1.0 / S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_acos (1.0 / T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_acos (1.0 / T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -829,7 +829,7 @@ GMT_LOCAL int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand > 1 for ASECH!\n");
 	if (S[last]->constant) a = acosh (1.0/S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : acosh (1.0/T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : acosh (1.0/T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -842,7 +842,7 @@ GMT_LOCAL int table_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASIN!\n");
 	if (S[last]->constant) a = d_asin (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_asin (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -855,7 +855,7 @@ GMT_LOCAL int table_ASINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = asinh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : asinh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : asinh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -868,7 +868,7 @@ GMT_LOCAL int table_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = atan (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atan (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : atan (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -885,9 +885,9 @@ GMT_LOCAL int table_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for ATAN2!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for ATAN2!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = d_atan2 (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = d_atan2 (a, b);
 	}
 	return 0;
 }
@@ -901,7 +901,7 @@ GMT_LOCAL int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if (S[last]->constant && fabs (S[last]->factor) >= 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| >= 1 for ATANH!\n");
 	if (S[last]->constant) a = atanh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : atanh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -930,14 +930,14 @@ GMT_LOCAL int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		p = S[prev2]->factor;
 		n = lrint (S[prev1]->factor);	x = lrint (S[last]->factor);
 		value = gmt_binom_cdf (GMT, x, n, p);
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
-		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		T_prev2->segment[s]->coord[col][row] = gmt_binom_cdf (GMT, x, n, p);
+		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		T_prev2->segment[s]->data[col][row] = gmt_binom_cdf (GMT, x, n, p);
 
 	}
 	return 0;
@@ -951,7 +951,7 @@ GMT_LOCAL int table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_bei (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_bei (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_bei (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -963,7 +963,7 @@ GMT_LOCAL int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_ber (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_ber (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_ber (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -992,14 +992,14 @@ GMT_LOCAL int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		p = S[prev2]->factor;
 		n = lrint (S[prev1]->factor);	x = lrint (S[last]->factor);
 		value = gmt_binom_pdf (GMT, x, n, p);
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
-		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		T_prev2->segment[s]->coord[col][row] = gmt_binom_pdf (GMT, x, n, p);
+		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		T_prev2->segment[s]->data[col][row] = gmt_binom_pdf (GMT, x, n, p);
 
 	}
 	return 0;
@@ -1018,16 +1018,16 @@ GMT_LOCAL int table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
 			result = a & b;
 			result_trunc = result & DOUBLE_BIT_MASK;
 			if (result != result_trunc) n_warn++;
-			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
+			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITAND resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
@@ -1049,15 +1049,15 @@ GMT_LOCAL int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bitshift */
 				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
-				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
 			else {
@@ -1065,7 +1065,7 @@ GMT_LOCAL int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				result = a << b;
 				result_trunc = result & DOUBLE_BIT_MASK;
 				if (result != result_trunc) n_warn++;
-				T_prev->segment[s]->coord[col][row] = (double)result_trunc;
+				T_prev->segment[s]->data[col][row] = (double)result_trunc;
 			}
 		}
 	}
@@ -1082,15 +1082,15 @@ GMT_LOCAL int table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	if (S[last]->constant) ad = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[last]->constant) ad = T->segment[s]->coord[col][row];
+		if (!S[last]->constant) ad = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad))	/* Any NaN in bitwise operations results in NaN output */
-			T->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;
 			result = ~a;
 			result_trunc = result & DOUBLE_BIT_MASK;
 			if (result != result_trunc) n_warn++;
-			T->segment[s]->coord[col][row] = (double)result_trunc;
+			T->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITNOT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
@@ -1110,16 +1110,16 @@ GMT_LOCAL int table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
 			result = a | b;
 			result_trunc = result & DOUBLE_BIT_MASK;
 			if (result != result_trunc) n_warn++;
-			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
+			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
@@ -1141,15 +1141,15 @@ GMT_LOCAL int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bitshift */
 				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
-				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
 			else {
@@ -1157,7 +1157,7 @@ GMT_LOCAL int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 				result = a >> b;
 				result_trunc = result & DOUBLE_BIT_MASK;
 				if (result != result_trunc) n_warn++;
-				T_prev->segment[s]->coord[col][row] = (double)result_trunc;
+				T_prev->segment[s]->data[col][row] = (double)result_trunc;
 			}
 		}
 	}
@@ -1180,15 +1180,15 @@ GMT_LOCAL int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bit */
 				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 0-63 (since we are using do); other values yield NaN\n");
-				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
 			else {
@@ -1197,7 +1197,7 @@ GMT_LOCAL int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				result = a & b;
 				result_trunc = result & DOUBLE_BIT_MASK;
 				if (result != result_trunc) n_warn++;
-				T_prev->segment[s]->coord[col][row] = (result_trunc) ? 1.0 : 0.0;
+				T_prev->segment[s]->data[col][row] = (result_trunc) ? 1.0 : 0.0;
 			}
 		}
 	}
@@ -1218,16 +1218,16 @@ GMT_LOCAL int table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	if (S[prev]->constant) ad = S[prev]->factor;
 	if (S[last]->constant) bd = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (!S[prev]->constant) ad = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->data[col][row];
 		if (gmt_M_is_dnan (ad) || gmt_M_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
 			result = a ^ b;
 			result_trunc = result & DOUBLE_BIT_MASK;
 			if (result != result_trunc) n_warn++;
-			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
+			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITXOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
@@ -1243,7 +1243,7 @@ GMT_LOCAL int table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = ceil (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : ceil (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : ceil (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1260,9 +1260,9 @@ GMT_LOCAL int table_CHI2CRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHI2CRIT!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHI2CRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_chi2crit (GMT, a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_chi2crit (GMT, a, b);
 	}
 	return 0;
 }
@@ -1279,10 +1279,10 @@ GMT_LOCAL int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHI2CDF!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHI2CDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 		gmt_chi2 (GMT, a, b, &q);
-		T_prev->segment[s]->coord[col][row] = 1.0 - q;
+		T_prev->segment[s]->data[col][row] = 1.0 - q;
 	}
 	return 0;
 }
@@ -1299,9 +1299,9 @@ GMT_LOCAL int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHI2PDF!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHI2PDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		c  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_chi2_pdf (GMT, c, nu);
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		c  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_chi2_pdf (GMT, c, nu);
 	}
 	return 0;
 }
@@ -1320,7 +1320,7 @@ GMT_LOCAL int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	}
 	k = urint (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = T_prev->segment[s]->coord[k][row];
+		T->segment[s]->data[col][row] = T_prev->segment[s]->data[k][row];
 	}
 	return 0;
 }
@@ -1344,13 +1344,13 @@ GMT_LOCAL int table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	if (S[prev]->constant && S[last]->constant) {	/* COMBO is given constant args */
 		double value = gmt_combination (GMT, irint(S[prev]->factor), irint(S[last]->factor));
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_combination (GMT, irint(a), irint(b));
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_combination (GMT, irint(a), irint(b));
 	}
 	return 0;
 }
@@ -1366,7 +1366,7 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 
 	if (S[prev]->constant && S[last]->constant) {	/* Correlation is undefined */
 		for (s = 0; s < info->T->n_segments; s++)
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 		return 0;
 	}
 
@@ -1374,12 +1374,12 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		a = gmt_M_memory (GMT, NULL, info->T->n_records, double);
 		b = gmt_M_memory (GMT, NULL, info->T->n_records, double);
 		for (s = i = 0; s < info->T->n_segments; s++)
-			for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) a[i] = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+			for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) a[i] = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 		for (s = i = 0; s < info->T->n_segments; s++)
-			for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) b[i] = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+			for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) b[i] = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 		coeff = gmt_corrcoeff (GMT, a, b, info->T->n_records, 0);
 		for (s = 0; s < info->T->n_segments; s++)
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = coeff;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = coeff;
 		gmt_M_free (GMT, a);		gmt_M_free (GMT, b); 
 		return 0;
 	}
@@ -1388,19 +1388,19 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		if (S[prev]->constant) {		/* Must create the missing (constant) column */
 			a = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) a[row] = S[prev]->factor;
-			b = T->segment[s]->coord[col];
+			b = T->segment[s]->data[col];
 		}
 		else if (S[last]->constant) {	/* Must create the missing (constant) column */
-			a = T_prev->segment[s]->coord[col];
+			a = T_prev->segment[s]->data[col];
 			b = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) b[row] = S[last]->factor;
 		}
 		else {
-			a = T_prev->segment[s]->coord[col];
-			b = T->segment[s]->coord[col];
+			a = T_prev->segment[s]->data[col];
+			b = T->segment[s]->data[col];
 		}
 		coeff = gmt_corrcoeff (GMT, a, b, info->T->segment[s]->n_rows, 0);
-		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = coeff;
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = coeff;
 		if (S[prev]->constant) gmt_M_free (GMT, a);
 		if (S[last]->constant) gmt_M_free (GMT, b);
 	}
@@ -1418,7 +1418,7 @@ GMT_LOCAL int table_COS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant) a = cos (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : cos (T->segment[s]->coord[col][row]);
+		T->segment[s]->data[col][row] = (S[last]->constant) ? a : cos (T->segment[s]->data[col][row]);
 	}
 	return 0;
 }
@@ -1432,7 +1432,7 @@ GMT_LOCAL int table_COSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = cosd (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : cosd (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : cosd (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1445,7 +1445,7 @@ GMT_LOCAL int table_COSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = cosh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : cosh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : cosh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1459,7 +1459,7 @@ GMT_LOCAL int table_COT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant) a = (1.0 / tan (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / tan (T->segment[s]->coord[col][row]));
+		T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / tan (T->segment[s]->data[col][row]));
 	}
 	return 0;
 }
@@ -1475,7 +1475,7 @@ GMT_LOCAL int table_COTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant) a = (1.0 / tand (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / tand (T->segment[s]->coord[col][row]));
+		T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / tand (T->segment[s]->data[col][row]));
 	}
 	return 0;
 }
@@ -1489,7 +1489,7 @@ GMT_LOCAL int table_COTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = 1.0 / tanh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / tanh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : 1.0 / tanh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1503,7 +1503,7 @@ GMT_LOCAL int table_CSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant) a = (1.0 / sin (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / sin (T->segment[s]->coord[col][row]));
+		T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / sin (T->segment[s]->data[col][row]));
 	}
 	return 0;
 }
@@ -1518,7 +1518,7 @@ GMT_LOCAL int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant) a = (1.0 / sind (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / sind (T->segment[s]->coord[col][row]));
+		T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / sind (T->segment[s]->data[col][row]));
 	}
 	return 0;
 }
@@ -1532,7 +1532,7 @@ GMT_LOCAL int table_CSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = 1.0 / sinh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / sinh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : 1.0 / sinh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1548,9 +1548,9 @@ GMT_LOCAL int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		gmt_poisson_cdf (GMT, a, b, &T_prev->segment[s]->coord[col][row]);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		gmt_poisson_cdf (GMT, a, b, &T_prev->segment[s]->data[col][row]);
 	}
 	return 0;
 }
@@ -1571,14 +1571,14 @@ GMT_LOCAL int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	for (s = 0; s < info->T->n_segments; s++) {
 		row = 0;
 		while (row < info->T->segment[s]->n_rows) {	/* Process each segment */
-			next_left = 2.0 * T->segment[s]->coord[col][row] - T->segment[s]->coord[col][row+1];
+			next_left = 2.0 * T->segment[s]->data[col][row] - T->segment[s]->data[col][row+1];
 			while (row < info->T->segment[s]->n_rows - 1) {
 				left = next_left;
-				next_left = T->segment[s]->coord[col][row];
-				T->segment[s]->coord[col][row] = (S[last]->constant) ? 0.0 : c * (T->segment[s]->coord[col][row+1] - left);
+				next_left = T->segment[s]->data[col][row];
+				T->segment[s]->data[col][row] = (S[last]->constant) ? 0.0 : c * (T->segment[s]->data[col][row+1] - left);
 				row++;
 			}
-			T->segment[s]->coord[col][row] = (S[last]->constant) ? 0.0 : 2.0 * c * (T->segment[s]->coord[col][row] - next_left);
+			T->segment[s]->data[col][row] = (S[last]->constant) ? 0.0 : 2.0 * c * (T->segment[s]->data[col][row] - next_left);
 			row++;
 		}
 	}
@@ -1601,16 +1601,16 @@ GMT_LOCAL int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	for (s = 0; s < info->T->n_segments; s++) {
 		row = 0;
 		while (row < info->T->segment[s]->n_rows) {	/* Process each segment */
-			next_left = T->segment[s]->coord[col][row];
-			T->segment[s]->coord[col][row] = (gmt_M_is_dnan (T->segment[s]->coord[col][row]) || gmt_M_is_dnan (T->segment[s]->coord[col][row+1])) ? GMT->session.d_NaN : 0.0;
+			next_left = T->segment[s]->data[col][row];
+			T->segment[s]->data[col][row] = (gmt_M_is_dnan (T->segment[s]->data[col][row]) || gmt_M_is_dnan (T->segment[s]->data[col][row+1])) ? GMT->session.d_NaN : 0.0;
 			row++;
 			while (row < info->T->segment[s]->n_rows - 1) {
 				left = next_left;
-				next_left = T->segment[s]->coord[col][row];
-				T->segment[s]->coord[col][row] = (S[last]->constant) ? 0.0 : c * (T->segment[s]->coord[col][row+1] - 2 * T->segment[s]->coord[col][row] + left);
+				next_left = T->segment[s]->data[col][row];
+				T->segment[s]->data[col][row] = (S[last]->constant) ? 0.0 : c * (T->segment[s]->data[col][row+1] - 2 * T->segment[s]->data[col][row] + left);
 				row++;
 			}
-			T->segment[s]->coord[col][row] = (gmt_M_is_dnan (T->segment[s]->coord[col][row]) || gmt_M_is_dnan (T->segment[s]->coord[col][row-1])) ? GMT->session.d_NaN : 0.0;
+			T->segment[s]->data[col][row] = (gmt_M_is_dnan (T->segment[s]->data[col][row]) || gmt_M_is_dnan (T->segment[s]->data[col][row-1])) ? GMT->session.d_NaN : 0.0;
 			row++;
 		}
 	}
@@ -1626,7 +1626,7 @@ GMT_LOCAL int table_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = S[last]->factor * D2R;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : T->segment[s]->coord[col][row] * D2R;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * D2R;
 	return 0;
 }
 
@@ -1644,7 +1644,7 @@ GMT_LOCAL int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_dilog (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_dilog (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_dilog (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1658,9 +1658,9 @@ GMT_LOCAL int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	/* Central 1st difference in t */
 	for (s = 0; s < info->T->n_segments; s++) {
 		for (row = 0; row < info->T->segment[s]->n_rows - 1; row++)
-			T->segment[s]->coord[col][row] = T->segment[s]->coord[col][row+1] - T->segment[s]->coord[col][row];
+			T->segment[s]->data[col][row] = T->segment[s]->data[col][row+1] - T->segment[s]->data[col][row];
 
-		T->segment[s]->coord[col][info->T->segment[s]->n_rows - 1] = 0;
+		T->segment[s]->data[col][info->T->segment[s]->n_rows - 1] = 0;
 	}
 	return 0;
 }
@@ -1679,9 +1679,9 @@ GMT_LOCAL int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Divide by zero gives NaNs\n");
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a / b;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a / b;
 	}
 	return 0;
 }
@@ -1699,10 +1699,10 @@ GMT_LOCAL int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	S[next]->constant = false;
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (S[last]->constant) {	/* Constant, update both this and next */
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_next->segment[s]->coord[col][row] = T->segment[s]->coord[col][row] = S[last]->factor;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_next->segment[s]->data[col][row] = T->segment[s]->data[col][row] = S[last]->factor;
 		}
 		else
-			gmt_M_memcpy (T_next->segment[s]->coord[col], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (T_next->segment[s]->data[col], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 	}
 	return 0;
 }
@@ -1718,9 +1718,9 @@ GMT_LOCAL int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = 1.0 - exp (-lambda * x);
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = 1.0 - exp (-lambda * x);
 	}
 	return 0;
 }
@@ -1736,9 +1736,9 @@ GMT_LOCAL int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		alpha  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = -log (1.0 - alpha)/lambda;
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		alpha  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = -log (1.0 - alpha)/lambda;
 	}
 	return 0;
 }
@@ -1754,9 +1754,9 @@ GMT_LOCAL int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = lambda * exp (-lambda * x);
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = lambda * exp (-lambda * x);
 	}
 	return 0;
 }
@@ -1770,7 +1770,7 @@ GMT_LOCAL int table_ERF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = erf (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : erf (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : erf (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1783,7 +1783,7 @@ GMT_LOCAL int table_ERFC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = erfc (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : erfc (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : erfc (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1795,7 +1795,7 @@ GMT_LOCAL int table_ERFINV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_erfinv (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_erfinv (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_erfinv (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1811,9 +1811,9 @@ GMT_LOCAL int table_EQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a == b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a == b);
 	}
 	return 0;
 }
@@ -1843,7 +1843,7 @@ GMT_LOCAL int table_EXP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = exp (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : exp (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : exp (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1855,7 +1855,7 @@ GMT_LOCAL int table_FACT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_factorial (GMT, irint(S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_factorial (GMT, irint(T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_factorial (GMT, irint(T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -1872,10 +1872,10 @@ GMT_LOCAL int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCRIT!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		nu1 = irint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]));
-		nu2 = irint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]));
-		T_prev2->segment[s]->coord[col][row] = gmt_Fcrit (GMT, alpha, (double)nu1, (double)nu2);
+		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		nu1 = irint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]));
+		nu2 = irint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]));
+		T_prev2->segment[s]->data[col][row] = gmt_Fcrit (GMT, alpha, (double)nu1, (double)nu2);
 	}
 	return 0;
 }
@@ -1891,10 +1891,10 @@ GMT_LOCAL int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCDF!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		nu1 = lrint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]));
-		nu2 = lrint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]));
-		T_prev2->segment[s]->coord[col][row] = gmt_f_cdf (GMT, F, nu1, nu2);
+		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		nu1 = lrint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]));
+		nu2 = lrint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]));
+		T_prev2->segment[s]->data[col][row] = gmt_f_cdf (GMT, F, nu1, nu2);
 	}
 	return 0;
 }
@@ -1907,7 +1907,7 @@ GMT_LOCAL int table_FLIPUD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	gmt_M_unused(GMT);
 	/* Reverse the order of points in a column */
 	if (S[last]->constant) return 0;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0, k = info->T->segment[s]->n_rows-1; row < info->T->segment[s]->n_rows/2; row++, k--) double_swap (T->segment[s]->coord[col][row], T->segment[s]->coord[col][k]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0, k = info->T->segment[s]->n_rows-1; row < info->T->segment[s]->n_rows/2; row++, k--) double_swap (T->segment[s]->data[col][row], T->segment[s]->data[col][k]);
 	return 0;
 }
 
@@ -1920,7 +1920,7 @@ GMT_LOCAL int table_FLOOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = floor (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : floor (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : floor (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1936,9 +1936,9 @@ GMT_LOCAL int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, using FMOD 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = fmod (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = fmod (a, b);
 	}
 	return 0;
 }
@@ -1968,14 +1968,14 @@ GMT_LOCAL int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		F = S[prev2]->factor;
 		nu1 = (uint64_t)S[prev1]->factor;	nu2 = (uint64_t)S[last]->factor;
 		value = gmt_f_pdf (GMT, F, nu1, nu2);
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		nu1 = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
-		nu2 = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		T_prev2->segment[s]->coord[col][row] = gmt_f_pdf (GMT, F, nu1, nu2);
+		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		nu1 = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+		nu2 = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		T_prev2->segment[s]->data[col][row] = gmt_f_pdf (GMT, F, nu1, nu2);
 	}
 	return 0;
 }
@@ -1992,9 +1992,9 @@ GMT_LOCAL int table_GE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a >= b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a >= b);
 	}
 	return 0;
 }
@@ -2011,9 +2011,9 @@ GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a > b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a > b);
 	}
 	return 0;
 }
@@ -2031,9 +2031,9 @@ GMT_LOCAL int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = hypot (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = hypot (a, b);
 	}
 	return 0;
 }
@@ -2046,7 +2046,7 @@ GMT_LOCAL int table_I0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_i0 (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_i0 (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_i0 (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2058,7 +2058,7 @@ GMT_LOCAL int table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_i1 (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_i1 (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_i1 (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2081,10 +2081,10 @@ GMT_LOCAL int table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	if (S[last]->constant)  c = (double)S[last]->factor;
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
-		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
-		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
-		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV8_LIMIT) ? c : b;
+		if (!S[prev2]->constant) a = T_prev2->segment[s]->data[col][row];
+		if (!S[prev1]->constant) b = T_prev1->segment[s]->data[col][row];
+		if (!S[last]->constant)  c = T->segment[s]->data[col][row];
+		T_prev2->segment[s]->data[col][row] = (fabs (a) < GMT_CONV8_LIMIT) ? c : b;
 	}
 	return 0;
 }
@@ -2111,10 +2111,10 @@ GMT_LOCAL int table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (simple)
-			T_prev->segment[s]->coord[col][row] = b;
+			T_prev->segment[s]->data[col][row] = b;
 		else {
-			if (!S[last]->constant) order = urint (fabs (T->segment[s]->coord[col][row]));
-			T_prev->segment[s]->coord[col][row] = gmt_in (GMT, order, fabs (T_prev->segment[s]->coord[col][row]));
+			if (!S[last]->constant) order = urint (fabs (T->segment[s]->data[col][row]));
+			T_prev->segment[s]->data[col][row] = gmt_in (GMT, order, fabs (T_prev->segment[s]->data[col][row]));
 		}
 	}
 	return 0;
@@ -2138,17 +2138,17 @@ GMT_LOCAL int table_INRANGE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if (S[last]->constant)  c = (double)S[last]->factor;
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
-		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
-		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
+		if (!S[prev2]->constant) a = T_prev2->segment[s]->data[col][row];
+		if (!S[prev1]->constant) b = T_prev1->segment[s]->data[col][row];
+		if (!S[last]->constant)  c = T->segment[s]->data[col][row];
 
 		if (gmt_M_is_dnan (a) || gmt_M_is_dnan (b) || gmt_M_is_dnan (c)) {
-			T_prev2->segment[s]->coord[col][row] = GMT->session.d_NaN;
+			T_prev2->segment[s]->data[col][row] = GMT->session.d_NaN;
 			continue;
 		}
 
 		inrange = (b <= a && a <= c) ? 1.0 : 0.0;
-		T_prev2->segment[s]->coord[col][row] = inrange;
+		T_prev2->segment[s]->data[col][row] = inrange;
 	}
 	return 0;
 }
@@ -2163,7 +2163,7 @@ GMT_LOCAL int table_INT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant) {	/* Trivial case */
 		sum = S[last]->factor * info->t_inc;
-		for (s = k = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) T->segment[s]->coord[col][row] = ((info->local) ? row : k) * sum;
+		for (s = k = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) T->segment[s]->data[col][row] = ((info->local) ? row : k) * sum;
 		return 0;
 	}
 
@@ -2176,14 +2176,14 @@ GMT_LOCAL int table_INT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 		row = 0;
 		if (info->local) sum = 0.0;	/* Reset integrated sum for each segment */
 		while (row < info->T->segment[s]->n_rows) {
-			left = T->segment[s]->coord[col][row];
-			T->segment[s]->coord[col][row] = sum;
+			left = T->segment[s]->data[col][row];
+			T->segment[s]->data[col][row] = sum;
 			row++;
 			while (row < info->T->segment[s]->n_rows) {	/* Dumb trapezoidal rule */
-				if (info->irregular) f = 0.5 * (info->T->segment[s]->coord[COL_T][row] - info->T->segment[s]->coord[COL_T][row-1]);
-				right = T->segment[s]->coord[col][row];
+				if (info->irregular) f = 0.5 * (info->T->segment[s]->data[COL_T][row] - info->T->segment[s]->data[COL_T][row-1]);
+				right = T->segment[s]->data[col][row];
 				sum += f * (left + right);
-				T->segment[s]->coord[col][row] = sum;
+				T->segment[s]->data[col][row] = sum;
 				left = right;
 				row++;
 			}
@@ -2201,7 +2201,7 @@ GMT_LOCAL int table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Inverse of zero gives NaNs\n");
 	if (S[last]->constant) a = (S[last]->factor == 0) ? GMT->session.d_NaN : 1.0 / S[last]->factor;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / T->segment[s]->coord[col][row];
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : 1.0 / T->segment[s]->data[col][row];
 	return 0;
 }
 
@@ -2214,7 +2214,7 @@ GMT_LOCAL int table_ISFINITE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = isfinite (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : isfinite (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : isfinite (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2227,7 +2227,7 @@ GMT_LOCAL int table_ISNAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = (double)gmt_M_is_dnan (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (double)gmt_M_is_dnan (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : (double)gmt_M_is_dnan (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2240,7 +2240,7 @@ GMT_LOCAL int table_J0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = j0 (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : j0 (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : j0 (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2253,7 +2253,7 @@ GMT_LOCAL int table_J1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = j1 (fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : j1 (fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : j1 (fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2279,10 +2279,10 @@ GMT_LOCAL int table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (simple)
-			T_prev->segment[s]->coord[col][row] = b;
+			T_prev->segment[s]->data[col][row] = b;
 		else {
-			if (!S[last]->constant) order = urint (fabs (T->segment[s]->coord[col][row]));
-			T_prev->segment[s]->coord[col][row] = jn ((int)order, fabs (T_prev->segment[s]->coord[col][row]));
+			if (!S[last]->constant) order = urint (fabs (T->segment[s]->data[col][row]));
+			T_prev->segment[s]->data[col][row] = jn ((int)order, fabs (T_prev->segment[s]->data[col][row]));
 		}
 	}
 	return 0;
@@ -2296,7 +2296,7 @@ GMT_LOCAL int table_K0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_k0 (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_k0 (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_k0 (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2308,7 +2308,7 @@ GMT_LOCAL int table_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_k1 (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_k1 (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_k1 (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2334,10 +2334,10 @@ GMT_LOCAL int table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (simple)
-			T_prev->segment[s]->coord[col][row] = b;
+			T_prev->segment[s]->data[col][row] = b;
 		else {
-			if (!S[last]->constant) order = urint (fabs (T->segment[s]->coord[col][row]));
-			T_prev->segment[s]->coord[col][row] = gmt_kn (GMT, order, fabs (T_prev->segment[s]->coord[col][row]));
+			if (!S[last]->constant) order = urint (fabs (T->segment[s]->data[col][row]));
+			T_prev->segment[s]->data[col][row] = gmt_kn (GMT, order, fabs (T_prev->segment[s]->data[col][row]));
 		}
 	}
 	return 0;
@@ -2351,7 +2351,7 @@ GMT_LOCAL int table_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_kei (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_kei (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_kei (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2363,7 +2363,7 @@ GMT_LOCAL int table_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_ker (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_ker (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_ker (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2375,7 +2375,7 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = GMT->session.d_NaN;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = GMT->session.d_NaN;
 		return 0;
 	}
 
@@ -2383,16 +2383,16 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) {n = 0; mean = sum2 = kurt = 0.0;}	/* Reset for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
 			n++;
-			delta = T->segment[s]->coord[col][row] - mean;
+			delta = T->segment[s]->data[col][row] - mean;
 			mean += delta / n;
-			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
+			sum2 += delta * (T->segment[s]->data[col][row] - mean);
 		}
 		if (info->local) {
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-				if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-				delta = T->segment[s]->coord[col][row] - mean;
+				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+				delta = T->segment[s]->data[col][row] - mean;
 				kurt += pow (delta, 4.0);
 			}
 			if (n > 1) {
@@ -2401,15 +2401,15 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			}
 			else
 				kurt = GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = kurt;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = kurt;
 		}
 	}
 	if (info->local) return 0;
 
 	/* Here we do the global kurtosis */
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-		delta = T->segment[s]->coord[col][row] - mean;
+		if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+		delta = T->segment[s]->data[col][row] - mean;
 		kurt += pow (delta, 4.0);
 	}
 	if (n > 1) {
@@ -2418,7 +2418,7 @@ GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	else
 		kurt = GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = kurt;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = kurt;
 	return 0;
 }
 
@@ -2433,7 +2433,7 @@ GMT_LOCAL int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = 0.5 + copysign (0.5, S[last]->factor) * (1.0 - exp (-fabs (S[last]->factor)));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a :  0.5 + copysign (0.5, T->segment[s]->coord[col][row]) * (1.0 - exp (-fabs (T->segment[s]->coord[col][row])));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a :  0.5 + copysign (0.5, T->segment[s]->data[col][row]) * (1.0 - exp (-fabs (T->segment[s]->data[col][row])));
 	return 0;
 }
 
@@ -2451,10 +2451,10 @@ GMT_LOCAL int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (S[last]->constant)
-			T->segment[s]->coord[col][row] = a;
+			T->segment[s]->data[col][row] = a;
 		else {
-			p = (1.0 - T->segment[s]->coord[col][row]) - 0.5;
-			T->segment[s]->coord[col][row] = -copysign (1.0, p) * log (1.0 - 2.0 * fabs (p));
+			p = (1.0 - T->segment[s]->data[col][row]) - 0.5;
+			T->segment[s]->data[col][row] = -copysign (1.0, p) * log (1.0 - 2.0 * fabs (p));
 		}
 	}
 	return 0;
@@ -2472,9 +2472,9 @@ GMT_LOCAL int table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a <= b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a <= b);
 	}
 	return 0;
 }
@@ -2488,7 +2488,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 		return 0;
 	}
 
@@ -2496,20 +2496,20 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
-			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->coord[col][row-1]); row--);
+			gmt_sort_array (GMT, T->segment[s]->data[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->data[col][row-1]); row--);
 			if (row) {
-				gmt_mode (GMT, T->segment[s]->coord[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
-				gmt_getmad (GMT, T->segment[s]->coord[col], row, mode, &lmsscl);
+				gmt_mode (GMT, T->segment[s]->data[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
+				gmt_getmad (GMT, T->segment[s]->data[col], row, mode, &lmsscl);
 			}
 			else
 				lmsscl = GMT->session.d_NaN;
 
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = lmsscl;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = lmsscl;
 			if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
 		}
 		else {	/* Just accumulate the total table */
-			gmt_M_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (&z[k], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
@@ -2523,7 +2523,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	else
 		lmsscl = GMT->session.d_NaN;
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = lmsscl;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = lmsscl;
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 	gmt_M_free (GMT, z);
 	return 0;
@@ -2539,7 +2539,7 @@ GMT_LOCAL int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument to log = 0!\n");
 
 	if (S[last]->constant) a = d_log (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2553,7 +2553,7 @@ GMT_LOCAL int table_LOG10 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument to log10 = 0!\n");
 
 	if (S[last]->constant) a = d_log10 (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_log10 (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log10 (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2567,7 +2567,7 @@ GMT_LOCAL int table_LOG1P (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument to log1p < 0!\n");
 
 	if (S[last]->constant) a = d_log1p (GMT, fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_log1p (GMT, fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log1p (GMT, fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2581,7 +2581,7 @@ GMT_LOCAL int table_LOG2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument to log2 = 0!\n");
 
 	if (S[last]->constant) a = d_log (GMT, fabs (S[last]->factor)) * M_LN2_INV;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->coord[col][row])) * M_LN2_INV;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_log (GMT, fabs (T->segment[s]->data[col][row])) * M_LN2_INV;
 	return 0;
 }
 
@@ -2593,21 +2593,21 @@ GMT_LOCAL int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = S[last]->factor;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = S[last]->factor;
 		return 0;
 	}
 
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) low = DBL_MAX;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-			if (T->segment[s]->coord[col][row] < low) low = T->segment[s]->coord[col][row];
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			if (T->segment[s]->data[col][row] < low) low = T->segment[s]->data[col][row];
 		}
 		if (low == DBL_MAX) low = GMT->session.d_NaN;
-		if (info->local) for (row = 0; row < info->T->segment[s]->n_rows; row++) if (!gmt_M_is_dnan (T->segment[s]->coord[col][row])) T->segment[s]->coord[col][row] = low;
+		if (info->local) for (row = 0; row < info->T->segment[s]->n_rows; row++) if (!gmt_M_is_dnan (T->segment[s]->data[col][row])) T->segment[s]->data[col][row] = low;
 	}
 	if (info->local) return 0;	/* Done with local */
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = low;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = low;
 	return 0;
 }
 
@@ -2620,7 +2620,7 @@ GMT_LOCAL int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) z = 0.5 * exp (-fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : 0.5 *exp (-fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? z : 0.5 *exp (-fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -2637,9 +2637,9 @@ GMT_LOCAL int table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant) a = S[prev]->factor;
 	if (S[last]->constant) b = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) a = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) b = T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a + b * gmt_lrand (GMT);
+		if (!S[prev]->constant) a = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) b = T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a + b * gmt_lrand (GMT);
 	}
 	return 0;
 }
@@ -2666,9 +2666,9 @@ GMT_LOCAL int table_LT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a < b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a < b);
 	}
 	return 0;
 }
@@ -2681,7 +2681,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 		return 0;
 	}
 
@@ -2689,18 +2689,18 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
-			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->coord[col][row-1]); row--);
+			gmt_sort_array (GMT, T->segment[s]->data[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->data[col][row-1]); row--);
 			if (row) {
-				med = (row%2) ? T->segment[s]->coord[col][row/2] : 0.5 * (T->segment[s]->coord[col][(row-1)/2] + T->segment[s]->coord[col][row/2]);
-				gmt_getmad (GMT, T->segment[s]->coord[col], row, med, &mad);
+				med = (row%2) ? T->segment[s]->data[col][row/2] : 0.5 * (T->segment[s]->data[col][(row-1)/2] + T->segment[s]->data[col][row/2]);
+				gmt_getmad (GMT, T->segment[s]->data[col], row, med, &mad);
 			}
 			else
 				mad = GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mad;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = mad;
 		}
 		else {	/* Just accumulate the total table */
-			gmt_M_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (&z[k], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
@@ -2713,7 +2713,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	}
 	else
 		mad = GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mad;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = mad;
 	gmt_M_free (GMT, z);
 	return 0;
 }
@@ -2729,9 +2729,9 @@ GMT_LOCAL int table_MAX (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : MAX (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : MAX (a, b);
 	}
 	return 0;
 }
@@ -2744,25 +2744,25 @@ GMT_LOCAL int table_MEAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = S[last]->factor;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = S[last]->factor;
 		return 0;
 	}
 
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) {sum_a = 0.0; n_a = 0;}
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-			sum_a += T->segment[s]->coord[col][row];
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			sum_a += T->segment[s]->data[col][row];
 			n_a++;
 		}
 		if (info->local) {
 			sum_a = (n_a) ? sum_a / n_a : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum_a;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum_a;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	sum_a = (n_a) ? sum_a / n_a : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum_a;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum_a;
 	return 0;
 }
 
@@ -2774,7 +2774,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = S[last]->factor;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = S[last]->factor;
 		return 0;
 	}
 
@@ -2782,17 +2782,17 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
-			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->coord[col][row-1]); row--);
+			gmt_sort_array (GMT, T->segment[s]->data[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->data[col][row-1]); row--);
 			if (row)
-				med = (row%2) ? T->segment[s]->coord[col][row/2] : 0.5 * (T->segment[s]->coord[col][(row-1)/2] + T->segment[s]->coord[col][row/2]);
+				med = (row%2) ? T->segment[s]->data[col][row/2] : 0.5 * (T->segment[s]->data[col][(row-1)/2] + T->segment[s]->data[col][row/2]);
 			else
 				med = GMT->session.d_NaN;
 
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = med;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = med;
 		}
 		else {	/* Just accumulate the total table */
-			gmt_M_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (&z[k], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
@@ -2804,7 +2804,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	else
 		med = GMT->session.d_NaN;
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = med;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = med;
 	gmt_M_free (GMT, z);
 	return 0;
 }
@@ -2820,9 +2820,9 @@ GMT_LOCAL int table_MIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : MIN (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : MIN (a, b);
 	}
 	return 0;
 }
@@ -2839,9 +2839,9 @@ GMT_LOCAL int table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, using MOD 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = MOD (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = MOD (a, b);
 	}
 	return 0;
 }
@@ -2855,7 +2855,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = S[last]->factor;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = S[last]->factor;
 		return 0;
 	}
 
@@ -2863,18 +2863,18 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
-			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->coord[col][row-1]); row--);
+			gmt_sort_array (GMT, T->segment[s]->data[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			for (row = info->T->segment[s]->n_rows; row > 1 && gmt_M_is_dnan (T->segment[s]->data[col][row-1]); row--);
 			if (row)
-				gmt_mode (GMT, T->segment[s]->coord[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
+				gmt_mode (GMT, T->segment[s]->data[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
 			else
 				mode = GMT->session.d_NaN;
 
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mode;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = mode;
 			if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
 		}
 		else {	/* Just accumulate the total table */
-			gmt_M_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (&z[k], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
@@ -2886,7 +2886,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		else
 			mode = GMT->session.d_NaN;
 
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mode;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = mode;
 		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 		gmt_M_free (GMT, z);
 	}
@@ -2906,9 +2906,9 @@ GMT_LOCAL int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a * b;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a * b;
 	}
 	return 0;
 }
@@ -2926,9 +2926,9 @@ GMT_LOCAL int table_NAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant) a = S[prev]->factor;
 	if (S[last]->constant) b = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) a = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) b = T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = ((a == b) ? GMT->session.d_NaN : a);
+		if (!S[prev]->constant) a = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) b = T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = ((a == b) ? GMT->session.d_NaN : a);
 	}
 	return 0;
 }
@@ -2942,7 +2942,7 @@ GMT_LOCAL int table_NEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
 	if (S[last]->constant) a = -S[last]->factor;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : -T->segment[s]->coord[col][row];
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : -T->segment[s]->data[col][row];
 	return 0;
 }
 
@@ -2958,9 +2958,9 @@ GMT_LOCAL int table_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (double)(a != b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (double)(a != b);
 	}
 	return 0;
 }
@@ -2978,7 +2978,7 @@ GMT_LOCAL int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	else {
 		for (s = n = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			z = T->segment[s]->coord[col][row];
+			z = T->segment[s]->data[col][row];
 			if (gmt_M_is_dnan (z)) continue;
 			if (z < zmin) zmin = z;
 			if (z > zmax) zmax = z;
@@ -2986,7 +2986,7 @@ GMT_LOCAL int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.d_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
 	}
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -2999,7 +2999,7 @@ GMT_LOCAL int table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
 	if (S[last]->constant) a = (fabs (S[last]->factor) > GMT_CONV8_LIMIT) ? 0.0 : 1.0;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : ((fabs (T->segment[s]->coord[col][row]) > GMT_CONV8_LIMIT) ? 0.0 : 1.0);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : ((fabs (T->segment[s]->data[col][row]) > GMT_CONV8_LIMIT) ? 0.0 : 1.0);
 	return 0;
 }
 
@@ -3016,9 +3016,9 @@ GMT_LOCAL int table_NRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant) a = S[prev]->factor;
 	if (S[last]->constant) b = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) a = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) b = T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a + b * gmt_nrand (GMT);
+		if (!S[prev]->constant) a = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) b = T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a + b * gmt_nrand (GMT);
 	}
 	return 0;
 }
@@ -3034,9 +3034,9 @@ GMT_LOCAL int table_OR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : a;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (gmt_M_is_dnan (a) || gmt_M_is_dnan (b)) ? GMT->session.d_NaN : a;
 	}
 	return 0;
 }
@@ -3061,14 +3061,14 @@ GMT_LOCAL int table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	if (S[prev]->constant && S[last]->constant) {	/* PERM is given constant argument */
 		double value = gmt_permutation (GMT, irint(S[prev]->factor), irint(S[last]->factor));
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	/* Must run the full thing */
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_permutation (GMT, irint(a), irint(b));
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_permutation (GMT, irint(a), irint(b));
 	}
 	return 0;
 }
@@ -3094,7 +3094,7 @@ GMT_LOCAL int table_PLM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	M = urint (S[last]->factor);
 
 	if (S[first]->constant) a = gmt_plm (GMT, L, M, S[first]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_first->segment[s]->coord[col][row] = (S[first]-> constant) ? a : gmt_plm (GMT, L, M, T_first->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_first->segment[s]->data[col][row] = (S[first]-> constant) ? a : gmt_plm (GMT, L, M, T_first->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3118,7 +3118,7 @@ GMT_LOCAL int table_PLMg (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	M = urint (S[last]->factor);
 
 	if (S[first]->constant) a = gmt_plm_bar (GMT, L, M, S[first]->factor, false);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_first->segment[s]->coord[col][row] = (S[first]-> constant) ? a : gmt_plm_bar (GMT, L, M, T_first->segment[s]->coord[col][row], false);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_first->segment[s]->data[col][row] = (S[first]-> constant) ? a : gmt_plm_bar (GMT, L, M, T_first->segment[s]->data[col][row], false);
 	return 0;
 }
 
@@ -3143,9 +3143,9 @@ GMT_LOCAL int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = pow (a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = pow (a, b);
 	}
 	return 0;
 }
@@ -3161,9 +3161,9 @@ GMT_LOCAL int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_poissonpdf (GMT, x, lambda);
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_poissonpdf (GMT, x, lambda);
 	}
 	return 0;
 }
@@ -3190,7 +3190,7 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	if (S[prev]->constant) {	/* Trivial case */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PQUANT of a constant is set to NaN\n");
 		p = GMT->session.d_NaN;
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = p;
 		return 0;
 	}
 
@@ -3198,19 +3198,19 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			gmt_sort_array (GMT, T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
-			p = gmt_quantile (GMT, T_prev->segment[s]->coord[col], S[last]->factor, info->T->segment[s]->n_rows);
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
+			gmt_sort_array (GMT, T_prev->segment[s]->data[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			p = gmt_quantile (GMT, T_prev->segment[s]->data[col], S[last]->factor, info->T->segment[s]->n_rows);
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = p;
 		}
 		else {	/* Just accumulate the total table */
-			gmt_M_memcpy (&z[k], T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (&z[k], T_prev->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 			k += info->T->segment[s]->n_rows;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	p = gmt_quantile (GMT, z, S[last]->factor, info->T->n_records);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = p;
 	gmt_M_free (GMT, z);
 	return 0;
 }
@@ -3229,10 +3229,10 @@ GMT_LOCAL int table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (!S[last]->constant) {
-			x[0] = T->segment[s]->coord[col][row];
+			x[0] = T->segment[s]->data[col][row];
 			a = gmt_psi (GMT, x, NULL);
 		}
-		T->segment[s]->coord[col][row] = a;
+		T->segment[s]->data[col][row] = a;
 	}
 	return 0;
 }
@@ -3266,13 +3266,13 @@ GMT_LOCAL int table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	kind *= 2;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (calc){
-			if (!S[prev]->constant) nu[0] = T_prev->segment[s]->coord[col][row];
-			if (!S[last]->constant) nu[1] = T->segment[s]->coord[col][row];
-			if (!S[first]-> constant)    x = T_first->segment[s]->coord[col][row];
+			if (!S[prev]->constant) nu[0] = T_prev->segment[s]->data[col][row];
+			if (!S[last]->constant) nu[1] = T->segment[s]->data[col][row];
+			if (!S[first]-> constant)    x = T_first->segment[s]->data[col][row];
 			gmt_PvQv (GMT, x, nu, pq, &n);
 			a = pq[kind];
 		}
-		T_first->segment[s]->coord[col][row] = a;
+		T_first->segment[s]->data[col][row] = a;
 	}
 	return 0;
 }
@@ -3306,9 +3306,9 @@ GMT_LOCAL int table_R2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if (S[prev]->constant) S[prev]->factor *= S[prev]->factor;
 	if (S[last]->constant) S[last]->factor *= S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row] * T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a + b;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row] * T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row] * T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a + b;
 	}
 	return 0;
 }
@@ -3322,7 +3322,7 @@ GMT_LOCAL int table_R2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = S[last]->factor * R2D;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : T->segment[s]->coord[col][row] * R2D;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * R2D;
 	return 0;
 }
 
@@ -3339,9 +3339,9 @@ GMT_LOCAL int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (S[prev]->constant) a = S[prev]->factor;
 	if (S[last]->constant) b = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) a = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) b = T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a + gmt_rand (GMT) * (b - a);
+		if (!S[prev]->constant) a = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) b = T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a + gmt_rand (GMT) * (b - a);
 	}
 	return 0;
 }
@@ -3355,8 +3355,8 @@ GMT_LOCAL int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T->segment[s]->coord[col][row] = 1.0 - exp (-0.5*z*z);
+		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T->segment[s]->data[col][row] = 1.0 - exp (-0.5*z*z);
 	}
 	return 0;
 }
@@ -3370,8 +3370,8 @@ GMT_LOCAL int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		alpha = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T->segment[s]->coord[col][row] = M_SQRT2 * sqrt (-log (1.0 - alpha));
+		alpha = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T->segment[s]->data[col][row] = M_SQRT2 * sqrt (-log (1.0 - alpha));
 	}
 	return 0;
 }
@@ -3385,8 +3385,8 @@ GMT_LOCAL int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T->segment[s]->coord[col][row] = z * exp (-0.5 * z * z);
+		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T->segment[s]->data[col][row] = z * exp (-0.5 * z * z);
 	}
 	return 0;
 }
@@ -3400,7 +3400,7 @@ GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = rint (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : rint (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : rint (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3416,21 +3416,21 @@ GMT_LOCAL int table_RMS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 		if (!S[last]->constant) {
 			if (info->local) {n = 0; sum2 = 0.0;}	/* Start anew for each segment */
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-				if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
 				n++;
-				sum2 += (T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row]);
+				sum2 += (T->segment[s]->data[col][row] * T->segment[s]->data[col][row]);
 			}
 			if (info->local) {
 				sum2 = (n > 0) ? sqrt (sum2 / n) : GMT->session.d_NaN;
 			}
 		}
 		if (info->local) {
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	if (!S[last]->constant) sum2 = (n > 0) ? sqrt (sum2 / n) : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 	return 0;
 }
 
@@ -3511,15 +3511,15 @@ GMT_LOCAL int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			j = (info->local) ? (row+shift)%info->T->segment[s]->n_rows : (k+shift)%info->T->n_records;
-			z[j] = T_prev->segment[s]->coord[col][row];
+			z[j] = T_prev->segment[s]->data[col][row];
 		}
 		if (info->local) {
-			gmt_M_memcpy (T_prev->segment[s]->coord[col], z, info->T->segment[s]->n_rows, double);
+			gmt_M_memcpy (T_prev->segment[s]->data[col], z, info->T->segment[s]->n_rows, double);
 			gmt_M_free (GMT, z);
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	for (s = k = 0; s < info->T->n_segments; s++, k += info->T->segment[s]->n_rows) gmt_M_memcpy (T_prev->segment[s]->coord[col], &z[k], info->T->segment[s]->n_rows, double);
+	for (s = k = 0; s < info->T->n_segments; s++, k += info->T->segment[s]->n_rows) gmt_M_memcpy (T_prev->segment[s]->data[col], &z[k], info->T->segment[s]->n_rows, double);
 	gmt_M_free (GMT, z);
 	return 0;
 }
@@ -3533,7 +3533,7 @@ GMT_LOCAL int table_SEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = (1.0 / cos (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / cos (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / cos (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -3546,7 +3546,7 @@ GMT_LOCAL int table_SECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = (1.0 / cosd (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / cosd (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : (1.0 / cosd (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -3559,7 +3559,7 @@ GMT_LOCAL int table_SECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = 1.0 / cosh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / cosh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : 1.0 / cosh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3572,7 +3572,7 @@ GMT_LOCAL int table_SIGN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
 	if (S[last]->constant) a = copysign (1.0, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : copysign (1.0, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : copysign (1.0, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3585,7 +3585,7 @@ GMT_LOCAL int table_SIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = sin (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : sin (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : sin (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3597,7 +3597,7 @@ GMT_LOCAL int table_SINC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_sinc (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_sinc (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_sinc (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3610,7 +3610,7 @@ GMT_LOCAL int table_SIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = sind (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : sind (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : sind (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3623,7 +3623,7 @@ GMT_LOCAL int table_SINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = sinh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : sinh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : sinh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3635,7 +3635,7 @@ GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = GMT->session.d_NaN;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = GMT->session.d_NaN;
 		return 0;
 	}
 
@@ -3643,17 +3643,17 @@ GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) {n = 0; mean = sum2 = skew = 0.0; }	/* Start anew for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
 			n++;
-			delta = T->segment[s]->coord[col][row] - mean;
+			delta = T->segment[s]->data[col][row] - mean;
 			mean += delta / n;
-			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
+			sum2 += delta * (T->segment[s]->data[col][row] - mean);
 		}
 		if (info->local) {
 			if (n > 1) {
 				for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-					if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-					delta = T->segment[s]->coord[col][row] - mean;
+					if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+					delta = T->segment[s]->data[col][row] - mean;
 					skew += pow (delta, 3.0);
 				}
 				sum2 /= (n - 1);
@@ -3661,14 +3661,14 @@ GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			}
 			else
 				skew = GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = skew;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = skew;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	if (n > 1) {
 		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-			delta = T->segment[s]->coord[col][row] - mean;
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			delta = T->segment[s]->data[col][row] - mean;
 			skew += pow (delta, 3.0);
 		}
 		sum2 /= (n - 1);
@@ -3676,7 +3676,7 @@ GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	else
 		skew = GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = skew;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = skew;
 	return 0;
 }
 
@@ -3689,7 +3689,7 @@ GMT_LOCAL int table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = S[last]->factor * S[last]->factor;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : T->segment[s]->coord[col][row] *  T->segment[s]->coord[col][row];
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] *  T->segment[s]->data[col][row];
 	return 0;
 }
 
@@ -3702,7 +3702,7 @@ GMT_LOCAL int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant && S[last]->factor < 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one < 0!\n");
 	if (S[last]->constant) a = sqrt (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : sqrt (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : sqrt (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3714,7 +3714,7 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 		return 0;
 	}
 
@@ -3722,20 +3722,20 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
 			n++;
-			delta = T->segment[s]->coord[col][row] - mean;
+			delta = T->segment[s]->data[col][row] - mean;
 			mean += delta / n;
-			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
+			sum2 += delta * (T->segment[s]->data[col][row] - mean);
 		}
 		if (info->local) {
 			sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 	return 0;
 }
 
@@ -3748,11 +3748,11 @@ GMT_LOCAL int table_STEP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		a = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 		if (a == 0.0)
-			T->segment[s]->coord[col][row] = 0.5;
+			T->segment[s]->data[col][row] = 0.5;
 		else
-			T->segment[s]->coord[col][row] = (a < 0.0) ? 0.0 : 1.0;
+			T->segment[s]->data[col][row] = (a < 0.0) ? 0.0 : 1.0;
 	}
 	return 0;
 }
@@ -3766,11 +3766,11 @@ GMT_LOCAL int table_STEPT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	gmt_M_unused(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = info->T->segment[s]->coord[COL_T][row] - ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		a = info->T->segment[s]->data[COL_T][row] - ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
 		if (a == 0.0)
-			T->segment[s]->coord[col][row] = 0.5;
+			T->segment[s]->data[col][row] = 0.5;
 		else
-			T->segment[s]->coord[col][row] = (a < 0.0) ? 0.0 : 1.0;
+			T->segment[s]->data[col][row] = (a < 0.0) ? 0.0 : 1.0;
 	}
 	return 0;
 }
@@ -3788,9 +3788,9 @@ GMT_LOCAL int table_SUB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = a - b;
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = a - b;
 	}
 	return 0;
 }
@@ -3807,9 +3807,9 @@ GMT_LOCAL int table_SUM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) sum = 0.0;	/* Reset for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (!S[last]->constant) a = T->segment[s]->coord[col][row];
+			if (!S[last]->constant) a = T->segment[s]->data[col][row];
 			if (!gmt_M_is_dnan (a)) sum += a;
-			T->segment[s]->coord[col][row] = sum;
+			T->segment[s]->data[col][row] = sum;
 		}
 	}
 	return 0;
@@ -3834,7 +3834,7 @@ GMT_LOCAL int table_TAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = tan (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : tan (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : tan (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3847,7 +3847,7 @@ GMT_LOCAL int table_TAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = tand (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : tand (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : tand (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3860,7 +3860,7 @@ GMT_LOCAL int table_TANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) a = tanh (S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : tanh (T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : tanh (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -3884,18 +3884,18 @@ GMT_LOCAL int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 			t_max = info->T->segment[s]->n_rows - 1.0;
 		}
 		else {	/* Here, A is in time units and the min/max are start/stop time per segment */
-			t_min = info->T->segment[s]->coord[COL_T][0];	/* Start of time for this segment */
-			t_max = info->T->segment[s]->coord[COL_T][info->T->segment[s]->n_rows-1];	/* End of time for this segment */
+			t_min = info->T->segment[s]->data[COL_T][0];	/* Start of time for this segment */
+			t_max = info->T->segment[s]->data[COL_T][info->T->segment[s]->n_rows-1];	/* End of time for this segment */
 		}
 		start = strip + t_min;
 		stop  = strip - t_max;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			t = (info->notime) ? (double)row : info->T->segment[s]->coord[COL_T][row];
+			t = (info->notime) ? (double)row : info->T->segment[s]->data[COL_T][row];
 			from_start = start - t;
 			if (from_start > 0.0) w_t = 0.5 * (1.0 + cos (from_start * scale));
 			else if ((from_stop = stop + t) > 0.0) w_t = 0.5 * (1.0 + cos (from_stop * scale));
 			else w_t = 1.0;	/* Inside non-tapered t-range */
-			T->segment[s]->coord[col][row] = w_t;
+			T->segment[s]->data[col][row] = w_t;
 		}
 	}
 	return 0;
@@ -3912,9 +3912,9 @@ GMT_LOCAL int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_t_cdf (GMT, t, nu);
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_t_cdf (GMT, t, nu);
 	}
 	return 0;
 }
@@ -3931,9 +3931,9 @@ GMT_LOCAL int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		n = irint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		gmt_chebyshev (GMT, a, n, &T_prev->segment[s]->coord[col][row]);
+		n = irint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		gmt_chebyshev (GMT, a, n, &T_prev->segment[s]->data[col][row]);
 	}
 	return 0;
 }
@@ -3949,9 +3949,9 @@ GMT_LOCAL int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_t_pdf (GMT, t, nu);
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_t_pdf (GMT, t, nu);
 	}
 	return 0;
 }
@@ -3969,9 +3969,9 @@ GMT_LOCAL int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TCRIT!\n");
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = gmt_tcrit (GMT, a, b);
+		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = gmt_tcrit (GMT, a, b);
 	}
 	return 0;
 }
@@ -3984,21 +3984,21 @@ GMT_LOCAL int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = S[last]->factor;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = S[last]->factor;
 		return 0;
 	}
 
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) high = -DBL_MAX;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
-			if (T->segment[s]->coord[col][row] > high) high = T->segment[s]->coord[col][row];
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			if (T->segment[s]->data[col][row] > high) high = T->segment[s]->data[col][row];
 		}
 		if (high == -DBL_MAX) high = GMT->session.d_NaN;
-		if (info->local) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = high;
+		if (info->local) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = high;
 	}
 	if (info->local) return 0;	/* Done with local */
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = high;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = high;
 	return 0;
 }
 
@@ -4010,7 +4010,7 @@ GMT_LOCAL int table_VAR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
 		return 0;
 	}
 
@@ -4018,20 +4018,20 @@ GMT_LOCAL int table_VAR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
 			n++;
-			delta = T->segment[s]->coord[col][row] - mean;
+			delta = T->segment[s]->data[col][row] - mean;
 			mean += delta / n;
-			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
+			sum2 += delta * (T->segment[s]->data[col][row] - mean);
 		}
 		if (info->local) {
 			sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
 	return 0;
 }
 
@@ -4046,10 +4046,10 @@ GMT_LOCAL int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <=0 for WCDF!\n");
 	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
-		b = (double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		T_prev2->segment[s]->coord[col][row] = gmt_weibull_cdf (GMT, x, a, b);
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+		b = (double)((S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row]);
+		T_prev2->segment[s]->data[col][row] = gmt_weibull_cdf (GMT, x, a, b);
 	}
 	return 0;
 }
@@ -4065,10 +4065,10 @@ GMT_LOCAL int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <=0 for WCRIT!\n");
 	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCRIT!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
-		b = (double)((S[last]->constant)  ? S[last]->factor  : T->segment[s]->coord[col][row]);
-		T_prev2->segment[s]->coord[col][row] = gmt_weibull_crit (GMT, alpha, a, b);
+		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row]);
+		b = (double)((S[last]->constant)  ? S[last]->factor  : T->segment[s]->data[col][row]);
+		T_prev2->segment[s]->data[col][row] = gmt_weibull_crit (GMT, alpha, a, b);
 	}
 	return 0;
 }
@@ -4098,14 +4098,14 @@ GMT_LOCAL int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		x = S[prev2]->factor;
 		a = S[prev1]->factor;	b = S[last]->factor;
 		value = gmt_weibull_pdf (GMT, x, a, b);
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		a = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row];
-		b = (S[last]->constant)  ? S[last]->factor : T->segment[s]->coord[col][row];
-		T_prev2->segment[s]->coord[col][row] = gmt_weibull_pdf (GMT, x, a, b);
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];
+		a = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->data[col][row];
+		b = (S[last]->constant)  ? S[last]->factor : T->segment[s]->data[col][row];
+		T_prev2->segment[s]->data[col][row] = gmt_weibull_pdf (GMT, x, a, b);
 	}
 	return 0;
 }
@@ -4124,9 +4124,9 @@ GMT_LOCAL int table_XOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[prev]->constant) a = S[prev]->factor;
 	if (S[last]->constant) b = S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) a = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) b = T->segment[s]->coord[col][row];
-		T_prev->segment[s]->coord[col][row] = (gmt_M_is_dnan (a)) ? b : a;
+		if (!S[prev]->constant) a = T_prev->segment[s]->data[col][row];
+		if (!S[last]->constant) b = T->segment[s]->data[col][row];
+		T_prev->segment[s]->data[col][row] = (gmt_M_is_dnan (a)) ? b : a;
 	}
 	return 0;
 }
@@ -4140,7 +4140,7 @@ GMT_LOCAL int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand = 0 for Y0!\n");
 	if (S[last]->constant) a = y0 (fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : y0 (fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : y0 (fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -4153,7 +4153,7 @@ GMT_LOCAL int table_Y1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 
 	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand = 0 for Y1!\n");
 	if (S[last]->constant) a = y1 (fabs (S[last]->factor));
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : y1 (fabs (T->segment[s]->coord[col][row]));
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : y1 (fabs (T->segment[s]->data[col][row]));
 	return 0;
 }
 
@@ -4178,10 +4178,10 @@ GMT_LOCAL int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct 
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		if (simple)
-			T_prev->segment[s]->coord[col][row] = b;
+			T_prev->segment[s]->data[col][row] = b;
 		else {
-			if (!S[last]->constant) order = urint (fabs (T->segment[s]->coord[col][row]));
-			T_prev->segment[s]->coord[col][row] = yn ((int)order, fabs (T_prev->segment[s]->coord[col][row]));
+			if (!S[last]->constant) order = urint (fabs (T->segment[s]->data[col][row]));
+			T_prev->segment[s]->data[col][row] = yn ((int)order, fabs (T_prev->segment[s]->data[col][row]));
 		}
 	}
 	return 0;
@@ -4195,7 +4195,7 @@ GMT_LOCAL int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_zcrit (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_zcrit (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_zcrit (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -4207,7 +4207,7 @@ GMT_LOCAL int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (S[last]->constant) a = gmt_zdist (GMT, S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : gmt_zdist (GMT, T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_zdist (GMT, T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -4220,7 +4220,7 @@ GMT_LOCAL int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	gmt_M_unused(GMT);
 
 	if (S[last]->constant) z = f * exp (-0.5 * S[last]->factor * S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : f * exp (-0.5 * T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? z : f * exp (-0.5 * T->segment[s]->data[col][row] * T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -4258,21 +4258,21 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	}
 	roots = gmt_M_memory (GMT, NULL, T->n_records, double);
 	info->n_roots = 0;
-	if (T_prev->segment[0]->coord[info->r_col][0] == 0.0) roots[info->n_roots++] = info->T->segment[0]->coord[COL_T][0];
+	if (T_prev->segment[0]->data[info->r_col][0] == 0.0) roots[info->n_roots++] = info->T->segment[0]->data[COL_T][0];
 	for (seg = 0; seg < info->T->n_segments; seg++) {
 		for (row = 1; row < info->T->segment[seg]->n_rows; row++) {
-			if (T_prev->segment[seg]->coord[info->r_col][row] == 0.0) {
-				roots[info->n_roots++] = info->T->segment[seg]->coord[COL_T][row];
+			if (T_prev->segment[seg]->data[info->r_col][row] == 0.0) {
+				roots[info->n_roots++] = info->T->segment[seg]->data[COL_T][row];
 				continue;
 			}
 
-			if ((T_prev->segment[seg]->coord[info->r_col][row-1] * T_prev->segment[seg]->coord[info->r_col][row]) < 0.0) {	/* Crossing 0 */
-				roots[info->n_roots] = info->T->segment[seg]->coord[COL_T][row-1] - T_prev->segment[seg]->coord[info->r_col][row-1] * (info->T->segment[seg]->coord[COL_T][row] - info->T->segment[seg]->coord[COL_T][row-1]) / (T_prev->segment[seg]->coord[info->r_col][row] - T_prev->segment[seg]->coord[info->r_col][row-1]);
+			if ((T_prev->segment[seg]->data[info->r_col][row-1] * T_prev->segment[seg]->data[info->r_col][row]) < 0.0) {	/* Crossing 0 */
+				roots[info->n_roots] = info->T->segment[seg]->data[COL_T][row-1] - T_prev->segment[seg]->data[info->r_col][row-1] * (info->T->segment[seg]->data[COL_T][row] - info->T->segment[seg]->data[COL_T][row-1]) / (T_prev->segment[seg]->data[info->r_col][row] - T_prev->segment[seg]->data[info->r_col][row-1]);
 				info->n_roots++;
 			}
 		}
 	}
-	for (i = 0; i < info->n_roots; i++) T_prev->segment[0]->coord[info->r_col][i] = roots[i];
+	for (i = 0; i < info->n_roots; i++) T_prev->segment[0]->data[info->r_col][i] = roots[i];
 	gmt_M_free (GMT, roots);
 	info->roots_found = true;
 	return 0;
@@ -4618,13 +4618,13 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		free_time = true;
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = false; seg < D->n_segments; seg++) {
-			gmt_M_memcpy (info.T->segment[seg]->coord[COL_T], D->segment[seg]->coord[use_t_col], D->segment[seg]->n_rows, double);
+			gmt_M_memcpy (info.T->segment[seg]->data[COL_T], D->segment[seg]->data[use_t_col], D->segment[seg]->n_rows, double);
 			if (!done) {
-				for (row = 1; row < info.T->segment[seg]->n_rows && (gmt_M_is_dnan (info.T->segment[seg]->coord[COL_T][row-1]) || gmt_M_is_dnan (info.T->segment[seg]->coord[COL_T][row])); row++);	/* Find the first real two records in a row */
-				Ctrl->T.inc = (row == info.T->segment[seg]->n_rows) ? GMT->session.d_NaN : info.T->segment[seg]->coord[COL_T][row] - info.T->segment[seg]->coord[COL_T][row-1];
+				for (row = 1; row < info.T->segment[seg]->n_rows && (gmt_M_is_dnan (info.T->segment[seg]->data[COL_T][row-1]) || gmt_M_is_dnan (info.T->segment[seg]->data[COL_T][row])); row++);	/* Find the first real two records in a row */
+				Ctrl->T.inc = (row == info.T->segment[seg]->n_rows) ? GMT->session.d_NaN : info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1];
 				t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
 			}
-			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->coord[COL_T][row] - info.T->segment[seg]->coord[COL_T][row-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = true;
+			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = true;
 		}
 		if (!read_stdin && GMT_Destroy_Data (API, &D_in) != GMT_OK) {
 			Return (API->error);
@@ -4634,17 +4634,17 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
-		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->coord[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
+		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->data[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 		t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
 	}
 
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
-		off = 0.5 * (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->coord[COL_T][0]);
-		scale = 2.0 / (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->coord[COL_T][0]);
-		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->coord[COL_T][row], info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time series */
+		off = 0.5 * (info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->data[COL_T][0]);
+		scale = 2.0 / (info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->data[COL_T][0]);
+		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->data[COL_T][row], info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time series */
 		for (row = 0; row < info.T->segment[seg]->n_rows; row++) {
-			info.T->segment[seg]->coord[COL_TN][row] = (info.T->segment[seg]->coord[COL_T][row] - off) * scale;
-			info.T->segment[seg]->coord[COL_TJ][row] = (unsigned int)((Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row);
+			info.T->segment[seg]->data[COL_TN][row] = (info.T->segment[seg]->data[COL_T][row] - off) * scale;
+			info.T->segment[seg]->data[COL_TJ][row] = (unsigned int)((Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row);
 		}
 		n_records += info.T->segment[seg]->n_rows;
 	}
@@ -4950,7 +4950,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		dim[GMT_ROW] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
-		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
+		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->data[GMT_X][kk] = S->data[info.r_col][kk];
 		GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 			Return (API->error);
@@ -4983,7 +4983,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
 					row = (Ctrl->S.active) ? ((Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1) : r;
-					for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->coord[c][r] = R->table[0]->segment[seg]->coord[c][row];
+					for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][r] = R->table[0]->segment[seg]->data[c][row];
 				}
 			}
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, N);

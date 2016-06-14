@@ -330,10 +330,10 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
 				Return (EXIT_FAILURE);
 			}
-			n_alloc = G->header->nx * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
-			record = gmt_M_memory (GMT, NULL, G->header->nx, char);
+			n_alloc = G->header->n_columns * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
+			record = gmt_M_memory (GMT, NULL, G->header->n_columns, char);
 			
-			sprintf (record, "ncols %d\nnrows %d", G->header->nx, G->header->ny);
+			sprintf (record, "ncols %d\nnrows %d", G->header->n_columns, G->header->n_rows);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 				sprintf (record, "xllcorner ");
@@ -373,11 +373,11 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					len = strlen (item);
 					if ((rec_len + len + 1) >= n_alloc) {	/* Must get more memory */
 						n_alloc <<= 1;
-						record = gmt_M_memory (GMT, record, G->header->nx, char);
+						record = gmt_M_memory (GMT, record, G->header->n_columns, char);
 					}
 					strcat (record, item);
 					rec_len += len;
-					if (col < (G->header->nx-1)) { strcat (record, " "); rec_len++;}
+					if (col < (G->header->n_columns-1)) { strcat (record, " "); rec_len++;}
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a whole y line */
 			}

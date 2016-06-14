@@ -326,7 +326,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 
 	flag = gmt_M_memory (GMT, NULL, Grid->header->size, unsigned int);
 
@@ -419,9 +419,9 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (read_cont) {	/* old-style segy2grd */
 		ix = 0;
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
-		if (Grid->header->nx < Ctrl->M.value) {
+		if (Grid->header->n_columns < Ctrl->M.value) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
-			Ctrl->M.value = Grid->header->nx;
+			Ctrl->M.value = Grid->header->n_columns;
 		}
 		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
 			if (swap_bytes) {
@@ -435,7 +435,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			if ((n_samp = segy_samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
-			if ((n_samp - ij0) > (uint64_t)Grid->header->ny) n_samp = Grid->header->ny + ij0;
+			if ((n_samp - ij0) > (uint64_t)Grid->header->n_rows) n_samp = Grid->header->n_rows + ij0;
 
 			if (swap_bytes) {
 				/* need to swap the order of the bytes in the data even though assuming IEEE format */
@@ -448,7 +448,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 
 			for (ij = ij0; ij < n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
-				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
+				Grid->data[ix + Grid->header->n_columns*(Grid->header->n_rows+ij0-ij-1)] = data[ij];
 			}
 
 			gmt_M_str_free (data);
@@ -518,12 +518,12 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			if (!(x0 < GMT->common.R.wesn[XLO] || x0 > GMT->common.R.wesn[XHI])) {	/* inside x-range */
 				/* find horizontal grid pos of this trace */
 				ii = (unsigned int)gmt_M_grd_x_to_col (GMT, x0, Grid->header);
-				if (ii == Grid->header->nx) ii--, n_confused++;
+				if (ii == Grid->header->n_columns) ii--, n_confused++;
 				for (isamp = 0; isamp< n_samp; ++isamp) {
 					yval = isamp*Ctrl->Q.value[Y_ID];
 					if (!(yval < GMT->common.R.wesn[YLO] || yval > GMT->common.R.wesn[YHI])) {	/* inside y-range */
 						jj = (unsigned int)gmt_M_grd_y_to_row (GMT, yval, Grid->header);
-						if (jj == Grid->header->ny) jj--, n_confused++;
+						if (jj == Grid->header->n_rows) jj--, n_confused++;
 						ij = gmt_M_ij0 (Grid->header, jj, ii);
 						Grid->data[ij] += data[isamp];	/* Add up incase we must average */
 						flag[ij]++;

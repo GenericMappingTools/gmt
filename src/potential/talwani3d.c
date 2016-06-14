@@ -936,15 +936,15 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
-					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->coord[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
-					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->coord[GMT_X][row]/ scl, S->coord[GMT_Y][row]/ scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
+					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
+					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->data[GMT_X][row]/ scl, S->data[GMT_Y][row]/ scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 				}
 				/* This loop is not under OpenMP */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Loop over output locations */
-					out[GMT_X] = S->coord[GMT_X][row];
-					out[GMT_Y] = S->coord[GMT_Y][row];
-					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->coord[GMT_Z][row];
+					out[GMT_X] = S->data[GMT_X][row];
+					out[GMT_Y] = S->data[GMT_Y][row];
+					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->data[GMT_Z][row];
 					out[3] = GMT->hidden.mem_coord[GMT_X][row];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
@@ -957,9 +957,9 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 	else {	/* Dealing with a grid */
 		int64_t row;
-		int col, nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
-		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->nx, double);
-		for (col = 0; col < nx; col++) {
+		int col, n_columns = (int)G->header->n_columns, n_rows = (int)G->header->n_rows;	/* To shut up compiler warnings */
+		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
+		for (col = 0; col < n_columns; col++) {
 			x_obs[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] /= METERS_IN_A_KM;	/* Convert to km */
 		}
@@ -967,13 +967,13 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		/* Spread calculation over selected cores */
 #pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth)
 #endif
-		for (row = 0; row < ny; row++) {	/* Do row-by-row and report on progress if -V */
+		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = gmt_M_grd_row_to_y (GMT, row, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) y_obs /= METERS_IN_A_KM;	/* Convert to km */
 #ifndef _OPENMP
 			GMT_Report (API, GMT_MSG_VERBOSE, "Finished row %5d\n", row);
 #endif
-			for (col = 0; col < (int)G->header->nx; col++) {
+			for (col = 0; col < (int)G->header->n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */

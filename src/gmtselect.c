@@ -607,9 +607,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (Cin->n_columns == 2) point->segment[seg]->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
 				for (row = 0; row < point->segment[seg]->n_rows; row++) {
-					gmt_geo_to_xy (GMT, point->segment[seg]->coord[GMT_X][row], point->segment[seg]->coord[GMT_Y][row], &xx, &yy);
-					point->segment[seg]->coord[GMT_X][row] = xx;
-					point->segment[seg]->coord[GMT_Y][row] = yy;
+					gmt_geo_to_xy (GMT, point->segment[seg]->data[GMT_X][row], point->segment[seg]->data[GMT_Y][row], &xx, &yy);
+					point->segment[seg]->data[GMT_X][row] = xx;
+					point->segment[seg]->data[GMT_Y][row] = yy;
 				}
 				pt_cartesian = true;	/* Well, now it is */
 			}
@@ -623,9 +623,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 			for (seg = k = 0; seg < point->n_segments; seg++) {
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
-					data[k].x = point->segment[seg]->coord[GMT_X][row];
-					data[k].y = point->segment[seg]->coord[GMT_Y][row];
-					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[seg]->coord[GMT_Z][row] : Ctrl->C.dist;
+					data[k].x = point->segment[seg]->data[GMT_X][row];
+					data[k].y = point->segment[seg]->data[GMT_Y][row];
+					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[seg]->data[GMT_Z][row] : Ctrl->C.dist;
 				}
 			}
 			
@@ -634,9 +634,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			
 			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
-					point->segment[seg]->coord[GMT_X][row] = data[k].x;
-					point->segment[seg]->coord[GMT_Y][row] = data[k].y;
-					if (Ctrl->C.dist == 0.0) point->segment[seg]->coord[GMT_Z][row] = data[k].d ;
+					point->segment[seg]->data[GMT_X][row] = data[k].x;
+					point->segment[seg]->data[GMT_Y][row] = data[k].y;
+					if (Ctrl->C.dist == 0.0) point->segment[seg]->data[GMT_Z][row] = data[k].d ;
 				}
 			}
 			gmt_M_free (GMT, data);
@@ -656,9 +656,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (Ctrl->L.dist > 0.0) line->segment[seg]->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
 				for (row = 0; row < line->segment[seg]->n_rows; row++) {
-					gmt_geo_to_xy (GMT, line->segment[seg]->coord[GMT_X][row], line->segment[seg]->coord[GMT_Y][row], &xx, &yy);
-					line->segment[seg]->coord[GMT_X][row] = xx;
-					line->segment[seg]->coord[GMT_Y][row] = yy;
+					gmt_geo_to_xy (GMT, line->segment[seg]->data[GMT_X][row], line->segment[seg]->data[GMT_Y][row], &xx, &yy);
+					line->segment[seg]->data[GMT_X][row] = xx;
+					line->segment[seg]->data[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -677,9 +677,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (do_project) {	/* Convert all the polygons points using the map projection */
 			for (seg = 0; seg < pol->n_segments; seg++) {
 				for (row = 0; row < pol->segment[seg]->n_rows; row++) {
-					gmt_geo_to_xy (GMT, pol->segment[seg]->coord[GMT_X][row], pol->segment[seg]->coord[GMT_Y][row], &xx, &yy);
-					pol->segment[seg]->coord[GMT_X][row] = xx;
-					pol->segment[seg]->coord[GMT_Y][row] = yy;
+					gmt_geo_to_xy (GMT, pol->segment[seg]->data[GMT_X][row], pol->segment[seg]->data[GMT_Y][row], &xx, &yy);
+					pol->segment[seg]->data[GMT_X][row] = xx;
+					pol->segment[seg]->data[GMT_Y][row] = yy;
 				}
 			}
 		}

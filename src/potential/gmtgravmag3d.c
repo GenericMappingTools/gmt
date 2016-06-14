@@ -464,19 +464,19 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
-		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
 
 		/* Build observation point vectors */
-		x = gmt_M_memory (GMT, NULL, Gout->header->nx, double);
-		y = gmt_M_memory (GMT, NULL, Gout->header->ny, double);
-		for (i = 0; i < Gout->header->nx; i++)
-			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] : (Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
-		for (j = 0; j < Gout->header->ny; j++)
-			y[j] = (j == (Gout->header->ny-1)) ? -Gout->header->wesn[YLO] : -(Gout->header->wesn[YHI] - j * Gout->header->inc[GMT_Y]);
+		x = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
+		y = gmt_M_memory (GMT, NULL, Gout->header->n_rows, double);
+		for (i = 0; i < Gout->header->n_columns; i++)
+			x[i] = (i == (Gout->header->n_columns-1)) ? Gout->header->wesn[XHI] : (Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
+		for (j = 0; j < Gout->header->n_rows; j++)
+			y[j] = (j == (Gout->header->n_rows-1)) ? -Gout->header->wesn[YLO] : -(Gout->header->wesn[YHI] - j * Gout->header->inc[GMT_Y]);
 	}
 
-	nx_p = (!Ctrl->F.active) ? Gout->header->nx : ndata_p;
-	ny_p = (!Ctrl->F.active) ? Gout->header->ny : ndata_p;
+	nx_p = (!Ctrl->F.active) ? Gout->header->n_columns : ndata_p;
+	ny_p = (!Ctrl->F.active) ? Gout->header->n_rows : ndata_p;
 	nm   = (!Ctrl->F.active) ? Gout->header->nm : ndata_p;
 	x_obs = gmt_M_memory (GMT, NULL, nx_p, double);
 	y_obs = gmt_M_memory (GMT, NULL, ny_p, double);
@@ -486,10 +486,10 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) { /* Need to compute observation coords only once */
 		size_t row;
 		for (row = 0; row < ndata_p; row++) {
-			x_obs[row] = (Ctrl->box.is_geog) ? (point->segment[0]->coord[GMT_X][row] - lon_0) *
-				Ctrl->box.d_to_m*cos(point->segment[0]->coord[GMT_Y][row] * D2R) : point->segment[0]->coord[GMT_X][row];
-			y_obs[row] = (Ctrl->box.is_geog) ? -(point->segment[0]->coord[GMT_Y][row] - lat_0) *
-				Ctrl->box.d_to_m : -point->segment[0]->coord[GMT_Y][row]; /* - because y positive 'south' */
+			x_obs[row] = (Ctrl->box.is_geog) ? (point->segment[0]->data[GMT_X][row] - lon_0) *
+				Ctrl->box.d_to_m*cos(point->segment[0]->data[GMT_Y][row] * D2R) : point->segment[0]->data[GMT_X][row];
+			y_obs[row] = (Ctrl->box.is_geog) ? -(point->segment[0]->data[GMT_Y][row] - lat_0) *
+				Ctrl->box.d_to_m : -point->segment[0]->data[GMT_Y][row]; /* - because y positive 'south' */
 		}
 		g = gmt_M_memory (GMT, NULL, nm, float);
 	}
@@ -606,8 +606,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	s_rad2 = Ctrl->S.radius*Ctrl->S.radius;
 
 	if (Ctrl->G.active) {		/* Compute the cos(lat) vector only once */
-		cos_vec = gmt_M_memory (GMT, NULL, Gout->header->ny, double);
-		for (i = 0; i < Gout->header->ny; i++)
+		cos_vec = gmt_M_memory (GMT, NULL, Gout->header->n_rows, double);
+		for (i = 0; i < Gout->header->n_rows; i++)
 			cos_vec[i] = (Ctrl->box.is_geog) ? cos(y[i]*D2R): 1;
 	}
 
@@ -628,10 +628,10 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			z_th = facet_raw (Ctrl, body_verts, i, Ctrl->box.is_geog);
 		if (z_th) {
 			if (Ctrl->G.active) { /* grid */
-				for (row = 0; row < Gout->header->ny; row++) {
+				for (row = 0; row < Gout->header->n_rows; row++) {
 					y_o = (Ctrl->box.is_geog) ? ((y[row]+lat_0) * Ctrl->box.d_to_m): y[row];
 					ij = gmt_M_ijp(Gout->header, row, 0);
-					for (col = 0; col < Gout->header->nx; col++, ij++) {
+					for (col = 0; col < Gout->header->n_columns; col++, ij++) {
 						x_o = (Ctrl->box.is_geog) ? ((x[col]-lon_0)*Ctrl->box.d_to_m * cos_vec[row]) : x[col];
 						if (Ctrl->S.active) {
 							DX = t_center[i].x - x_o;
@@ -697,8 +697,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		strcpy (save, GMT->current.setting.format_float_out);
 		strcpy (GMT->current.setting.format_float_out, "%.9g");	/* Make sure we use enough decimals */
 		for (k = 0; k < ndata_p; k++) {
-			out[GMT_X] = point->segment[0]->coord[GMT_X][k];
-			out[GMT_Y] = point->segment[0]->coord[GMT_Y][k];
+			out[GMT_X] = point->segment[0]->data[GMT_X][k];
+			out[GMT_Y] = point->segment[0]->data[GMT_Y][k];
 			out[GMT_Z] = g[k];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}

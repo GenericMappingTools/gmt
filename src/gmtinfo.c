@@ -442,7 +442,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						}
 					}
 				}
-				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
+				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting n_columns/n_rows */
 					unsigned int sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;
 					in_dim[GMT_X] = gmt_M_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);
@@ -454,7 +454,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;
 					south -= sub * Ctrl->I.inc[GMT_Y];		north += add * Ctrl->I.inc[GMT_Y];
 					GMT_Report (API, GMT_MSG_VERBOSE,
-					            "Initial -R: %g/%g/%g/%g [nx = %u ny = %u] --> Suggested -R:  %g/%g/%g/%g [nx = %u ny = %u].\n",
+					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
 						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], west, east, south, north, out_dim[GMT_X], out_dim[GMT_Y]);
 				}
 			}

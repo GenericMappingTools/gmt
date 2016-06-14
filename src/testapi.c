@@ -78,11 +78,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is only valid for -Td|g.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify data type.  Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d : Dataset\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t : Textset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c : CPT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t : Textset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v : Vector\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m : Matrix\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify write destination.  Choose among:\n");
@@ -172,17 +172,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
-	int geometry[] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_POINT, GMT_IS_SURFACE, GMT_IS_NONE};
+	int geometry[] = {GMT_IS_POINT, GMT_IS_SURFACE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_NONE};
 	uint64_t k;
 	
 	float *fdata = NULL;
 	double *ddata = NULL;
 	
-	char *ikind[] = {"DATASET", "TEXTSET", "GRID", "CPT", "IMAGE", "PS", "VECTOR", "MATRIX", "COORD"};
+	char *ikind[] = {"DATASET", "GRID", "IMAGE", "PALETTE", "POSTSCRIPT", "TEXTSET", "MATRIX", "VECTOR", "COORD"};
 	char *method[] = {"FILE", "STREAM", "FDESC", "COPY", "REF"};
 	char *append[] = {"", " via VECTOR", " via MATRIX"};
-	char *ifile[] = {"dtesti.txt", "ttesti.txt", "gtesti.nc", "ctesti.cpt", "itesti.jpg", "ptesti.ps", "vtesti.bin", "mtesti.bin", "-"};
-	char *ofile[] = {"dtesto.txt", "ttesto.txt", "gtesto.nc", "ctesto.cpt", "itesto.jpg", "ptesto.ps", "vtesto.bin", "mtesto.bin", "-"};
+	char *ifile[] = {"dtesti.txt", "gtesti.nc", "itesti.jpg", "ctesti.cpt", "ptesti.ps", "ttesti.txt", "mtesti.bin", "vtesti.bin", "-"};
+	char *ofile[] = {"dtesto.txt", "gtesto.nc", "itesto.jpg", "ctesto.cpt", "ptesto.ps", "ttesto.txt", "mtesto.bin", "vtesto.bin", "-"};
 	char string[GMT_STR16];
 
 	FILE *fp = NULL;

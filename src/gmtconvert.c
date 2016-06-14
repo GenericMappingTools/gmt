@@ -489,12 +489,12 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				for (tbl_hor = out_col = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 					use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
 					for (col = 0; col < D[GMT_IN]->table[use_tbl]->segment[seg]->n_columns; col++, out_col++) {	/* Now go across all columns in current table */
-						val[out_col] = D[GMT_IN]->table[use_tbl]->segment[seg]->coord[col][row];
+						val[out_col] = D[GMT_IN]->table[use_tbl]->segment[seg]->data[col][row];
 					}
 				}
 				for (col = 0; col < n_cols_out; col++) {	/* Now go across the single virtual row */
 					if (col >= n_cols_in) continue;			/* This column is beyond end of this table */
-					D[GMT_OUT]->table[tbl_ver]->segment[seg]->coord[col][n_rows] = val[col];
+					D[GMT_OUT]->table[tbl_ver]->segment[seg]->data[col][n_rows] = val[col];
 				}
 				n_rows++;
 			}
@@ -517,7 +517,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 					for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
 						for (col = 0; col < D[GMT_OUT]->table[tbl]->segment[seg]->n_columns; col++)
-							double_swap (D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->coord[col][row2]);
+							double_swap (D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row2]);
 					}
 				}
 			}

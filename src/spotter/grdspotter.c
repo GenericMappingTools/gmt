@@ -626,13 +626,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
-	x_smt = gmt_M_memory (GMT, NULL, Z->header->nx, double);
-	for (col = 0; col < Z->header->nx; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
-	y_smt = gmt_M_memory (GMT, NULL, Z->header->ny, double);
-	for (row = 0; row < Z->header->ny; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
-	lat_area = gmt_M_memory (GMT, NULL, Z->header->ny, double);
+	x_smt = gmt_M_memory (GMT, NULL, Z->header->n_columns, double);
+	for (col = 0; col < Z->header->n_columns; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
+	y_smt = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
+	for (row = 0; row < Z->header->n_rows; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	lat_area = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
 
-	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
+	for (row = 0; row < Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
 	
 	x_cva = gmt_grd_coord (GMT, G->header, GMT_X);
 	y_cva = gmt_grd_coord (GMT, G->header, GMT_Y);
@@ -641,7 +641,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
+		if (!(A->header->n_columns == Z->header->n_columns && A->header->n_rows == Z->header->n_rows && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
@@ -653,7 +653,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
+		if (!(L->header->n_columns == Z->header->n_columns && L->header->n_rows == Z->header->n_rows && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
@@ -760,7 +760,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			i = (int)gmt_M_grd_x_to_col (GMT, c[k++], G_rad->header);
 			yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			j = (int)gmt_M_grd_y_to_row (GMT, yg, G->header);
-			if (i < 0 || (col2 = i) >= G->header->nx || j < 0 || (row2 = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
+			if (i < 0 || (col2 = i) >= G->header->n_columns || j < 0 || (row2 = j) >= G->header->n_rows)	/* Outside the CVA box, flag as outside */
 				node = UINTMAX_MAX;
 			else								/* Inside the CVA box, assign node ij */
 				node = gmt_M_ijp (G->header, row2, col2);
@@ -937,10 +937,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 					i = (int)gmt_M_grd_x_to_col (GMT, c[k++], G_rad->header);
-					if (i < 0 || (col = i) >= G->header->nx) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
+					if (i < 0 || (col = i) >= G->header->n_columns) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
 					yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					j = (int)gmt_M_grd_y_to_row (GMT, yg, G->header);
-					if (j < 0 || (row = j) >= G->header->ny) { k++; continue;}	/* Outside the CVA box, flag as outside */
+					if (j < 0 || (row = j) >= G->header->n_rows) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];
 					node = gmt_M_ijp (G->header, row, col);
 					if (G->data[node] <= CVA_max) continue;	/* Already seen higher CVA values */
@@ -1005,15 +1005,15 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	
 		try = 0;
 		srand ((unsigned int)time(NULL));	/* Initialize random number generator */
-		x_scale = (double)G->header->nx / (double)RAND_MAX;
-		y_scale = (double)G->header->ny / (double)RAND_MAX;
+		x_scale = (double)G->header->n_columns / (double)RAND_MAX;
+		y_scale = (double)G->header->n_rows / (double)RAND_MAX;
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\r", try);
 		
 			gmt_M_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				row = urint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
-				col = urint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
+				row = urint (floor (rand() * y_scale));		/* Get a random integer in 0 to n_rows-1 range */
+				col = urint (floor (rand() * x_scale));		/* Get a random integer in 0 to n_columns-1 range */
 				ij = gmt_M_ijp (G->header, row, col);		/* Get the node index */
 				gmt_M_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];

@@ -358,12 +358,12 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 			for (row = 0; row < S->n_rows; row++) {
 				if (!cartesian) {	/* Want to turn geographic or polar into Cartesian */
 					if (gmt_M_is_geographic (GMT, GMT_IN))
-						gmt_geo_to_cart (GMT, S->coord[GMT_Y][row], S->coord[GMT_X][row], X, true);	/* get x/y/z */
+						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], X, true);	/* get x/y/z */
 					else
-						gmt_polar_to_cart (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], X, true);
+						gmt_polar_to_cart (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], X, true);
 					for (k = 0; k < n_components; k++) P[k][n] = X[k];
 				}
-				else for (k = 0; k < n_components; k++) P[k][n] = S->coord[k][row];
+				else for (k = 0; k < n_components; k++) P[k][n] = S->data[k][row];
 				for (k = 0; k < n_components; k++) M[k] += P[k][n];
 				n++;
 			}
@@ -520,7 +520,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		}
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		n_components = (n == 3 || gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
-		for (k = 0; k < n_components; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
+		for (k = 0; k < n_components; k++) Din->table[0]->segment[0]->data[k][0] = vector_1[k];
 		single = true;
 	}
 	else {	/* Read input files or stdin */
@@ -567,11 +567,11 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			for (row = 0; row < Sin->n_rows; row++) {
 				if (convert) {	/* Want to turn geographic or polar into Cartesian */
 					if (gmt_M_is_geographic (GMT, GMT_IN))
-						gmt_geo_to_cart (GMT, Sin->coord[GMT_Y][row], Sin->coord[GMT_X][row], vector_1, true);	/* get x/y/z */
+						gmt_geo_to_cart (GMT, Sin->data[GMT_Y][row], Sin->data[GMT_X][row], vector_1, true);	/* get x/y/z */
 					else
-						gmt_polar_to_cart (GMT, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], vector_1, true);
+						gmt_polar_to_cart (GMT, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], vector_1, true);
 				}
-				else for (k = 0; k < n_components; k++) vector_1[k] = Sin->coord[k][row];
+				else for (k = 0; k < n_components; k++) vector_1[k] = Sin->data[k][row];
 				
 				switch (Ctrl->T.mode) {
 					case DO_AVERAGE:	/* Get sum of 2-D or 3-D vectors and compute average */
@@ -638,12 +638,12 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 						gmt_cart_to_polar (GMT, &(out[GMT_X]), &(out[GMT_Y]), vector_3, true);	/* Get r/theta */
 					}
 				}
-				for (k = 0; k < n_out; k++) Sout->coord[k][row] = out[k];
+				for (k = 0; k < n_out; k++) Sout->data[k][row] = out[k];
 			}
 		}
 	}
 
-	if (Ctrl->A.mode) for (k = 0; k < 3; k++) Sout->coord[k+n_out][0] = E[k];	/* Place az, major, minor in the single output record */
+	if (Ctrl->A.mode) for (k = 0; k < 3; k++) Sout->data[k+n_out][0] = E[k];	/* Place az, major, minor in the single output record */
 	
 	/* Time to write out the results */
 	

@@ -540,8 +540,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
 	}
-	xval = gmt_M_memory (GMT, NULL, G->header->nx, double);
-	yval = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	xval = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
+	yval = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	gtg = gmt_M_memory (GMT, NULL, Ctrl->N.value*Ctrl->N.value, double);
 	gtd = gmt_M_memory (GMT, NULL, Ctrl->N.value, double);
 	old = gmt_M_memory (GMT, NULL, Ctrl->N.value, double);
@@ -558,7 +558,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, old);		gmt_M_free (GMT, pstuff);
 				Return (API->error);
 			}
-			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
+			if (W->header->n_columns != G->header->n_columns || W->header->n_rows != G->header->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
@@ -577,11 +577,11 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/* Set up xval and yval lookup tables */
 
-	dv = 2.0 / (double)(G->header->nx - 1);
-	for (col = 0; col < G->header->nx - 1; col++) xval[col] = -1.0 + col * dv;
-	dv = 2.0 / (double)(G->header->ny - 1);
-	for (row = 0; row < G->header->ny - 1; row++) yval[row] = -1.0 + row * dv;
-	xval[G->header->nx - 1] = yval[G->header->ny - 1] = 1.0;
+	dv = 2.0 / (double)(G->header->n_columns - 1);
+	for (col = 0; col < G->header->n_columns - 1; col++) xval[col] = -1.0 + col * dv;
+	dv = 2.0 / (double)(G->header->n_rows - 1);
+	for (row = 0; row < G->header->n_rows - 1; row++) yval[row] = -1.0 + row * dv;
+	xval[G->header->n_columns - 1] = yval[G->header->n_rows - 1] = 1.0;
 
 	/* Do the problem */
 

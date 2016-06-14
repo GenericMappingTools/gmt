@@ -480,9 +480,9 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 
-			lon = T->segment[seg]->coord[GMT_X];	/* lon, lat, z are just shorthands */
-			lat = T->segment[seg]->coord[GMT_Y];
-			z = T->segment[seg]->coord[GMT_Z];
+			lon = T->segment[seg]->data[GMT_X];	/* lon, lat, z are just shorthands */
+			lat = T->segment[seg]->data[GMT_Y];
+			z = T->segment[seg]->data[GMT_Z];
 			
 			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
 

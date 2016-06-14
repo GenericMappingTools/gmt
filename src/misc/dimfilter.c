@@ -30,8 +30,8 @@
 #define GMT_PROG_OPTIONS "-:RVfh"
 
 struct DIMFILTER_INFO {
-	int nx;			/* The max number of filter weights in x-direction */
-	int ny;			/* The max number of filter weights in y-direction */
+	int n_columns;			/* The max number of filter weights in x-direction */
+	int n_rows;			/* The max number of filter weights in y-direction */
 	int x_half_width;	/* Number of filter nodes to either side needed at this latitude */
 	int y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
 	int d_flag;
@@ -319,15 +319,15 @@ GMT_LOCAL void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_
 
 	/* Get radius, weight, etc.  */
 
-	i_half = F->nx / 2;
-	j_half = F->ny / 2;
+	i_half = F->n_columns / 2;
+	j_half = F->n_rows / 2;
 	f_half = 0.5 * F->width;
 	r_f_half = 1.0 / f_half;
 	sigma = F->width / 6.0;
 	sig_2 = -0.5 / (sigma * sigma);
 	for (i = -i_half; i <= i_half; i++) {
 		for (j = -j_half; j <= j_half; j++) {
-			ij = (j + j_half) * F->nx + i + i_half;
+			ij = (j + j_half) * F->n_columns + i + i_half;
 			if (fast && i == 0)
 				r = (j == 0) ? 0.0 : j * y_scl * F->dy;
 			else if (fast && j == 0)
@@ -489,8 +489,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			if ((Sout = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gout)) == NULL) Return (API->error);
 		}
 #endif
-		i_origin = gmt_M_memory (GMT, NULL, Gout->header->nx, int);
-		if (!fast_way) x_shift = gmt_M_memory (GMT, NULL, Gout->header->nx, double);
+		i_origin = gmt_M_memory (GMT, NULL, Gout->header->n_columns, int);
+		if (!fast_way) x_shift = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
 
 		if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple grid but one is pix, other is grid */
 			F.x_fix = 0.5 * Gin->header->inc[GMT_X];
@@ -522,21 +522,21 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		F.dx = Gin->header->inc[GMT_X];
 		F.dy = Gin->header->inc[GMT_Y];
 
-		F.nx = 2 * F.x_half_width + 1;
-		F.ny = 2 * F.y_half_width + 1;
+		F.n_columns = 2 * F.x_half_width + 1;
+		F.n_rows = 2 * F.y_half_width + 1;
 		F.width = Ctrl->F.width;
-		F.weight = gmt_M_memory (GMT, NULL, F.nx*F.ny, double);
+		F.weight = gmt_M_memory (GMT, NULL, F.n_columns*F.n_rows, double);
 
 		if (slow) {	/* SCAN: Now require several work_arrays, one for each sector */
 			work_array = gmt_M_memory (GMT, NULL, Ctrl->N.n_sectors, double *);
 #ifdef OBSOLETE
-			if (Ctrl->S.active) work_array2 = gmt_M_memory (GMT, NULL, 2*F.nx*F.ny, double);
+			if (Ctrl->S.active) work_array2 = gmt_M_memory (GMT, NULL, 2*F.n_columns*F.n_rows, double);
 			if (Ctrl->E.active) {
 				xx = gmt_M_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
 				yy = gmt_M_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
 			}
 #endif
-			wsize = 2*F.nx*F.ny/Ctrl->N.n_sectors;	/* Should be enough, watch for messages to the contrary */
+			wsize = 2*F.n_columns*F.n_rows/Ctrl->N.n_sectors;	/* Should be enough, watch for messages to the contrary */
 			for (i = 0; i < Ctrl->N.n_sectors; i++) {
 				work_array[i] = gmt_M_memory (GMT, NULL, wsize, double);
 #ifdef OBSOLETE
@@ -548,13 +548,13 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter nx,ny = (%d %d)\n",
-			Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter n_columns,n_rows = (%d %d)\n",
+			Gin->header->n_columns, Gin->header->n_rows, Gout->header->n_columns, Gout->header->n_rows, F.n_columns, F.n_rows);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
 
 		/* Compute nearest xoutput i-indices and shifts once */
 
-		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
+		for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 			x_out = gmt_M_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
 			i_origin[col_out] = (int)gmt_M_grd_x_to_col (GMT, x_out, Gin->header);
 			if (!fast_way) x_shift[col_out] = x_out - gmt_M_grd_col_to_x (GMT, i_origin[col_out], Gin->header);
@@ -588,8 +588,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		else {
 		/* SCAN: Precalculate which sector each point belongs to */
-			sector = gmt_M_memory (GMT, NULL, F.ny, unsigned short int *);
-			for (jj = 0; jj < F.ny; jj++) sector[jj] = gmt_M_memory (GMT, NULL, F.nx, unsigned short int);
+			sector = gmt_M_memory (GMT, NULL, F.n_rows, unsigned short int *);
+			for (jj = 0; jj < F.n_rows; jj++) sector[jj] = gmt_M_memory (GMT, NULL, F.n_columns, unsigned short int);
 			for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {	/* This double loop visits all nodes in the square centered on an output node */
 				j = F.y_half_width + jj;
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {	/* (ii, jj) is local coordinates relative center (0,0) */
@@ -606,14 +606,14 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		value = gmt_M_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 		wt_sum = gmt_M_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 
-		for (row_out = 0; row_out < Gout->header->ny; row_out++) {
+		for (row_out = 0; row_out < Gout->header->n_rows; row_out++) {
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
 			y_out = gmt_M_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = (int)gmt_M_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
 
-			for (col_out = 0; col_out < Gout->header->nx; col_out++) {
+			for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 
 				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
 				gmt_M_memset (n_in_median, Ctrl->N.n_sectors, unsigned int);
@@ -628,13 +628,13 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {
 					scol = i_origin[col_out] + ii;
-					if (scol < 0 || (col_in = scol) >= Gin->header->nx) continue;
+					if (scol < 0 || (col_in = scol) >= Gin->header->n_columns) continue;
 
 					for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {
 						srow = j_origin + jj;
-						if (srow < 0 || (row_in = srow) >= Gin->header->ny) continue;
+						if (srow < 0 || (row_in = srow) >= Gin->header->n_rows) continue;
 
-						ij_wt = (jj + F.y_half_width) * (uint64_t)F.nx + ii + F.x_half_width;
+						ij_wt = (jj + F.y_half_width) * (uint64_t)F.n_columns + ii + F.x_half_width;
 						if (F. weight[ij_wt] < 0.0) continue;
 
 						ij_in = gmt_M_ijp (Gin->header, row_in, col_in);
@@ -932,7 +932,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		gmt_M_free (GMT, F. weight);
 		gmt_M_free (GMT, i_origin);
-		for (ii = 0; ii < F.ny; ii++) gmt_M_free (GMT, sector[ii]);
+		for (ii = 0; ii < F.n_rows; ii++) gmt_M_free (GMT, sector[ii]);
 		gmt_M_free (GMT, sector);
 		gmt_M_free (GMT, value);
 		gmt_M_free (GMT, wt_sum);

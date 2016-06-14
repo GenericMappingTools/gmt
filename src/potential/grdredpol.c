@@ -77,8 +77,8 @@ struct REDPOL_CTRL {
 		bool active;
 	} N;
 	struct S {	/* -S, size of working grid */
-		unsigned int	nx;
-		unsigned int	ny;
+		unsigned int	n_columns;
+		unsigned int	n_rows;
 	} S;
 	struct T {	/* -T */
 		double	year;
@@ -93,7 +93,7 @@ struct REDPOL_CTRL {
 };
 
 
-#define ij0_data(Ctrl,i,j) ((Ctrl->S.nx+Ctrl->F.ncoef_col-1)*(i)+(j))
+#define ij0_data(Ctrl,i,j) ((Ctrl->S.n_columns+Ctrl->F.ncoef_col-1)*(i)+(j))
 #define ij_mn(Ctrl,i,j) (Ctrl->F.ncoef_row*(j)+(i))
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -215,22 +215,22 @@ GMT_LOCAL void mirror_edges (float *grid, int nc, int i_data_start, int j_data_s
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
-	   Ctrl->S.nx & Ctrl->S.ny are the grid's original number of column/rows before extension */
+	   Ctrl->S.n_columns & Ctrl->S.n_rows are the grid's original number of column/rows before extension */
 	int	i, j, ins, isn, iss, jww, jwe, jee, jew, upper_nx, upper_ny;
 
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
-	upper_ny = Ctrl->S.ny+i_data_start;
+	upper_ny = Ctrl->S.n_rows+i_data_start;
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
 		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
-		jee = Ctrl->S.nx + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
+		jee = Ctrl->S.n_columns + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
 		if (Ctrl->M.mirror) {
 			jwe = j_data_start+j;			/* Minimum Inside xmin and aproaching center  */
-			jew = Ctrl->S.nx + j_data_start - j-1;	/* Minimum Inside xmax and aproching center  */
+			jew = Ctrl->S.n_columns + j_data_start - j-1;	/* Minimum Inside xmax and aproching center  */
 		}
 		else {
 			jwe = j_data_start;			/* West border */
-			jew = Ctrl->S.nx + j_data_start - 1;	/* East border */
+			jew = Ctrl->S.n_columns + j_data_start - 1;	/* East border */
 		}
 		for (i = i_data_start; i < upper_ny; i++) {	/* ROWS */
 			grid[ij0_data(Ctrl,i,jww)] = grid[ij0_data(Ctrl,i,jwe)];	/* West border */
@@ -240,16 +240,16 @@ GMT_LOCAL void mirror_edges (float *grid, int nc, int i_data_start, int j_data_s
 
 	/* Next, reflect about ymin and ymax. At the same time, since x has been reflected, we can use these vals */
 
-	upper_nx = Ctrl->S.nx + nc;
+	upper_nx = Ctrl->S.n_columns + nc;
 	for (i = 0; i < i_data_start; i++) {	/* ROWS */
-		iss = Ctrl->S.ny+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
+		iss = Ctrl->S.n_rows+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
 		if (Ctrl->M.mirror) {
 			ins = 2*i_data_start - i;		/* Maximum Inside ymax and aproaching North border */
-			isn = Ctrl->S.ny+i_data_start-2-i;	/* Minimum Inside ymin and aproaching center  */
+			isn = Ctrl->S.n_rows+i_data_start-2-i;	/* Minimum Inside ymin and aproaching center  */
 		}
 		else {
 			ins = i_data_start;			/* North border */
-			isn = Ctrl->S.ny+i_data_start-1;	/* South border */
+			isn = Ctrl->S.n_rows+i_data_start-1;	/* South border */
 		}
 		for (j = 0; j < upper_nx; j++) {	/* COLUMNS */
 			grid[ij0_data(Ctrl,i,j)] = grid[ij0_data(Ctrl,ins,j)];		/* North border */
@@ -1236,7 +1236,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	nx_new = urint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
 	ny_new = urint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
 
-	Ctrl->S.nx = nx_new;		Ctrl->S.ny = ny_new;
+	Ctrl->S.n_columns = nx_new;		Ctrl->S.n_rows = ny_new;
 
 	gmt_grd_init (GMT, Gin->header, options, true);
 
@@ -1293,8 +1293,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	fxar   = gmt_M_memory (GMT, NULL, n_coef, double);
 	fxbr   = gmt_M_memory (GMT, NULL, n_coef, double);
 	fxgr   = gmt_M_memory (GMT, NULL, n_coef, double);
-	ftlon  = gmt_M_memory (GMT, NULL, Gin->header->nx, double);
-	ftlat  = gmt_M_memory (GMT, NULL, Gin->header->ny, double);
+	ftlon  = gmt_M_memory (GMT, NULL, Gin->header->n_columns, double);
+	ftlat  = gmt_M_memory (GMT, NULL, Gin->header->n_rows, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
 		gxtr = gmt_M_memory (GMT, NULL, n_coef, double);
@@ -1309,8 +1309,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	/* Generate vectors of lon & lats */
-	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
-	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
+	for (col = 0; col < Gin->header->n_columns; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
+	for (row = 0; row < Gin->header->n_rows; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
 
 	n_jlon = urint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
 	n_jlat = urint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;

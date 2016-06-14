@@ -192,7 +192,7 @@ double gmt_stripack_areas (double *V1, double *V2, double *V3) {
 
 int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f) {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
-	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
+	int64_t nm, n_sig, ist, iflgs, iter, itgs, n_columns = h->n_columns, n_rows = h->n_rows;
 	unsigned int row, col;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
@@ -207,11 +207,11 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	
 	/* Set out output nodes */
 	
-	plon = gmt_M_memory (GMT, NULL, h->nx, double);
-	plat = gmt_M_memory (GMT, NULL, h->ny, double);
-	for (col = 0; col < h->nx; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
-	for (row = 0; row < h->ny; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
-	nm = h->nx * h->ny;
+	plon = gmt_M_memory (GMT, NULL, h->n_columns, double);
+	plat = gmt_M_memory (GMT, NULL, h->n_rows, double);
+	for (col = 0; col < h->n_columns; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
+	for (row = 0; row < h->n_rows; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
+	nm = h->n_columns * h->n_rows;
 	
 	/* Time to work on the interpolation */
 
@@ -221,9 +221,9 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
 		ist = 1;
-		for (row = 0; row < h->ny; row++) {
-			for (col = 0; col < h->nx; col++) {
-				ij = (uint64_t)col * (uint64_t)h->ny + (uint64_t)(h->ny - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
+		for (row = 0; row < h->n_rows; row++) {
+			for (col = 0; col < h->n_columns; col++) {
+				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)(h->n_rows - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 				if (ierror < 0) {
@@ -268,7 +268,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 		iflgs = 0;
 		if (vartens) iflgs = 1;
-		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
@@ -319,7 +319,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		}
 		/* compute interpolated values on the uniform grid (unif). */
 
-		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);	
@@ -370,7 +370,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
-		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &n_rows, &n_rows, &n_columns, plat, plon, &plus, grad, f, &ierror);
 		gmt_M_free (GMT, wt);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: ier = %" PRId64 "\n", ierror);

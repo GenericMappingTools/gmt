@@ -392,7 +392,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
 		F->n_f_wts = F->Fin->n_records;
 		F->f_wt = gmt_M_memory (GMT, F->f_wt, F->n_f_wts, double);
-		gmt_M_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
+		gmt_M_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->data[GMT_X], F->n_f_wts, double);
 		for (i = 0, w_sum = 0.0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
 		F->f_operator = (gmt_M_is_zero (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
 		if (w_sum > 1.0) {	/* Must normalize filter weights */
@@ -937,13 +937,13 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			last_time = -DBL_MAX;
 
 			for (row = F.n_rows = 0; row < D->table[tbl]->segment[seg]->n_rows; ++row, ++F.n_rows) {
-				in = D->table[tbl]->segment[seg]->coord[F.t_col][row];
+				in = D->table[tbl]->segment[seg]->data[F.t_col][row];
 				if (gmt_M_is_dnan (in)) continue;	/* Skip records with time == NaN */
 				new_time = in;
 				if (new_time < last_time) Return (GMT_DATA_READ_ERROR, "Error! Time decreases at line # %" PRIu64 "\n\tUse UNIX utility sort and then try again.\n", row);
 				last_time = new_time;
 				for (col = 0; col < F.n_cols; ++col) {
-					in = D->table[tbl]->segment[seg]->coord[col][row];
+					in = D->table[tbl]->segment[seg]->data[col][row];
 					if (Ctrl->I.active && in == Ctrl->I.value)
 						F.data[col][F.n_rows] = GMT->session.d_NaN;
 					else

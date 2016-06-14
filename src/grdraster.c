@@ -77,7 +77,7 @@ GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	/* convert unsigned char */
 	unsigned int i;
 	unsigned char tempval;
-	for (i = 0; i < ras->h.nx; ++i) {
+	for (i = 0; i < ras->h.n_columns; ++i) {
 		gmt_M_memcpy (&tempval, &buffer[i], 1, char);
 		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
@@ -95,7 +95,7 @@ GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	/* convert char */
 	unsigned int i;
 	char tempval;
-	for (i = 0; i < ras->h.nx; ++i) {
+	for (i = 0; i < ras->h.n_columns; ++i) {
 		tempval = buffer[i];
 		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
@@ -113,7 +113,7 @@ GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	/* convert uint16_t */
 	unsigned int i;
 	uint16_t tempval;
-	for (i = 0; i < ras->h.nx; ++i) {
+	for (i = 0; i < ras->h.n_columns; ++i) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
 		if (ras->swap_me)
 			tempval = bswap16 (tempval);
@@ -134,7 +134,7 @@ GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	unsigned int i;
 	int16_t tempval;
 	uint16_t *u = (uint16_t *)&tempval;
-	for (i = 0; i < ras->h.nx; i++) {
+	for (i = 0; i < ras->h.n_columns; i++) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int16_t)], 1, int16_t);
 		if (ras->swap_me)
 			*u = bswap16 (*u);
@@ -155,7 +155,7 @@ GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	unsigned int i;
 	int32_t tempval;
 	uint32_t *u = (uint32_t *)&tempval;
-	for (i = 0; i < ras->h.nx; i++) {
+	for (i = 0; i < ras->h.n_columns; i++) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int32_t)], 1, int32_t);
 		if (ras->swap_me)
 			*u = bswap32 (*u);
@@ -216,7 +216,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 			so it can be printed out as an abbreviated description
 			for the user.
 		Figure out if file is global, and set nglobal.
-		Set nx and ny also.
+		Set n_columns and n_rows also.
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
@@ -252,7 +252,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
-				record = In->table[tbl]->segment[seg]->record[row];
+				record = In->table[tbl]->segment[seg]->data[row];
 				if (record[0] == '#') continue;	/* Skip all headers */
 
 				/* Strip off trailing "\r\n" */
@@ -572,14 +572,14 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				rasinfo[nfound].h.command[stop_point] = '\0';
 
 				i = lrint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
-				rasinfo[nfound].h.nx = (unsigned int)((rasinfo[nfound].h.registration) ? i : i + 1);
+				rasinfo[nfound].h.n_columns = (unsigned int)((rasinfo[nfound].h.registration) ? i : i + 1);
 				j = lrint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
-				rasinfo[nfound].h.ny = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
+				rasinfo[nfound].h.n_rows = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 				if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
-					expected_size = lrint ((ceil (gmt_M_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
+					expected_size = lrint ((ceil (gmt_M_get_nm (GMT, rasinfo[nfound].h.n_columns, rasinfo[nfound].h.n_rows) * 0.125)) + rasinfo[nfound].skip);
 				else
-					expected_size = (gmt_M_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
+					expected_size = (gmt_M_get_nm (GMT, rasinfo[nfound].h.n_columns, rasinfo[nfound].h.n_rows) * ksize + rasinfo[nfound].skip);
 				if (gmt_getdatapath (GMT, rasinfo[nfound].h.remark, path, F_OK) || gmt_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path, F_OK)) {
 					strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160-1);
 					stat (path, &F);
@@ -908,20 +908,20 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "%s -> -R%g/%g/%g/%g\n", r_opt->arg, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 	}
 
-	/* Now Enforce that wesn will fit inc[GMT_X], inc[GMT_Y].  Set nx, ny but reset later based on G or P  */
+	/* Now Enforce that wesn will fit inc[GMT_X], inc[GMT_Y].  Set n_columns, n_rows but reset later based on G or P  */
 	tol = 0.01 * Grid->header->inc[GMT_X];
-	Grid->header->nx = urint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
-	if (fabs ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) - Grid->header->inc[GMT_X] * Grid->header->nx) > tol) error++;
+	Grid->header->n_columns = urint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO])/Grid->header->inc[GMT_X]);
+	if (fabs ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) - Grid->header->inc[GMT_X] * Grid->header->n_columns) > tol) error++;
 	tol = 0.01 * Grid->header->inc[GMT_Y];
-	Grid->header->ny = urint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
-	if (fabs ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) - Grid->header->inc[GMT_Y] * Grid->header->ny) > tol) error++;
+	Grid->header->n_rows = urint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO])/Grid->header->inc[GMT_Y]);
+	if (fabs ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) - Grid->header->inc[GMT_Y] * Grid->header->n_rows) > tol) error++;
 	if (error) {	/* Must cleanup and give warning */
 		Grid->header->wesn[XLO] = floor (Grid->header->wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[XHI] =  ceil (Grid->header->wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YLO] = floor (Grid->header->wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->wesn[YHI] =  ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
-		Grid->header->nx = urint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
-		Grid->header->ny = urint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
+		Grid->header->n_columns = urint ((Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) / Grid->header->inc[GMT_X]);
+		Grid->header->n_rows = urint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (doubleAlmostEqualZero (rint (Grid->header->inc[GMT_X] * 60.0), Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			int w, e, s, n, wm, em, sm, nm;
@@ -945,8 +945,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to go */
 	if (!myras.h.registration) {
-		Grid->header->nx++;
-		Grid->header->ny++;
+		Grid->header->n_columns++;
+		Grid->header->n_rows++;
 	}
 	strncpy (Grid->header->title, myras.h.title, GMT_GRID_TITLE_LEN80-1);
 	strncpy (Grid->header->z_units, myras.h.z_units, GMT_GRID_UNIT_LEN80-1);
@@ -966,10 +966,10 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
-	grdlatorigin = gmt_M_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
-	grdlonorigin = gmt_M_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-	raslatorigin = gmt_M_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
-	raslonorigin = gmt_M_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
+	grdlatorigin = gmt_M_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->n_rows);
+	grdlonorigin = gmt_M_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->n_columns);
+	raslatorigin = gmt_M_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.n_rows);
+	raslonorigin = gmt_M_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.n_columns);
 	irasstart = irint ((grdlonorigin - raslonorigin) / myras.h.inc[GMT_X]);
 	jrasstart = irint ((raslatorigin - grdlatorigin) / myras.h.inc[GMT_Y]);
 	if (myras.nglobal) while (irasstart < 0) irasstart += myras.nglobal;
@@ -978,9 +978,9 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		unsigned int col;
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nx, float);
-		x = gmt_M_memory (GMT, NULL, Grid->header->nx, double);
-		for (col = 0; col < Grid->header->nx; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->n_columns, float);
+		x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
+		for (col = 0; col < Grid->header->n_columns; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->n_columns);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
@@ -998,12 +998,12 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	ksize = get_byte_size (GMT, myras.type);
 	if (ksize == 0) {	/* Bits; Need to read the whole thing */
-		nmask = lrint (ceil (myras.h.nx * myras.h.ny * 0.125));
+		nmask = lrint (ceil (myras.h.n_columns * myras.h.n_rows * 0.125));
 		ubuffer = gmt_M_memory (GMT, NULL, nmask, unsigned char);
 	}
 	else {	/* Need to read by rows, and convert each row to float */
-		buffer = gmt_M_memory (GMT, NULL, ksize * myras.h.nx, char);
-		floatrasrow = gmt_M_memory (GMT, NULL, myras.h.nx, float);
+		buffer = gmt_M_memory (GMT, NULL, ksize * myras.h.n_columns, char);
+		floatrasrow = gmt_M_memory (GMT, NULL, myras.h.n_columns, float);
 	}
 
 	/* Now open file and do it */
@@ -1028,21 +1028,21 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
-		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
-			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+		for (row = 0, jras = jrasstart; row < Grid->header->n_rows; row++, jras += jmult) {
+			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->n_rows);
 			ij = (Ctrl->T.active) ? 0 : gmt_M_ijp (Grid->header, row, 0);	/* Either we just have one row (with no padding) or we have a padded grid */
-			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
+			if (jras < 0 || (jras2 = jras) > myras.h.n_rows) {
 				/* This entire row is outside the raster */
-				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
-				n_nan += Grid->header->nx;
+				for (col = 0; col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
+				n_nan += Grid->header->n_columns;
 			}
 			else {
 				iras = irasstart;
-				ijras = jras * myras.h.nx;
+				ijras = jras * myras.h.n_columns;
 				
-				for (col = 0; col < Grid->header->nx; col++, ij++) {
+				for (col = 0; col < Grid->header->n_columns; col++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
-					if (iras < 0 || (iras2 = iras) >= myras.h.nx) {
+					if (iras < 0 || (iras2 = iras) >= myras.h.n_columns) {
 						Grid->data[ij] = GMT->session.f_NaN;
 						n_nan++;
 					}
@@ -1057,7 +1057,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->T.active) {	/* Just dump the row as xyz triplets */
 				out[1] = y;
-				for (col = 0; col < Grid->header->nx; col++) {
+				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[0] = x[col];
 					out[2] = Grid->data[col];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -1068,14 +1068,14 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	}
 	else {
 		firstread = true;
-		n_expected = myras.h.nx;
-		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
-			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+		n_expected = myras.h.n_columns;
+		for (row = 0, jras = jrasstart; row < Grid->header->n_rows; row++, jras += jmult) {
+			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->n_rows);
 			ij = (Ctrl->T.active) ? 0 : gmt_M_ijp (Grid->header, row, 0);	/* Either we just have one row (no padding) or we have a padded grid */
-			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
+			if (jras < 0 || (jras2 = jras) > myras.h.n_rows) {
 				/* This entire row is outside the raster */
-				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
-				n_nan += Grid->header->nx;
+				for (col = 0; col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
+				n_nan += Grid->header->n_columns;
 			}
 			else {
 				if (firstread) {
@@ -1087,7 +1087,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				else
 					jseek = 0;
 				/* This will be slow on SGI because seek is broken there */
-				if (jseek && fseek (fp, (off_t)jseek * (off_t)ksize * (off_t)myras.h.nx, SEEK_CUR) ) {
+				if (jseek && fseek (fp, (off_t)jseek * (off_t)ksize * (off_t)myras.h.n_columns, SEEK_CUR) ) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR seeking in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
@@ -1120,9 +1120,9 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 						break;
 				}
 				iras = irasstart;
-				for (col = 0; col < Grid->header->nx; col++, ij++) {
+				for (col = 0; col < Grid->header->n_columns; col++, ij++) {
 					if (myras.nglobal && iras >= myras.nglobal) iras = iras%myras.nglobal;
-					if (iras < 0 || (iras2 = iras) >= myras.h.nx) {
+					if (iras < 0 || (iras2 = iras) >= myras.h.n_columns) {
 						Grid->data[ij] = GMT->session.f_NaN;
 						n_nan++;
 					}
@@ -1136,7 +1136,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->T.active) {	/* Just dump the row as xyz triplets */
 				out[GMT_Y] = y;
-				for (col = 0; col < Grid->header->nx; col++) {
+				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[GMT_X] = x[col];
 					out[GMT_Z] = Grid->data[col];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -1151,7 +1151,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Finished reading from %s\n", myras.h.remark);
 	GMT_Report (API, GMT_MSG_VERBOSE, "min max and # NaN found: %g %g %" PRIu64 "\n", Grid->header->z_min, Grid->header->z_max, n_nan);
 
-	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid file is entirely full of NaNs.\n");
+	if (n_nan == Grid->header->n_columns * Grid->header->n_rows) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid file is entirely full of NaNs.\n");
 
 	if (Ctrl->T.active) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

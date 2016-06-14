@@ -151,7 +151,7 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 	/* Normally, one would expect here a check on the value (i,j) to make sure that the
 	   corners of the convolution kernel, (i,j) and (i+bcr->n-1,j+bcr->n-1), are both within
 	   the padded grid. However, the check on (xx, yy) above, even with the slack, ensures
-	   that the corner points are between (-2,-2) and (G->header->nx+1,G->header->ny+1), the corners
+	   that the corner points are between (-2,-2) and (G->header->n_columns+1,G->header->n_rows+1), the corners
 	   of the padding.
 	*/
 

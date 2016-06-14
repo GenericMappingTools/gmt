@@ -88,7 +88,7 @@ struct GRDFLEXURE_CTRL {
 		double scale;		/* scale for time */
 		char unit;		/* Unit of time */
 	} M;
-	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
+	struct N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
@@ -218,7 +218,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		T = gmt_M_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
 		for (seg = 0, k = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, k++) {
-				s_time = gmt_get_modeltime (Tin->table[0]->segment[seg]->record[row], &s_unit, &s_scale);
+				s_time = gmt_get_modeltime (Tin->table[0]->segment[seg]->data[row], &s_unit, &s_scale);
 				T[k].value = s_time;
 				T[k].scale = s_scale;
 				T[k].unit  = s_unit;
@@ -857,7 +857,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate load grid array structure */
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
-				sscanf (Tin->table[0]->segment[seg]->record[row], "%s %s", file, t_arg);
+				sscanf (Tin->table[0]->segment[seg]->data[row], "%s %s", file, t_arg);
 				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);
 				this_time.value = s_time;
 				this_time.scale = s_scale;
@@ -994,7 +994,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 			else
 				sprintf (record, "%s", file);
-			L->table[0]->segment[0]->record[t_eval] = strdup (record);
+			L->table[0]->segment[0]->data[t_eval] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
 	}

@@ -1479,24 +1479,24 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
 						/* The whole trimming stuff requires at least 2 points per line so we resample */
 						if (gmt_M_is_geographic (GMT, GMT_IN))
-							L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+							L->n_rows = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 						else
-							L->n_rows = gmt_resample_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, 0.5 * hypot (L->coord[GMT_X][1]-L->coord[GMT_X][0], L->coord[GMT_Y][1]-L->coord[GMT_Y][0]), GMT_TRACK_FILL);
+							L->n_rows = gmt_resample_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, 0.5 * hypot (L->data[GMT_X][1]-L->data[GMT_X][0], L->data[GMT_Y][1]-L->data[GMT_Y][0]), GMT_TRACK_FILL);
 						resampled = true;	/* To avoid doing it twice */
 					}
-					if (gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
+					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
 				}
 				
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
-				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
+				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
 
 				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
-				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 
@@ -1547,18 +1547,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
 
-				if (polygon && gmt_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
+				if (polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
 					size_t n_alloc;
 					L->n_rows++;
 					n_alloc = L->n_rows;
-					gmt_M_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
-					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
-					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
+					gmt_M_malloc2 (GMT, L->data[GMT_X], L->data[GMT_Y], 0, &n_alloc, double);
+					L->data[GMT_X][L->n_rows-1] = L->data[GMT_X][0];
+					L->data[GMT_Y][L->n_rows-1] = L->data[GMT_Y][0];
 				}
 
 				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && !resampled)	/* Resample if spacing is too coarse */
-					L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+					L->n_rows = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					gmt_setfill (GMT, &current_fill, outline_active);
@@ -1567,7 +1567,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					bool closed, split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
@@ -1602,7 +1602,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Decorated lines are dealt with by the contour machinery */
 					bool split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
@@ -1640,13 +1640,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
-								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[GMT_Y][k] - fabs (L->coord[2][k]);
+								GMT->hidden.mem_coord[GMT_Y][k] = L->data[GMT_Y][k] - fabs (L->data[2][k]);
 							/* Then go in negative x direction and build rest of envelope */
 							for (k = n = L->n_rows; k > 0; k--, n++) {
-								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
-								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[GMT_Y][k-1] + fabs (L->coord[col][k-1]);
+								GMT->hidden.mem_coord[GMT_X][n] = L->data[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Y][n] = L->data[GMT_Y][k-1] + fabs (L->data[col][k-1]);
 							}
 							/* Explicitly close polygon */
 							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
@@ -1657,13 +1657,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
-								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[2][k];
+								GMT->hidden.mem_coord[GMT_Y][k] = L->data[2][k];
 							/* Then go in negative x direction and build rest of envelope */
 							for (k = n = L->n_rows; k > 0; k--, n++) {
-								GMT->hidden.mem_coord[GMT_X][n] = L->coord[GMT_X][k-1];
-								GMT->hidden.mem_coord[GMT_Y][n] = L->coord[3][k-1];
+								GMT->hidden.mem_coord[GMT_X][n] = L->data[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Y][n] = L->data[3][k-1];
 							}
 							/* Explicitly close polygon */
 							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
@@ -1675,8 +1675,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = L->n_rows;
 							gmt_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
 							/* First copy the given line segment */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
 								case XHI:	off = 1;	/* To select the x max entry */
@@ -1684,21 +1684,21 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
 									GMT->hidden.mem_coord[GMT_X][end] = GMT->hidden.mem_coord[GMT_X][end+1] = value;
-									GMT->hidden.mem_coord[GMT_Y][end] = L->coord[GMT_Y][end-1];
-									GMT->hidden.mem_coord[GMT_Y][end+1] = L->coord[GMT_Y][0];
+									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
+									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
 								case YHI:	off = 1;	/* To select the y max entry */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
 									GMT->hidden.mem_coord[GMT_Y][end] = GMT->hidden.mem_coord[GMT_Y][end+1] = value;
-									GMT->hidden.mem_coord[GMT_X][end] = L->coord[GMT_X][end-1];
-									GMT->hidden.mem_coord[GMT_X][end+1] = L->coord[GMT_X][0];
+									GMT->hidden.mem_coord[GMT_X][end] = L->data[GMT_X][end-1];
+									GMT->hidden.mem_coord[GMT_X][end+1] = L->data[GMT_X][0];
 									break;
 							}
 							/* Explicitly close polygon */
-							GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
-							GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
+							GMT->hidden.mem_coord[GMT_X][end+2] = L->data[GMT_X][0];
+							GMT->hidden.mem_coord[GMT_Y][end+2] = L->data[GMT_Y][0];
 							end += 3;
 						}
 						/* Project and get ready */
@@ -1713,7 +1713,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (Ctrl->L.outline) gmt_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					if (draw_line) {
-						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 						gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
 						plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
 					}

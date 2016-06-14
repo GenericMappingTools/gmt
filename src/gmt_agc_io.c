@@ -120,7 +120,7 @@ GMT_LOCAL void agc_save_header (char *remark, float *agchead) {
 int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
-	int nx, ny;
+	int n_columns, n_rows;
 	off_t predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct stat buf;
@@ -151,19 +151,19 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
 	}
-	nx = (int)gmt_M_get_n (GMT, x_min, x_max, x_inc, 0);
-	if (nx <= 0) {
+	n_columns = (int)gmt_M_get_n (GMT, x_min, x_max, x_inc, 0);
+	if (n_columns <= 0) {
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
 	}
-	ny = (int)gmt_M_get_n (GMT, y_min, y_max, y_inc, 0);
-	if (ny <= 0) {
+	n_rows = (int)gmt_M_get_n (GMT, y_min, y_max, y_inc, 0);
+	if (n_rows <= 0) {
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
 	}
 	gmt_fclose (GMT, fp);
 	/* OK so far; see if file size matches the predicted size given the header info */
-	predicted_size = lrint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
+	predicted_size = lrint (ceil ((double)n_rows /ZBLOCKHEIGHT) * ceil ((double)n_columns / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
 	if (predicted_size == buf.st_size) {
 		/* Yes, appears to be an AGC grid */
 		header->type = GMT_GRID_IS_AF;
@@ -200,8 +200,8 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->wesn[YHI]  = recdata[1];
 	header->inc[GMT_Y] = recdata[4];
 	header->inc[GMT_X] = recdata[5];
-	header->nx = gmt_M_grd_get_nx (GMT, header);
-	header->ny = gmt_M_grd_get_ny (GMT, header);
+	header->n_columns = gmt_M_grd_get_nx (GMT, header);
+	header->n_rows = gmt_M_grd_get_ny (GMT, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -288,8 +288,8 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	
-	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = urint (ceil ((double)header->n_rows / (double)ZBLOCKHEIGHT));
+	n_blocks_x = urint (ceil ((double)header->n_columns / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
@@ -299,12 +299,12 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->n_rows);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
-			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
+			j_gmt = header->n_rows - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, header->n_columns);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + (((j_gmt - first_row) + pad[YHI]) * width_out + col - first_col) + pad[XLO];
@@ -325,7 +325,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	gmt_M_free (GMT, k);
 
-	header->nx = width_in;	header->ny = height_in;
+	header->n_columns = width_in;	header->n_rows = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
@@ -402,18 +402,18 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	gmt_M_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or agc_write_record (fp, outz, prez, postz); points to uninitialised buffer */
 
-	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = urint (ceil ((double)header->n_rows / (double)ZBLOCKHEIGHT));
+	n_blocks_x = urint (ceil ((double)header->n_columns / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->n_rows);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
-			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
+			j_gmt = header->n_rows - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, header->n_columns);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];

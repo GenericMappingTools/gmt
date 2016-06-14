@@ -512,7 +512,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			}
 			for (j = 0; j < n_pts; j++) {
-				out[GMT_X] = S->coord[GMT_X][j];	out[GMT_Y] = S->coord[GMT_Y][j];
+				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
@@ -541,7 +541,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
 				if ((n_pts = (int)gmt_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
-					lon = S->coord[GMT_X]; lat = S->coord[GMT_Y];
+					lon = S->data[GMT_X]; lat = S->data[GMT_Y];
 					n_pts = (int)S->n_rows;
 					must_free = false;
 				}

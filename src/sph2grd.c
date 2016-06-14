@@ -223,7 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT
 
 int GMT_sph2grd (void *V_API, int mode, void *args) {
 	bool ortho = false, duplicate_col;
-	int row, col, nx, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
+	int row, col, n_columns, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, k;
 	char text[GMT_LEN32] = {""};
@@ -288,8 +288,8 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 		T = D->table[tbl]->segment[seg];
 		for (drow = 0; drow < T->n_rows; drow++) {
-			L = irint (T->coord[0][drow]);
-			M = irint (T->coord[1][drow]);
+			L = irint (T->data[0][drow]);
+			M = irint (T->data[1][drow]);
 			if (L > L_max) L_max = L;
 			if (M > M_max) M_max = M;
 		}
@@ -323,12 +323,12 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 		T = D->table[tbl]->segment[seg];	/* Short-hand notation for current segment */
 		for (drow = 0; drow < T->n_rows; drow++) {
-			L = irint (T->coord[0][drow]);
+			L = irint (T->data[0][drow]);
 			if (L > L_max) continue;	/* Skip stuff beyond the high cut-off filter */
 			if (L < L_min) continue;	/* Skip stuff beyond the low cut-off filter */
-			M = irint (T->coord[1][drow]);
-			C[L][M]  = T->coord[2][drow];
-			S[L][M]  = T->coord[3][drow];
+			M = irint (T->data[1][drow]);
+			C[L][M]  = T->data[2][drow];
+			S[L][M]  = T->data[3][drow];
 			if (!Ctrl->F.active) continue;	/* No filtering selected */
 			if (Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* Note: L_min/L_max have already taken care of the low-cut and high-cut */
 				if (L < Ctrl->F.lp)	/* Taper the low order components */
@@ -372,16 +372,16 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 
 	n_PLM = LM_index (L_max + 1, L_max + 1);	/* Number of P_lm terms needed */
 	n_CS = L_max + 1;				/* Number of Cos,Sin terms needed for each longitude */
-	n_CS_nx = n_CS * Grid->header->nx;		/* Number of Cos,Sin terms needed for all longitudes */
+	n_CS_nx = n_CS * Grid->header->n_columns;		/* Number of Cos,Sin terms needed for all longitudes */
 	P_lm  = gmt_M_memory (GMT, NULL, n_PLM, double);
 	gmt_M_malloc2 (GMT, Cosmx, Sinmx, n_CS_nx, NULL, double);
-	gmt_M_malloc2 (GMT, Cosm,  Sinm,  Grid->header->nx, NULL, double *);
+	gmt_M_malloc2 (GMT, Cosm,  Sinm,  Grid->header->n_columns, NULL, double *);
 	
 	/* Evaluate longitude terms once and for all to avoid doing it repeatedly in the big loop.
 	 * We compute a matrix with rows representing order M and columns representing longitude.
 	 * Then, we allocate a set of pointers assigned to each row to enable 2-D indexing.*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->nx);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->n_columns);
 	k = 0;
 	gmt_M_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
 		lon = gmt_M_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
@@ -403,15 +403,15 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		n_bytes += 2 * (L_max + 1) * (L_max + 1) * sizeof (double);	/* C[] and S[] contents */
 		n_bytes += n_PLM * sizeof (double);				/* P_lm */
 		n_bytes += 2 * n_CS_nx * sizeof (double);			/* Sinmx and Cosmn */
-		n_bytes += 2 * Grid->header->nx * sizeof (double *);		/* Sinm and Cosm pointers */
+		n_bytes += 2 * Grid->header->n_columns * sizeof (double *);		/* Sinm and Cosm pointers */
 		
 		mem = n_bytes / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
 	}
-	percent_inc = 100.0 / Grid->header->ny;	/* Percentage of whole grid represented by one row */
+	percent_inc = 100.0 / Grid->header->n_rows;	/* Percentage of whole grid represented by one row */
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
-	nx = (duplicate_col) ? Grid->header->nx - 1 : Grid->header->nx;
+	n_columns = (duplicate_col) ? Grid->header->n_columns - 1 : Grid->header->n_columns;
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
 	
@@ -436,9 +436,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
 #ifdef _OPENMP
-#pragma omp parallel for private(col,node,sum,kk,L,M) shared(Grid,row,nx,L_min,L_max,P_lm,C,Cosm,S,Sinm)
+#pragma omp parallel for private(col,node,sum,kk,L,M) shared(Grid,row,n_columns,L_min,L_max,P_lm,C,Cosm,S,Sinm)
 #endif
-		for (col = 0; col < nx; col++) {	/* For each longitude along this parallel */
+		for (col = 0; col < n_columns; col++) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
 			kk = (L_min) ? LM_index (L_min, 0) : 0;	/* Set start index for P_lm packed array */
 			for (L = L_min; L <= L_max; L++) {	/* For all degrees */
@@ -454,7 +454,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		uint64_t node_L, node_R;
 		gmt_M_row_loop (GMT, Grid, row) {	/* For each output latitude */
 			node_L = gmt_M_ijp (Grid->header, row, 0);	/* West */
-			node_R = node_L + Grid->header->nx - 1;		/* East */
+			node_R = node_L + Grid->header->n_columns - 1;		/* East */
 			Grid->data[node_R] = Grid->data[node_L];
 		}
 	}

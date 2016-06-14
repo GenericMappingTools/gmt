@@ -1243,7 +1243,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 				n = (int)L->n_rows;				/* Number of points in this segment */
 
-				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
+				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
@@ -1289,7 +1289,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 				if (polygon) {
 					gmt_plane_perspective (GMT, -1, 0.0);
-					for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
+					for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->data[GMT_X][i], L->data[GMT_Y][i], L->data[GMT_Z][i], &xp[i], &yp[i]);
 					gmt_setfill (GMT, &current_fill, outline_active);
 					PSL_plotpolygon (PSL, xp, yp, (int)n);
 				}
@@ -1297,7 +1297,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					bool closed;
 					/* Note that this always be plotted in the XY-plane */
 					gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
 					closed = !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
 					gmt_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
@@ -1313,15 +1313,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->coord[GMT_Z], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
-								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[GMT_Y][k] - fabs (L->coord[3][k]);
+								GMT->hidden.mem_coord[GMT_Y][k] = L->data[GMT_Y][k] - fabs (L->data[3][k]);
 							/* Then go in negative x direction and build rest of envelope */
 							for (k = m = L->n_rows; k > 0; k--, m++) {
-								GMT->hidden.mem_coord[GMT_X][m] = L->coord[GMT_X][k-1];
-								GMT->hidden.mem_coord[GMT_Z][m] = L->coord[GMT_Z][k-1];
-								GMT->hidden.mem_coord[GMT_Y][m] = L->coord[GMT_Y][k-1] + fabs (L->coord[col][k-1]);
+								GMT->hidden.mem_coord[GMT_X][m] = L->data[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Z][m] = L->data[GMT_Z][k-1];
+								GMT->hidden.mem_coord[GMT_Y][m] = L->data[GMT_Y][k-1] + fabs (L->data[col][k-1]);
 							}
 							/* Explicitly close polygon */
 							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
@@ -1333,15 +1333,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->coord[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_X], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
-								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[3][k];
+								GMT->hidden.mem_coord[GMT_Y][k] = L->data[3][k];
 							/* Then go in negative x direction and build rest of envelope */
 							for (k = m = L->n_rows; k > 0; k--, m++) {
-								GMT->hidden.mem_coord[GMT_X][m] = L->coord[GMT_X][k-1];
-								GMT->hidden.mem_coord[GMT_Z][m] = L->coord[GMT_Z][k-1];
-								GMT->hidden.mem_coord[GMT_Y][m] = L->coord[4][k-1];
+								GMT->hidden.mem_coord[GMT_X][m] = L->data[GMT_X][k-1];
+								GMT->hidden.mem_coord[GMT_Z][m] = L->data[GMT_Z][k-1];
+								GMT->hidden.mem_coord[GMT_Y][m] = L->data[4][k-1];
 							}
 							/* Explicitly close polygon */
 							GMT->hidden.mem_coord[GMT_X][end-1] = GMT->hidden.mem_coord[GMT_X][0];
@@ -1354,9 +1354,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							end = L->n_rows;
 							gmt_prep_tmp_arrays (GMT, end+3, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First copy the given line segment */
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
-							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->coord[GMT_Z], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
 								case XHI:	off = 1;	/* To select the x max entry */
@@ -1364,24 +1364,24 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
 									GMT->hidden.mem_coord[GMT_X][end] = GMT->hidden.mem_coord[GMT_X][end+1] = value;
-									GMT->hidden.mem_coord[GMT_Z][end] = GMT->hidden.mem_coord[GMT_Z][end+1] = L->coord[GMT_Z][0];
-									GMT->hidden.mem_coord[GMT_Y][end] = L->coord[GMT_Y][end-1];
-									GMT->hidden.mem_coord[GMT_Y][end+1] = L->coord[GMT_Y][0];
+									GMT->hidden.mem_coord[GMT_Z][end] = GMT->hidden.mem_coord[GMT_Z][end+1] = L->data[GMT_Z][0];
+									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
+									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
 								case YHI:	off = 1;	/* To select the y max entry */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];
 									GMT->hidden.mem_coord[GMT_Y][end] = GMT->hidden.mem_coord[GMT_Y][end+1] = value;
-									GMT->hidden.mem_coord[GMT_Z][end] = GMT->hidden.mem_coord[GMT_Z][end+1] = L->coord[GMT_Z][0];
-									GMT->hidden.mem_coord[GMT_X][end] = L->coord[GMT_X][end-1];
-									GMT->hidden.mem_coord[GMT_X][end+1] = L->coord[GMT_X][0];
+									GMT->hidden.mem_coord[GMT_Z][end] = GMT->hidden.mem_coord[GMT_Z][end+1] = L->data[GMT_Z][0];
+									GMT->hidden.mem_coord[GMT_X][end] = L->data[GMT_X][end-1];
+									GMT->hidden.mem_coord[GMT_X][end+1] = L->data[GMT_X][0];
 									break;
 							}
 							/* Explicitly close polygon */
-							GMT->hidden.mem_coord[GMT_X][end+2] = L->coord[GMT_X][0];
-							GMT->hidden.mem_coord[GMT_Y][end+2] = L->coord[GMT_Y][0];
-							GMT->hidden.mem_coord[GMT_Z][end+2] = L->coord[GMT_Z][0];
+							GMT->hidden.mem_coord[GMT_X][end+2] = L->data[GMT_X][0];
+							GMT->hidden.mem_coord[GMT_Y][end+2] = L->data[GMT_Y][0];
+							GMT->hidden.mem_coord[GMT_Z][end+2] = L->data[GMT_Z][0];
 							end += 3;
 						}
 						/* Project and get ready */
@@ -1399,7 +1399,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						if (Ctrl->L.outline) gmt_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					else {
-						for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
+						for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->data[GMT_X][i], L->data[GMT_Y][i], L->data[GMT_Z][i], &xp[i], &yp[i]);
 					}
 					if (draw_line) {
 						PSL_plotline (PSL, xp, yp, (int)n, PSL_MOVE + PSL_STROKE);
@@ -1407,7 +1407,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
 					gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 					gmt_setfill (GMT, &current_fill, (S.f.f_pen == -1) ? false : true);
 					gmt_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 					if (S.f.f_pen == 0) gmt_setpen (GMT, &current_pen);	/* Reinstate current pen */

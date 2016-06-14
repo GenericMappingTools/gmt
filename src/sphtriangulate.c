@@ -135,15 +135,15 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			else	/* Just a plain header with triangle number */
 				sprintf (segment_header, "Triangle: %" PRIu64 " -Z%" PRIu64, k, k);
 			if (nodes) {	/* Output Voronoi node and area information via S[1] */
-				S[1]->coord[GMT_X][k] = (double)D->tri[ij];
-				S[1]->coord[GMT_Y][k] = (double)D->tri[ij+1];
-				S[1]->coord[GMT_Z][k] = (double)D->tri[ij+2];
-				if (get_area) S[1]->coord[3][k] = area_triangle * R2;
+				S[1]->data[GMT_X][k] = (double)D->tri[ij];
+				S[1]->data[GMT_Y][k] = (double)D->tri[ij+1];
+				S[1]->data[GMT_Z][k] = (double)D->tri[ij+2];
+				if (get_area) S[1]->data[3][k] = area_triangle * R2;
 			}
 			S[0]->header = strdup (segment_header);
 			for (i = 0; i < 3; i++) {	/* Copy the three vertices */
-				S[0]->coord[GMT_X][i] = lon[D->tri[ij+i]];
-				S[0]->coord[GMT_Y][i] = lat[D->tri[ij+i]];
+				S[0]->data[GMT_X][i] = lon[D->tri[ij+i]];
+				S[0]->data[GMT_Y][i] = lat[D->tri[ij+i]];
 			}
 			Dout[0]->table[0]->n_records += 3;
 		}
@@ -184,10 +184,10 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 		}
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
-			S[0]->coord[GMT_X][0] = lon[arc[i].begin];	S[0]->coord[GMT_Y][0] = lat[arc[i].begin];
-			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
+			S[0]->data[GMT_X][0] = lon[arc[i].begin];	S[0]->data[GMT_Y][0] = lat[arc[i].begin];
+			S[0]->data[GMT_X][1] = lon[arc[i].end];	S[0]->data[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) {	/* Compute arc lengths */
-				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
+				dist = gmt_distance (GMT, S[0]->data[GMT_X][0], S[0]->data[GMT_Y][0], S[0]->data[GMT_X][1], S[0]->data[GMT_Y][1]);
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g -Z%" PRIu64, arc[i].begin, arc[i].end, dist, i);
 			}
 			else	/* Plain header */
@@ -310,15 +310,15 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 				sprintf (segment_header, "Pol: %" PRIu64 " %g %g -Z%" PRIu64, node, lon[node], lat[node], node);
 
 			if (nodes) {	/* Also output node info via S[1] */
-				S[1]->coord[GMT_X][node] = lon[node];
-				S[1]->coord[GMT_Y][node] = lat[node];
-				if (get_area) S[1]->coord[GMT_Z][node] = area_km2;
+				S[1]->data[GMT_X][node] = lon[node];
+				S[1]->data[GMT_Y][node] = lat[node];
+				if (get_area) S[1]->data[GMT_Z][node] = area_km2;
 			}
 			S[0]->header = strdup (segment_header);
 
 			gmt_alloc_segment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
-			gmt_M_memcpy (S[0]->coord[GMT_X], plon, vertex, double);
-			gmt_M_memcpy (S[0]->coord[GMT_Y], plat, vertex, double);
+			gmt_M_memcpy (S[0]->data[GMT_X], plon, vertex, double);
+			gmt_M_memcpy (S[0]->data[GMT_Y], plat, vertex, double);
 			Dout[0]->table[0]->n_records += vertex;
 			Dout[0]->n_records += vertex;
 			if (get_area) area_sphere += area_polygon;
@@ -348,10 +348,10 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
-			S[0]->coord[GMT_X][0] = V->lon[arc[i].end];	S[0]->coord[GMT_Y][0] = V->lat[arc[i].end];
-			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[0]->coord[GMT_Y][1] = V->lat[arc[i].begin];
+			S[0]->data[GMT_X][0] = V->lon[arc[i].end];	S[0]->data[GMT_Y][0] = V->lat[arc[i].end];
+			S[0]->data[GMT_X][1] = V->lon[arc[i].begin];	S[0]->data[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
-				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
+				dist = gmt_distance (GMT, S[0]->data[GMT_X][0], S[0]->data[GMT_Y][0], S[0]->data[GMT_X][1], S[0]->data[GMT_Y][1]);
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g -Z%" PRIu64, arc[i].begin, arc[i].end, dist, i);
 			}
 			else

@@ -343,7 +343,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		T = Cin->table[0];	/* Since we only have one table here */
 		t_supplied_out = gmt_M_memory (GMT, NULL, Cin->table[0]->n_records, double);
 		for (seg = 0; seg < T->n_segments; seg++) {
-			gmt_M_memcpy (&t_supplied_out[m], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
+			gmt_M_memcpy (&t_supplied_out[m], T->segment[seg]->data[GMT_X], T->segment[seg]->n_rows, double);
 			m += T->segment[seg]->n_rows;
 		}
 		m_supplied = m;
@@ -370,41 +370,41 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				continue;
 			}
 			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
-			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (gmt_M_is_dnan (S->coord[col][row])) nan_flag[col] = true;
+			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (gmt_M_is_dnan (S->data[col][row])) nan_flag[col] = true;
 			if (resample_path) {	/* Need distances for path interpolation */
-				dist_in = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
+				dist_in = gmt_dist_array (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, true);
 				lon = gmt_M_memory (GMT, NULL, S->n_rows, double);
 				lat = gmt_M_memory (GMT, NULL, S->n_rows, double);
-				gmt_M_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
-				gmt_M_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
+				gmt_M_memcpy (lon, S->data[GMT_X], S->n_rows, double);
+				gmt_M_memcpy (lat, S->data[GMT_Y], S->n_rows, double);
 				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
 				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
 				uint64_t n_outside = 0;
-				low_t  = MIN (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
-				high_t = MAX (S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
+				low_t  = MIN (S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
+				high_t = MAX (S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
 				for (row = m = 0; row < m_supplied; row++) {
 					if (t_supplied_out[row] < low_t || t_supplied_out[row] > high_t) n_outside++;
 					t_out[m++] = t_supplied_out[row];
 				}
 				if (n_outside) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %" PRIu64 " knot points outside range %g to %g\n", n_outside, S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
 				}
 			}
 			else {	/* Generate evenly spaced output */
 				uint64_t first_k, last_k;
 				double abs_inc;
-				if (!Ctrl->I.active) Ctrl->I.inc = S->coord[Ctrl->T.col][1] - S->coord[Ctrl->T.col][0];
-				if (Ctrl->I.active && (S->coord[Ctrl->T.col][1] - S->coord[Ctrl->T.col][0]) < 0.0 && Ctrl->I.inc > 0.0) Ctrl->I.inc = -Ctrl->I.inc;	/* For monotonically decreasing data */
+				if (!Ctrl->I.active) Ctrl->I.inc = S->data[Ctrl->T.col][1] - S->data[Ctrl->T.col][0];
+				if (Ctrl->I.active && (S->data[Ctrl->T.col][1] - S->data[Ctrl->T.col][0]) < 0.0 && Ctrl->I.inc > 0.0) Ctrl->I.inc = -Ctrl->I.inc;	/* For monotonically decreasing data */
 				first_k = (Ctrl->I.inc > 0.0) ? 0 : S->n_rows-1;	/* Index of point with earliest time */
 				last_k  = (Ctrl->I.inc > 0.0) ? S->n_rows-1 : 0;	/* Index of point with latest time */
 				abs_inc = fabs (Ctrl->I.inc);
 				if (!Ctrl->S.active) {	/* Set first output time */
-					Ctrl->S.start = floor (S->coord[Ctrl->T.col][first_k] / abs_inc) * abs_inc;
-					if (Ctrl->S.start < S->coord[Ctrl->T.col][first_k]) Ctrl->S.start += abs_inc;
+					Ctrl->S.start = floor (S->data[Ctrl->T.col][first_k] / abs_inc) * abs_inc;
+					if (Ctrl->S.start < S->data[Ctrl->T.col][first_k]) Ctrl->S.start += abs_inc;
 				}
-				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->coord[Ctrl->T.col][last_k];
+				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->data[Ctrl->T.col][last_k];
 				/* So here, Ctrl->S.start holds to smallest t value and last_t holds the largest t_value, regardless of inc sign */
 				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / abs_inc)) + 1;
 				t_out = gmt_M_memory (GMT, t_out, m_alloc, double);
@@ -430,11 +430,11 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			Sout = Tout->segment[seg];	/* Current output segment */
 			gmt_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
 			if (resample_path) {	/* Use resampled path coordinates */
-				gmt_M_memcpy (Sout->coord[GMT_X], lon, m, double);
-				gmt_M_memcpy (Sout->coord[GMT_Y], lat, m, double);
+				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
+				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
 			}
 			else
-				gmt_M_memcpy (Sout->coord[Ctrl->T.col], t_out, m, double);
+				gmt_M_memcpy (Sout->data[Ctrl->T.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			Sout->n_rows = m;
 				
@@ -448,17 +448,17 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					ttime = gmt_M_memory (GMT, NULL, S->n_rows, double);
 					data = gmt_M_memory (GMT, NULL, S->n_rows, double);
 					for (row = k = 0; row < S->n_rows; row++) {
-						if (gmt_M_is_dnan (S->coord[col][row])) continue;
-						ttime[k] = (resample_path) ? dist_in[row] : S->coord[Ctrl->T.col][row];
-						data[k++] = S->coord[col][row];
+						if (gmt_M_is_dnan (S->data[col][row])) continue;
+						ttime[k] = (resample_path) ? dist_in[row] : S->data[Ctrl->T.col][row];
+						data[k++] = S->data[col][row];
 					}
-					result = gmt_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], int_mode);
+					result = gmt_intpol (GMT, ttime, data, k, m, t_out, Sout->data[col], int_mode);
 					gmt_M_free (GMT, ttime);
 					gmt_M_free (GMT, data);
 				}
 				else {
-					ttime = (resample_path) ? dist_in : S->coord[Ctrl->T.col];
-					result = gmt_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], int_mode);
+					ttime = (resample_path) ? dist_in : S->data[Ctrl->T.col];
+					result = gmt_intpol (GMT, ttime, S->data[col], S->n_rows, m, t_out, Sout->data[col], int_mode);
 				}
 
 				if (result != GMT_OK) {

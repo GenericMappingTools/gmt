@@ -329,7 +329,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				n_alloc <<= 2;
-				TX->record = gmt_M_memory (GMT, TX->record, n_alloc, char *);
+				TX->data = gmt_M_memory (GMT, TX->data, n_alloc, char *);
 			}
 		}
 		else {
@@ -358,7 +358,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			sprintf (header, "%6d%8d%2d%2c %.12g %.12g %s %s %s %s %6d %6d", h.id, h.n, level, source, area, f_area, west, east, south, north, h.container, h.ancestor);
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
-			TX->record[seg_no] = strdup (header);
+			TX->data[seg_no] = strdup (header);
 			TX->n_rows++;
 			fseek (fp, (off_t)(h.n * sizeof(struct GSHHG_POINT)), SEEK_CUR);
 		}
@@ -381,11 +381,11 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				}
 				if (must_swab) /* Must deal with different endianness */
 					bswap_POINT_struct (&p);
-				T[seg_no]->coord[GMT_X][row] = p.x * GSHHG_SCL;
-				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][row] -= 360.0;
-				T[seg_no]->coord[GMT_Y][row] = p.y * GSHHG_SCL;
+				T[seg_no]->data[GMT_X][row] = p.x * GSHHG_SCL;
+				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->data[GMT_X][row] -= 360.0;
+				T[seg_no]->data[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
-			if (Ctrl->G.active) T[seg_no]->coord[GMT_X][row] = T[seg_no]->coord[GMT_Y][row] = GMT->session.d_NaN;
+			if (Ctrl->G.active) T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
@@ -396,7 +396,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
-			TX->record = gmt_M_memory (GMT, TX->record, seg_no, char *);
+			TX->data = gmt_M_memory (GMT, TX->data, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {

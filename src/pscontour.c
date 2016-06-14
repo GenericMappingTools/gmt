@@ -269,7 +269,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 
 	/* Now we must paint, with colors or patterns */
 
-	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))
+	if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))
 		gmt_setfill (GMT, f, false);
 	else
 		PSL_setfill (PSL, rgb, -2);
@@ -877,10 +877,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		ind = gmt_M_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
 		for (seg = ij = n_skipped = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				if (T->segment[seg]->coord[0][row] > d_n || T->segment[seg]->coord[1][row] > d_n || T->segment[seg]->coord[2][row] > d_n)
+				if (T->segment[seg]->data[0][row] > d_n || T->segment[seg]->data[1][row] > d_n || T->segment[seg]->data[2][row] > d_n)
 					n_skipped++;	/* Outside point range */
 				else {
-					for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
+					for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->data[col][row]);
 				}
 			}
 		}
@@ -923,24 +923,24 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		cont = gmt_M_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
 		for (i = c = 0; i < P->n_colors; i++) {
-			if (P->range[i].skip) continue;
-			cont[c].val = P->range[i].z_low;
+			if (P->data[i].skip) continue;
+			cont[c].val = P->data[i].z_low;
 			if (Ctrl->A.mode)
 				cont[c].type = 'C';
-			else if (P->range[i].annot)
+			else if (P->data[i].annot)
 				cont[c].type = 'A';
 			else
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-			cont[c].type = (P->range[i].annot && !Ctrl->A.mode) ? 'A' : 'C';
+			cont[c].type = (P->data[i].annot && !Ctrl->A.mode) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 			GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
 			c++;
 		}
-		cont[c].val = P->range[P->n_colors-1].z_high;
+		cont[c].val = P->data[P->n_colors-1].z_high;
 		if (Ctrl->A.mode)
 			cont[c].type = 'C';
-		else if (P->range[P->n_colors-1].annot & 2)
+		else if (P->data[P->n_colors-1].annot & 2)
 			cont[c].type = 'A';
 		else
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';

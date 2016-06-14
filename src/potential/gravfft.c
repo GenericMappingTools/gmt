@@ -86,7 +86,7 @@ struct GRAVFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct GRVF_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
+	struct GRVF_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
@@ -542,8 +542,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->C.n_pt; k++) {
 			freq = (k + 1) * delta_pt;
 			if (Ctrl->misc.give_wavelength) freq = 1. / freq;
-			S->coord[0][k] = freq;
-			S->coord[1][k] = z_top_or_bot[k];
+			S->data[0][k] = freq;
+			S->data[1][k] = z_top_or_bot[k];
 		}
 		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
 			Return (API->error);
@@ -1040,14 +1040,14 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 
 		col = 0;
 		/* Col 0 is the frequency (or wavelength) */
-		S->coord[col++][k] = freq;
+		S->data[col++][k] = freq;
 		/* Cols 1-2 are xpower and std.err estimate */
-		S->coord[col++][k] = out[k];
-		S->coord[col++][k] = err_bar[k];
+		S->data[col++][k] = out[k];
+		S->data[col++][k] = err_bar[k];
 		if (Ctrl->misc.from_below)
-			S->coord[col++][k] = z_from_below[k];
+			S->data[col++][k] = z_from_below[k];
 		else if (Ctrl->misc.from_top)
-			S->coord[col++][k] = z_from_top[k];
+			S->data[col++][k] = z_from_top[k];
 	}
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
 		error = GMT->parent->error;

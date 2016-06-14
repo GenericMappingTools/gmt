@@ -148,7 +148,7 @@ EXTERN_MSC double       GMT_FFT_Wavenumber(void *API, uint64_t k, unsigned int m
 EXTERN_MSC int          GMT_FFT           (void *API, void *X, int direction, unsigned int mode, void *K);
 EXTERN_MSC int          GMT_FFT_Destroy   (void *API, void *K);
 EXTERN_MSC int          GMT_FFT_1D        (void *API, float *data, uint64_t n, int direction, unsigned int mode);
-EXTERN_MSC int          GMT_FFT_2D        (void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
+EXTERN_MSC int          GMT_FFT_2D        (void *API, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode);
 
 /* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 

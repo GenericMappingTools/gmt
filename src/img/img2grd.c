@@ -379,7 +379,7 @@ GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, st
 int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	unsigned int nx, ny, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	unsigned int n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	int in_ID, out_ID = GMT_NOTSET, jin, iinstart, iinstop;
 
 	uint64_t ij;
@@ -540,11 +540,11 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	if (toplat < wesn[YHI]) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
-		wesn[YHI] = toplat - GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating ny */
+		wesn[YHI] = toplat - GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 	if (botlat > wesn[YLO]) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
-		wesn[YLO] = botlat + GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating ny */
+		wesn[YLO] = botlat + GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 
 	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */
@@ -552,7 +552,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	jinstart = navg * (urint (floor (img_lat_to_ypix (wesn[YHI], &imgcoord) / navg)));
 	jinstop  = navg * (urint (ceil  (img_lat_to_ypix (wesn[YLO], &imgcoord) / navg)));
 	/* jinstart <= jinputrow < jinstop  */
-	ny = (int)(jinstop - jinstart) / navg;
+	n_rows = (int)(jinstop - jinstart) / navg;
 	north2 = wesn[YHI] = img_ypix_to_lat ((double)jinstart, &imgcoord);
 	south2 = wesn[YLO] = img_ypix_to_lat ((double)jinstop,  &imgcoord);
 
@@ -562,10 +562,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Reset left and right edges of user area */
 	wesn[XLO] = iinstart * dx;
 	wesn[XHI] = iinstop  * dx;
-	nx = (int)(iinstop - iinstart) / navg;
+	n_columns = (int)(iinstop - iinstart) / navg;
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "To fit [averaged] input, your %s is adjusted to -R%.12g/%.12g/%.12g/%.12g.\n", Ctrl->In.file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-	GMT_Report (API, GMT_MSG_VERBOSE, "The output grid size will be %d by %d pixels.\n", nx, ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
 
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
 	while (iinstart < 0) iinstart += imgcoord.nx360;
@@ -579,9 +579,9 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		int equator;
 		equator = irint (img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
-		wesn[XHI] = wesn[XLO] + nx * inc[GMT_X];
+		wesn[XHI] = wesn[XLO] + n_columns * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - (int)jinstart - equator) * inc[GMT_Y];
-		wesn[YLO] = wesn[YHI] - ny * inc[GMT_Y];
+		wesn[YLO] = wesn[YHI] - n_rows * inc[GMT_Y];
 		left = bottom = 0.0;
 		if (wesn[XHI] > 360.0) {
 			wesn[XHI] -= 360.0;
@@ -594,9 +594,9 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	}
 	else {
 		wesn[XLO] = 0.0;
-		wesn[XHI] = nx * inc[GMT_X];
+		wesn[XHI] = n_columns * inc[GMT_X];
 		wesn[YLO] = 0.0;
-		wesn[YHI] = ny * inc[GMT_Y];
+		wesn[YHI] = n_rows * inc[GMT_Y];
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
@@ -622,13 +622,13 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
 
 	row = gmt_M_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
-	ix = gmt_M_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
+	ix = gmt_M_memory (GMT, NULL, navgsq * Merc->header->n_columns, unsigned int);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich,
 	   also faster averaging of the file, etc.  Note for averaging each n by n block is looped in turn. */
 
 	if (navg > 1) {
-		for (iout = k = 0; iout < Merc->header->nx; iout++) {
+		for (iout = k = 0; iout < Merc->header->n_columns; iout++) {
 			ion = iout * navg;
 			for (jin2 = 0; jin2 < navg; jin2++) {
 				jj = jin2 * imgcoord.nxcol;
@@ -641,7 +641,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	else {
-		for (iout = 0; iout < Merc->header->nx; iout++) ix[iout] = (iout + iinstart) % imgcoord.nx360;
+		for (iout = 0; iout < Merc->header->n_columns; iout++) ix[iout] = (iout + iinstart) % imgcoord.nx360;
 	}
 
 
@@ -651,11 +651,11 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Now loop over output points, reading and handling data as needed */
 
 	n_expected = navg * imgcoord.nxcol;
-	for (jout = 0; jout < Merc->header->ny; jout++) {
+	for (jout = 0; jout < Merc->header->n_rows; jout++) {
 		jin = jinstart + navg * jout;
 		ij = gmt_M_ijp (Merc->header, jout, 0);	/* Left-most index of this row */
 		if (jin < 0 || jin >= imgcoord.nyrow) {	/* Outside latitude range; set row to NaNs */
-			for (iout = 0; iout < Merc->header->nx; iout++, ij++) Merc->data[ij] = GMT->session.f_NaN;
+			for (iout = 0; iout < Merc->header->n_columns; iout++, ij++) Merc->data[ij] = GMT->session.f_NaN;
 			continue;
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
@@ -671,7 +671,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			u2[iout] = bswap16 (u2[iout]);
 #endif
 
-		for (iout = 0, kstart = 0; iout < Merc->header->nx; iout++, ij++, kstart += navgsq) {
+		for (iout = 0, kstart = 0; iout < Merc->header->n_columns; iout++, ij++, kstart += navgsq) {
 			if (navg) {
 				csum = dsum = 0.0;
 				for (k = 0, kk = kstart; k < navgsq; k++, kk++) {
@@ -725,7 +725,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* We now have the Mercator grid in Grid. */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->nx, Merc->header->ny, Merc->header->z_min, Merc->header->z_max);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);

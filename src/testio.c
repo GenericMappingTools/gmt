@@ -91,7 +91,7 @@ int main () {
 	}
 	gmt_free_vector (API->GMT, &Vo, true);
 	
-	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
+	printf ("n_columns,n_rows = %d %d\n", G->header->n_columns, G->header->n_rows);
 	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!gmt_M_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
 	if (GMT_Destroy_Data (API, &G) != GMT_OK) {

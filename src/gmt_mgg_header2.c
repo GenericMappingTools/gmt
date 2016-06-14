@@ -109,13 +109,13 @@ GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *m
 	mgg->dataType    = 1;
 
 	mgg->cellRegistration = gmt->registration;
-	mgg->lonNumCells = gmt->nx;
+	mgg->lonNumCells = gmt->n_columns;
 	f  = gmt->inc[GMT_X] * GMT_DEG2SEC_F;
 	mgg->lonSpacing  = irint(f);
 	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_XINC);
 	grd98_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 
-	mgg->latNumCells = gmt->ny;
+	mgg->latNumCells = gmt->n_rows;
 	f  = gmt->inc[GMT_Y] * GMT_DEG2SEC_F;
 	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * GMT_DEG2SEC_F);
 	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_YINC);
@@ -155,15 +155,15 @@ GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *
 	gmt->type = GMT_GRID_IS_RF;
 	gmt->registration = mgg->cellRegistration;
 	one_or_zero = 1 - gmt->registration;
-	gmt->nx = mgg->lonNumCells;
+	gmt->n_columns = mgg->lonNumCells;
 	gmt->wesn[XLO] = grd98_dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
 	gmt->inc[GMT_X] = grd98_dms2degrees(0, 0, mgg->lonSpacing);
-	gmt->wesn[XHI] = gmt->wesn[XLO] + (gmt->inc[GMT_X] * (gmt->nx - one_or_zero));
+	gmt->wesn[XHI] = gmt->wesn[XLO] + (gmt->inc[GMT_X] * (gmt->n_columns - one_or_zero));
 
-	gmt->ny = mgg->latNumCells;
+	gmt->n_rows = mgg->latNumCells;
 	gmt->wesn[YHI] = grd98_dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
 	gmt->inc[GMT_Y] = grd98_dms2degrees(0, 0, mgg->latSpacing);
-	gmt->wesn[YLO] = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->ny - one_or_zero));
+	gmt->wesn[YLO] = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->n_rows - one_or_zero));
 
 	gmt->z_min = (double)mgg->minValue / (double)mgg->precision;
 	gmt->z_max = (double)mgg->maxValue / (double)mgg->precision;
@@ -317,7 +317,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	n_expected = header->nx;
+	n_expected = header->n_columns;
 	tLong  = gmt_M_memory (GMT, NULL, n_expected, int);
 	tShort = (short *)tLong;	tChar = (char *)tLong;	tFloat = (float *)tLong;
 	size = abs (mggHeader.numType);
@@ -386,8 +386,8 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		}
 	}
 	if (piping)	{ /* Skip data by reading it */
-		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) {
+		int n_rows = header->n_rows;
+		for (j = last_row + 1; j < n_rows; j++) {
 			if (gmt_M_fread ( tLong, size, n_expected, fp) != n_expected) {
 				gmt_M_free (GMT, tLong);
 				gmt_M_free (GMT, actual_col);
@@ -400,8 +400,8 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	gmt_M_free (GMT, tLong);
 	gmt_M_free (GMT, actual_col);
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->n_columns = width_in;
+	header->n_rows = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
