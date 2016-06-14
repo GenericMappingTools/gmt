@@ -641,6 +641,9 @@ if (BUILD_DEVELOPER)
 		gmt_core_module.h gmt_supplements_module.h compat/qsort.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
+	install (FILES compat/qsort.h
+		DESTINATION ${GMT_INCLUDEDIR}/compat
+		COMPONENT Runtime)
 	# Install gshhg supplement headers in separate subdirectory [These have no #define HAVE_* configuration]
 	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
 		DESTINATION ${GMT_INCLUDEDIR}/gshhg
