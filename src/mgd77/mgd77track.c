@@ -605,7 +605,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	if (Ctrl->I.active) MGD77_Process_Ignore (GMT, 'I', Ctrl->I.code);
-	info[LABEL] = &(Ctrl->L.info);	info[ANNOT] = &(Ctrl->A.info);
+	info[ANNOT] = &(Ctrl->L.info);	info[LABEL] = &(Ctrl->A.info);
 
 	if (Ctrl->F.active) {	/* Turn off automatic corrections */
 		if (Ctrl->F.mode == MGD77_NOT_SET)	/* Both sets */
