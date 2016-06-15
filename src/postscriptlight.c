@@ -3824,7 +3824,8 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	}
 
 	for (i = i0; i < n; i++) {
-		if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy) PSL_command (PSL, "%d %d D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
+		if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy)
+			PSL_command (PSL, "%d %d D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
 		PSL->internal.ix = ix[i];
 		PSL->internal.iy = iy[i];
 	}
