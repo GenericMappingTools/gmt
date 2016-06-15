@@ -217,7 +217,7 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
 /* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd) */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
-static const char *GMT_family[] = {"Data Table", "Text Table", "GMT Grid", "CPT Table", "GMT Image", "GMT PostScript", "GMT Vector", "GMT Matrix", "GMT Coord"};
+static const char *GMT_family[] = {"Data Table", "GMT Grid", "GMT Image", "CPT", "GMT PostScript", "Text Table", "GMT Matrix", "GMT Vector", "GMT Coord"};
 static const char *GMT_via[] = {"User Vector", "User Matrix"};
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
