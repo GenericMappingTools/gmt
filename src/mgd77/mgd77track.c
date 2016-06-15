@@ -117,6 +117,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	unsigned int k;
 	struct MGD77TRACK_CTRL *C = NULL;
 	
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
@@ -140,6 +141,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	gmt_getfont (GMT, "Times-BoldItalic", &C->T.marker[MGD77TRACK_MARK_NEWDAY].font);
 	gmt_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
 	gmt_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
+	for (k = 0; k < 3; k++) C->T.marker[k].font_size = C->T.marker[k].font.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 
 	return (C);
 }
@@ -460,13 +462,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
-				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getpen */
+				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getfont */
 				gmt_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (gmt_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
+				Ctrl->T.marker[mrk].font_size = Ctrl->T.marker[mrk].font.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				break;
 
 			case 'W':
