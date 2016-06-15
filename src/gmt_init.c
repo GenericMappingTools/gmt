@@ -4788,6 +4788,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.proj_length_unit = GMT_CM;
 	/* PROJ_MEAN_RADIUS */
 	GMT->current.setting.proj_mean_radius = GMT_RADIUS_AUTHALIC;
+	gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */ 
 	/* PROJ_SCALE_FACTOR (default) */
 	GMT->current.setting.proj_scale_factor = -1.0;
 
