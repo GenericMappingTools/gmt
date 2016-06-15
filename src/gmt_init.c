@@ -4783,6 +4783,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* PROJ_DATUM (Not implemented yet) */
 	/* PROJ_GEODESIC */
 	GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
+	gmtlib_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */ 
 	/* PROJ_LENGTH_UNIT */
 	GMT->current.setting.proj_length_unit = GMT_CM;
 	/* PROJ_MEAN_RADIUS */
