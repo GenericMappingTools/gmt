@@ -2384,6 +2384,7 @@ GMT_LOCAL double map_az_backaz_vincenty (struct GMT_CTRL *GMT, double lonE, doub
 	baz = ts * tu2;
 	faz = baz * tu1;
 	gmt_M_set_delta_lon (lonS, lonE, d_lon);
+	if (gmt_M_is_zero (d_lon) && doubleAlmostEqualZero (latS, latE)) return GMT->session.d_NaN;
 	x = dx = D2R * d_lon;
 	do {
 		n_iter++;
@@ -5135,6 +5136,7 @@ GMT_LOCAL double map_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, dou
 	baz = ts * tu2;
 	faz = baz * tu1;
 	gmt_M_set_delta_lon (lonS, lonE, d_lon);
+	if (gmt_M_is_zero (d_lon) && doubleAlmostEqualZero (latS, latE)) return 0.0;
 	x = dx = D2R * d_lon;
 	do {
 		n_iter++;
