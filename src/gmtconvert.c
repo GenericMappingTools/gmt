@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
 	GMT_Option (API, "V,a,bi,bo,d,f,g,h,i,o,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -334,7 +334,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /* Must free allocated memory before returning */
@@ -378,7 +378,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 	
@@ -402,16 +402,16 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.active) {	/* Segmentizing happens here and then we are done */
 		D[GMT_OUT] = gmt_segmentize_data (GMT, D[GMT_IN], &(Ctrl->F.S));	/* Segmentize the data */
-		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_OK) {	/* Be gone with the original */
+		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_NOERROR) {	/* Be gone with the original */
 			Return (API->error);
 		}
 		if (D[GMT_OUT]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
-		Return (GMT_OK);	/* We are done! */
+		Return (GMT_NOERROR);	/* We are done! */
 	}
 	
 	/* Determine number of input and output columns for the selected options.
@@ -436,7 +436,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_NOERROR) {
 		Return (error);
 	}
 	
@@ -555,7 +555,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		//if (D[GMT_OUT]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
@@ -564,5 +564,5 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

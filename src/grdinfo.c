@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|r|b]] [-L[0|1|2]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -116,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
 	GMT_Option (API, "V,f,h,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -271,10 +271,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 		}
 	}
-	if (GMT_Init_IO (API, o_type, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, o_type, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	if (n_cols && (error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != 0) Return (error);	/* Set number of output columns */
@@ -365,7 +365,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_sort_array (GMT, G2->data, n, GMT_FLOAT);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Free the temporary grid */
-				if (GMT_Destroy_Data (API, &G2) != GMT_OK) {
+				if (GMT_Destroy_Data (API, &G2) != GMT_NOERROR) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G2\n");
 				}
 			}
@@ -629,7 +629,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -725,10 +725,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		gmt_M_str_free (projStr);
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

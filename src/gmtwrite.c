@@ -68,7 +68,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: write <infile> <outfile> -Tc|d|g|i|p|t [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input and output file names\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify data type.  Choose among:\n");
@@ -81,7 +81,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "R,V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -144,7 +144,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify only two filenames (input and output)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify a valid datatype\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}

@@ -73,7 +73,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [-Fs|l|p] [%s] [-Z] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more Google Earth KML files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
@@ -85,7 +85,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
 	GMT_Option (API, "V,bo,do,h,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one file can be processed at the time\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error: Cannot read file %s\n", Ctrl->In.file);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -194,13 +194,13 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
@@ -213,7 +213,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
 		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
@@ -315,11 +315,11 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		n_features++;
 	}
 	if (fp != stdin) fclose (fp);
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %u features with selected geometry\n", n_features);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

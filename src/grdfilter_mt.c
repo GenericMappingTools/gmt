@@ -368,7 +368,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Area weight grid for debugging purposes", A)) return (NULL);
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (NULL);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_NOERROR) return (NULL);
 	}
 	return (A);
 }
@@ -380,7 +380,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file to be filtered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
@@ -435,7 +435,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
 	GMT_Option (API, "V,f,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_OPTION *options)
@@ -613,7 +613,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass,
 				"Syntax error -F option: Highpass filtering requires original -R -I\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -685,13 +685,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
 			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter y-width given as an odd number of pixels\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
 		}
@@ -714,7 +714,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	if (error) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Output grid domain incompatible with input grid domain.\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
@@ -729,7 +729,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (!fast_way) {	/* Not optimal... */
 		if (Ctrl->F.custom) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Ff or -Fo the input and output grids must be coregistered.\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
@@ -867,7 +867,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			weight[ij_wt++] = Fin->data[ij_in];
 			wt_sum += Fin->data[ij_in];
 		}
-		if (GMT_Destroy_Data (API, &Fin) != GMT_OK) {	/* Done with this grid */
+		if (GMT_Destroy_Data (API, &Fin) != GMT_NOERROR) {	/* Done with this grid */
 			Return (API->error);
 		}
 		if (gmt_M_is_zero (wt_sum)) {	/* The custom filter is an operator; should have used -Fo */
@@ -1004,7 +1004,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	gmt_M_free (GMT, col_origin);
 	if (!fast_way) gmt_M_free (GMT, x_shift);
-	if (GMT_Destroy_Data (API, &A) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &A) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free A\n");
 	}
 
@@ -1019,27 +1019,27 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Gout)) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID for grid Gout */
+			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_NOERROR) {	/* Make filename with embedded object ID for grid Gout */
 				Return (API->error);
 			}
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_NOERROR) {
 				Return (API->error);	/* Make filename with embedded object ID for result grid L */
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
-			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_OK) {	/* Resample the file */
+			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}
 			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {	/* Load in the resampled grid */
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, &Gout) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Gout) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_M_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] - L->data[ij_out];
@@ -1058,10 +1058,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		FILE *fp = fopen ("n_conv.txt", "w");
 		fprintf (fp, "%d\n", n_conv);
 		fclose (fp);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &Gout) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Gout) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Gout\n");
 		}
 	}
@@ -1070,17 +1070,17 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (Ctrl->F.highpass && L) {	/* Save the highpassed-filtered grid instead */
 
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "High-pass filtered data", L)) return (GMT->parent->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 	else {
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }
 
 /* ----------------------------------------------------------------------------------------------------- */

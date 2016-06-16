@@ -455,7 +455,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 	}
 
-	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_NOERROR) {
 		return (GMT->parent->error);
 	}
 	gmt_M_free (GMT, X_pow);
@@ -575,7 +575,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -611,7 +611,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, ".");
 	GMT_Message (API, GMT_TIME_NONE, "\tList operations in the order desired for execution.\n");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par) {
@@ -797,7 +797,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -842,19 +842,19 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
 		if(Orig[0]->header->registration != Orig[1]->header->registration) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different regions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different intervals\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -884,7 +884,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 	}
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
@@ -938,7 +938,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "inverse FFT...\n");
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 #ifdef DEBUG
 		gmt_grd_dump (Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
 #endif
@@ -948,7 +948,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-		                    GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+		                    GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -956,5 +956,5 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_grids; k++)
 		GMT_FFT_Destroy (API, &(FFT_info[k]));
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

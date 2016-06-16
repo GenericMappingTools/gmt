@@ -166,7 +166,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
 	GMT_Message (API, GMT_TIME_NONE, " A B op C op D op ... = <outgrd>\n\n");
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE,
 		"\tA, B, etc are grid files, constants, or symbols (see below).\n"
@@ -215,7 +215,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
 	GMT_Option (API, "n,r,s,x,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -294,7 +294,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 		n_errors++;
 	}
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL struct GMT_GRID *alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template) {
@@ -2037,7 +2037,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_OK) {
+	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE setting number of input columns\n");
 		info->error = GMT->parent->error;
 		return;
@@ -2064,7 +2064,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	/* Free memory used for pol */
 
-	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE destroying allocated data from %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
@@ -2288,7 +2288,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 	else
 		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
-	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_OK) {
+	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s setting number of input columns\n", op);
 		info->error = GMT->parent->error;
 		return NULL;
@@ -2303,7 +2303,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 
 GMT_LOCAL int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATASET **D, char *op)
 {
-	if (GMT_Destroy_Data (GMT->parent, D) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, D) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s destroying allocated data from %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return 1;
@@ -4328,7 +4328,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (stack[k]->alloc_mode == 3)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Let stack item %d survive module\n", k);
-		else if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
+		else if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
 		gmt_M_free (GMT, stack[k]);
@@ -4336,13 +4336,13 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
 		if (recall[k] && !recall[k]->stored.constant) {
-			if (GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G) != GMT_OK) {
+			if (GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 			}
 		}
 		gmt_M_free (GMT, recall[k]);
 	}
-	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
 	gmt_M_free (GMT, info->d_grd_x);
@@ -4397,7 +4397,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
-	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (EXIT_FAILURE);
+	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return1 (error);
@@ -4427,7 +4427,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else {	/* Standard output */
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No output file specified via = file mechanism\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 	}
@@ -4443,7 +4443,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
-		if (status == GRDMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
+		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		in_file = opt->arg;
 		/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
@@ -4457,11 +4457,11 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active && Ctrl->I.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -I together with -R<gridfile>\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		else if  (GMT->common.r.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -r when grid files are specified\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
@@ -4470,7 +4470,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 		}
 		if ((info.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, G_in)) == NULL) Return (API->error);
-		if (GMT_Destroy_Data (API, &G_in) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G_in) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -4482,7 +4482,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	info.nm = info.G->header->nm;	info.size = info.G->header->size;
 
@@ -4564,7 +4564,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
 			if (nstack <= 0) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: No items on stack available for output!\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "= %s", opt->arg);
@@ -4585,7 +4585,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
@@ -4627,9 +4627,9 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				bool added_new = false;
 				if (nstack == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
-				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 					if (!stack[last]->constant) gmt_M_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
@@ -4650,10 +4650,10 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_RECALL) {
 				/* Add to stack from stored memory location */
-				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				if (recall[k]->stored.constant) {	/* Place a stored constant on the stack */
 					stack[nstack]->constant = true;
@@ -4673,12 +4673,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_CLEAR) {
 				/* Free stored memory location */
-				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
-				if (recall[k]->stored.G && GMT_Destroy_Data (API, &recall[k]->stored.G) != GMT_OK) {
+				if (recall[k]->stored.G && GMT_Destroy_Data (API, &recall[k]->stored.G) != GMT_NOERROR) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 				}
 
@@ -4741,12 +4741,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				}
 				if (!subset && !gmt_M_grd_same_shape (GMT, stack[nstack]->G, info.G)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "grid files not of same size!\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				else if (!Ctrl->N.active && (!subset && (fabs (stack[nstack]->G->header->wesn[XLO] - info.G->header->wesn[XLO]) > x_noise || fabs (stack[nstack]->G->header->wesn[XHI] - info.G->header->wesn[XHI]) > x_noise ||
 					fabs (stack[nstack]->G->header->wesn[YLO] - info.G->header->wesn[YLO]) > y_noise || fabs (stack[nstack]->G->header->wesn[YHI] - info.G->header->wesn[YHI]) > y_noise))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "grid files do not cover the same area!\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
@@ -4761,12 +4761,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		if ((new_stack = nstack - consumed_operands[op] + produced_operands[op]) >= GRDMATH_STACK_SIZE) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Stack overflow (%s)\n", opt->arg);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (nstack < consumed_operands[op]) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		n_items++;
@@ -4803,7 +4803,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	/* Clean-up time */
 
 	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
-		if (recall[kk]->stored.G && GMT_Destroy_Data (API, &recall[kk]->stored.G) != GMT_OK) {
+		if (recall[kk]->stored.G && GMT_Destroy_Data (API, &recall[kk]->stored.G) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", kk);
 		}
 		gmt_M_str_free (recall[kk]->label);
@@ -4814,5 +4814,5 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	if (nstack > 0) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack);
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

@@ -111,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|R|x] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in the\n");
@@ -144,7 +144,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
 	GMT_Option (API, "bo,d,f,g,h,i,o,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
@@ -472,7 +472,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		gmt_make_rot2d_matrix (Ctrl->T.par[2], R);
 	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE)) {	/* Will need secondary vector, get that first before input file */
 		n = decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
-		if (n == 0) Return (EXIT_FAILURE);
+		if (n == 0) Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
 			if (n == 2)
 				gmt_normalize2v (GMT, vector_2);
@@ -490,7 +490,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		uint64_t dim[4] = {1, 1, 1, 3};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 				Return (API->error);
 			}
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -502,14 +502,14 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || gmt_M_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
-			if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			add_cols = 3;	/* Make space for angle major minor */
 		}
 		else {	/* Decode a single vector */
 			n = decode_vector (GMT, Ctrl->A.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
-			if (n == 0) Return (EXIT_FAILURE);
+			if (n == 0) Return (GMT_RUNTIME_ERROR);
 			if (Ctrl->T.mode == DO_DOT) {	/* Must normalize before we turn dot-product into angle */
 				if (n == 2)
 					gmt_normalize2v (GMT, vector_1);
@@ -525,7 +525,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	}
 	else {	/* Read input files or stdin */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -647,15 +647,15 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	/* Time to write out the results */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	if (single && GMT_Destroy_Data (API, &Din) != GMT_OK) {
+	if (single && GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

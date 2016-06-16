@@ -171,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_do_OPT, GMT_c_OPT, GMT_ho_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the grid file to be contoured.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of three ways:\n");
@@ -238,7 +238,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
 	GMT_Option (API, "bo3,c,do,f,h,p,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GRDCONTOUR_CTRL *Ctrl) {
@@ -480,7 +480,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
 	                                 "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /* Three sub functions used by GMT_grdcontour */
@@ -857,10 +857,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			gmt_plane_perspective (GMT, -1, 0.0);
 			gmt_plotend (GMT);
 		}
-		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	/* Read data */
@@ -910,10 +910,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->L.high < G->header->z_max) G->header->z_max = Ctrl->L.high;
 	if (Ctrl->L.active && G->header->z_max < G->header->z_min) {	/* Specified contour range outside range of data - quit */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours within specified -L range\n");
-		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
@@ -972,14 +972,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {
 			Return (API->error);	/* Establishes data input */
 		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error enabling contour info file %s\n", Ctrl->C.file);
 			Return (API->error);
 		}
@@ -1008,7 +1008,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			n_contours++;
 		} while (true);
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further grid data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
 			Return (API->error);
 		}
 	}
@@ -1068,13 +1068,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cont_type);
 		gmt_M_free (GMT, cont_angle);
 		gmt_M_free (GMT, cont_do_tick);
-		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (Ctrl->C.cpt && GMT_Destroy_Data (API, &P) != GMT_OK) {
+		if (Ctrl->C.cpt && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	/* OK, now we know we have contouring to do */
@@ -1092,7 +1092,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (gmt_contlabel_prep (GMT, &Ctrl->contour, xyz)) {	/* Prep for crossing lines, if any */
 		gmt_M_free (GMT, contour);		gmt_M_free (GMT, cont_type);
 		gmt_M_free (GMT, cont_angle);		gmt_M_free (GMT, cont_do_tick);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	for (i = 0; i < 3; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];	/* Used if -D is set */
@@ -1100,7 +1100,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* Because we are doing single-precision, we cannot subtract incrementally but must start with the
 	 * original grid values and subtract the current contour value. */
 
- 	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
+ 	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
 	n_edges = G->header->n_rows * (urint (ceil (G->header->n_columns / 16.0)));
 	edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
@@ -1251,14 +1251,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
 			Return (error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_M_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		gmt_M_free (GMT, n_seg_alloc);
@@ -1313,7 +1313,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (make_plot || Ctrl->contour.save_labels) gmt_contlabel_free (GMT, &Ctrl->contour);
 
-	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_orig\n");
 	}
 	gmt_M_free (GMT, edge);
@@ -1324,5 +1324,5 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

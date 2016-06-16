@@ -76,7 +76,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 
 	if (re == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	
 	/*************************************************************************
@@ -103,7 +103,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 			/* Handle other special cases if you like */
 			default: 
 				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE matching error %d.\n", rc);
-				 GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				 GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				 break;
 		}
 		return (0);	/* Match failed */
@@ -127,7 +127,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 	if ( (status = regcomp(&re, pattern, cflags)) != 0) {
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: POSIX ERE compilation failed: %s\n", err_msg);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
 	/* execute the RE against the subject string */
@@ -139,7 +139,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 		/* this is when errors have been encountered */
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	return (0); /* No match */
 
@@ -147,7 +147,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 
 	/* disable ERE support */
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: this GMT version was compiled without regular expression support.\n");
-	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 
 #endif
 }

@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tGive xyz[dh]file name or read stdin.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -182,7 +182,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
 	GMT_Option (API, "bo,d,f,g,h,i,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -298,7 +298,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
 	                                 "Syntax error -N: Output template must contain %%d\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -347,10 +347,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_FILEBREAK, NULL, NULL, NULL)) == NULL) {
@@ -419,14 +419,14 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active)
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Registers default output destination, unless already set */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
@@ -559,7 +559,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->F.active) gmt_M_free (GMT, fwork);
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		gmt_M_free (GMT, rec);
 		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);
@@ -596,7 +596,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->N.name);
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);
 	}
@@ -606,5 +606,5 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->data[j] = NULL;
 	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

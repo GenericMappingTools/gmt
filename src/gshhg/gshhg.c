@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_o_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tgshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b is a GSHHG polygon or line file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -101,7 +101,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
 	GMT_Option (API, "V,bo2,do,o,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 	
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -177,7 +177,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -236,11 +236,11 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 
 	if (gmt_access (GMT, Ctrl->In.file, F_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_FILE_NOT_FOUND);
 	}
 	if ((fp = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -377,7 +377,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
-					Return (EXIT_FAILURE);
+					Return (GMT_DATA_READ_ERROR);
 				}
 				if (must_swab) /* Must deal with different endianness */
 					bswap_POINT_struct (&p);
@@ -399,7 +399,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			TX->data = gmt_M_memory (GMT, TX->data, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -409,7 +409,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -418,5 +418,5 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

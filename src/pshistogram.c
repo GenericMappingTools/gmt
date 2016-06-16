@@ -391,7 +391,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "JXZ");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the bin width.  Append +l|h|b to include extreme values\n");
@@ -432,7 +432,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Option (API, "bi2,c,di,f,h,i,p,s,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -590,7 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -650,13 +650,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (GMT->common.R.active) gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -696,7 +696,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {
 		gmt_M_free (GMT, data);
 		Return (API->error);	/* Disables further data input */
 	}
@@ -704,7 +704,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
 		gmt_M_free (GMT, data);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points read\n", n);
@@ -742,7 +742,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (fill_boxes (GMT, &F, data, n)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
 		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -775,7 +775,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (error);
 			}
@@ -800,11 +800,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				S->data[GMT_Y][row] = yy;
 				row++;
 			}
-			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+			if (GMT_Destroy_Data (GMT->parent, &D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
@@ -815,15 +815,15 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 4U)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (error);
 			}
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
@@ -832,7 +832,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
@@ -840,7 +840,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, F.boxh);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
@@ -862,7 +862,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
 			gmt_M_free (GMT, data);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -955,5 +955,5 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, data);
 	gmt_M_free (GMT, F.boxh);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -305,7 +305,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<unit>] [-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the name of the grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -322,7 +322,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
 	GMT_Option (API, "f,h,o,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -430,7 +430,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
 	                                   "Syntax error option -T: Must specify -Clow/high/delta\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -485,12 +485,12 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Yours grid is recognized as Cartesian.\n");
 		
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
@@ -505,7 +505,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Ctrl->C.inc  = Ctrl->C.high - Ctrl->C.low;
 		if (Ctrl->C.high <= Ctrl->C.low) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Cr<cval> option: <cval> must exceed grid's minimum.\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -673,11 +673,11 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	/* Print out final estimates */
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
@@ -689,7 +689,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
@@ -713,7 +713,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
@@ -722,5 +722,5 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, vol);
 	gmt_M_free (GMT, height);
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-N<upper_age>] [-SadrswxyXY]\n\t[-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
 	spotter_rot_usage (API, 'E');
@@ -133,7 +133,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override age grid.\n");
 	GMT_Option (API, "V,bi2,d,h,r,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 
 }
 
@@ -249,7 +249,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T: Must specify positive age.\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -347,7 +347,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->G.active) {	/* Need one or more output grids */
@@ -387,13 +387,13 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
@@ -523,14 +523,14 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			strcpy (G_mod[k]->header->y_units, "degrees_north");
 			snprintf (G_mod[k]->header->remark, GMT_GRID_REMARK_LEN160, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode[k]], Ctrl->E.rot.file);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_mod[k])) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G_mod[k]) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G_mod[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 		gmt_M_free (GMT, G_mod);
 	}
 	else {
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 		gmt_M_free (GMT, out);
@@ -542,5 +542,5 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

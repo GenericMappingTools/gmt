@@ -81,7 +81,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t%s] [%s] [-K] [-O] [-P] [%s]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	gmt_refpoint_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
@@ -92,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,c,f,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -152,7 +152,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -270,5 +270,5 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	gmt_plotend (GMT);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

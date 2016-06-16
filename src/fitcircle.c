@@ -124,7 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -142,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
 	GMT_Option (API, "V,a,bi,di,f,g,h,i,o,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_t ndata, double *pole, int norm, double *work, double *circle_distance) {
@@ -387,10 +387,10 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -418,19 +418,19 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		if (++n_data == n_alloc) data = gmt_M_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA);
 	} while (true);
 
-  	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
+  	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {
 		Return (API->error);				/* Disables further data input */
 	}
 
  	if (n_data == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		gmt_M_free (GMT, data);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	o_mode = (Ctrl->F.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 
-	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (Ctrl->F.active) {	/* Must determine number of output columns for this single record */
@@ -440,12 +440,12 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		if (Ctrl->F.mode & 16) n_cols += 3;	/* Requested small circle pole location and colatitude */
 		if (Ctrl->L.norm == 3) n_cols *= 2;	/* Selected all this for both norms, so double output size */
 		if (Ctrl->F.mode & 1) n_cols += 2;	/* Requested flat earth mean as well */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_NOERROR) {
 			Return (error);
 		}
 	}
 
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
@@ -631,9 +631,9 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, work);
 	gmt_M_free (GMT, data);
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

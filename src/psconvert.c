@@ -369,7 +369,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
-	if ( ghostbuster(GMT->parent, C) != GMT_OK ) { /* Try first to find the gspath from registry */
+	if ( ghostbuster(GMT->parent, C) != GMT_NOERROR ) { /* Try first to find the gspath from registry */
 		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
 	}
 #else
@@ -405,7 +405,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tWorks by modifying the page size in order that the resulting\n");
 	GMT_Message (API, GMT_TIME_NONE, "\timage will have the size specified by the BoundingBox.\n");
@@ -522,7 +522,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -693,7 +693,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
 	                                   "Syntax error: Creation of Multipage PDF requires setting -F option\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp, char *notused1, uint64_t *notused2) {
@@ -831,21 +831,21 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 #ifdef _WIN32
 	if (_pipe(fd, 512, O_BINARY) == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 #else
 	if (pipe (fd) == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 #endif
 	if (dup2 (fd[1], fileno (stderr)) < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 	if (close (fd[1]) == -1) { 		/* Close original write end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	/* Allocate GMT_POSTSCRIPT struct to hold the string that lives inside GMT->PSL */
@@ -864,7 +864,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	else {
 		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
 		gmt_M_free (API->GMT, PS);
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	/* Now read the image from input pipe fd[0] */
@@ -876,7 +876,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close read end of pipe.\n");
 		gmt_M_free (API->GMT, PS);
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
@@ -931,7 +931,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	gmt_M_free (API->GMT, PS);
 
-	return GMT_OK;
+	return GMT_NOERROR;
 }
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -967,21 +967,21 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 #ifdef _WIN32
 		if (_pipe(fd, 145227600, O_BINARY) == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-			return EXIT_FAILURE;
+			return GMT_RUNTIME_ERROR;
 		}
 #else
 		if (pipe (fd) == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-			return EXIT_FAILURE;
+			return GMT_RUNTIME_ERROR;
 		}
 #endif
 		if (dup2 (fd[1], fileno (stdout)) < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
-			return EXIT_FAILURE;
+			return GMT_RUNTIME_ERROR;
 		}
 		if (close (fd[1]) == -1) { 		/* Close original write end of pipe */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
-			return EXIT_FAILURE;
+			return GMT_RUNTIME_ERROR;
 		}
 	}
 	else
@@ -1003,13 +1003,13 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
 		gmt_M_free (API->GMT, PS);
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 	gmt_M_free (API->GMT, PS);
 
 	/* ----------- IF WE WROTE A FILE THAN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
 	if (out_file[0] != '\0')
-		return GMT_OK;
+		return GMT_NOERROR;
 	/* ---------------------------------------------------------------------------------------- */
 
 	n = read (fd[0], buf, 3U);				/* Consume first header line */
@@ -1031,7 +1031,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 
 	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create Image structure\n");
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
@@ -1053,10 +1053,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	I->header->n_columns = (uint32_t)dim[GMT_X];	I->header->n_rows = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
 	I->header->registration = GMT_GRID_PIXEL_REG;
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
-	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
-		return EXIT_FAILURE;
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
+		return GMT_RUNTIME_ERROR;
 
-	return GMT_OK;	/* Done here */
+	return GMT_NOERROR;	/* Done here */
 }
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
@@ -1155,19 +1155,19 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			/* command execution failed or cannot parse response */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n",
 			            n, gsVersion.major, gsVersion.minor);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else { /* failed to open pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript (%s).\n", Ctrl->G.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no longer supports the SVG device.\n",
 		            gsVersion.major, gsVersion.minor);
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
@@ -1182,7 +1182,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active && gmt_M_file_is_memory (Ctrl->F.file)) {
 		if (Ctrl->T.device <= GS_DEV_SVG || Ctrl->In.n_files > 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Can only return one raster image to calling program via memory array.\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		return_image = true;
 #ifndef HAVE_GDAL
@@ -1220,7 +1220,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
 			gmt_M_free (GMT, line);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		ps_names = gmt_M_memory (GMT, NULL, n_alloc, char *);
 		while (file_line_reader (GMT, &line, &line_size, fpl, NULL, NULL) != EOF) {
@@ -1258,7 +1258,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		if (error) {	/* Return in error state */
 			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
@@ -1276,7 +1276,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			error++;
 		}
 		gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-		Return (error ? EXIT_FAILURE : GMT_OK);		/* Done here */
+		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
 	}
 	/* -------------------------------------------------------------------------------------- */
 
@@ -1320,7 +1320,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cmd2);
 		gmt_M_free (GMT, ps_names);
 		gmt_M_free (GMT, line);
-		Return (error ? EXIT_FAILURE : GMT_OK);		/* Done here */
+		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
 	}
 	/* ----------------------------------------------------------------------------------------------- */
 
@@ -1360,7 +1360,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
@@ -1409,12 +1409,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				remove (BB_file);
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-				Return (EXIT_FAILURE);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while ((file_line_reader (GMT, &line, &line_size, fpb, NULL, NULL) != EOF) && !got_BB) {
 				/* We only use the High resolution BB */
@@ -1445,7 +1445,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							remove (tmp_file);
 							if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-							Return (EXIT_FAILURE);
+							Return (GMT_RUNTIME_ERROR);
 						}
 						/* must leave loop because fpb has been closed and read_source would
 						 * read from closed file: */
@@ -1899,7 +1899,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				remove (tmp_file);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			/* Check output file */
@@ -1946,7 +1946,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				sys_retval = system (cmd);
 				if (sys_retval) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				if (!Ctrl->S.active) remove (pdf_file);	/* The temporary PDF file is no longer needed */
 			}
@@ -1974,7 +1974,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			unsigned char *tmp;
 			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open image file %s\n", out_file);
-				Return (EXIT_FAILURE);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 1st line */
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 2nd line */
@@ -1982,7 +1982,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to decipher size of image in file %s\n", out_file);
 				fclose (fp_raw);
-				Return (EXIT_FAILURE);
+				Return (GMT_PARSE_ERROR);
 			}
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 4th line */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
@@ -2005,7 +2005,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, tmp);
 			fclose (fp_raw);
 #endif
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 				Return (API->error);
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
 			if (Ctrl->Z.active) {	/* Remove the image since it is returned to a calling program and -Z was given */
@@ -2097,7 +2097,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "The gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
@@ -2197,7 +2197,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, PS);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }
 
 #ifdef WIN32
@@ -2238,7 +2238,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 
 	if (RegO != ERROR_SUCCESS) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	while (rc != ERROR_NO_MORE_ITEMS) {
@@ -2252,7 +2252,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 
 	if (maxVersion == 0) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Unknown version reported in registry\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	sprintf(ver, "%.2f", maxVersion);
@@ -2273,7 +2273,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 #endif
 	if (RegO != ERROR_SUCCESS) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Read the value for "GS_DLL" via the handle 'hkey' */
@@ -2283,12 +2283,12 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 
 	if (RegO != ERROR_SUCCESS) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error reading the GS_DLL value contents\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GS_DLL value is screwed.\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Truncate string and add affix gswinXXc.exe */
@@ -2298,14 +2298,14 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gswinXXc.exe does not exist.\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
 	C->G.file = malloc (strlen (data) + 3);	/* strlen + 2 * " + \0 */
 	sprintf (C->G.file, "\"%s\"", data);
 
-	return (GMT_OK);
+	return (GMT_NOERROR);
 }
 
 #endif		/* WIN32 */

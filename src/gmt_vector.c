@@ -70,7 +70,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 
 	if (m < n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in gmt_svdcmp: m < n augment A with additional rows\n");
-		return (EXIT_FAILURE);
+		return (GMT_DIM_TOO_SMALL);
 	}
 
 	/* allocate work space */
@@ -220,7 +220,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 			if (its == 30) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
 #ifndef _OPENMP
-				return (EXIT_FAILURE);
+				return (GMT_RUNTIME_ERROR);
 #endif
 			}
 			x=w[l];		/* shift from bottom 2-by-2 minor */
@@ -426,11 +426,11 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 
 	if (step_out < 0.0) {	/* Safety valve */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_spherical given negative step-size\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_spherical given bad mode %d\n", mode);
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	if (mode < GMT_TRACK_SAMPLE_FIX) {
@@ -533,11 +533,11 @@ GMT_LOCAL uint64_t vector_resample_path_cartesian (struct GMT_CTRL *GMT, double 
 
 	if (step_out < 0.0) {	/* Safety valve */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_cartesian given negative step-size\n");
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: vector_resample_path_cartesian given bad mode %d\n", mode);
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 
 	if (mode < GMT_TRACK_SAMPLE_FIX) return (vector_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
@@ -1012,7 +1012,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	/* Check for convergence */
 	if (info > 0 ) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
-		return (EXIT_FAILURE);
+		return (GMT_RUNTIME_ERROR);
 	}
 	/* Free workspace */
 	gmt_M_free (GMT, work);

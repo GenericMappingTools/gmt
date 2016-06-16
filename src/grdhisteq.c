@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -105,7 +105,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
 	GMT_Option (API, "R,V,h,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -170,7 +170,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
 	n_errors += gmt_M_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
@@ -257,14 +257,14 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 		i = j;
 		current_cell++;
 	}
-	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data ioutput */
+	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
 		gmt_M_free (GMT, cell);
 		return (GMT->parent->error);
 	}
 
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
-		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
 	}
@@ -384,27 +384,27 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 			int out_ID;
 			/* Must register Ctrl->D.file first since we are going to writing rec-by-rec */
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->D.file)) == GMT_NOTSET) {
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
 				Return (error);
 			}
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
 		}
-		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active)) != 0) Return (EXIT_FAILURE);	/* Read error */
+		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active)) != 0) Return (GMT_RUNTIME_ERROR);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was true */
 	}
 	if (Ctrl->G.active) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

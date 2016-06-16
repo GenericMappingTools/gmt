@@ -282,12 +282,12 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	FILE *fp = NULL;
 	gmt_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up records */
 	if (D->n_records == 0)
-		return GMT_OK;	/* No symbols to plot */
+		return GMT_NOERROR;	/* No symbols to plot */
 	
 	/* Here we have symbols.  Set up ID etc for the call to psxy */
 	if ((object_ID = GMT_Get_ID (GMT->parent, GMT_IS_TEXTSET, GMT_IN, D)) == GMT_NOTSET)	/* Get object ID */
 		return (GMT->parent->error);
-	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_OK)	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_NOERROR)	/* Make filename with embedded object ID */
 		return (GMT->parent->error);
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
@@ -297,7 +297,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary decorated line symbol .def file created: %s\n", tmp_file);
 	if ((fp = fopen (tmp_file, "w")) == NULL) {	/* Disaster */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
-		return EXIT_FAILURE;
+		return GMT_ERROR_ON_FOPEN;
 	}
 	fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");	/* Make a rotated plain symbol of type picked up from input file */
 	fclose (fp);
@@ -306,7 +306,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
 	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
-	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Plot all the symbols */
+	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
@@ -321,7 +321,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_OK) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write file: %s\n", tmp_file2);
 		}
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
@@ -330,7 +330,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		if (remove (tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file: %s\n", tmp_file);
 		
-	return GMT_OK;
+	return GMT_NOERROR;
 }
 
 GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P) {
@@ -377,7 +377,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, \
 		GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -507,7 +507,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,f,g,h,i,p,t,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
@@ -711,7 +711,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->W.mode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -866,18 +866,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->T.active) {
 		gmt_plotend (GMT);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
-		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
+		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
 		if (S.G.delay) gmt_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
-		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
+		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
 	}
 	
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
@@ -931,7 +931,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
@@ -958,10 +958,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			set_type  = GMT_IS_DATASET;
 			read_mode = GMT_READ_DOUBLE;
 		}
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_OK) {		/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");
@@ -1417,7 +1417,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 	}
@@ -1426,7 +1426,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */
@@ -1437,7 +1437,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			S.method = SEGM_REFPOINT;	S.level = SEGM_RECORD;
 			D = gmt_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the original data */
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
+			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
 				Return (API->error);
 			}
 		}
@@ -1447,7 +1447,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			D = gmt_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
+			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
 				Return (API->error);
 			}
 		}
@@ -1727,7 +1727,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 			}
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -1756,7 +1756,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
 		if ((error = plot_decorations (GMT, Decorate)) != 0)	/* Cannot possibly be a good thing */
 			Return (error);
-		if (GMT_Destroy_Data (API, &Decorate) != GMT_OK) {	/* Might as well delete since no good later */
+		if (GMT_Destroy_Data (API, &Decorate) != GMT_NOERROR) {	/* Might as well delete since no good later */
 			Return (API->error);
 		}
 	}
@@ -1764,5 +1764,5 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	
 	gmt_plotend (GMT);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -200,7 +200,7 @@ GMT_LOCAL unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 			ksize = 4;	break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid data type [%c]\n", (int)type);
-			return (EXIT_FAILURE);
+			return (GMT_NOT_A_VALID_TYPE);
 			break;
 	}
 	return (ksize);
@@ -654,7 +654,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	gmt_M_free (API->GMT, rasinfo);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If r is appended you must also specify a projection with -J (set scale = 1).\n");
@@ -668,7 +668,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To get binary triplets, see -bo.  Cannot be used with -G.\n");
 	GMT_Option (API, "V,bo3,do,h,o,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -724,7 +724,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 		n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
 	}
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -782,7 +782,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
-	if ((nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) == 0) Return (EXIT_FAILURE);
+	if ((nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) == 0) Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
@@ -792,7 +792,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	reset_coltype (GMT, r_opt->arg);	/* Make sure geo coordinates will be recognized */
 	if (gmt_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reprocessing -R?.\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Check if given argument is an integer ID.  If so, assign iselect, else set it to UINT_MAX */
@@ -846,7 +846,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	if (error) {
 		free (tselect);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* OK, here we have a recognized dataset ID */
@@ -879,7 +879,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		if (jmult < 1 || fabs(Grid->header->inc[GMT_Y] - jmult * myras.h.inc[GMT_Y]) > tol) error++;
 		if (error) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Your -I option does not create a grid which fits the selected raster (%s)\n", myras.h.command);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else {
@@ -981,14 +981,14 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->n_columns, float);
 		x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
 		for (col = 0; col < Grid->header->n_columns; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->n_columns);
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
@@ -1011,12 +1011,12 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	if ((fp = gmt_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR opening %s for read.\n", myras.h.remark);
 		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (myras.skip && fseek (fp, myras.skip, SEEK_CUR)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR skipping %" PRIi64 " bytes in %s.\n", (int64_t)myras.skip, myras.h.remark);
 		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Reading from raster %s\n", myras.h.remark);
 	if (myras.swap_me) GMT_Report (API, GMT_MSG_VERBOSE, "Data from %s will be byte-swapped\n", myras.h.remark);
@@ -1026,7 +1026,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 			gmt_fclose (GMT, fp);
-			Return (EXIT_FAILURE);
+			Return (GMT_GRID_READ_ERROR);
 		}
 		for (row = 0, jras = jrasstart; row < Grid->header->n_rows; row++, jras += jmult) {
 			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->n_rows);
@@ -1091,13 +1091,13 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR seeking in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
-					Return (EXIT_FAILURE);
+					Return (GMT_GRID_READ_ERROR);
 				}
 				if ((gmt_M_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
-					Return (EXIT_FAILURE);
+					Return (GMT_GRID_READ_ERROR);
 				}
 #ifdef DEBUG
 				GMT_Report (API, GMT_MSG_VERBOSE, "Doing line %06d\r", j);
@@ -1154,17 +1154,17 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	if (n_nan == Grid->header->n_columns * Grid->header->n_rows) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid file is entirely full of NaNs.\n");
 
 	if (Ctrl->T.active) {
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 		gmt_M_free (GMT, x);
 	}
 	else {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -77,7 +77,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_binlist <files> -T<TAG> [-D] [-E] [%s]\n\n", GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Bin tracks using equal-area bins (with -D only).\n");
 	GMT_Option (API, "V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->D.active, "Syntax error: -E requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
@@ -218,7 +218,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (EXIT_FAILURE);		
+		Return (GMT_RUNTIME_ERROR);		
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -227,7 +227,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		Return (EXIT_FAILURE);		
+		Return (GMT_RUNTIME_ERROR);		
 	}
 
 	if (s->geographic) {
@@ -249,7 +249,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			x2sys_end (GMT, s);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
@@ -280,13 +280,13 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
@@ -470,7 +470,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_km);
 	}
 	
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -480,5 +480,5 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 	x2sys_free_list (GMT, trk_name, n_tracks);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

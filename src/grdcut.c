@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is file to extract a subset from.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
@@ -114,7 +114,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs in range instead [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -192,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify one input grid file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side) {
@@ -289,7 +289,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 		/* Here NaNs have either been skipped by inward search, or will be ignored (NAN_IS_IGNORED) or will beconsider to be within range (NAN_IS_INRANGE) */
@@ -305,7 +305,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		if (go) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Z is empty!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		for (row = row1, go = true; go && row > row0; row--) {	/* Scan from ymin towards ymax */
 			for (col = col0, node = gmt_M_ijp (G->header, row, 0); go && col <= col1; col++, node++) {
@@ -359,7 +359,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		if (!gmt_M_is_geographic (GMT, GMT_IN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -S option requires a geographic grid\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		/* Set w/e to center and adjust in case of -/+ 360 stuff */
@@ -583,9 +583,9 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	/* Send the subset of the grid to the destination. */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -190,7 +190,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT);
 #endif
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the column name to process (e.g., faa, mag).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Equation to fit: specify <flag> as c (constant), d (drift over distance),\n");
@@ -206,7 +206,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
 	GMT_Option (API, "bi,di,x,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == F_IS_DRIFT_T && !Ctrl->I.file, "Syntax error -Ed: Solution requires -I<tracklist>\n");
 #endif
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #ifdef SAVEFORLATER
@@ -389,7 +389,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 #ifdef SAVEFORLATER
 	if (Ctrl->I.file && x2sys_read_namedatelist (GMT, Ctrl->I.file, &trk_list, &start, &n_tracks) == X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
 
@@ -405,7 +405,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (S->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		x2sys_end (GMT, S);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	gmt_M_memset (active_col, N_COE_PARS, bool); /* Initialize array */
@@ -456,7 +456,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", Ctrl->In.file);
 		x2sys_end (GMT, S);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	/* Allocate memory for COE data */
@@ -492,7 +492,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		if (GMT->common.b.ncol[GMT_IN] < (uint64_t)expect) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Binary file has %" PRIu64 " columns but %d is required\n", GMT->common.b.ncol[GMT_IN], expect);
 			gmt_fclose (GMT, fp);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
@@ -565,7 +565,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) gmt_M_free (GMT, data[i]);
 			gmt_M_free (GMT, data[COL_WW]);
 			for (i = 0; i < 2; i++) gmt_M_free (GMT, ID[i]);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else {	/* ASCII input with track names */
@@ -574,7 +574,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			gmt_fclose (GMT, fp);
 			gmt_M_free (GMT, trk_list);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
@@ -582,7 +582,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			            "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			gmt_fclose (GMT, fp);
 			gmt_M_free (GMT, trk_list);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
 			if (line[0] == '#') continue;	/* Skip other comments */
@@ -656,7 +656,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 #ifdef SAVEFORLATER
 					else {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 #endif
 				}
@@ -855,7 +855,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Singular matrix - unable to solve!\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	gmt_M_free (GMT, N);
@@ -894,10 +894,10 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Write correction table */
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
@@ -947,5 +947,5 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	x2sys_end (GMT, S);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

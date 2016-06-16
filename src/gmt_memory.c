@@ -83,7 +83,7 @@ GMT_LOCAL int memory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t 
 #ifdef DEBUG
 	gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory [realloc] called\n");
 #endif
-	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	GMT_exit (GMT, GMT_MEMORY_ERROR); return GMT_MEMORY_ERROR;
 }
 
 #ifdef MEMDEBUG
@@ -139,7 +139,7 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 		snprintf (logfile, 32, "gmt_memtrack_%d.log", pid);
 		if ((M->fp = fopen (logfile, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create log file gmt_memtrack_%d.log\n", pid);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 		}
 	}
 	fprintf (M->fp, "# %s", ctime (&now));
@@ -487,7 +487,7 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 #ifdef DEBUG
 		gmtlib_report_func (GMT, GMT_MSG_NORMAL, where, "gmt_M_memory called\n");
 #endif
-		GMT_exit (GMT, EXIT_FAILURE); return NULL;
+		GMT_exit (GMT, GMT_MEMORY_ERROR); return NULL;
 	}
 
 #if defined(WIN32) && !defined(USE_MEM_ALIGNED)

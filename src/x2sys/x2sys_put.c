@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<info.tbf> is one track bin file from x2sys_binlist [Default reads stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-D Remove the listed tracks  [Default will add to database].\n");
@@ -90,7 +90,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   [Default refuses to process tracks already in the database].\n");
 	GMT_Option (API, "V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -142,7 +142,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 	
 	if (Ctrl->F.active) Ctrl->D.active = true;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B) {
@@ -229,20 +229,20 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.active && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track binindex file\n");
 		gmt_fclose (GMT, fp);
-		Return (EXIT_FAILURE);
+		Return (GMT_DATA_READ_ERROR);
 	}
 	k = (line[1] == ' ') ? 2 : 1;	/* Since line may be "#TAG" or "# TAG" */
 	if (strncmp (&line[k], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
 		GMT_Report (API, GMT_MSG_NORMAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[k]);
 		gmt_fclose (GMT, fp);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Open TAG file and set the operational parameters */
@@ -266,7 +266,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 2nd line of track binindex file\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_DATA_READ_ERROR);
 	}
 	while (line[0] == '>') {	/* Next segment */
 		sscanf (line, "> %s", track);
@@ -302,7 +302,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		if (skip) {	/* Just wind past this segment */
 			if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error in a segment line of track binindex file\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_DATA_READ_ERROR);
 			}
 			while (line[0] != '>' && (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));	/* Keep reading until EOF of next segment header */
 		}
@@ -327,11 +327,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
 					GMT_Report (API, GMT_MSG_NORMAL, "Error processing record for track %s [%s]\n", track, line);
-					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 				}
 				else if (flag > max_flag) {
 					GMT_Report (API, GMT_MSG_NORMAL, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
-					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
 					B.base[index].first_track = x2sys_bix_make_track (GMT, 0, 0);
@@ -363,25 +363,25 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	if (rename (track_path, old_track_path)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
 		x2sys_end (GMT, s);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	remove (old_index_path);	/* First delete old files */
 	if (rename (index_path, old_index_path)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
 		x2sys_end (GMT, s);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", track_path);
 		x2sys_end (GMT, s);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if ((fbin = fopen (index_path, "wb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", index_path);
 		fclose (ftrack);
 		x2sys_end (GMT, s);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 	fprintf (ftrack,"# %s\n", Ctrl->T.TAG);
 	for (this_info = B.head->next_info; this_info; this_info = this_info->next_info)
@@ -395,20 +395,20 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 		if (fwrite (&index, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_WRITE_ERROR);
 		}
 		if (fwrite (&B.base[index].n_tracks, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_WRITE_ERROR);
 		}
 		for (this_track = B.base[index].first_track->next_track; this_track; this_track = this_track->next_track) {
 			if (fwrite (&this_track->track_id, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_DATA_WRITE_ERROR);
 			}
 			if (fwrite (&this_track->track_flag, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_DATA_WRITE_ERROR);
 			}
 		}
 	}
@@ -419,5 +419,5 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	x2sys_end (GMT, s);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -190,7 +190,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -248,7 +248,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o open document or folder when loaded [closed].\n");
 	GMT_Option (API, "a,bi2,di,f,g,h,i,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -504,7 +504,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.b.active[GMT_IN] || GMT->common.i.active) && (Ctrl->N.mode == GET_COL_LABEL || Ctrl->N.mode == GET_LABEL), "Syntax error: Cannot use -N- or -N+ when -b or -i are used.\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...) {
@@ -639,12 +639,12 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
 					gmt_M_free (GMT, Q);
-					return (EXIT_FAILURE);
+					return (GMT_RUNTIME_ERROR);
 				}
 				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
 					gmt_M_free (GMT, Q);
-					return (EXIT_FAILURE);
+					return (GMT_RUNTIME_ERROR);
 				}
 				gmt_quad_add (GMT, Q, x);
 				if (y < y_min) y_min = y;
@@ -729,14 +729,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		}
 		if (P->is_continuous) {
 			GMT_Message (API, GMT_TIME_NONE, "Cannot use continuous color palette\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
@@ -828,7 +828,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
 			GMT_Message (API, GMT_TIME_NONE, "Could not open description file %s\n", Ctrl->D.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		kml_print (API, N++, "<description>\n");
 		kml_print (API, N++, "<![CDATA[\n");
@@ -843,7 +843,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	   same for n_segments, and n_rows, then additional if-test on parsing text record or using data as is. */
 
 	if (no_text) {	/* Treat input as a data set (no texts) */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if ((Dd = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -856,7 +856,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		n_tables = Dd->n_tables;
 	}
 	else {	/* Free-form text record, parse coordinates when required */
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if ((Dt = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -875,7 +875,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			wesn[YLO] = Dd->min[GMT_Y];	wesn[YHI] = Dd->max[GMT_Y];
 		}
 		else {	/* Must slog through the textset the hard way */
-			if (get_data_region (GMT, Dt, wesn)) Return (EXIT_FAILURE);
+			if (get_data_region (GMT, Dt, wesn)) Return (GMT_RUNTIME_ERROR);
 		}
 		place_region_tag (API, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	}
@@ -995,17 +995,17 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					}
 					if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
 						GMT_Message (API, GMT_TIME_NONE, "Error: Could not decode longitude from %s\n", C[GMT_X]);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 					if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					if (get_z) {
 						if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
-							Return (EXIT_FAILURE);
+							Return (GMT_RUNTIME_ERROR);
 						}
 						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
@@ -1013,7 +1013,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					if (Ctrl->F.mode == EVENT) {
 						if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
-							Return (EXIT_FAILURE);
+							Return (GMT_RUNTIME_ERROR);
 						}
 					}
 					else if (Ctrl->F.mode == SPAN) {
@@ -1021,13 +1021,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 							out[t1_col] = GMT->session.d_NaN;
 						else if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
-							Return (EXIT_FAILURE);
+							Return (GMT_RUNTIME_ERROR);
 						}
 						if (!(strcmp (C[t2_col], "NaN")))
 							out[t2_col] = GMT->session.d_NaN;
 						else if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], gmt_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
-							Return (EXIT_FAILURE);
+							Return (GMT_RUNTIME_ERROR);
 						}
 					}
 				}
@@ -1140,9 +1140,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		kml_print (API, 0, "</kml>\n");
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	Return (GMT_OK);	/* Garbage collection will free Dd or Dt */
+	Return (GMT_NOERROR);	/* Garbage collection will free Dd or Dt */
 }

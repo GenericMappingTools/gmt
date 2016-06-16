@@ -158,7 +158,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[l]<t0>/<t1>/<dt>|<n>] [-Z<base>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tInput contains x (or lon), y (or lat), radius, height for each seamount.\n");
@@ -200,7 +200,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
 	GMT_Option (API, "h,i,r,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -333,7 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 	n_errors += gmt_check_binary_io (GMT, n_expected_fields);
 	if (Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active) {Ctrl->F.active = false; Ctrl->F.mode = 0; Ctrl->F.value = 0.0;}
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
@@ -537,19 +537,19 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = parse (GMT, Ctrl, options)) != GMT_OK) Return (error);
+	if ((error = parse (GMT, Ctrl, options)) != GMT_NOERROR) Return (error);
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 	
 	/* Specify inputexpected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_NOERROR) {
 		Return (error);
 	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	if ((D = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -597,10 +597,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = n_expected_fields + 3;
-		if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 	}
@@ -619,7 +619,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);
 			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
 		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
@@ -669,14 +669,14 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (API->error);
 		}
 		gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 				
 	/* Set up and allocate output grid */
@@ -928,7 +928,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_M_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_NOERROR) {
 			gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 			Return (API->error);
@@ -936,7 +936,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, float);
 	}
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
-	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {
+	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
 		gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
@@ -947,5 +947,5 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

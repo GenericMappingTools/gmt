@@ -28,7 +28,7 @@
 #include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {
-	int status = EXIT_SUCCESS;           /* Status code from GMT API */
+	int status = GMT_NOERROR;           /* Status code from GMT API */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 	/* Structure containing name, purpose, Api_mode, and function pointer of this module: */
 
@@ -40,7 +40,7 @@ int main (int argc, char *argv[]) {
 	status = GMT_Call_Module (api_ctrl, MODULE, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (api_ctrl) != GMT_OK)
+	if (GMT_Destroy_Session (api_ctrl) != GMT_NOERROR)
 		return EXIT_FAILURE;
 
 	return status; /* Return the status from the module */

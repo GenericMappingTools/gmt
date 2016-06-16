@@ -404,7 +404,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			!(Ctrl->F.mode == GRAVFFT_FAA || Ctrl->F.mode == GRAVFFT_GEOID),
 				"Syntax error: Theoretical admittances are only defined for FAA or GEOID.\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -415,7 +415,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE,"\ttopo_grd is the input grdfile with topography values\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-G Filename for output netCDF grdfile with gravity [or geoid] values\n");
@@ -471,7 +471,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE,"\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -545,12 +545,12 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			S->data[0][k] = freq;
 			S->data[1][k] = z_top_or_bot[k];
 		}
-		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_NOERROR)
 			Return (API->error);
 
 		gmt_M_free (GMT, K);
 		gmt_M_free (GMT, z_top_or_bot);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	/* ---------------------------------------------------------------------------------- */
 
@@ -573,19 +573,19 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
 		if(Orig[0]->header->registration != Orig[1]->header->registration) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different regions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different intervals\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -594,19 +594,19 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if(Orig[0]->header->registration != Rho->header->registration) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different registrations!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_shape (GMT, Orig[0], Rho)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different dimensions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_region (GMT, Orig[0], Rho)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different regions\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!gmt_M_grd_same_inc (GMT, Orig[0], Rho)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different intervals\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -656,7 +656,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 			GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
 			if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 		}
 
 		error = do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
@@ -664,7 +664,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_FFT_Destroy (API, &(FFT_info[k]));
 
 		if (!error) {
-			Return (EXIT_SUCCESS);
+			Return (GMT_NOERROR);
 		}
 		else {
 			Return (error);
@@ -678,14 +678,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		double coeff[3];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Forward FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		do_isostasy (GMT, Grid[0], Ctrl, K);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
 			gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
@@ -703,13 +703,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0]))
 				Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-                                GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+                                GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			GMT_FFT_Destroy (API, &(FFT_info[0]));
 			gmt_M_free (GMT, topo);
 			gmt_M_free (GMT, raised);
-			Return (EXIT_SUCCESS);
+			Return (GMT_NOERROR);
 		}
 		else {
 			Ctrl->misc.z_level = Ctrl->Z.zm;
@@ -743,7 +743,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		if (GMT_FFT_2D (API, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX)) {
 			gmt_M_free (GMT, raised);	gmt_M_free (GMT, topo);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (Ctrl->D.active || Ctrl->T.moho)	/* "classical" anomaly */
@@ -758,7 +758,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
 		gmt_M_free (GMT, raised);	gmt_M_free (GMT, topo);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	/* Manually demux back since we may do loops below */
@@ -812,7 +812,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-                        GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+                        GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_NOERROR) {
 		gmt_M_free (GMT, topo);
 		Return (API->error);
 	}
@@ -821,7 +821,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }
 
 GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K) {
@@ -1049,7 +1049,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 		else if (Ctrl->misc.from_top)
 			S->data[col++][k] = z_from_top[k];
 	}
-	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_NOERROR)
 		error = GMT->parent->error;
 
 Lfree:

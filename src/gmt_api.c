@@ -296,7 +296,7 @@ GMT_LOCAL inline GMT_putfunction api_select_put_function (struct GMTAPI_CTRL *AP
 		case GMT_CHAR:		return (api_put_val_char);	break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "Internal error in api_select_put_function: Passed bad type (%d), Must abort\n", type);
-			GMT_exit (API->GMT, EXIT_FAILURE); return NULL;
+			GMT_exit (API->GMT, GMT_RUNTIME_ERROR); return NULL;
 			break;
 	}
 }
@@ -315,7 +315,7 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 		case GMT_CHAR:		return (api_get_val_char);	break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "Internal error in api_select_get_function: Passed bad type (%d), Must abort\n", type);
-			GMT_exit (API->GMT, EXIT_FAILURE); return NULL;
+			GMT_exit (API->GMT, GMT_RUNTIME_ERROR); return NULL;
 			break;
 	}
 }
@@ -414,6 +414,7 @@ GMT_LOCAL inline struct GMT_FFT_INFO * api_get_fftinfo_ptr (struct GMT_FFT_INFO 
 GMT_LOCAL inline struct GMT_FFT_WAVENUMBER * api_get_fftwave_ptr (struct GMT_FFT_WAVENUMBER *ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_FFT_WAVENUMBER ** api_get_fftwave_addr (struct GMT_FFT_WAVENUMBER **ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_GRID    * api_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
+GMT_LOCAL inline struct GMT_IMAGE   * api_get_image_data (struct GMT_IMAGE *ptr) {return (ptr);}
 
 /*! If API is not set or no_not_exit is false then we call system exit, else we move along */
 GMT_LOCAL inline void api_exit (struct GMTAPI_CTRL *API, int code) {
@@ -569,7 +570,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
-		api_exit (API, EXIT_FAILURE); return EXIT_FAILURE;
+		api_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	dlerror (); /* Clear any existing error */
 #endif
@@ -1235,7 +1236,7 @@ GMT_LOCAL p_func_size_t api_get_2d_to_index (struct GMTAPI_CTRL *API, enum GMT_e
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "api_get_2d_to_index: Illegal mode passed - aborting\n");
-			api_exit (API, EXIT_FAILURE); return (NULL);
+			api_exit (API, GMT_RUNTIME_ERROR); return (NULL);
 	}
 	return (p);
 }
@@ -1878,22 +1879,57 @@ GMT_LOCAL int api_get_object (struct GMTAPI_CTRL *API, int sfamily, void *ptr) {
 
 /*! . */
 GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, double *wesn) {
-	/* Simply passes back the object pointer after possibly some minor adjustments to metadata */
+	/* Passes back the object pointer after possibly some minor adjustments to metadata.
+	 * For grids and images we must worry about any subset requests */
 	void *data = (object->data) ? object->data : object->resource;	/* Get pointer to the data */
 	struct GMT_GRID *G = NULL;
+	struct GMT_IMAGE *I = NULL;
 	switch (family) {	/* Do family-specific prepping before passing back the object */
 		case GMT_IS_PALETTE:
 			if (data) gmtlib_init_cpt (API->GMT, data);
 			break;
-		case GMT_IS_GRID:	/* Grids need to update the grdtype setting and possibly rotate geographic grids */
+		case GMT_IS_GRID:	/* Grids need to update the grdtype setting, possibly rotate geographic grids */
 			G = api_get_grid_data (data);
 			gmtlib_grd_get_units (API->GMT, G->header);
 			G->header->grdtype = gmtlib_get_grdtype (API->GMT, G->header);
-			if (wesn && gmt_M_grd_is_global (API->GMT, G->header) && G->data) {	/* May have to rotate geographic grid since we are not reading from file */
-				double shift_amount = wesn[XLO] - G->header->wesn[XLO];
-				if (fabs (shift_amount) >= G->header->inc[GMT_X]) {	/* Must do it */
-					GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
-					gmt_grd_shift (API->GMT, G, shift_amount);
+			if (wesn && G->data) {	/* Subset or global rotation */
+				if (gmt_M_grd_is_global (API->GMT, G->header)) {	/* May have to rotate geographic grid since we are not reading from file */
+					double shift_amount = wesn[XLO] - G->header->wesn[XLO];
+					if (fabs (shift_amount) >= G->header->inc[GMT_X]) {	/* Must do it */
+						GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
+						gmt_grd_shift (API->GMT, G, shift_amount);
+					}
+				}
+				else if (object->region) {	/* Possibly adjust the pad so inner region matches wesn */
+					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+						gmtlib_contract_headerpad (API->GMT, G->header, object->orig_pad, object->orig_wesn);
+						object->reset_pad = G->header->reset_pad = false;
+					}
+					if (gmtlib_expand_headerpad (API->GMT, G->header, object->wesn, object->orig_pad, object->orig_wesn))
+						object->reset_pad = G->header->reset_pad = true;
+				}
+			}
+			break;
+		case GMT_IS_IMAGE:	/* Grids need to update the grdtype setting, possibly rotate geographic grids */
+			I = api_get_image_data (data);
+			gmtlib_grd_get_units (API->GMT, I->header);
+			I->header->grdtype = gmtlib_get_grdtype (API->GMT, I->header);
+			if (wesn && I->data) {	/* Subset or global rotation */
+				if (gmt_M_grd_is_global (API->GMT, I->header)) {	/* May have to rotate geographic grid since we are not reading from file */
+					double shift_amount = wesn[XLO] - I->header->wesn[XLO];
+					if (fabs (shift_amount) >= I->header->inc[GMT_X]) {	/* Must do it */
+						GMT_Report (API, GMT_MSG_NORMAL, "Longitudinal roll for images not implemented yet\n");
+						//GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
+						//gmt_grd_shift (API->GMT, I, shift_amount);
+					}
+				}
+				else if (object->region) {	/* Possibly adjust the pad so inner region matches wesn */
+					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+						gmtlib_contract_headerpad (API->GMT, I->header, object->orig_pad, object->orig_wesn);
+						object->reset_pad = I->header->reset_pad = false;
+					}
+					if (gmtlib_expand_headerpad (API->GMT, I->header, object->wesn, object->orig_pad, object->orig_wesn))
+						object->reset_pad = I->header->reset_pad = true;
 				}
 			}
 			break;
@@ -2252,7 +2288,7 @@ int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		append = (M_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&M_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s Matrix file %s\n", msg2[append], &M_file[append]);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		close_file = true;	/* We only close files we have opened here */
 	}
@@ -2268,7 +2304,7 @@ int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert Matrix file descriptor %d to stream in gmt_write_matrix\n", *fd);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FDOPEN);
 		}
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 		if (fp == GMT->session.std[GMT_OUT])
@@ -2279,7 +2315,7 @@ int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmt_write_matrix\n", dest_type);
-		return (EXIT_FAILURE);
+		return (GMT_NOT_A_VALID_METHOD);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Matrix to %s\n", msg1[append], &M_file[append]);
 	
@@ -2302,7 +2338,7 @@ int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	}
 	
 	if (close_file) fclose (fp);
-	return (EXIT_SUCCESS);
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -2376,7 +2412,7 @@ int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		append = (V_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&V_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s Matrix file %s\n", msg2[append], &V_file[append]);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		close_file = true;	/* We only close files we have opened here */
 	}
@@ -2392,7 +2428,7 @@ int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert Matrix file descriptor %d to stream in gmt_write_matrix\n", *fd);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FDOPEN);
 		}
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 		if (fp == GMT->session.std[GMT_OUT])
@@ -2403,7 +2439,7 @@ int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmt_write_matrix\n", dest_type);
-		return (EXIT_FAILURE);
+		return (GMT_NOT_A_VALID_METHOD);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Matrix to %s\n", msg1[append], &V_file[append]);
 	
@@ -2426,7 +2462,7 @@ int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	gmt_M_free (GMT, api_get_val);
 	
 	if (close_file) fclose (fp);
-	return (EXIT_SUCCESS);
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -3432,6 +3468,14 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if (I_obj->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Add pad\n");
 			//gmt_grd_pad_on (GMT, image, GMT->current.io.pad);
+			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = I_obj->header->reset_pad = false;
+				}
+				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = I_obj->header->reset_pad = true;
+			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Return from GMT_IS_REFERENCE\n");
 			break;
 
@@ -3462,6 +3506,14 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
+			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = I_obj->header->reset_pad = false;
+				}
+				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = I_obj->header->reset_pad = true;
+			}
 			break;
 
 	 	case GMT_IS_REFERENCE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
@@ -3489,6 +3541,14 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
+			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = I_obj->header->reset_pad = false;
+				}
+				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = I_obj->header->reset_pad = true;
+			}
 			break;
 
 		default:
@@ -3719,6 +3779,14 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (G_obj->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Add pad\n");
 			gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);
+			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = G_obj->header->reset_pad = false;
+				}
+				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = G_obj->header->reset_pad = true;
+			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
 
@@ -3789,6 +3857,14 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
+			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
+					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = G_obj->header->reset_pad = false;
+				}
+				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = G_obj->header->reset_pad = true;
+			}
 			break;
 
 		default:
@@ -4434,6 +4510,11 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 			continue;
 		}
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session) */
+			if (S_obj->reset_pad) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this */
+				address = (S_obj->data) ? S_obj->data : S_obj->resource;	/* Try to get the data object */
+				gmtlib_contract_pad (API->GMT, address, S_obj->family, S_obj->orig_pad, S_obj->orig_wesn);
+				S_obj->reset_pad = false;
+			}
 			i++;	continue;
 		}
 		if (!(S_obj->data || S_obj->resource)) {	/* No memory to free (probably freed earlier); handle trashing of object after this loop */
@@ -8835,9 +8916,9 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 
 	if (name == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrdinfo\n");
-		return EXIT_FAILURE;
+		return GMT_ARG_IS_NULL;
 	}
-	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strdup (name);
 
 	/* Read the grid header */
@@ -8845,7 +8926,7 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_GRID_READ_ERROR;
 	}
 	gmt_M_str_free (file);
 
@@ -8859,8 +8940,8 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	if (title) strncpy (title, header.title, GMT_GRID_TITLE_LEN80);
 	if (remark) strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160);
 
-	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
-	return EXIT_SUCCESS;
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
+	return GMT_NOERROR;
 }
 
 int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name) {
@@ -8878,9 +8959,9 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 
 	if (name == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrd\n");
-		return EXIT_FAILURE;
+		return GMT_ARG_IS_NULL;
 	}
-	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strdup (name);
 
 	/* Read the grid header */
@@ -8888,7 +8969,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_GRID_READ_ERROR;
 	}
 
 	/* Read the grid, possibly after first allocating array space */
@@ -8896,7 +8977,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (gmtlib_read_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_GRID_READ_ERROR;
 	}
 	gmt_M_str_free (file);
 
@@ -8912,8 +8993,8 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (title) strncpy (title, header.title, GMT_GRID_TITLE_LEN80);
 	if (remark) strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160);
 
-	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
-	return EXIT_SUCCESS;
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
+	return GMT_NOERROR;
 }
 
 int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double inc[], const char *title, const char *remark, const char *name) {
@@ -8930,21 +9011,21 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 
 	if (name == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_writegrd\n");
-		return EXIT_FAILURE;
+		return GMT_ARG_IS_NULL;
 	}
-	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strdup (name);
 
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_ARG_IS_NULL;
 	}
 	if (inc[GMT_X] == 0.0 || inc[GMT_Y] == 0.0) {	/* Here that means grid spacing was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid spacing not specified for %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_ARG_IS_NULL;
 	}
 
 	/* Set header parameters */
@@ -8964,12 +9045,12 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (gmtlib_write_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing file %s\n", file);
 		gmt_M_str_free (file);
-		return EXIT_FAILURE;
+		return GMT_GRID_WRITE_ERROR;
 	}
 	gmt_M_str_free (file);
 
-	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
-	return EXIT_SUCCESS;
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_MEMORY_ERROR;
+	return GMT_NOERROR;
 }
 
 #if 0

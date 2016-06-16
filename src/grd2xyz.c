@@ -77,7 +77,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\t<grid> is one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Option (API, "bo,d,f,h,o,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -265,12 +265,12 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
 	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->C.mode == 2) ? 2 : 3));
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) Return (error);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers stdout, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
@@ -328,7 +328,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!gmt_M_is_zero (slop)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			n_alloc = G->header->n_columns * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
 			record = gmt_M_memory (GMT, NULL, G->header->n_columns, char);
@@ -384,7 +384,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, record);
 		}
 		else {	/* Regular x,y,z[,w] output */
-			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
+			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				Return (API->error);
 			}
 
@@ -446,7 +446,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -458,5 +458,5 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

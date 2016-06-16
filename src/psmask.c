@@ -435,7 +435,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "I,J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -464,7 +464,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
 	GMT_Option (API, "U,V,X,bi2,bo,c,d,h,i,p,r,s,t,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -591,7 +591,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 		n_errors += gmt_check_binary_io (GMT, 2);
 	}
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -723,13 +723,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
-		if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 
@@ -781,7 +781,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			}
 		} while (true);
 		
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 
@@ -812,10 +812,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 						break;
 				}
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->L.file, G) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->L.file, G) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -868,7 +868,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				if (n_seg > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Set -mo if > 1 segment */
 				D->table[0]->segment = gmt_M_memory (GMT, D->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_NOERROR) {
 					Return (API->error);
 				}
 			}
@@ -918,7 +918,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if (make_plot) gmt_plane_perspective (GMT, -1, 0.0);
 
 		gmt_M_free (GMT, grd);
-		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid\n");
 		}
 		if (Ctrl->S.active) gmt_M_free (GMT, d_col);
@@ -930,5 +930,5 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	gmt_set_pad (GMT, API->pad);		/* Reset default pad */
 	if (make_plot) gmt_plotend (GMT);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

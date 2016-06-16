@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
@@ -185,7 +185,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, "r,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 
 	/*n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -414,7 +414,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_PARSE_ERROR);
 		}
 		point   = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata_p = (unsigned int)point->n_records;
@@ -425,12 +425,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
 		if ((retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		/* read vertex file */
 		if ((retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.t_file);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_t = retval;
 
@@ -442,7 +442,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
 		if ( (retval = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.stl_file);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_s = retval;
 		/*n_swap = check_triang_cw (ndata_s, 1);*/
@@ -450,7 +450,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
 		if ( (retval = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.raw_file);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_r = retval;
 		/*n_swap = check_triang_cw (ndata_r, 1);*/
@@ -525,7 +525,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "It shouldn't pass here\n");
 		gmt_M_free (GMT, body_verts);
-		return (EXIT_FAILURE); /* should not happen but just in case */
+		return (GMT_RUNTIME_ERROR); /* should not happen but just in case */
 	}
 
 	/* Allocate a structure that will be used inside okabe().
@@ -674,7 +674,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
@@ -682,15 +682,15 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else {
 		double out[3];
 		char save[GMT_LEN64] = {""};
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
@@ -703,7 +703,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		strcpy (GMT->current.setting.format_float_out, save);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
@@ -731,7 +731,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.m_var3) gmt_M_free (GMT, okabe_mag_var3);
 	gmt_M_free (GMT, okabe_mag_var4);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }
 
 /* -------------------------------------------------------------------------*/

@@ -58,7 +58,7 @@ int main (int argc, char **argv) {
 		printf ("%g\t%g\n", x, y);
 	}
 	GMT_free ((void *)xout);	GMT_free ((void *)yout);
-	exit (EXIT_SUCCESS);
+	exit (GMT_NOERROR);
 }
 EOF
 

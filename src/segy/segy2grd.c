@@ -123,7 +123,7 @@ GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name the output grid file.\n");
@@ -146,7 +146,7 @@ GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
 	GMT_Option (API, "V,r,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -340,7 +340,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			gmt_M_free (GMT, flag);
-			Return (EXIT_FAILURE);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 	}
 	else {
@@ -348,14 +348,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		if (fpi == NULL) fpi = stdin;
 	}
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
-		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE);
+		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		gmt_M_free (GMT, flag);
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
-		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE);
+		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		gmt_M_free (GMT, flag);
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	if (swap_bytes) {
@@ -385,7 +385,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples for reel is %d\n", Ctrl->L.value);
@@ -404,7 +404,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, no sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning, grid spacing != sample interval, setting sample interval to grid spacing\n");
@@ -569,9 +569,9 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

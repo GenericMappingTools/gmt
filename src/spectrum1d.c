@@ -216,7 +216,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 		detrend_and_hanning (C, leave_trend, mode);
 
 		if (GMT_FFT_1D (GMT->parent, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
-			return EXIT_FAILURE;
+			return GMT_RUNTIME_ERROR;
 
 		/* Get one-sided estimates */
 
@@ -307,7 +307,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -324,7 +324,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -340,7 +340,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -356,7 +356,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -372,7 +372,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -395,7 +395,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.admit", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, "w")) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -411,7 +411,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -427,7 +427,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				gmt_M_free (GMT, f_or_w);
-				return (EXIT_FAILURE);
+				return (GMT_ERROR_ON_FOPEN);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
@@ -544,7 +544,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Use data subsets of <segment_size> elements.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <segment_size> must be radix 2;\n");
@@ -566,7 +566,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
 	GMT_Option (API, "bi2,bo,d,f,g,h,i,s,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -673,7 +673,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -727,10 +727,10 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		Ctrl->C.active = true;
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -764,7 +764,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
 			if (compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 
 			if (!Ctrl->T.active) {
@@ -774,16 +774,16 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */
 				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 	}
 	
 	free_space_spectrum1d (GMT, &C);
 	
-	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

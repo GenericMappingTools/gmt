@@ -206,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				         "Syntax error -Z option: 2.5-D solution only available for FAA\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -216,7 +216,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -238,7 +238,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
 	GMT_Option (API, "h,i,o,x,.");
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 /*
@@ -562,17 +562,17 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is not a whole multiple of inc\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_PARSE_ERROR);
 				break;
 			case 2:
 				if (Ctrl->T.inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is <= 0\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_PARSE_ERROR);
 				}
 				break;
 			case 3:
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: inc is <= 0\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_PARSE_ERROR);
 				break;
 			default:	/* OK */
 				break;
@@ -597,15 +597,15 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 
 	/* Specify input expected columns to be at least 2 */
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Register likely model files unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	/* Initialize the i/o for doing record-by-record reading */
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -684,7 +684,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
  		for (k = 0; k < n_bodies; k++) {
 			gmt_M_free (GMT, body[k].x);	gmt_M_free (GMT, body[k].z);
 		}
@@ -736,7 +736,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_OK)
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 		error++;
 		
 	/* Clean up memory */
@@ -751,6 +751,6 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	else {
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 }

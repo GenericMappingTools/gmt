@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -111,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !gmt_M_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -269,10 +269,10 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		sprintf (msg, " Geographical coordinates for a (%s) rectangular plot domain outline polygon", kind[GMT->common.R.oblique]);
 		D->table[0]->header[0] = strdup (msg);
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLYGON, GMT_WRITE_SET, NULL, Ctrl->A.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLYGON, GMT_WRITE_SET, NULL, Ctrl->A.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	/* Regular plot behaviour */
@@ -293,5 +293,5 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	gmt_plotend (GMT);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

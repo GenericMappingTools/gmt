@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S[+]<track>]\n\t[%s] [%s] [-W<weight>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
@@ -159,7 +159,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
 	GMT_Option (API, "bo,do,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -274,7 +274,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	/* GMT->parent->mode means we are calling from mex or Python and dont want to get textsets back */
 	n_errors += gmt_M_check_condition (GMT, (mixed || GMT->parent->mode) && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first, char *record) {
@@ -354,7 +354,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	/* Select internal, external, or both */
@@ -374,7 +374,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->W.file) {	/* Got file with weights for each track, OR a fixed weight [1] */
@@ -511,11 +511,11 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	}
 
 	o_mode = (mixed) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 	gmt_set_cols (GMT, GMT_OUT, n_output);
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);
@@ -744,7 +744,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
@@ -759,5 +759,5 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, trk_name);
 	x2sys_end (GMT, s);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

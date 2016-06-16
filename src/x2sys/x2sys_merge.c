@@ -70,7 +70,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_merge -A<main_COEdbase> -M<new_COEdbase> [%s]\n\n", GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give file with the main crossover error data base.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Give file with the new crossover error data base.\n");
@@ -79,7 +79,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -122,7 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !access (Ctrl->A.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !access (Ctrl->M.file, F_OK), "Syntax error: Unable to find crossover file %s\n", Ctrl->M.file);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 			
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -160,13 +160,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
 		fclose (fp_base);
-		Return (EXIT_FAILURE);
+		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	n_alloc = GMT_CHUNK;
@@ -223,13 +223,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	map_merge_end[n_merge - 1] = k - 1;	/* This one was not yet assigned */
 	rewind (fp_merge);
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		fclose (fp_merge);
 		fclose (fp_base);
 		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		fclose (fp_merge);
 		fclose (fp_base);
 		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
@@ -262,7 +262,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 				}
@@ -272,7 +272,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 				}
 
@@ -286,7 +286,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						fclose (fp_merge);
 						fclose (fp_base);
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
-						Return (EXIT_FAILURE);
+						Return (GMT_RUNTIME_ERROR);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 				}
@@ -299,7 +299,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		fclose (fp_base);	fclose (fp_merge);
 		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
@@ -310,7 +310,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 	clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }
 
 GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,

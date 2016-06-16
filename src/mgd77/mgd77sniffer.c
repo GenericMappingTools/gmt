@@ -375,7 +375,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tScan MGD77 files for errors using point-by-point sanity checking,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\talong-track detection of excessive slopes and comparison of cruise\n");
@@ -527,7 +527,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tmgd77sniffer 08010001 -Ds\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTo compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tmgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -887,37 +887,37 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: omit cruise ids for -Dl option.\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -b option requires -D.\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	else if (custom_warn && strcmp(display,"")) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Incompatible options -D and -W.\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dd option requires -G.\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	if (east < west || south > north) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Region set incorrectly\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	if (adjustData && n_cruises > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -A adjustments valid for only one cruise.\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dn option requires -Gnav\n");
-		bailout (EXIT_FAILURE);
+		bailout (GMT_PARSE_ERROR);
 	}
 	if (simulate && n_grids > 0) {
 		for (i = 0; i < n_grids; i++) {
 			if (sscanf (this_grid[i].fname, "%lf/%lf", &sim_m[i], &sim_b[i]) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give m/b for simulated grid.\n");
-				bailout (EXIT_FAILURE);
+				bailout (GMT_PARSE_ERROR);
 			}
 		}
 	}
@@ -938,7 +938,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	if (custom_limit_file) {
 		if ((custom_fp = gmt_fopen (GMT, custom_limit_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not open custom limit file %s\n", custom_limit_file);
-			bailout (EXIT_FAILURE);
+			bailout (GMT_ERROR_ON_FOPEN);
 	 	}
 		else {
 			while (gmt_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
@@ -955,7 +955,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error in custom limits file [%s]\n", custom_limit_line);
-					bailout (EXIT_FAILURE);
+					bailout (GMT_DATA_READ_ERROR);
 				}
 			}
 		}
@@ -1012,7 +1012,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
-		bailout (EXIT_FAILURE);
+		bailout (GMT_NOERROR);
 	}
 
 	/* PRINT HEADER FOR SNIFFER DATA DUMPS */
@@ -1119,7 +1119,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, n_paths, list);
-				bailout (EXIT_FAILURE);
+				bailout (GMT_ERROR_ON_FOPEN);
 			}
 	 	}
 
@@ -3006,5 +3006,5 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
 
-	bailout (GMT_OK);
+	bailout (GMT_NOERROR);
 }

@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_datalist <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT);
 	
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
 	GMT_Option (API, "V,bo,do,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -179,7 +179,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
@@ -269,13 +269,13 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (EXIT_FAILURE);		
+		Return (GMT_RUNTIME_ERROR);		
 	}
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -293,7 +293,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (EXIT_FAILURE);		
+			Return (GMT_RUNTIME_ERROR);		
 		}
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
@@ -345,7 +345,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
 		case 'M':
@@ -381,7 +381,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
 		case 'M':
@@ -404,7 +404,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, n_tracks);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 	}
 	/* Override default GMT->current.io.col_type[GMT_OUT] settings */
@@ -431,13 +431,13 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		gmt_formatting = false;
 	}
 	o_mode = (gmt_formatting) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	gmt_set_cols (GMT, GMT_OUT, s->n_out_columns);
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
@@ -543,7 +543,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -560,5 +560,5 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	x2sys_free_list (GMT, trk_name, n_tracks);
 	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

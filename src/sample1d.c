@@ -104,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -136,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
 	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,s,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -246,7 +246,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -313,10 +313,10 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	geometry = (resample_path) ? GMT_IS_LINE : GMT_IS_NONE;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 
@@ -349,7 +349,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		m_supplied = m;
 		t_out = gmt_M_memory (GMT, NULL, m_supplied, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
-		if (GMT_Destroy_Data (API, &Cin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Cin) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -461,7 +461,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					result = gmt_intpol (GMT, ttime, S->data[col], S->n_rows, m, t_out, Sout->data[col], int_mode);
 				}
 
-				if (result != GMT_OK) {
+				if (result != GMT_NOERROR) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
@@ -474,7 +474,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, t_out);
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	//gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
@@ -483,5 +483,5 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, nan_flag);
 	if (Ctrl->N.active) gmt_M_free (GMT, t_supplied_out);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

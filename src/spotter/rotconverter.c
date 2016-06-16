@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s] [-W]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
@@ -150,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only one of -N, -S, -W may be used at the same time.\n");
 	GMT_Option (API, "h,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -247,7 +247,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -359,7 +359,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
 				gmt_M_free (GMT, a);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			else {	/* Try to decode as a single rotation */
 
@@ -368,11 +368,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				if (angle == 0.0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has zero opening angle\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				online_rot = true;
 				online_stage = (k == 5);
@@ -429,15 +429,15 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	if (a[0].has_cov) n_out += 9;
 	if (Ctrl->G.active) n_out = 6;
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_NOERROR) {
 		gmt_M_free (GMT, a);
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, a);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, a);
 		Return (API->error);
 	}
@@ -495,9 +495,9 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	
 	gmt_M_free (GMT, a);
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {		/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {		/* Disables further data output */
 		Return (API->error);
 	}
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

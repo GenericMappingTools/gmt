@@ -333,7 +333,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is data set to be plotted.\n");
 	GMT_Option (API, "J-Z");
@@ -381,7 +381,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
 	GMT_Option (API, "X,c,f,n,p,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -633,7 +633,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
 	                                 "Syntax error -T option: Cannot specify -JZ|z\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -745,7 +745,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	/* Read data */
@@ -857,13 +857,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		/* Destroy original grid and use the copy in Z_orig instead */
 
 		if (Ctrl->G.active) {
-			if (GMT_Destroy_Data (API, &Drape[0]) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Drape[0]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			Drape[0] = Z_orig;
 		}
 		else {
-			if (GMT_Destroy_Data (API, &Topo) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Topo) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			Topo = Z_orig;
@@ -883,7 +883,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if (Intens->header->n_columns != Topo->header->n_columns || Intens->header->n_rows != Topo->header->n_rows) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity grid has improper dimensions!\n");
 			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 	}
@@ -1810,11 +1810,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) for (k = 0; k < Ctrl->G.n; k++) {
 		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
-	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_OK) {
+	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Z\n");
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

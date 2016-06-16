@@ -76,7 +76,7 @@ int main (int argc, char *argv[]) {
 	if (v_mode) mode = ((unsigned int)v_mode) << 2;	/* Left-shift the mode by 2 */
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 	api_ctrl->internal = true;	/* This is a proper GMT internal session (external programs will default to false) */
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example
@@ -99,12 +99,12 @@ int main (int argc, char *argv[]) {
 		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE) != 0) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
 			strncat (gmt_module, argv[1], GMT_LEN32-4U);
-			status = GMT_Call_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST, NULL); /* either GMT_OK or GMT_NOT_A_VALID_MODULE */
+			status = GMT_Call_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 			if (status != GMT_NOT_A_VALID_MODULE) module = gmt_module;
 		}
 	}
 
-	if (status == GMT_OK) {
+	if (status == GMT_NOERROR) {
 	/* Here we have found a recognized GMT module and the API has been initialized. */
 		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL) {
 			/* Just want to know if module exists */
@@ -121,7 +121,7 @@ int main (int argc, char *argv[]) {
 		int arg_n;
 
 		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)
-			status = EXIT_FAILURE; /* Just wanted to know if module exists */
+			status = GMT_RUNTIME_ERROR; /* Just wanted to know if module exists */
 
 		for (arg_n = 1; arg_n < argc && status == GMT_NOT_A_VALID_MODULE; ++arg_n) {
 			/* Try all remaining arguments: */
@@ -134,53 +134,53 @@ int main (int argc, char *argv[]) {
 				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
 
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Print all modules and exit */
 			else if (!strcmp (argv[arg_n], "--show-modules")) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_LIST, NULL);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Print version and exit */
 			else if (!strcmp (argv[arg_n], "--version")) {
 				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Show number of cores */
 			else if (!strcmp (argv[arg_n], "--show-cores")) {
 				fprintf (stdout, "%u\n", api_ctrl->n_cores);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Show share directory */
 			else if (!strcmp (argv[arg_n], "--show-datadir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Show the directory that contains the 'gmt' executable */
 			else if (!strcmp (argv[arg_n], "--show-bindir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Show the directory that contains the shared plugins */
 			else if (!strcmp (argv[arg_n], "--show-plugindir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_plugindir);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 			/* Show share directory */
 			else if (!strcmp (argv[arg_n], "--show-sharedir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
-				status = GMT_OK;
+				status = GMT_NOERROR;
 			}
 
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
-	} /* status == GMT_OK */
+	} /* status == GMT_NOERROR */
 
 	if (status == GMT_NOT_A_VALID_MODULE) {
 		/* If we get here, we were called without a recognized modulename or option
@@ -222,13 +222,13 @@ int main (int argc, char *argv[]) {
 				fprintf (stderr, "  3. Module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
-		status = EXIT_FAILURE;
+		status = GMT_RUNTIME_ERROR;
 	} /* status == GMT_NOT_A_VALID_OPTION */
 
 	gmt_M_str_free (progname); /* Was already dereferenced in gmt_chop_ext, so no NULL check needed */
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
-		return EXIT_FAILURE;
+		return GMT_RUNTIME_ERROR;
 
 	return status; /* Return the status from the module */
 }

@@ -125,7 +125,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tChoose one of three ways to specify where to evaluate the spline:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t1. Specify a rectangular grid domain with options -R, -I [and optionally -r].\n");
@@ -172,7 +172,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4-6 input columns (see -W); use -i to select columns from any data table.\n");
 	GMT_Option (API, "d,f,h,i,n,o,r,s,x,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 					gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 					gmt_M_memcpy (Ctrl->I.inc, G->header->inc, 2, double);
 					GMT->common.r.registration = G->header->registration;
-					if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+					if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 						return (API->error);
 					}
 					GMT->common.R.active = true;
@@ -283,7 +283,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /* GENERAL NUMERICAL FUNCTIONS */
@@ -514,10 +514,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -594,7 +594,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 		Return (API->error);
@@ -634,15 +634,15 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		if (! (Grid->header->wesn[XLO] == GMT->common.R.wesn[XLO] && Grid->header->wesn[XHI] == GMT->common.R.wesn[XHI] && Grid->header->wesn[YLO] == GMT->common.R.wesn[YLO] && Grid->header->wesn[YHI] == GMT->common.R.wesn[YHI])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid does not match your specified region\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (! (Grid->header->inc[GMT_X] == Ctrl->I.inc[GMT_X] && Grid->header->inc[GMT_Y] == Ctrl->I.inc[GMT_Y])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (! (Grid->header->registration == GMT->common.r.registration)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid registration does not match your specified grid registration\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
@@ -762,7 +762,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
 				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
 			}
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
 				gmt_M_free (GMT, eig);
 				Return (API->error);
 			}
@@ -782,7 +782,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, v);
 				for (k = 0; k < 2; k++)
 					gmt_free_grid (GMT, &Out[k], true);
-				Return (EXIT_SUCCESS);
+				Return (GMT_NOERROR);
 			}
 		}
 		b = gmt_M_memory (GMT, NULL, n2, double);
@@ -791,7 +791,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) {
 			gmt_M_free (GMT, b);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.2f %% of data variance]\n", n_use, n2, limit);
 
@@ -832,13 +832,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Return (API->error);
 			wmode = GMT_ADD_EXISTING;
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_OK) {	/* Establishes output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_NOERROR) {	/* Establishes output */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
 			Return (error);
 		}
 		gmt_M_memset (out, 4, double);
@@ -860,10 +860,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Nin) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -904,7 +904,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
 			sprintf (file, Ctrl->G.file, tag[k]);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -919,5 +919,5 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

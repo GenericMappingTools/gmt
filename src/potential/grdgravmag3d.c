@@ -196,7 +196,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity effect is to be computed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
@@ -242,7 +242,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Option (API, ":,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -436,7 +436,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	                                "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -505,7 +505,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_PARSE_ERROR);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata = (unsigned int)point->n_records;
@@ -532,7 +532,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 		if (error) {
 			GMT_Report(API, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
-			Return(EXIT_FAILURE);
+			Return(GMT_RUNTIME_ERROR);
 		}
 
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc,
@@ -592,12 +592,12 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO] ||
 		    Gout->header->wesn[XHI] > GridA->header->wesn[XHI]) {
 			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
-			return (EXIT_FAILURE);
+			return (GMT_RUNTIME_ERROR);
 		}
 		else if (Gout->header->wesn[YLO] < GridA->header->wesn[YLO] ||
 		         Gout->header->wesn[YHI] > GridA->header->wesn[YHI]) {
 			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
-			return (EXIT_FAILURE);
+			return (GMT_RUNTIME_ERROR);
 		}
 		gmt_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set n_columns, n_rows */
 	}
@@ -632,7 +632,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 		if(GridA->header->registration != GridB->header->registration) {
 			GMT_Report(API, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
@@ -656,19 +656,19 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 		if(GridA->header->registration != GridS->header->registration) {
 			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grids have different registrations!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if ((GridA->header->z_scale_factor != GridS->header->z_scale_factor) ||
 		    (GridA->header->z_add_offset != GridS->header->z_add_offset)) {
 			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid scale/offset not compatible!\n");
-			Return(EXIT_FAILURE);
+			Return(GMT_RUNTIME_ERROR);
 		}
 
 		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
 		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
 			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid increments do not match!\n");
-			Return(EXIT_FAILURE);
+			Return(GMT_RUNTIME_ERROR);
 		}
 
 		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
@@ -961,18 +961,18 @@ L1:
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK)
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR)
 			Return (API->error);
 	}
 	else {
 		double out[3];
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) 	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) 	/* Establishes data output */
 			Return (API->error);
 
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK)
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR)
 			Return (API->error);
 
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) 	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) 	/* Enables data output and sets access mode */
 			Return (API->error);
 
 		for (k = 0; k < ndata; k++) {
@@ -982,7 +982,7 @@ L1:
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) 	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data input */
 			Return (API->error);
 	}
 
@@ -1005,7 +1005,7 @@ L1:
 		gmt_M_free (GMT, x_grd_geo);		gmt_M_free (GMT, y_grd_geo);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }
 
 

@@ -329,7 +329,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w][<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tproject will read stdin or file, and does not want input if -G option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tThe projection may be defined in (only) one of three ways:\n");
@@ -379,7 +379,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
 	GMT_Option (API, "bi2,bo,d,f,g,h,i,s,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -538,7 +538,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P) {
@@ -890,17 +890,17 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		/* Now output generated track */
 
-		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
 			for (rec = 0; rec < P.n_used; rec++) {
 				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			for (rec = 0; rec < P.n_used; rec++) {
 				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
@@ -927,15 +927,15 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
-		if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != GMT_NOERROR) {
 			Return (error);
 		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		pure_ascii = gmt_is_ascii_record (GMT, options);
@@ -944,13 +944,13 @@ int GMT_project (void *V_API, int mode, void *args) {
 		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
 		
-		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
+		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 
@@ -981,7 +981,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN);
 				if (n_cols == 2 && P.want_z_output) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				else
 					P.n_z = n_cols - 2;
@@ -1037,11 +1037,11 @@ int GMT_project (void *V_API, int mode, void *args) {
 			n_total_used += P.n_used;
 		}
 
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -1054,5 +1054,5 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, p_data);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

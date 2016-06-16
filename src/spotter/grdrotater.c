@@ -95,7 +95,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time(s)>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] > projpol\n\n", GMT_b_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the gridded data file in geographic coordinates to be rotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename for the new, rotated grid.  The boundary of the\n");
@@ -120,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the reconstruction times equal the rotation times given in -E.\n");
 	GMT_Option (API, "V,bi2,bo,d,g,h,n,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 
 }
 
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						for (row = 0; row < S->n_rows; seg++, t++)
 							Ctrl->T.value[t] = S->data[GMT_X][row];
 					}
-					if (GMT_Destroy_Data (API, &T) != GMT_OK)
+					if (GMT_Destroy_Data (API, &T) != GMT_NOERROR)
 						n_errors++;
 					break;
 				}
@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
@@ -419,7 +419,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		if (!gmt_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "No grid values inside selected region - aborting\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
@@ -542,7 +542,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 					Sr->header = strdup (txt);
 				}
 			}
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, file, Dr) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, file, Dr) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -653,10 +653,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			sprintf (gfile, Ctrl->G.file, Ctrl->T.value[t]);
 		else
 			strcpy (gfile, Ctrl->G.file);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, gfile, G_rot) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, gfile, G_rot) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_OK)
+		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_NOERROR)
 			Return (API->error);
 
 		gmt_M_free (GMT, grd_x);
@@ -667,19 +667,19 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, p);
 
 	if (Ctrl->S.active) {
-		if (Ctrl->F.active && GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (Ctrl->F.active && GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		else if (not_global)
 			gmt_free_dataset (GMT, &D);
 	}
 	gmt_M_free (GMT, Ctrl->T.value);
-	if (D && GMT_Destroy_Data (API, &D) != GMT_OK)
+	if (D && GMT_Destroy_Data (API, &D) != GMT_NOERROR)
 		Return (API->error);
-	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_OK)
+	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_NOERROR)
 		Return (API->error);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

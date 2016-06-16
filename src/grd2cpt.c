@@ -137,12 +137,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-S<z_start>/<z_stop>/<z_inc> or -S<n>]\n\t[-T<-|+|=|_>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is name of one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0].\n");
-	if (gmt_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
+	if (gmt_list_cpt (API->GMT, 'C')) return (GMT_CPT_READ_ERROR);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
@@ -174,7 +174,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
 	GMT_Option (API, "h,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -327,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
@@ -335,10 +335,10 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 	uint64_t k;
 	for (k = 0; k < n; k++) {
 		gmt_M_str_free (grdfile[k]);
-		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK)
+		if (GMT_Destroy_Data (API, &G[k]) != GMT_NOERROR)
 			return (API->error);
 	}
-	return (GMT_OK);
+	return (GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -562,7 +562,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Min and Max data values are equal.\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 		}	/* End of stupid bug fix  */
 
@@ -609,7 +609,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
@@ -619,5 +619,5 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, G);
 	gmt_M_free (GMT, grdfile);
 
-	Return ((error) ? error : EXIT_SUCCESS);
+	Return ((error) ? error : GMT_NOERROR);
 }

@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_report -C<column> -T<TAG> [<COEdbase>] [-A] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<nx_min>] [-Qe|i] [-S<track>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
@@ -136,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
 	GMT_Option (API, "V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active || !Ctrl->C.col, "Syntax error: Must use -C to specify observation of interest\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
@@ -273,7 +273,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		x2sys_end (GMT, s);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	/* Select internal, external, or both */
@@ -295,7 +295,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 	
 	R = gmt_M_memory (GMT, NULL, n_tracks, struct COE_REPORT);
@@ -344,11 +344,11 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 
 	/* Time to issue output */
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, R);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		gmt_M_free (GMT, R);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
@@ -390,7 +390,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 	
@@ -446,7 +446,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, R);
 				if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 				x2sys_end (GMT, s);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			n1 = adj[k].n - 1;
 			out[1] = 0.0;
@@ -476,5 +476,5 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	x2sys_end (GMT, s);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

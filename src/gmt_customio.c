@@ -1809,7 +1809,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.mx = header->mx;
 			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
 				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
-				return (EXIT_FAILURE);
+				return (GMT_N_COLS_NOT_SET);
 			}
 		}
 		else if (pad[XHI] >= header->n_columns - 1) {
@@ -1817,7 +1817,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.mx = header->mx;
 			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
 				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
-				return (EXIT_FAILURE);
+				return (GMT_N_COLS_NOT_SET);
 			}
 		}
 		else if (pad[YLO] >= header->n_rows - 1) {
@@ -1825,7 +1825,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.my = header->my;
 			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
 				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
-				return (EXIT_FAILURE);
+				return (GMT_N_ROWS_NOT_SET);
 			}
 		}
 		else if (pad[YHI] >= header->n_rows - 1) {
@@ -1833,7 +1833,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.my = header->my;
 			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
 				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
-				return (EXIT_FAILURE);
+				return (GMT_N_ROWS_NOT_SET);
 			}
 		}
 		else {

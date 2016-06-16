@@ -87,7 +87,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]]\n\t[%s]\n\n", GMT_V_OPT);
         
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
              
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
@@ -113,7 +113,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	
 	MGD77_end (API->GMT, &M);	/* Close machinery */
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M) {
@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 	if (Ctrl->L.active) n_opts++;
 	n_errors += gmt_M_check_condition (GMT, n_opts != 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -294,7 +294,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	if (Ctrl->M.flag == 1) {
 		MGD77_List_Header_Items (GMT, &M);
 		MGD77_end (GMT, &M);
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	/* Initialize MGD77 output order and other parameters*/
@@ -314,14 +314,14 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 				printf ("%s\t-> %s\n", MGD77_vessel[i].code, MGD77_vessel[i].name);
 			}
 		}
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_NO_INPUT);
 	}
 	
 	read_file = (Ctrl->E.active || (Ctrl->M.mode == RAW_HEADER));
@@ -345,11 +345,11 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header & data for cruise %s\n", list[argno]);
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 
 		if (Ctrl->M.mode == HIST_HEADER) {	/* Dump of MGD77+ history */
@@ -561,5 +561,5 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

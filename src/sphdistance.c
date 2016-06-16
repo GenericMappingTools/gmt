@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output distance grid file.\n");
 	GMT_Option (API, "I");
@@ -169,7 +169,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
 	GMT_Option (API, "V,bi2,di,h,i,r,s,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -336,7 +336,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
 			struct GMT_DATATABLE *NTable = NULL;
-			if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
@@ -360,7 +360,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 			gmt_M_memcpy (lon, NTable->segment[0]->data[GMT_X], NTable->n_records, double);
 			gmt_M_memcpy (lat, NTable->segment[0]->data[GMT_Y], NTable->n_records, double);
-			if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Nin) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " records\n", NTable->n_records);
@@ -380,13 +380,13 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	}
 	else {	/* Must process input point/line data */
 		n_in = (Ctrl->E.mode == SPHD_VALUES) ? 3 : 2;
-		if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {
 			Return (API->error);	/* Enables data input and sets access mode */
 		}
 
@@ -463,7 +463,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			lat = yy;
 		}
 		gmt_M_free (GMT,  zz);
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 		GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
@@ -606,12 +606,12 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 	if (Ctrl->E.mode == SPHD_VALUES) gmt_M_free (GMT, z_val);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
 	if (n_set > Grid->header->nm) n_set = Grid->header->nm;	/* Not confuse the public */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

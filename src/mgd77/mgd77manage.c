@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s[+|-]] [%s] [%s] [%s]\n\t[%s]\n\n",
 	             GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_n_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    See -C for selecting distance calculation procedure.\n");
 	GMT_Option (API, "Rg,V,bi,di,n,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 /* Help functions to decode the -A and -I options */
@@ -490,7 +490,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN,
 		                                 "Syntax error: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
 	}
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -565,13 +565,13 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_NO_INPUT);
 	}
 
 	if (got_table && n_paths != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
 		MGD77_Path_Free (GMT, n_paths, list);
-		Return (EXIT_FAILURE);
+		Return (GMT_PARSE_ERROR);
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
@@ -600,7 +600,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		}
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ac expects m, c, or g[1-4]\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_PARSE_ERROR);
 		}
 	}
 	else if (Ctrl->A.mode == MODE_e) {	/* Do E77 work by ignoring previous E77 settings */
@@ -639,7 +639,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if ((fp = gmt_fopen (GMT, Ctrl->A.file, GMT->current.io.r_mode)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->A.file);
 				MGD77_Path_Free (GMT, n_paths, list);
-				Return (EXIT_FAILURE);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
 		}
 
@@ -649,7 +649,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
 					if (fp != GMT->session.std[GMT_IN]) gmt_fclose (GMT, fp);
 					MGD77_Path_Free (GMT, n_paths, list);
-					Return (EXIT_FAILURE);
+					Return (GMT_DATA_READ_ERROR);
 				}
 			}
 		}
@@ -697,7 +697,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, colvalue);
 				if (two_cols) gmt_M_free (GMT, coldnt);
 				if (strings) gmt_M_free (GMT, tmp_string);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 
 			if (strings) {	/* number in col1, string in col2 */
@@ -758,7 +758,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 		if (MGD77_Read_File (GMT, list[argno], &In, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 
 		/* Start reading data from file */
@@ -770,7 +770,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (set == MGD77_M77_SET && !Ctrl->F.active) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Column %s is part of the standard MGD77 set and cannot be removed unless you use -F!\n",
 				            Ctrl->I.c_abbrev);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			if (!Ctrl->A.replace) {
 				GMT_Report (API, GMT_MSG_NORMAL, "A columned named %s is already present in %s.  use -A+ to overwrite [default is to skip]\n",
@@ -833,7 +833,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			sprintf (oldfile, "%s.old", In.path);
 			if (rename (In.path, oldfile)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to rename %s to %s\n", In.path, oldfile);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			
 			/* Update header history */
@@ -847,14 +847,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error writing slimmer version of %s\n", list[argno]);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_DATA_WRITE_ERROR); return GMT_DATA_WRITE_ERROR;
 			}
 
 			/* Now we can safely remove the old file */
 			
 			if (remove (oldfile)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error removing the old version of %s\n", list[argno]);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			
 			MGD77_Free_Dataset (GMT, &D);
@@ -866,7 +866,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			D = MGD77_Create_Dataset (GMT);
 			if (MGD77_Read_File (GMT, list[argno], &In, D)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 			}
 			if (reset_column)
 				column = MGD77_NOT_SET;
@@ -1006,7 +1006,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (n != D->H.n_records) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Extra column data records (%d) do not match # of cruise records (%d) for %s\n",
 				            n, D->H.n_records, list[argno]);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
 		}
@@ -1033,7 +1033,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
-					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
 				gmt_M_free (GMT, y);
@@ -1629,5 +1629,5 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	gmt_M_free (GMT, tmp_string);		/* A Coverity issue pointed out that 'tmp_string' could not had been freed yet */
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", 
 	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT file.  Alternatively, give three separate\n");
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Option (API, "U,V,X,c,f,n,p,t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -309,7 +309,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
 					"Syntax error -Q option:  Cannot use -M when doing colormasking\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected) {
@@ -447,8 +447,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (use_intensity_grid && GMT->common.R.active) {
 			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
 			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Requested region exceeds illumination extents\n");
-				Return (EXIT_FAILURE);
+				GMT_Report (API, GMT_MSG_NORMAL, "Requested region exceeds illumination extent\n");
+				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 
@@ -506,7 +506,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Grid_orig[2]->header->registration)) error++;
 		if (error) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The r, g, and b grids are not congruent\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
@@ -536,7 +536,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	if (n_grids) {
@@ -578,7 +578,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns || Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 #ifdef HAVE_GDAL
@@ -590,23 +590,23 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* Create option list, register Intens_orig as input source via reference */
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, Intens_orig)) == GMT_NOTSET) 
 				Return (API->error);
-			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {
+			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_NOERROR) {
 				Return (API->error);	/* Make filename with embedded object ID for grid G */
 			}
 
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
+			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_NOERROR) {
 				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
 			}
 
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, n_columns, n_rows);
-			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
+			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) return (API->error);	/* Do the resampling */
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			Intens_orig = G2;
@@ -635,7 +635,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, Img_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
 			gmt_img_project (GMT, I, Img_proj, false);
-			if (GMT_Destroy_Data (API, &I) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -650,7 +650,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, Grid_proj[k]->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
 			gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
-			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -670,7 +670,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, Intens_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
 			gmt_grd_project (GMT, Intens_orig, Intens_proj, false);
-			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -811,7 +811,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
 
 				if (Ctrl->I.active && index != GMT_NAN - 3) {
-					if (!n_grids) {		/* Here we are illuminating an image. Must recompute "node" with the gmt_M_ijp macro */
+					if (!n_grids || Intens_proj->header->reset_pad) {	/* Here we are illuminating an image. Must recompute "node" with the gmt_M_ijp macro */
 						node = gmt_M_ijp (Intens_proj->header, actual_row, 0) + (normal_x ? col : n_columns - col - 1);
 					}
 					if (use_intensity_grid)
@@ -858,13 +858,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
-		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_OK) {
+		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[k]\n");
 		}
 	}
 	if (use_intensity_grid) {
 		if (need_to_project || !n_grids) {
-			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Intens_proj\n");
 			}
 		}
@@ -1009,7 +1009,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, bitimage_8);
 	gmt_M_free (GMT, bitimage_24);
 
-	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_OK) {
+	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
 	}
 
@@ -1020,10 +1020,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, g_table);
 			gmt_M_free (GMT, b_table);
 		}
-		if (GMT_Destroy_Data (API, &Img_proj) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Img_proj) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {
+		if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -1035,8 +1035,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_M_str_free (Ctrl->A.file);
 	}
 #endif
-	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {
+	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

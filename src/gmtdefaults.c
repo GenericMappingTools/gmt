@@ -60,13 +60,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdefaults [-D[s|u]]\n\n");
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of the defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of the defaults.\n");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -108,7 +108,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 
 	n_errors += gmt_M_check_condition (GMT, n_files, "Syntax error: No input files are expected\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /* Must free allocated memory before returning */
@@ -152,5 +152,5 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 
 	gmt_putdefaults (GMT, "-");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

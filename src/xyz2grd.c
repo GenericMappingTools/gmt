@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grid file.\n");
 	GMT_Option (API, "IR");
@@ -148,7 +148,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_Option (API, "f,h,i,r,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 	n_req = (Ctrl->Z.active) ? 1 : ((Ctrl->A.mode == 'n') ? 2 : 3);
 	n_errors += gmt_check_binary_io (GMT, n_req);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -375,7 +375,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		/* Register the data source */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set via file */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set via file */
 			Return (API->error);
 		}
 		if (Ctrl->S.file) {	/* Specified an output file */
@@ -384,20 +384,20 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			}
 			w_mode = GMT_ADD_EXISTING;
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_NOERROR) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_NOERROR) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
@@ -420,13 +420,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous_bin_o;	/* Reset output binary */
 
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		Return (GMT_OK);	/* We are done here */
+		Return (GMT_NOERROR);	/* We are done here */
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -440,7 +440,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		
 		if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
@@ -449,29 +449,29 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_columns) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_rows) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding xll record\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding yll record\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding cellsize record\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		Grid->header->inc[GMT_Y] = Grid->header->inc[GMT_X];
 		Grid->header->xy_off = 0.5 * Grid->header->registration;
@@ -488,13 +488,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read nodata-flag or first data record from ESRI file\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		gmtlib_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
 			if (fscanf (fp, "%lf", &value) != 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to parse nodata-flag from ESRI file\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_DATA_READ_ERROR);
 			}
 			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
@@ -518,12 +518,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		gmt_fclose (GMT, fp);
 		if (n_left) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
@@ -570,16 +570,16 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_NOERROR) {
 		gmt_M_free (GMT, flag);
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Establishes data input */
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {
 		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
@@ -608,7 +608,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			ij_gmt = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
 			Grid->data[ij_gmt] = (gmt_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
@@ -669,7 +669,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
 
@@ -679,7 +679,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_NORMAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
 	}
@@ -761,9 +761,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

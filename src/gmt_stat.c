@@ -1777,7 +1777,7 @@ int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 		}
 		else {	/* If we get here, I made a mistake!  */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal goof in gmt_median; please report to developers!\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 
 	} while (!finished);

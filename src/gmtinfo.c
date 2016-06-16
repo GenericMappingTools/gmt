@@ -114,7 +114,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
 	GMT_Option (API, "V,bi2,d,f,g,h,i,o,r,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -279,7 +279,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		                                   "Syntax error -I option: Must specify positive increment(s)\n");
 	}
 	n_errors += gmt_check_binary_io (GMT, 1);
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -346,17 +346,17 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	o_mode = (Ctrl->C.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
@@ -569,15 +569,15 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Not enough columns to support the -S option\n");
-				Return (EXIT_FAILURE);
+				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
   				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
-				Return (EXIT_FAILURE);
+				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
-				Return (EXIT_FAILURE);
+				Return (GMT_DIM_TOO_LARGE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
 			if (give_r_string) ncol = 2;	/* Since we only will concern ourselves with lon/lat or x/y */
@@ -650,10 +650,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (file[0] == 0) strncpy (file, GMT->current.io.current_filename[GMT_IN], GMT_BUFSIZ);	/* Grab name of current file while we can */
 		
 	}
-	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 	
@@ -666,5 +666,5 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active && GMT->common.b.active[GMT_IN])
 		gmt_M_free (GMT, dchosen);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -417,7 +417,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		else {
 			if (!gmt_getsharepath (GMT, "spotter", GPLATES_PLATES, ".txt", Plates, R_OK)) {	/* Decode GPlates ID file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_PLATES file : %s\n", Plates);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
 			}
 		}
 #ifdef WIN32
@@ -425,7 +425,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 #endif
 		if ((fp = gmt_fopen (GMT, Plates, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates plate id file %s\n", Plates);
 		A_id = B_id = 0;
@@ -438,11 +438,11 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		gmt_fclose (GMT, fp);
 		if (A_id == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_NOT_A_VALID_ARG); return GMT_NOT_A_VALID_ARG;
 		}
 		if (B_id == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_NOT_A_VALID_ARG); return GMT_NOT_A_VALID_ARG;
 		}
 		/* OK, here we have the two IDs */
 		if ((this_c = getenv ("GPLATES_ROTATIONS")))
@@ -450,7 +450,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		else {
 			if (!gmt_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_ROTATIONS file : %s\n", Rotations);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
 			}
 		}
 #ifdef WIN32
@@ -458,14 +458,14 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 #endif
 		if ((fp = gmt_fopen (GMT, Rotations, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = true;
 	}
 	else if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open stage pole file: %s\n", file);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 	}
 
 	e = gmt_M_memory (GMT, NULL, n_alloc, struct EULER);
@@ -496,12 +496,12 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
 				gmt_fclose (GMT, fp);
 				gmt_M_free(GMT, e);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 			}
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Rotation file mixes total reconstruction and stage rotation format\n");
-					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				}
 				total_in = true;
 				for (k = 8; k > 0; k--) K[k] = K[k-1];
@@ -520,14 +520,14 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Rotation %d has time reversal\n", i);
 			gmt_fclose (GMT, fp);
 			gmt_M_free(GMT, e);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		last_t = e[i].t_start;
 		if (e[i].t_stop >= e[i].t_start) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			gmt_fclose (GMT, fp);
 			gmt_M_free(GMT, e);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		spotter_setrot (GMT, &(e[i]));
 		if (GPlates) {
@@ -545,7 +545,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	if (GPlates && i == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find rotations for the plate pair %s - %s\n", A, B);
 		gmt_M_free(GMT, e);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	
 	/* Sort the rotations to make sure they are in the expected order */
@@ -719,7 +719,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 			if (stage == ns) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(spotter_backtrack) Ran out of stage poles for t = %g\n", t);
 				gmt_M_free(GMT, track);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			dt = MIN (p[stage].duration, t - MAX(p[stage].t_stop, t_zero));
 			d_lon = p[stage].omega_r * dt;
@@ -900,7 +900,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 			if (stage == ns) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
 				gmt_M_free(GMT, track);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			dt = MIN (tp[i], p[stage].t_start) - t;	/* Time interval to rotate */
 			d_lon = p[stage].omega_r * dt;		/* Rotation angle (radians) */

@@ -218,7 +218,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT);
 	
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid with topo or gravity\n");
 	spotter_rot_usage (API, 'E');
@@ -245,7 +245,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
 	GMT_Option (API, "h,r,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -397,7 +397,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Syntax error: Must specify both -L and -Q if one is present\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Syntax error: Cannot use -M with -W or -Z (slicing)\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow) {
@@ -616,7 +616,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	/* Start to read input data */
 	
-	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		gmt_M_free (GMT, processed_node);
 		Return (API->error);
 	}
@@ -643,7 +643,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 		if (!(A->header->n_columns == Z->header->n_columns && A->header->n_rows == Z->header->n_rows && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
 			Return (API->error);
@@ -655,7 +655,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 		if (!(L->header->n_columns == Z->header->n_columns && L->header->n_rows == Z->header->n_rows && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
 			Return (API->error);
@@ -677,7 +677,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			
 			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;
@@ -820,7 +820,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
@@ -879,7 +879,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, CVA_inc);
 				Return (API->error);
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				gmt_M_free (GMT, CVA_inc);
@@ -960,7 +960,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write DI grid %s\n", Ctrl->D.file);
 			snprintf (DI->header->remark, GMT_GRID_REMARK_LEN160, "CVA maxima along flowlines from each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, DI)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				Return (API->error);
@@ -970,7 +970,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write PA grid %s\n", Ctrl->PA.file);
 			snprintf (PA->header->remark, GMT_GRID_REMARK_LEN160, "Predicted age for each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, PA)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				Return (API->error);
@@ -987,15 +987,15 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Message (API, GMT_TIME_NONE, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 			Return (API->error);
@@ -1046,7 +1046,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 	}
@@ -1064,11 +1064,11 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, lat_area);
 	if (keep_flowlines) gmt_M_free (GMT, flowline);
 	if (Ctrl->Q.mode) gmt_M_free (GMT, ID_info);
-	if (GMT_Destroy_Data (API, &G_rad) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &G_rad) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

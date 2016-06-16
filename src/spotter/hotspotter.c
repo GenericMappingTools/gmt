@@ -193,7 +193,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA grid.\n");
@@ -208,7 +208,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
 	GMT_Option (API, "V,bi5,di,h,i,r,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -286,7 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 5, "Syntax error option: Binary input data (-bi) must have at least 5 columns\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -393,13 +393,13 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -543,7 +543,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 		if (!(n_smts%100)) GMT_Report (API, GMT_MSG_VERBOSE, "Processed %5ld seamounts\r", n_smts);
 	} while (true);
 	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		gmt_M_free (GMT, processed_node);	gmt_M_free (GMT, latfactor);	gmt_M_free (GMT, p);
 		gmt_M_free (GMT, ilatfactor);		gmt_M_free (GMT, xpos);			gmt_M_free (GMT, ypos);
 		Return (API->error);
@@ -574,7 +574,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		gmt_M_free (GMT, processed_node);	gmt_M_free (GMT, latfactor);	gmt_M_free (GMT, p);
 		gmt_M_free (GMT, ilatfactor);		gmt_M_free (GMT, xpos);			gmt_M_free (GMT, ypos);
 		Return (API->error);
@@ -584,11 +584,11 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, processed_node);	gmt_M_free (GMT, latfactor);	gmt_M_free (GMT, p);
 	gmt_M_free (GMT, ilatfactor);		gmt_M_free (GMT, xpos);			gmt_M_free (GMT, ypos);
-	if (GMT_Destroy_Data (API, &G_rad) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &G_rad) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

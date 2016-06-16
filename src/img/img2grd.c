@@ -176,7 +176,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<world_image_filename> gives name of img file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set filename for the output grid file.\n");
@@ -204,7 +204,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Input img file runs from 0 to <maxlon> longitude [360.0].\n");
 	GMT_Option (API, "n,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -316,7 +316,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->M.active, "Syntax error: -C requires -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Syntax error: -E cannot be used with -M.\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL double  img_gud_fwd (double y) {
@@ -662,7 +662,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Read failure at jin = %d.\n", jin);
 			gmt_M_free (GMT, ix);
 			gmt_M_free (GMT, row);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 
 #ifndef WORDS_BIGENDIAN
@@ -729,10 +729,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Merc) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Merc) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (GMT_OK);
+		Return (GMT_NOERROR);
 	}
 
 	/* Here we need to reproject the data, and Merc becomes a temporary grid */
@@ -744,7 +744,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Merc)) == GMT_NOTSET) {
 		Return (API->error);
 	}
-	if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_OK) {
+	if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_NOERROR) {
 		Return (API->error);	/* Make filename with embedded object ID */
 	}
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
@@ -753,7 +753,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		if (GMT_Encode_ID (API, s_out_ID, out_ID) != GMT_OK) {
+		if (GMT_Encode_ID (API, s_out_ID, out_ID) != GMT_NOERROR) {
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 	}
@@ -761,10 +761,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		strncpy (s_out_ID, Ctrl->G.file, GMT_LEN256-1);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
 	GMT_Report (API, GMT_MSG_DEBUG, "Calling grdproject %s.\n", cmd);
-	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
+	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_NOERROR) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
-	if (GMT_Destroy_Data (API, &Merc) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &Merc) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
@@ -783,14 +783,14 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Geo)) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+		if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_NOERROR) {	/* Make filename with embedded object ID */
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
-		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_OK) {	/* Resample the grid or fail */
+		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the grid or fail */
 			Return (API->error);
 		}
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or image file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -120,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -290,7 +290,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
@@ -416,7 +416,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
@@ -424,11 +424,11 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
 		if (gmt_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_FILE_NOT_FOUND);
 		}
 		if (PSL_loadimage (PSL, path, &header, &picture)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], path);
-			Return (EXIT_FAILURE);
+			Return (GMT_IMAGE_READ_ERROR);
 		}
 	}
 #ifdef HAVE_GDAL
@@ -486,7 +486,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 #else
 	else {	/* Without GDAL we can only read EPS and Sun raster */
 		GMT_Report (API, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
 
@@ -498,7 +498,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if (known) PSL_free (picture); /* EPS or Sun raster file */
 #ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
-			if (GMT_Destroy_Data (API, &I) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -517,7 +517,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
-		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
+		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
 			Return (API->error);
 		}
 #else
@@ -625,7 +625,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 #ifdef HAVE_GDAL
-	if (I && GMT_Destroy_Data (API, &I) != GMT_OK) {
+	if (I && GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}
 #endif
@@ -635,5 +635,5 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	else if (known || did_gray)
 		PSL_free (picture);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

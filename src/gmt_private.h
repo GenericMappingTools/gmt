@@ -77,19 +77,22 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned int ID;			/* Unique identifier which is >= 0 */
 	unsigned int alloc_level;		/* Nested module level when object was allocated */
 	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
+	unsigned int orig_pad[4];		/* Original grid pad */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
 	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
 	bool messenger;				/* true for output objects passed from the outside to receive data from GMT. If true we destroy data pointer before writing */
 	bool module_input;			/* true for input objects that will serve as module input(s) and not option inputs */
+	bool reset_pad;				/* true for input memory grids from which a subregion was requested */
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
 	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|PALETTE|IMAGE|GRID|POSTSCRIPT|MATRIX|VECTOR|COORD} */
 	enum GMT_enum_family actual_family;	/* May be GMT_IS_MATRIX|VECTOR when one of the others are created via those */
 	unsigned method;			/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
-	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
+	double wesn[GMTAPI_N_GRID_ARGS];	/* Active Grid domain limits */
+	double orig_wesn[GMTAPI_N_GRID_ARGS];	/* Original Grid domain limits */
 	void *resource;				/* Points to registered filename, memory location, etc., where data can be obtained from with GMT_Get_Data. */
 	void *data;				/* Points to GMT object that was read from a resource */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */

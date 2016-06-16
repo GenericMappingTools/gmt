@@ -78,7 +78,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed.  -R, -J are not required (unless -B is used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
@@ -94,7 +94,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
 	GMT_Option (API, "U,V,X,bi2,di,c,f,g,h,i,p,t,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -173,7 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n) {
@@ -231,7 +231,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		gmt_plotend (GMT);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	/* Here we have -R -J etc to deal with */
@@ -260,7 +260,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 		if (!Ctrl->T.active) {
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				Return (API->error);	/* Register data input */
 			}
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -293,7 +293,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 						gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				}
 			}
-			if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -307,5 +307,5 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

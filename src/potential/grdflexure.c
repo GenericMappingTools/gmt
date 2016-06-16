@@ -225,7 +225,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 				T[k].u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
 			}
 		}
-		if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error destroying data set after processing\n");
 			return 0;
 		}
@@ -636,7 +636,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 	                                 "Syntax error -G option: Filename template must contain format specified\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Syntax error: Load template given but -T not specified\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -645,7 +645,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdflexure <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]]\n\t[%s] [-W<wd>] [-Z<zm>] [-fg]\n\n", GMT_FFT_OPT, GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is the input grdfile with topography (load) values, in meters. If -T is used,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <topogrid> may be a filename template with a floating point format (C syntax) and\n");
@@ -681,7 +681,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -866,7 +866,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				Load[t_load] = Prepare_Load (GMT, options, Ctrl, file, &this_time);
 			}
 		}
-		if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error destroying load file list after processing\n");
 			Return (API->error);
 		}
@@ -901,7 +901,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
 		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
@@ -957,7 +957,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT\n");
 		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 
 		/* 4d. APPLY SCALING AND OFFSET */
 		gmt_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
@@ -977,7 +977,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			Return (API->error);
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
-			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_OK) {	/* This demuxes the grid before writing! */
+			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
 				Return (API->error);
 		}
 		if (t_eval < (Ctrl->T.n_eval_times-1)) {	/* Must put the total grid back into interleave mode */
@@ -999,7 +999,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_OK) {
+	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing list of grid files to %s\n", Ctrl->L.file);
 		Return (API->error);
 	}
@@ -1020,5 +1020,5 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

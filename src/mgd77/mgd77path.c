@@ -61,7 +61,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
         
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
              
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-A List full cruise pAths [Default].  Append - to only get cruise names.\n");
@@ -71,7 +71,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_Option (API, "V,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->D.active, "Syntax error: Only one of -A -D may be used\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -179,14 +179,14 @@ int GMT_mgd77path (void *V_API, int mode, void *args) {
 		printf ("# Currently, your $MGD77_HOME is set to: %s\n", M.MGD77_HOME);
 		printf ("# $MGD77_HOME/mgd77_paths.txt contains these directories:\n");
 		for (i = 0; i < M.n_MGD77_paths; i++) printf ("%s\n", M.MGD77_datadir[i]);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No cruises found\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_NO_INPUT);
 	}
 	
 	for (i = 0; i < n_paths; i++) {		/* Process each ID */
@@ -207,5 +207,5 @@ int GMT_mgd77path (void *V_API, int mode, void *args) {
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

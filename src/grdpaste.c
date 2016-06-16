@@ -67,7 +67,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
@@ -79,7 +79,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,f,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -124,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -189,12 +189,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		error++;
 	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((C = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, A)) == NULL) Return (API->error);	/* Just to get a header */
@@ -276,7 +276,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		}
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else if (fabs (A->header->wesn[XLO] - B->header->wesn[XLO]) < x_noise && fabs (A->header->wesn[XHI] - B->header->wesn[XHI]) < x_noise) {
@@ -313,12 +313,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		}
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if (gmt_M_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
 		C->header->wesn[XLO] -= 360.0;
@@ -504,11 +504,11 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	gmt_set_pad (GMT, 0U); /* Reset padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, C) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, C) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	A->data = B->data = NULL; /* Since these were never actually allocated */
 
 	gmt_set_pad (GMT, API->pad); /* Restore to GMT Defaults */
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -116,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is grid to be filtered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tDistance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
@@ -151,7 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Option (API, "V,f,h,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option: Total # of columns cannot exceed 50.\n");
 	}
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
@@ -462,7 +462,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		if (error) {
 			GMT_Report (API, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
@@ -916,14 +916,14 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Write filtered grid\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write scale grid\n");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Sout)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Sout) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Sout) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -965,12 +965,12 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		FILE *ip = NULL;
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) Return (error);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) Return (error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
@@ -978,7 +978,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		/* Check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 
 		/* read depths from each column until EOF */
@@ -991,7 +991,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				if (fscanf (ip, "%lf", &err_depth) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to read depths for column %d\n", i);
 					fclose (ip);
-					Return (EXIT_FAILURE);
+					Return (GMT_DATA_READ_ERROR);
 				}
 				err_workarray[i] = err_depth;
 				err_sum += err_depth;
@@ -1024,10 +1024,10 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		/* close the input */
 		fclose (ip);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 			Return (API->error);	/* Disables further data output */
 		}
 	}
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

@@ -106,6 +106,9 @@ EXTERN_MSC void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* Local functions */
 
+GMT_LOCAL inline struct GMT_GRID    * grdio_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
+GMT_LOCAL inline struct GMT_IMAGE   * grdio_get_image_data (struct GMT_IMAGE *ptr) {return (ptr);}
+
 GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, unsigned int complex_mode, unsigned int direction) {
 	/* Checks or sets the array arrangement for a complex array */
 	size_t needed_size;	/* Space required to hold both components of a complex grid */
@@ -115,7 +118,7 @@ GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	needed_size = 2ULL * header->mx * header->my;	/* For the complex array */
 	if (header->size < needed_size) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid not large enough to hold both components!.\n");
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_DIM_TOO_SMALL); return GMT_DIM_TOO_SMALL;
 	}
 	if (direction == GMT_IN) {	/* About to read in a complex component; another one might have been read in earlier */
 		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {
@@ -132,17 +135,17 @@ GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	else {	/* About to write out a complex component */
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) {	/* Not a complex grid */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Asking to write out complex components from a non-complex grid.\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if ((complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no real components that can be written to file.\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		else if ((complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no imaginary components that can be written to file.\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {	/* Must first demultiplex the grid */
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before writing can take place.\n");
@@ -2257,7 +2260,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		if (wesn == NULL) {	/* Must select -R setting */
 			if (!GMT->common.R.active) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
 		else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
@@ -2265,7 +2268,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		if (inc == NULL) {	/* Must select -I setting */
 			if (!GMT->common.API_I.active) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
 		else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
@@ -2562,6 +2565,49 @@ bool gmtlib_check_url_name (char *fname) {
 		return (false);
 }
 
+unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
+	unsigned int tmp_pad[4] = {0, 0, 0, 0}, k = 0;
+	/* When using subset with memory grids we must temporarily change the pad to match the region wesn */
+	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] = h->pad[XLO] + urint ((new_wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
+	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] = h->pad[XHI] + urint ((h->wesn[XHI] - new_wesn[XHI]) * h->r_inc[GMT_X]);
+	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] = h->pad[YLO] + urint ((new_wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]);
+	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] = h->pad[YHI] + urint ((h->wesn[YHI] - new_wesn[YHI]) * h->r_inc[GMT_Y]);
+	if (k) {	/* Yes, pad will change since region is different */
+		gmt_M_memcpy (orig_pad, h->pad, 4, unsigned int);	/* Place the original grid pad in the provided array */
+		gmt_M_memcpy (orig_wesn, h->wesn, 4, double);		/* Place the original grid wesn in the provided array */
+		gmt_M_memcpy (h->pad, tmp_pad, 4, unsigned int);	/* Place the new pad in the grid header */
+		gmt_M_memcpy (h->wesn, new_wesn, 4, double);		/* Place the new wesn in the grid header */
+		gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: %d pad sides changed. Now %u/%u/%u/%u\n", k, h->pad[XLO], h->pad[XHI], h->pad[YLO], h->pad[YHI]);
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: No pad adjustment needed\n");
+	return k;
+}
+
+void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn) {
+	/* When using subset with memory grids we must reset the pad back to the original setting when done */
+	if (h == NULL) return;	/* Nothing for us to work with */
+	gmt_M_memcpy (h->pad, orig_pad, 4, unsigned int);	/* Place the original pad in the grid header */
+	gmt_M_memcpy (h->wesn, orig_wesn, 4, double);		/* Place the orig_pad wesn in the grid header */
+	gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_contract_headerpad: Pad and wesn reset to original values\n");
+}
+
+void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn) {
+	/* When using subset with memory grids we must reset the pad back to the original setting when done */
+	struct GMT_GRID_HEADER *h = NULL;
+	if (family == GMT_IS_GRID) {
+		struct GMT_GRID *G = grdio_get_grid_data (object);
+		if (G) h = G->header;
+	}
+	else if (family == GMT_IS_IMAGE) {
+		struct GMT_IMAGE *I = grdio_get_image_data (object);
+		if (I) h = I->header;
+	}
+	gmtlib_contract_headerpad (GMT, h, orig_pad, orig_wesn);
+}
+
 #ifdef HAVE_GDAL
 GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread)
 {
@@ -2604,7 +2650,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 		gmt_M_free (GMT, to_gdalread);
 		gdal_free_from (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
-		return (EXIT_FAILURE);
+		return (GMT_NOT_A_VALID_TYPE);
 	}
 
 	I->ColorInterp    = from_gdalread->ColorInterp;     /* Must find out how to release this mem */

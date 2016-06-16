@@ -167,7 +167,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [%s] [-h] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F <dataflags> is a comma-separated string made up of one or more of these abbreviations\n");
@@ -322,7 +322,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
 	GMT_Option (API, ":,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -664,7 +664,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Syntax error -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error ERROR -D: Start time exceeds stop time!\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
@@ -814,7 +814,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_NO_INPUT);
 	}
 
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
@@ -825,7 +825,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
-				Return (EXIT_FAILURE);
+				Return (GMT_FILE_NOT_FOUND);
 			}
 			Ctrl->L.file = path;
 		}
@@ -965,7 +965,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
-				Return (EXIT_FAILURE);
+				Return (GMT_FILE_NOT_FOUND);
 			}
 			Ctrl->L.file = path;
 		}
@@ -1002,7 +1002,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (string_output && GMT->common.b.active[1]) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot specify binary output with text fields\n");
 				MGD77_Free_Dataset (GMT, &D);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			if (!string_output) out = gmt_M_memory (GMT, NULL, n_out_columns, double);
 
@@ -1011,7 +1011,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
-			Return (EXIT_FAILURE);
+			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);
 		
@@ -1525,5 +1525,5 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);
 	MGD77_end (GMT, &M);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

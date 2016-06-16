@@ -139,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_V_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of grid file to fit trend to.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
 	GMT_Option (API, ".");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify an input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Specify 1-10 model parameters\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #if 0
@@ -596,7 +596,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 		if (ierror) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
-			return (EXIT_FAILURE);
+			return (GMT_RUNTIME_ERROR);
 		}
 		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 		if (Ctrl->D.active || Ctrl->N.robust) compute_resid (GMT, G, T, R);
@@ -613,7 +613,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 				if (ierror) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
-					return (EXIT_FAILURE);
+					return (GMT_RUNTIME_ERROR);
 				}
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
@@ -638,33 +638,33 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->T.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend surface", T)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, T)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->T.file, T) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->T.file, T) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
-	else if (GMT_Destroy_Data (API, &T) != GMT_OK) {
+	else if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free T\n");
 	}
 	if (Ctrl->D.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust) {
-		if (GMT_Destroy_Data (API, &R) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &R) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free R\n");
 		}
 	}
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend weights", W)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, W)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
-	else if (set_ones && GMT_Destroy_Data (API, &W) != GMT_OK) {
+	else if (set_ones && GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free W\n");
 	}
 
@@ -680,5 +680,5 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

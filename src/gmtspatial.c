@@ -683,7 +683,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -739,7 +739,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   and clip against a polygon derived from the region border.\n");
 	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -963,7 +963,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1029,7 +1029,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.active) geometry = Ctrl->Q.mode;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
 	else if (Ctrl->F.active) geometry = Ctrl->F.geometry;	/* Forcing polygon or line mode */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -1045,10 +1045,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = 1;
@@ -1066,15 +1066,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		
 		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */		
 		NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {	/* All data now in NN_dist so free original dataset */
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* All data now in NN_dist so free original dataset */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
@@ -1173,12 +1173,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
 			
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 		gmt_M_free (GMT, NN_dist);	
 		gmt_M_free (GMT, NN_info);	
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	if (Ctrl->L.active) {	/* Remove tile lines only */
 		int gap = 0, first, prev_OK;
@@ -1187,10 +1187,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 		
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -1226,13 +1226,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 					
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
@@ -1257,10 +1257,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			qmode = GMT_IS_POINT;
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		
@@ -1308,17 +1308,17 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		/* Write out results */
 		if (Ctrl->Q.header || Ctrl->E.active) {
 			if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
@@ -1356,13 +1356,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		else
 			C = D;	/* Compare with itself */
 			
-		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
@@ -1502,18 +1502,18 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, ylist1);
 			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (Ctrl->S.mode == POL_CLIP) {
-			if (GMT_Destroy_Data (API, &C) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &C) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
@@ -1547,11 +1547,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_alloc_segment (GMT, S2, 0, C->n_columns, true);
 		}
 			
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 			Return (API->error);				/* Enables data output and sets access mode */
 		}
@@ -1618,16 +1618,16 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) gmt_M_free (GMT, Info[tbl]);
 		gmt_M_free (GMT, Info);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (Ctrl->D.file && GMT_Destroy_Data (API, &C) != GMT_OK) {
+		if (Ctrl->D.file && GMT_Destroy_Data (API, &C) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
@@ -1658,7 +1658,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S->n_rows = np;
 			}
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -1682,15 +1682,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
 		}
 		else {	/* Regular data output */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 		}
@@ -1756,22 +1756,22 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		for (p = n_inside = 0; p < D->n_segments; p++) if (count[p]) n_inside++;
 		if (Ctrl->N.mode != 1) {	/* Write out results */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
-		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &C) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &C) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		gmt_M_free (GMT, count);
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_SPLIT) {	/* Split polygons at dateline */
 		bool crossing;
@@ -1818,21 +1818,21 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Dout->table[tbl]->n_segments = seg_out;
 			Dout->n_segments += seg_out;
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments split across the Dateline\n", n_split_tot);
-		if (GMT_Destroy_Data (API, &Dout) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 	
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		Return (EXIT_SUCCESS);
+		Return (GMT_NOERROR);
 	}
 	
-	Return (EXIT_SUCCESS);
+	Return (GMT_NOERROR);
 }

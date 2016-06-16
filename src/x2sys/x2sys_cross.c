@@ -111,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n\n");
 	
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
@@ -135,7 +135,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
 	GMT_Option (API, "bo,do,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -249,7 +249,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Error -Q: Only one of -Qe -Qi can be specified!\n");
 
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs) {
@@ -363,12 +363,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	if (s->x_col == -1 || s->y_col == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: lon,lat or x,y are not among data columns!\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Must give at least one data set!\n");
-		Return (EXIT_FAILURE);		
+		Return (GMT_RUNTIME_ERROR);		
 	}
 	
 	GMT->current.setting.interpolant = Ctrl->I.mode;
@@ -402,7 +402,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 
 		n_alloc = add_chunk = GMT_CHUNK;
@@ -415,7 +415,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
-				Return (EXIT_FAILURE);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			pair[n_pairs].id1 = strdup (name1);
 			pair[n_pairs].id2 = strdup (name2);
@@ -434,7 +434,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
 			gmt_M_free (GMT, duplicate);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
@@ -523,13 +523,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 	wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
@@ -538,7 +538,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		if (s->x_col < 0 || s->y_col < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[A], &data[0], s, &data_set[0], &GMT->current.io, &n_rec[0]), trk_name[A]);
@@ -870,7 +870,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	if (fpC) fclose (fpC);
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -890,5 +890,5 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	x2sys_end (GMT, s);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

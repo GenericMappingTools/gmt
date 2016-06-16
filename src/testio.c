@@ -55,8 +55,8 @@ int main () {
 
 	/* 4. Create command options for GMT_mapproject */
 
-	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/5/0/5 -Jm1 -Fk -bi3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -71,8 +71,8 @@ int main () {
 
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
-	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -94,7 +94,7 @@ int main () {
 	printf ("n_columns,n_rows = %d %d\n", G->header->n_columns, G->header->n_rows);
 	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!gmt_M_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
-	if (GMT_Destroy_Data (API, &G) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G\n");
 	}
 
@@ -103,8 +103,8 @@ int main () {
 	Vo = gmt_create_vector (API->GMT, 3U, GMT_OUT);
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
-	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -126,5 +126,5 @@ int main () {
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
 
-	exit (GMT_OK);		/* Return the status from this program */
+	exit (GMT_NOERROR);		/* Return the status from this program */
 }

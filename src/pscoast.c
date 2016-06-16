@@ -192,7 +192,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\n");
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,G");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -264,7 +264,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Option (API, ".");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -522,14 +522,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					record[j++] = record[i];
 				}
 				record[j] = '\0';
-				if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+				if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 					return (API->error);
 				}
-				if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+				if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 					return (API->error);
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
-				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 					return (API->error);
 				}
 				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
@@ -660,7 +660,7 @@ GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, 
 	GMT->common.J.active = false;
 	gmt_parse_common_options (GMT, "J", 'J', old_J);
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
-	return (GMT_OK);
+	return (GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -757,7 +757,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (!gmt_M_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	world_map_save = GMT->current.map.is_world;
@@ -780,7 +780,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (!(need_coast_base || Ctrl->E.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No GSHHG databases available - must abort\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
@@ -789,13 +789,13 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		if (Ctrl->W.active) {
@@ -838,7 +838,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-			Return (GMT_OK);
+			Return (GMT_NOERROR);
 		}
 
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -946,7 +946,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 #endif
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5d\r", bin);
@@ -1204,7 +1204,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 	}
-	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 		Return (API->error);	/* Disables further data output */
 	}
 	
@@ -1212,5 +1212,5 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

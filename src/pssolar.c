@@ -126,7 +126,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
@@ -151,7 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X,c,o,p");
 	GMT_Option (API, "t,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -277,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -391,7 +391,7 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 
 	Sun->radius = radius;
 
-	return (GMT_OK);
+	return (GMT_NOERROR);
 }
 
 /* --------------------------------------------------------------------------------------------------- */
@@ -433,12 +433,12 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_NOERROR) Return (API->error);
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -447,17 +447,17 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) { 
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
 		}
 		else {
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination*/
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination*/
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -476,7 +476,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
 				sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -491,12 +491,12 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			gmt_M_free (GMT, Sun);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			gmt_M_free (GMT, Sun);
 			Return (API->error);
 		}
@@ -518,7 +518,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) Return (API->error);
 	}
 
 	else {	/* Plotting the terminator as line, polygon, or cliup path */
@@ -572,5 +572,5 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, Sun);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

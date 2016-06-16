@@ -413,7 +413,7 @@ GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, d
 	if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 5\n");
 	if (set_exit || GMT->current.proj.g_debug > 1) {
 		gmt_message (GMT, "phi    %12.7f\n", phi*R2D);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT_PROJECTION_ERROR;
 	}
 	*lat = phi * R2D;
 	*lon = atan2d (Y, X) + GMT->current.proj.g_lon0;
@@ -2466,7 +2466,7 @@ double gmt_left_robinson (struct GMT_CTRL *GMT, double y) {
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
 		gmt_message (GMT, "GMT Internal error in gmt_left_robinson!\n");
-		GMT_exit (GMT, EXIT_FAILURE); return GMT->session.d_NaN;
+		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT->session.d_NaN;
 	}
 
 	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian);
@@ -2481,7 +2481,7 @@ double gmt_right_robinson (struct GMT_CTRL *GMT, double y) {
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
 		gmt_message (GMT, "GMT Internal error in gmt_right_robinson!\n");
-		GMT_exit (GMT, EXIT_FAILURE); return GMT->session.d_NaN;
+		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT->session.d_NaN;
 	}
 
 	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian);

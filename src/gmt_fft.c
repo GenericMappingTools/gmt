@@ -509,7 +509,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 
 	if (plan == NULL) { /* There was a problem creating a plan */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
-		GMT_exit (GMT, EXIT_FAILURE); return NULL;
+		GMT_exit (GMT, GMT_ARG_IS_NULL); return NULL;
 	}
 
 	return plan;

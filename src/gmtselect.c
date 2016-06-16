@@ -219,7 +219,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -272,7 +272,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Does not apply to files given via -C, -F, or -L.\n");
 	GMT_Option (API, "o,s,:,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -474,7 +474,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
 	
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /* Must free allocated memory before returning */
@@ -567,7 +567,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		if ((err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
@@ -596,11 +596,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		for (seg = 0; seg < point->n_segments; seg++) {
@@ -649,7 +649,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
 		for (seg = 0; seg < line->n_segments; seg++) {
@@ -671,7 +671,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
 		if (do_project) {	/* Convert all the polygons points using the map projection */
@@ -692,16 +692,16 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
@@ -744,7 +744,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least %u columns; this file only has %d near line %" PRIu64 ". Exiting.\n", n_minimum, n_fields, n_read);
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %d near line %" PRIu64 ". Exiting.\n", n_fields, n_read);
-			Return (EXIT_FAILURE);
+			Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (Ctrl->Z.active) {	/* Apply z-range test(s) */
@@ -812,7 +812,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				gmt_free_shore (GMT, &c);	/* Free previously allocated arrays */
 				if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
-					Return (EXIT_FAILURE);
+					Return (GMT_RUNTIME_ERROR);
 				}
 
 				/* Must use polygons.  Go in both directions to cover both land and sea */
@@ -884,10 +884,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		n_pass++;
 	} while (true);
 	
-	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
@@ -902,5 +902,5 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

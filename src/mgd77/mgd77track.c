@@ -160,7 +160,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL 
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s]\n\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
              
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Option (API, "J-,R");
@@ -206,7 +206,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL 
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, &Ctrl->W.pen));
 	GMT_Option (API, "X,c,p,t,.");
 	
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
@@ -500,7 +500,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	                                 "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Region is not set\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
@@ -625,7 +625,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
-		Return (EXIT_FAILURE);
+		Return (GMT_NO_INPUT);
 	}
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
@@ -884,5 +884,5 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 	
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }

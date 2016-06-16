@@ -405,7 +405,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
 	return (GMT_OK);
@@ -1588,7 +1588,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
 		if ((err = gmt_get_shore_bin (GMT, ind, c))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [gmt_shore_level_at_point]\n", GMT_strerror(err));
-			return (EXIT_FAILURE);
+			return (GMT_RUNTIME_ERROR);
 		}
 
 		/* Must use polygons.  Go in both directions to cover both land and sea */

@@ -2547,7 +2547,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
-			GMT_exit (GMT, EXIT_FAILURE); return false;
+			GMT_exit (GMT, GMT_PARSE_ERROR); return false;
 			break;
 
 	}
@@ -4599,7 +4599,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
 	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 
 	bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
@@ -4926,7 +4926,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			}
 			if (level == GMT_N_COND_LEVELS) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
 			if (s->conditional == 6) {	/* else branch */
@@ -5026,7 +5026,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 					            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
-					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 				}
 			case GMT_SYMBOL_CROSS:
@@ -5112,7 +5112,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 				            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
 
@@ -5419,7 +5419,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		}
 		else if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT, EXIT_FAILURE); return NULL;
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
 		}
 	}
 
@@ -6427,7 +6427,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 		append = (ps_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&ps_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s PostScript file %s\n", msg2[append], &ps_file[append]);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FOPEN);
 		}
 		close_file = true;	/* We only close files we have opened here */
 	}
@@ -6443,7 +6443,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmtlib_write_ps\n", *fd);
-			return (EXIT_FAILURE);
+			return (GMT_ERROR_ON_FDOPEN);
 		}
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 		if (fp == GMT->session.std[GMT_OUT])
@@ -6454,7 +6454,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmtlib_write_ps\n", dest_type);
-		return (EXIT_FAILURE);
+		return (GMT_NOT_A_VALID_METHOD);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s PostScript to %s\n", msg1[append], &ps_file[append]);
 	
@@ -6463,10 +6463,10 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	if (fwrite (P->data, 1U, P->n_bytes, fp) != P->n_bytes) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s PostScript to %s\n", msg1[append], &ps_file[append]);
 		if (close_file) fclose (fp);
-		return (EXIT_FAILURE);
+		return (GMT_DATA_WRITE_ERROR);
 	}
 	if (close_file) fclose (fp);
-	return (EXIT_SUCCESS);
+	return (GMT_NOERROR);
 }
 
 /*! . */

@@ -121,7 +121,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[/<nn_dist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
 	GMT_Option (API, "a,bi2,bo,d,f,g,h,i,o,s,:,.");
 
-	return (EXIT_FAILURE);
+	return (GMT_MODULE_USAGE);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Syntax error: Option -C cannot be used with -D!\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist) {
@@ -341,7 +341,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input assuming lines */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input assuming lines */
 		Return (API->error);
 	}
 	/* Read in all the input segments into one virtual dataset */
@@ -471,22 +471,22 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		D[GMT_OUT]->table[0]->segment = gmt_M_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize allocation */
 		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
 		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C; here we do C */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 		/* Write open segments to the outfile (probably stdout) */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 or 2 files depending on q_mode */
 			Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
-		Return (GMT_OK);	/* That is it, we are done here */
+		Return (GMT_NOERROR);	/* That is it, we are done here */
 	}
 
 	/* Below here, -C was NOT given since those cases have already been dealt with.
@@ -640,10 +640,10 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			LNK->table[0]->segment[0]->data[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, &LNK) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &LNK) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -834,7 +834,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -844,7 +844,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	D[GMT_OUT]->table[0]->segment = gmt_M_memory (GMT, T[OPEN], out_seg, struct GMT_DATASEGMENT *);
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
@@ -856,5 +856,5 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were already closed\n", n_islands);
 	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
 
-	Return (GMT_OK);
+	Return (GMT_NOERROR);
 }
