@@ -8,6 +8,7 @@
 # Designed by Lester M. Anderson (CASP, UK) lester.anderson@casp.cam.ac.uk,
 # Modified by Jesse Varner and Elliot Lim (NOAA/NGDC) with a smaller band of white for the highest elevations.
 #
+# HINGE = -0.001
 -11000	10/0/121	-10500	26/0/137
 -10500	26/0/137	-10000	38/0/152
 -10000	38/0/152	-9500	27/3/166

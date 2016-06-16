@@ -4,6 +4,7 @@
 # For folks who hate green in their color tables
 # Designed by W.H.F. Smith, NOAA
 #
+# HINGE = 0
 -32	32/96/255	-28	32/96/255
 -28	32/159/255	-24	32/159/255
 -24	32/191/255	-20	32/191/255

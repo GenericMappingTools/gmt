@@ -5,6 +5,7 @@
 # new topography colour scheme for use with Generic Mapping Tools.
 # Designed by Designed by Lester M. Anderson ( arctica1963@gmail.com )
 #
+# HINGE = 0
 -10000	153/0/255	-9500	153/0/255
 -9500	153/0/255	-9000	153/0/255
 -9000	153/0/255	-8500	153/0/255
