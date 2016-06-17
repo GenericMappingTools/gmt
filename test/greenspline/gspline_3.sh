@@ -50,7 +50,7 @@ echo "0 1 a)" | gmt pstext -R -J -O -K -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps
 gmt greenspline use.xyz -R0/2/0/1 -I$D -Gsplined.nc -S${method}${tension} -D1
 gmt greenspline use.xyz -R0/2/0/1 -I0.01 -Ggrad.nc -S${method}${tension} -Q135 -D1
 gmt grdview splined.nc -Jx2.5i -JZ1.75 -p155/30 -Ctt.cpt -Wc1p -Qm/lightgray -O -Bx0.5 -By0.2 -Bz0.2 -BwSEnZ -K -X6.5i -Y-4.25i >> $ps
-gmt makecpt -Cpolar -T-5/5/0.2 -D -Z > tt.cpt
+gmt makecpt -Cpolar -T-5/5 -D -Z > tt.cpt
 gmt grdimage grad.nc -Ctt.cpt -Jx2.8i -M -Bx0.5 -By0.2 -BWSne -Y4.25i -O -K >> $ps
 gmt grdcontour splined.nc -Jx2.8i -O -Bx0.5 -By0.2 -BWSne -C0.2 -A0.2 -K -GlLT/1/0,1.5/0.5/1.5/1 >> $ps
 gmt psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps

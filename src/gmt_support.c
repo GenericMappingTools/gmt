@@ -67,6 +67,7 @@
  *  support_rgb_to_lab          Convert RGB to CMYK
  *  support_rgb_to_xyz          Convert RGB to CIELAB XYZ
  *  gmt_sample_cpt          Resamples the current CPT file based on new z-array
+ *  gmt_invert_cpt          Flips the current CPT file upside down
  *  support_smooth_contour      Use Akima's spline to smooth contour
  *  GMT_shift_refpoint      Adjust reference point based on size and justification of plotted item
  *  gmt_sprintf_float       Make formatted string from float, while checking for %-apostrophe
@@ -6190,7 +6191,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
 	char T5[GMT_LEN64] = {""}, T6[GMT_LEN64] = {""}, T7[GMT_LEN64] = {""}, T8[GMT_LEN64] = {""}, T9[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, clo[GMT_LEN64] = {""}, chi[GMT_LEN64] = {""}, c, cpt_file[GMT_BUFSIZ] = {""};
-	char *name = NULL;
+	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
@@ -6279,6 +6280,12 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				gmt_M_free (GMT, X);
 				return (NULL);
 			}
+			continue;	/* Don't want this instruction to be also kept as a comment */
+		}
+		else if ((h = strstr (line, "HINGE ="))) {	/* CPT table is hinged at this z value */
+			X->mode &= GMT_CPT_HINGED;
+			X->has_hinge = 1;
+			gmt_scanf_arg (GMT, &h[7], GMT_IS_UNKNOWN, &X->hinge);
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		GMT->current.setting.color_model = X->model;
@@ -6399,8 +6406,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 		nread = sscanf (line, "%s %s %s %s %s %s %s %s %s %s", T0, T1, T2, T3, T4, T5, T6, T7, T8, T9);	/* Hope to read 4, 8, or 10 fields */
 
-		if (nread <= 0) continue;								/* Probably a line with spaces - skip */
-		if (X->model & GMT_CMYK && nread != 10) error = true;			/* CMYK should results in 10 fields */
+		if (nread <= 0) continue;	/* Probably a line with spaces - skip */
+		if (X->model & GMT_CMYK && nread != 10) error = true;	/* CMYK should results in 10 fields */
 		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = true;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 		gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, &X->data[n].z_low);
 		X->data[n].skip = false;
@@ -6572,12 +6579,12 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	for (i = annot = 0, gap = lap = false; i < X->n_colors - 1; i++) {
 		if (X->data[i].z_high < X->data[i+1].z_low) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has a gap between slices %d and %d!\n", cpt_file, i, i+1);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has a gap of size %g between slices %d and %d!\n", cpt_file, (X->data[i+1].z_low-X->data[i].z_high), i, i+1);
 			gap = true;
 		}
 		else if (X->data[i].z_high > X->data[i+1].z_low) {
 			lap = true;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has an overlap between slices %d and %d\n", cpt_file, i, i+1);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has an overlap of size %g between slices %d and %d\n", cpt_file, (X->data[i].z_high - X->data[i+1].z_low), i, i+1);
 		}
 		annot += X->data[i].annot;
 	}
@@ -6683,6 +6690,33 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 	for (i = 0; i < 3; i++) P->bfn[i].hsv[3] = P->bfn[i].rgb[3] = transparency;
 }
 
+#define Fill_swap(x, y) {struct GMT_FILL *F_tmp; F_tmp = x, x = y, y = F_tmp;}
+/*! . */
+void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	unsigned int i, j, k;
+	/* Reverse the order of the colors, leaving the z arrangement intact */
+	for (i = 0, j = P->n_colors-1; i < P->n_colors; i++, j--) {
+		for (k = 0; k < 4; k++) {
+			double_swap (P->data[i].rgb_low[k], P->data[j].rgb_high[k]);
+			double_swap (P->data[i].hsv_low[k], P->data[j].hsv_high[k]);
+		}
+		if (i < j) Fill_swap (P->data[i].fill, P->data[j].fill);
+		
+	}
+	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrrays */
+		for (k = 0; k < 4; k++) {
+			P->data[i].rgb_diff[k] = P->data[i].rgb_high[k] - P->data[i].rgb_low[k];
+			P->data[i].hsv_diff[k] = P->data[i].hsv_high[k] - P->data[i].hsv_low[k];
+		}
+	}
+	/* Swap the B&F settings */
+	for (k = 0; k < 4; k++) {
+		double_swap (P->bfn[GMT_BGD].rgb[k], P->bfn[GMT_FGD].rgb[k]);
+		double_swap (P->bfn[GMT_BGD].hsv[k], P->bfn[GMT_FGD].hsv[k]);
+	}
+	Fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
+}
+	
 /*! . */
 struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter) {
 	/* Resamples the current CPT file based on new z-array.
@@ -6994,6 +7028,11 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		fprintf (fp, "# COLOR_MODEL = cmyk\n");
 	else
 		fprintf (fp, "# COLOR_MODEL = rgb\n");
+	if (P->has_hinge) {
+		fprintf (fp, "# HINGE = ");
+		fprintf (fp, GMT->current.setting.format_float_out, P->hinge);
+		fprintf (fp, "\n");
+	}
 
 	sprintf (format, "%s\t%%s%%c", GMT->current.setting.format_float_out);
 

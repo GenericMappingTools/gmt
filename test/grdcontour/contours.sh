@@ -18,7 +18,7 @@ color_contour () {
 	done
 }
 
-gmt makecpt -Cseis -T0/1/0.1 -Z > contour.cpt
+gmt makecpt -Cseis -T0/1 -Z > contour.cpt
 
 # The bottom map will have contours oriented so that as you move along
 # them (color goes from red to blue) the higher topography will be to

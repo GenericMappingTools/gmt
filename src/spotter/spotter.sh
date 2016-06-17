@@ -55,7 +55,7 @@ gmt hotspotter $DATA -h -I$dx -R$region -E${POLES} -Gexample_1.nc -V -T -N$tmax
 
 # Make a suitable color table
 
-gmt makecpt -Chot -T0/3000/300 -Z > t.cpt
+gmt makecpt -Chot -T0/3000 -Z > t.cpt
 
 gmt grdimage example_1.nc -JM6i -P -K -Ct.cpt -V > example_2.ps
 gmt pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -Baf -BWSne >> example_2.ps

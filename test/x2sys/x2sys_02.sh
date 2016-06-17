@@ -9,7 +9,7 @@
 ps=x2sys_02.ps
 
 R=181/185/0/3
-gmt makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
+gmt makecpt -Crainbow -T-80/80 -Z > faa.cpt
 gmt psbasemap -R$R -JM5.5i -P -B1 -BWsne+ggray -K -X1.75i -Y5.75i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF > $ps
 gmt psxy -R -J -O "${src:-.}"/data/*.xyg -Sc0.02i -Cfaa.cpt -K >> $ps
 # Grid the data

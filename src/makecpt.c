@@ -80,8 +80,9 @@ struct MAKECPT_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct T {	/* -T<z_min/z_max/z_inc> */
+	struct T {	/* -T<z_min/z_max[/z_inc>] */
 		bool active;
+		bool interpolate;
 		double low, high, inc;
 		char *file;
 	} T;
@@ -146,11 +147,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or filename with custom z-values.  If no -T option is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master CPT file will be used.  If no increment\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   is given we match the number of entries in the master CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>/<z_max> to change the z-range for the colorscale in z-units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Without -Z, append /<z_inc> to sample the cpt discretely instead, or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   append + to <z_inc> to indicate number of z-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a filename with custom z-values\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				break;
 			case 'T':	/* Sets up color z values */
-				Ctrl->T.active = true;
+				Ctrl->T.active = Ctrl->T.interpolate = true;
 				if (!gmt_access (GMT, opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
@@ -242,6 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 					if (n == 3 && opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of levels instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / (Ctrl->T.inc - 1.0);
 					}
+					if (n == 2) Ctrl->T.interpolate = false;
 				}
 				break;
 			case 'Q':	/* Logarithmic scale */
@@ -271,6 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active & !Ctrl->T.interpolate && !Ctrl->Z.active, "Syntax error -T: Must specify sampling interval for discrete output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -284,7 +286,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	double *z = NULL;
 
-	char *l = NULL;
+	char *l = NULL, *kind[2] = {"discrete", "continuous"};
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -329,11 +331,30 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 	
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
 
+	if (Ctrl->T.active && !Ctrl->T.interpolate) {	/* Use existing CPT structure, just change z */
+		double z_min, scale = (Ctrl->T.high - Ctrl->T.low)/(Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
+		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
+		z_min = Pin->data[0].z_low;
+		for (i = 0; i < Pin->n_colors; i++) {
+			Pout->data[i].z_low  = Ctrl->T.low + (Pin->data[i].z_low  - z_min) * scale;
+			Pout->data[i].z_high = Ctrl->T.low + (Pin->data[i].z_high - z_min) * scale;
+			Pout->data[i].i_dz *= scale;
+		}
+		if (Ctrl->I.active)
+			gmt_invert_cpt (GMT, Pout);
+		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
+			Return (API->error);
+		}
+
+		Return (GMT_NOERROR);
+	}
+	
 	/* Set up arrays */
 
 	if (Ctrl->T.file) {	/* Array passed as a data file */
@@ -400,7 +421,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		nz = Pin->n_colors + 1;
 		z = gmt_M_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
-			/* Reverse the intervals (only relavant for non-equidistant color maps) */
+			/* Reverse the intervals (only relevant for non-equidistant color maps) */
 			for (i = 0; i < nz-1; i++) z[i] = Pin->data[0].z_low + Pin->data[Pin->n_colors-1].z_high - Pin->data[Pin->n_colors-1-i].z_high;
 		}
 		else {

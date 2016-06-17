@@ -18,7 +18,7 @@ name=anim_02
 ps=${name}.ps
 # 1b) setup
 del_angle=`gmt gmtmath -Q 360 ${n_frames} DIV =`
-gmt makecpt -Crainbow -T500/4500/5000 -Z > $$.cpt
+gmt makecpt -Crainbow -T500/4500 -Z > $$.cpt
 # 2. Main loop
 mkdir -p $$
 frame=0

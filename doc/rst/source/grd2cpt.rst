@@ -15,7 +15,7 @@ Synopsis
 
 **grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**\ \|\ **o**] ]
-[ |-E|\ *nlevels* ]
+[ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ]
 [ |-G|\ *zlo*\ /\ *zhi* ] [ |-I| ]
 [ |-L|\ *minlimit/maxlimit* ]
@@ -107,9 +107,10 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *nlevels*
-    Create a linear color table by dividing the grid z-range into
-    *nlevels* equidistant slices.
+**-E**\ [*nlevels*]
+    Create a linear color table by using the grid z-range as the new
+    limits in the CPT.  Alternatively, append *nlevels* and we will
+    resample the color table into *nlevels* equidistant slices.
 
 .. _-F:
 
@@ -210,6 +211,15 @@ Optional Arguments
 .. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_transparency.rst_
+
+Color Aliasing
+--------------
+
+For best result when **-E** is used we recommend you do no append
+a specific *nlevels*.  This way the original CPT is used exactly
+as is but the *z* boundaries are adjusted to match the grid limits.
+Otherwise you may, depending on the nature of the input CPT, miss
+aspects of the color changes by aliasing the signal.
 
 Examples
 --------

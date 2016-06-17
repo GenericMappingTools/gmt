@@ -56,7 +56,7 @@ rm -f xydz.def
 
 gmt x2sys_cross -TFAKE track[ABC].xydz -Qe -V -2 > fake_COE_orig.txt
 
-gmt makecpt -T-1/1/0.1 -Cpolar -Z > hat.cpt
+gmt makecpt -T-1/1 -Cpolar -Z > hat.cpt
 PS=x2sys_1.ps
 gmt grdview hat.nc -Chat.cpt -JX6i -P -B1g1 -BWSne -Qs -Wc1p -K -X1.25i > $PS
 gmt psxy -R -J -O -K trackA.xydz -W2p,red >> $PS

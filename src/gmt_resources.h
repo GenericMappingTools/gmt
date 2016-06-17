@@ -595,7 +595,7 @@ enum GMT_enum_bfn {GMT_BGD, GMT_FGD, GMT_NAN};
 
 enum GMT_enum_cpt {GMT_CPT_REQUIRED, GMT_CPT_OPTIONAL};
 
-enum GMT_enum_cptflags {GMT_CPT_NO_BNF = 1, GMT_CPT_EXTEND_BNF = 2};
+enum GMT_enum_cptflags {GMT_CPT_NO_BNF = 1, GMT_CPT_EXTEND_BNF = 2, GMT_CPT_HINGED = 4};
 
 /* Here is the definition of the GMT_PALETTE structure that is used in programs
  * that deals with coloring of items as a function of z-lookup.  Note that rgb

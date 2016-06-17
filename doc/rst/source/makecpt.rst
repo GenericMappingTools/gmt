@@ -153,9 +153,8 @@ Optional Arguments
 
 **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new CPT file by giving the lowest and
-    highest z-value and interval. When used with **-C** and *z_inc* is
-    not specified, the number of intervals remains the same as in the
-    input palette. If *z_inc* is specified with a trailing **+** we
+    highest z-value and interval.  If **-Z** is not used then you
+    must also specify *z_inc*; append a trailing **+** we should
     interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
     per record. If **-T** is not given, the existing range in the master
@@ -184,6 +183,15 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_transparency.rst_
+
+Color Aliasing
+--------------
+
+For best result when **-T -Z** is used we recommend you do no append
+a specific *z_inc*.  This way the original CPT is used exactly
+as is but the *z* boundaries are adjusted to match the stated limits.
+Otherwise you may, depending on the nature of the input CPT, miss
+aspects of the color changes by aliasing the signal.
 
 Examples
 --------

@@ -31,8 +31,8 @@ EOF
 gmt grdmath -R0/5/0/5 -I1 X = x.nc
 gmt grdmath -R0/5/0/5 -I1 Y = y.nc
 gmt grdmath -R0/5/0/5 -I1 X Y MUL = x.nc
-gmt makecpt -Cjet -T0/10/1 -Z > a.cpt
-gmt makecpt -Cpolar -T0/100/10 -Z > b.cpt
+gmt makecpt -Cjet -T0/10 -Z > a.cpt
+gmt makecpt -Cpolar -T0/100 -Z > b.cpt
 gmt makecpt -Cgray -T0/1000/100 > last.cpt
 gmt psbasemap -R0/20/0/20 -JM6i -P -Baf > first.ps
 gmt psbasemap -R0/20/20/40 -JM6i -P -Baf > second.ps

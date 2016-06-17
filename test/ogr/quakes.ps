@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13938M [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0_r16556M [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jan 14 15:33:56 2015
+%%CreationDate: Thu Jun 16 17:05:00 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add -3815 PSL_yorig sub PSL_page_ysize 2 div add TM
 
 % PostScript produced by:
-%%GMT: psxy quakes.gmt -R15/25/15/25 -JM6i -B5 -Sci -Ct.cpt -P -K -Wthin -a2=depth,3=magnitude -i0,1,2,3s0.05l -Yc -Xc
-%%PROJ: merc 15.00000000 25.00000000 15.00000000 25.00000000 -556597.454 556597.454 1678147.516 2857692.611 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy quakes.gmt -R15/25/15/25 -JM6i -B5 -Sci -Ct.cpt -P -K -Wthin -a2=depth,3=magnitude -i0,1,2,3s0.05l -Yc -Xc
+%@PROJ: merc 15.00000000 25.00000000 15.00000000 25.00000000 -556597.454 556597.454 1678147.516 2857692.611 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -748,8 +745,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext quakes.gmt -R15/25/15/25 -JM6i -O -K -a2=name -F+jCT -Dj0/0.2i
-%%PROJ: merc 15.00000000 25.00000000 15.00000000 25.00000000 -556597.454 556597.454 1678147.516 2857692.611 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext quakes.gmt -R15/25/15/25 -JM6i -O -K -a2=name -F+jCT -Dj0/0.2i
+%@PROJ: merc 15.00000000 25.00000000 15.00000000 25.00000000 -556597.454 556597.454 1678147.516 2857692.611 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -774,8 +771,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -D3i/-0.5i/6i/0.1ih -O '-Bx+lEpicenter Depth' -By+lkm
-%%PROJ: xy 0.00000000 300.00000000 0.00000000 0.10000000 0.000 300.000 0.000 0.100 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psscale -Ct.cpt -D3i/-0.5i+w6i/0.1i+h+jTC -O '-Bxa50+lEpicenter Depth' -By+lkm
+%@PROJ: xy 0.00000000 300.00000000 0.00000000 0.10000000 0.000 300.000 0.000 0.100 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -800,66 +797,48 @@ F.jWAH(GLf%%ZV+$bXPRF9u5uR;R,E#<bF-HLhJlGW!.Rlb#MjqU%O?a]f0]+G1LNL+nj#$thtQRurY=
 Nat,4iCJ\J)34`?30N,hH6_[6Uc4In89uNFNMJLrhFMr;l&DJtP28`U,O(2`2u_FBnLs;Q"=*~>
 U
 2 setlinecap
-N 0 0 M 7200 0 D S
 N 0 120 M 7200 0 D S
 N 0 0 M 0 120 D S
 N 7200 0 M 0 120 D S
-4 W
-N 0 0 M 0 120 D S
-N 600 0 M 0 120 D S
-N 1200 0 M 0 120 D S
-N 1800 0 M 0 120 D S
-N 2400 0 M 0 120 D S
-N 3000 0 M 0 120 D S
-N 3600 0 M 0 120 D S
-N 4200 0 M 0 120 D S
-N 4800 0 M 0 120 D S
-N 5400 0 M 0 120 D S
-N 6000 0 M 0 120 D S
-N 6600 0 M 0 120 D S
-N 7200 0 M 0 120 D S
+N 0 0 M 7200 0 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
 8 W
-0 0 M
-0 -83 D S
-0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 0 0 M 0 -83 D S
+N 1200 0 M 0 -83 D S
+N 2400 0 M 0 -83 D S
+N 3600 0 M 0 -83 D S
+N 4800 0 M 0 -83 D S
+N 6000 0 M 0 -83 D S
+N 7200 0 M 0 -83 D S
+/PSL_AH0 0
+/MM {neg M} def
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(0) tc Z
-600 0 M
-0 -83 D S
-600 -167 M (25) tc Z
-1200 0 M
-0 -83 D S
-1200 -167 M (50) tc Z
-1800 0 M
-0 -83 D S
-1800 -167 M (75) tc Z
-2400 0 M
-0 -83 D S
-2400 -167 M (100) tc Z
-3000 0 M
-0 -83 D S
-3000 -167 M (125) tc Z
-3600 0 M
-0 -83 D S
-3600 -167 M (150) tc Z
-4200 0 M
-0 -83 D S
-4200 -167 M (175) tc Z
-4800 0 M
-0 -83 D S
-4800 -167 M (200) tc Z
-5400 0 M
-0 -83 D S
-5400 -167 M (225) tc Z
-6000 0 M
-0 -83 D S
-6000 -167 M (250) tc Z
-6600 0 M
-0 -83 D S
-6600 -167 M (275) tc Z
-7200 0 M
-0 -83 D S
-7200 -167 M (300) tc Z
+(0) sh mx
+(50) sh mx
+(100) sh mx
+(150) sh mx
+(200) sh mx
+(250) sh mx
+(300) sh mx
+def
+/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+0 PSL_A0_y MM
+(0) bc Z
+1200 PSL_A0_y MM
+(50) bc Z
+2400 PSL_A0_y MM
+(100) bc Z
+3600 PSL_A0_y MM
+(150) bc Z
+4800 PSL_A0_y MM
+(200) bc Z
+6000 PSL_A0_y MM
+(250) bc Z
+7200 PSL_A0_y MM
+(300) bc Z
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 3600 -446 M 267 F0
 (Epicenter Depth) tc Z
 7283 60 M 200 F0

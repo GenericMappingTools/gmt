@@ -9,7 +9,7 @@
 ps=x2sys_03.ps
 
 R=181/185/0/3
-gmt makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
+gmt makecpt -Crainbow -T-80/80 -Z > faa.cpt
 
 # Grid the data
 cat "${src:-.}"/bad/*.xyg | gmt blockmean -R$R -I1m | gmt surface -R$R -I1m -Gss_gridded_bad.nc -T0.25

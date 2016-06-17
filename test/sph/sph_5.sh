@@ -16,7 +16,7 @@ gmt psxy -R -J -O -K tt.arcs -W1p >> $ps
 gmt psxy -R -J -O -K -SE-250 -Gwhite -Wfaint "${src:-.}"/hotspots.d >> $ps
 gmt psxy -R -J -O -K -SE-100 -Gblack "${src:-.}"/hotspots.d >> $ps
 # Make a grid with z values numbers
-gmt makecpt -Crainbow -T0/600/10 -Z > t.cpt
+gmt makecpt -Crainbow -T0/600 -Z > t.cpt
 awk '{print $1, $2, 10*NR}' "${src:-.}"/hotspots.d | gmt sphdistance -Rg -I30m -Ez5 -Gz.nc
 gmt grdimage z.nc -Ct.cpt -JH0/6i -B0 -O -K -Y6.5i -nn >> $ps
 gmt psxy -R -J -O -K tt.arcs -W1p >> $ps

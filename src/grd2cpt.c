@@ -134,7 +134,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E[<nlevels>]] [-F[R|r|h|c]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-S<z_start>/<z_stop>/<z_inc> or -S<n>]\n\t[-T<-|+|=|_>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -146,7 +146,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set CPT to go from grid zmin to zmax (i.e., a linear scale).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append <nlevels> to sample equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
@@ -221,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
-				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
+				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
@@ -490,6 +491,28 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
 	}
+	
+	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
+		double z_min, scale = (Ctrl->L.max - Ctrl->L.min)/(Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
+		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
+		z_min = Pin->data[0].z_low;
+		for (k = 0; k < Pin->n_colors; k++) {
+			Pout->data[k].z_low  = Ctrl->L.min + (Pin->data[k].z_low  - z_min) * scale;
+			Pout->data[k].z_high = Ctrl->L.min + (Pin->data[k].z_high - z_min) * scale;
+			Pout->data[k].i_dz *= scale;
+		}
+		if (Ctrl->I.active)
+			gmt_invert_cpt (GMT, Pout);
+		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		error = free_them_grids (API, G, grdfile, ngrd);
+		gmt_M_free (GMT, G);
+		gmt_M_free (GMT, grdfile);
+
+		Return (GMT_NOERROR);
+	}
+
 	ngood = nxyg - nfound;	/* This is the number of non-NaN points for the cdf function  */
 	mean /= ngood;
 	sd /= ngood;

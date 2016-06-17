@@ -17,7 +17,7 @@ gmt grdgradient tasman_grav.nc -Nt1 -A45 -Gtasman_grav_i.nc
 
 # Make a suitable cpt file for mGal
 
-gmt makecpt -T-120/120/240 -Z -Crainbow > grav.cpt
+gmt makecpt -T-120/120 -Z -Crainbow > grav.cpt
 
 # Since this is a Mercator grid we use a linear projection
 

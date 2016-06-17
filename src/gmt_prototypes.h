@@ -291,6 +291,7 @@ EXTERN_MSC bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GR
 EXTERN_MSC bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col);
 EXTERN_MSC int gmt_list_cpt (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC struct GMT_PALETTE * gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz, bool continuous, bool reverse, bool log_mode, bool no_inter);
+EXTERN_MSC void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double transparency, unsigned int mode);
 EXTERN_MSC int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_CONTOUR *G);
 EXTERN_MSC void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned int mode);

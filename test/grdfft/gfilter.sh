@@ -9,7 +9,7 @@ topo="${src:-.}"/../../doc/examples/ex38/topo.nc
 
 # Do a 100 km Gaussian filter on some topography
 gmt grdfft ${topo} -fg -F-/100000 -Glow.nc -N+l
-gmt makecpt -Crainbow -T0/1700/100 -Z > t.cpt
+gmt makecpt -Crainbow -T0/1700 -Z > t.cpt
 gmt grdgradient ${topo} -Nt1 -fg -A45 -Gitopo.nc
 gmt grdgradient low.nc -Nt1 -fg -A45 -Gilow.nc
 gmt grdimage ${topo} -Iitopo.nc -Ct.cpt -JM6i -Y6i -Xc -K -P -B5 -BWSne > $ps
