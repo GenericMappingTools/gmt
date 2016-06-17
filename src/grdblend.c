@@ -163,6 +163,9 @@ GMT_LOCAL bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *
 GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
+	if (gmt_M_grd_is_global (GMT, h)) return false;	/* Not possible to be outside the final grids longitude range if global */
+	if (gmt_M_grd_is_global (GMT, B->G->header)) return false;	/* Not possible to overlap with the final grid in longitude range if your are a global grid */
+	/* Here the grids are not global so we must carefully check for overlap while being aware of periodicity in 360 degrees */
 	w = ((mode) ? B->wesn[XLO] : B->G->header->wesn[XLO]) - shift;	e = ((mode) ? B->wesn[XHI] : B->G->header->wesn[XHI]) - shift;
 	while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
 	if (w > h->wesn[XHI]) {
