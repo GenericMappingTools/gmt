@@ -90,7 +90,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT file. The mid x-value for each bar is used to
+    Give a CPT. The mid x-value for each bar is used to
     look-up the bar color.
 
 .. _-D:

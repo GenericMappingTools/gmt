@@ -68,7 +68,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  gmt surface points.d -Gslice_cut.nc -R$lMin/$lMax/0/999 -I1500+/2000+ -C0.1 -T0.25
  #
- # create CPT file
+ # create CPT
  #
  deltaZ=`gmt grdinfo -T10 slice_cut.nc base.nc`
  gmt makecpt -Cseis -I $deltaZ -Z > colors.cpt

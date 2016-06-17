@@ -2031,39 +2031,39 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 			/* gmtlib_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT table from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
 			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->filename, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			snprintf (tmp_cptfile, GMT_LEN64, "api_colors2cpt_%d.cpt", (int)getpid());
 			if (!strcmp (tmp_cptfile, S_obj->filename)) {	/* This file was created when we gave "name" as red,blue instead */
-				GMT_Report (API, GMT_MSG_DEBUG, "Remove temporary CPT table %s\n", S_obj->filename);
+				GMT_Report (API, GMT_MSG_DEBUG, "Remove temporary CPT %s\n", S_obj->filename);
 				remove (tmp_cptfile);
 			}
 			break;
 		case GMT_IS_STREAM:
  			/* gmtlib_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (S_obj->fp == GMT->session.std[GMT_IN]) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT table from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			break;
 		case GMT_IS_FDESC:
 			/* gmtlib_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (*((int *)S_obj->fp) == GMT_IN) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT table from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			break;
 		case GMT_IS_DUPLICATE:	/* Duplicate the input CPT palette */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating CPT table from GMT_PALETTE memory location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating CPT from GMT_PALETTE memory location\n");
 			if (S_obj->resource == NULL) return_null (API, GMT_PTR_IS_NULL);
 			P_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 			gmtlib_copy_palette (GMT, P_obj, S_obj->resource);
 			break;
 		case GMT_IS_REFERENCE:	/* Just pass memory location, so nothing is allocated */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT table from GMT_PALETTE memory location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT from GMT_PALETTE memory location\n");
 			if ((P_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			gmtlib_init_cpt (GMT, P_obj);	/* Make sure derived quantities are set */
 			break;
 		default:	/* Barking up the wrong tree here... */
-			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import CPT tables\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import CPTs\n");
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
@@ -2100,36 +2100,36 @@ GMT_LOCAL int api_export_cpt (struct GMTAPI_CTRL *API, int object_ID, unsigned i
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 			/* gmtlib_write_cpt will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT table to %s %s\n", GMT_method[S_obj->method], S_obj->filename);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT to %s %s\n", GMT_method[S_obj->method], S_obj->filename);
 			if ((error = gmtlib_write_cpt (GMT, S_obj->filename, S_obj->method, mode, P_obj))) return (gmtapi_report_error (API, error));
 			break;
 	 	case GMT_IS_STREAM:
 			/* gmtlib_write_cpt will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (S_obj->fp == GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT table to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((error = gmtlib_write_cpt (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (gmtapi_report_error (API, error));
 			break;
 	 	case GMT_IS_FDESC:
 			/* gmtlib_write_cpt will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (*((int *)S_obj->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT table to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CPT to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((error = gmtlib_write_cpt (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (gmtapi_report_error (API, error));
 			break;
 		case GMT_IS_DUPLICATE:		/* Duplicate the input cpt */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating CPT table to GMT_PALETTE memory location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating CPT to GMT_PALETTE memory location\n");
 			P_copy = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 			gmtlib_copy_palette (GMT, P_copy, P_obj);
 			S_obj->resource = P_copy;	/* Set resource pointer from object to this palette */
 			break;
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT table to GMT_PALETTE memory location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT to GMT_PALETTE memory location\n");
 			P_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = P_obj;	/* Set resource pointer from object to this palette */
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to export CPT tables\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to export CPTs\n");
 			return (gmtapi_report_error (API, GMT_NOT_A_VALID_METHOD));
 			break;
 	}
@@ -4436,7 +4436,7 @@ GMT_LOCAL struct GMTAPI_DATA_OBJECT * api_make_dataobject (struct GMTAPI_CTRL *A
 
 /*! . */
 GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
-	/* Take comma-separated color entries and build a linear, continuous CPT table.
+	/* Take comma-separated color entries and build a linear, continuous CPT.
 	 * We check if color is valid then write the given entries verbatim.
 	 * Returns GMT_NOTSET on error, 0 if no CPT is created (str presumably holds a CPT name) and 1 otherwise.
 	*/
@@ -4445,7 +4445,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 	double z = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
 
-	if (!(pch = strchr (*str, ','))) return (0);	/* Presumably gave a regular CPT file name */
+	if (!(pch = strchr (*str, ','))) return (0);	/* Presumably gave a regular CPT name */
 
 	snprintf (tmp_file, GMT_LEN256, "api_colors2cpt_%d.cpt", (int)getpid());
 	if ((fp = fopen (tmp_file, "w")) == NULL) {
@@ -4470,7 +4470,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 	}
 	fclose (fp);
 
-	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT file %s\n", *str, tmp_file);
+	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT %s\n", *str, tmp_file);
 
 	gmt_M_str_free (*str);		/* Because it was allocated with strdup */
 	*str = strdup (tmp_file);	/* Pass out the temp file name */
@@ -5749,10 +5749,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
-		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPT files must be handled differently since the master files live in share/cpt and filename is missing .cpt */
+		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
-			if ((c_err = api_colors2cpt (API, &file)) < 0) { /* Maybe converted colors to new CPT file */
+			if ((c_err = api_colors2cpt (API, &file)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
@@ -5764,9 +5764,9 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				else	/* Use name as is */
 					strncpy (CPT_file, file, GMT_BUFSIZ-1);
 			}
-			else	/* Got color list, now a temp CPT file instead */
+			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, GMT_BUFSIZ-1);
-			gmt_M_str_free (file);	/* Free temp CPT file name */
+			gmt_M_str_free (file);	/* Free temp CPT name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
 				return_null (API, API->error);
@@ -5939,7 +5939,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 				new_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_TEXTSET);
 			geometry = GMT_IS_NONE;
 			break;
-		case GMT_IS_PALETTE:	/* GMT CPT table, allocate one with space for dim[0] color entries */
+		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
 			new_obj = gmtlib_duplicate_palette (GMT, data, 0);
 			geometry = GMT_IS_NONE;
 			break;
@@ -7034,7 +7034,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (this_dim[GMT_TBL] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
 			if ((new_obj = gmtlib_create_textset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
-		case GMT_IS_PALETTE:	/* GMT CPT table, allocate one with space for dim[0] color entries */
+		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
 			/* If dim is NULL then we ask for 0 color entries as direction here is GMT_OUT for return to an external API */
 		 	if ((new_obj = gmtlib_create_palette (API->GMT, this_dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
@@ -8358,7 +8358,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			if (direction == GMT_IN) n_in_added++;
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
-			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well */
+			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT.  Also check for -Rd|g and let -R pass as well */
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
 			if (key[k][K_DIR] == '-')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */

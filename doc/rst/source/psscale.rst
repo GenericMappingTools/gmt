@@ -31,6 +31,7 @@ Synopsis
 [ |-S| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *scale* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ *zfile* ]
@@ -44,7 +45,7 @@ Description
 -----------
 
 **psscale** plots gray scales or color scales on maps. Both horizontal
-and vertical scales are supported. For CPT files with gradational
+and vertical scales are supported. For CPTs with gradational
 colors (i.e., the lower and upper boundary of an interval have different
 colors) **psscale** will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
@@ -103,22 +104,22 @@ Optional Arguments
     **-Baf** annotation and/or minor tick intervals are chosen
     automatically. If **-B** is omitted, or no annotation intervals are
     provided, the default is to annotate every color level based on the
-    numerical entries in the CPT file (which may be overridden by ULB
-    flags in the CPT file). To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the CPT file.
+    numerical entries in the CPT (which may be overridden by ULB
+    flags in the CPT). To specify custom text annotations for
+    intervals, you must append ;\ *annotation* to each z-slice in the CPT.
 
 .. _-C:
 
 **-C**\ *cpt*
-    *cpt* is the CPT file to be used. By default all
+    *cpt* is the CPT to be used. By default all
     color changes are annotated. To use a subset, add an extra column to
-    the CPT file with a L, U, or B to annotate Lower, Upper, or Both
+    the CPT with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). If not given, **psscale**
     will read stdin. Like :doc:`grdview`, **psscale** can understand
-    pattern specifications in the CPT file. For CPT files where the
+    pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
-    Likewise, if the CPT file uses another unit than meter and you wish
+    Likewise, if the CPT uses another unit than meter and you wish
     to plot the CPT versus meters, append **+u**\ *unit*.
 
 .. _-F:
@@ -170,9 +171,9 @@ Optional Arguments
 
 **-L**\ [**i**][*gap*]
     Gives equal-sized color rectangles. Default scales rectangles
-    according to the z-range in the CPT file (Also see **-Z**). If set,
+    according to the z-range in the CPT (Also see **-Z**). If set,
     any equal interval annotation set with **-B** will be ignored. If
-    *gap* is appended and the CPT file is discrete we will center each
+    *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
     instead. If **-I** is used then each rectangle will have its
@@ -203,7 +204,7 @@ Optional Arguments
 
 **-Q**
     Select logarithmic scale and power of ten annotations. All z-values
-    in the CPT file will be converted to p = log10(z) and only integer p
+    in the CPT will be converted to p = log10(z) and only integer p
     values will be annotated using the 10^p format [Default is linear scale].
 
 .. _-R:
@@ -227,6 +228,12 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ *scale*
+    Multiply all *z*-values in the CPT by the provided *scale*.
+    By default the CPT is used as is.
 
 .. _-X:
 
@@ -279,7 +286,7 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 Notes
 -----
 
-When the CPT file is discrete and no illumination is specified, the
+When the CPT is discrete and no illumination is specified, the
 color bar will be painted using polygons. For all other cases we must
 paint with an image. Some color printers may give slightly different
 colors for the two methods given identical RGB values.

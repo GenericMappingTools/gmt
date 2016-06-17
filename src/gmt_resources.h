@@ -626,7 +626,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int mode;		/* Flags controling use of BFN colors */
 	struct GMT_LUT *data;		/* CPT lookup table read by gmtlib_read_cpt */
 	struct GMT_BFN bfn[3];		/* Structures with back/fore/nan colors */
-	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
+	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */

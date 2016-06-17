@@ -33,7 +33,7 @@ components (0-255 range) to separate grid files. Since the raster file
 header is limited you may use the **-R**, **-I**, **-r** options to set
 a complete header record [Default is simply based on the number of rows
 and columns]. (2) A binary 2-D grid file; we then convert the z-values
-to red, green, blue via the provided CPT file. Optionally, only write
+to red, green, blue via the provided CPT. Optionally, only write
 out one of the r, g, b, layers. (3) A RGB or RGBA raw raster file. Since
 raw rasterfiles have no header, you have to give the image dimensions
 via the **-W** option.

@@ -66,8 +66,8 @@
  *  support_rgb_to_hsv          Convert RGB to HSV
  *  support_rgb_to_lab          Convert RGB to CMYK
  *  support_rgb_to_xyz          Convert RGB to CIELAB XYZ
- *  gmt_sample_cpt          Resamples the current CPT file based on new z-array
- *  gmt_invert_cpt          Flips the current CPT file upside down
+ *  gmt_sample_cpt          Resamples the current CPT based on new z-array
+ *  gmt_invert_cpt          Flips the current CPT upside down
  *  support_smooth_contour      Use Akima's spline to smooth contour
  *  GMT_shift_refpoint      Adjust reference point based on size and justification of plotted item
  *  gmt_sprintf_float       Make formatted string from float, while checking for %-apostrophe
@@ -919,7 +919,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse_z_unit (struct GMT_CTRL *GMT, ch
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT file z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return NULL;
 	}
 	/* Got a valid unit */
@@ -946,12 +946,12 @@ GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P,
 		if (Z) {P->z_adjust[GMT_IN] = Z->z_adjust; P->z_unit[GMT_IN] = Z->z_unit; P->z_mode[GMT_IN] = Z->z_mode; P->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter; }
 		if (P->z_adjust[GMT_IN] == 0) return;	/* Nothing to do */
 		if (P->z_adjust[GMT_IN] & 2)  return;	/* Already scaled them */
-		scale = P->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT table */
+		scale = P->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT */
 		P->z_adjust[GMT_IN] = 2;	/* Now the cpt is ready for use and in meters */
 		if (P->z_mode[GMT_IN])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT file z unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT file z unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
 	}
 	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
 		if (Z) {P->z_adjust[GMT_OUT] = Z->z_adjust; P->z_unit[GMT_OUT] = Z->z_unit; P->z_mode[GMT_OUT] = Z->z_mode; P->z_unit_to_meter[GMT_OUT] = Z->z_unit_to_meter; }
@@ -959,17 +959,17 @@ GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P,
 			scale = 1.0 / P->z_unit_to_meter[GMT_OUT];
 			P->z_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
 			if (P->z_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
 		}
 		else if (P->z_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
 			scale = 1.0 / P->z_unit_to_meter[GMT_IN];
 			P->z_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
 			if (P->z_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
 		}
 	}
 	/* If we got here we must scale the CPT's z-values */
@@ -6236,17 +6236,17 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		return (NULL);
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading CPT table from %s\n", cpt_file);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading CPT from %s\n", cpt_file);
 
 	X = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 
 	X->data = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LUT);
 	X->mode = cpt_flags;	/* Maybe limit what to do with BFN selections */
-	color_model = GMT->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
+	color_model = GMT->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT */
 	/* Also: GMT->current.setting.color_model is used in some rgb_to_xxx functions so it must be set if changed by cpt */
 	X->is_gray = X->is_bw = true;	/* May be changed when reading the actual colors */
 
-	/* Set default BFN colors; these may be overwritten by things in the CPT file */
+	/* Set default BFN colors; these may be overwritten by things in the CPT */
 	for (id = 0; id < 3; id++) {
 		gmt_M_rgb_copy (X->bfn[id].rgb, GMT->current.setting.color_patch[id]);
 		support_rgb_to_hsv (X->bfn[id].rgb, X->bfn[id].hsv);
@@ -6259,7 +6259,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		gmt_strstrip (line, true);
 		c = line[0];
 
-		if (strstr (line, "COLOR_MODEL")) {	/* CPT file overrides default color model */
+		if (strstr (line, "COLOR_MODEL")) {	/* CPT overrides default color model */
 			if (strstr (line, "+RGB") || strstr (line, "rgb"))
 				X->model = GMT_RGB + GMT_COLORINT;
 			else if (strstr (line, "RGB"))
@@ -6282,7 +6282,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
-		else if ((h = strstr (line, "HINGE ="))) {	/* CPT table is hinged at this z value */
+		else if ((h = strstr (line, "HINGE ="))) {	/* CPT is hinged at this z value */
 			X->mode &= GMT_CPT_HINGED;
 			X->has_hinge = 1;
 			gmt_scanf_arg (GMT, &h[7], GMT_IS_UNKNOWN, &X->hinge);
@@ -6296,7 +6296,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			if (strstr (line, "$Id:")) master = true;
 			if (master) {
 				n_master++;
-				if (n_master <= 2) continue;	/* Skip first 2 lines of GMT master CPT files */
+				if (n_master <= 2) continue;	/* Skip first 2 lines of GMT master CPTs */
 			}
 			if (n_hdr_alloc == 0) X->header = gmt_M_memory (GMT, X->header, (n_hdr_alloc = GMT_TINY_CHUNK), char *);
 			X->header[X->n_headers] = strdup (line);
@@ -6540,7 +6540,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	}
 
 	if (X->categorical && n_cat_records != n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot decode %s as categorical CPT file\n", cpt_file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot decode %s as categorical CPT\n", cpt_file);
 		if (Z) gmt_M_free (GMT, Z);
 		gmt_M_free (GMT, X->data);
 		gmt_M_free (GMT, X);
@@ -6554,7 +6554,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		return (NULL);
 	}
 	if (n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT file %s has no z-slices!\n", cpt_file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT %s has no z-slices!\n", cpt_file);
 		if (Z) gmt_M_free (GMT, Z);
 		gmt_M_free (GMT, X->data);
 		gmt_M_free (GMT, X);
@@ -6621,12 +6621,12 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 /*! . */
 struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax) {
-	/* Will read in a CPT file.  However, if file does not exist in the current directory we may provide
+	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
 	struct GMT_PALETTE *P = NULL;
 
-	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT file to be present; GMT_Read_Data will work or fail accordingly */
+	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 		return (P);
 	}
@@ -6639,7 +6639,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   For 2 & 3 we take the master table and linearly shift the z values to fit the range.
 	*/
 
-	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT file was given and exists or is memory location */
+	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT was given and exists or is memory location */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Take master cpt and stretch to fit data range */
@@ -6719,10 +6719,10 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	
 /*! . */
 struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter) {
-	/* Resamples the current CPT file based on new z-array.
+	/* Resamples the current CPT based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
 	 * New cpt may be continuous and/or reversed.
-	 * We write the new CPT file to stdout. */
+	 * We write the new CPT to stdout. */
 
 	unsigned int i = 0, j, k, upper, lower, nz;
 	uint64_t dim_nz[1];
@@ -6751,12 +6751,12 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	i += gmt_M_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
 
-	/* First normalize old CPT file so z-range is 0-1 */
+	/* First normalize old CPT so z-range is 0-1 */
 
 	b = 1.0 / (Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
 	a = -Pin->data[0].z_low * b;
 
-	for (i = 0; i < Pin->n_colors; i++) {	/* Copy/normalize CPT file and reverse if needed */
+	for (i = 0; i < Pin->n_colors; i++) {	/* Copy/normalize CPT and reverse if needed */
 		if (reverse) {
 			j = Pin->n_colors - i - 1;
 			lut[i].z_low = 1.0 - a - b * Pin->data[j].z_high;
@@ -6955,7 +6955,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 /*! . */
 int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int cpt_flags, struct GMT_PALETTE *P) {
-	/* We write the CPT file to fpr [or stdout].
+	/* We write the CPT to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * cpt_flags is a combination of:
 	 * GMT_CPT_NO_BNF = Do not write BFN
@@ -7012,9 +7012,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmtlib_write_cpt\n", dest_type);
 		return (GMT_NOT_A_VALID_METHOD);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s CPT table to %s\n", msg1[append], &cpt_file[append]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s CPT to %s\n", msg1[append], &cpt_file[append]);
 
-	/* Start writing CPT file info to fp */
+	/* Start writing CPT info to fp */
 
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
 		gmtlib_write_tableheader (GMT, fp, P->header[i]);
@@ -7076,7 +7076,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	/* Background, foreground, and nan colors */
 
-	if (cpt_flags & GMT_CPT_NO_BNF) {	/* Do not want to write BFN to the CPT file */
+	if (cpt_flags & GMT_CPT_NO_BNF) {	/* Do not want to write BFN to the CPT */
 		if (close_file) fclose (fp);
 		return (GMT_NOERROR);
 	}
@@ -7108,7 +7108,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 /*! . */
 struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
-	/* Truncate this CPT table to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
+	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
 
 	unsigned int k, j, first = 0, last = P->n_colors - 1;
 

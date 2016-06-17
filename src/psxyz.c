@@ -149,7 +149,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header.  Then, color is\n");
@@ -292,7 +292,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 					Ctrl->C.active = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No CPT table given\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No CPT given\n");
 					n_errors++;
 				}
 				break;
@@ -779,7 +779,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (get_rgb) {	/* Lookup t to get rgb */
 				gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
 				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-				if (P->skip) continue;	/* Chosen CPT file indicates skip for this t */
+				if (P->skip) continue;	/* Chosen CPT indicates skip for this t */
 			}
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
@@ -1248,7 +1248,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
 
-				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
+				if (P && P->skip) continue;	/* Chosen CPT indicates skip for this z */
 
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);

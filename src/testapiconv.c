@@ -52,7 +52,7 @@ int main (int argc, char *argv[]) {
 	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
 	for (k = 0; k < n; k++)
 		if (GMT_Destroy_Data (API, &G[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
-	/* Test reading several CPT files */
+	/* Test reading several CPTs */
 	n = 0;
 	if ((C = GMT_Read_Group (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	for (k = 0; k < n; k++)

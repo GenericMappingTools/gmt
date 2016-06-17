@@ -268,7 +268,7 @@ illumination file for this using :doc:`grdgradient </grdgradient>`:
 
     gmt grdgradient merc_grav_2.nc -Gillum.nc -A0/270 -Ne0.6
 
-and if we also have a CPT file called "grav.cpt" we can create a color
+and if we also have a CPT called "grav.cpt" we can create a color
 shaded relief map like this:
 
    ::

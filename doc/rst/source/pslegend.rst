@@ -151,7 +151,7 @@ Pslegend Codes
     Records starting with # and blank lines are skipped.
 **A** *cptname*
     Symbol or cell color fills may be given indirectly via a *z*-value
-    which can be used for the color look-up via the given CPT file *cptname*.
+    which can be used for the color look-up via the given CPT *cptname*.
     You may switch to other *cptname* by repeating this command.
 **B** *cptname offset height* [ *optional arguments* ]
     The **B** record will plot a horizontal color bar, **psscale**-style

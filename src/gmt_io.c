@@ -6203,7 +6203,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 *	 -W-		Turn outline OFF
 	 *	 -W		Revert to default pen [current.map_default_pen if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
-	 *	-ZNaN		Get the NaN color from the CPT file
+	 *	-ZNaN		Get the NaN color from the CPT
 	 *
 	 * header is the text string to process
 	 * P is the color palette used for the -Z option
@@ -6218,7 +6218,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 * The function returns the sum of the following return codes:
 	 * 0 = No fill, no outline
 	 * 1 = Revert to default fill or successfully parsed a -G<fill> option
-	 * 2 = Encountered a -Z option to set the fill based on a CPT file
+	 * 2 = Encountered a -Z option to set the fill based on a CPT
 	 * 4 = Encountered a -W<pen> option
 	 * For OGR/GMT files similar parsing occurs in that aspatial values assigned to the magic
 	 * columns D, G, L, W, Z are used in the same fashion.

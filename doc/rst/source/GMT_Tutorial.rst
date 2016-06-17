@@ -756,8 +756,8 @@ longitude and latitude (or *x* and *y*.  The remaining items
 apply when one (or more) of the following conditions are met:
 
 #. If you want the color of each symbol to be determined individually,
-   supply a CPT file with the **-C** option and let the 3rd data column
-   contain the *z*-values to be used with the CPT file.
+   supply a CPT with the **-C** option and let the 3rd data column
+   contain the *z*-values to be used with the CPT.
 
 #. If you want the size of each symbol to be determined individually,
    append the size in a separate column.
@@ -909,7 +909,7 @@ and color:
     100  green  300 green
     300  blue  1000 blue
 
-Apart from comment lines (starting with #), each record in the CPT file
+Apart from comment lines (starting with #), each record in the CPT
 governs the color of a symbol whose *z* value falls in the range between
 *z_0* and *z_1*.  If the colors for the lower and upper levels differ
 then an intermediate color will be linearly interpolated given the *z*
@@ -1400,15 +1400,15 @@ that must be understood.  These are
 #. Artificial illumination and how it affects colors.
 #. Multi-dimensional grids.
 
-CPT files
----------
+CPTs
+----
 
-The CPT file is discussed in detail in the GMT Technical Reference
+The CPT is discussed in detail in the GMT Technical Reference
 and Cookbook.  Please review the format before experimenting
 further.
 
 
-CPT files can be created in any number of ways.  GMT provides
+CPTs can be created in any number of ways.  GMT provides
 two mechanisms:
 
 #. Create simple, linear color tables given a master color table
@@ -1427,7 +1427,7 @@ shown if you run the module with no arguments) and the equidistant
   +---------+----------------------------------------------+
   | Option  | Purpose                                      | 
   +=========+==============================================+
-  | **-C**  | Set the name of the master CPT file to use   |
+  | **-C**  | Set the name of the master CPT to use        |
   +---------+----------------------------------------------+
   | **-I**  | Reverse the sense of the color progression   |
   +---------+----------------------------------------------+
@@ -1436,7 +1436,7 @@ shown if you run the module with no arguments) and the equidistant
   | **-Z**  | Make a continuous rather than discrete table |
   +---------+----------------------------------------------+
 
-To make discrete and continuous color CPT files for data that ranges
+To make discrete and continuous color CPTs for data that ranges
 from -20 to 60, with color changes at every 10, try these two variants:
 
    ::
@@ -1456,7 +1456,7 @@ and grid-line intervals for the color bars.)
   +--------------------------------------------------------+------------------------------------------------+
   | Option                                                 | Purpose                                        | 
   +========================================================+================================================+
-  | **-C**\ *cpt*                                          | The required CPT file                          |
+  | **-C**\ *cpt*                                          | The required CPT                               |
   +--------------------------------------------------------+------------------------------------------------+
   | **-Dx**\ *xpos/ypos*\ **+w**\ *length/width*\ [**+h**] | Sets the position and dimensions of scale bar. |
   +--------------------------------------------------------+------------------------------------------------+
@@ -1541,7 +1541,7 @@ illumination effect, and transform back the modified RGB values.
 Color images
 ------------
 
-Once a CPT file has been made it is relatively straightforward to generate
+Once a CPT has been made it is relatively straightforward to generate
 a color image of a gridded data.  Here, we will extract a subset of the
 global 30" DEM (data id 9) from USGS:
 
@@ -1552,7 +1552,7 @@ global 30" DEM (data id 9) from USGS:
 You can find the grid us.nc also in the *tutorial* directory
 of your GMT installation.
 Using :doc:`grdinfo` we find that the data ranges from about 1000m to
-about 4300m so we make a CPT file accordingly:
+about 4300m so we make a CPT accordingly:
 
    ::
 
@@ -1560,7 +1560,7 @@ about 4300m so we make a CPT file accordingly:
 
 Color images are made with :doc:`grdimage` which takes the usual
 common command options (by default the **-R** is taken from the data set)
-and a CPT file; the main other options are:
+and a CPT; the main other options are:
 
   +---------------------+-----------------------------------------------------------------------+
   | Option              | Purpose                                                               | 
@@ -1638,7 +1638,7 @@ we prefer to use the **-Ne** option; the value of
 
      gmt grdgradient us.nc -Ne0.8 -A100 -fg -Gus_i.nc
 
-Given the CPT file and the two gridded data sets we can
+Given the CPT and the two gridded data sets we can
 create the shaded relief image:
 
    ::
@@ -1770,7 +1770,7 @@ Mesh-plot
 
 Mesh plots work best on smaller data sets.  We again use the small
 subset of the ETOPO5 data over Bermuda and make a quick-and-dirty
-CPT file:
+CPT:
 
    ::
 

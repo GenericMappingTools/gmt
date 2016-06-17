@@ -100,7 +100,7 @@ fonts can be found in the :doc:`gmt` man page.
     values which can produce some unexpected hues, whereas interpolation
     directly on the HSV values better preserves those hues. The choices
     are: **none** (default: use whatever the COLOR_MODEL setting in the
-    CPT file demands), **rgb** (force interpolation in RGB),
+    CPT demands), **rgb** (force interpolation in RGB),
     **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
     in CMYK but interpolates in RGB).
 

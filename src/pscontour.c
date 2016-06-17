@@ -390,9 +390,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. Name of a CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3. Name of a CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT file contours are set to C unless the CPT flags are set;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -419,7 +419,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose among five algorithms:\n");
 	gmt_cont_syntax (API->GMT, 3, 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Color triangles using the CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Color triangles using the CPT.\n");
 	GMT_Option (API, "K");
 	gmt_pen_syntax (API->GMT, 'L', "Draws the triangular mesh with the specified pen.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
@@ -442,8 +442,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT.\n");
 	GMT_Option (API, "X,bi3,bo,c,d,h,i,p,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -528,7 +528,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					Ctrl->contour.annot = true;
 				}
 				break;
-			case 'C':	/* CPT table */
+			case 'C':	/* CPT */
 				Ctrl->C.active = true;
 				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
@@ -673,7 +673,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont), 
-	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or CPT file\n");
+	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
 	                                 "Syntax error: Must specify one of -W or -I\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
@@ -682,7 +682,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),
 	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -753,7 +753,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->C.cpt) {	/* Presumably got a CPT file; read it here so we can crash if no-such-file before we process input data */
+	if (Ctrl->C.cpt) {	/* Presumably got a CPT; read it here so we can crash if no-such-file before we process input data */
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -762,7 +762,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Return (GMT_NOERROR);
 		}
 		if (P->categorical) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
@@ -919,7 +919,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %u triangles whose verticies are all outside the domain.\n", n_skipped);
 	}
 	
-	if (Ctrl->C.cpt) {	/* We already read the CPT file */
+	if (Ctrl->C.cpt) {	/* We already read the CPT */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		cont = gmt_M_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
 		for (i = c = 0; i < P->n_colors; i++) {
@@ -1130,7 +1130,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 		nx = get_triangle_crossings (GMT, cont, n_contours, x, y, z, &ind[ij], small, &xc, &yc, &zc, &vert, &cind);
 
-		if (Ctrl->I.active) {	/* Must color the triangle slices according to CPT file */
+		if (Ctrl->I.active) {	/* Must color the triangle slices according to CPT */
 
 			if (nx == 0) {	/* No contours go through - easy, but must check for NaNs */
 				int kzz;
@@ -1288,11 +1288,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 
 			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
-			if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
+			if (Ctrl->W.color_cont) {	/* Override pen color according to CPT */
 				gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 				gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 			}
-			if (Ctrl->W.color_text)	/* Override label color according to CPT file */
+			if (Ctrl->W.color_text)	/* Override label color according to CPT */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 			
 			head_c = last_c = gmt_M_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
@@ -1385,12 +1385,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 				if (current_contour != cont[c].val) {
 					if (make_plot) {
-						if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
+						if (Ctrl->W.color_cont) {	/* Override pen color according to CPT */
 							gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 							PSL_setcolor (PSL, rgb, PSL_IS_STROKE);
 							gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 						}
-						if (Ctrl->W.color_text && Ctrl->contour.curved_text) {	/* Override label color according to CPT file */
+						if (Ctrl->W.color_text && Ctrl->contour.curved_text) {	/* Override label color according to CPT */
 							gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 						}
 					}

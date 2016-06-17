@@ -48,7 +48,7 @@ done some extrapolation beyond the convex hull of the original *x, y*
 values. The "best" smooth approximation of *z(x, y)* depends on
 the errors in the data and the physical laws obeyed by *z*. GMT cannot
 always do the "best" thing but it offers great flexibility through its
-combinations of tools. We illustrate all four solutions using a CPT file
+combinations of tools. We illustrate all four solutions using a CPT
 that contains color fills, predefined patterns for interval (900,925)
 and NaN, an image pattern for interval (875,900), and a "skip slice"
 request for interval (700,725).

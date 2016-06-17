@@ -98,7 +98,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Name of the CPT file (for *grd_z* only). Alternatively,
+    Name of the CPT (for *grd_z* only). Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdimage** automatically determine a 16-level continuous CPT from
     the grid's z-range.

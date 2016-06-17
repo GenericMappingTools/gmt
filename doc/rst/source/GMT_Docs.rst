@@ -359,8 +359,8 @@ Several changes have affects across GMT; these are:
    now very fast, as is true for the regular Gauss-Jordan solution via a
    new multi-processor enabled algorithm.
 
-*  Allow comma-separated colors instead of CPT files in options that are
-   used to pass a CPT file (typically this means the **-C** option).
+*  Allow comma-separated colors instead of CPTs in options that are
+   used to pass a CPT (typically this means the **-C** option).
 
 *  Faster netCDF reading for COARDS table data (i.e., not grids).
 
@@ -855,9 +855,9 @@ ways, such as
    option **+U**\ *unit*, which can be used to convert your grid
    coordinates *from* meters *to* the specified unit.
 
-*  CPT files also support the **+u**\ \|\ **U**\ *unit* mechanism.  Here, the scaling
-   applies to the z values.  By appending these modifiers to your CPT filenames you
-   can avoid having two CPT files (one for meter and one for km) since only one is needed.
+*  CPTs also support the **+u**\ \|\ **U**\ *unit* mechanism.  Here, the scaling
+   applies to the z values.  By appending these modifiers to your CPT names you
+   can avoid having two CPTs (one for meter and one for km) since only one is needed.
 
 *  Programs that read grids can now directly handle Arc/Info float binary
    files (GRIDFLOAT) and ESRI .hdr formats.
@@ -1013,10 +1013,10 @@ Finally, here is a list of numerous enhancements to individual programs:
    in the fitting, and **-Sl** adds a linear (or bilinear) spline.
 
 *  :doc:`makecpt` has a new **-F** option to
-   specify output color representation, e.g., to output the CPT table in
+   specify output color representation, e.g., to output the CPT in
    h-s-v format despite originally being given in r/g/b, and **-G** to
    truncate incoming CPT to be limited to a given range.  It also adds **Di**
-   to match the bottom/top values in the input CPT file.
+   to match the bottom/top values in the input CPT.
 
 *  :doc:`mapproject` has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
@@ -1041,7 +1041,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 
 *  :doc:`pscontour` is now similar to :doc:`grdcontour` in the options it
    takes, e.g., **-C** in particular. In GMT 4, the program could only
-   read a CPT file and not take a specific contour interval.
+   read a CPT and not take a specific contour interval.
 
 *  :doc:`pshistogram` now takes **-D** to place histogram count labels on top of each bar
    and **-N** to draw the equivalent normal distributions.
@@ -4005,36 +4005,36 @@ Color palette tables
 Several programs, such as those which read 2-D gridded data sets and
 create colored images or shaded reliefs, need to be told what colors to
 use and over what *z*-range each color applies. This is the purpose of
-the color palette table (CPT file). These files may also be used by
+the color palette table (CPT). These files may also be used by
 :doc:`psxy` and
 :doc:`psxyz` to plot color-filled symbols. For
-most applications, you will simply create a CPT file using the tool
+most applications, you will simply create a CPT using the tool
 :doc:`makecpt` which will take an existing
 color table and resample it to fit your chosen data range, or use
-:doc:`grd2cpt` to build a CPT file based on
+:doc:`grd2cpt` to build a CPT based on
 the data distribution in one or more given grid files. However, in some
-situations you will need to make a CPT file by hand or using text tools
+situations you will need to make a CPT by hand or using text tools
 like **awk** or **perl**.
 
 Color palette tables (CPT) comes in two flavors: (1) Those designed to
 work with categorical data (e.g., data where interpolation of values is
 undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
-Section `Specifying area fill attributes`_. The z-values in CPT files can
+Section `Specifying area fill attributes`_. The z-values in CPTs can
 be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
-modifiers to your CPT filenames when used in GMT commands.  The **+u**\ *unit*
+modifiers to your CPT Rƒnames when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
 
-Categorical CPT files
-~~~~~~~~~~~~~~~~~~~~~
+Categorical CPTs
+~~~~~~~~~~~~~~~~
 
 Categorical data are information on which normal numerical operations
 are not defined. As an example, consider various land classifications
 (desert, forest, glacier, etc.) and it is clear that even if we assigned
 a numerical value to these categories (e.g., desert = 1, forest = 2,
 etc) it would be meaningless to compute average values (what would 1.5
-mean?). For such data a special format of the CPT files are provided.
+mean?). For such data a special format of the CPTs are provided.
 Here, each category is assigned a unique key, a color or pattern, and an
 optional label (usually the category name) marked by a leading
 semi-colon. Keys must be monotonically increasing but do not need to be
@@ -4063,11 +4063,11 @@ overridden by the statements
 | N   | Fill\ :sub:`nan`    |
 +-----+---------------------+
 
-Regular CPT files
-~~~~~~~~~~~~~~~~~
+Regular CPTs
+~~~~~~~~~~~~
 
 Suitable for continuous data types and allowing for color
-interpolations, the format of the regular CPT files is:
+interpolations, the format of the regular CPTs is:
 
 +---------------+-------------------+---------------+-------------------+----------+--------------+
 | z\ :sub:`0`   | Color\ :sub:`min` | z\ :sub:`1`   | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
@@ -4109,7 +4109,7 @@ statements
 | N   | Fill\ :sub:`nan`    |
 +-----+---------------------+
 
-which can be inserted into the beginning or end of the CPT file. If you
+which can be inserted into the beginning or end of the CPT. If you
 prefer the HSV system, set the :doc:`gmt.conf` parameter accordingly and replace red,
 green, blue with hue, saturation, value. Color palette tables that
 contain gray-shades only may replace the *r/g/b* triplets with a single
@@ -4148,7 +4148,7 @@ to achieve shaded relief maps. This is typically done by finding the
 directional gradient in the direction of the artificial light source and
 scaling the gradients to have approximately a normal distribution on the
 interval [-1,+1]. These intensities are used to add "white" or "black"
-to the color as defined by the *z*-values and the CPT file. An intensity
+to the color as defined by the *z*-values and the CPT. An intensity
 of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
 hue of the color (see Chapter `Color Space: The Final Frontier`_ for more details). The
@@ -7205,7 +7205,7 @@ override that by modifying the :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` defa
 Programs can examine the segment headers to see if they contain **-D**
 for a distance value, **-W** and **-G** options for specifying pen and
 fill attributes for individual segments, **-Z** to change color via a
-CPT file, **-L** for label specifications, or **-T** for general-purpose
+CPT, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
 override the corresponding command line options. GMT also provides for
 two special values for :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` that can make
@@ -8129,10 +8129,10 @@ Color Space: The Final Frontier
 
 In this Chapter, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
-them more intuitive. GMT allows users to specify colors in CPT files
+them more intuitive. GMT allows users to specify colors in CPTs
 in either of these three systems. Interpolation between colors is
 performed in either RGB or HSV, depending on the specification in the
-CPT file. Below, we will explain why this all matters.
+CPT. Below, we will explain why this all matters.
 
 RGB color system
 ----------------
@@ -8348,7 +8348,7 @@ Depending on the design of your CPT, you may want to have it
 either way. By default, GMT interpolates in RGB space, even when the
 original CPT is in the HSV system. However, when you add the
 line ``#COLOR_MODEL=+HSV`` (with the leading ‘+' sign) in the header of
-the CPT file, GMT will not only read the color
+the CPT, GMT will not only read the color
 representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
 between two colors, instead of their respective R, G, and B values.
@@ -8377,7 +8377,7 @@ Artificial illumination
 GMT uses the HSV system to achieve artificial illumination of colored
 images (e.g., **-I** option in :doc:`grdimage`) by changing the saturation
 *s* and value *v* coordinates of the color. When the intensity is zero
-(flat illumination), the data are colored according to the CPT file. If
+(flat illumination), the data are colored according to the CPT. If
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (*sv*) toward
@@ -8927,12 +8927,12 @@ Of Colors and Color Legends
 Built-in color palette tables (CPT)
 -----------------------------------
 
-Figures :ref:`CPT files a <CPT_files_a>` and
+Figures :ref:`CPTs a <CPT_files_a>` and
 :ref:`b <CPT_files_b>` show the 36 built-in
-color palettes, stored in so-called CPT tables [40]_. The programs
+color palettes, stored in so-called CPTs [40]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
-master CPT tables and translate/scale them to fit the user's range of
+master CPTs and translate/scale them to fit the user's range of
 *z*-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
@@ -8945,7 +8945,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The first 18 of the standard 36 CPT files supported by GMT
+   The first 18 of the standard 36 CPTs supported by GMT
 
 .. _CPT_files_b:
 
@@ -8953,7 +8953,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The second 18 of the standard 36 CPT files supported by GMT
+   The second 18 of the standard 36 CPTs supported by GMT
 
 
 Labeled and non-equidistant color legends
@@ -8965,7 +8965,7 @@ Things become a bit more
 complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
 accomplish that, one should add a semi-colon and the label name at the
-end of a line in the CPT table and add the **-L** option to the
+end of a line in the CPT and add the **-L** option to the
 :doc:`psscale` command that draws the color
 legend. This option also makes all intervals in the legend of equal
 length, even it the numerical values are not equally spaced.
@@ -8973,7 +8973,7 @@ length, even it the numerical values are not equally spaced.
 Normally, the name labels are plotted at the lower end of the intervals.
 But by adding a *gap* amount (even when zero) to the **-L** option, they
 are centered. The example below also shows how to annotate ranges using
-**-Li** (in which case no name labels should appear in the CPT file),
+**-Li** (in which case no name labels should appear in the CPT),
 and how to switch the color bar around (by using a negative length).
 
 .. figure:: /_images/GMT_App_M_2.*

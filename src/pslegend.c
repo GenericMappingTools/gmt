@@ -663,7 +663,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 				}
 
 				switch (line[0]) {
-					case 'A':	/* Z lookup color table change: A CPT file */
+					case 'A':	/* Z lookup color table change: A CPT */
 						if (P && GMT_Destroy_Data (API, &P) != GMT_NOERROR)	/* Remove the previous CPT from registration */
 							Return (API->error);
 						for (col = 1; line[col] == ' '; col++);	/* Wind past spaces */

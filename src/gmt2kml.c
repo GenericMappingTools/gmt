@@ -723,7 +723,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	gmt_M_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 
-	if (Ctrl->C.active) {	/* Process CPT file */
+	if (Ctrl->C.active) {	/* Process CPT */
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -783,7 +783,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	kml_print (API, --N, "</LabelStyle>\n");
 	kml_print (API, --N, "</Style>\n");
 
-	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT file */
+	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT */
 		get_rgb_lookup (GMT, P, index, rgb);	/* For -3, -2, -1 we get the back, fore, nan colors */
 		kml_print (API, N++, "<Style id=\"st-%d-%d\">\n", process_id, index + 4); /* +4 to make the first style ID = 1 */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */

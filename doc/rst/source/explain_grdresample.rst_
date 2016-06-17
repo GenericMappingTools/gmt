@@ -7,9 +7,9 @@ that projects data from one lattice to another while avoiding anti-aliasing,
 leading to possible distortions.
 One expected effect of resampling with splines is the tendency for the new
 resampled grid to slightly exceed the global min/max limits of the original
-grid.  If this is coupled with tight CPT file limits you may find that some
+grid.  If this is coupled with tight CPT limits you may find that some
 map areas may show up with fore- or background color due to the resampling.
-In that case you have two options: (1) Modify your CPT file to fit the resampled
+In that case you have two options: (1) Modify your CPT to fit the resampled
 extrema (reported with **-V**) or (2) Impose clipping of resampled values
 so they do not exceed the input min/max values (add **+c** to your **-n**
 option).

@@ -178,9 +178,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        [and optionally an individual annotation angle in col 3].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     3. Name of a CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     3. Name of a CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT file contours are set to C unless the CPT flags are set;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -231,8 +231,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen:  %s.\n", gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT.\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
@@ -471,14 +471,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
 			gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
-	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT file\n");
+	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
 	                                 "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
-	                                 "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
+	                                 "Syntax error -W option: + or - only valid if -C sets a CPT\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -927,12 +927,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	else	/* No annotations, set aval outside range */
 		aval = G->header->z_max + 1.0;
 
-	if (Ctrl->C.cpt) {	/* Presumably got a CPT file */
+	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (P->categorical) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
@@ -1171,11 +1171,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		id = (cont_type[c] == 'A' || cont_type[c] == 'a') ? 1 : 0;
 
 		Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
-		if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
+		if (Ctrl->W.color_cont) {	/* Override pen color according to CPT */
 			gmt_get_rgb_from_z (GMT, P, cval, rgb);
 			gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 		}
-		if (Ctrl->W.color_text)	/* Override label color according to CPT file */
+		if (Ctrl->W.color_text)	/* Override label color according to CPT */
 			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 
 		n_alloc = 0;

@@ -3334,7 +3334,7 @@ contains the image values.  The type of the array is determined by the value of 
 CPT palette table
 ~~~~~~~~~~~~~~~~~
 
-A CPT table is represented by a :ref:`GMT_PALETTE <struct-palette>` structure that contains several
+A CPT is represented by a :ref:`GMT_PALETTE <struct-palette>` structure that contains several
 items, such as a :ref:`GMT_LUT <struct-lut>` structure ``data`` that
 contains the color information per interval.  The background, foreground and Nan-color values have
 colors specified by the :ref:`GMT_BFN <struct-bnf>` array structure ``bfn``.  As each actual
@@ -3347,12 +3347,12 @@ the :ref:`GMT_FILL <struct-fill>` structure.
 
    struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
        /* Variables we document for the API: */
-       unsigned int          n_headers;          /* Number of CPT file header records (0 if no header) */
+       unsigned int          n_headers;          /* Number of CPT header records (0 if no header) */
        unsigned int          n_colors;           /* Number of colors in CPT lookup table */
        unsigned int          mode;               /* Flags controlling use of BFN colors */
        struct GMT_LUT       *data;               /* CPT lookup data read by GMT_read_cpt */
        struct GMT_BFN        bfn[3];             /* Structures with back/fore/nan fills */
-       char                **header;             /* Array with all CPT file header records, if any) */
+       char                **header;             /* Array with all CPT header records, if any) */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t              id;                 /* The internal number of the data set */
        enum GMT_enum_alloc   alloc_mode;         /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
@@ -3361,7 +3361,7 @@ the :ref:`GMT_FILL <struct-fill>` structure.
        unsigned int          is_gray;            /* true if only grayshades are needed */
        unsigned int          is_bw;              /* true if only black and white are needed */
        unsigned int          is_continuous;      /* true if continuous color tables have been given */
-       unsigned int          has_pattern;        /* true if CPT file contains any patterns */
+       unsigned int          has_pattern;        /* true if CPT contains any patterns */
        unsigned int          skip;               /* true if current z-slice is to be skipped */
        unsigned int          categorical;        /* true if CPT applies to categorical data */
        unsigned int          z_adjust[2];        /* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */

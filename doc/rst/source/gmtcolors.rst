@@ -13,7 +13,7 @@ Description
 
 Colors can be specified in GMT as arguments to commands, generally
 as part of the **-G** or **-W** options to select polygon fill or
-outline pen. Colors are also used in color palette tables (CPT files)
+outline pen. Colors are also used in color palette tables (CPTs)
 that help convert numerical values to colors.
 
 GMT allows several ways to represent a color:

@@ -16,7 +16,7 @@ how to do it:
 .. literalinclude:: /_verbatim/example_04.txt
    :language: bash
 
-The purpose of the CPT file ``zero.cpt`` is to have the positive topography
+The purpose of the CPT ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 
@@ -40,7 +40,7 @@ will be the resolution of our final raster (The EOS raster was 300 dpi).
 Note that the size of the resulting output file is directly dependent on
 the square of the dpi chosen for the scanline conversion and how well
 the resulting image compresses. A higher value for dpi in **-Qc** would
-have resulted in a much larger output file. The CPT files were taken
+have resulted in a much larger output file. The CPTs were taken
 from Example :ref:`example_02`.
 
 .. [1]

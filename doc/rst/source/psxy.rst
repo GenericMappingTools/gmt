@@ -104,7 +104,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT file or specify -Ccolor1,color2[,color3,...]
+    Give a CPT or specify -Ccolor1,color2[,color3,...]
     to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
@@ -114,7 +114,7 @@ Optional Arguments
     field, etc.). If **-S** is not set, then **psxy** expects the user to
     supply a multisegment file where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
-    polygon (if **-L** is set) via the CPT file.
+    polygon (if **-L** is set) via the CPT.
 
 .. _-D:
 
@@ -377,7 +377,7 @@ Segment header records may contain one of more of the following options:
 **-Z**\ *zval*
     Obtain fill via cpt lookup using z-value *zval*
 **-Z**\ *NaN*
-    Get the NaN color from the CPT file
+    Get the NaN color from the CPT
 
 Custom Symbols
 --------------

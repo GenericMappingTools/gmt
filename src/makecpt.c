@@ -21,9 +21,9 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  *
- * Brief synopsis: Reads an existing CPT file and desired output grid
- * and produces a GMT CPT file.  Can be inverted [-I] or made to be
- * continuous [-Z].  Discrete color jumps in CPT files are handled
+ * Brief synopsis: Reads an existing CPT and desired output grid
+ * and produces a GMT CPT.  Can be inverted [-I] or made to be
+ * continuous [-Z].  Discrete color jumps in CPTs are handled
  * correctly.  Default color table is "rainbow".
  *
  */
@@ -128,8 +128,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
 	if (gmt_list_cpt (API->GMT, 'C')) return (GMT_CPT_READ_ERROR);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies we read data from given command-line files [or stdin] to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   determine data range (use -i to select a data column, else last column is used).\n");
@@ -321,7 +321,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
 
 	/* OK, we can now do the resampling */
 
@@ -417,7 +417,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* Just copy what was in the CPT file */
+	else {	/* Just copy what was in the CPT */
 		nz = Pin->n_colors + 1;
 		z = gmt_M_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
@@ -432,7 +432,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
-	/* Now we can resample the CPT file and write out the result */
+	/* Now we can resample the CPT and write out the result */
 
 	Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 

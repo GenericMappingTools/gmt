@@ -364,7 +364,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *cpt*
-    Give a CPT file and let compressive part color be
+    Give a CPT and let compressive part color be
     determined by the z-value in the third column.
 
 .. include:: ../../explain_-c.rst_

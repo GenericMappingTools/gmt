@@ -30,7 +30,7 @@
  * As an option, a drape grid file can be specified.  Then, the colors
  * are calculated from that file while the topo file is used for shape.
  * Alternatively, give three drape files (red, green, blue components)
- * to bypass the z -> rgb via the CPT file.
+ * to bypass the z -> rgb via the CPT.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -700,7 +700,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
 		if (P->categorical && Ctrl->W.active) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
@@ -1039,7 +1039,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
 		if (Ctrl->C.active && P->has_pattern)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT file will not work with -Qi\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT will not work with -Qi\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");
@@ -1379,7 +1379,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			   since cval is double precision.  We had the cast during the contouring but here under -Qs we had some
 			   comparisions without the cast, the result being both sides got promoted to double prior to the test and
 			   we can get a different result.
-			5) In the case of no contour we paint the entire tile.  However, in the case of discontinuous CPT files we
+			5) In the case of no contour we paint the entire tile.  However, in the case of discontinuous CPTs we
 			   based the color on the lower-left node value (since it should not matter which corner we pick).  But it
 			   does: If that node HAPPENS to be one that had small added to it and as a result no contour goes through,
 			   we have no way of adjusting the node accordingly.  Consequently, it is safer to always take the average

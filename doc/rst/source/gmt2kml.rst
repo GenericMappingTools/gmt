@@ -82,7 +82,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Use the CPT file for assigning colors to the symbol, event, or
+    Use the CPT for assigning colors to the symbol, event, or
     timespan icons, based on the value in the 3rd column of the input
     file. For lines or polygons we examine the segment header for
     -Z<value> statements and obtain the color via the cpt lookup. Note
