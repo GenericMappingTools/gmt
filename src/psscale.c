@@ -1325,22 +1325,13 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	//if (P->has_range) gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Convert from normalized to natural range */
-//	for (i = 0; i < P->n_colors; i++) {
-//		fprintf (stderr, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\n", P->data[i].z_low, P->data[i].rgb_low[0], P->data[i].rgb_low[1], P->data[i].rgb_low[2],
-//			P->data[i].z_high, P->data[i].rgb_high[0], P->data[i].rgb_high[1], P->data[i].rgb_high[2]);
-//	}
+	if (P->has_range)	/* Convert from normalized to default CPT z-range */
+		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
 	
 	if (Ctrl->G.active)
 		P = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
-	if (Ctrl->W.active) {	/* Scale all z values */
-		for (i = 0; i < P->n_colors; i++) {
-			P->data[i].z_low  *= Ctrl->W.scale;
-			P->data[i].z_high *= Ctrl->W.scale;
-			P->data[i].i_dz   /= Ctrl->W.scale;
-		}
-		if (P->has_hinge) P->hinge *= Ctrl->W.scale;
-	}
+	if (Ctrl->W.active)	/* Scale all z values */
+		gmt_scale_cpt (GMT, P, Ctrl->W.scale);
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
@@ -1355,7 +1346,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			P->data[i].z_low = d_log10 (GMT, P->data[i].z_low);
+			P->data[i].z_low  = d_log10 (GMT, P->data[i].z_low);
 			P->data[i].z_high = d_log10 (GMT, P->data[i].z_high);
 			P->data[i].i_dz = 1.0 / (P->data[i].z_high - P->data[i].z_low);
 		}
@@ -1383,7 +1374,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.dim[GMT_X]) * (P->data[i].z_high - P->data[i].z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 	}
 
-	/* Because psscale uses -D to position things we need to make some
+	/* Because psscale uses -D to position the scale we need to make some
 	 * changes so that BoundingBox and others are set ~correctly */
 
 	if (Ctrl->Q.active && GMT->current.map.frame.draw) {
@@ -1445,7 +1436,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
 	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar reference x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
 	gmt_draw_colorbar (GMT, Ctrl, P, z_width);

@@ -934,6 +934,18 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse_z_unit (struct GMT_CTRL *GMT, ch
 }
 
 /*! . */
+GMT_LOCAL int support_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Return the slice number where z_low == hinge */
+	unsigned int k;
+	if (!P->has_hinge) return GMT_NOTSET;
+	for (k = 0; k < P->n_colors; k++) if (doubleAlmostEqualZero (P->hinge, P->data[k].z_low)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge = %g for slice k = %u!\n", P->hinge, k);
+		return (int)k;
+	}
+	return GMT_NOTSET;
+}
+
+/*! . */
 GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, struct CPT_Z_SCALE *Z, unsigned int direction) {
 	unsigned int k;
 	double scale = 1.0;
@@ -6185,7 +6197,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, n_master = 0;
 	size_t k;
-	bool gap, lap, error = false, close_file = false, check_headers = true, master = false;
+	bool gap, overlap, error = false, close_file = false, check_headers = true, master = false;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
 	char T0[GMT_LEN64] = {""}, T1[GMT_LEN64] = {""}, T2[GMT_LEN64] = {""}, T3[GMT_LEN64] = {""}, T4[GMT_LEN64] = {""};
@@ -6591,19 +6603,25 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		}
 	}
 
-	for (i = annot = 0, gap = lap = false; i < X->n_colors - 1; i++) {
-		if (X->data[i].z_high < X->data[i+1].z_low) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has a gap of size %g between slices %d and %d!\n", cpt_file, (X->data[i+1].z_low-X->data[i].z_high), i, i+1);
+	for (i = annot = 0, gap = overlap = false; i < X->n_colors - 1; i++) {
+		dz = X->data[i].z_high - X->data[i+1].z_low;
+		if (dz < -GMT_CONV12_LIMIT) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has a gap of size %g between slices %d and %d!\n", cpt_file, -dz, i, i+1);
 			gap = true;
 		}
-		else if (X->data[i].z_high > X->data[i+1].z_low) {
-			lap = true;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has an overlap of size %g between slices %d and %d\n", cpt_file, (X->data[i].z_high - X->data[i+1].z_low), i, i+1);
+		else if (dz > GMT_CONV12_LIMIT) {
+			overlap = true;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Color palette table %s has an overlap of size %g between slices %d and %d\n", cpt_file, dz, i, i+1);
+		}
+		else if (fabs (dz) > 0.0) {	/* Split the tiny difference across the two values */
+			dz *= 0.5;
+			X->data[i].z_high -= dz;
+			X->data[i+1].z_low += dz;
 		}
 		annot += X->data[i].annot;
 	}
 	annot += X->data[i].annot;
-	if (gap || lap) {
+	if (gap || overlap) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Must abort due to above errors in %s\n", cpt_file);
 		for (i = 0; i < X->n_colors; i++) {
 			gmt_M_free (GMT, X->data[i].fill);
@@ -6704,33 +6722,26 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 	for (i = 0; i < 3; i++) P->bfn[i].hsv[3] = P->bfn[i].rgb[3] = transparency;
 }
 
-GMT_LOCAL int gmt_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	/* Return the slice number where z_low == hinge */
-	unsigned int k;
-	if (!P->has_hinge) return GMT_NOTSET;
-	for (k = 0; k < P->n_colors; k++) if (doubleAlmostEqualZero (P->hinge, P->data[k].z_low)) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge = %g for slice k = %u!\n", P->hinge, k);
-		return (int)k;
-	}
-	return GMT_NOTSET;
-}
-
+/*! . */
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
+	 * zero then we substitute the CPT's default range instead. */
 	int i, k;
 	double z_min, z_start, scale;
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing z_low == z_high but CPT has no default range: using 0/1!\n");
-			z_low =  0.0;	z_high = 1.0;
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Passing z_low == z_high but CPT has no default range.  No changes made\n");
+			return;
 		}
-		else {
-			z_low =  P->minmax[0];	z_high = P->minmax[1];
-		}
+		z_low =  P->minmax[0];	z_high = P->minmax[1];
 	}
 	z_min = P->data[0].z_low;
 	z_start = z_low;
-	if ((k = gmt_find_cpt_hinge (GMT, P)) == GMT_NOTSET)	/* No hinge, same scale for all of CPT */
+	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (k = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
+		P->has_hinge = 0;
+		k = GMT_NOTSET;
+	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
 	
@@ -6741,7 +6752,22 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		}
 		P->data[i].z_low  = z_start + (P->data[i].z_low  - z_min) * scale;
 		P->data[i].z_high = z_start + (P->data[i].z_high - z_min) * scale;
-		P->data[i].i_dz *= scale;
+		P->data[i].i_dz /= scale;
+	}
+}
+
+void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
+	/* Scale all z-related variables in the CPT by scale */
+	unsigned int i;
+	for (i = 0; i < P->n_colors; i++) {
+		P->data[i].z_low  *= scale;
+		P->data[i].z_high *= scale;
+		P->data[i].i_dz   /= scale;
+	}
+	if (P->has_hinge) P->hinge *= scale;
+	if (P->has_range) {
+		P->minmax[0] *= scale;
+		P->minmax[1] *= scale;
 	}
 }
 
