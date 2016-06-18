@@ -4024,7 +4024,7 @@ undefined) and (2) those designed for regular, continuously-varying
 data. In both cases the *fill* information follows the format given in
 Section `Specifying area fill attributes`_. The z-values in CPTs can
 be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
-modifiers to your CPT Rƒnames when used in GMT commands.  The **+u**\ *unit*
+modifiers to your CPT names when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
 
@@ -4194,22 +4194,23 @@ comment
 | ``# HINGE = <hinge-value>``
 
 CPTs without a hinge are instead normalized with *z*-values from 0 to 1.
-Dynamic CPTs will need to be stretch to the users preferred range, and there
-are two modes of scaling: Some CPTs designed for a specific application
+Dynamic CPTs will need to be stretched to the user's preferred range, and there
+are two modes of such scaling: Some CPTs designed for a specific application
 (again, the topographic relief is a good example) have a *default range*
 specified in the master table via the special comment
 
 
 | ``# RANGE = <zmin/zmax>``
 
-and when used by applications the normalized *z* will be stretched to reflect
+and when used by applications the normalized *z*-values will be stretched to reflect
 this natural range.  In contrast, CPTs without a natural range are instead
 stretched to fit the range of the data in question (e.g., a grid's range).
 Exceptions to these rules are implemented in the two CPT-producing modules
 :doc:`makecpt` and :doc:`grd2cpt`, both of which can read dynamic CPTs
 and produce *static* CPTs satisfying a user's specific range needs.  These
 tools can also read static CPTs where the new range must be specified (or computed
-from data).  Here, :doc:`makecpt` can compute this range from data tables
+from data), reversing the order of colors, and even isolating a section
+of an incoming CPT.  Here, :doc:`makecpt` can be told the range of compute it from data tables
 while :doc:`grd2cpt` can derive the range from one or more grids.
 
 The Drawing of Vectors
