@@ -183,7 +183,10 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 		line[pos] = '\0';
 	}
 	/* Try the user's default directories */
-	if (gmtlib_getuserpath (GMT, &line[i], path)) return NULL;	/* Yes, found so no problems */
+	if (gmtlib_getuserpath (GMT, &line[i], path)) {
+		if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+		return NULL;	/* Yes, found so no problems */
+	}
 	/* Now must put our faith in the cpt path and hope it has a path that can help us */
 	if (cpt_path == NULL || cpt_path[0] == '<') {	/* Without an actual file path we must warn and bail */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
