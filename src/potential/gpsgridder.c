@@ -370,6 +370,9 @@ GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double
 		double du, dv;
 		coeff[GSP_RANGE_U] = MAX (fabs(umin), fabs(umax));	/* Determine u range */
 		coeff[GSP_RANGE_V] = MAX (fabs(vmin), fabs(vmax));	/* Determine v range */
+		/* Select the maximum range */
+        coeff[GSP_RANGE_U] = MAX (coeff[GSP_RANGE_U],coeff[GSP_RANGE_V]);
+		coeff[GSP_RANGE_V] = coeff[GSP_RANGE_U];
 		du = (coeff[GSP_RANGE_U] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE_U];
 		dv = (coeff[GSP_RANGE_V] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE_V];
 		for (i = 0; i < n; i++) {	/* Normalize 0-1 */
@@ -425,10 +428,10 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 
 GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in G[0], G[1], and G[2].
-	 * Here, par[0] holds -(2*e+1)/2 and par[1] holds delta_r to prevent singularity */
+	 * Here, par[0] holds Poisson's ratio and par[1] holds delta_r to prevent singularity */
 	
 	double dx2 = dx * dx, dy2 = dy * dy;	/* Squared offsets */
-	double dr2 = dx2 + dy2 + par[1];			/* Radius squared */
+	double dr2 = dx2 + dy2 + par[1];		/* Radius squared (remember par[1] already squared during initialization) */
 	double c1, c2;
 	
 	c1 = (3.0 - par[0]) / 2.0;
@@ -436,8 +439,8 @@ GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], dou
 	
 	G[0] = G[1] = c1 * log (dr2);
 	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
-	G[0] += c2 * dx2 * dr2;
-	G[1] += c2 * dy2 * dr2;
+	G[0] += c2 * dy2 * dr2;
+	G[1] += c2 * dx2 * dr2;
 	G[2]  = c2 * dx * dy * dr2;
 }
 
@@ -678,11 +681,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Initialize the Greens function machinery */
 	
-	par[0] = 0.5 * (2.0 * (1.0 - Ctrl->S.nu)/(1.0 + Ctrl->S.nu) + 1.0);	/* half of 2*epsilon + 1 */
+	par[0] = Ctrl->S.nu;	/* Poisson's ratio */
 	if (Ctrl->F.mode == 1)
 		par[1] = Ctrl->F.fudge;			/* Small fudge radius to avoid singularity for r = 0 */
 	else
 		par[1] = Ctrl->F.fudge * r_min;		/* Small fudge factor*r_min to avoid singularity for r = 0 */
+	par[1] *= par[1];		/* Do the square here once instead of inside a loop */
 	
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 
