@@ -4154,7 +4154,8 @@ GMT_LOCAL bool api_not_used (struct GMTAPI_CTRL *API, char *name) {
 	unsigned int item = 0;
 	bool not_used = true;
 	while (item < API->n_objects && not_used) {
-		if (API->object[item] && API->object[item]->direction == GMT_IN && API->object[item]->status != GMT_IS_UNUSED && API->object[item]->filename && !strcmp (API->object[item]->filename, name))
+		if (API->object[item] && API->object[item]->direction == GMT_IN && API->object[item]->status != GMT_IS_UNUSED &&
+		    API->object[item]->filename && !strcmp (API->object[item]->filename, name))
 			/* Used resource with same name */
 			not_used = false;	/* Got item with same name, but used */
 		else
@@ -4196,11 +4197,13 @@ GMT_LOCAL int api_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 						gmt_M_memcpy (wesn, API->GMT->common.R.wesn, 4, double);
 					}
 				}
-				if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, wesn, current->arg)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
+				if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, wesn, current->arg)) == GMT_NOTSET)
+					return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
 				n_reg++;	/* Count of new items registered */
 				gmt_M_free (API->GMT, wesn);
 				if (first_ID == GMT_NOTSET) first_ID = object_ID;	/* Found our first ID */
-				if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+				if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET)
+					return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
 				API->object[item]->selected = true;
 			}
 			current = current->next;	/* Go to next option */
@@ -4211,10 +4214,12 @@ GMT_LOCAL int api_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	/* Note that n_reg can have changed if we added file args above */
 
 	if ((mode & GMT_ADD_STDIO_ALWAYS) || ((mode & GMT_ADD_STDIO_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
-		if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdin */
+		if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMT_NOTSET)
+			return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (first_ID == GMT_NOTSET) first_ID = object_ID;	/* Found our first ID */
-		if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+		if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET)
+			return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
 		API->object[item]->selected = true;
 		GMT_Report (API, GMT_MSG_DEBUG, "api_init_import: Added stdin to registered sources\n");
 	}
@@ -4258,8 +4263,10 @@ GMT_LOCAL int api_init_export (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 			current = head;
 			while (current) {		/* Loop over the list and look for output files (we know there is only one) */
 				if (current->option == GMT_OPT_OUTFILE) {	/* File given, register it */
-					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, NULL, current->arg)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
-					if ((item = gmtapi_validate_id (API, family, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, NULL, current->arg)) == GMT_NOTSET)
+						return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
+					if ((item = gmtapi_validate_id (API, family, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+						return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
 					API->object[item]->selected = true;
 					GMT_Report (API, GMT_MSG_DEBUG, "api_init_export: Added 1 new destination\n");
 				}
@@ -4269,11 +4276,14 @@ GMT_LOCAL int api_init_export (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	}
 	/* Note that n_reg can have changed if we added file arg */
 
-	if ((mode & GMT_ADD_STDIO_ALWAYS) && n_reg == 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMT_NOTSET);	/* Only one output destination allowed at once */
+	if ((mode & GMT_ADD_STDIO_ALWAYS) && n_reg == 1)
+		return_value (API, GMT_ONLY_ONE_ALLOWED, GMT_NOTSET);	/* Only one output destination allowed at once */
 
 	if (n_reg == 0 && ((mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, NULL, API->GMT->session.std[GMT_OUT])) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdout?*/
-		if ((item = gmtapi_validate_id (API, family, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, NULL, API->GMT->session.std[GMT_OUT])) == GMT_NOTSET)
+			return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdout?*/
+		if ((item = gmtapi_validate_id (API, family, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+			return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
 		API->object[item]->selected = true;
 		GMT_Report (API, GMT_MSG_DEBUG, "api_init_export: Added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */
@@ -4293,7 +4303,8 @@ GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
 	struct GMT_CTRL *GMT = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
-	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
+	if (!API->registered[direction])
+		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
 
 	GMT = API->GMT;
 	API->io_mode[direction] = GMTAPI_BY_SET;
@@ -4537,9 +4548,11 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 				via = (m / GMT_VIA_VECTOR) - 1;
 				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
 			}
-			if (m <= GMT_IS_REFERENCE) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_garbage_collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
-			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2],
-				(size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
+			if (m <= GMT_IS_REFERENCE)
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_garbage_collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
+				            S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction],
+				            GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2], (size_t)S_obj->resource,
+				            (size_t)S_obj->data, S_obj->filename);
 		}
 		if (S_obj->data) {
 			address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
@@ -4598,14 +4611,18 @@ GMT_LOCAL int api_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_fami
 /*! Determine if file contains a netCDF directive to a specific variable, e.g., table.nc?time[2] */
 GMT_LOCAL bool api_file_with_netcdf_directive (struct GMTAPI_CTRL *API, const char *file) {
 	char *duplicate = NULL, *c = NULL;
-	if (!strchr (file, '?')) return false;	/* No question mark found */
-	duplicate = strdup (file);		/* Found a ?, duplicate this const char string and chop off the end */
-	c = strchr (duplicate, '?');		/* Locate the location of ? again */
-	c[0] = '\0';				/* Chop off text from ? onwards */
-	if (gmt_access (API->GMT, duplicate, F_OK))	/* No such file, presumably */
+	if (!strchr (file, '?')) return false;  /* No question mark found */
+	duplicate = strdup (file);              /* Found a ?, duplicate this const char string and chop off the end */
+	c = strchr (duplicate, '?');            /* Locate the location of ? again */
+	if (c) c[0] = '\0';                     /* Chop off text from ? onwards */
+	if (gmt_access (API->GMT, duplicate, F_OK)) {	/* No such file, presumably */
+		free (duplicate);
 		return false;
-	else
+	}
+	else {
+		free (duplicate);
 		return true;
+	}
 }
 
 /* Several lower-level API function are needed in a few other gmt_*.c library codes and are thus NOT local.
@@ -9118,7 +9135,7 @@ int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size
 
 /* GMT_DATASET to GMT_* : */
 
-GMT_LOCAL void * api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_TEXTSET *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void *api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_TEXTSET *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to a textset using current formatting and column type information.
 	 * If Out is not NULL then we assume it has exact same dimension as the dataset, but no headers/records allocated.
 	 * header controls what we do with headers.
@@ -9192,7 +9209,7 @@ GMT_LOCAL void * api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASE
 	return Out;
 }
 
-GMT_LOCAL void * api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void *api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to a matrix.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * Header controls if segment headers are written as NaN recs
@@ -9241,7 +9258,7 @@ GMT_LOCAL void * api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET
 	return Out;
 }
 
-GMT_LOCAL void * api_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void *api_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to vectors.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
@@ -9284,7 +9301,7 @@ GMT_LOCAL void * api_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET
 
 /* GMT_TEXTSET to GMT_* : */
 
-GMT_LOCAL void * api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_DATASET *Out, unsigned int header, unsigned int dim, unsigned int mode) {
+GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_DATASET *Out, unsigned int header, unsigned int dim, unsigned int mode) {
 	/* Convert a textset to dataset.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * header controls what we do with headers.
@@ -9362,7 +9379,7 @@ GMT_LOCAL void * api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSE
 	return Out;
 }
 
-GMT_LOCAL void * api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int dim, unsigned int mode) {
+GMT_LOCAL void *api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int dim, unsigned int mode) {
 	/* Convert a textset to matrix.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * header controls what we do with headers.
@@ -9417,7 +9434,7 @@ GMT_LOCAL void * api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 	return Out;
 }
 
-GMT_LOCAL void * api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int dim, unsigned int mode) {
+GMT_LOCAL void *api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int dim, unsigned int mode) {
 	/* Convert a textset to vectors.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * header controls what we do with headers.
@@ -9464,7 +9481,7 @@ GMT_LOCAL void * api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 
 /* GMT_MATRIX to GMT_* : */
 
-GMT_LOCAL void * api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_DATASET *Out, unsigned int header) {
+GMT_LOCAL void *api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_DATASET *Out, unsigned int header) {
 	/* Convert a matrix to a dataset (one table with one segment).
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * header controls what we do with headers.
@@ -9489,7 +9506,7 @@ GMT_LOCAL void * api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX 
 	return Out;
 }
 
-GMT_LOCAL void * api_matrix2textset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_TEXTSET *Out, unsigned int header) {
+GMT_LOCAL void *api_matrix2textset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_TEXTSET *Out, unsigned int header) {
 	/* Convert a matrix to a textset (one table with one segment).
 	 * If Out is not NULL then we assume it has enough rows to hold the textset records.
 	 * header controls what we do with headers.
@@ -9522,7 +9539,7 @@ GMT_LOCAL void * api_matrix2textset (struct GMTAPI_CTRL *API, struct GMT_MATRIX 
 	return Out;
 }
 
-GMT_LOCAL void * api_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void *api_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
 	/* Convert a matrix to vectors.
 	 * If Out is not NULL then we assume it has enough rows to hold the vector rows.
 	 * header controls what we do with headers.
@@ -9562,7 +9579,7 @@ GMT_LOCAL void * api_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 
 /* GMT_VECTOR to GMT_* : */
 
-GMT_LOCAL void * api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_DATASET *Out, unsigned int header) {
+GMT_LOCAL void *api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_DATASET *Out, unsigned int header) {
 	/* Convert a vector to a dataset (one table with one segment).
 	 * header controls what we do with headers.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
@@ -9583,7 +9600,7 @@ GMT_LOCAL void * api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR 
 	return Out;
 }
 
-GMT_LOCAL void * api_vector2textset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_TEXTSET *Out, unsigned int header) {
+GMT_LOCAL void *api_vector2textset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_TEXTSET *Out, unsigned int header) {
 	/* Convert a vector to a textset (one table with one segment).
 	 * header controls what we do with headers.
 	 * If Out is not NULL then we assume it has enough rows to hold the textset records.
@@ -9617,7 +9634,7 @@ GMT_LOCAL void * api_vector2textset (struct GMTAPI_CTRL *API, struct GMT_VECTOR 
 	return Out;
 }
 
-GMT_LOCAL void * api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
 	/* Convert a vector to a textset (one table with one segment).
 	 * If Out is not NULL then we assume it has enough rows to hold the textset records.
 	 * header controls what we do with headers.
@@ -9662,7 +9679,7 @@ GMT_LOCAL void * api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *
 #define GMT_TYPE_MODE	2
 #define GMT_FORMAT_MODE	2	/* Same as GMT_TYPE_MODE [not a typo] */
 
-EXTERN_MSC void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
+EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
 	/* Convert between valid pairs of objects,  If Out == NULL then we allocate an output object,
 	 * otherwise we assume we are given adequate space already.  This is most likely restricted to a GMT_MATRIX.
 	 * flag is up to three unsigned integers controlling various aspects of the conversion:
