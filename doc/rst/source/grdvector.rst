@@ -73,9 +73,10 @@ Optional Arguments
 
 **-C**\ [*cpt*]
     Use *cpt* to assign colors based on vector length. Alternatively,
-    supply the name of a GMT color master CPT [rainbow] and let
-    **grdvector** automatically determine a 16-level continuous CPT from
-    the grid's z-range.
+    supply the name of a GMT color master dynamic CPT [rainbow] to
+    automatically determine a continuous CPT from
+    the grid's z-range.  If the dynamic CPT has a default range then
+    that range will be imposed instead.
     Yet another option is to specify -Ccolor1,color2[,color3,...]
     to build a linear continuous cpt from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,

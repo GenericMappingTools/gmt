@@ -4002,19 +4002,21 @@ as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
 Color palette tables
 --------------------
 
-Several programs, such as those which read 2-D gridded data sets and
-create colored images or shaded reliefs, need to be told what colors to
-use and over what *z*-range each color applies. This is the purpose of
-the color palette table (CPT). These files may also be used by
-:doc:`psxy` and
-:doc:`psxyz` to plot color-filled symbols. For
+Several programs need to relate user data to colors, shades, or even patterns.
+For instance, programs that read 2-D gridded data sets and
+create colored images or shaded reliefs  need to be told what colors to
+use and over what *z*-range each color applies. Other programs may need
+to associate a user value with a color to be applied to a symbol, line,
+or polygon.  This is the purpose of the color palette table (CPT).  For
 most applications, you will simply create a CPT using the tool
-:doc:`makecpt` which will take an existing
-color table and resample it to fit your chosen data range, or use
+:doc:`makecpt` which will take an existing *dynamic* master
+color table and stretch it to fit your chosen data range, or use
 :doc:`grd2cpt` to build a CPT based on
-the data distribution in one or more given grid files. However, in some
-situations you will need to make a CPT by hand or using text tools
-like **awk** or **perl**.
+the data distribution in one or more given grid files. However, in rare
+situations you may need to make a CPT by hand or using text tools
+like **awk** or **perl**. Finally, if you have your own preferred color
+table you can convert it into a dynamic CPT and place it in your GMT
+user directory and it will be found and behave like other GMT master CPTs.
 
 Color palette tables (CPT) comes in two flavors: (1) Those designed to
 work with categorical data (e.g., data where interpolation of values is
@@ -4025,6 +4027,20 @@ be scaled by using the **+u**\ \|\ **U**\ *unit* mechanism.  Append these
 modifiers to your CPT Rƒnames when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
+
+Since GMT supports several coordinate systems for color specification,
+many master (or user) CPTs will contain the special comment
+
+| ``# COLOR_MODEL = model``
+
+where *model* specifies how the color-values in the CPT should be interpreted.
+By default we assume colors are given as red/green/blue triplets (each in the
+0-255 range) separated by
+slashes (model = *rgb*), but alternative representations are the HSV system
+of specifying hue-saturation-value triplets (with hue in 0-360 range and
+saturation and value ranging from 0-1) separated by hyphens (model = *hsv*),
+or the CMYK system of specifying cyan/magenta/yellow/black quadruples in percent,
+separated by slashes (model = *cmyk*).
 
 Categorical CPTs
 ~~~~~~~~~~~~~~~~
@@ -4162,6 +4178,39 @@ bathymetry and backscatter intensities, and one may want to use the
 latter information to specify the illumination of the colors defined by
 the former. Similarly, one could portray magnetic anomalies superimposed
 on topography by using the former for colors and the latter for shading.
+
+Master (dynamic) CPTs
+~~~~~~~~~~~~~~~~~~~~~
+
+The CPTs distributed with GMT are *dynamic*.  This means they have several
+special properties that modify the behavior of programs that use them.
+All dynamic CPTs are normalized in one of two ways: If a CPT was designed
+to behave differently across a *hinge* value (e.g., a CPT designed specifically
+for topographic relief may include a discontinuity in color across the the
+coastline at *z = 0*) then the CPT's *z*-values will range from -1, via 0
+at the hinge, to +1 at the end.  The hinge value is specified via the special
+comment
+
+| ``# HINGE = <hinge-value>``
+
+CPTs without a hinge are instead normalized with *z*-values from 0 to 1.
+Dynamic CPTs will need to be stretch to the users preferred range, and there
+are two modes of scaling: Some CPTs designed for a specific application
+(again, the topographic relief is a good example) have a *default range*
+specified in the master table via the special comment
+
+
+| ``# RANGE = <zmin/zmax>``
+
+and when used by applications the normalized *z* will be stretched to reflect
+this natural range.  In contrast, CPTs without a natural range are instead
+stretched to fit the range of the data in question (e.g., a grid's range).
+Exceptions to these rules are implemented in the two CPT-producing modules
+:doc:`makecpt` and :doc:`grd2cpt`, both of which can read dynamic CPTs
+and produce *static* CPTs satisfying a user's specific range needs.  These
+tools can also read static CPTs where the new range must be specified (or computed
+from data).  Here, :doc:`makecpt` can compute this range from data tables
+while :doc:`grd2cpt` can derive the range from one or more grids.
 
 The Drawing of Vectors
 ----------------------

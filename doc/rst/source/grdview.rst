@@ -74,9 +74,11 @@ Optional Arguments
     **-Qi**). For **-Qs**: You can specify that you want to skip a
     z-slice by setting red = -; to use a pattern give red =
     **P\|p**\ *dpi/pattern*\ [:**F**\ *color*\ [**B**\ *color*]].
-    Alternatively, supply the name of a GMT color master CPT [rainbow] and let
-    **grdview** automatically determine a 16-level continuous CPT from
-    the grid's z-range.
+    Alternatively,
+    supply the name of a GMT color master dynamic CPT [rainbow] to
+    automatically determine a continuous CPT from
+    the grid's z-range.  If the dynamic CPT has a default range then
+    that range will be imposed instead.
 
 .. _-G:
 

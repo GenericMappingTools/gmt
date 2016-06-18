@@ -121,6 +121,8 @@ Optional Arguments
     when plotting.  To do so, append **+U**\ *unit* to the file name.
     Likewise, if the CPT uses another unit than meter and you wish
     to plot the CPT versus meters, append **+u**\ *unit*.
+    If a GMT master dynamic CPT is given instead then its *z*-range will
+    be set to its default range (if it has one) before plotting.
 
 .. _-F:
 

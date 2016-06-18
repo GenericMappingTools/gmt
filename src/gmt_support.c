@@ -6668,7 +6668,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   2. file is NULL and hence we default to master CPT name "rainbow".
 	   3. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
-	   For 2 & 3 we take the master table and linearly shift the z values to fit the range.
+	   For 2 & 3 we take the master table and linearly stretch the z values to fit the range, or honor default range for dynamic CPTs.
 	*/
 
 	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT was given and exists or is memory location */
@@ -6676,8 +6676,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	}
 	else {	/* Take master cpt and stretch to fit data range */
 		char *master = NULL;
-		unsigned int k;
-		double noise, old_z_min, old_z_max, scale, z_lo, z_hi;
+		double noise;
 
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
@@ -6687,21 +6686,17 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing max <= zmin prevents automatic CPT generation!\n");
 			return (NULL);
 		}
-		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
-		noise = (zmax - zmin) * GMT_CONV8_LIMIT;
-		zmin -= noise;	zmax += noise;
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
-		/* New z = new_z_min + (old_z - old_z_min)*[(new_z_max - new_z_min)/(old_z_max - old_z_min)] */
-		old_z_min = P->data[0].z_low;	old_z_max = P->data[P->n_colors-1].z_high;
-		scale = (zmax - zmin) / (old_z_max - old_z_min);
-		for (k = 0; k < P->n_colors; k++) {
-			z_lo = zmin + (P->data[k].z_low  - old_z_min) * scale;
-			z_hi = zmin + (P->data[k].z_high - old_z_min) * scale;
-			P->data[k].z_low = z_lo;	P->data[k].z_high = z_hi;
-			P->data[k].i_dz /= scale;
+		if (P->has_range)	/* Only stretch CPTs that have no default range*/
+			zmin = zmax = 0.0;
+		else {	/* Stretch to fit the data range */
+			/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
+			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
+			zmin -= noise;	zmax += noise;
 		}
+		gmt_stretch_cpt (GMT, P, zmin, zmax);
 	}
 	return (P);
 }
@@ -6754,6 +6749,8 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		P->data[i].z_high = z_start + (P->data[i].z_high - z_min) * scale;
 		P->data[i].i_dz /= scale;
 	}
+	/* Once we have stretched the CPT it is no longer a normalized CPT with a hinge: */
+	P->has_range = P->has_hinge = 0;
 }
 
 void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
@@ -7016,6 +7013,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	P->is_continuous = continuous;
 	P->is_bw = Pin->is_bw;
 	P->is_gray = Pin->is_gray;
+	P->has_range = P->has_hinge = 0;	/* No longer normalized or special hinge after resampling */
 
 	/* Background, foreground, and nan colors */
 

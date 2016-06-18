@@ -29,9 +29,9 @@ Synopsis
 Description
 -----------
 
-**makecpt** is a utility that will help you make color palette tables
+**makecpt** is a utility that will help you make static color palette tables
 (CPTs). You define an equidistant set of contour intervals or pass
-your own z-table, and create a new CPT based on an existing master
+your own z-table, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
 standard GMT offerings, visit cpt-city:
@@ -184,6 +184,19 @@ Optional Arguments
 
 .. include:: explain_transparency.rst_
 
+Color Hinges
+------------
+
+Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a *hinge*.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+If the selected range does not include the hinge then no such partitioning
+takes place.
+
 Color Aliasing
 --------------
 
@@ -203,19 +216,20 @@ changes every 25, and using a polar blue-white-red colortable:
 
     gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
-To make an equidistant CPT from z = -2 to 6, in steps of 1, using
-continuous default rainbow colors:
+To make an equidistant CPT from z = -2 to 6 using the
+continuous default rainbow of colors:
 
    ::
 
-    gmt makecpt -T-2/6/1 -Z > rainbow.cpt
+    gmt makecpt -T-2/6 -Z > rainbow.cpt
 
-To make a GEBCO look-alike CPT for bathymetry, run
+To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
    ::
 
     gmt makecpt -Cgebco > my_gebco.cpt
 
+or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level rainbow color table suitable for plotting the depths in
 the data table depths.txt (with lon, lat, depths), run
 
@@ -227,8 +241,11 @@ Bugs
 ----
 
 Since **makecpt** will also interpolate from any existing CPT you
-may have in your directory, you cannot use one of the listed cpt names
-as an output filename; hence the my_gebco.cpt in the example.
+may have in your directory, you should not use one of the listed cpt names
+as an output filename; hence the my_gebco.cpt in the example.  If you
+do create a CPT of such a name, e.g., rainbow.cpt, then **makecpt** will
+read that file first and not look for the master CPT in the shared GMT
+directory.
 
 See Also
 --------

@@ -99,9 +99,10 @@ Optional Arguments
 
 **-C**\ *cpt*
     Name of the CPT (for *grd_z* only). Alternatively,
-    supply the name of a GMT color master CPT [rainbow] and let
-    **grdimage** automatically determine a 16-level continuous CPT from
-    the grid's z-range.
+    supply the name of a GMT color master dynamic CPT [rainbow] to
+    automatically determine a continuous CPT from
+    the grid's z-range.  If the dynamic CPT has a default range then
+    that range will be imposed instead.
     Yet another option is to specify -Ccolor1,color2[,color3,...]
     to build a linear continuous CPT from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,

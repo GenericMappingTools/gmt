@@ -33,8 +33,8 @@ Synopsis
 Description
 -----------
 
-**grd2cpt** reads one or more grid files and writes a color palette
-(CPT) file to standard output. The CPT is based on an existing
+**grd2cpt** reads one or more grid files and writes a static color palette
+(CPT) file to standard output. The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
 colors is through the data's cumulative distribution function (CDF), so
 that the colors are histogram equalized. Thus if the grid(s) and the
