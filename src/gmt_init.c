@@ -6784,7 +6784,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->common.R.oblique = true;
 	}
 	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
-		double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch;
+		double fwd_scale, inv_scale = 0.0, inch_to_unit = 0, unit_to_inch = 0;
 		int k_unit;
 		k_unit = gmtlib_get_unit_number (GMT, item[0]);
 		gmt_init_scales (GMT, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
