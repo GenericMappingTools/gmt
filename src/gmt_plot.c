@@ -4391,7 +4391,8 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	if (fore && GMT->current.map.frame.side[Z_SIDE]) {
 		unsigned int k, n_z, quadrant, corner_to_quadrant[5] = {0, 2, 1, 4, 3}, z_axis[4];	/* Given corner ID 1-4, return quadrant, or vice versa (0 is unused) */
 		gmt_M_memcpy (z_axis, GMT->current.map.frame.z_axis, 4, unsigned int);
-		for (k = n_z = 0; k < 4; k++) if (z_axis[k]) n_z++;	/* Count # of vertical axes specified; if 0 then we do an auto-select */
+		for (k = n_z = 0; k < 4; k++)	/* Count # of vertical axes specified; if 0 then we do an auto-select */
+			if (z_axis[k]) n_z++;
 		if (n_z == 0) z_axis[corner_to_quadrant[GMT->current.proj.z_project.quadrant]-1] = 1;	/* Set the default corner given the quadrant */
 		gmt_plane_perspective (GMT, -1, 0.0);
 		for (k = 0; k < 4; k++) {
@@ -5210,7 +5211,8 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	if (G->debug) plot_contlabel_debug (GMT, PSL, G);		/* Debugging lines and points */
 
 	/* See if there are labels at all */
-	for (i = 0, no_labels = true; i < G->n_segments && no_labels; i++) if (G->segment[i]->n_labels) no_labels = false;
+	for (i = 0, no_labels = true; i < G->n_segments && no_labels; i++)
+		if (G->segment[i]->n_labels) no_labels = false;
 
 	if (no_labels) {	/* No labels, just draw lines; no clipping required */
 		plot_contlabel_drawlines (GMT, PSL, G, 0);
@@ -5472,7 +5474,8 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
 	this_proj = GMT->current.proj.projection;
-	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT->current.proj.proj4[k].id == this_proj) id = k;
+	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
+		if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
 		char *pstr = NULL, proj4name[16] = {""};

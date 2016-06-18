@@ -297,7 +297,8 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
+			             mem, m_unit[k], nelem, size);
 			return (NULL);
 		}
 	}
@@ -307,7 +308,8 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n",
+			             mem, m_unit[k], nelem, size);
 			return (NULL);
 		}
 	}
@@ -1515,7 +1517,8 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 			i0 = 0;
 			i1 = (int) (c - clean);
 
-			if (i1 > i0) word[k++] = psl_add_word_part (PSL, &clean[i0], i1 - i0, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_NO_SPACE, rgb);
+			if (i1 > i0)
+				word[k++] = psl_add_word_part (PSL, &clean[i0], i1 - i0, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_NO_SPACE, rgb);
 			if (k == n_alloc) {
 				n_alloc <<= 1;
 				word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
@@ -3630,7 +3633,8 @@ int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode) {
 	/* Updates the current PDF transparency mode */
 	int k, ok;
 	if (!mode || !mode[0]) return (PSL_NO_ERROR);	/* Quietly returned if not given an argument */
-	for (k = ok = 0; !ok && k < N_PDF_TRANSPARENCY_MODES; k++) if (!strcmp (PDF_transparency_modes[k], mode)) ok = 1;
+	for (k = ok = 0; !ok && k < N_PDF_TRANSPARENCY_MODES; k++)
+		if (!strcmp (PDF_transparency_modes[k], mode)) ok = 1;
 	if (!ok) PSL_message (PSL, PSL_MSG_FATAL, "Warning: Unknown PDF transparency mode %s - ignored\n", mode);
 
 	strncpy (PSL->current.transparency_mode, mode, 15U);	/* Keep one character for null terminator */
@@ -3731,8 +3735,11 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 		}
 		else
 			PSL_command (PSL, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
-		PSL_command (PSL, " /Width %d /Height %d /BitsPerComponent %d", PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
-		PSL_command (PSL, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n", PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny, image_no, kind_mask[mask]);
+		PSL_command (PSL, " /Width %d /Height %d /BitsPerComponent %d",
+		             PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
+		PSL_command (PSL, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n",
+		             PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny,
+		             image_no, kind_mask[mask]);
 
 		PSL->internal.pattern[image_no].dpi = image_dpi;
 		PSL_rgb_copy (PSL->internal.pattern[image_no].f_rgb, f_rgb);
@@ -3979,7 +3986,8 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		if (lastpage) PSL->internal.pmode |= 2;	/* We provided a trailer */
 	}
 	else {	/* Dealing with files or stdout */
-		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
+		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1)
+			fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
 	}
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
@@ -4027,7 +4035,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	/* Save original initialization settings */
 
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
-	if (PSL->internal.call_level == 1) PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
+	if (PSL->internal.call_level == 1)
+		PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
 
 	PSL->internal.overlay = overlay;
 	memcpy (PSL->init.page_size, page_size, 2 * sizeof(double));
@@ -4126,7 +4135,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		if (manual_feed)	/* Manual media feed requested */
 			PSL_command (PSL, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
 		else if (PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
-			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
+			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n",
+			             PSL->internal.p_width, PSL->internal.p_height);
 		if (PSL->init.copies > 1) PSL_command (PSL, "/#copies %d def\n", PSL->init.copies);
 		PSL_command (PSL, "%%%%EndSetup\n\n");
 
@@ -4275,15 +4285,18 @@ int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double s
 		scaps = PSL_SUBSUP_SIZE;
 	}
 	if (sup_lc <= 0.0 || sup_lc >= 1.0) {
-		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for lower-case super-scripts (%g) exceed allowable range, reset to %^g\n", sup_lc, PSL_SUP_UP_LC);
+		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for lower-case super-scripts (%g) exceed allowable range, reset to %^g\n",
+		             sup_lc, PSL_SUP_UP_LC);
 		sup_lc = PSL_SUBSUP_SIZE;
 	}
 	if (sup_uc <= 0.0 || sup_uc >= 1.0) {
-		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for upper-case super-scripts (%g) exceed allowable range, reset to %^g\n", sup_uc, PSL_SUP_UP_UC);
+		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for upper-case super-scripts (%g) exceed allowable range, reset to %^g\n",
+		             sup_uc, PSL_SUP_UP_UC);
 		sup_uc = PSL_SUBSUP_SIZE;
 	}
 	if (sdown <= 0.0 || sdown >= 1.0) {
-		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for sub-scripts (%g) exceed allowable range, reset to %^g\n", sdown, PSL_SUB_DOWN);
+		PSL_message (PSL, PSL_MSG_FATAL, "Warning: Amount of baseline shift for sub-scripts (%g) exceed allowable range, reset to %^g\n",
+		             sdown, PSL_SUB_DOWN);
 		sdown = PSL_SUBSUP_SIZE;
 	}
 	PSL->current.subsupsize = supsub;
@@ -4500,7 +4513,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		if (dim[0] == '-')
 			PSL_command (PSL, "(%s) s%c ", string, dim[1]);
 		else
-			PSL_command (PSL, "(%s) V MU 0 0 M E /%s_w edef FP pathbbox N /%s_h edef /%s_x1 edef /%s_d edef /%s_x0 edef U\n", string, dim, dim, dim, dim, dim);
+			PSL_command (PSL, "(%s) V MU 0 0 M E /%s_w edef FP pathbbox N /%s_h edef /%s_x1 edef /%s_d edef /%s_x0 edef U\n",
+			             string, dim, dim, dim, dim, dim);
 		PSL_free (string);
 		return (PSL_NO_ERROR);
 	}
@@ -4661,7 +4675,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	else if (dim[0] == '-' && dim[1] == 'b')
 		PSL_command (PSL, "pathbbox N 4 1 roll exch pop add exch U ");
 	else
-		PSL_command (PSL, "pathbbox N /%s_h edef /%s_x1 edef /%s_d edef /%s_x0 edef /%s_w %s_x1 %s_x0 add def U\n", dim, dim, dim, dim, dim, dim, dim);
+		PSL_command (PSL, "pathbbox N /%s_h edef /%s_x1 edef /%s_d edef /%s_x0 edef /%s_w %s_x1 %s_x0 add def U\n",
+		             dim, dim, dim, dim, dim, dim, dim);
 
 	PSL_free (tempstring);
 	PSL_free (piece);
