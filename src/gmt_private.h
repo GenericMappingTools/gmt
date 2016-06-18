@@ -78,13 +78,13 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned int alloc_level;		/* Nested module level when object was allocated */
 	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	unsigned int orig_pad[4];		/* Original grid pad */
+	unsigned int reset_pad;			/* 1 for input memory grids from which a subregion was requested */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
 	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
 	bool messenger;				/* true for output objects passed from the outside to receive data from GMT. If true we destroy data pointer before writing */
 	bool module_input;			/* true for input objects that will serve as module input(s) and not option inputs */
-	bool reset_pad;				/* true for input memory grids from which a subregion was requested */
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
 	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|PALETTE|IMAGE|GRID|POSTSCRIPT|MATRIX|VECTOR|COORD} */

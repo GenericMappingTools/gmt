@@ -83,7 +83,8 @@ struct SPECTRUM1D_CTRL {
 };
 
 struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
-	int y_given, n_spec, window, window_2;
+	unsigned int y_given;
+	int n_spec, window, window_2;
 	float *datac;
 	double dt, x_variance, y_variance, d_n_windows, y_pow;
 	struct SPEC {

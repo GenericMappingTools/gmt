@@ -167,7 +167,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	 * file and see if the pattern can be found that way.
 	 */
 	
-	int i = 0, j, pos, len, c;
+	int i = 0, j, pos, len, c = 0;
 	char *name = NULL, path[PATH_MAX] = {""};
 	if (!((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1]))) return NULL;	/* Not an image specification */
 	len = (int)strlen (line);
@@ -6740,7 +6740,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
 	
-	for (i = 0; i < P->n_colors; i++) {
+	for (i = 0; i < (int)P->n_colors; i++) {
 		if (i == k) {	/* Must change scale and z_min for cpt above the hinge */
 			z_min = z_start = P->hinge;
 			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);

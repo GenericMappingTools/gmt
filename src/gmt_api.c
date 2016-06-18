@@ -1903,10 +1903,10 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 				else if (object->region) {	/* Possibly adjust the pad so inner region matches wesn */
 					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 						gmtlib_contract_headerpad (API->GMT, G->header, object->orig_pad, object->orig_wesn);
-						object->reset_pad = G->header->reset_pad = false;
+						object->reset_pad = G->header->reset_pad = 0;
 					}
 					if (gmtlib_expand_headerpad (API->GMT, G->header, object->wesn, object->orig_pad, object->orig_wesn))
-						object->reset_pad = G->header->reset_pad = true;
+						object->reset_pad = G->header->reset_pad = 1;
 				}
 			}
 			break;
@@ -1926,10 +1926,10 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 				else if (object->region) {	/* Possibly adjust the pad so inner region matches wesn */
 					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 						gmtlib_contract_headerpad (API->GMT, I->header, object->orig_pad, object->orig_wesn);
-						object->reset_pad = I->header->reset_pad = false;
+						object->reset_pad = I->header->reset_pad = 0;
 					}
 					if (gmtlib_expand_headerpad (API->GMT, I->header, object->wesn, object->orig_pad, object->orig_wesn))
-						object->reset_pad = I->header->reset_pad = true;
+						object->reset_pad = I->header->reset_pad = 1;
 				}
 			}
 			break;
@@ -3471,10 +3471,10 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = false;
+					S_obj->reset_pad = I_obj->header->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = true;
+					S_obj->reset_pad = I_obj->header->reset_pad = 1;
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Return from GMT_IS_REFERENCE\n");
 			break;
@@ -3509,10 +3509,10 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = false;
+					S_obj->reset_pad = I_obj->header->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = true;
+					S_obj->reset_pad = I_obj->header->reset_pad = 1;
 			}
 			break;
 
@@ -3544,10 +3544,10 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = false;
+					S_obj->reset_pad = I_obj->header->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = true;
+					S_obj->reset_pad = I_obj->header->reset_pad = 1;
 			}
 			break;
 
@@ -3782,10 +3782,10 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = G_obj->header->reset_pad = false;
+					S_obj->reset_pad = G_obj->header->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = G_obj->header->reset_pad = true;
+					S_obj->reset_pad = G_obj->header->reset_pad = 1;
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
@@ -3860,10 +3860,10 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = G_obj->header->reset_pad = false;
+					S_obj->reset_pad = G_obj->header->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = G_obj->header->reset_pad = true;
+					S_obj->reset_pad = G_obj->header->reset_pad = 1;
 			}
 			break;
 
@@ -4513,7 +4513,7 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 			if (S_obj->reset_pad) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this */
 				address = (S_obj->data) ? S_obj->data : S_obj->resource;	/* Try to get the data object */
 				gmtlib_contract_pad (API->GMT, address, S_obj->family, S_obj->orig_pad, S_obj->orig_wesn);
-				S_obj->reset_pad = false;
+				S_obj->reset_pad = 0;
 			}
 			i++;	continue;
 		}
@@ -4668,11 +4668,11 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 		if (!S_obj) continue;									/* Empty object */
 		//if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
 		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;			/* Already used this input object */
-		if (!(family == GMT_NOTSET || S_obj->family == family)) continue;		/* Not the required data type */
-		if (object_ID == GMT_NOTSET && S_obj->direction == direction) item = i;	/* Pick the first object with the specified direction */
+		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) continue;		/* Not the required data type */
+		if (object_ID == GMT_NOTSET && (int)S_obj->direction == direction) item = i;	/* Pick the first object with the specified direction */
 		if (object_ID == GMT_NOTSET && !(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
-		else if (direction == GMT_NOTSET && S_obj->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
-		else if (S_obj->ID == object_ID) item = i;					/* Pick the requested object */
+		else if (direction == GMT_NOTSET && (int)S_obj->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
+		else if ((int)S_obj->ID == object_ID) item = i;					/* Pick the requested object */
 		if (item != GMT_NOTSET && direction == GMT_IN && module_input != GMT_NOTSET) {		/* Must check that object's module_input status matches */
 			bool status = (module_input == GMTAPI_MODULE_INPUT) ? true : false;
 			if (status != S_obj->module_input) item = GMT_NOTSET;	/* Not the right type of input resouce */
@@ -4681,7 +4681,7 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }		/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
-	if (direction != GMT_NOTSET && API->object[item]->direction != direction) {
+	if (direction != GMT_NOTSET && (int)(API->object[item]->direction) != direction) {
 		/* Passing an input object but it is listed as output, or vice versa */
 		if (direction == GMT_IN)  { API->error = GMT_NOT_INPUT_OBJECT;  return (GMT_NOTSET); }
 		if (direction == GMT_OUT) { API->error = GMT_NOT_OUTPUT_OBJECT; return (GMT_NOTSET); }
@@ -8228,7 +8228,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *
 	 */
 
-	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku,  n_out = 0, nn[2][2];
+	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku, n_out = 0, nn[2][2];
 	unsigned int output_pos = 0, input_pos = 0;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
@@ -8465,12 +8465,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (n_items == 0) gmt_M_str_free (info);	/* No containers used */
 
 	gmt_M_memset (nn, 4, unsigned int);
-	for (k = 0; k < n_items; k++)	/* Count how many primary and secondary objects each for input and output */
-		nn[info[k].direction][info[k].mode]++;
+	for (ku = 0; ku < n_items; ku++)	/* Count how many primary and secondary objects each for input and output */
+		nn[info[ku].direction][info[ku].mode]++;
 	
-	for (k = 0; k < n_items; k++) {	/* Reorder positions so that primary objects are listed before secondary objects */
-		if (info[k].mode == K_SECONDARY) info[k].pos += nn[info[k].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
-		else info[k].pos -= nn[info[k].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
+	for (ku = 0; ku < n_items; ku++) {	/* Reorder positions so that primary objects are listed before secondary objects */
+		if (info[ku].mode == K_SECONDARY) info[ku].pos += nn[info[ku].direction][K_PRIMARY];	/* Move secondary objects after all primary objects for this direction */
+		else info[ku].pos -= nn[info[ku].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", input_pos, output_pos);
 	/* Just checking that the options were properly processed */
@@ -8480,9 +8480,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
 		GMT_Destroy_Cmd (API, &text);
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: List of items returned:\n");
-		for (k = 0; k < n_items; k++) {
+		for (ku = 0; ku < n_items; ku++) {
 			GMT_Report (API, GMT_MSG_DEBUG, "External API item %2d: Family: %14s Direction: %6s Pos: %d Mode: %s\n",
-				k, GMT_family[info[k].family], GMT_direction[info[k].direction], info[k].pos, omode[info[k].mode]);
+				ku, GMT_family[info[ku].family], GMT_direction[info[ku].direction], info[ku].pos, omode[info[ku].mode]);
 		}
 	}
 

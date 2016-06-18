@@ -822,7 +822,8 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128], t[32] = {""}, *pch, c;
-	int       fd[2] = { 0, 0 }, n, r, c_begin = 0;
+	int       fd[2] = { 0, 0 }, r, c_begin = 0;
+	size_t	n;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
 	FILE     *fp = NULL;
@@ -1246,7 +1247,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
 	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
 		int    error = 0;
-		double w, h;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
+		double w = 0.0, h = 0.0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			error++;

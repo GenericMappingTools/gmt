@@ -6521,14 +6521,14 @@ int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Text Table to file %s\n", out_file);
 			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments;
-			if ((error = gmtio_write_texttable (GMT, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode, D->table[tbl]->n_segments))) {
+			if ((error = gmtio_write_texttable (GMT, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
 		}
 		else {	/* Write to stream we set up earlier */
 			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments;
-			if ((error = gmtio_write_texttable (GMT, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode, D->n_segments))) {
+			if ((error = gmtio_write_texttable (GMT, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
