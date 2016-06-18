@@ -1325,6 +1325,12 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	//if (P->has_range) gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Convert from normalized to natural range */
+//	for (i = 0; i < P->n_colors; i++) {
+//		fprintf (stderr, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\n", P->data[i].z_low, P->data[i].rgb_low[0], P->data[i].rgb_low[1], P->data[i].rgb_low[2],
+//			P->data[i].z_high, P->data[i].rgb_high[0], P->data[i].rgb_high[1], P->data[i].rgb_high[2]);
+//	}
+	
 	if (Ctrl->G.active)
 		P = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 	if (Ctrl->W.active) {	/* Scale all z values */

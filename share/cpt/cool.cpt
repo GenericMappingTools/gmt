@@ -1,5 +1,8 @@
 #	$Id$
 #
-# Simulates the COOL colormap in Matlab
-#
+# Simulates the COOL colormap in MATLAB
+#------------------------------------------------
+# COLOR_MODEL = RGB
+#------------------------------------------------
 0	cyan	1	magenta
+#------------------------------------------------

@@ -272,7 +272,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active & !Ctrl->T.interpolate && !Ctrl->Z.active, "Syntax error -T: Must specify sampling interval for discrete output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -337,24 +336,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
 
-	if (Ctrl->T.active && !Ctrl->T.interpolate) {	/* Use existing CPT structure, just change z */
-		double z_min, scale = (Ctrl->T.high - Ctrl->T.low)/(Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
-		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		z_min = Pin->data[0].z_low;
-		for (i = 0; i < Pin->n_colors; i++) {
-			Pout->data[i].z_low  = Ctrl->T.low + (Pin->data[i].z_low  - z_min) * scale;
-			Pout->data[i].z_high = Ctrl->T.low + (Pin->data[i].z_high - z_min) * scale;
-			Pout->data[i].i_dz *= scale;
-		}
-		if (Ctrl->I.active)
-			gmt_invert_cpt (GMT, Pout);
-		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
-			Return (API->error);
-		}
-
-		Return (GMT_NOERROR);
-	}
-	
 	/* Set up arrays */
 
 	if (Ctrl->T.file) {	/* Array passed as a data file */
@@ -383,7 +364,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		nz = gmtlib_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
 	}
-	else if (Ctrl->T.active) {	/* Establish linear grid */
+	else if (Ctrl->T.active && Ctrl->T.interpolate) {	/* Establish discrete linear grid */
 		if (Ctrl->T.inc == 0 && Ctrl->C.active) {	/* Compute interval from number of colors in palette */
 			nz = Pin->n_colors + 1;
 			Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / Pin->n_colors;
@@ -418,16 +399,15 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Just copy what was in the CPT */
-		nz = Pin->n_colors + 1;
-		z = gmt_M_memory (GMT, NULL, nz, double);
-		if (Ctrl->I.active) {
-			/* Reverse the intervals (only relevant for non-equidistant color maps) */
-			for (i = 0; i < nz-1; i++) z[i] = Pin->data[0].z_low + Pin->data[Pin->n_colors-1].z_high - Pin->data[Pin->n_colors-1-i].z_high;
+		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
+		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);
+		if (Ctrl->I.active)
+			gmt_invert_cpt (GMT, Pout);
+		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
+			Return (API->error);
 		}
-		else {
-			for (i = 0; i < nz-1; i++) z[i] = Pin->data[i].z_low;
-		}
-		z[i] = Pin->data[i-1].z_high;
+
+		Return (GMT_NOERROR);
 	}
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */

@@ -6288,6 +6288,20 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			gmt_scanf_arg (GMT, &h[7], GMT_IS_UNKNOWN, &X->hinge);
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
+		else if ((h = strstr (line, "RANGE ="))) {	/* CPT has a default range */
+			if (sscanf (&h[7], "%[^/]/%s", T1, T2) != 2) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not parse RANGE [%s] in %s\n", &h[7], cpt_file);
+				if (close_file) fclose (fp);
+				if (Z) gmt_M_free (GMT, Z);
+				gmt_M_free (GMT, X->data);
+				gmt_M_free (GMT, X);
+				return (NULL);
+			}
+			gmt_scanf_arg (GMT, T1, GMT_IS_UNKNOWN, &X->minmax[0]);
+			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->minmax[1]);
+			X->has_range = 1;
+			continue;	/* Don't want this instruction to be also kept as a comment */
+		}
 		GMT->current.setting.color_model = X->model;
 
 		if (c == '#') {	/* Possibly a header/comment record */
@@ -6688,6 +6702,47 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 	/* Background, foreground, and nan colors */
 
 	for (i = 0; i < 3; i++) P->bfn[i].hsv[3] = P->bfn[i].rgb[3] = transparency;
+}
+
+GMT_LOCAL int gmt_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Return the slice number where z_low == hinge */
+	unsigned int k;
+	if (!P->has_hinge) return GMT_NOTSET;
+	for (k = 0; k < P->n_colors; k++) if (doubleAlmostEqualZero (P->hinge, P->data[k].z_low)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge = %g for slice k = %u!\n", P->hinge, k);
+		return (int)k;
+	}
+	return GMT_NOTSET;
+}
+
+void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+	int i, k;
+	double z_min, z_start, scale;
+	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
+		if (P->has_range == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing z_low == z_high but CPT has no default range: using 0/1!\n");
+			z_low =  0.0;	z_high = 1.0;
+		}
+		else {
+			z_low =  P->minmax[0];	z_high = P->minmax[1];
+		}
+	}
+	z_min = P->data[0].z_low;
+	z_start = z_low;
+	if ((k = gmt_find_cpt_hinge (GMT, P)) == GMT_NOTSET)	/* No hinge, same scale for all of CPT */
+		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
+	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
+		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
+	
+	for (i = 0; i < P->n_colors; i++) {
+		if (i == k) {	/* Must change scale and z_min for cpt above the hinge */
+			z_min = z_start = P->hinge;
+			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);
+		}
+		P->data[i].z_low  = z_start + (P->data[i].z_low  - z_min) * scale;
+		P->data[i].z_high = z_start + (P->data[i].z_high - z_min) * scale;
+		P->data[i].i_dz *= scale;
+	}
 }
 
 #define Fill_swap(x, y) {struct GMT_FILL *F_tmp; F_tmp = x, x = y, y = F_tmp;}

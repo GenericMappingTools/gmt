@@ -493,14 +493,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
-		double z_min, scale = (Ctrl->L.max - Ctrl->L.min)/(Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		z_min = Pin->data[0].z_low;
-		for (k = 0; k < Pin->n_colors; k++) {
-			Pout->data[k].z_low  = Ctrl->L.min + (Pin->data[k].z_low  - z_min) * scale;
-			Pout->data[k].z_high = Ctrl->L.min + (Pin->data[k].z_high - z_min) * scale;
-			Pout->data[k].i_dz *= scale;
-		}
+		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
 		if (Ctrl->I.active)
 			gmt_invert_cpt (GMT, Pout);
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {

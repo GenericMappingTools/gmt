@@ -1,7 +1,11 @@
 #	$Id$
 #
-# Simulates the POLAR colormap in Matlab
+# Simulates the POLAR colormap in MATLAB
 #
+#----------------------------------------------------------
+# COLOR_MODEL = RGB
 # HINGE = 0
+#----------------------------------------------------------
 -1	blue	0	white
 0	white	1	red
+#----------------------------------------------------------
