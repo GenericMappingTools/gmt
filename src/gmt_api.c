@@ -9191,6 +9191,8 @@ GMT_LOCAL void *api_dataset2textset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 				ST->data = gmt_M_memory (GMT, NULL, ST->n_rows, char *);
 				if (SD->header && do_seg_header(header)) ST->header = strdup (SD->header);
 			}
+			else
+				ST = T->segment[seg_out];			
 			for (row = 0; row < SD->n_rows; row++, row_out++) {	/* Encode each row into a text string */
 				fmt = 10;	/* Initialize record */
 				for (col = 0; col < SD->n_columns; col++) {
@@ -9364,6 +9366,8 @@ GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 				gmt_alloc_segment (GMT, SD, SD->n_rows, Out->n_columns, true);
 				if (ST->header && do_seg_header(header)) SD->header = strdup (ST->header);
 			}
+			else
+				SD = D->segment[seg_out];
 			for (row = 0; row < ST->n_rows; row++, row_out++) {
 				col = gmtlib_conv_text2datarec (GMT, ST->data[row], Out->n_columns, GMT->current.io.curr_rec);
 				for (col = 0; col < SD->n_columns; col++)
@@ -9451,7 +9455,7 @@ GMT_LOCAL void *api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	if (alloc) {
 		if (dim == 0) {	/* Must guess number of columns from first text record */
 			dim = gmtlib_conv_text2datarec (GMT, In->table[0]->segment[0]->data[0], GMT_BUFSIZ, GMT->current.io.curr_rec);
-			GMT_Report (API, GMT_MSG_DEBUG, "Determined that textset contains %d columns\n", Out->n_columns);
+			GMT_Report (API, GMT_MSG_DEBUG, "Determined that textset contains %d columns\n", dim);
 		}
 		if ((Out = gmt_create_vector (GMT, dim, GMT_OUT)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 		Out->n_rows = In->n_records + (add_NaN_record ? In->n_segments : 0);
