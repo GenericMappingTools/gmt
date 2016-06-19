@@ -268,11 +268,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high), "Syntax error -T option: Give z_min < z_max\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0, "Syntax error -T option: For interpolation, give z_inc > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
+	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
+		Ctrl->Z.active = false;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

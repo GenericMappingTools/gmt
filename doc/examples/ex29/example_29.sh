@@ -25,7 +25,7 @@ gmt greenspline -RPROJ_ELLIPSOID.nc mars370.txt -D4 -Sq0.9975 -Gmars2.nc
 # Scale to km and remove PROJ_ELLIPSOID
 gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
-gmt makecpt -Crainbow -T-7/15 -Z > mars.cpt
+gmt makecpt -Crainbow -T-7/15 > mars.cpt
 gmt grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
 gmt grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 \
 	--FONT_ANNOT_PRIMARY=12p -X0.75i > $ps

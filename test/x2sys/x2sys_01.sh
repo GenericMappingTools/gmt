@@ -9,7 +9,7 @@
 ps=x2sys_01.ps
 
 R=181/185/0/3
-gmt makecpt -Crainbow -T-80/80 -Z > faa.cpt
+gmt makecpt -Crainbow -T-80/80 > faa.cpt
 gmt grdgradient -Ne0.75 -A65 -fg ss_faa.nc -Gss_faa_int.nc
 
 gmt grdimage ss_faa.nc -Iss_faa_int.nc -JM5.5i -P -K -Cfaa.cpt -X1.75i -Y2.5i > $ps

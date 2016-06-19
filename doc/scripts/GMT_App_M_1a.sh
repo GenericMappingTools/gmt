@@ -24,9 +24,9 @@ do
 	j=`expr $i + 1`
 	left=`sed -n ${j}p tt.lis`
 	right=`sed -n ${i}p tt.lis`
-	gmt makecpt -C$left -Z > tt.left.cpt
+	gmt makecpt -C$left > tt.left.cpt
 	gmt makecpt -C$left -T-1/1/0.25 > tt.left2.cpt
-	gmt makecpt -C$right -Z > tt.right.cpt
+	gmt makecpt -C$right > tt.right.cpt
 	gmt makecpt -C$right -T-1/1/0.25 > tt.right2.cpt
 	gmt psscale -D1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0 -O -K >> $ps
 	gmt psscale -D4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0 -O -K >> $ps

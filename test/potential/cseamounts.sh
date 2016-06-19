@@ -10,7 +10,7 @@ gmt gmtset MAP_FRAME_TYPE plain
 # Each panel shows to seamounts, the lower right being
 # truncated with a flattening of 0.3
 # NOT FINISHED
-gmt makecpt -Crainbow -T-3000/-2000 -Z > t.cpt
+gmt makecpt -Crainbow -T-3000/-2000 > t.cpt
 # LL. Input file for Cartesian circular
 cat << EOF > cart_circ.txt
 -50	50	50	1000	0

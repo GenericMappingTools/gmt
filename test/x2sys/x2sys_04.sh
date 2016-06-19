@@ -23,7 +23,7 @@ gmt x2sys_cross -TTEST =bad.lis -Qe -Ia > COE_orig.txt
 gmt x2sys_list -TTEST COE_orig.txt -Cz -Fndc > COE_use.txt
 gmt x2sys_solve -TTEST COE_use.txt -Cz -Ed > corrections.txt
 R=181/185/0/3
-gmt makecpt -Crainbow -T-80/80 -Z > faa.cpt
+gmt makecpt -Crainbow -T-80/80 > faa.cpt
 
 # Grid the corrected data
 gmt x2sys_datalist -TTEST -Lcorrections.txt =bad.lis -Flon,lat,z | gmt blockmean -R$R -I1m | gmt surface -R$R -I1m -Gss_gridded_fix1.nc -T0.25

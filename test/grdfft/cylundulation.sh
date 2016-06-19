@@ -14,7 +14,7 @@ ps=cylundulation.ps
 #gmt grdmath -R0/127/0/127 -I1 X -60 COSD MUL Y -60 SIND MUL ADD 128 DIV 18 MUL 2 MUL PI MUL 0.5 ADD COS 4 MUL = B.nc
 #gmt grdmath -R0/127/0/127 -I1 2 1 NRAND = C.nc
 #gmt grdmath A.nc B.nc ADD C.nc ADD = surf.nc
-gmt makecpt -Cpolar -T-14/14 -Z > t.cpt
+gmt makecpt -Cpolar -T-14/14 > t.cpt
 gmt grdimage "${src:-.}"/surf.nc -JX4.5i -Ct.cpt -B64f32g64+u" m" -BWSne -P -K -Xc -Y0.5i > $ps
 gmt psxy -R"${src:-.}"/surf.nc -J -O -K -Sv0.21i+e -Wthick -Gblack << EOF >> $ps
 64 64 18 2i

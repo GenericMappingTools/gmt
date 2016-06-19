@@ -12,7 +12,7 @@ ps=spotter_07.ps
 APM=${src}/../../src/spotter/WK97.txt
 
 gmt grdspotter pac_residual_topo.nc -E$APM -Gcva_bathy.nc -R200/210/15/25 -I5m -r -N140 -S -Tt
-gmt makecpt -Chot -T0/100 -Z > h.cpt
+gmt makecpt -Chot -T0/100 > h.cpt
 # Lay down CVA image in percent
 gmt grdimage -JM6i cva_bathy.nc -Ipac_int.nc -Ei --FORMAT_GEO_MAP=ddd:mm:ssF -Ch.cpt -Baf -BWSne -P -K -X1.5i -Y2i > $ps
 # Show 10% contours

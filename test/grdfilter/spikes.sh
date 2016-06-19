@@ -18,7 +18,7 @@ image () {	# First 3 args for gmt grdimage; $4 is text for gmt pstext
 	echo "50 50 $4" | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f18p -W1p -Gwhite
 }
 echo 25 25 100 | gmt xyz2grd -R0/50/0/50 -I0.5 -di0 -Gt.nc
-gmt makecpt -Crainbow -T0/1 -Z > t.cpt
+gmt makecpt -Crainbow -T0/1 > t.cpt
 gmt psscale -D3.25i/-0.35i+w6i/0.1i+h+jTC -P -K -Ba0.1 -Ct.cpt -Y1.2i > $ps
 image t.nc -X0i -Y0i "Spike" >> $ps
 filter -D0 -Fg30

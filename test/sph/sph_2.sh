@@ -4,7 +4,7 @@
 
 ps=sph_2.ps
 
-gmt makecpt -Crainbow -T-9000/9000 -Z > tt.cpt
+gmt makecpt -Crainbow -T-9000/9000 > tt.cpt
 gmt sphinterpolate lun2.txt -Rg -I1 -Q0 -Gtt.nc
 gmt grdimage tt.nc -JH0/4.5i -B30g30 -B+t"-Q0" -Ctt.cpt -X0.7i -Y5.5i -K --MAP_TITLE_OFFSET=0i --FONT_TITLE=18p > $ps
 gmt sphinterpolate lun2.txt -Rg -I1 -Q1 -Gtt.nc

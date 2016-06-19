@@ -15,8 +15,8 @@ G=grav.V18.par.surf.1km.sq
 T=mb.par.surf.1km.sq
 gmt gmtset FONT_TITLE 14p GMT_FFT kiss
 
-gmt makecpt -Crainbow -T-5000/-3000 -Z > z.cpt
-gmt makecpt -Crainbow -T-50/25 -Z > g.cpt
+gmt makecpt -Crainbow -T-5000/-3000 > z.cpt
+gmt makecpt -Crainbow -T-50/25 > g.cpt
 gmt grdinfo $T.nc -Ib > bbox
 gmt grdgradient $G.nc -A0 -Nt1 -G${G}_int.nc
 gmt grdgradient $T.nc -A0 -Nt1 -G${T}_int.nc
@@ -31,8 +31,8 @@ gmt grdfft $T.nc $G.nc -Ewk -N192/192+d+wtmp > cross.txt
 gmt grdgradient ${G}_tmp.nc -A0 -Nt1 -G${G}_tmp_int.nc
 gmt grdgradient ${T}_tmp.nc -A0 -Nt1 -G${T}_tmp_int.nc
 
-gmt makecpt -Crainbow -T-1500/1500 -Z > z.cpt
-gmt makecpt -Crainbow -T-40/40 -Z > g.cpt
+gmt makecpt -Crainbow -T-1500/1500 > z.cpt
+gmt makecpt -Crainbow -T-40/40 > g.cpt
 
 gmt grdimage ${T}_tmp.nc -I${T}_tmp_int.nc -Jx${scl}i -Cz.cpt -O -K -X-3.474i -Y3i >> $ps
 gmt psxy -R${T}_tmp.nc -J bbox -O -K -L -W0.5p,- >> $ps

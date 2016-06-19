@@ -16,7 +16,7 @@ gmt hotspotter ${src}/../../src/spotter/seamounts.txt -I10m -R130/260/-66/60 -E$
 
 # Make a suitable color table
 
-gmt makecpt -Chot -T0/3000 -Z > t.cpt
+gmt makecpt -Chot -T0/3000 > t.cpt
 
 gmt grdimage spotter_2.nc -JM6i -P -K -Ct.cpt > $ps
 gmt pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -B20 -BWSne >> $ps

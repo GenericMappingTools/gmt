@@ -6,7 +6,7 @@ ps=power2D.ps
 
 # Single sinusoid of unit amplitude
 gmt grdmath -R0/256/0/256 -I1 -r X 256 DIV 360 MUL 10 MUL COSD = t.nc
-gmt makecpt -Cpolar -T-1/1 -Z > t.cpt
+gmt makecpt -Cpolar -T-1/1 > t.cpt
 gmt grdimage t.nc -JX6i -Ct.cpt -B64f32 -BWSne+t"Sinusoid @~l@~ = 25.6" -P -K -Xc > $ps
 
 gmt grdfft t.nc -Exw -N+l --GMT_FFT=brenner > pow5.txt

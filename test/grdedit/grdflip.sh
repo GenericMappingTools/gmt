@@ -3,7 +3,7 @@
 ps=grdflip.ps
 # Original grid
 gmt grdmath -R-1800/2600/-600/600 -I10 Y 100 DIV 2 POW NEG EXP Y 1000 DIV ADD X 1000 DIV MUL = w.nc
-gmt makecpt -Crainbow -T-1.8/2.65 -Z > t.cpt
+gmt makecpt -Crainbow -T-1.8/2.65 > t.cpt
 gmt grdimage w.nc -Ct.cpt -Jx0.00147727i -Baf -P -K -BWSne -Y8.5i > $ps
 # Flip grid left-to-right
 gmt grdedit w.nc -Gh.nc -Eh

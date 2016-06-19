@@ -28,7 +28,7 @@ gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
 mkdir -p $$
 gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
-gmt makecpt -Cglobe -Z > globe_$$.cpt
+gmt makecpt -Cglobe > globe_$$.cpt
 function make_frame () {
 	local frame file ID lon lat dist
 	frame=$1; lon=$2; lat=$3; dist=$4

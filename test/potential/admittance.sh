@@ -13,9 +13,9 @@ gmt grdseamount -R0/512/0/512 -I4 -r -Gz.nc -Z-5000 << EOF
 EOF
 
 # 2. LL Map: Bathymetry load + flexural contours
-gmt makecpt -Crainbow -T-5000/-1000 -Z > z.cpt
+gmt makecpt -Crainbow -T-5000/-1000 > z.cpt
 gmt grdimage z.nc -Cz.cpt -JX3i -P -Ba -BWSne -K -Y0.75i > $ps
-gmt makecpt -Crainbow -T-50/250 -Z > g.cpt
+gmt makecpt -Crainbow -T-50/250 > g.cpt
 
 # Compute flexure and overlay on bathymetry
 gmt gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w+a -Gmoho_flex.nc

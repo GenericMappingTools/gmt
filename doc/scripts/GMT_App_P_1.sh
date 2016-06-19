@@ -18,7 +18,7 @@ gmt gmtset COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
 
 # Make grid file and color map in temporary directory
 gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
-gmt makecpt -Crainbow -T-90/90 -Z > $GMT_TMPDIR/lat.cpt
+gmt makecpt -Crainbow -T-90/90 > $GMT_TMPDIR/lat.cpt
 
 # The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
 gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps

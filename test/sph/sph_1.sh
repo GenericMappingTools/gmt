@@ -5,7 +5,7 @@
 ps=sph_1.ps
 mars370=${src}/../../doc/examples/ex36/mars370.txt
 
-gmt makecpt -Crainbow -T-7000/15000 -Z > tt.cpt
+gmt makecpt -Crainbow -T-7000/15000 > tt.cpt
 gmt sphinterpolate ${mars370} -Rg -I1 -Q0 -Gtt.nc
 gmt grdimage tt.nc -JH0/4.5i -B30g30 -B+t"-Q0" -Ctt.cpt -X0.7i -Y5.5i -K --MAP_TITLE_OFFSET=0i --FONT_TITLE=18p > $ps
 gmt sphinterpolate ${mars370} -Rg -I1 -Q1 -Gtt.nc

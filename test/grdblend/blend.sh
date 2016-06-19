@@ -9,7 +9,7 @@ gmt grdmath -R0/6/0/6 -I0.1 0 = a.nc
 gmt grdmath -R4/10/0/5 -I0.1 2 = b.nc
 gmt grdmath -R0/6/4/10 -I0.1 8 = c.nc
 gmt grdmath -R4/10/4/10 -I0.1 4 = d.nc
-gmt makecpt -Crainbow -T0/8 -Z > t.cpt
+gmt makecpt -Crainbow -T0/8 > t.cpt
 # Just add them up
 gmt grdblend ?.nc -R0/10/0/10 -I0.1 -Gblend.nc
 gmt grdimage blend.nc -Ct.cpt -JX3i -P -B2 -BWSne -K -X0.75i -Y0.75i > $ps
