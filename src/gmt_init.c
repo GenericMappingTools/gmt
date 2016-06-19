@@ -6210,7 +6210,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 
 	char *u = GMT->session.unit_name[GMT->current.setting.proj_length_unit];
 
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option. Correct syntax:\n", option);
 
 	switch (option) {
 
@@ -11616,11 +11616,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'J':
 			if (item && (item[0] == 'Z' || item[0] == 'z')) {	/* -JZ or -Jz */
-				error += (gmt_M_check_condition (GMT, GMT->common.J.zactive, "Warning: Option -JZ|z given more than once\n") || gmtinit_parse_J_option (GMT, item));
+				error += (gmt_M_check_condition (GMT, GMT->common.J.zactive, "Warning: Option -JZ|z given more than once\n") ||
+				                                 gmtinit_parse_J_option (GMT, item));
 				GMT->common.J.zactive = true;
 			}
 			else {	/* Horizontal map projection */
-				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") || gmtinit_parse_J_option (GMT, item));
+				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
+				                                 gmtinit_parse_J_option (GMT, item));
 				GMT->common.J.active = true;
 			}
 			break;
@@ -11687,9 +11689,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'Z':	/* GMT4 Backwards compatibility */
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n" GMT_COMPAT_INFO);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n"
+				            GMT_COMPAT_INFO);
 				if (item && item[0]) {
-					if (gmtinit_get_uservalue (GMT, item, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_level, "-Z zlevel value")) return 1;
+					if (gmtinit_get_uservalue (GMT, item, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_level, "-Z zlevel value"))
+						return 1;
 				}
 			}
 			else {
@@ -11714,7 +11718,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					GMT->common.b.active[GMT_OUT] = true;
 					break;
 				default:
-					error += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] + GMT->common.b.active[GMT_OUT], "Warning Option -b given more than once\n");
+					error += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] + GMT->common.b.active[GMT_OUT],
+					                                "Warning Option -b given more than once\n");
 					GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = true;
 					break;
 			}
@@ -11735,7 +11740,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					error += gmt_M_check_condition (GMT, GMT->common.d.active[GMT_OUT], "Warning Option -do given more than once\n");
 					break;
 				default:
-					error += gmt_M_check_condition (GMT, GMT->common.d.active[GMT_IN] + GMT->common.d.active[GMT_OUT], "Warning Option -d given more than once\n");
+					error += gmt_M_check_condition (GMT, GMT->common.d.active[GMT_IN] + GMT->common.d.active[GMT_OUT],
+					                                "Warning Option -d given more than once\n");
 					break;
 			}
 			error += gmt_parse_d_option (GMT, item);
@@ -11857,6 +11863,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	/* On error, give syntax message */
 
 	if (error) gmt_syntax (GMT, option);
+	if (error)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Offending option %s\n", item);
 
 	return (error);
 }
