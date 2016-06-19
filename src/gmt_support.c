@@ -6176,7 +6176,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	}
 
 	gmt_message (GMT, "\t-%c Specify a colortable [Default is rainbow]:\n", option);
-	gmt_message (GMT, "\t   [Original z-range is given in brackets]\n");
+	gmt_message (GMT, "\t   [Notes: R=Default z-range, H=Hinge, C=colormodel]\n");
 	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");
 	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t   %s", buffer);
 	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");

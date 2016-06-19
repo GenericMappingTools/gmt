@@ -236,9 +236,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				if (!gmt_access (GMT, opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					Ctrl->T.inc = 0.0;
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
-					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc[+]]\n");
+					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify z_min/z_max[/z_inc[+]]\n");
 					if (n == 3 && opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of levels instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / (Ctrl->T.inc - 1.0);
 					}
@@ -267,7 +266,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active, "Syntax error: No input files expected unless -E is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option: Give start < stop and inc > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high), "Syntax error -T option: Give z_min < z_max\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0, "Syntax error -T option: For interpolation, give z_inc > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
@@ -365,17 +366,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		nz = gmtlib_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
 	}
 	else if (Ctrl->T.active && Ctrl->T.interpolate) {	/* Establish discrete linear grid */
-		if (Ctrl->T.inc == 0 && Ctrl->C.active) {	/* Compute interval from number of colors in palette */
-			nz = Pin->n_colors + 1;
-			Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / Pin->n_colors;
-		}
-		else if (Ctrl->T.inc <= 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Interval must be > 0\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		else
-			nz = irint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
-
+		nz = irint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
 		z = gmt_M_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */
 	}
@@ -400,23 +391,20 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just copy what was in the CPT */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);
-		if (Ctrl->I.active)
+		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);	/* Stretch to given range or use natural range if 0/0 */
+		if (Ctrl->I.active)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
-		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
-			Return (API->error);
-		}
-
-		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
+	if (Pout == NULL) {	/* Meaning it was not created above */
+		if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
-	/* Now we can resample the CPT and write out the result */
+		/* Now we can resample the CPT and write out the result */
 
-	Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
+		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 
-	if (!Ctrl->T.file) gmt_M_free (GMT, z);
+		if (!Ctrl->T.file) gmt_M_free (GMT, z);
+	}
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 

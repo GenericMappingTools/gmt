@@ -154,7 +154,7 @@ Optional Arguments
 **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new CPT by giving the lowest and
     highest z-value and interval.  If **-Z** is not used then you
-    must also specify *z_inc*; append a trailing **+** we should
+    may also want to specify *z_inc*; append a trailing **+** if we should
     interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
     per record. If **-T** is not given, the existing range in the master
