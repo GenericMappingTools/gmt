@@ -15,7 +15,7 @@ REM Get Voronoi polygons
 gmt sphtriangulate gshhs_c.txt -Qv -D > tt.pol
 REM Compute distances in km
 gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
-gmt makecpt -Chot -T0/3500/500 -Z > t.cpt
+gmt makecpt -Chot -T0/3500 > t.cpt
 REM Make a basic image plot and overlay contours, Voronoi polygons and coastlines
 gmt grdimage tt.nc -JG-140/30/7i -P -K -Ct.cpt -X0.75i -Y2i > %ps%
 gmt grdcontour tt.nc -J -O -K -C500 -A1000+f10p,Helvetica,white -L500 -GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -Wa0.75p,white -Wc0.25p,white >> %ps%

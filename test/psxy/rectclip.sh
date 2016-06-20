@@ -17,4 +17,4 @@ EOF
 #
 gmt select -R-88.9/-14.1/-58.5993313003/6.9895410772r -fg t.txt > a.txt
 gmt psxy -JL-73.5/-10.6/-14.16/-14.24/6i -R-88.9/-14.1/-58.5993313003/6.9895410772r -P -Ba5f1g5 -W2p,red t.txt -Xc -K > $ps
-gmt psxy -J -R -O -Ba5f1g5  -W2p,red a.txt -Y5i >> $ps
+gmt psxy -J -R -O -Ba5f1g5 -W2p,red a.txt -Y5i >> $ps

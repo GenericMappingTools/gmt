@@ -20,7 +20,7 @@ echo -142.65 56.25 400 > pratt.d
 REM First generate gravity image w/ shading, label Pratt, and draw a circle
 REM of radius = 200 km centered on Pratt.
 
-gmt makecpt -Crainbow -T-60/60/120 -Z > grav.cpt
+gmt makecpt -Crainbow -T-60/60 > grav.cpt
 gmt grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
 gmt grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > %ps%
 gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> %ps%

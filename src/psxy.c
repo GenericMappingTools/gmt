@@ -1454,7 +1454,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		else if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (D->n_columns < 2) {
+		if (D->n_records && D->n_columns < 2) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
