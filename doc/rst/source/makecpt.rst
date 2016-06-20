@@ -54,7 +54,7 @@ The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master CPT. When
 there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
 :ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
-line will be used. 
+line will be used.
 
 Required Arguments
 ------------------
@@ -78,7 +78,7 @@ Optional Arguments
     Choose among the built-in tables (type **makecpt** to see the list)
     or give the name of an existing CPT [Default gives a rainbow CPT].
     Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.  
+    to build a linear continuous cpt from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
@@ -153,12 +153,12 @@ Optional Arguments
 
 **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new CPT by giving the lowest and
-    highest z-value and interval.  If **-Z** is not used then you
-    may also want to specify *z_inc*; append a trailing **+** if we should
-    interpret *z_inc* as the number of desired intervals instead.
+    highest z-value and interval.  Append /*z_inc* to sample the input CPT
+    discretely at intervals *z_inc* between *z_min* and *z_max*;
+    append a trailing **+** to interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
     per record. If **-T** is not given, the existing range in the master
-    CPT will be used intact. 
+    CPT will be used intact.
 
 .. _-V:
 
@@ -178,7 +178,10 @@ Optional Arguments
 
 **-Z**
     Creates a continuous CPT [Default is discontinuous, i.e.,
-    constant colors for each interval]. 
+    constant colors for each interval]. This option has no effect when no **-T**
+    is used, or when using **-T**\ *z_min*/*z_max*; in the first case the input
+    CPT remains untouched, in the second case it is only scaled to match the
+    range *z_min*/*z_max*.
 
 .. include:: explain_help.rst_
 

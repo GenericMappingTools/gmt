@@ -148,13 +148,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>/<z_max> to change the z-range for the colorscale in z-units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Without -Z, append /<z_inc> to sample the cpt discretely instead, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   append + to <z_inc> to indicate number of z-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a filename with custom z-values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append /<z_inc> to sample the cpt discretely instead, or append + to <z_inc>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to indicate the number of z-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a filename with custom z-values.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals]. Without -T or when using -T<z_min>/<z_max> this\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   has no effect; the input palette table is used untouched with possible scaling.\n");
 	GMT_Option (API, "bi,di,h,i,.");
 
 	return (GMT_MODULE_USAGE);
@@ -336,7 +337,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
-	
+
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
 
