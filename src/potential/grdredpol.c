@@ -22,7 +22,7 @@
  * computes the continuous reduction to the pole (RTP) anomaly by calculating the
  * filter coefficients in the frequency, inverse FT and convolve in space domain.
  * For details on the method see, Luis, J.F and J.M. Miranda (2008), 
- * "Reevaluation of magnetic chrons in the North Atlantic between 35Â°N and 47Â°N: 
+ * "Reevaluation of magnetic chrons in the North Atlantic between 35°N and 47°N: 
  * Implications for the formation of the Azores Triple Junction and associated plateau, 
  * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573 
  *
@@ -1026,7 +1026,7 @@ GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, do
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei<dip_grd>] [-Ee<dec_grd>] [-F<m>/<n>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filterfile>]\n\t[%s]\n\n",
 				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
@@ -1036,15 +1036,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets<dec>/<dip> and uses this constant values in the RTP procedure.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Gets magnetization DIP & DEC from these two grids [default: use IGRF].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Ei grid with the magnetization inclination [default: use IGRF].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Ed grid with the magnetization declination [default: use IGRF].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets <m>/<n> filter widths [25x25].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Sets boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT use Taylor expansion.\n");
-	GMT_Option (API, "R");
+	GMT_Option  (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Sets year used by the IGRF routine to compute the various DECs & DIPs [default: 2000].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Sets window width in degrees [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write filter file <filterfile> to disk.\n");
-	GMT_Option (API, "V,n,.");
+	GMT_Option  (API, "V,n,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -1080,28 +1081,38 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 				Ctrl->C.const_f = true;
 				Ctrl->C.use_igrf = false;
 				break;
-			case 'E':
-				j = 0;
-				while (gmt_strtok (opt->arg, "/", &pos, p)) {
-					switch (j) {
-						case 0:
-							Ctrl->E.dipfile = strdup (p);
-							Ctrl->E.dip_grd_only = true;
-							break;
-						case 1:
-							Ctrl->E.decfile = strdup (p);
-							Ctrl->E.dip_grd_only = false;
-							Ctrl->E.dip_dec_grd = true;
-							break;
-						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR using option -E\n");
-							n_errors++;
-							break;
-					}
-					j++;
-				}
+			case 'E':		/* -Ei<dip_grid> -Ee<dec_grid> */
 				Ctrl->E.active = true;
 				Ctrl->C.use_igrf = false;
+				Ctrl->E.dip_grd_only = true;
+
+				if (opt->arg[0] == 'i')				/* Will fail if old syntax is used and grid name starts with an 'i' */
+					Ctrl->E.dipfile = strdup (&opt->arg[1]);
+				else if (opt->arg[0] == 'd') {		/* Will fail if old syntax is used and grid name starts with an 'd' */
+					Ctrl->E.decfile = strdup (&opt->arg[1]);
+					Ctrl->E.dip_dec_grd = true;
+					Ctrl->E.dip_grd_only = false;
+				}
+				else {		/* Old syntax -E<dip_grd>[/<dec_grd>] */
+					j = 0;
+					while (gmt_strtok (opt->arg, "/", &pos, p)) {
+						switch (j) {
+							case 0:
+								Ctrl->E.dipfile = strdup (p);
+								break;
+							case 1:
+								Ctrl->E.decfile = strdup (p);
+								Ctrl->E.dip_grd_only = false;
+								Ctrl->E.dip_dec_grd = true;
+								break;
+							default:
+								GMT_Report (API, GMT_MSG_NORMAL, "ERROR using option -E\n");
+								n_errors++;
+								break;
+						}
+						j++;
+					}
+				}
 				break;
 			case 'F':
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
