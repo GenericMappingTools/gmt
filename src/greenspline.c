@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
-	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[+f<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -228,7 +228,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, X = (x, y[, z]) is the position vector, V is the gradient vector.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<filename> to save the eigenvalues to this file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <cut> eigenvalues [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <cut> %% of data variance [all].\n");
@@ -408,10 +408,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
 				k = (Ctrl->C.mode) ? 1 : 0;
-				if (strchr (opt->arg, '/')) {
-					char tmp[GMT_BUFSIZ];
-					sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, tmp);
-					Ctrl->C.file = strdup (tmp);
+				if (gmt_get_modifier (opt->arg, 'f', p))
+					Ctrl->C.file = strdup (p);
+				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
+					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
+						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
+						Ctrl->C.file = strdup (p);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|v]<cut>[+<file>]\n");
+						n_errors++;
+					}
 				}
 				else
 					Ctrl->C.value = atof (&opt->arg[k]);

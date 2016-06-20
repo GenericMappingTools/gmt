@@ -15,7 +15,7 @@ Synopsis
 
 **greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
-[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
+[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*] ]
 [ |-D|\ *mode* ]
 [ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -96,14 +96,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*]
+**-C**\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *cut*
     [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly]. Optionally, append /*file* to save the
+    and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalue ratios to the specified file for further analysis.
-    Finally, if a negative *cut* is given then /*file* is required and
+    Finally, if a negative *cut* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cv** to use the
     largest eigenvalues needed to explain *cut* % of the data variance.
@@ -239,7 +239,7 @@ Optional Arguments
 **-W**
    Expect data weights in the final input column, typically given as
    weight = 1 / sigma, the data uncertainty.  This results in a weighted
-   least squares fit.  Note that this only has an effect if **-CC** is used.
+   least squares fit.  Note that this only has an effect if **-C** is used.
 
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].

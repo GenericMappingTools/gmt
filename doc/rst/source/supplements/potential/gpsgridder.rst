@@ -17,7 +17,7 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
+[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*] ]
 [ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
@@ -70,14 +70,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*]
+**-C**\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *cut*
     [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly]. Optionally, append /*file* to save the
+    and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalue ratios to the specified file for further analysis.
-    Finally, if a negative *cut* is given then /*file* is required and
+    Finally, if a negative *cut* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cv** to use the
     largest eigenvalues needed to explain *cut* % of the data variance.
