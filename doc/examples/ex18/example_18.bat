@@ -15,7 +15,7 @@ REM Use spherical projection since SS data define on sphere
 gmt gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %%g
 
 REM Define location of Pratt seamount and the 400 km diameter
-echo -142.65 56.25 400 > pratt.d
+echo -142.65 56.25 400 > pratt.txt
 
 REM First generate gravity image w/ shading, label Pratt, and draw a circle
 REM of radius = 200 km centered on Pratt.
@@ -26,8 +26,8 @@ gmt grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K 
 gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> %ps%
 gmt psscale -DjCB+o0/0.4i+jTC+w4i/0.15i+h -R -J -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> %ps%
 echo {print $1, $2, "Pratt"} > t
-gawk -f t pratt.d | gmt pstext -R -J -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB >> %ps%
-gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> %ps%
+gawk -f t pratt.txt | gmt pstext -R -J -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB >> %ps%
+gmt psxy pratt.txt -R -J -O -K -SE- -Wthinnest >> %ps%
 
 REM Then draw 10 mGal contours and overlay 50 mGal contour in green
 
@@ -36,7 +36,7 @@ REM Save 50 mGal contours to individual files, then plot them
 gmt grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%%d_%%c.txt
 gmt psxy -R -J -O -K -Wthin,green sm_*.txt >> %ps%
 gmt pscoast -R -J -O -K -Di -Ggray -Wthinnest >> %ps%
-gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> %ps%
+gmt psxy pratt.txt -R -J -O -K -SE- -Wthinnest >> %ps%
 REM Only consider closed contours
 del sm_*_O.txt
 
@@ -45,12 +45,12 @@ REM only plot the ones within 200 km of Pratt seamount.
 
 REM First determine mean location of each closed contour
 
-gmt gmtspatial -Q -fg sm_*_C.txt > centers.d
+gmt gmtspatial -Q -fg sm_*_C.txt > centers.txt
 
 REM Only plot the ones within 200 km
 
-gmt gmtselect -C200k/pratt.d centers.d -fg | gmt psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> %ps%
-gmt psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> %ps%
+gmt gmtselect -Cpratt.txt+d200k centers.txt -fg | gmt psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> %ps%
+gmt psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.txt >> %ps%
 
 REM Then report the volume and area of these seamounts only
 REM by masking out data outside the 200 km-radius circle
@@ -75,7 +75,7 @@ del sm_*.txt
 del *_i.nc
 del tmp.nc
 del mask.nc
-del pratt.d
+del pratt.txt
 del center*.*
 del .gmt*
 del gmt.conf

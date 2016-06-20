@@ -215,8 +215,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -253,7 +253,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, Append +p to exclude points projecting beyond a line's endpoints.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information with s or k using 1 of 2 formats:\n");
@@ -275,6 +275,69 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+	int j;
+	bool fix = false;
+	/* Parse older versions of the -C syntax */
+	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+		return 1;
+	}
+	if (arg[0] == 'f') {
+		if (gmt_M_compat_check (API->GMT, 4)) {	/* Allow old-style quick-mode specification */
+			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C<file>+d-<distance> instead\n");
+			arg[0] = '-';
+			fix = true;
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+			return 1;
+		}
+	}
+	for (j = 0; arg[j] && arg[j] != '/'; j++);
+	if (arg[j]) {	/* Found a file name */
+		Ctrl->C.file = strdup (&arg[j+1]);
+		arg[j] = '\0';	/* Chop off the /filename part */
+		Ctrl->C.mode = gmt_get_distance (API->GMT, arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
+		arg[j] = '/';	/* Restore the /filename part */
+	}
+	else {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C<file>+d%s\n", GMT_DIST_OPT);
+		return 1;
+	}
+	if (fix) arg[0] = 'f';	/* Just to leave the original args unaltered */
+	return 0;
+}
+
+GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+	int j, k = 0;
+	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+		return 1;
+	}
+	if (arg[k] == 'p') {	/* Disallow points beyond endpoints */
+		Ctrl->L.end_mode = 10;
+		k++;
+	}
+	for (j = k; arg[j] && arg[j] != '/'; j++);	/* Find the first slash */
+	if (!arg[j]) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+		return 1;
+	}
+	else {
+		if (gmt_check_filearg (API->GMT, 'L', &arg[j+1], GMT_IN, GMT_IS_DATASET))
+			Ctrl->L.file = strdup (&arg[j+1]);
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: No file given\n");
+			return 1;
+		}
+		arg[j] = '\0';	/* Chop off the /filename part */
+		Ctrl->L.mode = gmt_get_distance (API->GMT, &arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
+		arg[j] = '/';	/* Restore the /filename part */
+	}
+	return 0;
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -282,11 +345,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, j, k, col, n_z_alloc = 0;
+	unsigned int n_errors = 0, pos, j, col, n_z_alloc = 0;
 	char ptr[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	bool fix = false;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -301,31 +363,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->A.active = true;
 				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
-			case 'C':	/* Near a point test */
+			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance>  */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'f') {
-					if (gmt_M_compat_check (GMT, 4)) {	/* Allow old-style quick-mode specification */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
-						opt->arg[0] = '-';
-						fix = true;
-					}
-					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
-						n_errors++;
-					}
+				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
+					n_errors += old_C_parse (API, opt->arg, Ctrl);
+					break;
 				}
-				for (j = 0; opt->arg[j] && opt->arg[j] != '/'; j++);
-				if (opt->arg[j]) {	/* Found a file name */
-					Ctrl->C.file = strdup (&opt->arg[j+1]);
-					opt->arg[j] = '\0';	/* Chop off the /filename part */
-					Ctrl->C.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
-					opt->arg[j] = '/';	/* Restore the /filename part */
-				}
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+				/* Here we perform new syntax parsing */
+				c[0] = '\0';	/* Temporarily chop off the modifier */
+				if (opt->arg[0] == 0) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No file given\n");
 					n_errors++;
 				}
-				if (fix) opt->arg[0] = 'f';	/* Just to leave the original args unaltered */
+				else
+					Ctrl->C.file = strdup (opt->arg);
+				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
+				c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -368,27 +421,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					}
 				}
 				break;
-			case 'L':	/* Near a line test */
+			case 'L':	/* Near a line test -L<lfile>+d%s[+p]] */
 				Ctrl->L.active = true;
-				k = 0;
-				if (opt->arg[k] == 'p') {	/* Disallow points beyond endpoints */
-					Ctrl->L.end_mode = 10;
-					k++;
+				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
+					n_errors += old_L_parse (API, opt->arg, Ctrl);
+					break;
 				}
-				for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);	/* Find the first slash */
-				if (!opt->arg[j]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+				/* Here we perform new syntax parsing */
+				/* Here we perform new syntax parsing */
+				c[0] = '\0';	/* Temporarily chop off the modifier */
+				if (opt->arg[0] == 0) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: No file given\n");
 					n_errors++;
 				}
-				else {
-					if (gmt_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN, GMT_IS_DATASET))
-						Ctrl->L.file = strdup (&opt->arg[j+1]);
-					else
-						n_errors++;
-					opt->arg[j] = '\0';	/* Chop off the /filename part */
-					Ctrl->L.mode = gmt_get_distance (GMT, &opt->arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
-					opt->arg[j] = '/';	/* Restore the /filename part */
+				else
+					Ctrl->L.file = strdup (opt->arg);
+				c[0] = '+';	/* Restore the modifier */
+				if (gmt_get_modifier (opt->arg, 'd', buffer)) {
+					Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
 				}
+				if (gmt_get_modifier (opt->arg, 'p', buffer))
+					Ctrl->L.end_mode = 10;
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
 				Ctrl->N.active = true;

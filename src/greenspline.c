@@ -206,7 +206,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
+	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
 	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
@@ -370,14 +370,38 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Gradient data */
+			case 'A':	/* Gradient data: -A<gradientfile>+f<format> */
 				Ctrl->A.active = true;
 				k = 0;
-				if (strchr (opt->arg, ',')) {	/* Specified a particular format with -A<mode>,<file> */
-					Ctrl->A.mode = (int)(opt->arg[0] - '0');
-					k = 2;
+				if (strchr (opt->arg, ',')) {	/* Old syntax: Specified a particular format with -A<mode>,<file> */
+					if (gmt_M_compat_check (API->GMT, 5)) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A<format>,<gradientfile> is deprecated; use -A<gradientfile>+f<format> instead\n");
+						Ctrl->A.mode = (int)(opt->arg[0] - '0');
+						k = 2;
+						Ctrl->A.file = strdup (&opt->arg[k]);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						n_errors++;
+					}
+					break;
 				}
-				Ctrl->A.file = strdup (&opt->arg[k]);
+				/* New syntax */
+				if ((c = strstr (opt->arg, "+f")) == NULL) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						n_errors++;
+				}
+				else {
+					Ctrl->A.mode = (int)(c[2] - '0');
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+					if (opt->arg[0] == 0) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: No file given\n");
+						n_errors++;
+					}
+					else
+						Ctrl->A.file = strdup (opt->arg);
+					c[0] = '+';	/* Restore the modifier */
+				}
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
@@ -575,6 +599,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.mode < 0 || Ctrl->A.mode > 5), "Syntax error -A: format must be in 0-5 range\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 #ifdef DEBUG

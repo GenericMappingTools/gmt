@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **greenspline** [ *table* ]
-[ |-A|\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
+[ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
 [ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
 [ |-D|\ *mode* ]
 [ |-G|\ *grdfile* ]
@@ -74,13 +74,14 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
+**-A**\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**
     The solution will partly be constrained by surface gradients **v** =
     *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
     unit vector direction. The gradient direction may be specified
     either by Cartesian components (either unit vector **n** and
     magnitude *v* separately or gradient components **v** directly) or
-    angles w.r.t. the coordinate axes. Specify one of five input
+    angles w.r.t. the coordinate axes. Append name of ASCII file with
+    the surface gradients.  Use **+f** to select one of five input
     formats: **0**: For 1-D data there is no direction, just gradient
     magnitude (slope) so the input format is *x*, *gradient*. Options
     1-2 are for 2-D data sets: **1**: records contain *x*, *y*,
@@ -91,9 +92,7 @@ Optional Arguments
     or 3-D data: **3**: records contain **x**, *direction(s)*, *v*
     (*direction(s)* in degrees are measured counter-clockwise from the
     horizontal (and for 3-D the vertical axis). **4**: records contain
-    **x**, **v**. **5**: records contain **x**, **n**, *v*. Append name
-    of ASCII file with the surface gradients (following a comma if a
-    format is specified).
+    **x**, **v**. **5**: records contain **x**, **n**, *v*. 
 
 .. _-C:
 
@@ -317,13 +316,13 @@ of the surface slope in the NW direction, try
     gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
 
 Finally, to use Cartesian minimum curvature splines in recovering a
-surface where the input data is a single surface value (pt.d) and the
+surface where the input data is a single surface value (pt.txt) and the
 remaining constraints specify only the surface slope and direction
-(slopes.d), use
+(slopes.txt), use
 
    ::
 
-    gmt greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
+    gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -Aslopes.txt+f1 -Gslopes.nc
 
 3-d Examples
 ------------
@@ -340,17 +339,17 @@ a measure of uranium oxide concentrations (in percent), try
 ------------------------------
 
 To recreate Parker's [1994] example on a global 1x1 degree grid,
-assuming the data are in file mag_obs_1990.d, try
+assuming the data are in file mag_obs_1990.txt, try
 
    ::
 
-    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag_obs_1990.d
+    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag_obs_1990.txt
 
 To do the same problem but applying tension of 0.85, use
 
    ::
 
-    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag_obs_1990.d
+    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag_obs_1990.txt
 
 Considerations
 --------------

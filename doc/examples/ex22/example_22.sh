@@ -12,18 +12,18 @@ gmt gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 # Get the data (-q quietly) from USGS using the wget (comment out in case
 # your system does not have wget or curl)
 
-#wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.d
-#curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes.d
+#wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.txt
+#curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes.txt
 
 # Count the number of events (to be used in title later. one less due to header)
 
-n=`cat neic_quakes.d | wc -l`
+n=`cat neic_quakes.txt | wc -l`
 n=`expr $n - 1`
 
 # Pull out the first and last timestamp to use in legend title
 
-first=`sed -n 2p neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
-last=`sed -n '$p' neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
+first=`sed -n 2p neic_quakes.txt | $AWK -F, '{printf "%s %s\n", $1, $2}'`
+last=`sed -n '$p' neic_quakes.txt | $AWK -F, '{printf "%s %s\n", $1, $2}'`
 
 # Assign a string that contains the current user @ the current computer node.
 # Note that two @@ is needed to print a single @ in gmt pstext:
@@ -43,7 +43,7 @@ END
 
 gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue \
 	-Dc -A1000 -K -Y2.75i > $ps
-$AWK -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
+$AWK -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.txt \
 	| gmt psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
 # Create legend input file for NEIS quake plot
 

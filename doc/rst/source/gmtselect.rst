@@ -15,12 +15,12 @@ Synopsis
 
 **gmtselect** [ *table* ]
 [ |-A|\ *min\_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
-[ |-C|\ *dist*\ [*unit*]/\ *ptfile* ]
+[ |-C|\ *pointfile*\ **+d**\ *dist*\ [*unit*] ]
 [ |-D|\ *resolution*\ [**+**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
 [ |-J|\ *parameters* ]
-[ |-L|\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
+[ |-L|\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |-Z|\ *min*\ [/*max*]\ [**+c**\ *col*] ]
@@ -44,7 +44,7 @@ from the first 2 columns of *infiles* [or standard input] and uses a
 combination of 1-6 criteria to pass or reject the records. Records can
 be selected based on whether or not they are 1) inside a rectangular
 region (**-R** [and **-J**]), 2) within *dist* km of any point in
-*ptfile*, 3) within *dist* km of any line in *linefile*, 4) inside one
+*pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one
 of the polygons in the *polygonfile*, 5) inside geographical features
 (based on coastlines), or 6) has z-values within a given range. The
 sense of the tests can be reversed for each of these 6 criteria by using
@@ -69,10 +69,10 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *dist*\ [*unit*]/\ *ptfile*
+**-C**\ *pointfile*\ **+d**\ *dist*\ [*unit*]
     Pass all records whose location is within *dist* of any of the
-    points in the ASCII file *ptfile*. If *dist* is zero then the 3rd
-    column of *ptfile* must have each point's individual radius of
+    points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
+    column of *pointfile* must have each point's individual radius of
     influence. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances and append a distance unit
     (see UNITS). Alternatively, if **-R** and **-J** are used then
@@ -135,17 +135,17 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile*
+**-L**\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**]
     Pass all records whose location is within *dist* of any of the line
     segments in the ASCII multiple-segment file *linefile*. If *dist* is
-    zero then we will scan each sub-header in the *ptfile* for an
+    zero then we will scan each sub-header in the *linefile* for an
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
     UNITS). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
-    distances are compared to *dist*. Use **-Lp** to ensure only points
+    distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
     line's endpoints.
@@ -261,35 +261,35 @@ Examples
 --------
 
 To extract the subset of data set that is within 300 km of any of the
-points in pts.d but more than 100 km away from the lines in lines.d, run
+points in pts.txt but more than 100 km away from the lines in lines.txt, run
 
    ::
 
-    gmt select lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+    gmt select lonlatfile -fg -Cpts.txt+d300k -Llines.txt+d100k -Il > subset
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
 
-To keep all points in data.d within the specified region, except the
+To keep all points in data.txt within the specified region, except the
 points on land (as determined by the high-resolution coastlines), use
 
    ::
 
-    gmt select data.d -R120/121/22/24 -Dh -Nk/s > subset
+    gmt select data.txt -R120/121/22/24 -Dh -Nk/s > subset
 
-To return all points in quakes.d that are inside or on the spherical
-polygon lonlatpath.d, try
-
-   ::
-
-    gmt select quakes.d -Flonlatpath.d -fg > subset1
-
-To return all points in stations.d that are within 5 cm of the point in
-origin.d for a certain projection, try
+To return all points in quakes.txt that are inside or on the spherical
+polygon lonlatpath.txt, try
 
    ::
 
-    gmt select stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
+    gmt select quakes.txt -Flonlatpath.txt -fg > subset1
+
+To return all points in stations.txt that are within 5 cm of the point in
+origin.txt for a certain projection, try
+
+   ::
+
+    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c \
     --PROJ_LENGTH_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_
