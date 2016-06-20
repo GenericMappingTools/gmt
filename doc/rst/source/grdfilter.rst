@@ -79,8 +79,9 @@ Required Arguments
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
-    for a rectangular filter (requires **-Dp** or **-D0**).  Some filters
-    allow for optional arguments and modifiers.
+    for a rectangular filter (requires **-Dp** or **-D0**).  By default we
+    perform low-pass filtering; append **+h** to select high-pass filtering.
+    Some filters allow for optional arguments and modifiers.
 
     Convolution filters (and their codes) are:
 
@@ -208,7 +209,7 @@ can compute the residuals, e.g.,
 
    ::
 
-    gmt grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 \
+    gmt grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm600+h \
                   -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual_pacific.nc grid will have the same 5 minute

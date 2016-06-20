@@ -470,7 +470,7 @@ GMT_LOCAL bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DA
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A[-]<ftable>[+s]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
@@ -504,8 +504,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t-A Set up and solve a linear system A x = b, and return vector x.\n"
 		"\t   Requires -N and initializes extended matrix [A | b] from <ftable> holding t and f(t) only.\n"
 		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1 (i.e., r.h.s. vector b).\n"
-		"\t   Use -A-<ftable> to only place f(t) in b and leave A initialized to zeros.\n"
 		"\t   No additional data files are read.  Output will be a single column with coefficients.\n"
+		"\t   Append +r to only place f(t) in b and leave A initialized to zeros.\n"
 		"\t   Append +w if 3rd column contains weights and +s if 3rd column contains 1-sigmas.\n"
 		"\t   Append +e to evaluate solution and write t, f(t), the solution, residuals[, weight|sigma].\n"
 		"\t   Use either LSQFIT or SVDFIT to solve the [weighted] linear system.\n"
@@ -570,11 +570,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				Ctrl->A.active = true;	k = 0;
-				if (opt->arg[0] == '-') {
-					Ctrl->A.null = true;
-					k = 1;
+				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
+					if (gmt_M_compat_check (GMT, 5)) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
+						Ctrl->A.null = true;
+						k = 1;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -A\n");
+						n_errors++;
+					}
 				}
-				if ((c = strchr(opt->arg, '+')) != NULL && strchr("esw", c[1]) != NULL) {	/* Got a valid modifier */
+				if ((c = strchr(opt->arg, '+')) != NULL && strchr("ersw", c[1]) != NULL) {	/* Got a valid modifier */
 					unsigned int pos = 0;
 					char p[GMT_LEN256] = {""};
 					c[0] = '\0';	/* Temporarily chop off modifiers */
@@ -583,6 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					while (gmt_strtok (c, "+", &pos, p)) {
 						switch (p[0]) {
 							case 'e': Ctrl->A.e_mode = GMTMATH_EVALUATE; break;	/* Evaluate solution */
+							case 'r': Ctrl->A.null = true; break;	/* Only set rhs of equation */
 							case 's': Ctrl->A.w_mode = GMTMATH_SIGMAS;   break;	/* Got t,y,s */
 							case 'w': Ctrl->A.w_mode = GMTMATH_WEIGHTS;  break;	/* Got t,y,w */
 							default: n_errors++;	break;

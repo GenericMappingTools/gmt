@@ -535,7 +535,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type><filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]%s\n\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -556,7 +556,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the low-pass filter type and full diameter (6 sigma) filter-width.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose between convolution-type filters which differ in how weights are assigned\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and geospatial filters that seek to return a representative value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative filter width to select high-pass filtering [low-pass].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h select high-pass filtering [Default is low-pass filtering].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : a simple averaging of all points inside filter domain.\n");
@@ -711,7 +711,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					}
 					else
 						Ctrl->F.width = atof (&txt[1]);
-					if (Ctrl->F.width < 0.0) Ctrl->F.highpass = true;
+					if ((p = strstr (b, "+h"))) Ctrl->F.highpass = true;
+					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
+						if (gmt_M_compat_check (GMT, 5)) { 
+							GMT_Report (API, GMT_MSG_COMPAT,
+							            "Warning: Negative filterwidth for highpass-filtering is deprecated; +h was added instead, use this in the future.\n", opt->arg);
+							Ctrl->F.highpass = true;
+						}
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Filter width cannot be negative\n");
+							n_errors++;
+						}
+					}
 					Ctrl->F.width = fabs (Ctrl->F.width);
 					if (Ctrl->F.filter == 'h' || Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
 						c = opt->arg[strlen(txt)-1];

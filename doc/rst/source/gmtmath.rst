@@ -71,11 +71,12 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**]
+**-A**\ *t_f(t).d*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
-    (see **-N**).  If used with operators LSQFIT and SVDFIT you can
+    (see **-N**).  Append **+r** to only place *f(t)* and leave the left
+    hand side of the matrix equation alone.  If used with operators LSQFIT and SVDFIT you can
     optionally append the modifier **+e** which will instead evaluate
     the solution and write a data set with four columns: t, f(t), the
     model solution at t, and the the residuals at t, respectively
