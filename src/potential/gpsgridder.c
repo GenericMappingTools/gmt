@@ -449,7 +449,7 @@ GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], dou
 	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
 	G[0] += c2 * dy2 * dr2;
 	G[1] += c2 * dx2 * dr2;
-	G[2]  = c2 * dx * dy * dr2;
+	G[2]  = -c2 * dx * dy * dr2;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
