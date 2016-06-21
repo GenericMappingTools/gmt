@@ -15,7 +15,7 @@ Synopsis
 
 **psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [*mode_file*] ]
+[ |-C|\ **m**\ \|\ *mode_file* ]
 [ |-D| ]
 [ |-G|\ *fill* ] [ |-I| ] [ |-K| ]
 [ |-L|\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ]
@@ -81,10 +81,10 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*mode_file*]
-    Plot vectors showing the principal directions given in the *modes*
-    file. If no file is given, compute and plot mean direction. See
-    **-M** to control vector attributes.
+**-C**\ **m**\ \|\ *mode_file*
+    Plot vectors showing the principal directions given in the *mode_file*
+    file. Alternatively, specify **-Cm** to compute and plot mean direction. See
+    **-M** to control the vector attributes.
 
 .. _-D:
 
@@ -225,7 +225,7 @@ azimuth, and shown in Portrait orientation, use:
 
     gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
                -Byg30 -B+t"Rose diagram"-S3i -Ar10 -Glightblue
-               -W0.75p,red -Z0.001 -C -P -T -: > half_rose.ps
+               -W0.75p,red -Z0.001 -Cm -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of radius = 5 cm, grid going out to radius =

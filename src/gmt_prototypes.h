@@ -321,6 +321,7 @@ EXTERN_MSC double gmt_pol_area (double x[], double y[], uint64_t n);
 EXTERN_MSC void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor);
 EXTERN_MSC unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S);
 EXTERN_MSC void gmt_symbol_free (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
+EXTERN_MSC char * gmt_get_filename (char *string);
 
 /* gmt_calclock.c: */
 

@@ -13531,6 +13531,15 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	return 0;
 }
 
+char * gmt_get_filename (char *string) {
+	/* Extract the filename from a string like <filename+<modifier> */
+	char *file = NULL, *c = strchr (string, '+');
+	c[0] = '\0';	/* Temporarily chop off the modifier */
+	file = strdup (string);
+	c[0] = '+';	/* Restore the modifier */
+	return (file);
+}
+
 char * gmt_memory_use (size_t bytes) {
 	/* Format the given bytes in terms of kb, Mb, or Gb, or Tb */
 	static char mem_report[GMT_LEN32] = {""};

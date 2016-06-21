@@ -370,15 +370,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					break;
 				}
 				/* Here we perform new syntax parsing */
-				c[0] = '\0';	/* Temporarily chop off the modifier */
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: No file given\n");
 					n_errors++;
 				}
 				else
-					Ctrl->C.file = strdup (opt->arg);
+					Ctrl->C.file = gmt_get_filename (opt->arg);
 				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
-				c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -428,15 +426,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					break;
 				}
 				/* Here we perform new syntax parsing */
-				/* Here we perform new syntax parsing */
-				c[0] = '\0';	/* Temporarily chop off the modifier */
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: No file given\n");
 					n_errors++;
 				}
 				else
-					Ctrl->L.file = strdup (opt->arg);
-				c[0] = '+';	/* Restore the modifier */
+					Ctrl->L.file = gmt_get_filename (opt->arg);
 				if (gmt_get_modifier (opt->arg, 'd', buffer)) {
 					Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
 				}

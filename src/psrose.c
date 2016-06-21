@@ -46,8 +46,9 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		bool rose;
 		double inc;
 	} A;
-	struct C {	/* -C[<modefile>] */
+	struct C {	/* -Cm|<modefile> */
 		bool active;
+		bool mean;
 		char *file;
 	} C;
 	struct D {	/* -D */
@@ -127,7 +128,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|<modefile>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
@@ -141,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
 	GMT_Option (API, "B-");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modefile> file.  To use mean direction, choose -Cm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
@@ -209,8 +210,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
-				gmt_M_str_free (Ctrl->C.file);
-				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if ((opt->arg[0] == 'm' && opt->arg[1] == '\0') || (API->mode == 0 && opt->arg[0] == '\0'))
+					Ctrl->C.mean = true;
+				else {
+					gmt_M_str_free (Ctrl->C.file);
+					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				}
 				break;
 			case 'D':	/* Center the bins */
 				Ctrl->D.active = true;
@@ -336,8 +341,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psrose (void *V_API, int mode, void *args) {
-	bool find_mean = false, do_fill = false;
-	bool automatic = false, sector_plot = false, windrose = true;
+	bool do_fill = false, automatic = false, sector_plot = false, windrose = true;
 	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;
 	int error = 0, k, n_annot, n_alpha, sbin;
 
@@ -708,8 +712,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {
 		unsigned int this_mode;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
-		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
-			find_mean = true;
+		if (Ctrl->C.mean) {	/* Not given, calculate and use mean direction only */
 			n_modes = 1;
 			mode_direction = gmt_M_memory (GMT, NULL, 1, double);
 			mode_length = gmt_M_memory (GMT, NULL, 1, double);
@@ -881,7 +884,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, azimuth);
 	gmt_M_free (GMT, length);
 	if (Ctrl->C.active) {
-		if (find_mean) {
+		if (Ctrl->C.mean) {
 			gmt_M_free (GMT, mode_length);
 			gmt_M_free (GMT, mode_direction);
 		}

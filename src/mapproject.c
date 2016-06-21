@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[-|+][<lon0>/<lat0>/][<unit>][+|-]", GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[w|h]] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT);
+	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<ltable>[+u[+|-]<unit>][+p] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[w|h]] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -188,12 +188,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u<unit> as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is spherical great-circle calculations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to get line segment id and fractional point number instead of lon/lat.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
@@ -214,6 +214,26 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL void old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+	/* [-L<ltable>[/[+|-]<unit>]][+] */
+	int k, slash;
+	Ctrl->L.file = strdup (arg);
+	k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
+	if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
+		Ctrl->L.mode = GMT_MP_GIVE_FRAC;
+		Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */
+		k--;	/* Now points to unit */
+	}
+	for (slash = k; slash && Ctrl->L.file[slash] != '/'; slash--);	/* Find location of optional slash */
+	if (slash && ((k - slash) < 3)) {	/* User appended /[+|-]<unit>[+].  (k-slash) should be either 1 or 2 unless we are confused by files with subdirs */
+		Ctrl->L.unit = Ctrl->L.file[k];
+		k--;	/* Now points to either / or the optional -/+ mode setting */
+		Ctrl->L.sph = GMT_GREATCIRCLE;	/* Great circle distances */
+		if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
+		Ctrl->L.file[slash] = '\0';
+	}
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -221,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_slash,k, n_errors = 0, slash;
+	unsigned int n_slash, k, n_errors = 0;
 	int n;
 	size_t last;
 	bool geodetic_calc = false,  g_dist = false;
@@ -333,25 +353,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'I':
 				Ctrl->I.active = true;
 				break;
-			case 'L':	/* [-L<line.xy>[/[+|-]<unit>]][+] */
+			case 'L':	/* -L<ltable>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
-				k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
-				if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
-					Ctrl->L.mode = GMT_MP_GIVE_FRAC;
-					Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */
-					k--;	/* Now points to unit */
+				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p")))
+					old_L_parse (API, opt->arg, Ctrl);
+				else {
+					Ctrl->L.file = gmt_get_filename (opt->arg);
+					if (gmt_get_modifier (opt->arg, 'u', txt_a)) {
+						Ctrl->L.sph = GMT_GREATCIRCLE;	/* Default is great circle distances */
+						k = 0;
+						switch (txt_a[0]) {
+							case '-': Ctrl->L.sph = GMT_FLATEARTH;	k = 1; break;
+							case '+': Ctrl->L.sph = GMT_GEODESIC;	k = 1; break;
+						}
+						Ctrl->L.unit = txt_a[k];
+					}
+					if (gmt_get_modifier (opt->arg, 'p', txt_a))
+						Ctrl->L.mode = GMT_MP_GIVE_FRAC;
 				}
-				for (slash = k; slash && Ctrl->L.file[slash] != '/'; slash--);	/* Find location of optional slash */
-				if (slash && ((k - slash) < 3)) {	/* User appended /[+|-]<unit>[+].  (k-slash) should be either 1 or 2 unless we are confused by files with subdirs */
-					Ctrl->L.unit = Ctrl->L.file[k];
-					k--;	/* Now points to either / or the optional -/+ mode setting */
-					Ctrl->L.sph = GMT_GREATCIRCLE;	/* Great circle distances */
-					if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
-					Ctrl->L.file[slash] = '\0';
-					n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
-					                                 "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
-				}
+				/* Check settings */
+				n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
+				            "Syntax error: Expected -L<file>[+u[-|+]%s|c|C][+p]\n", GMT_LEN_UNITS_DISPLAY);
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !gmt_M_is_geographic (GMT, GMT_IN))
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
