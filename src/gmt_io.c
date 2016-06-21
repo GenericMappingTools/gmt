@@ -4965,6 +4965,23 @@ void gmt_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t
 }
 
 /*! . */
+void gmt_cat_to_record (struct GMT_CTRL *GMT, char *record, char *word, unsigned int way, unsigned int sep) {
+	/* appends val to the record text string; way is GMT_IN|GMT_OUT
+	 * If sep is 1 we prepend col separator.
+	 * If sep is 2 we append col separator
+	 * If sep is 1|2 do both [0 means no separator].
+	 * if sep > 10 we init record then remove 10 from sep.
+	 */
+	if (sep >= 10) {	/* Initialize new record */
+		record[0] = '\0';
+		sep -= 10;
+	}
+	if (sep & 1) strcat (record, GMT->current.setting.io_col_separator);
+	strcat (record, word);
+	if (sep & 2) strcat (record, GMT->current.setting.io_col_separator);
+}
+
+/*! . */
 void gmt_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 	/* Output ASCII or binary segment header.
 	 * ASCII header is expected to contain newline (\n) */

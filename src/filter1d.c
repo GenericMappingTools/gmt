@@ -531,9 +531,10 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	uint64_t iq, i_col, diff;
 	int64_t i_f_wt;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
-	double t_time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
+	double t_time, delta_time, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
+	double *outval = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
 	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);

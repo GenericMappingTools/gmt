@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
-#define THIS_MODULE_KEYS	">D},RG-"
+#define THIS_MODULE_KEYS	">?},RG-"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -189,7 +189,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       tz :   Time zone adjustment in hours (-13 to +12).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     lon:     Longitude (formatted according to FORMAT_GEO_OUT).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     lat:     Latitude (formatted according to FORMAT_GEO_OUT).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     id:      Survey leg ID [TEXTSTRING].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     id:      Survey leg ID [string_output].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     recno:   Record number.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   >Derived navigational information:\n");
@@ -717,12 +717,16 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
+	int sep_flag;
 	
 	unsigned int select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
-	unsigned int kk, ku, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
+	unsigned int kk, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
 	
 	uint64_t rec, prevrec;
 	
+	enum GMT_enum_family family;
+	enum GMT_enum_geometry geometry;
+
 	bool negative_depth = false, negative_msd = false, need_distances, need_time;
 	bool string_output = false, need_depth = false, PDR_wrap, has_prev_twt = false;
 	bool need_lonlat = false, first_cruise = true, need_twt = false, this_limit_on_time;
@@ -730,7 +734,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	bool first_time_on_sensor_offset = true;
 	
 	char fx_setting[GMT_BUFSIZ] = {""}, **list = NULL, **item_names = NULL;
-	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
+	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX], record[GMT_BUFSIZ] = {""}, word[GMT_LEN32] = {""};
 	
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, this_cc;
 	double dist_scale, vel_scale, ds, ds0 = 0.0, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
@@ -972,6 +976,21 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, M.desired_column, 2, &CORR);
 	}
 	if (n_paths > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
+	
+	if (strstr (Ctrl->F.flags, "id") || strstr (Ctrl->F.flags, "ngdcid") || strstr (Ctrl->F.flags, "sln")
+	    || strstr (Ctrl->F.flags, "sspn") || strstr (Ctrl->F.flags, "date") || strstr (Ctrl->F.flags, "recno"))
+		string_output = true;
+
+	family = (string_output) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
+	
+	geometry = (string_output) ? GMT_IS_NONE : GMT_IS_POINT;
+	if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	if (!string_output) gmt_set_cols (GMT, GMT_OUT, n_out_columns);
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
 	
@@ -1044,27 +1063,27 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 		
 		if (first_cruise && !GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
-			fprintf (GMT->session.std[GMT_OUT], "# ");
-			for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
+			for (kk = kx = pos = 0, sep_flag = 10; pos < n_out_columns; kk++, pos++) {
 				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
-					fprintf (GMT->session.std[GMT_OUT], "%s", auxlist[aux[kx].type].header);
-					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+					gmt_cat_to_record (GMT, record, auxlist[aux[kx].type].header, GMT_OUT, sep_flag);
 					pos++, kx++;
+					sep_flag = 1;
 				}
 				if (kk >= n_cols_to_process) continue;
 				c  = M.order[kk].set;
 				id = M.order[kk].item;
-				fprintf (GMT->session.std[GMT_OUT], "%7s", D->H.info[c].col[id].abbrev);
-				if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+				gmt_cat_to_record (GMT, record, auxlist[aux[kx].type].header, GMT_OUT, sep_flag);
+				sprintf (word, "%7s", D->H.info[c].col[id].abbrev);
+				gmt_cat_to_record (GMT, record, word, GMT_OUT, sep_flag);
+				sep_flag = 1;
 			}
-			fprintf (GMT->session.std[GMT_OUT], "\n");
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		}
 		first_cruise = false;
 
-		if (n_paths > 1) {	/* Write segment header between each cruise */
-			sprintf (GMT->current.io.segment_header, "%s", list[argno]);
-			gmt_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
-		}
+		if (n_paths > 1)	/* Write segment header between each cruise */
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, list[argno]);
+
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;
 		if (auxlist[MGD77_AUX_ID].requested) strncpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id, GMT_LEN64);
 	
@@ -1438,20 +1457,24 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (negative_msd) dvalue[m_col][rec] = -dvalue[m_col][rec];
 			
 			if (string_output) {	/* Must do it col by col and deal with the requested string(s) */
-				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
+				record[0] = 0;	/* Start with blank record */
+				for (kk = kx = pos = 0, sep_flag = 10; pos < n_out_columns; kk++, pos++) {
 					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
 						if (aux[kx].text)
-							fprintf (GMT->session.std[GMT_OUT], "%s", aux_tvalue[aux[kx].type]);
+							gmt_cat_to_record (GMT, record, aux_tvalue[aux[kx].type], GMT_OUT, sep_flag);	/* Format our output x value */
 						else
-							gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], aux_dvalue[aux[kx].type], pos);
-						if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+							gmt_add_to_record (GMT, record, aux_dvalue[aux[kx].type], pos, GMT_OUT, sep_flag);	/* Format our output x value */
+						sep_flag = 1;
 						kx++, pos++;
 					}
 					if (kk >= n_cols_to_process) continue;
 					c  = M.order[kk].set;
 					id = M.order[kk].item;
-					if (D->H.info[c].col[id].text)
-						for (ku = 0; ku < D->H.info[c].col[id].text && tvalue[kk][rec*D->H.info[c].col[id].text+ku]; ku++) fputc ((int)tvalue[kk][rec*D->H.info[c].col[id].text+ku], GMT->session.std[GMT_OUT]);
+					if (D->H.info[c].col[id].text) {
+						strncpy (word, &tvalue[kk][rec*D->H.info[c].col[id].text], D->H.info[c].col[id].text);
+						word[D->H.info[c].col[id].text] = 0;
+						gmt_cat_to_record (GMT, record, word, GMT_OUT, sep_flag);	/* Format our output x value */
+					}
 					else if (c == MGD77_M77_SET && id == time_column) {	/* Time */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
@@ -1463,15 +1486,15 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 							date = MGD77_utime2time (GMT, &M, dvalue[t_col][rec]);
 						else
 							date = dvalue[t_col][rec];
-						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], date, pos);
+						gmt_add_to_record (GMT, record, date, pos, GMT_OUT, sep_flag);	/* Format our output time value */
 					}
 					else {
 						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][kk].term, dvalue, aux_dvalue, rec) : 0.0;
-						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[kk][rec] - correction, pos);
+						gmt_add_to_record (GMT, record, dvalue[kk][rec] - correction, pos, GMT_OUT, sep_flag);	/* Format our output time value */
 					}
-					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+					sep_flag = 1;
 				}
-				fprintf (GMT->session.std[GMT_OUT], "\n");
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}
 			else {	/* Use GMT output machinery which can handle binary output, if requested */
 				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
@@ -1500,7 +1523,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						out[pos] = dvalue[kk][rec] - correction;
 					}
 				}
-				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n_out++;
 		}
@@ -1515,6 +1538,10 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		n_cruises++;
 	}
 	
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
+		Return (API->error);
+	}
+
 	if (!string_output) gmt_M_free (GMT, out);
 	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_ID]);
 	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_DA]);

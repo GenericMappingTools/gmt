@@ -8322,7 +8322,15 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			|| (opt = GMT_Find_Option (API, 'Q', *head)) || (opt = GMT_Find_Option (API, 'S', *head))))
 				deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
-	
+	/* 1f. Check if this is the mgd77list module, which writes text or data depending on -F choices */
+	if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
+		/* Found the -F option, check if any strings are requested */
+		type = 'D';	/* Default is dataset output unless any of the below were requested */
+		if (strstr (opt->arg, "all") || strstr (opt->arg, "mgd77") || strstr (opt->arg, "id") || strstr (opt->arg, "ngdcid")
+		    || strstr (opt->arg, "sln") || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
+			type = 'T';
+	}
+
 	gmt_M_str_free (module);
 
 	/* 2a. Get the option key array for this module */
