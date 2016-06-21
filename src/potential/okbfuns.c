@@ -191,38 +191,36 @@ GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z) {
 
 /* ---------------------------------------------------------------------- */
 GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
-			double c_tet, double s_tet, double c_phi, double s_phi) {
+	                      double c_tet, double s_tet, double c_phi, double s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
 	unsigned int i;
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
-	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
+	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, tg_psi, auxil;
 
 	mag_fac = s_phi * (okabe_mag_param[pm].rim[0] * c_tet + okabe_mag_param[pm].rim[1] * s_tet) +
-				   okabe_mag_param[pm].rim[2] * c_phi;
+	          c_phi * okabe_mag_param[pm].rim[2];
 
 	if (fabs(mag_fac) < FLT_EPSILON) return 0.0;
 
 	kx = okabe_mag_var[km].rk[0];	ky = okabe_mag_var[km].rk[1];	kz = okabe_mag_var[km].rk[2];
-	v = kx * c_tet + ky * s_tet;
-	mx = v * c_phi - kz * s_phi;	my = ky * c_tet - kx * s_tet;
-	mz = v * s_phi + kz * c_phi;
+	v  = kx * c_tet + ky * s_tet;
+	mx = v * c_phi - kz * s_phi;	my = ky * c_tet - kx * s_tet;	mz = v * s_phi + kz * c_phi;
 
 	for (i = 0; i < n_vert; i++) {
 		xi = loc_or[i].x;	xi1 = loc_or[i+1].x;
 		yi = loc_or[i].y;	yi1 = loc_or[i+1].y;
 		dx = xi1 - xi;	dy = yi1 - yi;
-		r = sqrt(dx*dx + dy*dy);
-		r_1 = 1. / r;
+		r  = sqrt(dx*dx + dy*dy);
 		if (r > FLT_EPSILON) {
-			c_psi = dx * r_1;	s_psi = dy * r_1;
+			c_psi  = dx / r;		s_psi = dy / r;
 			tg_psi = dy / dx;
-			auxil = my * c_psi - mx * s_psi;
-			qsi1 = yi * s_psi + xi * c_psi;	qsi2 = yi1 * s_psi + xi1 * c_psi;
-			eta1 = yi * c_psi - xi * s_psi;	eta2 = yi1 * c_psi - xi1 * s_psi;
-			z1 = loc_or[i].z;	z2 = loc_or[i+1].z;
-			ano_p = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) -
-			        eq_43(mz, c_psi, tg_psi, auxil, qsi1, eta1, z1);
+			auxil  = my * c_psi - mx * s_psi;
+			qsi1   = yi * s_psi + xi * c_psi;	qsi2 = yi1 * s_psi + xi1 * c_psi;
+			eta1   = yi * c_psi - xi * s_psi;	eta2 = yi1 * c_psi - xi1 * s_psi;
+			z1     = loc_or[i].z;	z2 = loc_or[i+1].z;
+			ano_p  = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) -
+			         eq_43(mz, c_psi, tg_psi, auxil, qsi1, eta1, z1);
 		}
 		else
 			ano_p = 0;
