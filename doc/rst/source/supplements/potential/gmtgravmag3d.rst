@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** |-T|\ **d**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
+**gmtgravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-Tv|\ *vert_file* OR |Tr|**\|s**\ *raw_file*
 [ |-C|\ *density* ]
 [ |-D| ]
 [ |-E|\ *thickness* ]
@@ -70,8 +70,8 @@ Required Arguments
 
 .. _-T:
 
-**-Td**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
-    Gives names of xyz (**-Td**\ *xyz_file*\ [**+m**]) and vertex (**-Tv**\ *vert_file*) files defining a close surface.
+**-Tp**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
+    Gives names of xyz (**-Tp**\ *xyz_file*\ [**+m**]) and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
     The optional **+m** flag to **-Td** instructs the program that the xyzm file
     has four columns and that the fourth column contains the magnetization intensity (plus signal),
