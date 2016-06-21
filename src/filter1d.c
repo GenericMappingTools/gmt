@@ -59,6 +59,7 @@ struct FILTER1D_CTRL {
 	} E;
 	struct F {	/* -F<type><width>[<mode>] */
 		bool active;
+		bool highpass;
 		char filter;	/* Character codes for the filter */
 		double width;
 		int mode;	/* -1/0/+1 */
@@ -112,6 +113,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	bool equidist;		/* Data is evenly sampled in t */
 	bool out_at_time;		/* true when output is required at evenly spaced intervals */
 	bool f_operator;		/* true if custom weights coefficients sum to zero */
+	bool highpass;		/* true if we are doing a highpass filter */
 
 	uint64_t *n_this_col;		/* Pointer to array of counters [one per column]  */
 	uint64_t *n_left;		/* Pointer to array of counters [one per column]  */
@@ -175,7 +177,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>][+h] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -184,6 +186,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and append filter <width> in same units as time column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is a low-pass filter; append +h for a high-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : Weights are equal.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weights given by cosine arch.\n");
@@ -260,6 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.filter = opt->arg[0];
 					Ctrl->F.width = atof (&opt->arg[1]);
+					if (gmt_get_modifier (opt->arg, 'h', txt_a)) Ctrl->F.highpass = true;
 					switch (Ctrl->F.filter) {	/* Get some futher info from some filters */
 						case 'P':
 						case 'p':
@@ -633,7 +637,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				if (i_col == F->t_col)
 					data_sum[i_col] = t_time;
 				else if (good_one[i_col]) {
-					data_sum[i_col] = F->this_loc[i_col];
+					data_sum[i_col] = (F->highpass) ? F->data[i_col][i_t_output] - F->this_loc[i_col] : F->this_loc[i_col];
 					++n_good_ones;
 				}
 				else
@@ -696,8 +700,10 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
 						outval[i_col] = t_time;
-					else if (good_one[i_col])
+					else if (good_one[i_col]) {
 						outval[i_col] = (F->f_operator) ? data_sum[i_col] : data_sum[i_col] / wt_sum[i_col];
+						if (F->highpass) outval[i_col] = F->data[i_col][i_t_output] - outval[i_col];
+					}
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
@@ -787,6 +793,7 @@ GMT_LOCAL void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1
 	F->t_stop_t = F->t_stop = Ctrl->T.max;
 	F->t_int =Ctrl->T.inc;
 	F->out_at_time = Ctrl->T.active;
+	F->highpass = Ctrl->F.highpass;
 }
 
 /* Must free allocated memory before returning */

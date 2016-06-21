@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**filter1d** [ *table* ] |-F|\ *type<width>*\ [*mode*]
+**filter1d** [ *table* ] |-F|\ *type<width>*\ [*mode*][**+h**]
 [ |-D|\ *increment* ] [ |-E| ] [ |-I|\ *ignore\_val* ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+**] ]
@@ -44,7 +44,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ *type<width>*\ [*mode*]
+**-F**\ *type<width>*\ [*mode*][**+h**]
     Sets the filter *type*. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *<width>* in same units as time column. Available convolution
@@ -82,6 +82,9 @@ Required Arguments
 
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
+
+    By default we perform low-pass filtering; append **+h** to instead
+    perform high-pass filtering.
 
 Optional Arguments
 ------------------
