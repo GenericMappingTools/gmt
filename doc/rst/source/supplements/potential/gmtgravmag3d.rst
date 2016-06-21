@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** |-T|\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*
+**gmtgravmag3d** |-T|\ **d**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
 [ |-C|\ *density* ]
 [ |-D| ]
 [ |-E|\ *thickness* ]
@@ -70,23 +70,16 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
-    Give either names of xyz[m] and *vertex* files or of a *raw* or
-    *stl* file defining a close surface. In the first case append a *d*
-    immediately after **-T** and optionally a */m* after the vertex file
-    name. In the second case append a *r* or a *s* immediately after
-    **-T** and before the file name. A *vertex* file is a file with N
-    rows (one per triangle) and 3 columns with integers defining the
-    order by which the points in the *xyz* file are to be connected to
-    form a triangle. The output of the program triangulate comes in this
-    format. The optional */m* instructs the program that the xyzm file
-    has four columns and that the fourth column contains the
-    magnetization intensity (plus signal), which needs not to be
-    constant. In this case the third argument of the **-H** option is
-    ignored. A *raw* format (selected by the **r** flag is a file with N
+**-Td**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
+    Gives names of xyz (**-Td**\ *fname*\ [**+m**]) and vertex (**-Tv**\ *fname*) files defining a close surface.
+    The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
+    The optional **+m** flag to **-Td** instructs the program that the xyzm file
+    has four columns and that the fourth column contains the magnetization intensity (plus signal),
+    which needs not to be constant. In this case the third argument of the **-H** option is
+    ignored. A *raw* format (selected by the **-Tr** option) is a file with N
     rows (one per triangle) and 9 columns corresponding to the x,y,x
     coordinates of each of the three vertex of each triangle.
-    Alternatively, the **s** flag indicates that the surface file is in
+    Alternatively, the **-Ts** option indicates that the surface file is in
     the ASCII STL (Stereo Lithographic) format. These two type of files
     are used to provide a closed surface.
 

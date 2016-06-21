@@ -14,7 +14,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
-[ |-E|\ *dec_grd/dip\grd*]
+[ |-E|\ **i**\ *inc_grd*]
+[ |-E|\ **d**\ *dec_grd*]
 [ |-F|\ *<m/n>*]
 [ |-M|\ *m\|r*]
 [ |-N| ]
@@ -70,8 +71,9 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *dip_grd/dec_grd*
-    Get magnetization DIP & DEC from these grids [default: use IGRF].
+**-Ei**\ *inc_grd* **-Ed**\ *dec_grd*
+    Get magnetization *INCLINATION* and *DECLINATION* from these grids
+    [default: use IGRF for each of the above parameters not provided via grid].
     Note that these two grids do not need to have the same resolution as
     the anomaly grid. They can be coarser.
 

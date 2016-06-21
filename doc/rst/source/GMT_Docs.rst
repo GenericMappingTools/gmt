@@ -230,6 +230,12 @@ One new module has been added to the *spotter* supplement:
 :doc:`pssolar`:
   Plot day-light terminators and other sunlight parameters.
 
+:doc:`grdredpol<supplements/potential/grdredpol>`:
+  Split **-E** option into **-Ei** and **-Ed**
+
+:doc:`gmtgravmag3d<supplements/potential/gmtgravmag3d>`:
+  Split **-T** option into **-Ti** and **-Tv** or **Tr\|s**
+
 New Features in GMT 5.2
 =======================
 
