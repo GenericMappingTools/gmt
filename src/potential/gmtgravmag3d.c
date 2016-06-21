@@ -156,17 +156,19 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -Td<xyz_file>[+m] -Tv<vert_file> | -Tr|s<raw_file> [-C<density>] [-G<outgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives names of xyz (-Td<fname>[+m]) and vertex (-Tv<fname>) files defining a close surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The [+m] in -Td tells the program that file has 4 columns and fourth holds a variable mangetization.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The file formats correspond to the output of the triangulate program.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -Tr<file> for file in raw triangle format (x1 y1 z1 x2 ... z3).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or -Ts<file> for file in STL format.\n");
+
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
@@ -269,51 +271,78 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 				Ctrl->S.radius = atof (opt->arg) * 1000;
 				Ctrl->S.active = true;
 				break;
-	 		case 't':		/* For backward compat of pre GMT version */
 			case 'T': 		/* Selected input mesh format */
 				Ctrl->T.active = true;
-				switch (opt->arg[0]) {
-					case 'd':	/* Surface computed by triangulate */
-						j = 0;
-						while (gmt_strtok (&opt->arg[1], "/", &pos, ptr)) {
-							switch (j) {
-								case 0:
-									Ctrl->T.xyz_file = strdup(ptr);
-									break;
-								case 1:
-									Ctrl->T.t_file = strdup(ptr);
-									break;
-								case 2:
-									Ctrl->T.m_var = true;
-									Ctrl->H.active = true;
-									Ctrl->C.active = false;
-									if (ptr[1] == '2') Ctrl->T.m_var2 = true;
-									else if (ptr[1] == '3') Ctrl->T.m_var3 = true;
-									else if (ptr[1] == '4') Ctrl->T.m_var4 = true;
-									else Ctrl->T.m_var1 = true;
-									break;
-								default:
-									break;
+				if (opt->arg[0] == 'd') {
+					char *pch;
+					Ctrl->T.xyz_file = strdup(&opt->arg[1]);
+					Ctrl->T.triangulate = true;
+					if ((pch = strstr(opt->arg, "+m")) != NULL) {	/* Variable magnetization */
+						Ctrl->T.m_var = true;
+						Ctrl->H.active = true;
+						Ctrl->C.active = false;
+						pch += 2;		/* Jump the +m chars. These are not documented and I (JL) don't remember what they do */
+						if (pch && pch[0] == '2') Ctrl->T.m_var2 = true;
+						else if (pch && pch[0] == '3') Ctrl->T.m_var3 = true;
+						else if (pch && pch[0] == '4') Ctrl->T.m_var4 = true;
+						else Ctrl->T.m_var1 = true;
+					}
+				}
+				else if (opt->arg[0] == 'v') {
+					Ctrl->T.t_file = strdup(&opt->arg[1]);
+				}
+				else if (opt->arg[0] == 'r') {
+ 					Ctrl->T.raw_file = strdup(&opt->arg[1]);
+					Ctrl->T.raw = true;
+				}
+				else if (opt->arg[0] == 's') {
+ 					Ctrl->T.stl_file = strdup(&opt->arg[1]);
+					Ctrl->T.stl = true;
+				}
+				else {			/* For backward compat with old syntax (to be removed some day) */
+					switch (opt->arg[0]) {
+						case 'd':	/* Surface computed by triangulate */
+							j = 0;
+							while (gmt_strtok (&opt->arg[1], "/", &pos, ptr)) {
+								switch (j) {
+									case 0:
+										Ctrl->T.xyz_file = strdup(ptr);
+										break;
+									case 1:
+										Ctrl->T.t_file = strdup(ptr);
+										break;
+									case 2:
+										Ctrl->T.m_var = true;
+										Ctrl->H.active = true;
+										Ctrl->C.active = false;
+										if (ptr[1] == '2') Ctrl->T.m_var2 = true;
+										else if (ptr[1] == '3') Ctrl->T.m_var3 = true;
+										else if (ptr[1] == '4') Ctrl->T.m_var4 = true;
+										else Ctrl->T.m_var1 = true;
+										break;
+									default:
+										break;
+								}
+								j++;
 							}
-							j++;
-						}
-						if (j != 2 && j != 3) {
-							GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+							if (j != 2 && j != 3) {
+								GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+								n_errors++;
+							}
+							Ctrl->T.triangulate = true;
+							break;
+						case 'r':	/* Closed volume in RAW format */
+ 							Ctrl->T.raw_file = strdup(&opt->arg[1]);
+							Ctrl->T.raw = true;
+							break;
+						case 's':	/* Closed volume in STL1format */
+ 							Ctrl->T.stl_file = strdup(&opt->arg[1]);
+							Ctrl->T.stl = true;
+							break;
+						default:
 							n_errors++;
-						}
-						Ctrl->T.triangulate = true;
-						break;
-					case 'r':	/* Closed volume in RAW format */
- 						Ctrl->T.raw_file = strdup(&opt->arg[1]);
-						Ctrl->T.raw = true;
-						break;
-					case 's':	/* Closed volume in STL1format */
- 						Ctrl->T.stl_file = strdup(&opt->arg[1]);
-						Ctrl->T.stl = true;
-						break;
-					default:
-						n_errors++;
-						break;
+							break;
+					}
 				}
 				break;
 			case 'Z':
@@ -326,13 +355,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 	}
 
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan (Ctrl->S.radius)),
-	                                "Syntax error: Radius is NaN or negative\n");
+	                                  "Syntax error: Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.xyz_file != NULL && Ctrl->T.t_file == NULL,
+	                                  "Syntax error: with -Td must provide also vertex (-Tv) file.\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.t_file != NULL && Ctrl->T.xyz_file == NULL,
+	                                  "Syntax error: vertex file provided (-Tv) but not xyz file (-Tv).\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
+	                                  "Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
