@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"gmtmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
-#define THIS_MODULE_KEYS	"<D{,AD(,TD(,>D}"
+#define THIS_MODULE_KEYS	"<D{,AD(=,TD(,>D}"
 
 #include "gmt_dev.h"
 

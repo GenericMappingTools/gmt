@@ -932,6 +932,8 @@ GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_
 #define K_OPT			0
 #define K_FAMILY		1
 #define K_DIR			2
+#define K_EQUAL			3
+#define K_MODIFIER		4
 #define GMT_FILE_NONE		0
 #define GMT_FILE_EXPLICIT	1
 #define GMT_FILE_IMPLICIT	2
@@ -8155,6 +8157,38 @@ const char * gmtapi_get_moduleinfo (void *V_API, char *module) {
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
+GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, int k, int *n_pre) {
+	/* Two separate actions:
+	 * 1) If key ends with "=" then we pull out the option argument after stripping off +<stuff>.
+	 * 2) If key ends with "=q" then we see if +q is given and return pos to this modifiers argument.
+	 * 3) Else we just copy input to output.
+	 * We also set n_pre which are the number of characters to skip after the -X option before
+	 * looking for an argument.
+	 */
+	char *c = NULL;
+	unsigned int pos = 0;
+	*n_pre = 0;
+	if (k >= 0 && key[k][K_EQUAL] == '=') {	/* Special handling */
+		*n_pre = (key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
+		if ((*n_pre || key[k][K_MODIFIER] == 0) && (c = strchr (optarg, '+'))) {	/* Strip off trailing +<modifiers> */
+			c[0] = 0;
+			strcpy (argument, optarg);
+			c[0] = '+';
+		}
+		else if (key[k][K_MODIFIER]) {	/* Look for +<mod> */
+			char code[3] = {"+?"};
+			code[1] = key[k][K_MODIFIER];
+			if ((c = strstr (optarg, code))) {	/* Found +<modifier> */
+				strcpy (argument, optarg);
+				pos = (unsigned int) (c - optarg + 2);	/* Position of this modifiers argument */
+			}
+		}
+	}
+	else
+		strcpy (argument, optarg);
+	return pos;
+}
+
 #define api_is_required_IO(key) (key == '{' || key == '}')			/* Returns true if this is a primary input or output item */
 #define api_not_required_io(key) ((key == '{' || key == '(') ? '(' : ')')	/* Returns the optional input or output flag */
 
@@ -8246,16 +8280,16 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 */
 
 	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku, n_out = 0, nn[2][2];
-	unsigned int output_pos = 0, input_pos = 0;
+	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int k, n_in_added = 0, n_to_add, e, n_per_family[GMT_N_FAMILIES];
+	int k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN16] = {""}, type = 0;
-	char *module = NULL;
+	char *module = NULL, argument[GMT_LEN256] = {""};
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
@@ -8365,7 +8399,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
-		if (api_found_marker (opt->arg, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
+		mod_pos = api_extract_argument (opt->arg, argument, key, k, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
+		if (api_found_marker (argument, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
 			if (k == GMT_NOTSET) {	/* Found marker but no corresponding key found? */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
@@ -8382,18 +8417,53 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			n_items++;
 			if (direction == GMT_IN) n_in_added++;
 		}
-		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
+		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && key[k][K_DIR] != '-') {	/* Got some option like -G or -Lu with further args */
+			bool implicit = true;
+			if ((len = strlen (argument)) == n_pre_arg)	/* Got some option like -G or -Lu with no further args */
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg [offset = %d]\n", opt->option, n_pre_arg);
+			else if (mod_pos && (argument[mod_pos] == '\0' || argument[mod_pos] == '+'))	/* Found an embedded +q<noarg> */
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg via argument-less +%c modifier\n", opt->option, key[k][K_MODIFIER]);
+			else
+				implicit = false;
+			if (implicit) {
+				/* This is an implicit reference and we must explicity add the missing item by adding the marker */
+				info[n_items].option    = opt;
+				info[n_items].family    = family;
+				info[n_items].geometry  = geometry;
+				info[n_items].direction = direction;
+				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
+				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
+				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
+				/* Explicitly add the missing marker (e.g., $) to the option argument */
+				if (mod_pos) {	/* Must expand something like 300k+s+d+u into 300k+s$+d+u (assuming +s triggered this test) */
+					strncpy (txt, opt->arg, mod_pos);
+					strcat (txt, "$");
+					if (opt->arg[mod_pos]) strcat (txt, &opt->arg[mod_pos]);
+				}
+				else if (n_pre_arg)	/* Something like -Lu becomes -Lu$ */
+					snprintf (txt, GMT_LEN16, "%s%c", opt->arg, marker);
+				else	/* Something like -C or -C+d200k becomes -C$ or -C$+d200k */
+					snprintf (txt, GMT_LEN16, "%c%s", marker, opt->arg);
+				gmt_M_str_free (opt->arg);
+				opt->arg = strdup (txt);
+				kind = GMT_FILE_EXPLICIT;
+				n_items++;
+				if (direction == GMT_IN) n_in_added++;
+			}
+		}
+#if 0
+		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && (len = strlen (argument)) < 2) {	/* Got some option like -G or -Lu with further args */
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT.  Also check for -Rd|g and let -R pass as well */
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
 			if (key[k][K_DIR] == '-')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
 				skip = number = true;
 			else if (len) {	/* There is a 1-char argument given */
-				if (!gmt_access (API->GMT, opt->arg, F_OK)) {
+				if (!gmt_access (API->GMT, argument, F_OK)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specification\n");
 					skip = true;	/* The file actually exist */
 				}
-				else if (key[k][K_FAMILY] == 'C' && !gmt_not_numeric (API->GMT, opt->arg)) {
+				else if (key[k][K_FAMILY] == 'C' && !gmt_not_numeric (API->GMT, argument)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got -C<n>, for <n> a single number that overrides implicit CPT specification\n");
 					skip = number = true;	/* Most likely a contour specification, e.g. -C5 */
 				}
@@ -8425,6 +8495,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				if (direction == GMT_IN) n_in_added++;
 			}
 		}
+#endif
 		else {	/* No implicit file argument involved, just check if this satisfies a required option */
 			kind = GMT_FILE_NONE;
 			if (k >= 0) {	/* If this was a required input|output it has now been satisfied */

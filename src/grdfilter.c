@@ -49,7 +49,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_NAME	"grdfilter"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
-#define THIS_MODULE_KEYS	"<G{,FG(,GG},RG-"
+#define THIS_MODULE_KEYS	"<G{,FG(=1,GG},RG-"
 
 #include "gmt_dev.h"
 #include "gmt_glib.h"

@@ -41,7 +41,7 @@
 #define THIS_MODULE_NAME	"filter1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Time domain filtering of 1-D data tables"
-#define THIS_MODULE_KEYS	"<D{,>D},FD("
+#define THIS_MODULE_KEYS	"<D{,>D},FD(1"
 
 #include "gmt_dev.h"
 
