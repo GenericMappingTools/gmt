@@ -1218,6 +1218,16 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
+		struct GMT_TEXTSET *T = NULL; 
+		if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL)
+			Return (GMT_RUNTIME_ERROR);
+
+		Ctrl->In.n_files = T->n_records;
+		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
+		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
+			ps_names[k] = T->table[0]->segment[0]->data[k]; 
+
+#if 0
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
 			gmt_M_free (GMT, line);
@@ -1234,6 +1244,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 		}
 		fclose (fpl);
+#endif
 	}
 	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);
@@ -1258,7 +1269,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			error++;
 		}
 		if (error) {	/* Return in error state */
-			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
+			if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
+			gmt_M_free (GMT, ps_names);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
@@ -1276,7 +1288,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
 			error++;
 		}
-		gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
+		if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
+		gmt_M_free (GMT, ps_names);
 		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
 	}
 	/* -------------------------------------------------------------------------------------- */
@@ -1302,7 +1315,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		all_names_in = gmt_M_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_qlist (all_names_in, ps_names[k]);
-			gmt_M_str_free (ps_names[k]);
+			if (!Ctrl->L.active) gmt_M_str_free (ps_names[k]);		/* Otherwise ps_names contents are the Garbageman territory */
 		}
 		cmd2 = gmt_M_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %s",
@@ -1359,7 +1372,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) fclose (fp);	/* Close original PS file */
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
+				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */ 
+					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -2192,7 +2206,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 	}
 
-	for (k = 0; k < Ctrl->In.n_files; k++) gmt_M_str_free (ps_names[k]);
+	if (!Ctrl->L.active)		/* Otherwise ps_names contents are the Garbageman territory */
+		for (k = 0; k < Ctrl->In.n_files; k++) gmt_M_str_free (ps_names[k]);
 	gmt_M_free (GMT, ps_names);
 	gmt_M_free (GMT, line);
 	gmt_M_free (GMT, PS);
