@@ -1113,7 +1113,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 #endif
 
-	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fpl = NULL, *fp2 = NULL, *fpw = NULL;
+	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
 
 	struct GMT_OPTION *opt = NULL;
 	struct PS2RASTER_CTRL *Ctrl = NULL;
