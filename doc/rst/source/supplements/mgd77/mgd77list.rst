@@ -217,12 +217,14 @@ Required Arguments
     comparison (\|) means that at least one of the bits in *value* must
     be turned on in *par*. At least one of the tests must be true for
     the record to be output, except for tests using UPPER case
-    parameters which all must be true for output to occur. Note that
-    specifying a test does not imply that the corresponding column will
+    parameters which all must be true for output to occur. Notes:
+    (1) Specifying a test does not imply that the corresponding column will
     be included in the output stream; it must be present in *columns*
-    for that to occur. Note: some of the operators are special UNIX
+    for that to occur. (2) Some of the operators are special UNIX
     characters and you are advised to place quotes around the entire
-    argument to **-F**.
+    argument to **-F**.  (3) The logical tests only apply to observed
+    data; derived data (such as distances, velocities, etc.) must be
+    limited using program options such as **-D**, **-Q**, **-S**, etc.
 
     Finally, for MGD77+ files you may optionally append :*bittests*
     which is : (a colon) followed by one or more comma-separated +-*col*

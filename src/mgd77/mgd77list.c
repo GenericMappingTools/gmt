@@ -234,7 +234,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    [Default is all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  (Note that -E is a shorthand to set all abbreviations to upper case).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  Optionally, append comma-separated logical tests that columns must pass to be output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Optionally, append comma-separated logical tests that data columns must pass to be output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (Note: These checks do not applied to derived or computed data columns).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Format is <flag><OP><value>, where flag is any of the dataflags above, and <OP> is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  one of the operators <, <=, =, >=, >, |, and !=.  <value> is the limit you are testing,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  including NaN (with = and != only).  If <flag> is UPPERCASE the test MUST be passed;\n");

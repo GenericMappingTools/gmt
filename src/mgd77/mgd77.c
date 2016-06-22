@@ -957,6 +957,10 @@ static int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 
 	for (i = 0; i < F->n_constraints; i++) {	/* Determine column and info numbers from column name */
 		F->Constraint[i].col = MGD77_Get_Column (GMT, F->Constraint[i].name, F);
+		if (F->Constraint[i].col == -1) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Requested column %s is not a data column [for auxiliary data tests use -D, -Q, -S]!\n", F->Constraint[i].name);
+			return (MGD77_ERROR_NOSUCHCOLUMN);
+		}
 		set = F->order[F->Constraint[i].col].set;
 		id = F->order[F->Constraint[i].col].item;
 		if (H->info[set].col[id].text) {
