@@ -493,7 +493,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
 
-	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both), add 4 for writing angles to labelfile
+	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both)
 	*/
 	int np, j, k, inside, col, row, stop, n_ticks, way, form;
 	uint64_t ij;
@@ -680,14 +680,14 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			}
 			save[k].do_it = false;
-			if (mode & 2) gmt_write_label_record (GMT, fp, x_lbl, y_lbl, 0.0, lbl[save[pol].high], mode & 4);
+			if (mode & 2) gmt_write_label_record (GMT, fp, x_lbl, y_lbl, 0.0, lbl[save[pol].high]);
 		}
 		else {
 			if (mode & 1) {
 				gmt_setpen (GMT, &save[pol].pen);
 				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			}
-			if (mode & 2) gmt_write_label_record (GMT, fp, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high], mode & 4);
+			if (mode & 2) gmt_write_label_record (GMT, fp, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high]);
 		}
 	}
 }
@@ -1274,7 +1274,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (make_plot) label_mode |= 1;		/* Would want to plot ticks and labels if -T is set */
 	if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) if -T is set */
 		label_mode |= 2;
-		if (Ctrl->contour.save_labels == 2) label_mode |= 4;
 		if ((error = gmt_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
 	}
 

@@ -5840,8 +5840,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind == 2) gmt_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
 	if (kind < 2) {
 		gmt_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
-		gmt_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
-		gmt_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
+		gmt_message (GMT, "%s +t[<file>] saves (x y angle label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
 		gmt_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
 	}
 	if (kind == 0) gmt_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);

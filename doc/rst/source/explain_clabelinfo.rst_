@@ -47,8 +47,7 @@
         Will not place labels where the contours's radius of curvature is
         less than *min\_rad* [Default is 0].
     **+t**\ [*file*\ ]
-        Saves contour label x, y, and text to *file* [Contour\_labels.txt].
-        Use **+T** to save x, y, angle, text instead.
+        Saves contour label x, y, angle, and text to *file* [Contour\_labels.txt].
     **+u**\ *unit*
         Appends *unit* to all contour labels. [Default is no unit].
         If **z** is appended we use the z-unit from the grdfile.
