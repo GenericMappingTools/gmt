@@ -1023,9 +1023,9 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 			            "api_process_keys: INTERNAL ERROR: key %s contains less than 3 characters\n", next);
 			continue;
 		}
-		if (strchr (next, '?')) {	/* Type did not get determined in GMT_Encode_Options so key is skipped */
+		if (strchr (next, '!')) {	/* Type did not get determined in GMT_Encode_Options so key is skipped */
 			GMT_Report (API, GMT_MSG_DEBUG,
-			            "api_process_keys: key %s contains undefined type so we skip it\n", next);
+			            "api_process_keys: key %s contains type = ! so we skip it\n", next);
 			n--;
 			continue;
 		}
@@ -8376,17 +8376,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		    || strstr (opt->arg, "sln") || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
 			type = 'T';
 	}
-	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with 0 */
+	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
 	if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
-		/* If not -Gf|x then we dont want this at all and set type = - */
-		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : 0);
+		/* If not -Gf|x then we dont want this at all and set type = ! */
+		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : '!');
 	}
-	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with 0 */
+	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with ! */
 	if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
-		/* If not f|x then we dont want this at all and set type = - */
-		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? 0 : ((opt->arg[1] == 'x') ? 'D' : 'T');
+		/* If not f|x then we dont want this at all and set type = ! */
+		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : ((opt->arg[1] == 'x') ? 'D' : 'T');
 		strip_colon = (type && strchr (opt->arg, ':'));
 		strip_colon_opt = opt->option;
 		if (strip_colon)
