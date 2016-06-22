@@ -5193,6 +5193,8 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 }
 
 int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
+	/* Finalize this textset and write it out */
+	gmt_set_textset_minmax (GMT, G->Out);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/write to file %s\n", G->label_file);
 		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */

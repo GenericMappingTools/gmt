@@ -1023,6 +1023,12 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 			            "api_process_keys: INTERNAL ERROR: key %s contains less than 3 characters\n", next);
 			continue;
 		}
+		if (strchr (next, '?')) {	/* Type did not get determined in GMT_Encode_Options so key is skipped */
+			GMT_Report (API, GMT_MSG_DEBUG,
+			            "api_process_keys: key %s contains undefined type so we skip it\n", next);
+			n--;
+			continue;
+		}
 		s[k] = strdup (next);
 		if (next[K_DIR] == '}') {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
@@ -8182,6 +8188,8 @@ GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, in
 				strcpy (argument, optarg);
 				pos = (unsigned int) (c - optarg + 2);	/* Position of this modifiers argument */
 			}
+			else
+				strcpy (argument, optarg);
 		}
 	}
 	else
@@ -8364,17 +8372,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		    || strstr (opt->arg, "sln") || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
 			type = 'T';
 	}
-	/* 1g. Check if this is a *contour modules with -Gf|x given */
+	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with 0 */
 	if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we dont want this at all and set type = - */
 		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : 0);
 	}
-	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines */
+	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with 0 */
 	if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we dont want this at all and set type = - */
-		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[0])) ? 0 : ((opt->arg[1] == 'x') ? 'D' : 'T');
+		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? 0 : ((opt->arg[1] == 'x') ? 'D' : 'T');
 	}
 
 	gmt_M_str_free (module);
@@ -8461,6 +8469,16 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				kind = GMT_FILE_EXPLICIT;
 				n_items++;
 				if (direction == GMT_IN) n_in_added++;
+			}
+			else {	/* No implicit file argument involved, just check if this satisfies a required option */
+				kind = GMT_FILE_NONE;
+				if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
+					/* Add check to make sure argument for input is an existing file! */
+					key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
+					satisfy = special_text[direction];
+				}
+				else	/* Nothing special about this option */
+					satisfy = special_text[2];
 			}
 		}
 #if 0

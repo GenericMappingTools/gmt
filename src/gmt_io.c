@@ -6202,11 +6202,12 @@ void gmt_set_textset_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	uint64_t tbl;
 	struct GMT_TEXTTABLE *T = NULL;
 	if (!D) return;	/* No textset given */
-	D->n_records = 0;
+	D->n_records = D->n_segments = 0;
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		gmtio_set_texttbl_minmax (GMT, T);
 		D->n_records += T->n_records;
+		D->n_segments += T->n_segments;
 	}
 }
 

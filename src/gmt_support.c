@@ -8427,7 +8427,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	else if (G->fixed) {
 		struct GMT_TEXTSET *T = NULL;
 		struct GMT_TEXTSEGMENT *S = NULL;
-		int n_col = 2, len;
+		int n_col = 2, n_fields;
 		bool bad_record = false;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
@@ -8442,10 +8442,10 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 			S = T->table[0]->segment[seg];	/* Current segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				len = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-				if (len != n_col) {
+				n_fields = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				if (n_fields < n_col) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
-						len, n_col, rec, G->file);
+						n_fields, n_col, rec, G->file);
 					continue;
 				}
 				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
@@ -8552,7 +8552,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	else if (G->fixed) {
 		struct GMT_TEXTSET *T = NULL;
 		struct GMT_TEXTSEGMENT *S = NULL;
-		int n_col, len;
+		int n_col, n_fields;
 		bool bad_record = false;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
@@ -8561,7 +8561,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			error++;
 			return (error);
 		}
-		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;
+		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input colums */
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
@@ -8569,10 +8569,10 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			S = T->table[0]->segment[seg];	/* Curent segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				len = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-				if (len != n_col) {
+				n_fields = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				if (n_fields < n_col) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
-						len, n_col, rec, G->file);
+						n_fields, n_col, rec, G->file);
 					continue;
 				}
 				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
