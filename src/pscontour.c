@@ -356,6 +356,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		}
 		if (mode & 1) {	/* Tick the innermost contour */
 			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
+			gmt_setpen (GMT, &save[pol].pen);
 			for (j = 1; j < np; j++) {	/* Consider each segment from point j-1 to j */
 				dx = save[pol].x[j] - save[pol].x[j-1];
 				dy = save[pol].y[j] - save[pol].y[j-1];
@@ -630,8 +631,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 							}
 						}
 					}
-					else
-						n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
+					else {
+						if (gmt_M_compat_check (API->GMT, 4))  {
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Your format for -T is deprecated (but accepted); use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+							n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
+						}
+						else {
+							GMT_Report (API, GMT_MSG_COMPAT, "Syntax error -T option: Your format for -T is deprecated; use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+							n_errors++;
+						}
+					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
@@ -1298,6 +1309,8 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->W.color_text)	/* Override label color according to CPT */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
+			else
+				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
 			
 			head_c = last_c = gmt_M_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
@@ -1446,7 +1459,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						gmt_M_memcpy (save[n_save].x, xp, m, double);
 						gmt_M_memcpy (save[n_save].y, yp, m, double);
 						save[n_save].n = m;
-						gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+						gmt_M_memcpy (&save[n_save].pen,  &Ctrl->contour.line_pen,   1, struct GMT_PEN);
 						gmt_M_memcpy (&save[n_save].font, &Ctrl->contour.font_label, 1, struct GMT_FONT);
 						save[n_save].do_it = true;
 						save[n_save].cval = cont[c].val;

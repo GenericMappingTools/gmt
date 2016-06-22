@@ -418,11 +418,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 							}
 						}
 					}
-					else
-						n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
+					else {
+						if (gmt_M_compat_check (API->GMT, 4))  {
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Your format for -T is deprecated (but accepted); use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+							n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
+						}
+						else {
+							GMT_Report (API, GMT_MSG_COMPAT, "Syntax error -T option: Your format for -T is deprecated; use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+							n_errors++;
+						}
+					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0,
-					                                 "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
-					                                 GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					                "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+					                	GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Pen settings */
@@ -564,6 +574,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
+	PSL_comment (PSL, "Start Embellishment of innermost contours\n");
 	for (pol = 0; pol < n; pol++) {
 		if (!save[pol].do_it) continue;
 		np = save[pol].n;
@@ -629,7 +640,6 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			continue;
 		}
 
-		gmt_setpen (GMT, &save[pol].pen);
 		way = gmt_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
 		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 
@@ -640,6 +650,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			j = 0;
 			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
 			inc = s[np-1] / n_ticks;
+			gmt_setpen (GMT, &save[pol].pen);
 			while (j < np-1) {
 				x_front = xp[j+1];
 				y_front = yp[j+1];
@@ -677,7 +688,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			x_lbl = 0.5 * (save[pol].xlabel + save[k].xlabel);
 			y_lbl = 0.5 * (save[pol].ylabel + save[k].ylabel);
 			if (mode & 1) {
-				gmt_setpen (GMT, &save[pol].pen);
+				//gmt_setpen (GMT, &save[pol].pen);
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}
@@ -686,13 +697,14 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		}
 		else {
 			if (mode & 1) {
-				gmt_setpen (GMT, &save[pol].pen);
+				//gmt_setpen (GMT, &save[pol].pen);
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}
 			if (mode & 2) gmt_add_label_record (GMT, T, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high]);
 		}
 	}
+	PSL_comment (PSL, "End Embellishment of innermost contours\n");
 }
 
 GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
@@ -1180,6 +1192,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->W.color_text)	/* Override label color according to CPT */
 			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
+		else
+			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
 
 		n_alloc = 0;
 		begin = true;
@@ -1218,7 +1232,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					gmt_M_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					gmt_M_memcpy (save[n_save].x, x, n, double);
 					gmt_M_memcpy (save[n_save].y, y, n, double);
-					gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+					gmt_M_memcpy (&save[n_save].pen,  &Ctrl->contour.line_pen,   1, struct GMT_PEN);
 					gmt_M_memcpy (&save[n_save].font, &Ctrl->contour.font_label, 1, struct GMT_FONT);
 					save[n_save].do_it = true;
 					save[n_save].cval = cval;

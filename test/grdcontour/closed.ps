@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13760 [64-bit] Document from grdcontour
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0_r16616M [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Dec  1 17:41:37 2014
+%%CreationDate: Wed Jun 22 12:46:20 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: grdcontour -A2 -C1 -L8.5/10.5 -Gd4 tmp.nc -Bxa60g30 -By30g30 -BWS -T:LH -Wa1p,red -Wc1p,blue -JN180/7i -P -K
-%%PROJ: robin 0.00000000 360.00000000 -90.00000000 90.00000000 -16986827.551 16986827.551 -8615515.162 8615515.162 +proj=robin +lon_0=180 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%@GMT: grdcontour -A2 -C1 -L8.5/10.5 -Gd4 tmp.nc -Bxa60g30 -By30g30 -BWS -T+lLH -Wa1p,red -Wc1p,blue -JN180/7i -P -K
+%@PROJ: robin 0.00000000 360.00000000 -90.00000000 90.00000000 -16986827.551 16986827.551 -8615515.162 8615515.162 +proj=robin +lon_0=180 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -842,15 +839,12 @@ N 1439 1837 M -23 -44 D S
 N 1240 2024 M -43 -25 D S
 N 1211 2289 M -47 17 D S
 N 1360 2500 M -31 39 D S
-0 A
-1 0 0 C
 8240 2197 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (H) mc Z
 4850 4009 M (H) mc Z
 214 2200 M (H) mc Z
 1585 2199 M (H) mc Z
-0 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -865,12 +859,12 @@ N 1360 2500 M -31 39 D S
 ] def
 /PSL_label_justify [ 6 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
-	(0 A 150 F0)
+	(1 0 0 C 150 F0)
+	(1 0 0 C 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 0.59 0.93 ] def
+/PSL_label_angle [ 0.59 1.31 ] def
 /PSL_label_str [
 	(10)
 	(10)
@@ -1193,6 +1187,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 4 W
 1965 0 M
 -83 23 D
@@ -2076,8 +2071,8 @@ O0
 1200 4800 TM
 
 % PostScript produced by:
-%%GMT: grdcontour -A2 -C1 -L8.5/10.5 -Gd4 tmp.nc -Bxa60g30 -By30g30 -BWS -T:LH -Wa1p,red -Wc1p,blue -JG30/35/5i -O -Y4i -X1i
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771400
+%@GMT: grdcontour -A2 -C1 -L8.5/10.5 -Gd4 tmp.nc -Bxa60g30 -By30g30 -BWS -T+lLH -Wa1p,red -Wc1p,blue -JG30/35/5i -O -Y4i -X1i
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -2296,14 +2291,11 @@ N 4116 1715 M -49 13 D S
 N 4211 1929 M -43 26 D S
 N 4363 2150 M -39 32 D S
 N 4521 2317 M -32 38 D S
-0 A
-1 0 0 C
 1608 1656 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (H) mc Z
 3004 5338 M (H) mc Z
 4758 1794 M (H) mc Z
-0 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -2318,11 +2310,11 @@ N 4521 2317 M -32 38 D S
 ] def
 /PSL_label_justify [ 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
+	(1 0 0 C 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 74.32 ] def
+/PSL_label_angle [ 74.31 ] def
 /PSL_label_str [
 	(10)
 ] def
@@ -2871,6 +2863,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 4 W
 2057 152 M
 -50 19 D

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13683 [64-bit] Document from pscontour
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0_r16616M [64-bit] Document from pscontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Nov 12 06:51:00 2014
+%%CreationDate: Wed Jun 22 12:54:33 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -C1 -A2 -Wa1p,red -Wc0.25p,blue -L0.25p,- -GlZ-/Z+ -P -K -T0.1i/0.05i:LH
-%%PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -C1 -A2 -Wa1p,red -Wc0.25p,blue -L0.25p,- -GlZ-/Z+ -P -K -T+d0.1i/0.05i+lLH
+%@PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -779,7 +776,7 @@ N 2790 2565 M -10 59 D S
 N 2880 2580 M -10 59 D S
 N 2970 2595 M -10 59 D S
 N 3060 2610 M -10 59 D S
-0 A
+0 0 1 C
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -794,10 +791,10 @@ N 3060 2610 M -10 59 D S
 ] def
 /PSL_label_justify [ 6 6 6 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
+	(1 0 0 C 150 F0)
+	(1 0 0 C 150 F0)
+	(1 0 0 C 150 F0)
+	(1 0 0 C 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
@@ -877,6 +874,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 4 W
 0 0 M
 0 4200 D
@@ -1088,8 +1086,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy t.txt -R-2/11/-1/6 -Jx0.5i -Sc0.05i -Gblack -O -K
-%%PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy t.txt -R-2/11/-1/6 -Jx0.5i -Sc0.05i -Gblack -O -K
+%@PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1121,8 +1119,8 @@ O0
 0 5100 TM
 
 % PostScript produced by:
-%%GMT: pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -Ct.cpt -I -W0.25p -GlZ-/Z+ -O -K -Y4.25i
-%%PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscontour t.txt -R-2/11/-1/6 -Jx0.5i -B2g1 -Ct.cpt -I -W0.25p -GlZ-/Z+ -O -K -Y4.25i
+%@PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1234,7 +1232,6 @@ PSL_clip N
 {1 0.75 0 C} FS
 -180 270 -45 -270 2 3225 2400 SP
 {1 0.25 0 C} FS
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -1417,6 +1414,7 @@ N 0 600 M -83 0 D S
 N 0 1800 M -83 0 D S
 N 0 3000 M -83 0 D S
 N 0 4200 M -83 0 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
@@ -1551,8 +1549,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy t.txt -R-2/11/-1/6 -Jx0.5i -Sc0.1i -W2p -O
-%%PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy t.txt -R-2/11/-1/6 -Jx0.5i -Sc0.1i -W2p -O
+%@PROJ: xy -2.00000000 11.00000000 -1.00000000 6.00000000 -2.000 11.000 -1.000 6.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
