@@ -8163,13 +8163,14 @@ const char * gmtapi_get_moduleinfo (void *V_API, char *module) {
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
-GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, int k, int *n_pre) {
+GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, int *n_pre) {
 	/* Two separate actions:
 	 * 1) If key ends with "=" then we pull out the option argument after stripping off +<stuff>.
 	 * 2) If key ends with "=q" then we see if +q is given and return pos to this modifiers argument.
 	 * 3) Else we just copy input to output.
 	 * We also set n_pre which are the number of characters to skip after the -X option before
 	 * looking for an argument.
+	 * If colon is true we also strip argument from the first colon onwards.
 	 */
 	char *c = NULL;
 	unsigned int pos = 0;
@@ -8194,6 +8195,9 @@ GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, in
 	}
 	else
 		strcpy (argument, optarg);
+	if (colon && (c = strchr (argument, ':')))	/* Also chop of :<more arguments> */
+		c[0] = '\0';
+
 	return pos;
 }
 
@@ -8292,12 +8296,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false;
+	bool deactivate_output = false, strip_colon = false, strip = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
-	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN16] = {""}, type = 0;
-	char *module = NULL, argument[GMT_LEN256] = {""};
+	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN256] = {""}, type = 0;
+	char *module = NULL, argument[GMT_LEN256] = {""}, strip_colon_opt = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
@@ -8383,6 +8387,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we dont want this at all and set type = - */
 		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? 0 : ((opt->arg[1] == 'x') ? 'D' : 'T');
+		strip_colon = (type && strchr (opt->arg, ':'));
+		strip_colon_opt = opt->option;
+		if (strip_colon)
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
 	}
 
 	gmt_M_str_free (module);
@@ -8415,11 +8423,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
 	/* Note: All explicit objects must be given after all implicit matrices have been listed */
 	for (opt = *head; opt; opt = opt->next) {	/* Process options */
+		strip = (strip_colon_opt == opt->option) ? strip_colon : false;	/* Just turn strip possibly true for the relevant option */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
-		mod_pos = api_extract_argument (opt->arg, argument, key, k, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
+		mod_pos = api_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
 		if (api_found_marker (argument, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
 			if (k == GMT_NOTSET) {	/* Found marker but no corresponding key found? */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
@@ -8460,10 +8469,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 					strcat (txt, "$");
 					if (opt->arg[mod_pos]) strcat (txt, &opt->arg[mod_pos]);
 				}
+				else if (strip)	/* Special case for quoted and decorated lines with colon separating label info */
+					snprintf (txt, GMT_LEN256, "%s%c%s", argument, marker, &opt->arg[2]);
 				else if (n_pre_arg)	/* Something like -Lu becomes -Lu$ */
-					snprintf (txt, GMT_LEN16, "%s%c", opt->arg, marker);
+					snprintf (txt, GMT_LEN256, "%s%c", opt->arg, marker);
 				else	/* Something like -C or -C+d200k becomes -C$ or -C$+d200k */
-					snprintf (txt, GMT_LEN16, "%c%s", marker, opt->arg);
+					snprintf (txt, GMT_LEN256, "%c%s", marker, opt->arg);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
 				kind = GMT_FILE_EXPLICIT;
