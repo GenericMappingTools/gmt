@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pscontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,DDD,>X},RG-"
+#define THIS_MODULE_KEYS	"<D{,AT)=t,CC(,ED(,DDD,G?(=1,>X},RG-"
 
 #include "gmt_dev.h"
 
@@ -277,7 +277,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp) {
+GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, struct GMT_TEXTSET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 	
@@ -348,7 +348,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
-			if (mode & 2) gmt_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high]);
+			if (mode & 2) gmt_add_label_record (GMT, T, x_mean, y_mean, 0.0, lbl[save[pol].high]);
 		}
 		if (mode & 1) {	/* Tick the innermost contour */
 			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
@@ -1467,7 +1467,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			size_t kk;
 			save = gmt_M_malloc (GMT, save, 0, &n_save, struct SAVE);
 
-			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
+			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {
 				gmt_M_free (GMT, save[kk].x);
 				gmt_M_free (GMT, save[kk].y);

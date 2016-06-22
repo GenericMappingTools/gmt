@@ -8364,6 +8364,18 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		    || strstr (opt->arg, "sln") || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
 			type = 'T';
 	}
+	/* 1g. Check if this is a *contour modules with -Gf|x given */
+	if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
+		/* Found the -G option, check if any strings are requested */
+		/* If not -Gf|x then we dont want this at all and set type = - */
+		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : 0);
+	}
+	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines */
+	if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
+		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
+		/* If not f|x then we dont want this at all and set type = - */
+		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[0])) ? 0 : ((opt->arg[1] == 'x') ? 'D' : 'T');
+	}
 
 	gmt_M_str_free (module);
 

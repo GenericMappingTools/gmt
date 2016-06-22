@@ -72,7 +72,7 @@ struct GMT_DECORATE {
 	char pen[GMT_LEN64];		/* The symbol outline pen */
 	char symbol_code[2];		/* The symbol code only as a null-terminated string */
 	char flag;			/* Char for the option key */
-	struct GMT_DATATABLE *xp;	/* Table with list of structures with crossing-line coordinates */
+	struct GMT_DATASET *X;		/* Dataset with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */
 	struct GMT_XSEGMENT *ylist;	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */

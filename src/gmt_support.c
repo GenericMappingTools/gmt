@@ -1198,7 +1198,7 @@ GMT_LOCAL void support_set_bit (unsigned int *mark, uint64_t k, unsigned int *bi
 GMT_LOCAL void support_decorate_free (struct GMT_CTRL *GMT, struct GMT_DECORATE *G) {
 	/* Free memory used by decorate */
 
-	gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+	GMT_Destroy_Data (GMT->parent, &(G->X));
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
 		gmt_M_free (GMT, G->f_xy[GMT_Y]);
@@ -2106,8 +2106,8 @@ GMT_LOCAL bool support_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, c
 			break;
 
 		case GMT_LABEL_IS_XFILE:
-			if (G->xp->segment[xl]->label && G->xp->segment[xl]->label[0])
-				strcpy (this_label, G->xp->segment[xl]->label);
+			if (G->X->table[0]->segment[xl]->label && G->X->table[0]->segment[xl]->label[0])
+				strcpy (this_label, G->X->table[0]->segment[xl]->label);
 			else
 				label_OK = false;
 			break;
@@ -2349,10 +2349,12 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			uint64_t left, right, line_no;
+			struct GMT_DATASEGMENT *S = NULL;
 			gmt_init_track (GMT, yy, nn, &(G->ylist));
-			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
-				gmt_init_track (GMT, G->xp->segment[line_no]->data[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
-				G->nx = (unsigned int)gmt_crossover (GMT, G->xp->segment[line_no]->data[GMT_X], G->xp->segment[line_no]->data[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
+			for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
+				S = G->X->table[0]->segment[line_no];	/* Current segment */
+				gmt_init_track (GMT, S->data[GMT_Y], S->n_rows, &(G->ylist_XP));
+				G->nx = (unsigned int)gmt_crossover (GMT, S->data[GMT_X], S->data[GMT_Y], NULL, G->ylist_XP, S->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
 				gmt_M_free (GMT, G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -2591,10 +2593,12 @@ GMT_LOCAL void support_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, dou
 	}
 	else if (G->crossing) {	/* Determine label positions based on crossing lines */
 		uint64_t left, right, line_no;
+		struct GMT_DATASEGMENT *Sd = NULL;
 		gmt_init_track (GMT, yy, nn, &(G->ylist));
-		for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
-			gmt_init_track (GMT, G->xp->segment[line_no]->data[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
-			G->nx = (unsigned int)gmt_crossover (GMT, G->xp->segment[line_no]->data[GMT_X], G->xp->segment[line_no]->data[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
+		for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
+			Sd = G->X->table[0]->segment[line_no];	/* Current segment */
+			gmt_init_track (GMT, Sd->data[GMT_Y], Sd->n_rows, &(G->ylist_XP));
+			G->nx = (unsigned int)gmt_crossover (GMT, Sd->data[GMT_X], Sd->data[GMT_Y], NULL, G->ylist_XP, Sd->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
 			gmt_M_free (GMT, G->ylist_XP);
 			if (G->nx == 0) continue;
 
@@ -8182,7 +8186,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 }
 
 /*! . */
-struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]) {
+struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]) {
 	/* Given a list of comma-separated start/stop coordinates, build a data table
  	 * of the profiles. xyz holds the grid min/max coordinates (or NULL if used without a grid;
 	 * in that case the special Z+, Z- coordinate shorthands are unavailable).
@@ -8192,18 +8196,20 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 */
 	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
+	uint64_t dim[4] = {1, 1, 0, 0};
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
+	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
 	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
-	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profile: Return distances along track\n");
+	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profiles: Return distances along track\n");
 	T = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 	T->segment = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 	n_cols = (get_distances) ? 3 :2;
@@ -8362,7 +8368,13 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 		}
 	}
 	if (T->n_segments < n_alloc) T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
-	return (T);
+	dim[GMT_COL] = n_cols;
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+		return (NULL);
+	gmt_free_table (GMT, D->table[0], D->alloc_mode);	/* Since we will add our own below */
+	D->table[0] = T;
+	gmtlib_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
+	return (D);
 }
 
 /*! . */
@@ -8374,10 +8386,9 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	/* Prepares decoarte line symbols machinery as needed */
 
 	unsigned int error = 0;
-	uint64_t k, i;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	uint64_t k, i, seg, row, rec;
 	double x, y;
-	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	if (G->spacing && G->dist_kind == 1) {
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
@@ -8389,90 +8400,85 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	}
 
 	if (G->crossing == GMT_DECORATE_XLINE) {
-		G->xp = gmt_make_profile (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
+		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_DECORATE_XCURVE) {
-		unsigned int geometry = GMT_IS_LINE;
-		if ((G->xp = gmtlib_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false)) == NULL) {	/* Failure to read the file */
+		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
-		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
+		else if (G->X->n_columns < 2 || G->X->n_records < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
-			gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			GMT_Destroy_Data (GMT, &(G->X));
 			error++;
 		}
-		else {	/* Should be OK to use */
-			for (k = 0; k < G->xp->n_segments; k++) {
-				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
-					gmt_geo_to_xy (GMT, G->xp->segment[k]->data[GMT_X][i], G->xp->segment[k]->data[GMT_Y][i], &x, &y);
-					G->xp->segment[k]->data[GMT_X][i] = x;
-					G->xp->segment[k]->data[GMT_Y][i] = y;
+		else {	/* Should be OK to use; note there is only one table here */
+			struct GMT_DATASEGMENT *S = NULL;
+			for (k = 0; k < G->X->table[0]->n_segments; k++) {
+				S = G->X->table[0]->segment[k];
+				for (i = 0; i < S->n_rows; i++) {	/* Project */
+					gmt_geo_to_xy (GMT, S->data[GMT_X][i], S->data[GMT_Y][i], &x, &y);
+					S->data[GMT_X][i] = x;
+					S->data[GMT_Y][i] = y;
 				}
 			}
 		}
 	}
 	else if (G->fixed) {
-		FILE *fp = NULL;
-		int kk, n_col, len;
+		struct GMT_TEXTSET *T = NULL;
+		struct GMT_TEXTSEGMENT *S = NULL;
+		int n_col = 2, len;
 		bool bad_record = false;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
-		if ((fp = gmt_fopen (GMT, G->file, "r")) == NULL) {
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		n_col = 2;
-		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, n_alloc, double);
-		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, n_alloc, double);
-		G->f_n = 0;
-		while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp)) {
-			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
-			len = (int)strlen (buffer);
-			for (kk = len - 1; kk >= 0 && strchr (" \t,\r\n", (int)buffer[kk]); kk--);
-			buffer[++kk] = '\n';	buffer[++kk] = '\0';	/* Now have clean C string with \n\0 at end */
-			len = sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-			if (len != n_col) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
-					len, n_col, GMT->current.io.rec_no, G->file);
-				continue;
-			}
-			if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-			if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-			if (bad_record) {
-				GMT->current.io.n_bad_records++;
-				if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(4) Input file in multiple segment format but the -m switch is not set.\n");
+		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
+		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
+		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
+			S = T->table[0]->segment[seg];	/* Current segment */
+			for (row = 0; row < S->n_rows; row++, rec++) {
+				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
+				len = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				if (len != n_col) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
+						len, n_col, rec, G->file);
+					continue;
 				}
-				continue;
-			}
-			/* Got here if data are OK */
+				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+				if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+				if (bad_record) {
+					GMT->current.io.n_bad_records++;
+					if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", rec);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
+					}
+					continue;
+				}
+				/* Got here if data are OK */
 
-			if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
-			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
-			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
-
-			gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
-			G->f_n++;
-			if (G->f_n == n_alloc) {	/* ALlocate more space for these records */
-				n_alloc <<= 1;
-				G->f_xy[GMT_X] = gmt_M_memory (GMT, G->f_xy[GMT_X], n_alloc, double);
-				G->f_xy[GMT_Y] = gmt_M_memory (GMT, G->f_xy[GMT_Y], n_alloc, double);
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
+				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
+				k++;
 			}
 		}
-		gmt_fclose (GMT, fp);
-		if (G->f_n == 0) {
+		G->f_n = k;
+		if ((G->f_n = k) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
+		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n", G->flag, G->file);
 	}
 
 	return (error);
@@ -8487,10 +8493,9 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	/* Prepares contour labeling machinery as needed */
 
 	unsigned int error = 0;
-	uint64_t k, i;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	uint64_t k, i, seg, row, rec;
 	double x, y;
-	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	gmt_contlabel_free (GMT, G);	/* In case we've been here before */
 
@@ -8520,97 +8525,91 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->no_gap = ((G->just + 2)%4 != 0);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
-		G->xp = gmt_make_profile (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
+		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		unsigned int geometry = GMT_IS_LINE;
-		if ((G->xp = gmtlib_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false)) == NULL) {	/* Failure to read the file */
+		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
-		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
+		else if (G->X->n_columns < 2 || G->X->n_records < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
-			gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			GMT_Destroy_Data (GMT, &(G->X));
 			error++;
 		}
-		else {	/* Should be OK to use */
-			for (k = 0; k < G->xp->n_segments; k++) {
-				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
-					gmt_geo_to_xy (GMT, G->xp->segment[k]->data[GMT_X][i], G->xp->segment[k]->data[GMT_Y][i], &x, &y);
-					G->xp->segment[k]->data[GMT_X][i] = x;
-					G->xp->segment[k]->data[GMT_Y][i] = y;
+		else {	/* Should be OK to use; note there is only one table here */
+			struct GMT_DATASEGMENT *S = NULL;
+			for (k = 0; k < G->X->table[0]->n_segments; k++) {
+				S = G->X->table[0]->segment[k];
+				for (i = 0; i < S->n_rows; i++) {	/* Project */
+					gmt_geo_to_xy (GMT, S->data[GMT_X][i], S->data[GMT_Y][i], &x, &y);
+					S->data[GMT_X][i] = x;
+					S->data[GMT_Y][i] = y;
 				}
 			}
 		}
 	}
 	else if (G->fixed) {
-		FILE *fp = NULL;
-		int kk, n_col, len;
+		struct GMT_TEXTSET *T = NULL;
+		struct GMT_TEXTSEGMENT *S = NULL;
+		int n_col, len;
 		bool bad_record = false;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
-		if ((fp = gmt_fopen (GMT, G->file, "r")) == NULL) {
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
 		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;
-		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, n_alloc, double);
-		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, n_alloc, double);
-		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, n_alloc, char *);
-		G->f_n = 0;
-		while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp)) {
-			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
-			len = (int)strlen (buffer);
-			for (kk = len - 1; kk >= 0 && strchr (" \t,\r\n", (int)buffer[kk]); kk--);
-			buffer[++kk] = '\n';	buffer[++kk] = '\0';	/* Now have clean C string with \n\0 at end */
-			len = sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-			if (len != n_col) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
-					len, n_col, GMT->current.io.rec_no, G->file);
-				continue;
-			}
-			if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-			if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-			if (bad_record) {
-				GMT->current.io.n_bad_records++;
-				if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(4) Input file in multiple segment format but the -m switch is not set.\n");
+		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
+		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
+		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
+		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
+			S = T->table[0]->segment[seg];	/* Curent segment */
+			for (row = 0; row < S->n_rows; row++, rec++) {
+				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
+				len = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				if (len != n_col) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
+						len, n_col, rec, G->file);
+					continue;
 				}
-				continue;
-			}
-			/* Got here if data are OK */
+				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+				if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+				if (bad_record) {
+					GMT->current.io.n_bad_records++;
+					if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", rec);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
+					}
+					continue;
+				}
+				/* Got here if data are OK */
 
-			if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
-			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
-			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
-
-			gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
-			if (n_col == 3) {	/* The label part if asked for */
-				G->f_label[G->f_n] = gmt_M_memory (GMT, NULL, strlen(txt_c)+1, char);
-				strcpy (G->f_label[G->f_n], txt_c);
-			}
-			G->f_n++;
-			if (G->f_n == n_alloc) {	/* ALlocate more space for these records */
-				n_alloc <<= 1;
-				G->f_xy[GMT_X] = gmt_M_memory (GMT, G->f_xy[GMT_X], n_alloc, double);
-				G->f_xy[GMT_Y] = gmt_M_memory (GMT, G->f_xy[GMT_Y], n_alloc, double);
-				if (n_col == 3) G->f_label = gmt_M_memory (GMT, G->f_label, n_alloc, char *);
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
+				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
+				if (n_col == 3) {	/* The label part if asked for */
+					G->f_label[k] = gmt_M_memory (GMT, NULL, strlen(txt_c)+1, char);
+					strcpy (G->f_label[k], txt_c);
+				}
+				k++;
 			}
 		}
-		gmt_fclose (GMT, fp);
-		if (G->f_n == 0) {
+		if ((G->f_n = k) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 			if (n_col == 3) gmt_M_free (GMT, G->f_label);
 		}
+		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n", G->flag, G->file);
 	}
 
 	return (error);
@@ -8633,7 +8632,7 @@ void gmt_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmt_M_free (GMT, L);
 	}
 	gmt_M_free (GMT, G->segment);
-	gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+	GMT_Destroy_Data (GMT->parent, &(G->X));
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
 		gmt_M_free (GMT, G->f_xy[GMT_Y]);

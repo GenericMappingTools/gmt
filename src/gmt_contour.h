@@ -145,14 +145,14 @@ struct GMT_CONTOUR {
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */
 	struct GMT_FONT font_label;	/* Which font */
-	struct GMT_DATATABLE *xp;		/* Table with list of structures with crossing-line coordinates */
+	struct GMT_DATASET *X;		/* Dataset with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */
 	struct GMT_XSEGMENT *ylist;	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 	struct GMT_PEN pen;		/* Pen for drawing textbox outline */
 	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
-	FILE *fp;			/* File pointer for writing labels and positions to text file */
+	struct GMT_TEXTSET *Out;	/* Textset with positions, angles and labels used in contouring */
 	/* Contour line section */
 	
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */

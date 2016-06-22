@@ -797,7 +797,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
 		double xyz[2][3];
-		uint64_t dim[4] = {1, 0, 0, 3};
 
 		if (get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
 			for (g = 0; g < Ctrl->G.n_grids; g++) {	/* Free up the grids */
@@ -812,8 +811,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
 
-		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
-		gmt_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
@@ -823,10 +820,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			gmt_grd_minmax (GMT, GC[0].G, xyz);
-			Din->table[0] = gmt_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
 		}
 		else
-			Din->table[0] = gmt_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
 		if (Din->table[0] == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */

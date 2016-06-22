@@ -6183,7 +6183,7 @@ void gmtlib_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		D->min[col] = DBL_MAX;
 		D->max[col] = -DBL_MAX;
 	}
-	D->n_records = 0;
+	D->n_records = D->n_segments = 0;
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		gmt_set_tbl_minmax (GMT, T);
@@ -6192,6 +6192,7 @@ void gmtlib_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
 		}
 		D->n_records += T->n_records;
+		D->n_segments += T->n_segments;
 	}
 }
 

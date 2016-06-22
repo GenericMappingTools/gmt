@@ -171,7 +171,7 @@ EXTERN_MSC int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y
 EXTERN_MSC void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level);
 EXTERN_MSC void gmt_plotcanvas (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y, double angle, char *label);
+EXTERN_MSC void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_TEXTSET *T, double x, double y, double angle, char *label);
 EXTERN_MSC int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
@@ -265,7 +265,7 @@ EXTERN_MSC void gmt_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A);
 EXTERN_MSC void gmt_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap);
 EXTERN_MSC void gmt_flip_azim_d (struct GMT_CTRL *GMT, double *azim);
 EXTERN_MSC void gmt_flip_angle_d (struct GMT_CTRL *GMT, double *angle);
-EXTERN_MSC struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);
+EXTERN_MSC struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);
 EXTERN_MSC unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double right);
 EXTERN_MSC void gmt_set_xy_domain (struct GMT_CTRL *GMT, double wesn_extended[], struct GMT_GRID_HEADER *h);
