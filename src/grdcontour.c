@@ -616,9 +616,11 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
 		np = (int)gmt_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
+		if (np == 0) continue;
 
 		s = gmt_M_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
-		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
+		for (j = 1, s[0] = 0.0; j < np; j++)
+			s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
 		n_ticks = irint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[pol].do_it = false;
