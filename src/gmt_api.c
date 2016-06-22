@@ -907,11 +907,11 @@ GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_
 
 	*first_ID = GMT_NOTSET;	/* Not found yet */
 	for (i = n = 0; i < API->n_objects; i++) {
-		if (!API->object[i]) continue;				  /* A freed object, skip */
-		if (API->object[i]->direction != direction) continue;	  /* Wrong direction */
-		if (API->object[i]->geometry  != geometry) continue;	  /* Wrong geometry */
-		if (API->object[i]->status    != GMT_IS_UNUSED) continue; /* Already used */
-		if (family != API->object[i]->family) continue;		  /* Wrong data type */
+		if (!API->object[i]) continue;				   /* A freed object, skip */
+		if (API->object[i]->direction != (int)direction) continue; /* Wrong direction */
+		if (API->object[i]->geometry  != (int)geometry) continue;  /* Wrong geometry */
+		if (API->object[i]->status    != GMT_IS_UNUSED) continue;  /* Already used */
+		if (family != API->object[i]->family) continue;		   /* Wrong data type */
 		n++;	/* Found one that satisfied requirements */
 		if (*first_ID == GMT_NOTSET) *first_ID = API->object[i]->ID;
 		API->object[i]->selected = true;
@@ -1790,7 +1790,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 }
 
 /*! . */
-GMT_LOCAL int api_next_data_object (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction) {
+GMT_LOCAL int api_next_data_object (struct GMTAPI_CTRL *API, enum GMT_enum_family family, enum GMT_enum_std direction) {
 	/* Sets up current_item to be the next unused item of the required direction; or return EOF.
 	 * When EOF is returned, API->current_item[direction] holds the last object ID used. */
 	bool found = false;
@@ -1798,7 +1798,8 @@ GMT_LOCAL int api_next_data_object (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 
 	item = API->current_item[direction] + 1;	/* Advance to next item, if possible */
 	while (item < (int)API->n_objects && !found) {
-		if (API->object[item] && API->object[item]->selected && API->object[item]->status == GMT_IS_UNUSED && API->object[item]->direction == direction && family == API->object[item]->family)
+		if (API->object[item] && API->object[item]->selected && API->object[item]->status == GMT_IS_UNUSED
+		    && API->object[item]->direction == direction && family == API->object[item]->family)
 			found = true;	/* Got item that is selected and unused, has correct direction and family */
 		else
 			item++;	/* No, keep looking */
@@ -1967,7 +1968,7 @@ GMT_LOCAL int api_get_object_id_from_data_ptr (struct GMTAPI_CTRL *API, void *pt
 }
 
 /*! . */
-GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, unsigned int mode, char *filename, void *resource) {
+GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, enum GMT_enum_geometry geometry, enum GMT_enum_std direction, unsigned int mode, char *filename, void *resource) {
 	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
@@ -2709,11 +2710,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 						}
 					}
 					else {	/* Found a data record */
-						for (col = 0; col < n_columns; col++) {	/* Place the record into the dataset segment structure */
-							//S->data[col][n_records] = GMT->current.io.curr_rec[col];
+						for (col = 0; col < n_columns; col++)	/* Place the record into the dataset segment structure */
 							S->data[col][n_records] = api_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns);
-
-						}
 						got_data = true;	/* No longer before first data record */
 						n_records++;	/* Update count of records in current segment */
 					}
