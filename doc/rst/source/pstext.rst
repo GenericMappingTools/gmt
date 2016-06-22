@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-|-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]]
+|-F|\ [**+a**\ \|\ **A**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by
@@ -142,7 +142,8 @@ Optional Arguments
     font (size,fontname,color); if no font info is given then the input
     file must have this information in one of its columns. Use **+a** to
     set the angle; if no angle is given then the input file must have
-    this as a column. Use **+j** to set the justification; if no
+    this as a column. Alternatively, use **+A** to force text-baselines
+    to convert into the -90/+90 range.  Use **+j** to set the justification; if no
     justification is given then the input file must have this as a
     column. Items read from the data file should be in the same order as
     specified with the **-F** option. Example:

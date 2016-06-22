@@ -68,6 +68,7 @@ struct PSTEXT_CTRL {
 	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>+l|h] */
 		bool active;
 		bool read_font;	/* True if we must read fonts from input file */
+		bool orientation;	/* True if we should treat angles as orientations for text */
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread, first;
@@ -318,6 +319,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use +A to force text-baselines in the -90/+90 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f[<fontinfo>] sets the size, font, and optionally the text color [%s].\n",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_PRIMARY]));
@@ -416,8 +418,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				Ctrl->F.active = true;
 				pos = 0;
 
-				while (gmt_getmodopt (GMT, opt->arg, "afjclhrtz", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
+				while (gmt_getmodopt (GMT, opt->arg, "Aafjclhrtz", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
 					switch (p[0]) {
+						case 'A':	/* orientation. Deliberate fall-through to next case */
+							Ctrl->F.orientation = true;
 						case 'a':	/* Angle */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
 							else Ctrl->F.angle = atof (&p[1]);
@@ -779,7 +783,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 								T.font = Ctrl->F.font;
 								if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 								break;
-							case 'a':
+							case 'a': case 'A':
 								T.paragraph_angle = atof (text);
 								break;
 							case 'j':
@@ -816,6 +820,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					tmp = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
+				}
+				if (Ctrl->F.orientation) {
+					tmp = T.paragraph_angle;
+					if (T.paragraph_angle > 180.0) T.paragraph_angle -= 360.0;
+					if (T.paragraph_angle > 90.0) T.paragraph_angle -= 180.0;
+					else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 				}
 				master_record = true;
 			}
@@ -884,7 +894,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				for (k = 0; k < Ctrl->F.nread; k++) {
 					nscan += gmt_strtok (buffer, token_separator, &pos, text);
 					switch (Ctrl->F.read[k]) {
-						case 'a':
+						case 'a': case 'A':
 							T.paragraph_angle = atof (text);
 							break;
 						case 'f':
@@ -960,6 +970,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				tmp = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 				T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
+			}
+			if (Ctrl->F.orientation) {
+				tmp = T.paragraph_angle;
+				if (T.paragraph_angle > 180.0) T.paragraph_angle -= 360.0;
+				if (T.paragraph_angle > 90.0) T.paragraph_angle -= 180.0;
+				else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 			}
 			if (add) {
 				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
