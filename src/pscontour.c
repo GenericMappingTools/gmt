@@ -348,7 +348,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
-			if (mode & 2) gmt_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high];
+			if (mode & 2) gmt_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high]);
 		}
 		if (mode & 1) {	/* Tick the innermost contour */
 			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */

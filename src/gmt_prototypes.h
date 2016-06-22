@@ -171,7 +171,7 @@ EXTERN_MSC int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y
 EXTERN_MSC void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level);
 EXTERN_MSC void gmt_plotcanvas (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y, double angle, char *label, bool save_angle);
+EXTERN_MSC void gmt_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y, double angle, char *label);
 EXTERN_MSC int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
