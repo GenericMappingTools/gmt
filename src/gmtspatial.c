@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtspatial"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Geospatial operations on lines and polygons"
-#define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D},RG-,>TD,>TN+r"
+#define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D},RG-,>TD,>TI,>TN+r"
 
 #include "gmt_dev.h"
 
@@ -1323,11 +1323,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		bool same_feature, wrap;
-		unsigned int in;
+		unsigned int in, wtype;
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
-		char T1[GMT_BUFSIZ] = {""}, T2[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
+		char record[GMT_BUFSIZ] = {""}, T1[GMT_BUFSIZ] = {""}, T2[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		
@@ -1355,14 +1355,16 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else
 			C = D;	/* Compare with itself */
-			
-		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
+		
+		wtype    = (Ctrl->S.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
+		geometry = (Ctrl->S.active) ? GMT_IS_PLP     : GMT_IS_NONE;
+		if (wtype == GMT_IS_DATASET && (error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, wtype, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, wtype, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
@@ -1376,11 +1378,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S1 = C->table[tbl1]->segment[seg1];
 				if (S1->n_rows == 0) continue;
 				gmt_init_track (GMT, S1->data[GMT_Y], S1->n_rows, &ylist1);
-				for (tbl2 = 0; tbl2 < D->n_tables; tbl2++) {
+				for (tbl2 = (Ctrl->S.mode == POL_CLIP) ? 0 : tbl1; tbl2 < D->n_tables; tbl2++) {
 					for (seg2 = 0; seg2 < D->table[tbl2]->n_segments; seg2++) {
 						S2 = D->table[tbl2]->segment[seg2];
 						if (S2->n_rows == 0) continue;
-						if (Ctrl->S.mode != POL_CLIP) {
+						if (Ctrl->S.mode != POL_CLIP) {	/* So there is only one dataset being compared with itself */
 							same_feature = (external == 2 || internal == 2) ? (tbl1 == tbl2) : (tbl1 == tbl2 && seg1 == seg2);	/* What constitutes the same feature */
 							if (!internal && same_feature) continue;	/* Do not do internal crossings */
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
@@ -1462,7 +1464,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								gmt_M_free (GMT, kk);
 							}
 							else {	/* Just report */
-								if (mseg){
+								if (mseg) {
 									sprintf (T1, "%s-%" PRIu64, C->table[tbl1]->file[GMT_IN], seg1);
 									sprintf (T2, "%s-%" PRIu64, D->table[tbl2]->file[GMT_IN], seg2);
 								}
@@ -1470,7 +1472,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ-1);
 									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ-1);
 								}
-								for (px = 0; px < nx; px++) printf (fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
+								for (px = 0; px < nx; px++) {	/* Write these to output */
+									sprintf (record, fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
+									GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+								}
 							}
 							gmt_x_free (GMT, &XC);
 						}
