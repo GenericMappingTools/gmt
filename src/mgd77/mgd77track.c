@@ -815,7 +815,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 					gmt_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size,
 					                   &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label,
-					              angle, 5, form);
+					              angle, PSL_ML, form);
 					last_julian = calendar.day_y;
 				}
 				if (annot_tick[ANNOT] & 2) {	/* Distance mark */
@@ -828,7 +828,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 					gmt_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 *
 					                   Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] *
-					                   Ctrl->T.marker[mrk].font_size, label, angle, 7, form);
+					                   Ctrl->T.marker[mrk].font_size, label, angle, PSL_MR, form);
 				}
 			}
 			if (both && !(annot_tick[ANNOT] & 1) && (draw_tick[ANNOT] & 1)) {

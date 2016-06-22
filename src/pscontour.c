@@ -102,6 +102,7 @@ struct SAVE {
 	double cval;
 	unsigned int n;
 	struct GMT_PEN pen;
+	struct GMT_FONT font;
 	bool do_it, high;
 };
 
@@ -347,7 +348,10 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		gmt_setpen (GMT, &save[pol].pen);
 		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
-			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
+			if (mode & 1) {
+				form = gmt_setfont (GMT, &save[pol].font);
+				PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
+			}
 			if (mode & 2) gmt_add_label_record (GMT, T, x_mean, y_mean, 0.0, lbl[save[pol].high]);
 		}
 		if (mode & 1) {	/* Tick the innermost contour */
@@ -1443,6 +1447,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						gmt_M_memcpy (save[n_save].y, yp, m, double);
 						save[n_save].n = m;
 						gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+						gmt_M_memcpy (&save[n_save].font, &Ctrl->contour.font_label, 1, struct GMT_FONT);
 						save[n_save].do_it = true;
 						save[n_save].cval = cont[c].val;
 						n_save++;

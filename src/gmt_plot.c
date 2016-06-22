@@ -2483,7 +2483,7 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 		if (mr->label[2][0]) {	/* Wanted the north label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-			PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, 2, form);
+			PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, PSL_BC, form);
 		}
 	}
 }

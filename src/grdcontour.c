@@ -119,6 +119,7 @@ struct SAVE {
 	double y_min, y_max;
 	int n, np;
 	struct GMT_PEN pen;
+	struct GMT_FONT font;
 	int do_it, high;
 	enum grdcontour_contour_type kind;
 	char label[GMT_LEN64];
@@ -660,8 +661,6 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		gmt_M_free (GMT, s);	gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
 	}
 
-	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
-
 	/* Still not finished with labeling polar caps when the pole point plots as a line (e.g., -JN).
 	 * One idea would be to add help points to include the pole and used this polygon to compute where to
 	 * plot the label but then skip those points when drawing the line. */
@@ -679,7 +678,8 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			y_lbl = 0.5 * (save[pol].ylabel + save[k].ylabel);
 			if (mode & 1) {
 				gmt_setpen (GMT, &save[pol].pen);
-				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
+				form = gmt_setfont (GMT, &save[pol].font);
+				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}
 			save[k].do_it = false;
 			if (mode & 2) gmt_add_label_record (GMT, T, x_lbl, y_lbl, 0.0, lbl[save[pol].high]);
@@ -687,7 +687,8 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		else {
 			if (mode & 1) {
 				gmt_setpen (GMT, &save[pol].pen);
-				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
+				form = gmt_setfont (GMT, &save[pol].font);
+				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}
 			if (mode & 2) gmt_add_label_record (GMT, T, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high]);
 		}
@@ -1218,6 +1219,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					gmt_M_memcpy (save[n_save].x, x, n, double);
 					gmt_M_memcpy (save[n_save].y, y, n, double);
 					gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+					gmt_M_memcpy (&save[n_save].font, &Ctrl->contour.font_label, 1, struct GMT_FONT);
 					save[n_save].do_it = true;
 					save[n_save].cval = cval;
 					save[n_save].kind = closed;
