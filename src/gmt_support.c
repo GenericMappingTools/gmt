@@ -184,13 +184,13 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	}
 	/* Try the user's default directories */
 	if (gmtlib_getuserpath (GMT, &line[i], path)) {
-		if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+		if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
 		return NULL;	/* Yes, found so no problems */
 	}
 	/* Now must put our faith in the cpt path and hope it has a path that can help us */
 	if (cpt_path == NULL || cpt_path[0] == '<') {	/* Without an actual file path we must warn and bail */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
-		if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+		if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
 		return NULL;
 	}
 	j = (int)strlen (cpt_path);
@@ -201,12 +201,12 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 		cpt_path[j] = '/';	/* Restore the slash */
 		if (access (path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
-			if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+			if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
 			return NULL;
 		}
 		name = strdup (path);	/* Must use this image name instead as it contains the full working path */
 	}
-	if (pos > -1) line[pos] = c;	/* Restore the colorization modifiers */
+	if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
 	return (name);
 }
 
@@ -4772,7 +4772,7 @@ static int chmatch (const char *target, const char *pat) {
 		/* search for character list contained within brackets */
 		ptr = strchr (pat+1, *target);
 		if (ptr != 0 && ptr < end)
-			return end - pat + 1;
+			return (int)(end - pat + 1);
 		else
 			return 0;
 	}
@@ -6763,6 +6763,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
 	/* Scale all z-related variables in the CPT by scale */
 	unsigned int i;
+	gmt_M_unused(GMT);
 	for (i = 0; i < P->n_colors; i++) {
 		P->data[i].z_low  *= scale;
 		P->data[i].z_high *= scale;
@@ -6779,6 +6780,7 @@ void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
 /*! . */
 void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	unsigned int i, j, k;
+	gmt_M_unused(GMT);
 	/* Reverse the order of the colors, leaving the z arrangement intact */
 	for (i = 0, j = P->n_colors-1; i < P->n_colors; i++, j--) {
 		for (k = 0; k < 4; k++) {
@@ -8444,7 +8446,8 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
 				n_fields = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
 				if (n_fields < n_col) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %"
+					            PRIu64 " in file %s.\n",
 						n_fields, n_col, rec, G->file);
 					continue;
 				}
@@ -8470,15 +8473,17 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				k++;
 			}
 		}
-		G->f_n = k;
-		if ((G->f_n = k) == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
+		G->f_n = (unsigned int)k;
+		if ((G->f_n = (unsigned int)k) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n",
+			            G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n",
+			            G->flag, G->file);
 	}
 
 	return (error);
@@ -8601,15 +8606,17 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 				k++;
 			}
 		}
-		if ((G->f_n = k) == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
+		if ((G->f_n = (unsigned int)k) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n",
+			            G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 			if (n_col == 3) gmt_M_free (GMT, G->f_label);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n", G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n",
+			            G->flag, G->file);
 	}
 
 	return (error);
@@ -13446,10 +13453,12 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 /*! . */
 void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor) {
 	/* Adjust reference point based on size and justification of plotted item, towards a given anchor */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Dim x = %g y = %g, Reference x = %g y = %g\n", justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Dim x = %g y = %g, Reference x = %g y = %g\n",
+	            justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
 	ref->x += 0.5 * (anchor%4 - justify%4) * dim[GMT_X];
 	ref->y += 0.5 * (anchor/4 - justify/4) * dim[GMT_Y];
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Offset x = %g y = %g, Reference x = %g y = %g\n", justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Offset x = %g y = %g, Reference x = %g y = %g\n",
+	            justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
 	/* Also deal with any justified offsets if given */
 	if (justify%4 == 3)	/* Right aligned */
 		ref->x -= off[GMT_X];
@@ -13463,8 +13472,10 @@ void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double
 }
 
 bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
+	gmt_M_unused(GMT);
 	if (P == NULL) return false;	/* No settings given */
-	if (gmt_M_is_zero (P->end[BEG].offset) && gmt_M_is_zero (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return false;	/* No trims given */
+	if (gmt_M_is_zero (P->end[BEG].offset) && gmt_M_is_zero (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL)
+		return false;	/* No trims given */
 	return true;
 }
 

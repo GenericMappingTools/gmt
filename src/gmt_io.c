@@ -3627,7 +3627,7 @@ int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val) {
 	if ((p = strpbrk (s, GMT_LEN_UNITS))) {	/* Find location of first valid unit */
 		int c = p[0];	p[0] = '\0';	/* Chop off unit */
 		*val = atof (s);
-		p[0] = c;	/* Restore unit */
+		p[0] = (char)c;	/* Restore unit */
 		switch (c) {
 			case 'd': *val *= GMT->current.proj.DIST_KM_PR_DEG; break;			/* arc degree */
 			case 'm': *val *= GMT->current.proj.DIST_KM_PR_DEG * GMT_MIN2DEG; break;	/* arc minutes */
@@ -3827,7 +3827,8 @@ bool gmtlib_gap_detected (struct GMT_CTRL *GMT) {
 	if (!GMT->common.g.active || GMT->current.io.pt_no == 0) return (false);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see gmtlib_set_gap_param] are met */
 	for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
-		if ((GMT->common.g.get_dist[i] (GMT, GMT->common.g.col[i]) > GMT->common.g.gap[i]) != GMT->common.g.match_all) return (!GMT->common.g.match_all);
+		if ((GMT->common.g.get_dist[i] (GMT, GMT->common.g.col[i]) > GMT->common.g.gap[i]) != GMT->common.g.match_all)
+			return (!GMT->common.g.match_all);
 	}
 	return (GMT->common.g.match_all);
 }
@@ -3846,7 +3847,8 @@ int gmtlib_set_gap (struct GMT_CTRL *GMT) {
 	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	GMT->current.io.status = GMT_IO_GAP;
 	GMT->current.io.seg_no++;
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %" PRIu64 "\n",
+	            GMT->current.io.rec_no);
 	sprintf (GMT->current.io.segment_header, "Data gap detected via -g; Segment header inserted");
 	return (0);
 }
@@ -4051,14 +4053,14 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", out_file);
-			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments;
+			n_seg = (unsigned int)((GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments);
 			if ((error = gmtio_write_table (GMT, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
 		}
 		else {	/* Write to stream we set up earlier */
-			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments;
+			n_seg = (unsigned int)((GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments);
 			if ((error = gmtio_write_table (GMT, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
@@ -6539,14 +6541,14 @@ int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Text Table to file %s\n", out_file);
-			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments;
+			n_seg = (unsigned int)((GMT->current.io.skip_headers_on_outout) ? 1 : D->table[tbl]->n_segments);
 			if ((error = gmtio_write_texttable (GMT, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);
 			}
 		}
 		else {	/* Write to stream we set up earlier */
-			n_seg = (GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments;
+			n_seg = (unsigned int)((GMT->current.io.skip_headers_on_outout) ? 1 : D->n_segments);
 			if ((error = gmtio_write_texttable (GMT, fp, GMT_IS_STREAM, D->table[tbl], D->io_mode, n_seg))) {
 				if (close_file) gmt_fclose (GMT, fp);
 				return (error);

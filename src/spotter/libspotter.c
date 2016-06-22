@@ -1733,6 +1733,7 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	double tmp[3][3];
 #endif
 	double A, B, C, F, G, H, a2, b2, c2, r;
+	gmt_M_unused(GMT);
 	
 #ifdef DEBUG
 	if (override) {

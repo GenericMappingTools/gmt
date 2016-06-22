@@ -221,7 +221,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
+				                                   "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':	/* Invert table */
 				Ctrl->I.active = true;
@@ -265,13 +266,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active, "Syntax error: No input files expected unless -E is used\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high), "Syntax error -T option: Give z_min < z_max\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0, "Syntax error -T option: For interpolation, give z_inc > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active,
+	                                   "Syntax error: No input files expected unless -E is used\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
+	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high),
+	                                   "Syntax error -T option: Give z_min < z_max\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
+	                                   "Syntax error -T option: For interpolation, give z_inc > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
+	                                   "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
+	                                   "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
 	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
@@ -285,7 +292,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_makecpt (void *V_API, int mode, void *args) {
-	int i, nz, error = 0;
+	int i, nz = 0, error = 0;
 	unsigned int cpt_flags = 0;
 
 	double *z = NULL;
@@ -401,7 +408,8 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 
 	if (Pout == NULL) {	/* Meaning it was not created above */
-		if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
+		if (Ctrl->Q.mode == 2)
+			for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
 		/* Now we can resample the CPT and write out the result */
 

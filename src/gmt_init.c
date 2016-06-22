@@ -2338,6 +2338,7 @@ GMT_LOCAL void gmtinit_handle_dosfile (struct GMT_CTRL *GMT, char *in, int this_
 	 * colon items have been parsed, we replace the ; back to : */
 	int i, len, other = 1 - this_mark;
 	char mark[2] = {':', ';'};
+	gmt_M_unused(GMT);
 
 	if (!in)
 		return;	/* Nothing to work on */

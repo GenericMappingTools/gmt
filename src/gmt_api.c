@@ -5738,7 +5738,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		unsigned int k;
 		char **filelist = NULL;
 		if (!multiple_files_ok (family)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET.  Use GMT_Read_Group to read groups of other data types\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET. "
+			                                 "Use GMT_Read_Group to read groups of other data types\n");
 			return_null (API, GMT_ONLY_ONE_ALLOWED);
 		}
 		if ((n_files = gmtlib_glob_list (API->GMT, infile, &filelist)) == 0) {
@@ -5752,7 +5753,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Could not register file for input: \n", filelist[k]);
 				return_null (API, API->error);
 			}
-			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET)
+				return_null (API, GMT_NOTSET);	/* Some internal error... */
 			API->object[item]->selected = true;
 		}
 		gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
@@ -7898,7 +7900,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	strcpy (Out->header->remark, "Applied fftshift: kx,ky = (0,0) now at (n_columns/2 + 1,n_rows/2");
 
 	offset = Out->header->size / 2;
-	i_scale = 1.0  / Out->header->nm;
+	i_scale = (float)(1.0  / Out->header->nm);
 	for (row_in = 0; row_in < K->ny2; row_in++) {
 		row_out = (row_in + ny_2) % K->ny2;
 		for (col_in = 0; col_in < K->nx2; col_in++) {
@@ -8291,7 +8293,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *
 	 */
 
-	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku, n_out = 0, nn[2][2];
+	unsigned int n_keys, direction = 0, kind, pos = 0, n_items = 0, ku, n_out = 0, nn[2][2];
 	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
@@ -8548,9 +8550,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				satisfy = special_text[2];
 		}
 		if (kind == GMT_FILE_EXPLICIT)
-			GMT_Report (API, GMT_MSG_DEBUG, "%s: Option -%c%s includes a memory reference to %s argument # %d\n", S[direction], opt->option, opt->arg, LR[direction], pos);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s: Option -%c%s includes a memory reference to %s argument # %d\n",
+			            S[direction], opt->option, opt->arg, LR[direction], pos);
 		else
-			GMT_Report (API, GMT_MSG_DEBUG, "---: Option -%c%s includes no memory reference%s\n", opt->option, opt->arg, satisfy);
+			GMT_Report (API, GMT_MSG_DEBUG, "---: Option -%c%s includes no memory reference%s\n",
+			            opt->option, opt->arg, satisfy);
 		if (n_items == n_alloc) {
 			n_alloc <<= 1;
 			info = realloc (info, n_alloc * sizeof (struct GMT_RESOURCE));

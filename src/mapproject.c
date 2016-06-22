@@ -87,8 +87,8 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
 		bool active;
-		unsigned int mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
-		unsigned int sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		unsigned int mode;	/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
+		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
@@ -217,6 +217,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL void old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* [-L<ltable>[/[+|-]<unit>]][+] */
 	int k, slash;
+	gmt_M_unused(API);
 	Ctrl->L.file = strdup (arg);
 	k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
 	if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
@@ -229,7 +230,8 @@ GMT_LOCAL void old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJEC
 		Ctrl->L.unit = Ctrl->L.file[k];
 		k--;	/* Now points to either / or the optional -/+ mode setting */
 		Ctrl->L.sph = GMT_GREATCIRCLE;	/* Great circle distances */
-		if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
+		if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+'))
+			Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
 		Ctrl->L.file[slash] = '\0';
 	}
 }
@@ -287,8 +289,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 							break;
 					}
 					if (n == 3) {
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->A.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->A.lat), txt_b);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
+						                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X],
+						                                     &Ctrl->A.lon), txt_a);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
+						                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y],
+						                                     &Ctrl->A.lat), txt_b);
 					}
 					else
 						Ctrl->A.azims = true;
@@ -328,9 +334,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 						                                 "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					}
 					if (Ctrl->G.unit == 'c') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
-					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->G.lon), txt_a);
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->G.lat), txt_b);
+					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n",
+					                                   GMT_LEN_UNITS_DISPLAY);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
+					                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X],
+					                                     &Ctrl->G.lon), txt_a);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
+					                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y],
+					                                     &Ctrl->G.lat), txt_b);
 				}
 				else if (opt->arg[last] == '+') {				/* Got -G[[+|-]units]+ */
 					Ctrl->G.mode = GMT_MP_PAIR_DIST;
@@ -551,7 +562,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		GMT_Message (API, GMT_TIME_NONE, "  ID  Name                               Ellipsoid                 x     y     z   Region\n");
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 		for (i = 0; i < GMT_N_DATUMS; i++) {
-			(!strcmp (GMT->current.setting.proj_datum[i].name, "WGS 1984")) ? GMT_Message (API, GMT_TIME_NONE, "->") : GMT_Message (API, GMT_TIME_NONE,  "  ");
+			(!strcmp (GMT->current.setting.proj_datum[i].name, "WGS 1984")) ? GMT_Message (API, GMT_TIME_NONE, "->") :
+			          GMT_Message (API, GMT_TIME_NONE,  "  ");
 			GMT_Message (API, GMT_TIME_NONE, "%3ld %-34s %-23s %5.0f %5.0f %5.0f %s\n",
 			             i, GMT->current.setting.proj_datum[i].name, GMT->current.setting.proj_datum[i].ellipsoid,
 			             GMT->current.setting.proj_datum[i].xyz[0], GMT->current.setting.proj_datum[i].xyz[1],
@@ -678,7 +690,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		map_inv = &gmt_xy_to_geo;
 	}
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
-		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		                                GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 		xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
@@ -717,7 +730,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT_Message (API, GMT_TIME_NONE, "%s coordinates [degrees]\n", auxlat[Ctrl->N.mode/2]);
 		}
 		else {
-			GMT_Message (API, GMT_TIME_NONE, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			GMT_Message (API, GMT_TIME_NONE, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
+			             GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 			(Ctrl->I.active) ? GMT_Message (API, GMT_TIME_NONE, " <- ") : GMT_Message (API, GMT_TIME_NONE,  " -> ");
 			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
 			GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
@@ -754,8 +768,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			do_geo_conv = true;
 			/* Will need spherical trig so convert to geocentric latitudes if on an ellipsoid */
 			for (seg = 0; seg < xyline->n_segments; seg++) {
-				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
-					xyline->segment[seg]->data[GMT_Y][row] = gmt_lat_swap (GMT, xyline->segment[seg]->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {		/* Convert to geocentric */
+					xyline->segment[seg]->data[GMT_Y][row] = gmt_lat_swap (GMT, xyline->segment[seg]->data[GMT_Y][row], GMT_LATSWAP_G2O);
 				}
 			}
 		}
@@ -1023,7 +1037,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				else if (Ctrl->L.active) {	/* Compute closest distance to line */
 					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*data)[GMT_Y], GMT_LATSWAP_G2O) : (*data)[GMT_Y];	/* Convert to geocentric */
 					(void) gmt_near_lines (GMT, (*data)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
-					if (do_geo_conv && Ctrl->L.mode != GMT_MP_GIVE_FRAC) ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					if (do_geo_conv && Ctrl->L.mode != GMT_MP_GIVE_FRAC)
+						ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				}
 				else if (Ctrl->A.azims) {	/* Azimuth from previous point */
 					if (n_read_in_seg == 1)	/* First point has undefined azimuth since there is no previous point */
