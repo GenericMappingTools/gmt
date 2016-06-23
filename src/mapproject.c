@@ -214,7 +214,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL void old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* [-L<table>[/[+|-]<unit>]][+] */
 	int k, slash;
 	gmt_M_unused(API);
@@ -238,6 +238,7 @@ GMT_LOCAL void old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJEC
 			Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? GMT_FLATEARTH : GMT_GEODESIC;	/* Gave [-|+]unit */
 		Ctrl->L.file[slash] = '\0';
 	}
+	return 0;
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -371,7 +372,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p")))
-					old_L_parse (API, opt->arg, Ctrl);
+					n_errors += old_L_parse (API, opt->arg, Ctrl);
 				else {
 					Ctrl->L.file = gmt_get_filename (opt->arg);
 					if (gmt_get_modifier (opt->arg, 'u', txt_a)) {
