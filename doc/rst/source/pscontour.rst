@@ -26,7 +26,7 @@ Synopsis
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ] 
 [ |SYN_OPT-V| ]
-[ |-W|\ [**+**]\ *pen* ] 
+[ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
 [ |SYN_OPT-X| ] 
 [ |SYN_OPT-Y| ] 
 [ |SYN_OPT-b| ]
@@ -214,12 +214,14 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**+**\ ]\ *pen* :ref:`(more ...) <set-pens>`
-    Select contouring and set contour pen attributes. If the **+** flag
-    is prepended then the color of the contour lines are taken from the
-    CPT (see **-C**). If the **-** flag is prepended then the color
-    from the CPT is applied both to the contours and the contour
-    annotations. 
+**-W**\ [*type*]\ *pen*\ [**+c**\ [**l**\ \|\ **f**]] :ref:`(more ...) <set-pens>`
+    *type*, if present, can be **a** for annotated contours or **c** for
+    regular contours [Default]. The *pen* sets the attributes for the
+    particular line. Default pen for annotated contours: 0.75p,black.
+    Regular contours use pen 0.25p,black. If the modifier **+cl** is appended
+    then the color of the contour lines are taken from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to the contour annotations.  Use just **+c** for both effects.
 
 .. _-X:
 

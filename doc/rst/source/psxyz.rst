@@ -27,7 +27,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-**\ \|\ **+**][*pen*] ] 
+[ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
@@ -189,12 +189,12 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
+**-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. A leading **+** will
-    use the lookup color (via **-C**) for both symbol fill and outline
-    pen color, while a leading **-** will set outline pen color and turn
-    off symbol fill. 
+    width = default, color = black, style = solid]. If the modifier **+cl**
+    is appended then the color of the line are taken from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to symbol fill.  Use just **+c** for both effects.
 
 .. _-X:
 

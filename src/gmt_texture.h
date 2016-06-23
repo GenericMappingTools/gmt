@@ -55,6 +55,7 @@ struct GMT_PEN {
 	char style[GMT_PEN_LEN];	/* Uses points as unit internally */
 	/* For line modifications: */
 	unsigned int mode;		/* Line-type: PSL_LINEAR [0; default] or PSL_BEZIER [1] */
+	unsigned int cptmode;		/* How a cpt affects pens and fills: 0-none, 1=use CPT for line, 2 = use CPT for fill, 3 = both */
 	struct GMT_LINE_END end[2];	/* What happens at each end of the line (see above) */
 };
 

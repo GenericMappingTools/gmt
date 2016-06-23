@@ -5533,12 +5533,13 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	/* First chop off and processes any line modifiers :
+	 * +c[l|f] : Determine how a CPT (-C) affects pen and fill colors normally controlled via -W.
 	 * +s : Draw line via Bezier spline [Default is linear segments]
 	 * +o<offset(s) : Start and end line after an initial offset from actual coordinates [planned for 5.3]
 	 * +v[b|e]<size><vecargs>  : Draw vector head at line endings [planned for 5.3].
 	 */
 
-	if ((c = strchr (line, '+')) && strchr ("osv", c[1])) {	/* Found valid modifiers */
+	if ((c = strchr (line, '+')) && strchr ("cosv", c[1])) {	/* Found valid modifiers */
 		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64], *t = NULL, *t2 = NULL;
 		unsigned int pos = 0;
 		int n;
@@ -5566,6 +5567,13 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pen modifier found: %s\n", mods);
 		while ((gmt_strtok (mods, "+", &pos, p))) {
 			switch (p[0]) {
+				case 'c':	/* Effect of CPT on lines and fills */
+					switch (p[1]) {
+						case 'l': P->cptmode = 1; break;
+						case 'f': P->cptmode = 2; break;
+						default:  P->cptmode = 3; break;
+					}
+					break;
 				case 's':
 					if (processed_vector) break;	/* This is the +s within +v vector specifications */
 					P->mode = PSL_BEZIER;

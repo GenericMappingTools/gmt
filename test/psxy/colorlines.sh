@@ -1,7 +1,7 @@
 #!/bin/bash
 #       $Id$
 #
-# Set colors applied ot lines via cpt and -Z in header
+# Set colors applied to lines via cpt and -Z in header
 
 ps=colorlines.ps
 
@@ -22,4 +22,4 @@ gmt math -T0/5/1 T 0.2 MUL 6 ADD = >> lines.txt
 echo "> -Z67" >> lines.txt
 gmt math -T0/5/1 T 0.2 MUL 7 ADD = >> lines.txt
 gmt makecpt -Cjet -T0/7/1 > t.cpt
-gmt psxy -R-1/6/-1/8 -JX6i/9i -P -B1g1 -BWSne -Xc lines.txt -Ct.cpt -W-5p > $ps
+gmt psxy -R-1/6/-1/8 -JX6i/9i -P -B1g1 -BWSne -Xc lines.txt -Ct.cpt -W5p+cl > $ps

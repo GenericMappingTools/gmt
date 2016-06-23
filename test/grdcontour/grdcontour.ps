@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13683 [64-bit] Document from grdcontour
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0_r16616M [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Nov 12 06:51:21 2014
+%%CreationDate: Wed Jun 22 16:43:11 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 709 TM
 
 % PostScript produced by:
-%%GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/21.02 -P -K -Y1.5c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 21.02000000 -100.000 -60.000 3.000 21.020 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/21.02 -P -K -Y1.5c
+%@PROJ: xy -100.00000000 -60.00000000 3.00000000 21.02000000 -100.000 -60.000 3.000 21.020 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -678,7 +675,7 @@ clipsave
 0 3405 D
 -7559 0 D
 PSL_clip N
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0.745 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -695,10 +692,10 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_label_justify [ 6 6 6 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
@@ -787,6 +784,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 2 setlinecap
 N 0 3405 M 0 -3405 D S
 /PSL_A0_y 83 def
@@ -796,6 +794,7 @@ N 0 378 M -83 0 D S
 N 0 1323 M -83 0 D S
 N 0 2268 M -83 0 D S
 N 0 3213 M -83 0 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
@@ -993,8 +992,8 @@ O0
 0 4252 TM
 
 % PostScript produced by:
-%%GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/20 -O -K -Y9c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/20 -O -K -Y9c
+%@PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1005,7 +1004,7 @@ clipsave
 0 3213 D
 -7559 0 D
 PSL_clip N
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0.745 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -1021,10 +1020,10 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_label_justify [ 6 6 6 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
@@ -1108,6 +1107,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 2 setlinecap
 N 0 3213 M 0 -3213 D S
 /PSL_A0_y 83 def
@@ -1117,6 +1117,7 @@ N 0 378 M -83 0 D S
 N 0 1323 M -83 0 D S
 N 0 2268 M -83 0 D S
 N 0 3213 M -83 0 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
@@ -1312,8 +1313,8 @@ O0
 0 4252 TM
 
 % PostScript produced by:
-%%GMT: grdcontour -Ccont.dat xz-temp.nc -Jx0.4c/0.4c -R-100/-60/3/20 -Ba5f1 -BWNse -Gd4 -Wathin,grey -Wcdefault,grey -O -Y9c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour -Ccont.dat xz-temp.nc -Jx0.4c/0.4c -R-100/-60/3/20 -Ba5f1 -BWNse -Gd4 -Wathin,grey -Wcdefault,grey -O -Y9c
+%@PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1324,7 +1325,7 @@ clipsave
 0 3213 D
 -7559 0 D
 PSL_clip N
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0.745 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -1340,10 +1341,10 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_label_justify [ 6 6 6 6 ] def
 /PSL_label_font [
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
-	(0 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
+	(0.745 A 150 F0)
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
@@ -1427,6 +1428,7 @@ PSL_cliprestore
 U
 PSL_cliprestore
 25 W
+0 A
 2 setlinecap
 N 0 3213 M 0 -3213 D S
 /PSL_A0_y 83 def
@@ -1436,6 +1438,7 @@ N 0 378 M -83 0 D S
 N 0 1323 M -83 0 D S
 N 0 2268 M -83 0 D S
 N 0 3213 M -83 0 D S
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0

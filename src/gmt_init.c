@@ -5951,7 +5951,7 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	\param string ...
 */
 void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode) {
-	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all */
+	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c ", option);
 	gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
@@ -5982,6 +5982,12 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 		gmt_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
 		gmt_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
 		gmt_message (GMT, "\t        See vector specifications for details. Note: +v must be last modifier for a pen.\n");
+	}
+	if (mode & 8) {
+		gmt_message (GMT, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
+		gmt_message (GMT, "\t          Append l to let pen colors follow the CPT setting.\n");
+		gmt_message (GMT, "\t          Append f to let fill/font colors follow the CPT setting.\n");
+		gmt_message (GMT, "\t          Default is both effects.\n");
 	}
 }
 

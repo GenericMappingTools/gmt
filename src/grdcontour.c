@@ -85,10 +85,10 @@ struct GRDCONTOUR_CTRL {
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label [-+] */
 	} T;
-	struct GRDCONTOUR_W {	/* -W[+]<type><pen> */
+	struct GRDCONTOUR_W {	/* -W[a|c]<pen>[+c[l|f]] */
 		bool active;
-		bool color_cont;
-		bool color_text;
+		bool cpt_effect;
+		unsigned int cptmode;	/* Apply to both a&c */
 		struct GMT_PEN pen[2];
 	} W;
 	struct GRDCONTOUR_Z {	/* -Z[<fact>[/shift>]][p] */
@@ -167,7 +167,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[+]<type><pen>]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_do_OPT, GMT_c_OPT, GMT_ho_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
@@ -232,8 +232,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen:  %s.\n", gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append l to let pen colors follow the CPT setting (requires -C).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append f to let fill/font colors follow the CPT setting.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
@@ -289,9 +291,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, id;
+	unsigned int n_errors = 0, n_files = 0, id, reset = 0;
 	int j, k, n;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -437,10 +439,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'W':	/* Pen settings */
 				Ctrl->W.active = true;
-				k = 0;
-				if (opt->arg[k] == '+') Ctrl->W.color_cont = true, k++;
-				if (opt->arg[k] == '-') Ctrl->W.color_cont = Ctrl->W.color_text = true, k++;
-				j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
+				k = reset = 0;
+				if (strchr ("-+", opt->arg[0])) {	/* Definitively old-style args */
+					if (opt->arg[k] == '+') Ctrl->W.cptmode = 1, k++;
+					if (opt->arg[k] == '-') Ctrl->W.cptmode = 3, k++;
+					j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
+				}
+				else {
+					if ((c = strstr (opt->arg, "+c"))) {	/* Gave +c modifier - apply to both pens */
+						switch (c[2]) {
+							case 'l': Ctrl->W.cptmode = 1; break;
+							case 'f': Ctrl->W.cptmode = 2; break;
+							default:  Ctrl->W.cptmode = 3; break;
+						}
+						c[0] = 0;	/* Temporarily chop of */
+						reset = 1;
+					}
+					j = (opt->arg[0] == 'a' || opt->arg[0] == 'c') ? k+1 : k;
+				}
 				if (j == k) {	/* Set both */
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
@@ -462,6 +478,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					}
 					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
 				}
+				if (reset) c[0] = '+';	/* Restore */
+				if (Ctrl->W.cptmode) Ctrl->W.cpt_effect = true;
 				break;
 			case 'Z':	/* For scaling or phase data */
 				Ctrl->Z.active = true;
@@ -488,8 +506,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
 	                                 "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
-	                                 "Syntax error -W option: + or - only valid if -C sets a CPT\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cptmode && !Ctrl->C.cpt,
+	                                 "Syntax error -W option: Modifier +c only valid if -C sets a CPT\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1186,15 +1204,16 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		id = (cont_type[c] == 'A' || cont_type[c] == 'a') ? 1 : 0;
 
 		Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
-		if (Ctrl->W.color_cont) {	/* Override pen color according to CPT */
-			gmt_get_rgb_from_z (GMT, P, cval, rgb);
-			gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
+		if (Ctrl->W.cpt_effect) {
+			if (Ctrl->W.cptmode & 1) {	/* Override pen color according to CPT */
+				gmt_get_rgb_from_z (GMT, P, cval, rgb);
+				gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
+			}
+			if (Ctrl->W.cptmode & 2)	/* Override label color according to CPT */
+				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 		}
-		if (Ctrl->W.color_text)	/* Override label color according to CPT */
-			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 		else
 			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
-
 		n_alloc = 0;
 		begin = true;
 
