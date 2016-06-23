@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-Tv|\ *vert_file* OR |Tr|**\|s**\ *raw_file*
+**gmtgravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file*
 [ |-C|\ *density* ]
 [ |-D| ]
 [ |-E|\ *thickness* ]
