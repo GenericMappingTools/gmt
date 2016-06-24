@@ -1074,10 +1074,14 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 		else if (!strchr ("{}()-", s[k][K_DIR])) {	/* Key letter Z not {|(|}|)|-: Means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >X} to >D} only when -M is used.  Also, modifiers may be involved.
 			   e.g, gmtspatial : New key “”>TN+r” means if -N+r given then set >T}.  Just giving -N will not trigger the change.
-			   e.g., pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R then set to >T} */
+			   e.g., pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R then set to >T}.
+			   If X is not - then we will find the other KEY with X and select that as the one to change; this could
+			   be used to change the primary INPUT type.  For instance, grdimage expects grid input (<G{+) but with
+			   magic sequence <ID we change <G{+ to <I{+.  */
 			magic = s[k][K_DIR];
 			if ((opt = GMT_Find_Option (API, magic, head))) {	/* Got the magic option that changes output type */
 				char modifier[3] = {'+', '?', 0};	/* We will replace ? with an actual modifier */
+				size_t this_k;
 				if (o_id == GMT_NOTSET)
 					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
 				/* Check if modifier(s) were given also and that one of them were selected */
@@ -1103,9 +1107,23 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				}
 				else	/* true since we found the option and no modifier given */
 					change_type = true;
+				if (s[k][K_OPT] != '-') {	/* Find the relevant option to change [primary output key] */
+					for (kk = 0, this_k = n; kk < n; kk++) {
+						if (kk == k || s[kk] == NULL) continue;
+						if (s[kk][K_OPT] == s[k][K_OPT])
+							this_k = kk;
+					}
+					if (this_k == n) this_k = o_id;
+				}
+				else
+					this_k = o_id;
 				if (change_type) {
-					s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
-					s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
+					int new_family, old_family;
+					(void)api_key_to_family (API, s[k], &new_family, &geometry);
+					(void)api_key_to_family (API, s[this_k], &old_family, &geometry);
+					if (new_family != old_family) int_swap (n_to_add[new_family], n_to_add[old_family]);	/* Must swap our counts */
+					s[this_k][K_FAMILY] = s[k][K_FAMILY];	/* Required input/output now implies this data type */
+					s[this_k][K_OPT]    = s[k][K_OPT];	/* Required input/output now implies this option */
 				}
 			}
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
