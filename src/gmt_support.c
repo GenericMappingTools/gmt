@@ -13271,8 +13271,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			int n2;
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 			arg[n] = 0;	/* Chop off modifiers temporarily */
-			if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) return NULL;	/* Not so good */
-			arg[n] = '+';	/* Restore modifiers */
+			if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) {
+				arg[n] = '+';	/* Restore modifiers */
+				return NULL;	/* Not so good */
+			}
 		}
 		else { /* No such modifiers given, so just slashes or nothing follows */
 			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) return NULL;	/* Not so good */

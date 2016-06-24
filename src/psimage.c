@@ -133,6 +133,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, n_files = 0;
 	int n;
+	bool p_fail = false;
 	char string[GMT_LEN256] = {""}, letter, *p = NULL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[4] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -162,7 +163,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 			case 'D':
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
-				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p)) == NULL) {	/* Failed basic parsing */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -D: Basic parsing of reference point in %s failed\n", opt->arg);
+					p_fail = true;
+					n_errors++;
+				}
 				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
 					/* Required modifier +w OR +r */
@@ -284,7 +289,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
+	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Syntax error -D option: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,

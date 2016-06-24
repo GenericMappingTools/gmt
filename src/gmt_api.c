@@ -908,8 +908,8 @@ GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_
 	*first_ID = GMT_NOTSET;	/* Not found yet */
 	for (i = n = 0; i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				   /* A freed object, skip */
-		if (API->object[i]->direction != (int)direction) continue; /* Wrong direction */
-		if (API->object[i]->geometry  != (int)geometry) continue;  /* Wrong geometry */
+		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue; /* Wrong direction */
+		if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;  /* Wrong geometry */
 		if (API->object[i]->status    != GMT_IS_UNUSED) continue;  /* Already used */
 		if (family != API->object[i]->family) continue;		   /* Wrong data type */
 		n++;	/* Found one that satisfied requirements */
@@ -1118,7 +1118,7 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				else
 					this_k = o_id;
 				if (change_type) {
-					int new_family, old_family;
+					int new_family = 0, old_family = 0;
 					(void)api_key_to_family (API, s[k], &new_family, &geometry);
 					(void)api_key_to_family (API, s[this_k], &old_family, &geometry);
 					if (new_family != old_family) int_swap (n_to_add[new_family], n_to_add[old_family]);	/* Must swap our counts */
