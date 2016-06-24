@@ -7308,8 +7308,16 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image) {
 	/* Free contents of image pointer */
 	if (!I) return;	/* Nothing to deallocate */
-	if (free_image) gmt_M_free_aligned (GMT, I->data);
-	gmt_M_free (GMT, I->header);
+	if (free_image && I->data) {
+		if (I->alloc_mode == GMT_ALLOC_INTERNALLY)
+			gmt_M_free_aligned (GMT, I->data);
+	}
+	if (I->header) {	/* Free the header structure and anything allocated by it */
+		gmt_M_str_free (I->header->ProjRefWKT);
+		gmt_M_str_free (I->header->ProjRefPROJ4);
+		gmt_M_str_free (I->header->pocket);
+		gmt_M_free (GMT, I->header);
+	}
 	gmt_M_free (GMT, I->colormap);
 }
 
