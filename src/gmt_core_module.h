@@ -104,7 +104,6 @@ EXTERN_MSC int GMT_sphtriangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_splitxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_surface_mt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_surface (void *API, int mode, void *args);
-EXTERN_MSC int GMT_surface (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);

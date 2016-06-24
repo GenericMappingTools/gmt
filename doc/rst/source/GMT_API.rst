@@ -1134,13 +1134,19 @@ and pass the ``par`` array as indicated below:
 
   **GMT_IS_GRID**
     An empty :ref:`GMT_GRID <struct-grid>` structure with a header is allocated; the data
-    array is NULL. The ``par`` argument is not used. Here ``wesn`` and ``inc`` can
-    be NULL but than **-R** and **-I** must have been set because they are inquired to
-    get the necessary info. If they were not set, than ``wesn`` and ``inc`` must in
-    fact be transmitted.
+    array is NULL.  Use ``registration`` to choose either gridline (GMT_GRID_PIXEL_REG) or pixel
+    (GMT_GRID_NODE_REG) registration.  The domain can be prescribed on one of two ways:
+    (1) The ``par`` argument is NULL. Then ``wesn`` and ``inc`` can also be NULL but only if
+    **-R** and **-I** have been set because they are inquired to get the necessary info. If they
+    were not set, than ``wesn`` and ``inc`` must in fact be transmitted. 
+    (2) The ``par`` argument is not NULL but both ``wesn`` and ``inc`` are NULL.
+    Now, par[0] has the number of columns and par[1] has the number of rows in the grid.  Here,
+    ``inc`` will be set to 1/1 and ``wesn`` will be set to 0/n_columns/0/n_rows (pixel registration)
+    or 0/n_columns-1/0/n_rows-1 (gridline registration).
 
   **GMT_IS_IMAGE**
-    Same as **GMT_IS_GRID** above but return an empty :ref:`GMT_IMAGE <struct-image>`
+    Same as **GMT_IS_GRID** above but return an empty :ref:`GMT_IMAGE <struct-image>`.  In either
+    way of specification you may use par[2] to pass the number of image bands [1].
 
   **GMT_IS_DATASET**
     An empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
@@ -1164,16 +1170,18 @@ and pass the ``par`` array as indicated below:
 
   **GMT_IS_VECTOR**
     An empty :ref:`GMT_VECTOR <struct-vector>` structure with ``par[0]`` column entries is allocated.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
+    The number of rows can be specified in one of two ways: (1) Set the number of rows via ``par[1]``;
+    ``wesn``, ``inc``, and ``registration`` argument are ignored.
+    (2) Specify ``wesn``, ``inc``, and ``registration`` and the number of rows are computed form these
+    parameters instead.  The ``data`` argument should be NULL.
 
   **GMT_IS_MATRIX**
-    An empty :ref:`GMT_MATRIX <struct-matrix>` structure is allocated. ``par[2]`` indicates
-    the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.  Here,
-    par[0] is the number of columns while par[1] has the number of rows.  The ``data`` argument should be NULL.
+    An empty :ref:`GMT_MATRIX <struct-matrix>` structure is allocated. The domain can be prescribed on one of two ways:
+    (1) Here, ``par[0]`` is the number of columns while ``par[1]`` has the number of rows.  Also,
+    ``par[2]`` indicates the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
+    (2) Pass ``wesn``, ``inc``, ``registration`` and we compute the dimensions of the matrix.
+    The ``data`` argument should be NULL.
 
-For the second approach, you
-instead pass ``wesn``, ``inc``, and ``registration`` and leave ``par`` as NULL
-(or with all elements equal 0).
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the GMT default. The ``mode`` determines what is actually
 allocated when you have chosen grids or images. As for GMT_Read_Data_

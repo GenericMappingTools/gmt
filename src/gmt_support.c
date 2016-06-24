@@ -6764,8 +6764,6 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		P->data[i].z_high = z_start + (P->data[i].z_high - z_min) * scale;
 		P->data[i].i_dz /= scale;
 	}
-	/* Once we have stretched the CPT it is no longer a normalized CPT with a hinge: */
-	P->has_range = P->has_hinge = 0;
 }
 
 void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
@@ -7065,6 +7063,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
+
+	/* When writing the CPT to file it is no longer a normalized CPT with a hinge */
+	P->has_range = P->has_hinge = 0;
 
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
