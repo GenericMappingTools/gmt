@@ -362,6 +362,7 @@ struct GMT_GRID_HEADER {
 	unsigned int xy_mode[2];	 /* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int xy_unit[2];	 /* Unit enum specified via +u<unit> */
 	double xy_unit_to_meter[2];	 /* Scale, given xy_unit, to convert xy from <unit> to meters */
+	uint64_t (*index_function) (struct GMT_GRID_HEADER *, unsigned int, unsigned int, unsigned int);	/* Pointer to index function (for images only) */
 #ifdef GMT_BACKWARDS_API
 	uint32_t nx;
 	uint32_t ny;
@@ -657,6 +658,12 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 /*============================================================ */
 /*=============== GMT_IMAGE Public Declaration =============== */
 /*============================================================ */
+
+/* These are different image layout modes */
+enum GMT_enum_image {
+	GMT_LAYOUT_BSQ = 0,
+	GMT_LAYOUT_BIP,
+	GMT_LAYOUT_BIL};
 
 /* The GMT_IMAGE container is used to pass user images in from the GDAL bridge */
 

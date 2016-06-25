@@ -134,11 +134,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) {
-					n_errors++;	/* Failed basic parsing */
-					break;
-				}
 				if (strstr (opt->arg, "+w")) {	/* New syntax: 	*/
+					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) {
+						n_errors++;	/* Failed basic parsing */
+						break;
+					}
 					/* Args are +w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
@@ -157,7 +157,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				}
 				else {	/* Backwards handling of old syntax. Args are args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
 					Ctrl->D.justify = PSL_TC;	/* Backwards compatible default justification */
-					n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 					n_errors += gmt_M_check_condition (GMT, n < 2, "Error: Syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
 					switch (n) {

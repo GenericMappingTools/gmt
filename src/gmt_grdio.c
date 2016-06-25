@@ -2634,6 +2634,21 @@ void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsign
 	gmtlib_contract_headerpad (GMT, h, orig_pad, orig_wesn);
 }
 
+uint64_t gmtlib_get_index_from_BSQ (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
+	/* Get linear index of an array with a band-interleaved layout */
+	return (uint64_t)col + ((uint64_t)row * (uint64_t)h->n_columns) + (uint64_t)(layer * h->n_bands);
+}
+
+uint64_t gmtlib_get_index_from_BIP (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
+	/* Get linear index of an array with a pixel-interleaved layout */
+	return ((uint64_t)col * (uint64_t)h->n_bands) + (uint64_t)layer + ((uint64_t)row * (uint64_t)h->n_columns * (uint64_t)h->n_bands);
+}
+
+uint64_t gmtlib_get_index_from_BIL (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
+	/* Get linear index of an array with a line-interleaved layout */
+	return (uint64_t)col + ((uint64_t)layer * (uint64_t)h->n_columns) + ((uint64_t)row * (uint64_t)h->n_columns * (uint64_t)h->n_bands);
+}
+
 #ifdef HAVE_GDAL
 GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread)
 {

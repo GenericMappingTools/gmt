@@ -7157,6 +7157,51 @@ int64_t GMT_Get_Index_ (void *h, int *row, int *col) {
 }
 #endif
 
+/*! Convenience function to get grid or image node */
+int64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
+	/* V_API not used but all API functions take V_API so no exceptions! */
+	gmt_M_unused(V_API);
+	return (header->index_function (header, row, col, layer));
+}
+
+#ifdef FORTRAN_API
+int64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Pixel (GMT_FORTRAN, h, *row, *col, *layer));
+}
+#endif
+
+/*! Specify image layout */
+int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, int mode) {
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	switch (mode) {
+		case GMT_LAYOUT_BSQ:	/* band-interleaved layout */
+			header->index_function = gmtlib_get_index_from_BSQ;
+			break;
+		case GMT_LAYOUT_BIP:	/* pixel-interleaved layout */
+			header->index_function = gmtlib_get_index_from_BIP;
+			break;
+		case GMT_LAYOUT_BIL:	/* line-interleaved layout */
+			header->index_function = gmtlib_get_index_from_BIL;
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for image layout [%u]\n", mode);
+			API->error = GMT_NOERROR;
+			break;
+	}
+	return API->error;
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Index_ (void *h, int *mode) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Index (GMT_FORTRAN, h, *mode));
+}
+#endif
+
 /*! . */
 double *GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void *container) {
 	/* Return an array of coordinates for the nodes along the specified dimension.
