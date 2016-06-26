@@ -456,7 +456,7 @@ GMT_LOCAL void *api_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_
 		case GMT_IS_DATASET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_DATASET *);	break;
 		case GMT_IS_TEXTSET:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_TEXTSET *);	break;
 		case GMT_IS_PALETTE:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_PALETTE *);	break;
-		case GMT_IS_POSTSCRIPT:		p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_POSTSCRIPT *);		break;
+		case GMT_IS_POSTSCRIPT:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_POSTSCRIPT *);	break;
 		case GMT_IS_IMAGE:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_IMAGE *);		break;
 		case GMT_IS_MATRIX:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_MATRIX *);	break;
 		case GMT_IS_VECTOR:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_VECTOR *);	break;
@@ -464,8 +464,8 @@ GMT_LOCAL void *api_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_
 	return (p);
 }
 
-/*! p_func_size_t is used as a pointer to functions that returns a size_t dimension */
-typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
+/*! p_func_uint64_t is used as a pointer to functions that returns a uint64_t index */
+typedef uint64_t (*p_func_uint64_t) (uint64_t row, uint64_t col, uint64_t dim);
 
 #ifdef DEBUG
 /*! Can be used to display API->object info wherever it is called as part of a debug operation */
@@ -1204,51 +1204,52 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 /* Mapping of internal [row][col] indices to a single 1-D index.
  * Internally, row and col starts at 0.  These will be accessed
  * via pointers to these functions, hence they are not macros.
+ * They apply to GMT_MATRIX items, NOT grids/images with pads.
  */
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_c_normal (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_c_normal (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for C normal row-major grid */
-	return (((size_t)row * dim) + (size_t)col);	/* Normal grid */
+	return ((row * dim) + col);	/* Normal scanline grid */
 }
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_c_cplx_real (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_c_cplx_real (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for C complex row-major grid, real component */
-	return (2*((size_t)row * dim) + (size_t)col);	/* Complex grid, real(1) component */
+	return (2ULL*(row * dim) + col);	/* Complex scanline grid, real(1) component */
 }
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_c_cplx_imag (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_c_cplx_imag (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for C complex row-major grid, imaginary component */
-	return (2*((size_t)row * dim) + (size_t)col + 1ULL);	/* Complex grid, imag(2) component */
+	return (2ULL*(row * dim) + col + 1ULL);	/* Complex grid, imag(2) component */
 }
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_f_normal (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_f_normal (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for Fortran column-major grid */
-	return (((size_t)col * dim) + (size_t)row);
+	return ((col * dim) + row);
 }
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_f_cplx_real (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_f_cplx_real (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for Fortran complex column-major grid, real component */
-	return (2*((size_t)col * dim) + (size_t)row);	/* Complex grid, real(1) */
+	return (2ULL*(col * dim) + row);	/* Complex grid, real(1) */
 }
 
 /*! . */
-GMT_LOCAL size_t api_2d_to_index_f_cplx_imag (uint64_t row, uint64_t col, size_t dim) {
+GMT_LOCAL uint64_t api_2d_to_index_f_cplx_imag (uint64_t row, uint64_t col, uint64_t dim) {
 	/* Maps (row,col) to 1-D index for Fortran complex column-major grid, imaginary component  */
-	return (2*((size_t)col * dim) + (size_t)row + 1ULL);	/* Complex grid, imag(2) component */
+	return (2ULL*(col * dim) + row + 1ULL);	/* Complex grid, imag(2) component */
 }
 
 /*! . */
-GMT_LOCAL p_func_size_t api_get_2d_to_index (struct GMTAPI_CTRL *API, enum GMT_enum_fmt shape, unsigned int mode) {
+GMT_LOCAL p_func_uint64_t api_get_2d_to_index (struct GMTAPI_CTRL *API, enum GMT_enum_fmt shape, unsigned int mode) {
 	/* Return pointer to the required 2D-index function above.  Here
 	 * shape is either GMT_IS_ROW_FORMAT (C) or GMT_IS_COL_FORMAT (Fortran);
 	 * mode is either 0 (regular grid), GMT_GRID_IS_COMPLEX_REAL (complex real) or GMT_GRID_IS_COMPLEX_IMAG (complex imag)
 	 */
-	p_func_size_t p = NULL;
+	p_func_uint64_t p = NULL;
 
 	switch (mode & GMT_GRID_IS_COMPLEX_MASK) {
 		case GMT_GRID_IS_REAL:
@@ -1282,6 +1283,77 @@ GMT_LOCAL void api_index_to_2d_f (int *row, int *col, size_t index, int dim, int
 	*row = (index % dim);
 }
 #endif
+
+/* Mapping of internal [row][col][layer] indices to a single 1-D index for images.
+ * Internally, row and col starts at 0.  These will be accessed
+ * via pointers to these functions, hence they are not macros.
+ */
+
+GMT_LOCAL uint64_t api_get_index_from_TRB (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index of an array with a band-interleaved layout RRR...RGGG...GBBB...B */
+	return (h->pad[XLO] + col) + ((row + h->pad[YHI]) * h->mx) + (layer * h->size);
+}
+
+GMT_LOCAL uint64_t api_get_index_from_TRP (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index of an array with a pixel-interleaved layout RGBRGBRGB...*/
+	return ((h->pad[XLO] + col) * h->n_bands) + layer + ((row + h->pad[YHI]) * h->mx * h->n_bands);
+}
+
+GMT_LOCAL uint64_t api_get_index_from_TRL (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index of an array with a line-interleaved layout R...RG..GB...BR...RG...GB...B...*/
+	return (h->pad[XLO] + col) + (layer * h->mx) + ((row + h->pad[YHI]) * h->mx * h->n_bands);
+}
+
+GMT_LOCAL uint64_t api_get_index_from_TRS (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index of an default GMT grid */
+	gmt_M_unused(layer);
+	return (gmt_M_ijp (h, row, col));
+}
+
+GMT_LOCAL uint64_t api_get_index_from_TRR (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index to the real component of an default complex GMT grid */
+	gmt_M_unused(layer);
+	return (2ULL*gmt_M_ijp (h, row, col));
+}
+
+GMT_LOCAL uint64_t api_get_index_from_TRI (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+	/* Get linear index to the imag component of an default complex GMT grid */
+	gmt_M_unused(layer);
+	return (2ULL*gmt_M_ijp (h, row, col)+1ULL);
+}
+
+/*! . */
+GMT_LOCAL unsigned int api_decode_layout (struct GMTAPI_CTRL *API, const char *code, enum GMT_enum_family *family) {
+	/* Convert the 3-letter grid/image layout code to a single integer mode */
+	unsigned int bits = 0;	/* Default value */
+	*family = GMT_IS_IMAGE;
+	switch (code[0]) {	/* Char 1: The Y direction */
+		case 'T':	break;
+		case 'B':	bits = 1; break;
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for y-direction grid/image layout.  Must be T or B\n", code[0]);
+			break;
+	}
+	switch (code[1]) {	/* Char 2: The X direction */
+		case 'L':	break;
+		case 'R':	bits |= 2; break;
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for x-direction grid/image layout.  Must be L or R\n", code[1]);
+			break;
+	}
+	switch (code[2]) {	/* Char 3: Grids: single, complex-real, complex-imag.  Images: band interleaving mode */
+		case 'S':	*family = GMT_IS_GRID; break;	/* Single-valued grid */
+		case 'R':	bits |= 4; *family = GMT_IS_GRID; break;	/* Real component of complex grid */ 
+		case 'I':	bits |= 8; *family = GMT_IS_GRID; break;	/* Imaginary component of complex grid */ 
+		case 'B':	break;			/* r/g/b separated into three bands (layers) */
+		case 'L':	bits |= 4; break;	/* r/g/b separated into three lines */ 
+		case 'P':	bits |= 8; break;	/* r/g/b separated into three values per pixel */ 
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for type of grid or image layout.  Must be SRI (grids) or BLP (images)\n", code[1]);
+			break;
+	}
+	return (bits);
+}
 
 /*! . */
 GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
@@ -2303,7 +2375,7 @@ int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	char M_file[GMT_BUFSIZ] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	gmt_M_unused(mode);
 
@@ -2579,7 +2651,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	bool via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
 	uint64_t row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -2954,7 +3026,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	uint64_t tbl, col, row_out, row, seg, ij;
 	bool save;
 	double value;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_DATASET *D_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -3377,7 +3449,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	uint64_t i0, i1, j0, j1, ij, ij_orig, row, col;
 	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
 	double dx, dy, d;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -3664,7 +3736,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 	size_t size;
 	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
 	double dx, dy, d;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -3914,7 +3986,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	uint64_t row, col, i0, i1, j0, j1, ij, ijp, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_putfunction api_put_val = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
@@ -6211,7 +6283,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	uint64_t *p = NULL, col, ij, n_use, col_pos, n_columns = 0;
 	bool get_next_record;
 	void *record = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *DT_obj = NULL;
@@ -6478,7 +6550,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	uint64_t *p = NULL, col, ij;
 	char *s = NULL;
 	double *d = NULL, value;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_putfunction api_put_val = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -7147,7 +7219,7 @@ void *GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned i
 int64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
 	gmt_M_unused(V_API);
-	return (gmt_M_ijp (header, row, col));
+	return (header->index_function (header, row, col, 0));
 }
 
 #ifdef FORTRAN_API
@@ -7172,24 +7244,52 @@ int64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
 #endif
 
 /*! Specify image layout */
-int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, int mode) {
+int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 	struct GMTAPI_CTRL *API = NULL;
+	enum GMT_enum_family family;
+	unsigned int mode;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	switch (mode) {
-		case GMT_LAYOUT_BSQ:	/* band-interleaved layout */
-			header->index_function = gmtlib_get_index_from_BSQ;
+	mode = api_decode_layout (API, code, &family);
+	switch (family) {
+		case GMT_IS_GRID:
+			switch (mode) {
+				case 0:	/* Default scanline C grid */
+					header->index_function = api_get_index_from_TRS;
+					break;
+				case GMT_LAYOUT_BIP:	/* Same for real component in complex grid */
+					header->index_function = api_get_index_from_TRR;
+					break;
+				case GMT_LAYOUT_BIL:	/* Same for imag component in complex grid */
+					header->index_function = api_get_index_from_TRI;
+					break;
+				default:
+					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for grid layout [%u]\n", mode);
+					API->error = GMT_NOT_A_VALID_MODULE;
+					break;
+			}
 			break;
-		case GMT_LAYOUT_BIP:	/* pixel-interleaved layout */
-			header->index_function = gmtlib_get_index_from_BIP;
-			break;
-		case GMT_LAYOUT_BIL:	/* line-interleaved layout */
-			header->index_function = gmtlib_get_index_from_BIL;
+		case GMT_IS_IMAGE:
+			switch (mode) {
+				case GMT_LAYOUT_BSQ:	/* band-interleaved layout */
+					header->index_function = api_get_index_from_TRB;
+					break;
+				case GMT_LAYOUT_BIP:	/* pixel-interleaved layout */
+					header->index_function = api_get_index_from_TRP;
+					break;
+				case GMT_LAYOUT_BIL:	/* line-interleaved layout */
+					header->index_function = api_get_index_from_TRL;
+					break;
+				default:
+					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for image layout [%u]\n", mode);
+					API->error = GMT_NOT_A_VALID_MODULE;
+					break;
+			}
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for image layout [%u]\n", mode);
-			API->error = GMT_NOERROR;
+			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized family for api_decode_layout [%s]\n", code);
+			API->error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
 	return API->error;
@@ -9409,7 +9509,7 @@ GMT_LOCAL void *api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET 
 	struct GMT_DATATABLE *D = NULL;
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_putfunction api_put_val = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 
 	if (alloc) {	/* Must allocate the output matrix */
 		if ((Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT)) == NULL) return (NULL);
@@ -9488,6 +9588,29 @@ GMT_LOCAL void *api_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET 
 
 /* GMT_TEXTSET to GMT_* : */
 
+GMT_LOCAL bool text2double_is_viable (struct GMT_TEXTSET *In) {
+	/* Determines if all records in the textset can be converted to floating point data */
+	bool viable = true;
+	uint64_t tbl, seg, row, k;
+	struct GMT_TEXTTABLE *T = NULL;
+	struct GMT_TEXTSEGMENT *S = NULL;
+	for (tbl = 0; viable && tbl < In->n_tables; tbl++) {
+		T = In->table[tbl];
+		for (seg = 0; viable && seg < T->n_segments; seg++) {
+			S = T->segment[seg];	/* Shorthand */
+			for (row = 0; viable && row < S->n_rows; row++) {
+				for (k = 0; viable && k < strlen (S->data[row]); k++) {
+					if (!strncmp (&S->data[row][k], "NaN", 3U))
+						k += 2;	/* Skip the NaN text */
+					else if (!strchr ("0123456789.,; -+eE", S->data[row][k]))
+						viable = false;
+				}
+			}
+		}
+	}
+	return viable;
+}
+
 GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *In, struct GMT_DATASET *Out, unsigned int header, unsigned int dim, unsigned int mode) {
 	/* Convert a textset to dataset.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
@@ -9496,6 +9619,7 @@ GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 	 * If mode == GMT_WRITE_TABLE_SEGMENT then we combine all segments into a SINGLE segment in ONE table
 	 * If mode == GMT_WRITE_TABLE then we collect all segments into ONE table.
 	 * If mode == GMT_WRITE_SEGMENT then we combine segments into ONE segment per table.
+	 * If header & GMT_STRICT_CONVERSION then we only do the conversion if possible 1:1, else return NULL.
 	 */
 	unsigned int hdr;
 	uint64_t tbl, seg, row, col, tbl_out = 0, row_out = 0, seg_out = 0;
@@ -9506,6 +9630,11 @@ GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 	struct GMT_DATASEGMENT *SD = NULL;
 	struct GMT_TEXTSEGMENT *ST = NULL;
 
+	if (header & GMT_STRICT_CONVERSION) {	/* Must ensure that all entries are numbers */
+		bool viable = text2double_is_viable (In);
+		if (!viable) return NULL;	/* No can do */
+	}
+	mode -= (mode & GMT_STRICT_CONVERSION);
 	s_alloc = t_alloc = alloc = (Out == NULL);
 	if (alloc) {
 		if ((Out = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET)) == NULL) return_null (API, GMT_MEMORY_ERROR);
@@ -9575,6 +9704,7 @@ GMT_LOCAL void *api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	 * If dim > 0 then it is assumed to hold the number of columns, else we estimate it from first data record.
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
 	 * If there are more than one segment we will insert NaN-records between segments.
+	 * If header & GMT_STRICT_CONVERSION then we only do the conversion if possible 1:1, else return NULL.
 	 */
 	uint64_t tbl, seg, row, row_out, col, ij;
 	bool alloc = (Out == NULL), add_NaN_record = (In->n_segments > 1 && do_seg_header(header));
@@ -9582,7 +9712,14 @@ GMT_LOCAL void *api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	struct GMT_TEXTTABLE *T = NULL;
 	struct GMT_TEXTSEGMENT *ST = NULL;
 	GMT_putfunction api_put_val = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
+
+	if (header & GMT_STRICT_CONVERSION) {	/* Must ensure that all entries are numbers */
+		bool viable = text2double_is_viable (In);
+		if (!viable) return NULL;	/* No can do */
+	}
+	mode -= (mode & GMT_STRICT_CONVERSION);
+
 	if (alloc) {
 		if ((Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 		if (dim == 0) {	/* Must guess number of columns from first text record */
@@ -9630,6 +9767,7 @@ GMT_LOCAL void *api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	 * If dim > 0 then it is assumed to hold the number of columns, else we estimate it from first data record.
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
 	 * If there are more than one segment we will insert NaN-records between segments.
+	 * If header & GMT_STRICT_CONVERSION then we only do the conversion if possible 1:1, else return NULL.
 	 */
 	uint64_t tbl, seg, row, row_out, col;
 	bool alloc = (Out == NULL), add_NaN_record = (In->n_segments > 1 && do_seg_header(header));
@@ -9637,6 +9775,13 @@ GMT_LOCAL void *api_textset2vector (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	struct GMT_TEXTTABLE *T = NULL;
 	struct GMT_TEXTSEGMENT *ST = NULL;
 	GMT_putfunction api_put_val = NULL;
+
+	if (header & GMT_STRICT_CONVERSION) {	/* Must ensure that all entries are numbers */
+		bool viable = text2double_is_viable (In);
+		if (!viable) return NULL;	/* No can do */
+	}
+	mode -= (mode & GMT_STRICT_CONVERSION);
+
 	if (alloc) {
 		if (dim == 0) {	/* Must guess number of columns from first text record */
 			dim = gmtlib_conv_text2datarec (GMT, In->table[0]->segment[0]->data[0], GMT_BUFSIZ, GMT->current.io.curr_rec);
@@ -9680,7 +9825,7 @@ GMT_LOCAL void *api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_getfunction api_get_val = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2dataset: Header stripping not implemented yet - ignored!\n");
 	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, true)) == NULL) return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
@@ -9708,7 +9853,7 @@ GMT_LOCAL void *api_matrix2textset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_TEXTSEGMENT *ST = NULL;
 	GMT_getfunction api_get_val = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2textset: Header stripping not implemented yet - ignored!\n");
 	if (alloc && (Out = gmtlib_create_textset (GMT, 1U, 1U, In->n_rows, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 
@@ -9740,7 +9885,7 @@ GMT_LOCAL void *api_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *I
 	struct GMT_CTRL *GMT = API->GMT;
 	GMT_getfunction api_get_val_m = NULL;
 	GMT_putfunction api_put_val_v = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2vector: Header stripping not implemented yet - ignored!\n");
 	if (alloc) {
 		if ((Out = gmt_create_vector (GMT, In->n_columns, GMT_OUT)) == NULL) return_null (API, GMT_MEMORY_ERROR);
@@ -9835,7 +9980,7 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 	struct GMT_CTRL *GMT = API->GMT;
 	GMT_getfunction api_get_val = NULL;
 	GMT_putfunction api_put_val = NULL;
-	p_func_size_t GMT_2D_to_index = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_vector2matrix: Header stripping not implemented yet - ignored!\n");
 	if (alloc) {
 		Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT);
@@ -9879,18 +10024,26 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	 * 	2 : Headers are preserved, segment headers are blank
 	 * 	3 : All headers headers are eliminated
 	 *	    The GMT Default settings in effect will control any output to files later.
+	 * 	Finally, if converting from TEXTSET to floating point representations, if the flag contains
+	 * GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
 	 *  >0: We use this value as the number of columns to decode and report.
 	 * flag[2]: Controls the data type to use for MATRIX and VECTOR.
 	 * 	0: Use the GMT default data type [GMT_EXPORT_TYPE]
-	 * >0: Assumed to contain datatype + 1 (e.g., GMT_FLOAT+1, GMT_DOUBLE+1)
+	 * 	>0: Assumed to contain datatype + 1 (e.g., GMT_FLOAT+1, GMT_DOUBLE+1)
 	 * If TEXTSET or DATASET, this integer controls the restructuring of the set:
 	 * 	GMT_WRITE_TABLE_SEGMENT: Combine all segments into a SINGLE segment in ONE table
 	 * 	GMT_WRITE_TABLE: Collect all segments into ONE table.
 	 * 	GMT_WRITE_SEGMENT: Combine segments into ONE segment per table.
 	 * 	0: Retain initial layout.
+	 *
 	 * The following conversions are valid; the brackets indicate any side-effects or limitations]
+	 *
+	 * DATASET -> TEXTSET, MATRIX,  VECTOR
+	 * TEXTSET -> DATASET, MATRIX,  VECTOR [May result in NaNs; see GMT_STRICT_CONVERSION to limit conversion]
+	 * MATRIX  -> DATASET, TEXTSET, VECTOR
+	 * VECTOR  -> DATASET, TEXTSET, MATRIX
 	 */
 	int object_ID;
 	void *X = NULL;

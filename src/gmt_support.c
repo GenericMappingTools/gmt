@@ -5382,10 +5382,10 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 			}
 			if (n_slash != 2) {	/* r/g/b not given, must replace whatever it was with a r/g/b triplet */
 				text[n] = '\0';	/* Temporarily terminate string so getrgb can work */
-				if (!gmt_getrgb (GMT, &text[i], rgb))
+				if (gmt_getrgb (GMT, &text[i], rgb))
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: failed to convert %s to r/g/b\n", &text[i]);
 				text[n] = ';';	/* Undo damage */
-				if (rgb[3] > 0.0)
+				if (rgb[3] > 0.0)	/* Asked for transparency as well */
 					snprintf (color, GMT_LEN256, "%f/%f/%f=%ld", gmt_M_t255(rgb), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */
 				else
 					snprintf (color, GMT_LEN256, "%f/%f/%f", gmt_M_t255(rgb));	/* Format triplet only */

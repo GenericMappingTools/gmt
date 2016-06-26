@@ -73,7 +73,7 @@ struct GPSGRIDDER_CTRL {
 	} T;
 	struct W {	/* -W[w] */
 		bool active;
-		unsigned int mode;
+		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
 };
 
@@ -94,7 +94,10 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 	GMT_WU		= 2,	/* Index into X row vector with x,y[,du,dv] */
 	GMT_WV		= 3,
 	GPS_TREND	= 1,	/* Remove/Restore linear trend */
-	GPS_NORM	= 2	/* Normalize residual data to 0-1 range */
+	GPS_NORM	= 2,	/* Normalize residual data to 0-1 range */
+	GPS_FUNC_Q	= 0,	/* Next 3 are indicies into G[] */
+	GPS_FUNC_P	= 1,	/* Next 3 are indicies into G[] */
+	GPS_FUNC_W	= 2,	/* Next 3 are indicies into G[] */
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -121,7 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile>[%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<cut>[+f<file>]] [-Fd|f<value>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -140,11 +143,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut> [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <cut> eigenvalues [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <cut> %% of data variance [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cr to select only eigenvalues needed to yield a r.m.s misfit of ~<val> [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     If <val> is not given then we compute <val> from the data uncertainties (requires -W).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <val> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Fudging factor to avoid Green-function singularities.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Fd<del_radius> will add <del_radius> to all distances between nodes and points.\n");
@@ -165,7 +170,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Give effective Poisson's ratio [0.25].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects two extra input columns with data errors sigma_x, sigma_y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weight factors instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weights instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via 1/sigma_x, 1/sigma_y].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
@@ -200,6 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
+				else if (opt->arg[0] == 'r') Ctrl->C.mode = 3;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
@@ -209,12 +215,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|v]<cut>[+<file>]\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|v]<val>[+<file>]\n");
 						n_errors++;
 					}
 				}
 				else
-					Ctrl->C.value = atof (&opt->arg[k]);
+					Ctrl->C.value = (opt->arg[k]) ? atof (&opt->arg[k]) : 0.0;
 				break;
 			case 'F':	/* Fudge factor  */
 				Ctrl->F.active = true;
@@ -274,6 +280,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				break;
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;
+				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;	/* Got weights instead of sigmas */
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -435,21 +442,22 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 }
 
 GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
-	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in G[0], G[1], and G[2].
+	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in
+	 * G[GPS_FUNC_Q], G[GPS_FUNC_P], and G[GPS_FUNC_W].
 	 * Here, par[0] holds Poisson's ratio and par[1] holds delta_r to prevent singularity */
 	
 	double dx2 = dx * dx, dy2 = dy * dy;	/* Squared offsets */
-	double dr2 = dx2 + dy2 + par[1];		/* Radius squared (remember par[1] already squared during initialization) */
+	double dr2 = dx2 + dy2 + par[1];	/* Radius squared (remember par[1] already squared during initialization) */
 	double c1, c2;
 	
-	c1 = (3.0 - par[0]) / 2.0;
+	c1 = (3.0 - par[0]) / 2.0;	/* The half is here since we take log of r^2, not r */
 	c2 = (1.0 + par[0]);
 	
-	G[0] = G[1] = c1 * log (dr2);
+	G[GPS_FUNC_Q] = G[GPS_FUNC_P] = c1 * log (dr2);
 	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
-	G[0] += c2 * dy2 * dr2;
-	G[1] += c2 * dx2 * dr2;
-	G[2]  = -c2 * dx * dy * dr2;
+	G[GPS_FUNC_Q] +=  c2 * dr2 * dy2;
+	G[GPS_FUNC_P] +=  c2 * dr2 * dx2;
+	G[GPS_FUNC_W]  = -c2 * dr2 * dx  * dy;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -467,7 +475,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *alpha_x = NULL, *alpha_y = NULL, *in = NULL;
-	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v, weight_ju, weight_jv, r_min, r_max, G[3];
+	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v, weight_ju, weight_jv;
+	double err_sum = 0.0, r_min, r_max, G[3];
 
 #ifdef DUMPING
 	FILE *fp = NULL;
@@ -532,11 +541,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	n_cols = (Ctrl->W.active) ? 4 : 2;	/* So X[k][0,1,2,3] will have the x,y weights, if -W is active */
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_cols+2)) != 0)
+		Return (error);
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
 	u = gmt_M_memory (GMT, NULL, n_alloc, double);
 	v = gmt_M_memory (GMT, NULL, n_alloc, double);
-	n_cols = (Ctrl->W.active) ? 4 : 2;	/* So X[k][2-3] will have the x,y weights, if -W is active */
 	for (k = 0; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read input data and check for data constraint duplicates\n");
@@ -590,9 +601,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			X[n][GMT_WU] = in[4];
 			X[n][GMT_WV] = in[5];
 			if (Ctrl->W.mode == 0) {	/* Got sigmas, create weights */
+				err_sum += X[n][GMT_WU]*X[n][GMT_WU] + X[n][GMT_WV]*X[n][GMT_WV];
 				X[n][GMT_WU] = 1.0 / X[n][GMT_WU];
 				X[n][GMT_WV] = 1.0 / X[n][GMT_WV];
 			}
+			else	/* Must unscramble sigmas */
+				err_sum += pow (X[n][GMT_WU], -1.0) + pow (X[n][GMT_WV], -2.0);
 		}
 		n++;			/* Added a new data constraint */
 		if (n == n_alloc) {	/* Get more memory */
@@ -726,20 +740,28 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Gu_ij  = j * n2 + i;		/* Index for Gu term */
 			Guv_ij = Gu_ij + n;		/* Index for Guv term */
 			Gvu_ij = (j+n) * n2 + i;	/* Index for Gvu term */
-			Gv_ij  = Gvu_ij + n;		/* Index for Gu term */
+			Gv_ij  = Gvu_ij + n;		/* Index for Gv term */
 			get_gps_dxdy (GMT, X[i], X[j], &dx, &dy, geo);
 			evaluate_greensfunctions (dx, dy, par, G);
-			A[Gu_ij]  = weight_u * G[0];
-			A[Gv_ij]  = weight_v * G[1];
-			A[Guv_ij] = weight_u * G[2];
-			A[Gvu_ij] = weight_v * G[2];
+			A[Gu_ij]  = weight_u * G[GPS_FUNC_Q];
+			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
+			A[Guv_ij] = weight_u * G[GPS_FUNC_W];
+			A[Gvu_ij] = weight_v * G[GPS_FUNC_W];
 		}
 	}
 
 	gmt_M_memcpy (&u[n], v, n, double);	/* Place v array at end of u array */
 	obs = u;				/* Use obs to refer to this combined u,v array */
 	
-	if (Ctrl->C.active) {		/* Solve using svd decomposition */
+	if (Ctrl->W.active) {
+		err_sum = sqrt (0.5 * err_sum / n);	/* Mean data rms from u,v uncertainties */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+		if (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) {
+			Ctrl->C.value = err_sum;
+			GMT_Report (API, GMT_MSG_VERBOSE, "Mean data uncertainty selected as desired rms fit\n");
+		}
+	}
+	if (Ctrl->C.active) {		/* Solve using SVD decomposition */
 		int n_use, error;
 		double *V = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit;
 
@@ -865,8 +887,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				for (p = 0; p < n; p++) {
 					get_gps_dxdy (GMT, out, X[p], &dx, &dy, geo);
 					evaluate_greensfunctions (dx, dy, par, G);
-					out[GMT_U] += (alpha_x[p] * G[0] + alpha_y[p] * G[2]);
-					out[GMT_V] += (alpha_y[p] * G[1] + alpha_x[p] * G[2]);
+					out[GMT_U] += (alpha_x[p] * G[GPS_FUNC_Q] + alpha_y[p] * G[GPS_FUNC_W]);
+					out[GMT_V] += (alpha_y[p] * G[GPS_FUNC_P] + alpha_x[p] * G[GPS_FUNC_W]);
 				}
 				undo_gps_normalization (out, normalize, norm);
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -901,8 +923,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n; p++) {
 					get_gps_dxdy (GMT, V, X[p], &dx, &dy, geo);
 					evaluate_greensfunctions (dx, dy, par, G);
-					V[GMT_U] += (alpha_x[p] * G[0] + alpha_y[p] * G[2]);
-					V[GMT_V] += (alpha_y[p] * G[1] + alpha_x[p] * G[2]);
+					V[GMT_U] += (alpha_x[p] * G[GPS_FUNC_Q] + alpha_y[p] * G[GPS_FUNC_W]);
+					V[GMT_V] += (alpha_y[p] * G[GPS_FUNC_P] + alpha_x[p] * G[GPS_FUNC_W]);
 				}
 				undo_gps_normalization (V, normalize, norm);
 				Out[GMT_X]->data[ij] = (float)V[GMT_U];

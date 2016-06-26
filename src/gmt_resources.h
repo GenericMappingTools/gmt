@@ -187,7 +187,8 @@ enum GMT_enum_write {
 	GMT_WRITE_NORMAL = 0,		/* Write header and contents of this entity (table or segment) */
 	GMT_WRITE_HEADER = 1,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP = 2,		/* Entirely skip this entity on output (table or segment) */
-	GMT_WRITE_NOLF = 16};		/* Do not write LF at end of ASCII record, and not increment output rec number */
+	GMT_WRITE_NOLF = 16,		/* Do not write LF at end of ASCII record, and not increment output rec number */
+	GMT_STRICT_CONVERSION = 1024};	/* Do not convert text to double unless is is viable */
 
 enum GMT_enum_header {
 	GMT_HEADER_OFF = 0,		/* Disable header blocks out as default */
@@ -362,7 +363,7 @@ struct GMT_GRID_HEADER {
 	unsigned int xy_mode[2];	 /* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int xy_unit[2];	 /* Unit enum specified via +u<unit> */
 	double xy_unit_to_meter[2];	 /* Scale, given xy_unit, to convert xy from <unit> to meters */
-	uint64_t (*index_function) (struct GMT_GRID_HEADER *, unsigned int, unsigned int, unsigned int);	/* Pointer to index function (for images only) */
+	uint64_t (*index_function) (struct GMT_GRID_HEADER *, uint64_t, uint64_t, uint64_t);	/* Pointer to index function (for images only) */
 #ifdef GMT_BACKWARDS_API
 	uint32_t nx;
 	uint32_t ny;

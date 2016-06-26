@@ -17,14 +17,14 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
 [ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
 [ |-S|\ *nu* ]
 [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **w**]
+[ |-W|\ [**w**]]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -70,18 +70,21 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **v**]\ *cut*\ [**+f**\ *file*]
+**-C**\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
-    eigenvalues whose ratio to the largest eigenvalue is less than *cut*
+    eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalue ratios to the specified file for further analysis.
-    Finally, if a negative *cut* is given then **+f**\ *file* is required and
+    Finally, if a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cv** to use the
-    largest eigenvalues needed to explain *cut* % of the data variance.
-    Alternatively, use **-Cn** to select the *cut* largest eigenvalues.
+    largest eigenvalues needed to explain *value* % of the data variance.
+    Specify **-Cr** to use the largest eigenvalues needed to leave approximately *value*
+    as the model misfit.  If *value* is not given then **-W** is required and we
+    compute *value* as the rms of the data uncertainties. 
+    Alternatively, use **-Cn** to select the *value* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
 
@@ -138,9 +141,12 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **w**
-    Data one-sigma uncertainties for *u* and *v* are provided in the last two columns.
-    Append **w** if weights are given instead of uncertainties [no weights or uncertainties].
+**-W**\ [**w**]
+   Data one-sigma uncertainties for *u* and *v* are provided in the last two columns.
+   We then compute weights that are inversely proportional to the uncertainties.
+   Append **w** if weights are given instead of uncertainties.  This results in
+   a weighted least squares fit.  Note that this only has an effect if **-C** is used.
+   [Default uses no weights or uncertainties].
 
 .. _-V:
 

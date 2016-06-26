@@ -1118,6 +1118,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	invalid = header->nan_value;
 
 	GMT_err_trap ((*GMT->session.readinfo[header->type]) (GMT, header));
+	GMT_Set_Index (GMT->parent, header, GMT_GRID_LAYOUT);
 
 	grdio_grd_xy_scale (GMT, header, GMT_IN);	/* Possibly scale wesn,inc */
 
@@ -2183,6 +2184,7 @@ struct GMT_GRID * gmt_create_grid (struct GMT_CTRL *GMT) {
 	G = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID);
 	G->header = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	gmt_grd_init (GMT, G->header, NULL, false); /* Set default values */
+	GMT_Set_Index (GMT->parent, G->header, GMT_GRID_LAYOUT);
 	G->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	G->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	G->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -2634,21 +2636,6 @@ void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsign
 	gmtlib_contract_headerpad (GMT, h, orig_pad, orig_wesn);
 }
 
-uint64_t gmtlib_get_index_from_BSQ (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
-	/* Get linear index of an array with a band-interleaved layout */
-	return (uint64_t)col + ((uint64_t)row * (uint64_t)h->n_columns) + (uint64_t)(layer * h->n_bands);
-}
-
-uint64_t gmtlib_get_index_from_BIP (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
-	/* Get linear index of an array with a pixel-interleaved layout */
-	return ((uint64_t)col * (uint64_t)h->n_bands) + (uint64_t)layer + ((uint64_t)row * (uint64_t)h->n_columns * (uint64_t)h->n_bands);
-}
-
-uint64_t gmtlib_get_index_from_BIL (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer) {
-	/* Get linear index of an array with a line-interleaved layout */
-	return (uint64_t)col + ((uint64_t)layer * (uint64_t)h->n_columns) + ((uint64_t)row * (uint64_t)h->n_columns * (uint64_t)h->n_bands);
-}
-
 #ifdef HAVE_GDAL
 GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread)
 {
@@ -2717,6 +2704,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 	}
 
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
+	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 
 	gmt_M_free (GMT, to_gdalread);
 	gdal_free_from (GMT, from_gdalread);

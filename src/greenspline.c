@@ -114,8 +114,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W */
+	struct W {	/* -W[w] */
 		bool active;
+		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
 };
 
@@ -207,8 +208,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
-	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[+f<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -227,11 +228,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, X = (x, y[, z]) is the position vector, V is the gradient vector.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut> [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <cut> eigenvalues [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <cut> %% of data variance [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cr to select only eigenvalues needed to yield a r.m.s misfit of ~<val> [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     If <val> is not given then we compute <val> from the data uncertainties (requires -W).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <val> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -269,7 +272,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append +e<error> to change maximum error in series truncation [%g].\n", SQ_TRUNC_ERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append +n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].\n", SQ_N_NODES);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects one extra input column with data weights (e.g., w_i = 1/sigma_i).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects one extra input column with data errors sigma_i.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate this column carries weights instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via w_i = 1/sigma_i].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -D) and weights (see -W).\n");
@@ -407,6 +412,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
+				else if (opt->arg[0] == 'r') Ctrl->C.mode = 3;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
@@ -421,7 +427,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					}
 				}
 				else
-					Ctrl->C.value = atof (&opt->arg[k]);
+					Ctrl->C.value = (opt->arg[k]) ? atof (&opt->arg[k]) : 0.0;
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
@@ -559,8 +565,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				else
 					n_errors++;
 				break;
-			case 'W':	/* Expect data weights in last column */
+			case 'W':	/* Expect data uncertainty or weights in last column */
 				Ctrl->W.active = true;
+				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;	/* Got weights instead of sigmas */
 				break;
 #ifdef DEBUG
 			case '+':	/* Turn on TEST mode */
@@ -1345,7 +1352,7 @@ GMT_LOCAL double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, dou
 
 int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize = 0, unit = 0, n_cols, L_Max = 0;
+	unsigned int dimension = 0, normalize = 0, unit = 0, n_cols, w_col, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way, n_columns;
 	bool delete_grid = false, check_longitude, skip;
@@ -1366,7 +1373,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_i, weight_j;
-	double *A = NULL, r_min, r_max;
+	double *A = NULL, r_min, r_max, err_sum = 0.0;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
 #endif
@@ -1470,12 +1477,15 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_cols+1)) != 0)
+		Return (error);
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
-	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
 	for (k = 0; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 	obs = gmt_M_memory (GMT, NULL, n_alloc, double);
 	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
+	w_col = dimension + 1;	/* Where weights would be in input, if given */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read input data and check for data constraint duplicates\n");
 	n = m = n_read = 0;
@@ -1501,7 +1511,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
 		}
 
-		for (k = 0; k < n_cols; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
+		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
+		if (Ctrl->W.active) X[n][k] = in[w_col];
 		/* Check for duplicates */
 		skip = false;
 		for (i = 0; !skip && i < n; i++) {
@@ -1930,11 +1941,19 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	weight_i = weight_j = 1.0;
 	for (j = 0; j < nm; j++) {	/* For each value or slope constraint */
 		if (Ctrl->W.active) {
-			weight_j = X[j][dimension];
+			if (Ctrl->W.mode == 0) {	/* Got sigma */
+				err_sum += X[j][dimension] * X[j][dimension];
+				weight_j = 1.0 / X[j][dimension];
+			}
+			else {	/* Got weight */
+				err_sum += pow (X[j][dimension], -2.0);
+				weight_j = X[j][dimension];
+			}
+			weight_j = (Ctrl->W.mode == 0) ? 1.0 / X[j][dimension] : X[j][dimension];
 			obs[j] *= weight_j;
 		}
 		for (i = j; i < nm; i++) {
-			if (Ctrl->W.active) weight_i = X[i][dimension];
+			if (Ctrl->W.active) weight_i = (Ctrl->W.mode == 0) ? 1.0 / X[i][dimension] : X[i][dimension];
 			ij = j * nm + i;
 			ji = i * nm + j;
 			r = get_radius (GMT, X[i], X[j], dimension);
@@ -1962,6 +1981,14 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 				A[ji] = weight_i * grad * C;
 			}
+		}
+	}
+	if (Ctrl->W.active) {
+		err_sum = sqrt (err_sum / nm);	/* Mean data variance */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+		if (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) {
+			Ctrl->C.value = err_sum;
+			GMT_Report (API, GMT_MSG_VERBOSE, "Mean data uncertainty selected as desired rms fit\n");
 		}
 	}
 
@@ -2017,7 +2044,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		b = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (b, obs, nm, double);
-		limit = Ctrl->C.value;
+		limit = (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) ? err_sum : Ctrl->C.value;
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
