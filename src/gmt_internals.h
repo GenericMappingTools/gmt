@@ -216,9 +216,6 @@ EXTERN_MSC unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GM
 EXTERN_MSC void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list);
-EXTERN_MSC uint64_t gmtlib_get_index_from_BSQ (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer);
-EXTERN_MSC uint64_t gmtlib_get_index_from_BIP (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer);
-EXTERN_MSC uint64_t gmtlib_get_index_from_BIL (struct GMT_GRID_HEADER *h, unsigned int row, unsigned int col, unsigned int layer);
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
