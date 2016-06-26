@@ -660,12 +660,6 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 /*=============== GMT_IMAGE Public Declaration =============== */
 /*============================================================ */
 
-/* These are different image layout modes */
-enum GMT_enum_image {
-	GMT_LAYOUT_BSQ = 0,
-	GMT_LAYOUT_BIP,
-	GMT_LAYOUT_BIL};
-
 /* The GMT_IMAGE container is used to pass user images in from the GDAL bridge */
 
 struct GMT_IMAGE {	/* Single container for a user image of data */

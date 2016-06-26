@@ -1324,7 +1324,8 @@ GMT_LOCAL uint64_t api_get_index_from_TRI (struct GMT_GRID_HEADER *h, uint64_t r
 
 /*! . */
 GMT_LOCAL unsigned int api_decode_layout (struct GMTAPI_CTRL *API, const char *code, enum GMT_enum_family *family) {
-	/* Convert the 3-letter grid/image layout code to a single integer mode */
+	/* Convert the 3-letter grid/image layout code to a single integer mode.
+	 * Defaults are TRS for grids and TRB for images. */
 	unsigned int bits = 0;	/* Default value */
 	*family = GMT_IS_IMAGE;
 	switch (code[0]) {	/* Char 1: The Y direction */
@@ -1334,11 +1335,11 @@ GMT_LOCAL unsigned int api_decode_layout (struct GMTAPI_CTRL *API, const char *c
 			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for y-direction grid/image layout.  Must be T or B\n", code[0]);
 			break;
 	}
-	switch (code[1]) {	/* Char 2: The X direction */
-		case 'L':	break;
-		case 'R':	bits |= 2; break;
+	switch (code[1]) {	/* Char 2: The storage mode (rows vs columns) */
+		case 'R':	break;
+		case 'C':	bits |= 2; break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for x-direction grid/image layout.  Must be L or R\n", code[1]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Illegal code [%c] for grid/image storage mode.  Must be R or C\n", code[1]);
 			break;
 	}
 	switch (code[2]) {	/* Char 3: Grids: single, complex-real, complex-imag.  Images: band interleaving mode */
@@ -7258,10 +7259,10 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 				case 0:	/* Default scanline C grid */
 					header->index_function = api_get_index_from_TRS;
 					break;
-				case GMT_LAYOUT_BIP:	/* Same for real component in complex grid */
+				case 4:	/* Same for real component in complex grid */
 					header->index_function = api_get_index_from_TRR;
 					break;
-				case GMT_LAYOUT_BIL:	/* Same for imag component in complex grid */
+				case 8:	/* Same for imag component in complex grid */
 					header->index_function = api_get_index_from_TRI;
 					break;
 				default:
@@ -7272,13 +7273,13 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 			break;
 		case GMT_IS_IMAGE:
 			switch (mode) {
-				case GMT_LAYOUT_BSQ:	/* band-interleaved layout */
+				case 0:	/* band-interleaved layout */
 					header->index_function = api_get_index_from_TRB;
 					break;
-				case GMT_LAYOUT_BIP:	/* pixel-interleaved layout */
+				case 4:	/* pixel-interleaved layout */
 					header->index_function = api_get_index_from_TRP;
 					break;
-				case GMT_LAYOUT_BIL:	/* line-interleaved layout */
+				case 8:	/* line-interleaved layout */
 					header->index_function = api_get_index_from_TRL;
 					break;
 				default:
