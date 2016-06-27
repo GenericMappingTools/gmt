@@ -7217,28 +7217,28 @@ void *GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned i
 #endif
 
 /*! Convenience function to get grid or image node */
-int64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
+uint64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
 	gmt_M_unused(V_API);
 	return (header->index_function (header, row, col, 0));
 }
 
 #ifdef FORTRAN_API
-int64_t GMT_Get_Index_ (void *h, int *row, int *col) {
+uint64_t GMT_Get_Index_ (void *h, int *row, int *col) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Index (GMT_FORTRAN, h, *row, *col));
 }
 #endif
 
 /*! Convenience function to get grid or image node */
-int64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
+uint64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
 	gmt_M_unused(V_API);
 	return (header->index_function (header, row, col, layer));
 }
 
 #ifdef FORTRAN_API
-int64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
+uint64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Pixel (GMT_FORTRAN, h, *row, *col, *layer));
 }
