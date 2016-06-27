@@ -41,7 +41,7 @@
  * GMT_Append_Option	: Append the given option to the end of the structure list
  * GMT_Delete_Option	: Delete the specified option and adjust the linked list
  * GMT_Parse_Common	: Parse the common GMT options
- * GMT_Expand_Option	: Replace special marker with new argument [external API only]
+ * GMT_Expand_Option	: Replace special marker (?) with new argument [external API only]
 
  * This part of the API helps the developer create, manipulate, modify, find, and
  * update options that will be passed to various GMT_* modules ("The GMT programs").
@@ -724,8 +724,8 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	return (GMT_OK);	/* No error encountered */
 }
 
-/*! Replaces a marker character (e.g., $) in the option arg with the replacement argument in arg, except when in quotes. */
-int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, const char *arg) {
+/*! Replaces a marker character (?) in the option arg with the replacement argument in arg, except when in quotes. */
+int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	char buffer[BUFSIZ] = {""};
 	size_t in = 0, out = 0;
 	bool quote = false;
@@ -736,7 +736,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, const c
 
 	while (opt->arg[in]) {
 		if (opt->arg[in] == '\"') quote = !quote;
-		if (opt->arg[in] == marker && !quote) {	/* Found an unquoted marker character */
+		if (opt->arg[in] == '?' && !quote) {	/* Found an unquoted questionmark */
 			strcat (&buffer[out], arg);	/* Insert the given arg instead */
 			out += strlen (arg);	/* Adjust next output location */
 		}

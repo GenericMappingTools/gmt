@@ -2373,18 +2373,19 @@ a GMT call in the MATLAB or Octave application might look like
 ::
 
   table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
-  grid  = gmt ('surface -R -I2m -Lu$', table, high_limit_grid);
+  grid  = gmt ('surface -R -I2m -Lu', table, high_limit_grid);
+  grid2 = gmt ('grdmath ? LOG10 ? MUL', grid, grid);
 
 and in such environments we need the ability to (1) specify references
-to memory items (via a marker, here "$") and (2) supply implicit
-module arguments (here a command-line "$" will be added to both commands
-to represent the input 3-column table, a "> $" to indicate the output
+to memory items (via a marker, here "?") and (2) supply implicit
+module arguments (here a command-line "?" will be added to both commands
+to represent the input 3-column table, a "> ?" to indicate the output
 of blockmean should go to a memory reference (eventually end up in the
-variable table, and a "-G$" to indicate the output grid from surface
+variable table, and a "-G? to indicate the output grid from surface
 should be written to a memory reference, ending up in the variable grid).
 Most of the time our implicit rules will take care of the ordering.  The
 rule says that all required input data items must be listed before any
-optional input data items.  Thus, in the surface call above we first gave
+secondary input data items.  Thus, in the surface call above we first gave
 the required input data *table* and then the optional high_limit_grid file.
 Such explicit and implicit references to data sources requires processing
 and even the addition of extra options to the linked list of options.
@@ -2395,12 +2396,11 @@ The prototype is
 
   ::
 
-    struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, char marker,
-                    	            int n_in, struct GMT_OPTION **head, int *n_items);
+    struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module,
+                    	 int n_in, struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
-pointed to by ``*head``, the ``marker`` is the special character that
-identifies a data resource (usually $), ``n_in`` contains the number of *input*
+pointed to by ``*head``, ``n_in`` contains the number of *input*
 objects we have to connect (or -1 if not known) and we return an array
 that contains specific information for those options that
 (after processing) contain explicit memory references.  The number of
@@ -2432,7 +2432,7 @@ Expand option with explicit memory references
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When the external tool or application knows the name of special file name
-used for memory references the developer should replace the ``marker`` character
+used for memory references the developer should replace the ``?`` character
 in any option string with the actual reference name.  This is accomplished by
 calling ``GMT_Expand_Option``, with prototype
 
@@ -2440,11 +2440,9 @@ calling ``GMT_Expand_Option``, with prototype
 
   ::
 
-    int GMT_Expand_Option (void *API, struct GMT_OPTION *option,
-	                         char marker, const char *name);
+    int GMT_Expand_Option (void *API, struct GMT_OPTION *option, const char *name);
 
-where ``option`` is the current option, ``marker`` is the character
-identifier representing an explicit memory reference, and ``name``
+where ``option`` is the current option and ``name``
 is the special file name for the memory reference.
 
 Calling a GMT module

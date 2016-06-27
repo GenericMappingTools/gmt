@@ -1165,13 +1165,13 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	return (GMT_NOTSET);
 }
 
-GMT_LOCAL unsigned int api_found_marker (char *text, char marker) {
-	/* Look for marker in text but ignore any that is found within quotes */
+GMT_LOCAL unsigned int api_found_marker (char *text) {
+	/* Look for questionmark in text but ignore any found within quotes */
 	size_t k;
 	unsigned int ignore = 0;
 	for (k = 0; k < strlen (text); k++) {
 		if (text[k] == '\"' || text[k] == '\'') ignore = !ignore;	/* Toggle on/off */
-		if (!ignore && text[k] == marker) return (unsigned int)k + 1;	/* Found, return position (added 1 so results are 1-length) */
+		if (!ignore && text[k] == '?') return (unsigned int)k + 1;	/* Found, return position (added 1 so results are 1-length) */
 	}
 	return 0;	/* Not found */
 }
@@ -8369,7 +8369,7 @@ GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, in
 #define api_not_required_io(key) ((key == '{' || key == '(') ? '(' : ')')	/* Returns the optional input or output flag */
 
 /*! . */
-struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, char marker, int n_in, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required given the module options.
 	 * It is only used to assist developers of external APIs, such as the MATLAB, Julia, Python, R, and others.
 	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
@@ -8380,7 +8380,6 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 	 * Here are the GMT_Encode_Options arguments:
 	 *   API	Controls all things within GMT.
 	 *   module	Name of the GMT module.
-	 *   marker	Character that represents a secondary resource, typically $, but could be another unique char if need be.
 	 *   n_in	Known number of objects given as input resources (-1 if not known).
 	 *   head	Linked list of GMT options passed for this module. We may hook on 1-2 additional options.
 	 *   *n		Number of structures returned by the function. Struct GMT_RESOURCE is defined in gmt.h
@@ -8389,9 +8388,9 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 	 * Basically, given the module we look up the keys for that module, which tells us which options provide
 	 * the input and output selections and which ones are required and which ones are optional.  We then
 	 * scan the given options and if file arguments to the options listed in the keys are missing we are
-	 * to insert the given marker as the filename. Some options may already have the marker. After scanning
+	 * to insert ? as the filename. Some options may already have the question mark. After scanning
 	 * the options we examine the keys for any required input or output argument that have yet to be specified
-	 * explicitly. If so we create the missing options, with filename = marker, and append them to the end of
+	 * explicitly. If so we create the missing options, with filename = ?, and append them to the end of
 	 * the option list (head). The API developers can then use this array of encoded options in concert with
 	 * the information passed back via the structure list to attach actual resources.
 	 *
@@ -8593,9 +8592,9 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		mod_pos = api_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
-		if (api_found_marker (argument, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
-			if (k == GMT_NOTSET) {	/* Found marker but no corresponding key found? */
-				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
+		if (api_found_marker (argument)) {	/* Found an explicit questionmark within the option, e.g., -G?, -R? or -<? */
+			if (k == GMT_NOTSET) {	/* Found questionmark but no corresponding key found? */
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>? argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
@@ -8619,7 +8618,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 			else
 				implicit = false;
 			if (implicit) {
-				/* This is an implicit reference and we must explicity add the missing item by adding the marker */
+				/* This is an implicit reference and we must explicity add the missing item by adding the questionmark */
 				info[n_items].option    = opt;
 				info[n_items].family    = family;
 				info[n_items].geometry  = geometry;
@@ -8627,18 +8626,18 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
-				/* Explicitly add the missing marker (e.g., $) to the option argument */
+				/* Explicitly add the missing marker (e.g., ?) to the option argument */
 				if (mod_pos) {	/* Must expand something like 300k+s+d+u into 300k+s$+d+u (assuming +s triggered this test) */
 					strncpy (txt, opt->arg, mod_pos);
-					strcat (txt, "$");
+					strcat (txt, "?");
 					if (opt->arg[mod_pos]) strcat (txt, &opt->arg[mod_pos]);
 				}
 				else if (strip)	/* Special case for quoted and decorated lines with colon separating label info */
-					snprintf (txt, GMT_LEN256, "%s%c%s", argument, marker, &opt->arg[2]);
+					snprintf (txt, GMT_LEN256, "%s?%s", argument, &opt->arg[2]);
 				else if (n_pre_arg)	/* Something like -Lu becomes -Lu$ */
-					snprintf (txt, GMT_LEN256, "%s%c", opt->arg, marker);
+					snprintf (txt, GMT_LEN256, "%s?", opt->arg);
 				else	/* Something like -C or -C+d200k becomes -C$ or -C$+d200k */
-					snprintf (txt, GMT_LEN256, "%c%s", marker, opt->arg);
+					snprintf (txt, GMT_LEN256, "?%s", opt->arg);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
 				kind = GMT_FILE_EXPLICIT;
@@ -8656,51 +8655,6 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 					satisfy = special_text[2];
 			}
 		}
-#if 0
-		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && (len = strlen (argument)) < 2) {	/* Got some option like -G or -Lu with further args */
-			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT.  Also check for -Rd|g and let -R pass as well */
-			bool skip = false, number = false;
-			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
-			if (key[k][K_DIR] == '-')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
-				skip = number = true;
-			else if (len) {	/* There is a 1-char argument given */
-				if (!gmt_access (API->GMT, argument, F_OK)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specification\n");
-					skip = true;	/* The file actually exist */
-				}
-				else if (key[k][K_FAMILY] == 'C' && !gmt_not_numeric (API->GMT, argument)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got -C<n>, for <n> a single number that overrides implicit CPT specification\n");
-					skip = number = true;	/* Most likely a contour specification, e.g. -C5 */
-				}
-			}
-			/* else there is no args, e.g., -G, which needs the marker */
-			if (skip) {	/* Not an explicit reference after all but a regular option such as -JM20c */
-				kind = GMT_FILE_NONE;
-				if (k >= 0 && !number) {	/* If this was a required input|output it has now been satisfied */
-					key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);
-					satisfy = special_text[direction];
-				}
-				else	/* Nothing special about this option */
-					satisfy = special_text[2];
-			}
-			else {	/* This is an implicit reference and we must explicity add the missing item by adding the marker */
-				info[n_items].option    = opt;
-				info[n_items].family    = family;
-				info[n_items].geometry  = geometry;
-				info[n_items].direction = direction;
-				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
-				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
-				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
-				/* Excplicitly add the missing marker (e.g., $) to the option argument */
-				snprintf (txt, GMT_LEN16, "%s%c", opt->arg, marker);
-				gmt_M_str_free (opt->arg);
-				opt->arg = strdup (txt);
-				kind = GMT_FILE_EXPLICIT;
-				n_items++;
-				if (direction == GMT_IN) n_in_added++;
-			}
-		}
-#endif
 		else {	/* No implicit file argument involved, just check if this satisfies a required option */
 			kind = GMT_FILE_NONE;
 			if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
@@ -8728,8 +8682,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 
 	for (ku = 0; ku < n_keys; ku++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
 		if (api_is_required_IO (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
-			char str[2] = {0,0};
-			str[0] = marker;
+			char str[2] = {'?',0};
 			direction = api_key_to_family (API, key[ku], &family, &geometry);	/* Extract family and geometry */
 			/* We need to know how many implicit items for a given family we might have to add.  For instance,
 			 * one can usually give any number of data or text tables but only one grid file.  However, this is
@@ -8748,8 +8701,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 				info[n_items].direction = direction;
 				info[n_items].pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
 				info[n_items].mode = K_PRIMARY;
-				GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
-					S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
+				GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c? as implicit memory reference to %s argument # %d\n",
+					S[direction], key[ku][K_OPT], LR[direction], info[n_items].pos);
 				n_items++;
 				if (direction == GMT_IN) n_in_added++;
 				if (n_items == n_alloc) {
@@ -8795,9 +8748,9 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, c
 }
 
 #ifdef FORTRAN_API
-struct GMT_RESOURCE *GMT_Encode_Options_ (const char *module, char *marker, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len)
+struct GMT_RESOURCE *GMT_Encode_Options_ (const char *module, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, *n_in, head, n));
+	return (GMT_Encode_Options (GMT_FORTRAN, module, *n_in, head, n));
 }
 #endif
 
