@@ -104,10 +104,10 @@ EXTERN_MSC void * GMT_Convert_Data	(void *API, void *In, unsigned int family_in,
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
-EXTERN_MSC int64_t GMT_Get_Index	(void *API, struct GMT_GRID_HEADER *header, int row, int col);
+EXTERN_MSC uint64_t GMT_Get_Index	(void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord	(void *API, unsigned int family, unsigned int dim, void *container);
 EXTERN_MSC int GMT_Set_Index		(void *API, struct GMT_GRID_HEADER *header, char *code);	/* Experimental */
-EXTERN_MSC int64_t GMT_Get_Pixel	(void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
+EXTERN_MSC uint64_t GMT_Get_Pixel	(void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
 
 /* 7 functions to show and inquire about GMT common options, GMT default settings, convert strings to doubles, and message and report printing */
 
