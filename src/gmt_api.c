@@ -8910,10 +8910,8 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 		sprintf (value, "%s", API->GMT->init.runtime_plugindir);
 	else if (!strncmp (keyword, "CORES", 5U))	/* Report number of cores */
 		sprintf (value, "%d", API->n_cores);
-#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
-		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
-#endif
+		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 3, char);
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Report grid layout */
 		if (API->shape == GMT_IS_COL_FORMAT)
 			strcpy (value, "columns");
@@ -8955,16 +8953,14 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 			API->pad = pad;
 		}
 	}
-#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U)) {	/* Change image/band layout */
-		if (strlen (value) != 4U) {
+		if (strlen (value) != 3U) {
 			error = 1;
-			GMT_Report (API, GMT_MSG_NORMAL, "API_IMAGE_LAYOUT requires a 4-character specification. %s is ignored",  value);
+			GMT_Report (API, GMT_MSG_NORMAL, "API_IMAGE_LAYOUT requires a 3-character specification. %s is ignored",  value);
 		}
 		else
-			gmt_M_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 4, char);
+			gmt_M_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 3, char);
 	}
-#endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
 		if (!strncmp (keyword, "columns", 7U))
 			API->shape = GMT_IS_COL_FORMAT;	/* Switch to column-major format */
@@ -9355,17 +9351,6 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_MEMORY_ERROR;
 	return GMT_NOERROR;
 }
-
-#if 0
-/* Currently not used in mex or Julia ? */
-EXTERN_MSC void GMT_set_mem_layout (struct GMTAPI_CTRL *API, char mem_layout[]);
-void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
-	int i;
-	for (i = 0; i < 4; i++)
-		API->GMT->current.gdal_read_in.O.mem_layout[i] = mem_layout[i];
-	return;
-}
-#endif
 
 char *GMT_Duplicate_String (void *API, const char* string) {
 	/* Duplicate a string. The interest of this function is to make the memory allocation

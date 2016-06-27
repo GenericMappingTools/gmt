@@ -685,11 +685,11 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   fliplr, got_R = false, got_r = false;
-	bool   topdown = false, rowmajor = true, leftright = true;		/* arrays from GDAL have this order */
+	bool   topdown = false, rowmajor = true;               /* arrays from GDAL have this order */
 	bool   just_copy = false, copy_flipud = false;
 	int	   *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos = 0, startRow = 0, nXSize_withPad = 0;
-	int     pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;		/* Different pads for when sub-regioning near the edges */
+	int     pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	unsigned int nn, mm;
 	uint64_t ij;
 	size_t  n_alloc;
@@ -736,17 +736,15 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	fliplr = prhs->L.active;
 	metadata_only = prhs->M.active;
 
-	if (!metadata_only && GMT->current.gdal_read_in.O.mem_layout[0]) {    /* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight) */
+	if (!metadata_only && GMT->current.gdal_read_in.O.mem_layout[0]) {    /* first char T(op)|B(ot), second R(ow)|C(ol), third B(and)|P(ixel)|L(ine) */
 		if (GMT->current.gdal_read_in.O.mem_layout[0] == 'T')
 			topdown = true;
 		if (GMT->current.gdal_read_in.O.mem_layout[1] == 'C')
 			rowmajor  = false;
-		if (GMT->current.gdal_read_in.O.mem_layout[2] == 'R')
-			leftright = false;
-		if (GMT->current.gdal_read_in.O.mem_layout[3] == 'S' || GMT->current.gdal_read_in.O.mem_layout[3] == 'L')
+		if (GMT->current.gdal_read_in.O.mem_layout[2] == 'B' || GMT->current.gdal_read_in.O.mem_layout[2] == 'L')
 			do_BIP = false;
-		if (topdown && rowmajor && leftright) just_copy = true;		/* Means we will send out the data as it came from gdal */
-		if (!topdown && rowmajor && leftright) copy_flipud = true;	/* Means we will send out the data as it came from gdal */
+		if (topdown && rowmajor) just_copy = true;		/* Means we will send out the data as it came from gdal */
+		if (!topdown && rowmajor) copy_flipud = true;	/* Means we will send out the data as it came from gdal */
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
