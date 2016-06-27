@@ -475,7 +475,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *alpha_x = NULL, *alpha_y = NULL, *in = NULL;
-	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v, weight_ju, weight_jv;
+	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v;
 	double err_sum = 0.0, r_min, r_max, G[3];
 
 #ifdef DUMPING
@@ -724,18 +724,18 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system Ax = b\n");
 
-	weight_u = weight_v = weight_ju = weight_jv = 1.0;
+	weight_u = weight_v = 1.0;
 	for (j = 0; j < n; j++) {	/* For each data constraint pair (u,v): j refers to a row */
 		if (Ctrl->W.active) {	/* Apply any weights */
-			weight_ju = X[j][GMT_WU];
-			weight_jv = X[j][GMT_WV];
-			u[j] *= weight_ju;
-			v[j] *= weight_jv;
+			weight_u = X[j][GMT_WU];
+			weight_v = X[j][GMT_WV];
+			u[j] *= weight_u;
+			v[j] *= weight_v;
 		}
 		for (i = 0; i < n; i++) {	/* i refers to a column */
 			if (Ctrl->W.active) {
-				weight_u = weight_ju * X[i][GMT_WU];
-				weight_v = weight_jv * X[i][GMT_WV];
+				weight_u = X[i][GMT_WU];
+				weight_v = X[i][GMT_WV];
 			}
 			Gu_ij  = j * n2 + i;		/* Index for Gu term */
 			Guv_ij = Gu_ij + n;		/* Index for Guv term */
