@@ -175,25 +175,25 @@ documentation, has many (not so trivial) examples on usage of the MEX GMT API.
 
 .. code-block:: c
 
-  ProjectionRefPROJ4     % Projection string in PROJ4 syntax (Optional)
-  ProjectionRefWKT       % Projection string in WKT syntax (Optional)
+  projection_ref_proj4   % Projection string in PROJ4 syntax (Optional)
+  projection_ref_wkt     % Projection string in WKT syntax (Optional)
   range                  % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
   inc                    % 1x2 vector with [x_inc y_inc]
   n_rows                 % Number of rows in grid
   n_columns              % Number of columns in grid
   n_bands                % Not-yet used (always == 1)
   registration           % Registration type: 0 -> Grid registration; 1 -> Pixel registration
-  NoDataValue            % The value of nodata
+  nodata                 % The value of nodata
   title                  % Title (Optional)
   remark                 % Remark (Optional)
   command                % Command used to create the grid (Optional) 
-  DataType               % 'float' or 'double'
+  datatype               % 'float' or 'double'
   x                      % [1 x n_columns] vector with XX coordinates
   y                      % [1 x n_rows]    vector with YY coordinates
   z                      % [n_rows x n_columns] grid array
-  x_units                % Units of XX axis (Optional)
-  y_units                % Units of YY axis (Optional)
-  z_units                % Units of ZZ axis (Optional)
+  x_unit                 % Units of XX axis (Optional)
+  y_unit                 % Units of YY axis (Optional)
+  z_unit                 % Units of ZZ axis (Optional)
 
 Definition of the *grid structure* that holds a grid and its metadata.
 
@@ -201,25 +201,25 @@ Definition of the *grid structure* that holds a grid and its metadata.
 
 .. code-block:: c
 
-  ProjectionRefPROJ4     % Projection string in PROJ4 syntax (Optional)
-  ProjectionRefWKT       % Projection string in WKT syntax (Optional)
+  projection_ref_proj4   % Projection string in PROJ4 syntax (Optional)
+  projection_ref_wkt     % Projection string in WKT syntax (Optional)
   range                  % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
   inc                    % 1x2 vector with [x_inc y_inc]
   n_rows                 % Number of rows in image
   n_columns              % Number of columns in image
   n_bands                % Number of bands in image
   registration           % Registration type: 0 -> Grid registration; 1 -> Pixel registration [Default]
-  NoDataValue            % The value of nodata
+  nodata                 % The value of nodata
   title                  % Title (Optional)
   remark                 % Remark (Optional)
   command                % Command used to create the image (Optional) 
-  DataType               % 'uint8' or 'int8' (needs checking)
+  datatype               % 'uint8' or 'int8' (needs checking)
   x                      % [1 x n_columns] vector with XX coordinates
   y                      % [1 x n_rows]    vector with YY coordinates
   image                  % [n_rows x n_columns] image array
-  x_units                % Units of XX axis (Optional)
-  y_units                % Units of YY axis (Optional)
-  z_units                % Units of ZZ axis (Optional)
+  x_unit                 % Units of XX axis (Optional)
+  y_unit                 % Units of YY axis (Optional)
+  z_unit                 % Units of ZZ axis (Optional)
   colormap               % A color palette structure
   alpha                  % A [n_rows x n_columns] alpha array
 
@@ -232,9 +232,10 @@ Definition of the *image structure* that holds a image and its metadata.
   colormap               % A [ncolors x 3] matrix with colorvalues in [0-1] range
   alpha                  % A [ncolors x 1] vector with transparency (alpha) values in [0-1] range (optional)
   range                  % A [ncolors x 2] matrix with z_low z_high for each 'color' interval
-  BNF                    % A [3 x 3] matrix with color values in [0-1] range for background, foreground, and NaN-nodes
-  rangeMinMax            % A 2 elements vector with [z_min z_max]
+  bnf                    % A [3 x 3] matrix with color values in [0-1] range for background, foreground, and NaN-nodes
+  minmax                 % A 2 elements vector with [z_min z_max]
   depth                  % Depth of the CPT (1, 8, 24)
+  hinge                  % The z-value for split colormaps [NaN means no hinge]
 
 Definition of the *CPT structure* that holds the color palette.
 
