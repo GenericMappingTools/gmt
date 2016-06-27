@@ -1165,6 +1165,7 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	return (GMT_NOTSET);
 }
 
+#if 0
 GMT_LOCAL unsigned int api_found_marker (char *text) {
 	/* Look for questionmark in text but ignore any found within quotes */
 	size_t k;
@@ -1173,6 +1174,12 @@ GMT_LOCAL unsigned int api_found_marker (char *text) {
 		if (text[k] == '\"' || text[k] == '\'') ignore = !ignore;	/* Toggle on/off */
 		if (!ignore && text[k] == '?') return (unsigned int)k + 1;	/* Found, return position (added 1 so results are 1-length) */
 	}
+	return 0;	/* Not found */
+}
+#endif
+
+GMT_LOCAL unsigned int api_found_marker (char *text) {
+	if (text[0] == '?' && text[1] == '\0') return 1;
 	return 0;	/* Not found */
 }
 
