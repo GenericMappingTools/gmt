@@ -3,7 +3,7 @@
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
-# GMT progs:	pscoast
+# GMT modules:	pscoast
 # Unix progs:	rm
 #
 ps=example_26.ps

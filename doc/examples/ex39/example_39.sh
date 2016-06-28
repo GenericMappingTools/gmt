@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate evaluation of spherical harmonic coefficients
-# GMT progs:    psscale, pstext, makecpt, grdimage, grdgradient, sph2grd
+# GMT modules:  psscale, pstext, makecpt, grdimage, grdgradient, sph2grd
 # Unix progs:   rm
 #
 ps=example_39.ps

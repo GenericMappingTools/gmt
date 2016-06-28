@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate regression and outlier detection
-# GMT progs:    gmtregress, psbasemap, pslegend, pstext, psxy
+# GMT modules:  gmtregress, psbasemap, pslegend, pstext, psxy
 # Unix progs:   grep, paste, awk, sed
 #
 

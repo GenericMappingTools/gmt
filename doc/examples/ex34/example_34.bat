@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 34
-REM             $Id
+REM             $Id$
 REM
 REM Purpose:    Illustrate pscoast with DCW country polygons
 REM GMT progs:  pscoast, makecpt, grdimage, grdgradient

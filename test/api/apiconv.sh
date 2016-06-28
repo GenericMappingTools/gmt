@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id
+#	$Id$
 #
 # Test the C API for conversions between datasets and
 # textsets, matrices, and vectors.

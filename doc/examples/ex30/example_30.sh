@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Show graph mode and math angles
-# GMT progs:	gmtmath, psbasemap, pstext and psxy
+# GMT modules:	gmtmath, psbasemap, pstext and psxy
 # Unix progs:	echo, rm
 #
 # Draw generic x-y axes with arrows

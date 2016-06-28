@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Extract subsets of data based on geospatial criteria
-# GMT progs:	gmtselect, pscoast, psxy, gmtinfo
+# GMT modules:	gmtselect, pscoast, psxy, gmtinfo
 # Unix progs:	echo, cat, awk
 #
 # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline

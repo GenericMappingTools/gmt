@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Generate grid and show monochrome 3-D perspective
-# GMT progs:	grdgradient, grdmath, grdview, pstext
+# GMT modules:	grdgradient, grdmath, grdview, pstext
 # Unix progs:	echo, rm
 #
 ps=example_05.ps

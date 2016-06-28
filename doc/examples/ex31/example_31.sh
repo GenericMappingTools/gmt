@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrate usage of non-default fonts in PostScript
-# GMT progs:	gmtset, pscoast, psxy, pstext, pslegend
+# GMT modules:	gmtset, pscoast, psxy, pstext, pslegend
 # Unix progs:	gs, awk, cat, rm
 #
 file=example_31

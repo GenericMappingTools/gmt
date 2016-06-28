@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate sphtriangulate and sphdistance with GSHHG crude data
-# GMT progs:    pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance
+# GMT modules:  pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance
 # Unix progs:   rm
 #
 ps=example_35.ps

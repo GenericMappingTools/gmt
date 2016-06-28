@@ -4,8 +4,8 @@
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
-# GMT progs:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdgradient, grdimage
-# GMT progs:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
+# GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdgradient, grdimage
+# GMT modules:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
 # Unix progs:	$AWK, cat, rm
 #
 ps=example_18.ps

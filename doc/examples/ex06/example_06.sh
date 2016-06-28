@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make standard and polar histograms
-# GMT progs:	pshistogram, psrose
+# GMT modules:	pshistogram, psrose
 # Unix progs:	rm
 #
 ps=example_06.ps

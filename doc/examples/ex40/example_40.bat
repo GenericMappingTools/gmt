@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 40
-REM             $Id $
+REM             $Id$
 REM
 REM Purpose:      Illustrate line simplification and area calculations
 REM GMT progs:    psbasemap, pstext, psxy, gmtsimplify, gmtspatial

@@ -3,8 +3,8 @@
 #		$Id$
 #
 # Purpose:	Illustrate draping of an image over topography
-# GMT progs:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview
-# GMT progs:	pscoast, pstext, psxyz
+# GMT modules:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview
+# GMT modules:	pscoast, pstext, psxyz
 # Unix progs:	cat, rm
 # Credits:	Original by Stephan Eickschen
 #

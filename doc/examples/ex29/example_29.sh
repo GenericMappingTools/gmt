@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
-# GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
+# GMT modules:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
 # Unix progs:	rm, echo
 #
 ps=example_29.ps

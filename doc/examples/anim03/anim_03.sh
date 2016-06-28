@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
-# GMT progs:    gmt gmtset, gmt gmtmath, gmt psxy, gmt psconvert
+# GMT modules:  gmtset, gmtmath, psxy, psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #

@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate sphinterpolate with Mars radii data
-# GMT progs:    psxy, makecpt, grdimage, sphinterpolate
+# GMT modules:  psxy, makecpt, grdimage, sphinterpolate
 # Unix progs:   rm
 #
 ps=example_36.ps

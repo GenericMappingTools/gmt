@@ -3,8 +3,8 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of gridding
-# GMT progs:    gmt gmtset, gmt gmtmath, gmt psxy, gmt psconvert
-# Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
+# GMT modules:  grdcontour, greenspline, psxy, pstext, psconvert
+# Unix progs:   mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
 # 1. Initialization
@@ -25,8 +25,8 @@ while [ $k -le $n_eigen ]; do
 	gmt psxy misfit.txt -R -J -O -K -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 >> $$.ps
 	echo $k | gmt pstext -R -J -O -K -F+cTR+jTR+f18p -Dj0.1i >> $$.ps
 	gmt psscale -R -J -O -Ct.cpt -DJBC+w3.4i/0.1i+h+jTC+o-0.2i/0.4i+e -Bxaf -By+l"misfit" >> $$.ps
+	[[ ${frame} -eq 0 ]] && cp $$.ps ${ps}
 	if [ $# -eq 0 ]; then
-		mv $$.ps ${name}.ps
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi

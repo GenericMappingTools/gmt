@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 36
-REM             $Id
+REM             $Id$
 REM
 REM Purpose:    Illustrate sphinterpolate with Mars radii data
 REM GMT progs:  psxy, makecpt, grdimage, sphinterpolate

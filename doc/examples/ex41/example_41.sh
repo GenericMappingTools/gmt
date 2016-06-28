@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate typesetting of legend with table
-# GMT progs:    pscoast, pslegend, psxy
+# GMT modules:  pscoast, pslegend, psxy
 # Unix progs:   cat, rm
 #
 ps=example_41.ps

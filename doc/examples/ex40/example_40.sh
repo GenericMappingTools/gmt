@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate line simplification and area calculations
-# GMT progs:    psbasemap, pstext, psxy, gmtsimplify, gmtspatial
+# GMT modules:  psbasemap, pstext, psxy, gmtsimplify, gmtspatial
 # Unix progs:   awk, rm
 #
 ps=example_40.ps

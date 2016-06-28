@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate use of trend1d mixed models
-# GMT progs:    pstext, psxy, trend1d
+# GMT modules:  pstext, psxy, trend1d
 # Unix progs:   echo, rm
 #
 

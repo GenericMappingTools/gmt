@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Id$
+# $Id: gmt_make_custom_code.sh 15301 2015-12-04 13:59:07Z fwobbe $
 #
 # Copyright (c) 2012-2015
 # by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe

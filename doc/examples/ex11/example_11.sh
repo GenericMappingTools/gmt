@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Create a 3-D RGB Cube
-# GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
+# GMT modules:	gmtset, grdimage, grdmath, pstext, psxy
 # Unix progs:	rm
 ps=example_11.ps
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 #               GMT EXAMPLE 47
-#               $Id $
+#               $Id$
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
-# GMT progs:    gmtregress, psxy
+# GMT modules:  gmtregress, psxy
 #
 
 ps=example_47.ps

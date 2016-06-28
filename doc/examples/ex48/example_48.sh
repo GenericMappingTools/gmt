@@ -1,9 +1,9 @@
 #!/bin/bash
 #               GMT EXAMPLE 48
-#               $Id $
+#               $Id$
 #
 # Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs
-# GMT progs:    makecpt, pscoast, psxy, sphtriangulate, grdgradient, grdimate, gmtmath, pstext
+# GMT modules:  makecpt, pscoast, psxy, sphtriangulate, grdgradient, grdimate, gmtmath, pstext
 #
 
 ps=example_48.ps

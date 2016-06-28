@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
-# GMT progs:	pscoast, pstext, psxy
+# GMT modules:	pscoast, pstext, psxy
 # Unix progs:	echo, rm
 #
 ps=example_07.ps

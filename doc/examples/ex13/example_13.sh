@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrate vectors and contouring
-# GMT progs:	grdmath, grdcontour, grdvector, pstext
+# GMT modules:	grdmath, grdcontour, grdvector, pstext
 # Unix progs:	echo, rm
 #
 ps=example_13.ps

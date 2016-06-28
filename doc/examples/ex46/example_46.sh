@@ -1,9 +1,9 @@
 #!/bin/bash
 #               GMT EXAMPLE 46
-#               $Id $
+#               $Id$
 #
 # Purpose:      Illustrate use of pssolar to plot day/night terminators
-# GMT progs:    pssolar, pscoast, psxy
+# GMT modules:  pssolar, pscoast, psxy
 #
 
 ps=example_46.ps

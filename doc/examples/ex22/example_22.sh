@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
-# GMT progs:	gmtset, pscoast, psxy, pslegend
+# GMT modules:	gmtset, pscoast, psxy, pslegend
 # Unix progs:	cat, sed, awk, wget|curl
 #
 ps=example_22.ps

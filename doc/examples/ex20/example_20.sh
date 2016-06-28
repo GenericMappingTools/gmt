@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Extend GMT to plot custom symbols
-# GMT progs:	pscoast, psxy
+# GMT modules:	pscoast, psxy
 # Unix progs:	rm
 #
 # Plot a world-map with volcano symbols of different sizes

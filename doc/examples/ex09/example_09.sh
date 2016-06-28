@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
-# GMT progs:	gmtconvert, pswiggle, pstext, psxy
+# GMT modules:	gmtconvert, pswiggle, pstext, psxy
 # Unix progs:	
 #
 ps=example_09.ps

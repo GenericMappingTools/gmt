@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates how to plot Mercator img grids
-# GMT progs:	makecpt, mapproject, grdgradient, grdimage, grdinfo, pscoast
+# GMT modules:	makecpt, mapproject, grdgradient, grdimage, grdinfo, pscoast
 # GMT supplement: img2grd (to read Sandwell/Smith img files)
 # Unix progs:	rm, grep, $AWK
 #

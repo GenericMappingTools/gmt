@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id
+#	$Id$
 # Place 7 decorated lines with symbols along them
 ps=decoratedlines.ps
 cat << EOF > vert.txt

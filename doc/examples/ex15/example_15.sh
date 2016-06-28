@@ -3,8 +3,8 @@
 #		$Id$
 #
 # Purpose:	Gridding and clipping when data are missing
-# GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, gmtinfo
-# GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
+# GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, gmtinfo
+# GMT modules:	nearneighbor, pscoast, psmask, pstext, surface
 # Unix progs:	echo, rm
 #
 ps=example_15.ps

@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
-# GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
+# GMT modules:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
 # Unix progs:	echo, rm
 #
 # Illustrate various means of contouring, using triangulate and surface.

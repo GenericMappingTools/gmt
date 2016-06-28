@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
-# GMT progs:	gmtset, grdcontour, psbasemap, pscoast
+# GMT modules:	gmtset, grdcontour, psbasemap, pscoast
 # Unix progs:	rm
 #
 ps=example_01.ps

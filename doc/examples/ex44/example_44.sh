@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate use of map inserts
-# GMT progs:    pscoast, psbasemap, mapproject
+# GMT modules:  pscoast, psbasemap, mapproject
 # Unix progs:   read
 #
 

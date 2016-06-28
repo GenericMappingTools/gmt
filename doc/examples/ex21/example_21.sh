@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Plot a time-series
-# GMT progs:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy 
+# GMT modules:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy 
 # Unix progs:	cut, echo
 #
 ps=example_21.ps

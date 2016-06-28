@@ -3,8 +3,8 @@
 #		$Id$
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
-# GMT progs:	filter1d, fitcircle, gmtinfo, project, sample1d
-# GMT progs:	spectrum1d, trend1d, pshistogram, psxy, pstext
+# GMT modules:	filter1d, fitcircle, gmtinfo, project, sample1d
+# GMT modules:	spectrum1d, trend1d, pshistogram, psxy, pstext
 # Unix progs:	$AWK, cat, echo, head, paste, rm, tail
 #
 # This example begins with data files "ship.xyg" and "sat.xyg" which

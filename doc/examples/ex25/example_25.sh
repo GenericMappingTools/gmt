@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Display distribution of antipode types
-# GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
+# GMT modules:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
 # Unix progs:	cat
 #
 # Create D minutes global grid with -1 over oceans and +1 over land

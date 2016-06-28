@@ -3,8 +3,8 @@
 #		$Id$
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
-# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, gmtinfo, project
-# GMT progs:	gmtset, pstext, psbasemap, psxy, surface
+# GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, gmtinfo, project
+# GMT modules:	gmtset, pstext, psbasemap, psxy, surface
 # Unix progs:	rm
 #
 ps=example_14.ps

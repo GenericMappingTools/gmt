@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate 2-D FFT and coherence between gravity and bathymetry grids
-# GMT progs:    psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo, grdgradient
+# GMT modules:  psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo, grdgradient
 # Unix progs:   rm
 #
 ps=example_37.ps

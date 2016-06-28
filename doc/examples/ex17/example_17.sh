@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates clipping of images using coastlines
-# GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
+# GMT modules:	grd2cpt, grdgradient, grdimage, pscoast, pstext
 # Unix progs:	rm
 #
 ps=example_17.ps

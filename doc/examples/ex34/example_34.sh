@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate pscoast with DCW country polygons
-# GMT progs:    pscoast, makecpt, grdimage, grdgradient
+# GMT modules:  pscoast, makecpt, grdimage, grdgradient
 # Unix progs:   rm
 #
 ps=example_34.ps
