@@ -1372,7 +1372,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
-				if (file_processing) fclose (fp);	/* Close original PS file */
+				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */ 
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
@@ -1865,6 +1865,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		fclose (fpo);
 		fclose (fp);
+		fp = NULL;
 		if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 
 		/* Build the converting ghostscript command and execute it */
@@ -2213,6 +2214,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, ps_names);
 	gmt_M_free (GMT, line);
 	gmt_M_free (GMT, PS);
+	if (fp) fclose(fp);			/* Coverity says fp might still be open */
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
 	Return (GMT_NOERROR);
