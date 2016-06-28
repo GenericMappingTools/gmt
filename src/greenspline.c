@@ -1688,12 +1688,14 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					r = get_radius (GMT, X[i], X[p], dimension);
 					if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 						if (doubleAlmostEqualZero (in[dimension], obs[i])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i-n);
+							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " is identical to %" PRIu64 "
+							            and will be skipped\n", n_read, i-n);
 							skip = true;
 							n_skip++;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i-n, obs[p], obs[i]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " and %" PRIu64 "
+							            occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i-n, obs[p], obs[i]);
 							n_duplicates++;
 						}
 					}
@@ -1742,15 +1744,18 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (m == 0)
-		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data points, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n", n, nm, nm);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data points, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n",
+		            n, nm, nm);
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data points and %" PRIu64 " gradients, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n", n, m, nm, nm);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data points and %" PRIu64 " gradients, yielding a %" PRIu64 " by %"
+		            PRIu64 " set of linear equations\n", n, m, nm, nm);
 
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
 		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		if (! (Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] && Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
+		if (!(Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] &&
+		     Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid does not match your specified region\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1843,7 +1848,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			dGdr = &gradspline1d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_2D:
-			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = 0.5 * (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y]);
+			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0)
+				Ctrl->S.value[1] = 0.5 * (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y]);
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
@@ -1851,7 +1857,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			dGdr = &gradspline2d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_3D:
-			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y] + Z.z_inc) / 3.0;
+			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0)
+				Ctrl->S.value[1] = (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y] + Z.z_inc) / 3.0;
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
@@ -2171,14 +2178,18 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ASCII table to named file or stdout for 1-D or 3-D */
 			if (Ctrl->G.active) {
-				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
+				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
+					gmt_M_free (GMT, xp);
 					Return (error);
+				}
 				wmode = GMT_ADD_EXISTING;
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_NOERROR) {	/* Establishes output */
+				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
 			if (dimension == 1) gmt_prep_tmp_arrays (GMT, Grid->header->n_columns, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
