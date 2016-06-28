@@ -1117,7 +1117,7 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				}
 				else
 					this_k = o_id;
-				if (change_type) {
+				if (change_type && s[k][K_DIR] == '{') {
 					int new_family = 0, old_family = 0;
 					(void)api_key_to_family (API, s[k], &new_family, &geometry);
 					(void)api_key_to_family (API, s[this_k], &old_family, &geometry);
@@ -9973,6 +9973,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	 *	    The GMT Default settings in effect will control any output to files later.
 	 * 	Finally, if converting from TEXTSET to floating point representations, if the flag contains
 	 * GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
+	 * [Note if that happens it is not considered an error, so API->error is GMT_NOERROR].
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
 	 *  >0: We use this value as the number of columns to decode and report.
@@ -9993,6 +9994,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	 * VECTOR  -> DATASET, TEXTSET, MATRIX
 	 */
 	int object_ID;
+	bool may_fail = false;
 	void *X = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -10018,6 +10020,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 			}
 			break;
 		case GMT_IS_TEXTSET:
+			may_fail = (flag[GMT_HEADER_MODE] & GMT_STRICT_CONVERSION);	/* Not an error if we "fail" to convert */
 			switch (family_out) {
 				case GMT_IS_DATASET:
 					X = api_textset2dataset (API, In, Out, flag[GMT_HEADER_MODE], flag[GMT_COLUMN_MODE], flag[GMT_FORMAT_MODE]);
@@ -10069,6 +10072,8 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 			API->error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
+	if (may_fail && X == NULL)
+		return_null (API, GMT_NOERROR);
 	if (API->error)
 		return_null (API, API->error);
 	if ((object_ID = GMT_Register_IO (API, family_out, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, X)) == GMT_NOTSET)
