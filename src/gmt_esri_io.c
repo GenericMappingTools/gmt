@@ -276,6 +276,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (sscanf (record, "%*s %lf", &header->wesn[XLO]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding xll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmtlib_str_tolower (record);
