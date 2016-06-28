@@ -150,12 +150,12 @@ GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (gmt_M_is_dnan (x_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: X error bar exceeded domain near line %d. Reset to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
 		tip1 = false;
 	}
 	if (gmt_M_is_dnan (x_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_max\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: X error bar exceeded domain near line %d. Reset to x_max\n", line);
 		x_2 = GMT->current.proj.rect[XHI];
 		tip2 = false;
 	}
@@ -173,12 +173,12 @@ GMT_LOCAL void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (gmt_M_is_dnan (y_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Y error bar exceeded domain near line %d. Reset to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
 		tip1 = false;
 	}
 	if (gmt_M_is_dnan (y_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_max\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Y error bar exceeded domain near line %d. Reset to y_max\n", line);
 		y_2 = GMT->current.proj.rect[YHI];
 		tip2 = false;
 	}
