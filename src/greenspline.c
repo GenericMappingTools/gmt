@@ -2019,13 +2019,15 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[4] = {1, 1, nm, 2};
+			unsigned int col_type[3];
 			struct GMT_DATASET *E = NULL;
 			for (i = 0; i < nm; i++) eig[i] = fabs (s[i]);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
 				Return (API->error);
 			}
-
+			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 3, unsigned int);	/* Save previous x/y/z output col types */
+			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 			/* Sort eigenvalues into ascending order */
 			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			eig_max = eig[nm-1];
@@ -2036,6 +2038,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
+			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 3, unsigned int);	/* Restore output col types */
 			if (Ctrl->C.mode == 2)
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			else

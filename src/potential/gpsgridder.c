@@ -794,6 +794,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, n_params, double);
 			uint64_t e_dim[4] = {1, 1, n_params, 2};
+			unsigned int col_type[2];
 			struct GMT_DATASET *E = NULL;
 			for (i = 0; i < n_params; i++) eig[i] = fabs (s[i]);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -802,6 +803,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
+			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2, unsigned int);	/* Save previous x/y output col types */
+			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 			/* Sort eigenvalues into ascending order */
 			gmt_sort_array (GMT, eig, n_params, GMT_DOUBLE);
 			eig_max = eig[n_params-1];
@@ -813,6 +816,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, eig);
 				Return (API->error);
 			}
+			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2, unsigned int);	/* Restore output col types */
 			if (Ctrl->C.mode == 2)
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			else
