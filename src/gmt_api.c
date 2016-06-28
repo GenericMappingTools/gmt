@@ -5840,7 +5840,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		if ((n_files = gmtlib_glob_list (API->GMT, infile, &filelist)) == 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Expansion of \"%s\" gave no results\n", infile);
-			if (infile) free (infile);
+			if (input) free (input);
 			return_null (API, GMT_OBJECT_NOT_FOUND);
 		}
 		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
