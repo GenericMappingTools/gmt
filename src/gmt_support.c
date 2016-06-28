@@ -13554,9 +13554,9 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 char * gmt_get_filename (char *string) {
 	/* Extract the filename from a string like <filename+<modifier> */
 	char *file = NULL, *c = strchr (string, '+');
-	c[0] = '\0';	/* Temporarily chop off the modifier */
+	if (c != NULL) c[0] = '\0';	/* Temporarily chop off the modifier */
 	file = strdup (string);
-	c[0] = '+';	/* Restore the modifier */
+	if (c != NULL) c[0] = '+';	/* Restore the modifier */
 	return (file);
 }
 
