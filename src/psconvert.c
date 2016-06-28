@@ -1219,8 +1219,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		struct GMT_TEXTSET *T = NULL; 
-		if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL)
+		if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
+			gmt_M_free (GMT, line);
 			Return (GMT_RUNTIME_ERROR);
+		}
 
 		Ctrl->In.n_files = (unsigned int)T->n_records;
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
