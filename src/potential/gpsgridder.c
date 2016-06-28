@@ -861,6 +861,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if ((error = gmt_gaussjordan (GMT, A, (unsigned int)n_params, obs)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "You probably have nearly duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Preprocess your data with one of the blockm* modules\n");
+			gmt_M_free (GMT, A);
 			Return (error);
 		}
 	}
