@@ -10068,7 +10068,9 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 			API->error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
-	if (API->error) return_null (API, API->error);
-	if ((object_ID = GMT_Register_IO (API, family_out, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, X)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
+	if (API->error)
+		return_null (API, API->error);
+	if ((object_ID = GMT_Register_IO (API, family_out, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, X)) == GMT_NOTSET)
+		return_null (API, API->error);	/* Failure to register */
 	return (X);
 }
