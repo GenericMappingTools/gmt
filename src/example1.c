@@ -22,7 +22,7 @@ int main (int argc, char *argv[]) {
     /* Obtain the grid from the virtual file */
     G = GMT_Read_VirtualFile (API, output);
     /* Write the grid to file */
-    GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, "junk.nc", G);
+    if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, "junk.nc", G)) return (API->error);
     /* Destroy the GMT session */
-    GMT_Destroy_Session (API);
+    if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
 };
