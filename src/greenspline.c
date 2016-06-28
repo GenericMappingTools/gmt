@@ -75,6 +75,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		int mode;	/* Can be negative */
 	} D;
+	struct E {	/* -E */
+		bool active;
+	} E;
 	struct G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
@@ -432,6 +435,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
 				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
+				break;
+			case 'E':	/* Evaluate misfit */
+				Ctrl->E.active = true;
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -1371,7 +1377,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		"bilinear Cartesian spline [2-D]"};
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 
-	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL;
+	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_i, weight_j;
 	double *A = NULL, r_min, r_max, err_sum = 0.0;
 #ifdef DEBUG
@@ -1924,6 +1930,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 #endif
 
+	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it */
+		orig_obs = gmt_M_memory (GMT, NULL, nm, double);
+		gmt_M_memcpy (orig_obs, obs, nm, double);
+	}
+
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 
 	do_normalization (API, X, obs, n, normalize, dimension, norm);
@@ -2009,7 +2020,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			double *eig = gmt_M_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[4] = {1, 1, nm, 2};
 			struct GMT_DATASET *E = NULL;
-			gmt_M_memcpy (eig, s, nm, double);
+			for (i = 0; i < nm; i++) eig[i] = fabs (s[i]);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
 				Return (API->error);
@@ -2020,15 +2031,15 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
-				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
+				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 2) ? eig[j] / eig_max : eig[j];
 			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			if (Ctrl->C.mode == 1)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
-			else
+			if (Ctrl->C.mode == 2)
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
+			else
+				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
 			gmt_M_free (GMT, eig);
 
 			if (Ctrl->C.value < 0.0) {	/* We are done */
@@ -2074,6 +2085,29 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	fclose (fp);
 #endif
 	gmt_M_free (GMT, A);
+
+	if (Ctrl->E.active) {
+		double here[4], rms = 0.0;
+		for (j = 0; j < nm; j++) {	/* For each data constraint pair (u,v) */
+			gmt_M_memset (here, 4, double);
+			gmt_M_memcpy (here, X[j], dimension, double);
+			for (p = 0; p < nm; p++) {
+				r = get_radius (GMT, here, X[p], dimension);
+				if (Ctrl->Q.active) {
+					C = get_dircosine (GMT, Ctrl->Q.dir, here, X[p], dimension, false);
+					part = dGdr (GMT, r, par, Lz) * C;
+				}
+				else
+					part = G (GMT, r, par, Lz);
+				here[dimension] += alpha[p] * part;
+			}
+			here[dimension] = undo_normalization (here, here[dimension], normalize, norm, dimension);
+			rms += pow (orig_obs[j] - here[dimension], 2.0);
+		}
+		rms = sqrt (rms / nm);
+		GMT_Report (API, GMT_MSG_NORMAL, "RMS misfit is %g\n", rms);
+		gmt_M_free (GMT, orig_obs);
+	}
 
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
