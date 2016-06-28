@@ -293,6 +293,10 @@ Animations
 |                  |                |
 | |anim03|         | |anim04|       |
 +------------------+----------------+
+|:ref:`anim_05`    |                |
+|                  |                |
+| |anim05|         |                |
++------------------+----------------+
 
 .. |anim01| image:: /_images/anim_01.*
    :width: 150 px
@@ -306,6 +310,9 @@ Animations
 .. |anim04| image:: /_images/anim_04.*
    :width: 150 px
 
+.. |anim05| image:: /_images/anim_05.*
+   :width: 150 px
+
 .. toctree::
    :hidden:
 
@@ -313,4 +320,5 @@ Animations
    gallery/anim02.rst
    gallery/anim03.rst
    gallery/anim04.rst
+   gallery/anim05.rst
 

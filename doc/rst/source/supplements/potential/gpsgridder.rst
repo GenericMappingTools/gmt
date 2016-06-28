@@ -18,6 +18,7 @@ Synopsis
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
+[ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
@@ -87,6 +88,16 @@ Optional Arguments
     Alternatively, use **-Cn** to select the *value* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
+
+.. _-E:
+
+**E**\ [*misfitfile*]
+
+    Evaluate the spline exactly at the input data locations and report
+    statistics of the misfit (mean, standard deviation, and rms) for *u* and
+    *v* separately and combined.  Optionally, append a filename and we will
+    write the data table, augmented by two extra columns after each of the
+    *u* and *v* columns holding the spline estimate and the misfit.
 
 .. _-F:
 

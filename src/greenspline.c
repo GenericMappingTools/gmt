@@ -49,7 +49,7 @@
 #define THIS_MODULE_NAME	"greenspline"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
-#define THIS_MODULE_KEYS	"<D{,AD(=,ND(,TG(,CD)=f,G?},RG-,GDN"
+#define THIS_MODULE_KEYS	"<D{,AD(=,ED),ND(,TG(,CD)=f,G?},RG-,GDN"
 
 #include "gmt_dev.h"
 
@@ -65,7 +65,7 @@ struct GREENSPLINE_CTRL {
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C[n|v]<cutoff>[/<file>] */
+	struct C {	/* -C[n|v]<cutoff>[+f<file>] */
 		bool active;
 		unsigned int mode;
 		double value;
@@ -75,8 +75,10 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		int mode;	/* Can be negative */
 	} D;
-	struct E {	/* -E */
+	struct E {	/* -E[<file>] */
 		bool active;
+		unsigned int mode;
+		char *file;
 	} E;
 	struct G {	/* -G<output_grdfile> */
 		bool active;
@@ -210,8 +212,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
-	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]]\n\t[-D<mode>] [-L] [-N<nodefile>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-E[<misfittable>]");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]] [-D<mode>] [-L] [-N<nodefile>] [-Q<az>]n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]][-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -251,6 +254,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Option 5 applies to Cartesian 3-D volume interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -D5 x,y,z in user units, Cartesian distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great circle arcs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Evaluate solution at input locations and report misfit statistics.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename to save all data with two extra columns for model and misfit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -R for specifying the output domain.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
@@ -436,8 +441,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				Ctrl->D.active = true;
 				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
-			case 'E':	/* Evaluate misfit */
+			case 'E':	/* Evaluate misfit -E[<file>]*/
 				Ctrl->E.active = true;
+				if (opt->arg) {
+					Ctrl->E.file = strdup (opt->arg);
+					Ctrl->E.mode = 1;
+				}
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -2097,11 +2106,22 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
-		double here[4], rms = 0.0;
-		for (j = 0; j < nm; j++) {	/* For each data constraint pair (u,v) */
+		double here[4], mean = 0.0, std = 0.0, rms = 0.0, dev;
+		uint64_t e_dim[4] = {1, 1, nm, dimension+3};
+		unsigned int m = 0;
+		struct GMT_DATASET *E = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
+			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving misfit estimates\n");
+				Return (API->error);
+			}
+			S = E->table[0]->segment[0];
+		}
+		for (j = 0; j < nm; j++) {	/* For each data constraint */
 			gmt_M_memset (here, 4, double);
 			gmt_M_memcpy (here, X[j], dimension, double);
-			for (p = 0; p < nm; p++) {
+			for (p = 0; p < nm; p++) {	/* Evaluate solution using all components */
 				r = get_radius (GMT, here, X[p], dimension);
 				if (Ctrl->Q.active) {
 					C = get_dircosine (GMT, Ctrl->Q.dir, here, X[p], dimension, false);
@@ -2112,11 +2132,30 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				here[dimension] += alpha[p] * part;
 			}
 			here[dimension] = undo_normalization (here, here[dimension], normalize, norm, dimension);
-			rms += pow (orig_obs[j] - here[dimension], 2.0);
+			/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+			m++;
+			dev = orig_obs[j] - mean;
+			mean += dev / m;
+			std += dev * (orig_obs[j] - mean);
+			dev = orig_obs[j] - here[dimension];
+			rms += dev * dev;
+			if (Ctrl->E.mode) {	
+				for (p = 0; p < dimension; p++)
+					S->data[p][j] = X[j][p];
+				S->coord[p++][j] = orig_obs[j];
+				S->coord[p++][j] = here[dimension];
+				S->coord[p][j]   = dev;
+			}
 		}
 		rms = sqrt (rms / nm);
-		GMT_Report (API, GMT_MSG_NORMAL, "RMS misfit is %g\n", rms);
+		std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
+		GMT_Report (API, GMT_MSG_NORMAL, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
 		gmt_M_free (GMT, orig_obs);
+		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
 	}
 
 	if (Ctrl->N.file) {	/* Specified nodes only */

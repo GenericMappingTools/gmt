@@ -43,8 +43,10 @@ struct GPSGRIDDER_CTRL {
 		double value;
 		char *file;
 	} C;
-	struct E {	/* -E */
+	struct E {	/* -E[<file>] */
 		bool active;
+		unsigned int mode;
+		char *file;
 	} E;
 	struct F {	/* -F<fudgefactor> or -Fa<mindist> */
 		bool active;
@@ -225,8 +227,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				else
 					Ctrl->C.value = (opt->arg[k]) ? atof (&opt->arg[k]) : 0.0;
 				break;
-			case 'E':	/* Evaluate misfit */
+			case 'E':	/* Evaluate misfit -E[<file>]*/
 				Ctrl->E.active = true;
+				if (opt->arg) {
+					Ctrl->E.file = strdup (opt->arg);
+					Ctrl->E.mode = 1;
+				}
 				break;
 			case 'F':	/* Fudge factor  */
 				Ctrl->F.active = true;
@@ -875,7 +881,20 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
-		double here[4], rms = 0.0;
+		double here[4], mean = 0.0, std = 0.0, rms = 0.0;
+		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, dev_u;
+		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, dev_v;
+		uint64_t e_dim[4] = {1, 1, n_uv, 8};
+		unsigned int m = 0, m2 = 0;
+		struct GMT_DATASET *E = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
+			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving misfit estimates\n");
+				Return (API->error);
+			}
+			S = E->table[0]->segment[0];
+		}
 		for (j = 0; j < n_uv; j++) {	/* For each data constraint pair (u,v) */
 			here[GMT_X] = X[j][GMT_X];
 			here[GMT_Y] = X[j][GMT_Y];
@@ -888,11 +907,51 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 			undo_gps_normalization (here, normalize, norm);
 			rms += pow (orig_u[j] - here[GMT_U], 2.0) + pow (orig_v[j] - here[GMT_V], 2.0);
+			/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+			m++;
+			dev_u = orig_u[j] - mean_u;
+			mean_u += dev_u / m;
+			std_u += dev_u * (orig_u[j] - mean_u);
+			mean += dev_u / m2;
+			std += dev_u * (orig_u[j] - mean_u);
+			dev_v = orig_v[j] - mean_v;
+			mean_v += dev_v / m;
+			std_v += dev_v * (orig_v[j] - mean_v);
+			m2++;
+			mean += dev_v / m2;
+			std += dev_v * (orig_v[j] - mean_v);
+			dev_u = orig_u[j] - here[GMT_U];
+			rms_u += dev_u * dev_u;
+			dev_v = orig_v[j] - here[GMT_V];
+			rms_u += dev_v * dev_v;
+			rms += dev_u * dev_u + dev_v * dev_v;
+			if (Ctrl->E.mode) {	
+				for (p = 0; p < 2; p++)
+					S->data[p][j] = X[j][p];
+				S->coord[p++][j] = orig_u[j];
+				S->coord[p++][j] = here[GMT_U];
+				S->coord[p++][j] = dev_u;
+				S->coord[p++][j] = orig_v[j];
+				S->coord[p++][j] = here[GMT_V];
+				S->coord[p][j]   = dev_v;
+			}
 		}
+		rms_u = sqrt (rms_u / n_uv);
+		rms_v = sqrt (rms_v / n_uv);
 		rms = sqrt (rms / n_params);
-		GMT_Report (API, GMT_MSG_NORMAL, "RMS misfit is %g\n", rms);
+		std_u = (m > 1) ? sqrt (std_u / (m-1.0)) : GMT->session.d_NaN;
+		std_v = (m > 1) ? sqrt (std_v / (m-1.0)) : GMT->session.d_NaN;
+		std   = (m2 > 1) ? sqrt (std / (m2-1.0)) : GMT->session.d_NaN;
+		GMT_Report (API, GMT_MSG_NORMAL, "Misfit evaluation: N = %u\tMean u = %g\tStd.dev u = %g\tRMS u = %g\n", n_uv, mean_u, std_u, rms_u);
+		GMT_Report (API, GMT_MSG_NORMAL, "Misfit evaluation: N = %u\tMean v = %g\tStd.dev v = %g\tRMS v = %g\n", n_uv, mean_v, std_v, rms_v);
+		GMT_Report (API, GMT_MSG_NORMAL, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", n_params, mean, std, rms);
 		gmt_M_free (GMT, orig_u);
 		gmt_M_free (GMT, orig_v);
+		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
 	}
 
 	if (Ctrl->N.file) {	/* Predict solution at specified discrete points only */

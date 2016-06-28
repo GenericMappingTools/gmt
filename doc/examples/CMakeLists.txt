@@ -112,7 +112,7 @@ add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
 if (UNIX)
 	configure_file (animate.in animate @ONLY)
 
-	foreach (_num 01 02 03 04)
+	foreach (_num 01 02 03 04 05)
 		add_custom_command (
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
 			COMMAND ${BASH} animate anim${_num}/anim_${_num}.sh
@@ -154,6 +154,8 @@ if (UNIX)
 		${CMAKE_CURRENT_BINARY_DIR}/anim03
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
 		${CMAKE_CURRENT_BINARY_DIR}/anim04
+		COMMAND ${CMAKE_COMMAND} -E remove_directory
+		${CMAKE_CURRENT_BINARY_DIR}/anim05
 		COMMENT "Removing animations")
 	# register with spotless target
 	add_depend_to_target (spotless _anim_clean)

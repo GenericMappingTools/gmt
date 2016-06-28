@@ -17,6 +17,7 @@ Synopsis
 [ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
 [ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
 [ |-D|\ *mode* ]
+[ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
@@ -131,6 +132,15 @@ Optional Arguments
     arcs. Select *mode* 5 for Cartesian 3-D surface spline
     interpolation: **-D**\ 5 means (*x*,\ *y*,\ *z*) in user units,
     Cartesian distances.
+
+.. _-E:
+
+**E**\ [*misfitfile*]
+
+    Evaluate the spline exactly at the input data locations and report
+    statistics of the misfit (mean, standard deviation, and rms).  Optionally,
+    append a filename and we will write the data table, augmented by
+    two extra columns holding the spline estimate and the misfit.
 
 .. _-G:
 
