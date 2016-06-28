@@ -397,6 +397,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		z = gmt_M_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = D->min[col] + i * inc;	/* Desired z values */
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
+			gmt_M_free (GMT, z);
 			Return (API->error);
 		}
 	}
@@ -414,9 +415,9 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		/* Now we can resample the CPT and write out the result */
 
 		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
-
-		if (!Ctrl->T.file) gmt_M_free (GMT, z);
 	}
+
+	gmt_M_free (GMT, z);	/* It may also have been allocated inside gmtlib_log_array() */
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
