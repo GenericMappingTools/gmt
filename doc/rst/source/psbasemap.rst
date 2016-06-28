@@ -70,8 +70,8 @@ Optional Arguments
 **-A**\ [*file*]
     No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
     for the (possibly oblique) rectangular map domain.  The plot domain must be given via
-    **-R** and **-J**, with no other options allowed.  The sampling interval is controlled via
-    **MAP_LINE_STEP** parameter.  The coordinates are written to *file* or to standard output if no file
+    **-R** and **-J**, with no other options allowed. The sampling interval is controlled via
+    :ref:`MAP_LINE_STEP <MAP_LINE_STEP>` parameter. The coordinates are written to *file* or to standard output if no file
     is specified.
 
 .. _-B:
@@ -108,13 +108,13 @@ Optional Arguments
 **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around any map insert (**-D**),
     map scale (**-L**) or map rose (**-T**) using
-    **MAP_FRAME_PEN**; specify a different pen with **+p**\ *pen*.
+    :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
     x- and y-direction, or individual side spacings between logo and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    *gap* between borders of 2\ **p** and the :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
     unless other values are specified. Append **+r** to draw rounded
     rectangular borders instead, with a 6\ **p** corner radius. You can
     override this radius by appending another value. Finally, append

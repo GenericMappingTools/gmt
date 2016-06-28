@@ -19,9 +19,9 @@
     N-S orientations, 2 adds the two intermediate NW-SE and NE-SW
     orientations, while 3 adds the eight minor orientations WNW-ESE,
     NNW-SSE, NNE-SSW, and ENE-WSW.
-    Label the cardinal points W,E,S,N by adding **+l** and append your
-    own four comma-separated strings to override the default.
-    See **-F** on how to place a panel behind the scale.
+    Label the cardinal points W,E,S,N by adding **+l** and append your own four
+    comma-separated strings to override the default.
+    See  :ref:`Placing-dir-map-roses` and **-F** on how to place a panel behind the scale.
 
 **-Tm**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
 
@@ -31,7 +31,7 @@
     (1) Use **g** for map (user) coordinates, (2) use **j** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **n** for normalized (0-1) coordinates, or (4) use **x** for plot coordinates
-    (inches, cm, etc.) [Default].  You can offset the reference point by *dx*/*dy* in
+    (inches, cm, etc.) [Default]. You can offset the reference point by *dx*/*dy* in
     the direction implied by *justify*.
     By default, the anchor point on the scale is assumed to be the center of the rose (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
@@ -47,7 +47,9 @@
     then a north star is plotted instead of the north label. Annotation
     and two levels of tick intervals for both geographic and magnetic
     directions are 30/5/1 degrees; override these settings by appending
-    **+t**\ *ints*, and append six intervals to set both the geographic and magnetic
-    intervals.   Number GMT default parameters control pens, fonts, and color;
-    see the Map Embellishment section in the Cookbook.
+    **+t**\ *ints*, and append six intervals to set both the geographic and magnetic intervals.
+    Label the cardinal points W,E,S,N by adding **+l** and append your own four comma-separated
+    strings to override the default.
+    Number GMT default parameters control pens, fonts, and color;
+    see the :ref:`Placing-mag-map-roses` section in the Cookbook.
     See **-F** on how to place a panel behind the scale.

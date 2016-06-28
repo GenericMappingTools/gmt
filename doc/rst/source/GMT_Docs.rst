@@ -4572,6 +4572,8 @@ Note that for the purpose of anchor justification (**+j**) the footprint of the 
 considered the rectangle that contains the scale and all selected labels and annotations, i.e.,
 the map scale's *bounding box*.
 
+.. _Placing-dir-map-roses:
+
 Placing directional map roses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4606,6 +4608,8 @@ there is one required and two optional modifiers:
    Plain and fancy directional map roses. (left) Bare-bones plain rose showing arrow towards north
    and a cross indicating the cardinal directions, specified by **-Tdg**\ 0/0\ **+w**\ 1i. (middle) Fancy rose
    obtained by adding **+f**.  (right) Fancy directional rose at level 3 with labels by adding **+f**\ 3\ **+l**.
+
+.. _Placing-mag-map-roses:
 
 Placing magnetic map roses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
