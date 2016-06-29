@@ -8054,7 +8054,8 @@ void gmtlib_init_ellipsoid (struct GMT_CTRL *GMT) {
 	GMT->current.proj.DIST_M_PR_DEG = GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.DIST_KM_PR_DEG = GMT->current.proj.KM_PR_DEG;
 
-	map_lat_swap_init (GMT);		/* Compute coefficients needed for auxilliary latitude conversions */
+	/* Compute coefficients needed for auxilliary latitude conversions */
+	map_lat_swap_init (GMT);
 }
 
 /*! . */

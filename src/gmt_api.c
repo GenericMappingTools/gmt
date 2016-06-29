@@ -1192,7 +1192,7 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 	size_t k;
 
 	/* First catch the simple -R$ which means a grid is passed by the API, hence dimension is 2 */
-	if (text[0] == '$' && text[1] == '\0') return 2;
+	if (text[0] == '?' && text[1] == '\0') return 2;
 	for (k = 0; k < strlen (text); k++) if (text[k] == '/') n_slashes++;			/* Count slashes just in case */
 	if ((text[0] == 'g' || text[0] == 'd') && (text[1] == '\0' || text[1] == '/')) {	/* Got -Rg or -Rd and possibly /zmin/zmax */
 		if (text[1] == '\0') return 2;	/* Got -Rg or -Rd and no more */

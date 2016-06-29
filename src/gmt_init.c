@@ -4780,7 +4780,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2A;
 	/* PROJ_ELLIPSOID */
 	GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "WGS-84");
-	gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+	gmtlib_init_ellipsoid (GMT;	/* Set parameters depending on the ellipsoid */
 	/* PROJ_DATUM (Not implemented yet) */
 	/* PROJ_GEODESIC */
 	GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
@@ -8477,7 +8477,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			else
 				GMT->current.setting.proj_ellipsoid = ival;
-			gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+			gmtlib_init_ellipsoid (GMT;	/* Set parameters depending on the ellipsoid */
 			break;
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
 			break;
@@ -8519,7 +8519,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.proj_mean_radius = GMT_RADIUS_QUADRATIC;
 			else
 				error = true;
-			gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+			gmtlib_init_ellipsoid (GMT;	/* Set parameters depending on the ellipsoid */
 			break;
 
 		case GMTCASE_MAP_SCALE_FACTOR:
