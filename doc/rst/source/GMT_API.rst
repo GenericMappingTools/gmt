@@ -2376,20 +2376,19 @@ a GMT call in the MATLAB or Octave application might look like
   grid  = gmt ('surface -R -I2m -Lu', table, high_limit_grid);
   grid2 = gmt ('grdmath ? LOG10 ? MUL', grid, grid);
 
-and in such environments we need the ability to (1) specify references
-to memory items (via a marker, here "?") and (2) supply implicit
-module arguments (here a command-line "?" will be added to both commands
-to represent the input 3-column table, a "> ?" to indicate the output
-of blockmean should go to a memory reference (eventually end up in the
-variable table, and a "-G? to indicate the output grid from surface
-should be written to a memory reference, ending up in the variable grid).
 Most of the time our implicit rules will take care of the ordering.  The
 rule says that all required input data items must be listed before any
-secondary input data items.  Thus, in the surface call above we first gave
-the required input data *table* and then the optional high_limit_grid file.
-Such explicit and implicit references to data sources requires processing
-and even the addition of extra options to the linked list of options.
-API developers may use ``GMT_Encode_Options`` to do so.
+secondary input data items, and all primary output items must be listed
+on the left hand side before any secondary output items.
+There are three situations where the parsing will need further help;
+(1) Specifying the positions of memory arguments given to :doc:`gmtmath`,
+(2) specifying the positions of memory arguments given to :doc:`grdmath`,
+and (3) using -R? when passing a memory grid to the -R option (since just -R
+means use the command history).
+Thus, in the grdmath call above we we needed to tell it where
+the specific arguments should be placed among the operators.
+API developers will rely on ``GMT_Encode_Options`` to convert the
+above syntax to correct options for ``GMT_Call_Module``.
 The prototype is
 
 .. _GMT_Encode_Options:
