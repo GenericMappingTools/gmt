@@ -4223,7 +4223,7 @@ while :doc:`grd2cpt` can derive the range from one or more grids.
    :width: 500 px
    :align: center
 
-   The top color bar is a dynamic master CPT with a hinge at sea level and
+   The top color bar is a dynamic master CPT (globe) with a hinge at sea level and
    a natural range from -10,000 to +10,000 meters. However, our data range
    is asymmetrical, going from -8,000 meter depths up to +3,000 meter elevations.
    Because of the hinge, the two sides of the CPT will be stretched separately
