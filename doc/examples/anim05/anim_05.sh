@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xv
 #               GMT ANIMATION 05
 #               $Id$
 #
@@ -16,7 +16,7 @@ name=anim_05
 ps=${name}.ps
 mkdir -p $$
 gmt makecpt -Cpolar -T-25/25 > t.cpt
-let frame=0
+frame=0
 let k=1
 while [ $k -le $n_eigen ]; do
 	file=`gmt_set_framename ${name} ${frame}`
