@@ -1,4 +1,4 @@
-#!/bin/bash -xv
+#!/bin/bash
 #               GMT ANIMATION 05
 #               $Id$
 #
