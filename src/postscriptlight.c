@@ -692,7 +692,7 @@ static void psl_prepare_buffer (struct PSL_CTRL *C, size_t len) {
 	size_t new_len = C->internal.n + len;
 	if (new_len <= C->internal.n_alloc) return;
 	while (new_len > C->internal.n_alloc)	/* Wind past what is needed */
-		C->internal.n_alloc *= 1.75;
+		C->internal.n_alloc = (size_t)(C->internal.n_alloc * 1.75);
 	if ((C->internal.buffer = PSL_memory (C, C->internal.buffer, C->internal.n_alloc, char)) == NULL) {
 		PSL_message (C, PSL_MSG_NORMAL, "Error: Could not allocate %d additional buffer space - this will not end well\n", len);
 	}
