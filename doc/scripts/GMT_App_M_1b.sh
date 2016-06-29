@@ -13,7 +13,7 @@ let n2=n/2
 # dy is line spacing and y0 is total box height
 
 gmt gmtset MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
-gmt psbasemap -R0/6.1/0/6.9 -Jx1i -P -K -B0 > $ps
+gmt psbasemap -R0/6.1/0/7.5 -Jx1i -P -K -B0 > $ps
 
 i=1
 y=0.475
