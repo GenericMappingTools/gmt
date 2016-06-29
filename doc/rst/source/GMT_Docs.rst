@@ -10587,7 +10587,7 @@ Finally we show an example of a polygon file:
    *J. Geophys. Res. 101*, 8741--8743).
 
 .. [40]
-   The 23rd palette is called *random* and produces a random set of
+   The 3rd palette is called *categorical* and produces a set of
    colors suitable for categorical plots.
 
 .. [41]
