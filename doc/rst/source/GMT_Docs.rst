@@ -223,16 +223,16 @@ New modules
 -----------
 
 We have added a new module to the GMT core called
-:doc:`pssolar`:
+:doc:`pssolar`.
 This module plots various day-light terminators and other sunlight parameters.
-A new module has been added to the *spotter* supplement:
 
-:doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`:
-Like :doc:`grdpmodeler<supplements/spotter/grdpmodeler>`: it evaluates plate
+A new module has been added to the *spotter* supplement:
+:doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`.
+Like :doc:`grdpmodeler<supplements/spotter/grdpmodeler>` it evaluates plate
 tectonic model predictions but at given point locations locations instead of
 on a grid.
 
-Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`:
+Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`
 to the *potential* supplement.  This tool is a Green's function gridding module
 that grids vector data assumed to be coupled via an elastic model.  The prime
 usage is for gridding GPS velocity components.
@@ -254,7 +254,7 @@ to highlight recently added capabilities.  For specific enhancements, we have:
    shifted to some other *z*-value when an asymmetrical range is being
    requested.  In situations where no range is specified then some CPTs
    will have a default range and that will be substituted instead.  The
-   tools :doc:`makecpt`: and :doc:`grd2cpt`: now displays more meta-data
+   tools :doc:`makecpt` and :doc:`grd2cpt` now displays more meta-data
    about the various CPTs, including values for hinge, range, and the
    color-model used.
 
@@ -266,9 +266,9 @@ to highlight recently added capabilities.  For specific enhancements, we have:
    *justified* and *offset*.
 
 *  We continue to extend support for OpenMP in GMT.  New modules that are
-   OpenMP-enabled are :doc:`grdgradient`:, :doc:`grdlandmask`:, and :doc:`sph2grd`:.
+   OpenMP-enabled are :doc:`grdgradient`, :doc:`grdlandmask`, and :doc:`sph2grd`.
 
-*  :doc:`psxy`: have seen numerous enhancements.  New features include
+*  :doc:`psxy` have seen numerous enhancements.  New features include
    *decorated* lines, which are similar to quoted lines except we place
    symbols rather than text along the line.  Users also gain new controls
    over the plotting of lines, including the ability to add vector heads
@@ -281,35 +281,35 @@ to highlight recently added capabilities.  For specific enhancements, we have:
    type of fault-slip symbol, using curved arrow heads.  Also the arrow
    head selections now include inward-pointing arrows.  Custom symbols
    may now simply be a preexisting EPS figure.  Many of these enhancements
-   are also available in :doc:`psxyz`:.
+   are also available in :doc:`psxyz`.
 
-*  :doc:`greenspline`: now offers a new **-E** option that evaluates the
+*  :doc:`greenspline` now offers a new **-E** option that evaluates the
    model fit at the input data locations and optionally saves the model
    misfits to a secondary output file.
 
-*  :doc:`pstext`: has new modifiers to its **-F** option that allows users
+*  :doc:`pstext` has new modifiers to its **-F** option that allows users
    to generate automatic labels such as record numbers of formatting of a
    third data column into a textual representation.  We also allow any
    baseline angles to be interpreted as *orientations*, i.e., they will be
    modified to fall in the -90/+90 range.
 
-*  :doc:`gmtmath`: and :doc:`grdmath`: have new operators **VAR**, 
+*  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
    **RMS** and **DENAN**.
 
 *  :doc:`filter1d`: can now compute high-pass filtered output via a new
    **+h** modifier to the filter settings, similar to existing capability
-   in :doc:`grdfilter`:.
+   in :doc:`grdfilter`.
 
-*  :doc:`gmtconvert`: has a new option (**-F**) for line segmentation and
+*  :doc:`gmtconvert` has a new option (**-F**) for line segmentation and
    network configuration.
 
-*  :doc:`grdfft`: has a new modifier to the **-E** that allows for more
+*  :doc:`grdfft` has a new modifier to the **-E** that allows for more
    control of the power normalization for radial spectra.
 
-*  :doc:`grdvolume`: can now accept **-Cr**\ *cval* which will evaluate
+*  :doc:`grdvolume` can now accept **-Cr**\ *cval* which will evaluate
    the volume between *cval* and the grid's minimum value.
 
-*  :doc:`psrose`: can now control the attributes of vectors in a windrose
+*  :doc:`psrose` can now control the attributes of vectors in a windrose
    diagram via **-M**.
 
 The API
@@ -319,7 +319,7 @@ We have spend most of our time strengthening the API, in particular in support
 of the GMT/MATLAB toolbox.  A few new API functions have been added since the
 initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Create_VirtualFile,
 GMT_Open_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
-see the :doc:`GMT_API`: documentation for details.
+see the API :doc:`GMT_API` for details.
 
 
 New Features in GMT 5.2
