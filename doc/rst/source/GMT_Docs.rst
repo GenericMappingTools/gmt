@@ -72,14 +72,14 @@ platforms. John Lillibridge and Stephan Eickschen provided the original
 Examples :ref:`(11) <example_11>` and :ref:`(32) <example_32>`,
 respectively; Hanno von Lom helped resolve early
 problems with DLL libraries for Win32; Lloyd Parkes enabled indexed
-color images in PostScript; Kurt Schwehr maintains the packages; Wayne
+color images in *PostScript*; Kurt Schwehr maintains the packages; Wayne
 Wilson implemented the full general perspective projection; and William
 Yip helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The
 SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI; College Park, MD; Faro, Portugal; Darmstadt and
-Bremerhaven, Germany; November 2015
+Bremerhaven, Germany; July 2016
 
 
 A Reminder
@@ -222,19 +222,105 @@ New Features in GMT 5.3
 New modules
 -----------
 
-One new module has been added to the *spotter* supplement:
+We have added a new module to the GMT core called
+:doc:`pssolar`:
+This module plots various day-light terminators and other sunlight parameters.
+A new module has been added to the *spotter* supplement:
 
 :doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`:
-	Evaluate plate tectonic model predictions at given locations.
+Like :doc:`grdpmodeler<supplements/spotter/grdpmodeler>`: it evaluates plate
+tectonic model predictions but at given point locations locations instead of
+on a grid.
 
-:doc:`pssolar`:
-  Plot day-light terminators and other sunlight parameters.
+Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`:
+to the *potential* supplement.  This tool is a Green's function gridding module
+that grids vector data assumed to be coupled via an elastic model.  The prime
+usage is for gridding GPS velocity components.
 
-:doc:`grdredpol<supplements/potential/grdredpol>`:
-  Split **-E** option into **-Ei** and **-Ed**
+General improvements
+--------------------
 
-:doc:`gmtgravmag3d<supplements/potential/gmtgravmag3d>`:
-  Split **-T** option into **-Ti** and **-Tv** or **Tr\|s**
+There are many changes to GMT, mostly under the hood, but also changes that
+affect users directly.  We have added two new examples and one new animation
+to highlight recently added capabilities.  For specific enhancements, we have:
+
+*  All GMT-distributed color palette tables (CPTs, now a total of 40) are
+   *dynamic* and many have a *hinge* and a default *range*.  What this means
+   is that the range of all CPTs have been normalized to 0-1, expect that
+   those with a hinge are normalized to -1/+1, with 0 being the normalized
+   hinge location.  CPTs with a hinge are interpolated separately on either
+   side of the hinge, since a hinge typically signifies a dramatic color
+   change (e.g., at sea-level) and we do not want that color change to be
+   shifted to some other *z*-value when an asymmetrical range is being
+   requested.  In situations where no range is specified then some CPTs
+   will have a default range and that will be substituted instead.  The
+   tools :doc:`makecpt`: and :doc:`grd2cpt`: now displays more meta-data
+   about the various CPTs, including values for hinge, range, and the
+   color-model used.
+
+*  We have consolidated how map embellishments are specified.  This group
+   includes map scales, color bars, legends, map roses, map inserts,
+   image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
+   dedicated to these items and how they are specified.  Common to all is
+   the concept of a *reference point* relative to which the item is
+   *justified* and *offset*.
+
+*  We continue to extend support for OpenMP in GMT.  New modules that are
+   OpenMP-enabled are :doc:`grdgradient`:, :doc:`grdlandmask`:, and :doc:`sph2grd`:.
+
+*  :doc:`psxy`: have seen numerous enhancements.  New features include
+   *decorated* lines, which are similar to quoted lines except we place
+   symbols rather than text along the line.  Users also gain new controls
+   over the plotting of lines, including the ability to add vector heads
+   to the line endings, to trim back lines by specified amounts, and to
+   request a Bezier spline interpolation in *PostScript* (see enhanced
+   **-W** option).  A new option (**-F**) for line segmentation and networks
+   have also been added. Various geographic symbols (such as ellipses; **-SE**,
+   rotatable rectangles **-SJ**; and geo-vectors **-S=**) can now take size in geographic
+   dimensions, including a new geo-wedge symbol.  We also offer one more
+   type of fault-slip symbol, using curved arrow heads.  Also the arrow
+   head selections now include inward-pointing arrows.  Custom symbols
+   may now simply be a preexisting EPS figure.  Many of these enhancements
+   are also available in :doc:`psxyz`:.
+
+*  :doc:`greenspline`: now offers a new **-E** option that evaluates the
+   model fit at the input data locations and optionally saves the model
+   misfits to a secondary output file.
+
+*  :doc:`pstext`: has new modifiers to its **-F** option that allows users
+   to generate automatic labels such as record numbers of formatting of a
+   third data column into a textual representation.  We also allow any
+   baseline angles to be interpreted as *orientations*, i.e., they will be
+   modified to fall in the -90/+90 range.
+
+*  :doc:`gmtmath`: and :doc:`grdmath`: have new operators **VAR**, 
+   **RMS** and **DENAN**.
+
+*  :doc:`filter1d`: can now compute high-pass filtered output via a new
+   **+h** modifier to the filter settings, similar to existing capability
+   in :doc:`grdfilter`:.
+
+*  :doc:`gmtconvert`: has a new option (**-F**) for line segmentation and
+   network configuration.
+
+*  :doc:`grdfft`: has a new modifier to the **-E** that allows for more
+   control of the power normalization for radial spectra.
+
+*  :doc:`grdvolume`: can now accept **-Cr**\ *cval* which will evaluate
+   the volume between *cval* and the grid's minimum value.
+
+*  :doc:`psrose`: can now control the attributes of vectors in a windrose
+   diagram via **-M**.
+
+The API
+-------
+
+We have spend most of our time strengthening the API, in particular in support
+of the GMT/MATLAB toolbox.  A few new API functions have been added since the
+initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Create_VirtualFile,
+GMT_Open_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
+see the :doc:`GMT_API`: documentation for details.
+
 
 New Features in GMT 5.2
 =======================
@@ -282,11 +368,11 @@ In addition, two established modules have been given more suitable names
     when GMT is running in compatibility mode).
 
 :doc:`psconvert`
-    Converts from PostScript to PDF, SVG, or various raster image formats.
+    Converts from *PostScript* to PDF, SVG, or various raster image formats.
     Previously known as ps2raster (this name is recognized
     when GMT is running in compatibility mode).
 
-Finally, we have renamed our PostScript Light (PSL) library from psl
+Finally, we have renamed our *PostScript* Light (PSL) library from psl
 to PostScriptLight to avoid package name conflicts.  This library will eventually
 become decoupled from GMT and end up as a required prerequisite.
 
@@ -504,7 +590,7 @@ changes to existing syntax will be backwards compatible:
    reporting dimensions of the plot when **-A** and **-V** are used,
    scaling the output plots via **-A+s**\ [**m**]\ *width*\ [**u**][/\ *height*\ [**u**]],
    paint and outline the bounding box via **-A** modifiers **g**\ *fill* and **+p**\ *pen*,
-   and **-Z** for removing the PostScript file on exit.  In addition, we have
+   and **-Z** for removing the *PostScript* file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 
@@ -592,9 +678,9 @@ New Features in GMT 5
 
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
-to an already extensive bag of tricks.  Our PostScript library
+to an already extensive bag of tricks.  Our *PostScript* library
 :doc:`PSL <postscriptlight>` has seen a complete rewrite as well
-and produce shorter and more compact PostScript. However, the big news
+and produce shorter and more compact *PostScript*. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
 GMT functionality is now accessible via GMT "modules". These are
@@ -747,7 +833,7 @@ implemented by a series of new lower-case GMT common options:
    handled with the new **-s** option.
 
 *  All plot programs can take a new **-t** option to modify the PDF
-   transparency level for that layer. However, as PostScript has no provision for
+   transparency level for that layer. However, as *PostScript* has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
 Updated common options
@@ -1105,11 +1191,11 @@ Several supplements have new features as well:
    :doc:`rotconverter <supplements/spotter/rotconverter>` can extract plate
    circuit rotations on-the-fly from the GPlates rotation file.
 
-Note: GMT 5 only produces PostScript and no longer has a setting for
-Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
+Note: GMT 5 only produces *PostScript* and no longer has a setting for
+Encapsulated *PostScript* (EPS). We made this decision since (a) our EPS determination
 was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
 and (b) :doc:`psconvert` handles it exactly.  Hence, users who need EPS plots should
-simply process their PostScript files via :doc:`psconvert`.
+simply process their *PostScript* files via :doc:`psconvert`.
 
 .. _command-line-completion:
 
@@ -1189,7 +1275,7 @@ with a warning under compatibility mode:
    In addition, a few defaults are no longer recognized,
    such as N_COPIES, PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for specifying
-   PostScript copies is no longer available.
+   *PostScript* copies is no longer available.
 
 *  **Units**: The unit abbreviation for arc seconds is finally **s**
    instead of **c**, with the same change for upper case in some clock
@@ -1719,11 +1805,11 @@ package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
 of forms ranging from simple *x*--*y* plots to maps and color,
 perspective, and shaded-relief illustrations. GMT uses the
-PostScript page description language [*Adobe Systems Inc.*, 1990].
-With PostScript, multiple plot files can easily be superimposed to
+*PostScript* page description language [*Adobe Systems Inc.*, 1990].
+With *PostScript*, multiple plot files can easily be superimposed to
 create arbitrarily complex images in gray tones or 24-bit true color.
 Line drawings, bitmapped images, and text can be easily combined in one
-illustration. PostScript plot files are device-independent: The same
+illustration. *PostScript* plot files are device-independent: The same
 file can be printed at 300 dots per inch (dpi) on an ordinary
 laserwriter or at 2470 dpi on a phototypesetter when ultimate quality is
 needed. GMT software is written as a set of UNIX tools [3]_ and is
@@ -1775,15 +1861,15 @@ data extraction tool which will put out data in a form readable by
 GMT (discussed below). After writing the extractor, all other
 GMT modules will work as they are.
 
-GMT makes full use of the PostScript page description language, and
-can produce color illustrations if a color PostScript device is
+GMT makes full use of the *PostScript* page description language, and
+can produce color illustrations if a color *PostScript* device is
 available. One does not necessarily have to have access to a
 top-of-the-line color printer to take advantage of the color
 capabilities offered by GMT: Several companies offer imaging services
-where the customer provides a PostScript plot file and gets color
+where the customer provides a *PostScript* plot file and gets color
 slides or hardcopies in return. Furthermore, general-purpose
-PostScript raster image processors (RIPs) are now becoming available,
-letting the user create raster images from PostScript and plot these
+*PostScript* raster image processors (RIPs) are now becoming available,
+letting the user create raster images from *PostScript* and plot these
 bitmaps on raster devices like computer screens, dot-matrix printers,
 large format raster plotters, and film writers [4]_. Because the
 publication costs of color illustrations are high, GMT offers 90
@@ -1798,7 +1884,7 @@ cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
 cookbook contains the shell scripts that were used for each example;
-PostScript\ files of each illustration are also provided. All programs
+*PostScript* files of each illustration are also provided. All programs
 have individual manual pages which can be installed as part of the
 on-line documentation under the UNIX **man** utility or as web
 pages. In addition, the programs offer friendly help messages which make
@@ -1847,7 +1933,7 @@ these types of output:
    ASCII (*x,y,z*) data or operate on existing grid files produce
    this type of output.
 
-*  PostScript -- The plotting programs all use the PostScript\ page
+*  *PostScript* -- The plotting programs all use the *PostScript* page
    description language to define plots. These commands are stored as
    ASCII text and can be edited should you want to customize the plot
    beyond the options available in the programs themselves.
@@ -2993,14 +3079,14 @@ Plot overlays: The **-K** **-O** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-K** and **-O** options control the generation of
-PostScript code for multiple overlay plots. All PostScript files
+*PostScript* code for multiple overlay plots. All *PostScript* files
 must have a header (for initializations), a body (drawing the figure),
 and a trailer (printing it out) (see Figure :ref:`Multiple overlay plots
 <OK_options>`). Thus, when overlaying
 several GMT plots we must make sure that the first plot call omits the
 trailer, that all intermediate calls omit both header and trailer, and
 that the final overlay omits the header. The **-K** omits the trailer
-which implies that more PostScript code will be appended later
+which implies that more *PostScript* code will be appended later
 [Default terminates the plot system]. The **-O** selects Overlay plot
 mode and omits the header information [Default initializes a new plot
 system]. Most unexpected results for multiple overlay plots can be
@@ -3014,7 +3100,7 @@ when stacking plots.
    :width: 500 px
    :align: center
 
-   A final PostScript file consists of any number of individual pieces.
+   A final *PostScript* file consists of any number of individual pieces.
 
 
 Timestamps on plots: The **-U** option
@@ -3173,7 +3259,7 @@ Number of Copies: The **-c** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-c** option specifies the number of plot copies [Default is 1].
-This value is embedded in the PostScript file and will make a printer
+This value is embedded in the *PostScript* file and will make a printer
 issue the chosen number of copies without respooling.
 
 Missing data conversion: The **-d** option
@@ -3408,8 +3494,8 @@ consider for this NaN test.
 Layer PDF transparency: The **-t** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-While the PostScript language does not support transparency, PDF does,
-and via PostScript extensions one can manipulate the transparency
+While the *PostScript* language does not support transparency, PDF does,
+and via *PostScript* extensions one can manipulate the transparency
 levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
 the 0--100 range; the default is 0, or opaque. Transparency may also be
@@ -3541,7 +3627,7 @@ The verbosity is cumulative, i.e., mode **l** means all messages of mode
 Program output
 --------------
 
-Most programs write their results, including PostScript\ plots, to
+Most programs write their results, including *PostScript* plots, to
 standard output. The exceptions are those which may create binary netCDF
 grid files such as :doc:`surface` (due to the
 design of netCDF a filename must be provided; however, alternative
@@ -3619,29 +3705,29 @@ to create limited FORTRAN-style card records by setting
 :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` to none
 [Default is tab].
 
-PostScript features
+*PostScript* features
 ---------------------
 
-PostScript is a command language for driving graphics devices such as
+*PostScript* is a command language for driving graphics devices such as
 laser printers. It is ASCII text which you can read and edit as you wish
 (assuming you have some knowledge of the syntax). We prefer this to
 binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL <postscriptlight>` plot
+GMT programs create *PostScript* code by calling the :doc:`PSL <postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
 plot programs. See the manual pages for :doc:`PSL <postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
-PostScript will enable the user to add such features directly into the
-plot file. By default, GMT will produce freeform PostScript output
+*PostScript* will enable the user to add such features directly into the
+plot file. By default, GMT will produce freeform *PostScript* output
 with embedded printer directives. To produce Encapsulated
-PostScript (EPS) that can be imported into graphics programs such as
+*PostScript* (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run :doc:`psconvert`
 **-Te**. See Chapter `Including GMT Graphics into your Documents`_ for an extensive discussion of converting
-PostScript to other formats.
+*PostScript* to other formats.
 
 .. _-Wpen_attrib:
 
@@ -3742,7 +3828,7 @@ suitable for, say, :doc:`psxy`.
 +-------------------------------+-----------------------------------------------------+
 
 In addition to these pen settings there are several
-PostScript settings that can affect the appearance of lines. These are
+*PostScript* settings that can affect the appearance of lines. These are
 controlled via the GMT defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
 :ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
@@ -3869,14 +3955,14 @@ pattern:
     fore- or background colors to - yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
-Due to PostScript implementation limitations the raster images used
+Due to *PostScript* implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`psimage`. The format of Sun
 raster files is outlined in Chapter `GMT file formats`_. Note that under
-PostScript Level 1 the patterns are filled by using the polygon as a
+*PostScript* Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
-PostScript interpreter has been assigned. There is therefore the
-possibility that some PostScript interpreters (especially those
+*PostScript* interpreter has been assigned. There is therefore the
+possibility that some *PostScript* interpreters (especially those
 supplied with older laserwriters) will run out of memory and abort.
 Should that occur we recommend that you use a regular gray-shade fill
 instead of the patterns. Installing more memory in your printer *may or
@@ -3929,8 +4015,8 @@ Chapter `PostScript fonts used by GMT`_ for a list of all fonts recognized by GM
 Stroke, Fill and Font Transparency
 ----------------------------------
 
-The PostScript language has no built-in mechanism for transparency.
-However, PostScript\ extensions make it possible to request
+The *PostScript* language has no built-in mechanism for transparency.
+However, *PostScript* extensions make it possible to request
 transparency, and tools that can render such extensions will produce
 transparency effects. We specify transparency in percent: 0 is opaque
 [Default] while 100 is fully transparent (i.e., nothing will show). As
@@ -3944,7 +4030,7 @@ Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
 information, see for instance (search online for) the Adobe pdfmark
-Reference Manual. Most printers and many PostScript viewers can
+Reference Manual. Most printers and many *PostScript* viewers can
 neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
 Ghostscript and its derivatives such as GMT's
@@ -4344,7 +4430,7 @@ you must use the full octal code):
 | @s       | ß          | @i       | í          |
 +----------+------------+----------+------------+
 
-PostScript fonts used in GMT may be re-encoded to include several
+*PostScript* fonts used in GMT may be re-encoded to include several
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
@@ -5396,7 +5482,7 @@ then the parameter setting will take precedence over the environment variable.
 Variable $GMT_SHAREDIR
     was sometimes required in previous GMT versions to locate the GMT
     share directory where all run-time support files such as coastlines,
-    custom symbols, PostScript macros, color tables, and much more reside.
+    custom symbols, *PostScript* macros, color tables, and much more reside.
     If this parameter is not set (default), GMT will make a reasonable
     guess of the location of its share folder. Setting this variable is
     usually not required and recommended only under special circumstances.
@@ -7654,7 +7740,7 @@ Numerous public-domain programs exist, such as **xv** and
 **convert** (in the GraphicsMagick or ImageMagick package), that will translate between
 various raster file formats such as tiff, gif, jpeg, and Sun raster.
 Raster patterns may be created with GMT plotting tools by generating
-PostScript plots that can be rasterized by ghostscript and
+*PostScript* plots that can be rasterized by ghostscript and
 translated into the right raster format.
 
 .. _include-gmt-graphics:
@@ -7669,55 +7755,55 @@ to a document, an article, a report, your dissertation, a poster, a web
 page, or a presentation. Of course, you could try the old-fashioned
 scissors and glue stick. More likely, you want to incorporate your
 graphics electronically into the document. Depending on the application,
-the GMT PostScript file will need to be converted to Encapsulated
-PostScript (EPS), Portable Document Format (PDF), or some raster
+the GMT *PostScript* file will need to be converted to Encapsulated
+*PostScript* (EPS), Portable Document Format (PDF), or some raster
 format (e.g., JPEG, PNG, or TIFF) in order to incorporate them into the
 document.
 
 -  When creating a document intended for printing (article,
    dissertation, or poster) it is best to preserve the scalable vector
-   characteristics of the PostScript file. Many applications can
-   directly incorporate PostScript in the form of EPS files. Modern
+   characteristics of the *PostScript* file. Many applications can
+   directly incorporate *PostScript* in the form of EPS files. Modern
    programs will often allow the inclusion of PDF files. Either way, the
    sharpness of lines and fonts will be preserved and can be scaled up
    or down as required.
 
 -  When the aim is to display the graphics on a computer screen or
    present it using a projector, it is wise to convert the
-   PostScript into a raster format. Although applications like
+   *PostScript* into a raster format. Although applications like
    PowerPoint can do this for you, you can best take the
    conversion into your own hands for the best results.
 
 A large number of questions to the GMT-Help mailing list are related to
 these rendering issues, showing that something as seemingly
-straightforward as incorporating a PostScript file into a document is
+straightforward as incorporating a *PostScript* file into a document is
 a far from trivial exercise. This Chapter will show how to include
 GMT graphics into documents and how to achieve the best quality results.
 
-Making GMT Encapsulated PostScript Files
+Making GMT Encapsulated *PostScript* Files
 ------------------------------------------
 
-GMT produces freeform PostScript files. Note that a freeform
-PostScript file may contain special operators (such as
+GMT produces freeform *PostScript* files. Note that a freeform
+*PostScript* file may contain special operators (such as
 ``Setpagedevice``) that is specific to printers (e.g., selection of
 paper tray). Some previewers (among them, Sun's pageview) may not
 understand these valid instructions and may fail to image the file.
-Also, embedding freeform PostScript with such instructions in it into
+Also, embedding freeform *PostScript* with such instructions in it into
 a larger document can cause printing to fail. While you could choose
 another viewer (we recommend **ghostview**) to view single plots
-prepared by GMT, it is generally wiser to convert PostScript to EPS
+prepared by GMT, it is generally wiser to convert *PostScript* to EPS
 output when you are creating a plot intended for inclusion into a larger
 document. Some programs (and some publishers as well) do not allow the
 use of instructions like ``Setpagedevice`` as part of embedded graphics.
 
 An EPS file that is to be placed into another document needs to have
 correct bounding box parameters. These are found in the
-PostScript Document Comment %%BoundingBox. Applications that generate
+*PostScript* Document Comment %%BoundingBox. Applications that generate
 EPS files should set these parameters correctly. Because GMT\ makes
-the PostScript files on the fly, often with several overlays, it is
+the *PostScript* files on the fly, often with several overlays, it is
 not possible to do so accurately. Therefore, if you need and EPS version
 with a "tight" BoundingBox you need to post-process your
-PostScript file. There are several ways in which this can be
+*PostScript* file. There are several ways in which this can be
 accomplished.
 
 -  Programs such as Adobe Illustrator, Aldus Freehand, and
@@ -7743,9 +7829,9 @@ accomplished.
    should also do the trick. The downside is that this program adds an
    "image" of the plot in the preamble of the EPS file, thus increasing
    the file size significantly. This image is a rough rendering of your
-   PostScript graphics that some programs will show on screen while
+   *PostScript* graphics that some programs will show on screen while
    you are editing your document. This image is basically a placeholder
-   for the PostScript graphics that will actually be printed.
+   for the *PostScript* graphics that will actually be printed.
 
 -  However, the preferred option is to use the GMT utility
    :doc:`psconvert`. Its **-A** option will
@@ -7756,23 +7842,23 @@ accomplished.
 
        gmt psconvert -A -Te myplot.ps
 
-   will convert the PostScript file ``myplot.ps`` into an encapsulated
-   PostScript file ``myplot.eps`` which is exactly cropped to the tightest possible
+   will convert the *PostScript* file ``myplot.ps`` into an encapsulated
+   *PostScript* file ``myplot.eps`` which is exactly cropped to the tightest possible
    BoundingBox.
 
 If you do not want to modify your illustration but just include it in a
 text document: many word processors (such as Microsoft Word  or Apple Pages) will let you include a
-PostScript file that you may place but not edit. Newer versions of
+*PostScript* file that you may place but not edit. Newer versions of
 those programs also allow you to include PDF versions of your graphics.
 Except for Pages, you will not be able to view the figure
 on-screen, but it will print correctly.
 
-Converting GMT PostScript to PDF or raster images
+Converting GMT *PostScript* to PDF or raster images
 ---------------------------------------------------
 
 Since Adobe's PDF (Portable Document Format) seems to have become the
 *de facto* standard for vector graphics, you are often well off
-converting GMT produced PostScript files to PDF. Being both vector
+converting GMT produced *PostScript* files to PDF. Being both vector
 formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
@@ -7781,25 +7867,25 @@ differently, since most converters cut corners by using the same tool
 devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert
-your PostScript file into a raster format, such as GIF (Graphics
+your *PostScript* file into a raster format, such as GIF (Graphics
 Interchange Format), TIFF (Tagged Image File Format), PNG (Portable
 Network Graphics), or JPEG (Joint Photographic Experts Group). A web
 page is better served with a raster image that will immediately show on
-a web browser, than with a PostScript file that needs to be downloaded
-to view, despite the better printing quality of the PostScript image.
+a web browser, than with a *PostScript* file that needs to be downloaded
+to view, despite the better printing quality of the *PostScript* image.
 A less obvious reason to convert your image to a raster format is to
 by-pass PowerPoint's rendering engine in case you want to embed
 the image into a presentation.
 
-The are a number of programs that will convert PostScript files to PDF
+The are a number of programs that will convert *PostScript* files to PDF
 or raster formats, like Aladdin's **pstopdf**, pbmplus' **pstoimg**,
 or GraphicsMagick's and ImageMagick's **convert**, most of which run ghostscript
 behind the scenes. The same is true for viewers like **ghostview** and
 Apple's Preview*. So a lot of the times when people report that
-their PostScript plot does not look right but prints fine, it is the
+their *PostScript* plot does not look right but prints fine, it is the
 way ghostscript is used with its most basic settings that is to blame.
 
-When converting or viewing PostScript goes awry
+When converting or viewing *PostScript* goes awry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here are some notorious pitfalls with ghostscript (and other
@@ -7893,7 +7979,7 @@ option. Simply run
 
     gmt psconvert -A -P -Tf *.ps
 
-to convert all PostScript files to PDF while cropping it to the
+to convert all *PostScript* files to PDF while cropping it to the
 smallest possible BoundingBox. Or use the **-Tg** option to convert your
 files to PNG.
 
@@ -7974,7 +8060,7 @@ GMT graphics in **PowerPoint**
 
 In Figure :ref:`Rendered images <Rendering>` we have attempted to include
 Example :ref:`example_20` into a PowerPoint presentation.
-First the PostScript file was converted to PDF (using
+First the *PostScript* file was converted to PDF (using
 :doc:`psconvert`), then loaded into
 PowerPoint and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
@@ -8017,7 +8103,7 @@ Concluding remarks
 
 These examples do not constitute endorsements of the products mentioned
 above; they only represent our limited experience with adding
-PostScript to various types of documents. For other solutions and
+*PostScript* to various types of documents. For other solutions and
 further help, please post messages to.
 
 
@@ -8074,11 +8160,11 @@ firmware will not know about the euro).
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
 
 
-PostScript Fonts Used by GMT
-============================
+*PostScript* Fonts Used by GMT
+==============================
 
 GMT uses the standard 35 fonts that come with most
-PostScript laserwriters. If your printer does not support some of
+*PostScript* laserwriters. If your printer does not support some of
 these fonts, it will automatically substitute the default font (which is
 usually Courier). The following is a list of the GMT fonts:
 
@@ -8086,7 +8172,7 @@ usually Courier). The following is a list of the GMT fonts:
    :width: 500 px
    :align: center
 
-   The standard 35 PostScript fonts recognized by GMT.
+   The standard 35 *PostScript* fonts recognized by GMT.
 
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
@@ -8106,7 +8192,7 @@ available freely in the internet or at your institution, see the
 instructions in the ``PSL_custom_fonts.txt`` under the ``share/postscriptlight`` directory and continue reading. GMT does
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
-GMT you need to specify the PostScript name of the relevant fonts in
+GMT you need to specify the *PostScript* name of the relevant fonts in
 the file ``PSL_custom_fonts.txt``. You can either edit the existing file distributed with
 GMT to make the changes global or you can create a new file in the
 current working directory, e.g.,
@@ -8116,11 +8202,11 @@ current working directory, e.g.,
     LinBiolinumO      0.700    0
     LinLibertineOB    0.700    0
 
-The format is a space delimited list of the PostScript font name, the
+The format is a space delimited list of the *PostScript* font name, the
 font height-point size-ratio, and a boolean variable that tells GMT to
 re-encode the font (if set to zero). The latter has to be set to zero as
 additional fonts will most likely not come in standard
-PostScript encoding. GMT determines how tall typical annotations
+*PostScript* encoding. GMT determines how tall typical annotations
 might be from the font size ratio so that the vertical position of
 labels and titles can be adjusted to a more uniform typesetting. Now,
 you can set the GMT font parameters to your non-standard fonts:
@@ -8136,19 +8222,19 @@ After setting the encoding and the degree symbol, the configuration part
 for GMT is finished and you can proceed to create GMT-maps as usual.
 An example script is discussed in Example :ref:`example_31`.
 
-Embedding fonts in PostScript and PDF
+Embedding fonts in *PostScript* and PDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you have Type 1 fonts in PFA (Printer Font ASCII) format you can
 embed them directly by copying them at the very top of your
-PostScript-file, before even the %!PS header comment. PFB (Printer
+*PostScript* file, before even the %!PS header comment. PFB (Printer
 Font Binary), TrueType or OpenType fonts cannot be embedded in
-PostScript directly and therefore have to be converted to PFA first.
+*PostScript* directly and therefore have to be converted to PFA first.
 
 However, you most likely will have to tell Ghostscript where to
-find your custom fonts in order to convert your GMT-PostScript-plot
+find your custom fonts in order to convert your GMT *PostScript* plot
 to PDF or an image with :doc:`psconvert`.
-When you have used the correct PostScript-names of the fonts in ``PSL_custom_fonts.txt`` you
+When you have used the correct *PostScript* names of the fonts in ``PSL_custom_fonts.txt`` you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 :doc:`psconvert` in the usual way. Likewise
@@ -8156,7 +8242,7 @@ you can specify Ghostscript's ``-sFONTPATH`` option on the
 command line with ``C -sFONTPATH=/path/to/fontdir``. Ghostscript,
 which is invoked by :doc:`psconvert`, does
 not depend on file names. It will automatically find the relevant font
-files by their PostScript-names and embed and subset them in
+files by their *PostScript* names and embed and subset them in
 PDF-files. This is quite convenient as the document can be displayed and
 printed even on other computers when the font is not available locally.
 There is no need to convert your fonts as Ghostscript can handle
@@ -8175,21 +8261,21 @@ way:
 
 Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
-PostScript-file. Also, :doc:`psconvert`
-cannot correctly crop Ghostscript converted PostScript-files
+*PostScript* file. Also, :doc:`psconvert`
+cannot correctly crop Ghostscript converted *PostScript* files
 anymore. Use Heiko Oberdiek's instead or crop with
 :doc:`psconvert` **-A** **-Te** before (See Example :ref:`example_31`).
 
 Character encoding
 ~~~~~~~~~~~~~~~~~~
 
-Since PostScript itself does not support Unicode fonts,
+Since *PostScript* itself does not support Unicode fonts,
 Ghostscript will re-encode the fonts on the fly. You have to make
 sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>`
 with :doc:`gmtset` and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
-codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
+codes, e.g., \\265 instead of μ. Note, that *PostScript* fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
@@ -8507,7 +8593,7 @@ are really concerned about how your color plots will show up in your PhD
 thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting GMT do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
-specify the color space of your PostScript file, set
+specify the color space of your *PostScript* file, set
 :ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the :doc:`gmt.conf` file to RGB, HSV, or CMYK.
 
 
@@ -9982,7 +10068,7 @@ are:
 
 A cure to all these woes is the *isolation mode* introduced in
 GMT version 4.2.2. This mode allows you to run a GMT script without
-leaving any traces other than the resulting PostScript  or data files,
+leaving any traces other than the resulting *PostScript*  or data files,
 and not altering the ``gmt.conf`` or ``gmt.history`` files. Those files will be placed in a temporary
 directory instead. And if properly set up, this temporary directory will
 only be used by a single script, even if another GMT script is running
@@ -10443,7 +10529,7 @@ Finally we show an example of a polygon file:
    XXII(176)*, 88--93.
 
 .. [8]
-   PostScript definition. In the typesetting industry a slightly
+   *PostScript* definition. In the typesetting industry a slightly
    different definition of point (1/72.27 inch) is used, presumably to
    cause needless trouble.
 
@@ -10489,7 +10575,7 @@ Finally we show an example of a polygon file:
    Ensures that boundary annotations do not fall off the page.
 
 .. [16]
-   To keep PostScript files small, such comments are by default turned
+   To keep *PostScript* files small, such comments are by default turned
    off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
 
 .. [17]
