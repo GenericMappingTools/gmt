@@ -26,14 +26,14 @@
  *
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
+ *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
  *  gmt_strstrip            Strip leading and trailing whitespace from string
- *  GMT_cr2lf               Replace CR with LF and terminate string
  *  gmt_strlshift           Left shift a string by n characters
  *  gmt_strrepc             Replaces all occurrences of a char in the string
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  gmt_strtok              Reiterant replacement of strtok
  *  gmt_strtok_m            A Matlab style strtok  
- *  gmt_dos_path_fix            Turn /c/dir/... paths into c:/dir/...
+ *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
@@ -69,7 +69,7 @@ char *gmt_chop_ext (char *string) {
 		*p = '\0';
 		return (p + 1);
 	}
-	return (NULL);
+	return NULL;
 }
 
 void gmt_chop (char *string) {
@@ -80,6 +80,16 @@ void gmt_chop (char *string) {
 	if ((p = strpbrk (string, "\r\n")))
 		/* Overwrite 1st CR or LF with terminate string */
 		*p = '\0';
+}
+
+char *gmt_get_ext (char *string) {
+	/* Returns a pointer to the filename extension (e.g., .ps)  or NULL if not found. */
+	char *p;
+	assert (string != NULL); /* NULL pointer */
+	if ((p = strrchr(string, '.'))) {
+		return (p + 1);
+	}
+	return NULL;
 }
 
 void gmt_strstrip(char *string, bool strip_leading) {
