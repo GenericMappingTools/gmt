@@ -543,9 +543,6 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 		if (GMT->common.a.n_aspatial == MAX_ASPATIAL) return (GMT_PARSE_ERROR);	/* Too many items */
 	}
 	if (s) s[0] = '+';	/* Restore the geometry part */
-	/* -a implies -fg */
-	gmt_set_geographic (GMT, GMT_IN);
-	gmt_set_geographic (GMT, GMT_OUT);
 	return (GMT_NOERROR);
 }
 
