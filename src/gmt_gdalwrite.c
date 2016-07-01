@@ -32,9 +32,10 @@
  * Author:	Joaquim Luis
  * Date:	26-April-2011
  *
- * Public functions (1):
+ * Public functions (2):
  *
- *	gmt_gdalwrite : Write a GDAL grid
+ *	gmt_export_image : Write an image to disk stored in an GMT_IMAGE struct
+ *	gmt_gdalwrite    : Write a GDAL grid
  */
 
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
@@ -43,6 +44,67 @@
  * Public functions that are part of the GMT Devel library  |
  *----------------------------------------------------------|
  */
+
+int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
+	/* Take the image stored in the I structure and write to file by calling gmt_gdalwrite()
+	   The image format is inferred from the image name (in *fname) file extension */
+	uint32_t row, col, band;
+	uint64_t k, ijk, b;
+	char    *data, *ext;
+	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
+
+	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+	to_GDALW->type = strdup("uint8");
+	to_GDALW->P.ProjectionRefPROJ4 = I->header->ProjRefPROJ4;
+	to_GDALW->flipud = 0;
+	to_GDALW->geog = 0;
+	to_GDALW->n_columns = (int)I->header->n_columns;
+	to_GDALW->n_rows = (int)I->header->n_rows;
+	to_GDALW->n_bands = I->header->n_bands;
+	to_GDALW->registration = I->header->registration;
+	/* Those are for the non-georeferenced case */
+	to_GDALW->ULx = 1;
+	to_GDALW->ULy = I->header->n_columns;
+	to_GDALW->x_inc = I->header->inc[0];
+	to_GDALW->y_inc = I->header->inc[1];
+
+	ext = gmt_get_ext (fname);
+	if (!strcasecmp (ext, "bmp"))
+		to_GDALW->driver = strdup("BMP");
+	else if (!strcasecmp (ext, "gif"))
+		to_GDALW->driver = strdup("GIF");
+	else if (!strcasecmp (ext, "jpg"))
+		to_GDALW->driver = strdup("JPEG");
+	else if (!strcasecmp (ext, "png"))
+		to_GDALW->driver = strdup("PNG");
+	else if (!strcasecmp (ext, "tif"))
+		to_GDALW->driver = strdup("GTiff");
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Non supported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
+		return GMT_NOTSET;
+	}
+
+	data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
+
+	for (k = band = 0; band < I->header->n_bands; band++) {
+		b = (uint64_t)band * I->header->size;
+		for (row = 0; row < I->header->n_rows; row++) {
+			for (col = 0; col < I->header->n_columns; col++) {
+				ijk = (uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI] + b;
+				data[k++] = I->data[ijk];
+			}
+		}
+	}
+
+	to_GDALW->data = data;
+	gmt_gdalwrite(GMT, fname, to_GDALW);
+	gmt_M_free (GMT, data);
+	free (to_GDALW->driver);
+	free (to_GDALW->type);
+	gmt_M_free (GMT, to_GDALW);
+
+	return GMT_NOERROR;
+}
 
 int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
@@ -232,7 +294,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				if (rint(prhs->nan_value) == prhs->nan_value)
 					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				if (strcmp(prhs->type,"uint8")) {
+				if (!strcmp(prhs->type,"byte")) {
 					/* This case arrives here from a separate path. It started in grdimage and an originaly
 					   data was in uchar but padded and possibly 3D (RGB) */
 					tmpByte = (unsigned char *)data;
