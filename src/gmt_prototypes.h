@@ -109,6 +109,7 @@ EXTERN_MSC double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, 
 /* Format # 22 */
 EXTERN_MSC int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl);
 EXTERN_MSC int gmt_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GMT_GDALWRITE_CTRL *prhs);
+EXTERN_MSC int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I);
 #endif
 
 /* gmt_fft.c: */
