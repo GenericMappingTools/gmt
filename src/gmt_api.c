@@ -3694,8 +3694,8 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 		case GMT_IS_FILE:	/* Name of an image file on disk */
 #ifdef HAVE_GDAL
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Writing image to file %s\n", S_obj->filename);
-			/* Look at grdimage for how this might be done and incorporate here, maybe via a GMT_write_img function */
-			//if (gmt_M_err_pass (GMT, GMT_write_img (GMT, S_obj->filename, I_obj->header, I_obj->data, S_obj->wesn, I_obj->header->pad, mode), S_obj->filename)) return (gmtapi_report_error (API, GMT_IMAGE_WRITE_ERROR));
+			if (gmt_M_err_pass (API->GMT, gmt_export_image (API->GMT, S_obj->filename, I_obj), S_obj->filename)) 
+				return (gmtapi_report_error (API, GMT_IMAGE_WRITE_ERROR));
 #else
 			GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to write image to file %s\n", S_obj->filename);
 #endif
