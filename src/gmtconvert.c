@@ -342,7 +342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtconvert (void *V_API, int mode, void *args) {
-	bool match = false;
+	bool match = false, prevent_seg_headers = false;
 	int error = 0;
 	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
@@ -397,7 +397,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	if (Ctrl->T.active)	/* Turn off segment headers on output */
+	if (Ctrl->T.active && !gmt_M_file_is_memory (Ctrl->Out.file))
+		prevent_seg_headers = true;
+	
+	if (prevent_seg_headers)	/* Turn off segment headers on file output */
 		GMT->current.io.skip_headers_on_outout = true;
 
 	if (Ctrl->F.active) {	/* Segmentizing happens here and then we are done */
@@ -410,7 +413,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
+		if (prevent_seg_headers) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
 		Return (GMT_NOERROR);	/* We are done! */
 	}
 	
@@ -549,16 +552,31 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		D[GMT_OUT]->io_mode = Ctrl->D.mode;
 	}
-	else {	/* Just register output to stdout or given file via ->outfile */
-		if (GMT->common.a.output)
+	else {	/* Just register output to stdout or the given file via ->outfile */
+		if (GMT->common.a.output)	/* Must notify the machinery of this output type */
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
-		//if (D[GMT_OUT]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	}
-
+	
+	if (Ctrl->T.active && gmt_M_file_is_memory (Ctrl->Out.file)) {
+		/* Since no file is written we must physically collate segments into a single segment per table first */
+		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
+		struct GMT_DATASET *D2 = NULL;
+		if ((D2 = GMT_Convert_Data (API, D[GMT_OUT], GMT_IS_DATASET, NULL, GMT_IS_DATASET, flag)) == NULL) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error collating each table's segments into a single segment per table.\n");
+			Return (API->error);
+		}
+#if 0
+		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {
+			Return (API->error);
+		}
+#endif
+		D[GMT_OUT] = D2;	/* Hook up the revised dataset */
+	}
+	
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	if (Ctrl->T.active) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
+	if (prevent_seg_headers) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed for file output */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
