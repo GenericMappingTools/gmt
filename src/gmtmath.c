@@ -4981,24 +4981,23 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			gmt_set_tbl_minmax (GMT, R->table[0]);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, R->n_columns)) != 0) Return (error);	/* Since -bo might have been used */
-		if (Ctrl->S.active) {	/* Only get one record */
-			uint64_t r, row;
-			uint64_t nr, c;
+		if (Ctrl->S.active) {	/* Only get one record per segment */
+			uint64_t row, c;
+			uint64_t dim[4] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */
 			struct GMT_DATASET *N = NULL;
-			nr = (Ctrl->S.active) ? 1 : 0;
-			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
-			N = gmt_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
+			dim[GMT_SEG] = R->table[0]->n_segments;
+			dim[GMT_COL] = n_columns;
+			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+				return (GMT->parent->error);
+			//N = gmt_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
-				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
-					row = (Ctrl->S.active) ? ((Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1) : r;
-					for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][r] = R->table[0]->segment[seg]->data[c][row];
-				}
+				row = (Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1;
+				for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][0] = R->table[0]->segment[seg]->data[c][row];
 			}
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, N);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			gmt_free_dataset (API->GMT, &N);
 		}
 		else {	/* Write the whole enchilada */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);

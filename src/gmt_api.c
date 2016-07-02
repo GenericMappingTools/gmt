@@ -1115,9 +1115,10 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				else	/* true since we found the option and no modifier given */
 					change_type = true;
 				if (s[k][K_OPT] != '-') {	/* Find the relevant option to change [primary output key] */
+					char match = (s[k][K_OPT] == '<') ? '{' : '}';
 					for (kk = 0, this_k = n; kk < n; kk++) {
 						if (kk == k || s[kk] == NULL) continue;
-						if (s[kk][K_OPT] == s[k][K_OPT])
+						if (s[kk][K_OPT] == s[k][K_OPT] && s[kk][K_DIR] == match)
 							this_k = kk;
 					}
 					if (this_k == n) this_k = o_id;
