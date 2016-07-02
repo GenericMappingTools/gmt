@@ -415,6 +415,7 @@ GMT_LOCAL inline struct GMT_FFT_WAVENUMBER * api_get_fftwave_ptr (struct GMT_FFT
 GMT_LOCAL inline struct GMT_FFT_WAVENUMBER ** api_get_fftwave_addr (struct GMT_FFT_WAVENUMBER **ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_GRID    * api_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_IMAGE   * api_get_image_data (struct GMT_IMAGE *ptr) {return (ptr);}
+GMT_LOCAL inline struct GMT_DATASET * api_get_dataset_data (struct GMT_DATASET *ptr) {return (ptr);}
 
 /*! If API is not set or no_not_exit is false then we call system exit, else we move along */
 GMT_LOCAL inline void api_exit (struct GMTAPI_CTRL *API, int code) {
@@ -1172,19 +1173,6 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	for (k = 0; keys && k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
 	return (GMT_NOTSET);
 }
-
-#if 0
-GMT_LOCAL unsigned int api_found_marker (char *text) {
-	/* Look for questionmark in text but ignore any found within quotes */
-	size_t k;
-	unsigned int ignore = 0;
-	for (k = 0; k < strlen (text); k++) {
-		if (text[k] == '\"' || text[k] == '\'') ignore = !ignore;	/* Toggle on/off */
-		if (!ignore && text[k] == '?') return (unsigned int)k + 1;	/* Found, return position (added 1 so results are 1-length) */
-	}
-	return 0;	/* Not found */
-}
-#endif
 
 GMT_LOCAL unsigned int api_found_marker (char *text) {
 	if (text[0] == '?' && text[1] == '\0') return 1;
@@ -1999,6 +1987,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	void *data = (object->data) ? object->data : object->resource;	/* Get pointer to the data */
 	struct GMT_GRID *G = NULL;
 	struct GMT_IMAGE *I = NULL;
+	struct GMT_DATASET *D = NULL;
 	switch (family) {	/* Do family-specific prepping before passing back the object */
 		case GMT_IS_PALETTE:
 			if (data) gmtlib_init_cpt (API->GMT, data);
@@ -2047,6 +2036,10 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 						object->reset_pad = I->header->reset_pad = 1;
 				}
 			}
+			break;
+		case GMT_IS_DATASET:
+		 	D = api_get_dataset_data (data);
+			gmtlib_set_dataset_minmax (API->GMT, D);	/* Set the min/max values for the entire dataset */
 			break;
 		default:	/* Nothing yet for other types */
 			break;
@@ -6613,6 +6606,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			break;
 
 		case GMT_IS_DUPLICATE:	/* Fill in a DATASET structure with one table only */
+		case GMT_IS_REFERENCE:	/* Fill in a DATASET structure with one table only */
 			if (S_obj->family == GMT_IS_DATASET) {
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				struct GMT_DATATABLE *T_obj = NULL;
@@ -6620,10 +6614,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					D_obj = gmtlib_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
 					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = 0;	/* Start at seg = 0 */
-					if (API->GMT->common.b.ncol[GMT_OUT] == 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+					if (API->GMT->common.b.ncol[GMT_OUT] == 0 && API->GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
+				if (D_obj->n_columns == 0) D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Last resort */
 				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
 				switch (mode) {
 					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
