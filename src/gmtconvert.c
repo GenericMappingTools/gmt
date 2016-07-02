@@ -565,12 +565,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error collating each table's segments into a single segment per table.\n");
 			Return (API->error);
 		}
-#if 0
-		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {
+		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {	/* Remove the previously registered output dataset */
 			Return (API->error);
 		}
-#endif
-		D[GMT_OUT] = D2;	/* Hook up the revised dataset */
+		D[GMT_OUT] = D2;	/* Hook up the reformatted dataset */
 	}
 	
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
