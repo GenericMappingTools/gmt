@@ -3271,7 +3271,7 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 	step = GMT->current.map.path_step;		/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);			/* Adjust step for exact fit, convert to radians */
-	gmt_alloc_segment (GMT, L, 2*n+1, 2, true);	/* Allocate polygon to draw filled path */
+	gmt_alloc_datasegment (GMT, L, 2*n+1, 2, true);	/* Allocate polygon to draw filled path */
 	n2 = 2*n-1;
 	gmtlib_init_rot_matrix (R0, C->P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
@@ -4545,7 +4545,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			double *lon = NULL, *lat = NULL;
 			struct GMT_DATASEGMENT *S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
-			gmt_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
+			gmt_alloc_datasegment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
 			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
 			outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
@@ -5807,7 +5807,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	/* Approximate ellipse by a N-sided polygon */
 	
 	delta_azimuth = 2.0 * M_PI / N;
-	gmt_alloc_segment (GMT, S, N+1, 2, true);
+	gmt_alloc_datasegment (GMT, S, N+1, 2, true);
 	px = S->data[GMT_X];	py = S->data[GMT_Y];
 
 	for (i = 0; i < N; i++)
@@ -5861,7 +5861,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 	if (mode & 2) n_path++;		/* Add apex */
 	if (mode == 3) n_path++;	/* Closed polygon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
-	gmt_alloc_segment (GMT, S, n_path, 2, true);	/* Add space for apex and explicitly close it */
+	gmt_alloc_datasegment (GMT, S, n_path, 2, true);	/* Add space for apex and explicitly close it */
 	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
 	d_az = -d_az;		/* Same reason */
 	for (k = kk = 0; k < N; k++, kk++) {

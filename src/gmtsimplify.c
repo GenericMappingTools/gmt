@@ -377,7 +377,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			if (!skip) {	/* Must allocate output */
 				D[GMT_OUT]->table[tbl]->segment[seg_out] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
 				S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg_out];
-				gmt_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
+				gmt_alloc_datasegment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
 				for (row = 0; row < np_out; row++)
 					for (col = 0; col < S[GMT_IN]->n_columns; col++) {	/* Copy coordinates via index lookup */
 						S[GMT_OUT]->data[col][row] = S[GMT_IN]->data[col][index[row]];

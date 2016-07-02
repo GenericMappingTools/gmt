@@ -373,7 +373,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			else
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
-			gmt_alloc_segment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
+			gmt_alloc_datasegment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);

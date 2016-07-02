@@ -140,6 +140,8 @@ EXTERN_MSC int    GMT_Update_Option             (void *API, struct GMT_OPTION *c
 EXTERN_MSC int    GMT_Delete_Option             (void *API, struct GMT_OPTION *current);
 EXTERN_MSC int    GMT_Parse_Common              (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char  *GMT_Duplicate_String          (void *API, const char* string);
+EXTERN_MSC struct GMT_DATASEGMENT * GMT_Alloc_DataSegment (void *API, uint64_t n_rows, uint64_t n_columns, char *header);
+EXTERN_MSC struct GMT_TEXTSEGMENT * GMT_Alloc_TextSegment (void *API, uint64_t n_rows, char *header);
 
 
 /* 8 GMT_FFT_* functions */

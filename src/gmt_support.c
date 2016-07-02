@@ -4439,7 +4439,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				dist_across_seg = 0.0;
 				S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-				gmt_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
+				gmt_alloc_datasegment (GMT, S, np_cross, n_tot_cols, true);
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
@@ -4567,7 +4567,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 				else if (mode == GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-				gmt_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
+				gmt_alloc_datasegment (GMT, S, np_cross, n_tot_cols, true);
 				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
@@ -8228,7 +8228,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
 		S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-		gmt_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
+		gmt_alloc_datasegment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("adilnor", p[k+1]))) s = k;
@@ -8822,7 +8822,7 @@ struct GMT_DATASEGMENT * gmt_prepare_contour (struct GMT_CTRL *GMT, double *x, d
 
 	n_cols = (gmt_M_is_dnan (z)) ? 2 : 3;	/* psmask only dumps xy */
 	S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-	gmt_alloc_segment (GMT, S, n, n_cols, true);
+	gmt_alloc_datasegment (GMT, S, n, n_cols, true);
 	if (n_cols == 3)
 		sprintf (header, "%g contour -Z%g", z, z);
 	else
@@ -12640,7 +12640,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		for (tbl = new_row = seg2 = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
 			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-				gmt_alloc_segment (GMT, Tout->segment[seg2], Tin->n_records-1, Tout->n_columns, false);
+				gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->n_records-1, Tout->n_columns, false);
 				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
 			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
@@ -12651,7 +12651,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					off = 1;
 				}
 				if (S->level == SEGM_SEGMENT) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-					gmt_alloc_segment (GMT, Tout->segment[seg2], Tin->segment[seg]->n_rows-1, Tout->n_columns, false);
+					gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->segment[seg]->n_rows-1, Tout->n_columns, false);
 					if (Tin->segment[seg]->header) Tout->segment[seg2]->header = strdup (Tin->segment[seg]->header);	/* Duplicate each segment header in table */
 				}
 				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_row++) {	/* For each end point in the new 2-point segments */
@@ -12685,7 +12685,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		for (tbl = seg2 = new_row = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
 			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-				gmt_alloc_segment (GMT, Tout->segment[tbl], Tin->n_records, Tin->n_columns, false);
+				gmt_alloc_datasegment (GMT, Tout->segment[tbl], Tin->n_records, Tin->n_columns, false);
 				new_row = 0;	/* Reset output count for this output segment */
 				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
 			}
@@ -12800,7 +12800,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
-	gmt_alloc_segment (GMT, Sx, 2*S->n_rows, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
+	gmt_alloc_datasegment (GMT, Sx, 2*S->n_rows, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 
 	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */
 		if (k && support_straddle_dateline (S->data[GMT_X][k-1], S->data[GMT_X][k])) {	/* Crossed Dateline */
@@ -12827,7 +12827,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	for (seg = 0; seg < n_split; seg++) {	/* Populate the output segment coordinate arrays */
 		L[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Allocate space for one segment */
 		length = pos[seg] - start + 1;	/* Length of new segment */
-		gmt_alloc_segment (GMT, L[seg], length, S->n_columns, true);		/* Allocate array space for coordinates */
+		gmt_alloc_datasegment (GMT, L[seg], length, S->n_columns, true);		/* Allocate array space for coordinates */
 		for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (L[seg]->data[col], &(Sx->data[col][start]), length, double);	/* Copy coordinates */
 		L[seg]->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
 		/* Modify label to part number */

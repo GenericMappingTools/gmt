@@ -316,7 +316,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			}
 			S[0]->header = strdup (segment_header);
 
-			gmt_alloc_segment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
+			gmt_alloc_datasegment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
 			gmt_M_memcpy (S[0]->data[GMT_X], plon, vertex, double);
 			gmt_M_memcpy (S[0]->data[GMT_Y], plat, vertex, double);
 			Dout[0]->table[0]->n_records += vertex;

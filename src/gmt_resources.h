@@ -188,7 +188,8 @@ enum GMT_enum_write {
 	GMT_WRITE_HEADER = 1,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP = 2,		/* Entirely skip this entity on output (table or segment) */
 	GMT_WRITE_NOLF = 16,		/* Do not write LF at end of ASCII record, and not increment output rec number */
-	GMT_STRICT_CONVERSION = 1024};	/* Do not convert text to double unless is is viable */
+	GMT_STRICT_CONVERSION = 1024,	/* Do not convert text to double unless is is viable */
+	GMT_LAX_CONVERSION = 2048};	/* Convert text to double if at least one field can be converted */
 
 enum GMT_enum_header {
 	GMT_HEADER_OFF = 0,		/* Disable header blocks out as default */

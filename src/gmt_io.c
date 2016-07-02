@@ -116,7 +116,7 @@
  * gmtlib_create_textset
  * gmtlib_alloc_textset
  * gmtlib_duplicate_textset
- * gmt_alloc_segment
+ * gmt_alloc_datasegment
  * gmtlib_assign_segment
  * gmtlib_assign_vector
  * gmt_create_table
@@ -2963,12 +2963,8 @@ GMT_LOCAL struct GMT_TEXTTABLE * gmtio_alloc_texttable (struct GMT_CTRL *GMT, st
 	T->segment = gmt_M_memory (GMT, NULL, Tin->n_segments, struct GMT_TEXTSEGMENT *);
 	for (seg = 0; seg < T->n_segments; seg++) {
 		T->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_TEXTSEGMENT);
-		T->segment[seg]->data = gmt_M_memory (GMT, NULL, Tin->segment[seg]->n_rows, char *);
-		T->segment[seg]->n_rows = T->segment[seg]->n_alloc = Tin->segment[seg]->n_rows;
+		gmt_alloc_textsegment (GMT, T->segment[seg], Tin->segment[seg]->n_rows);
 		if (Tin->segment[seg]->header) T->segment[seg]->header = strdup (Tin->segment[seg]->header);
-#ifdef GMT_BACKWARDS_API
-		T->segment[seg]->record = T->segment[seg]->data;	
-#endif
 	}
 	return (T);
 }
@@ -2995,7 +2991,7 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 	for (seg = 0; seg < T->n_segments; seg++) {
 		T->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		nr = (n_rows) ? n_rows : Tin->segment[seg]->n_rows;
-		gmt_alloc_segment (GMT, T->segment[seg], nr, n_columns, true);
+		gmt_alloc_datasegment (GMT, T->segment[seg], nr, n_columns, true);
 		T->segment[seg]->n_rows = nr;
 		T->segment[seg]->n_columns = n_columns;
 		T->n_records += nr;
@@ -6680,7 +6676,7 @@ struct GMT_TEXTSET *gmtlib_duplicate_textset (struct GMT_CTRL *GMT, struct GMT_T
 }
 
 /*! . */
-int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, bool first) {
+int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, bool first) {
 	/* (re)allocates memory for a segment of given dimensions.
  	 * If n_rows is 0 then we do not set S->n_rows.  */
 	uint64_t col;
@@ -6777,7 +6773,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
 			T->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-			if (gmt_alloc_segment (GMT, T->segment[seg], n_rows, n_columns, true)) return (NULL);
+			if (gmt_alloc_datasegment (GMT, T->segment[seg], n_rows, n_columns, true)) return (NULL);
 		}
 	}
 
@@ -7089,7 +7085,7 @@ struct GMT_DATASEGMENT * gmt_duplicate_segment (struct GMT_CTRL *GMT, struct GMT
 	/* Duplicates the segment */
 	uint64_t col;
 	struct GMT_DATASEGMENT *Sout = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-	gmt_alloc_segment (GMT, Sout, Sin->n_rows, Sin->n_columns, true);
+	gmt_alloc_datasegment (GMT, Sout, Sin->n_rows, Sin->n_columns, true);
 	for (col = 0; col < Sin->n_columns; col++) gmt_M_memcpy (Sout->data[col], Sin->data[col], Sin->n_rows, double);
 	Sout->n_rows = Sin->n_rows;
 	return (Sout);
@@ -7149,7 +7145,7 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 			D->table[0]->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			nr = (n_rows) ? n_rows : Din->table[tbl]->segment[seg_in_tbl]->n_rows;
 			D->table[0]->segment[seg]->n_rows = nr;
-			gmt_alloc_segment (GMT, D->table[0]->segment[seg], nr, D->n_columns, true);
+			gmt_alloc_datasegment (GMT, D->table[0]->segment[seg], nr, D->n_columns, true);
 			D->table[0]->segment[seg]->n_columns = D->n_columns;
 			if (mode != GMT_ALLOC_HORIZONTAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
 			D->n_records += nr;
@@ -7249,6 +7245,17 @@ void gmt_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data) {
 	/* This takes pointer to data array and thus can return it as NULL */
 	gmtlib_free_dataset_ptr (GMT, *data);
 	gmt_M_free (GMT, *data);
+}
+
+int gmt_alloc_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, uint64_t n_rows) {
+	/* Allocate pointers for a single text segment */
+	S->data = gmt_M_memory (GMT, S->data, n_rows, char *);
+	if (S->data == NULL) return -1;
+	S->n_rows = S->n_alloc = n_rows;
+#ifdef GMT_BACKWARDS_API
+	S->record = S->data;	
+#endif
+	return 0;
 }
 
 /*! . */
@@ -7744,7 +7751,7 @@ struct GMT_DATASET * GMT_Read_Dataset (struct GMTAPI_CTRL *API, unsigned int fam
 		D->table[tbl]->segment = gmt_M_memory (GMT, NULL, T->table[tbl]->n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			ST = T->table[tbl]->segment[seg];
-			gmt_alloc_segment (GMT, SD, ST->n_rows, n_columns, true);	/* Allocate this segment */
+			gmt_alloc_datasegment (GMT, SD, ST->n_rows, n_columns, true);	/* Allocate this segment */
 			D->table[tbl]->segment[seg] = SD;
 			if (ST->header) SD->header = strdup (ST->header);
 			for (row = 0; row < ST->n_rows; row++, n_total_read++) {

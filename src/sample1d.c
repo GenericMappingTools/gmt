@@ -428,7 +428,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				m = row;
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
-			gmt_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
+			gmt_alloc_datasegment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
 			if (resample_path) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
