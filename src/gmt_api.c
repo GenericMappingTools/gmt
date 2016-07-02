@@ -8261,7 +8261,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	}
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
 		status = GMT_NOT_A_VALID_MODULE;
-		if (strcasecmp(module, "gmt", 3)) {
+		if (strncasecmp(module, "gmt", 3)) {
 			char gmt_module[32] = "gmt";
 			strncat(gmt_module, module, 28);
 			status = GMT_Call_Module(V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix */
