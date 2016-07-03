@@ -9401,7 +9401,7 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 	struct GMT_DATASEGMENT *Sout = NULL;
 	s_alloc = t_alloc = alloc = (Out == NULL);
 	if (alloc) {	/* Must allocate output textset */
-		Out = gmt_M_memory (GMT, NULL, 1, struct GMT_TEXTSET);
+		Out = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
 		Out->n_tables = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : In->n_tables;
 		Out->table = gmt_M_memory (GMT, NULL, Out->n_tables, struct GMT_DATATABLE *);
 	}
