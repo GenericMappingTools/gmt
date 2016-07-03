@@ -4200,7 +4200,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	 */
 	int error, item;
 
-	if (API == NULL) return (GMT_NOT_A_SESSION);			/* GMT_Create_Session has not been called */
+	if (API == NULL) return (GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (!API->registered[GMT_OUT]) return (gmtapi_report_error (API, GMT_NO_OUTPUT));		/* No destination registered yet */
 
 	/* Get information about this resource first */
@@ -4214,6 +4214,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
 		error = api_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
 		if (error) return error;
+		GMT_Report (API, GMT_MSG_DEBUG, "api_export_data: Messenger dummy output container for object %d [item %d] freed and set resource=data=NULL\n", API->object[item]->ID, item);
 		API->object[item]->resource = API->object[item]->data = NULL;	/* Since we now have nothing */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
@@ -6087,6 +6088,9 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	API->object[item]->data = new_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Successfully duplicated a %s\n", GMT_family[family]);
+#ifdef DEBUG
+	api_list_objects (API, "GMT_Duplicate_Data");
+#endif
 
 	return (new_obj);
 }
@@ -9405,6 +9409,7 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 	GMT->current.setting.io_header[GMT_OUT] = do_tbl_header (header);
 	Out->n_segments = (mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : ((mode == GMT_WRITE_SEGMENT) ? In->n_tables : In->n_segments);
 	Out->n_records  = In->n_records;
+	Out->n_columns  = In->n_columns;
 	for (tbl = 0; tbl < In->n_tables; tbl++) {
 		if (mode == GMT_WRITE_SEGMENT) row_out = 0;	/* Reset row output counter on a per table basis */
 		else if (mode == 0) seg_out = 0;	/* Reset segment output counter on a per table basis */
@@ -9414,6 +9419,7 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 			Out->table[tbl_out] = Dout = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 			Dout->n_segments = Dout->n_alloc = (mode == GMT_WRITE_TABLE_SEGMENT || mode == GMT_WRITE_SEGMENT) ? 1 : ((mode == GMT_WRITE_TABLE) ? In->n_segments : Din->n_segments);	/* Number of segments in this table */
 			Dout->n_records  = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : Din->n_records;	/* Number of data records int this table */
+			Dout->n_columns = In->n_columns;
 		}
 		else
 			Dout = Out->table[tbl_out];
@@ -10193,6 +10199,9 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 		return_null (API, API->error);	/* Failure to register */
 	if ((item = gmtapi_validate_id (API, family_out, object_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, API->error);
 	API->object[item]->data = X;		/* Retain pointer to the allocated data so we use garbage collection later */
+#ifdef DEBUG
+	api_list_objects (API, "GMT_Convert_Data");
+#endif
 	return (X);
 }
 
