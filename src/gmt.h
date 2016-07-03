@@ -94,13 +94,14 @@ EXTERN_MSC int GMT_Set_Comment      (void *API, unsigned int family, unsigned in
 EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
-/* These 4 functions are being tested */
+/* These 5 functions are being tested */
 EXTERN_MSC int GMT_Create_VirtualFile	(void *API, unsigned int family, unsigned int geometry, char *string);
 EXTERN_MSC int GMT_Open_VirtualFile	(void *API, unsigned int family, unsigned int geometry, void *data, char *string);
 EXTERN_MSC void * GMT_Read_VirtualFile	(void *API, const char *string);
 EXTERN_MSC void * GMT_Read_Group	(void *API, unsigned int family, unsigned int method, unsigned int geometry,
 						unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
 EXTERN_MSC void * GMT_Convert_Data	(void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
+EXTERN_MSC void * GMT_Alloc_Segment	(void *API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
@@ -140,8 +141,6 @@ EXTERN_MSC int    GMT_Update_Option             (void *API, struct GMT_OPTION *c
 EXTERN_MSC int    GMT_Delete_Option             (void *API, struct GMT_OPTION *current);
 EXTERN_MSC int    GMT_Parse_Common              (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char  *GMT_Duplicate_String          (void *API, const char* string);
-EXTERN_MSC struct GMT_DATASEGMENT * GMT_Alloc_DataSegment (void *API, uint64_t n_rows, uint64_t n_columns, char *header);
-EXTERN_MSC struct GMT_TEXTSEGMENT * GMT_Alloc_TextSegment (void *API, uint64_t n_rows, char *header);
 
 
 /* 8 GMT_FFT_* functions */

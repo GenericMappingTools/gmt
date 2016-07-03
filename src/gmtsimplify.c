@@ -374,14 +374,13 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			index = gmt_M_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->data[GMT_X][index[0]] == S[GMT_IN]->data[GMT_X][index[1]] && S[GMT_IN]->data[GMT_Y][index[0]] == S[GMT_IN]->data[GMT_Y][index[1]]));
-			if (!skip) {	/* Must allocate output */
-				D[GMT_OUT]->table[tbl]->segment[seg_out] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
-				S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg_out];
-				gmt_alloc_datasegment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
-				for (row = 0; row < np_out; row++)
-					for (col = 0; col < S[GMT_IN]->n_columns; col++) {	/* Copy coordinates via index lookup */
+			if (!skip) {	/* Must allocate one segment for output */
+				S[GMT_OUT] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np_out, S[GMT_IN]->n_columns, NULL, NULL);
+				D[GMT_OUT]->table[tbl]->segment[seg_out] = S[GMT_OUT];
+				for (row = 0; row < np_out; row++) {
+					for (col = 0; col < S[GMT_IN]->n_columns; col++)	/* Copy coordinates via index lookup */
 						S[GMT_OUT]->data[col][row] = S[GMT_IN]->data[col][index[row]];
-					}
+				}
 				seg_out++;		/* Move on to next output segment */
 				ns_in++;		/* Input segment with points */
 				if (np_out) ns_out++;	/* Output segment with points */

@@ -364,16 +364,13 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
-			T[seg_no] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-			T[seg_no]->header = strdup (header);
+			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, dim[GMT_ROW], dim[GMT_COL], header, NULL);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
 			else if (h.id == 4)	/* Special longitude range for Antarctica since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P180_RANGE;
 			else
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
-			/* Allocate h.n number of data records */
-			gmt_alloc_datasegment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);

@@ -314,9 +314,8 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 				S[1]->data[GMT_Y][node] = lat[node];
 				if (get_area) S[1]->data[GMT_Z][node] = area_km2;
 			}
-			S[0]->header = strdup (segment_header);
-
-			gmt_alloc_datasegment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
+			/* Realloc this output polygon to actual size and set header */
+			S[0] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, vertex, 2U, segment_header, Dout[0]->table[0]->segment[node]);
 			gmt_M_memcpy (S[0]->data[GMT_X], plon, vertex, double);
 			gmt_M_memcpy (S[0]->data[GMT_Y], plat, vertex, double);
 			Dout[0]->table[0]->n_records += vertex;

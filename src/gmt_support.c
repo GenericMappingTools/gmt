@@ -4438,8 +4438,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 				else if (mode == GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				dist_across_seg = 0.0;
-				S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-				gmt_alloc_datasegment (GMT, S, np_cross, n_tot_cols, true);
+				S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np_cross, n_tot_cols, NULL, NULL);
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
@@ -4566,8 +4565,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 					sign = -sign;
 				else if (mode == GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
-				S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-				gmt_alloc_datasegment (GMT, S, np_cross, n_tot_cols, true);
+				S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np_cross, n_tot_cols, NULL, NULL);
 				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
@@ -8227,8 +8225,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	T->n_columns = n_cols;
 
 	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
-		S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-		gmt_alloc_datasegment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
+		S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 2, n_cols, NULL, NULL);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("adilnor", p[k+1]))) s = k;
@@ -8821,8 +8818,7 @@ struct GMT_DATASEGMENT * gmt_prepare_contour (struct GMT_CTRL *GMT, double *x, d
 	if (n < 2) return (NULL);
 
 	n_cols = (gmt_M_is_dnan (z)) ? 2 : 3;	/* psmask only dumps xy */
-	S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-	gmt_alloc_datasegment (GMT, S, n, n_cols, true);
+	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n, n_cols, NULL, NULL);
 	if (n_cols == 3)
 		sprintf (header, "%g contour -Z%g", z, z);
 	else
@@ -12825,15 +12821,13 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	txt = (S->label) ? S->label : feature;	/* What to label the features */
 	start = 0;
 	for (seg = 0; seg < n_split; seg++) {	/* Populate the output segment coordinate arrays */
-		L[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Allocate space for one segment */
 		length = pos[seg] - start + 1;	/* Length of new segment */
-		gmt_alloc_datasegment (GMT, L[seg], length, S->n_columns, true);		/* Allocate array space for coordinates */
+		L[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, length, S->n_columns, S->header, NULL);	/* Allocate array space for coordinates */
 		for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (L[seg]->data[col], &(Sx->data[col][start]), length, double);	/* Copy coordinates */
 		L[seg]->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
 		/* Modify label to part number */
 		sprintf (label, "%s part %" PRIu64, txt, seg);
 		L[seg]->label = strdup (label);
-		if (S->header) L[seg]->header = strdup (S->header);
 		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}

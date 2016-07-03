@@ -291,8 +291,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) return NULL;
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
-		P = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-		gmt_alloc_datasegment (GMT, P, 0, 2, true);
+		P = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, 2, NULL, NULL);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
 	}
 

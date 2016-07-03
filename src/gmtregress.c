@@ -1035,8 +1035,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* Explore E vs slope only; no best-fit solution is returned */
 		n_try = lrint ((Ctrl->A.max - Ctrl->A.min) / Ctrl->A.inc) + 1;	/* Number of angles to explore */
 		n_columns = GMTREGRESS_NPAR_MAIN;	/* Hardwired to return angle, misfit, slope, intercept */
-		Sa = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Will hold the result of the experiment */
-		gmt_alloc_datasegment (GMT, Sa, n_try, n_columns, true);	/* Reallocate fixed temp space for this experiment */
+		/* Allocate fixed temp space hold the result of the experiment */
+		Sa = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_try, n_columns, NULL, NULL);
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)

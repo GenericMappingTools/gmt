@@ -6109,9 +6109,8 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
-		L[side] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
-		gmt_alloc_datasegment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
+		n_alloc = lrint (1.05*S->n_rows + 5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+		L[side] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_alloc, S->n_columns, NULL, NULL);
 		m = 0;		/* Start with nuthin' */
 
 		/* Must ensure we copy the very first point if it is left of the Dateline */
@@ -6119,15 +6118,15 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		for (row = 1; row < S->n_rows; row++) {	/* For each line segment */
 			np = map_clip_we (S->data[GMT_X][row-1], S->data[GMT_Y][row-1], S->data[GMT_X][row], S->data[GMT_Y][row], xx, yy, 180.0, inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) gmt_alloc_datasegment (GMT, L[side], n_alloc << 2, S->n_columns, false);
+				if (m == n_alloc) L[side] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_alloc << 2, S->n_columns, NULL, L[side]);
 				L[side]->data[GMT_X][m] = xx[j]; L[side]->data[GMT_Y][m] = yy[j]; m++;
 			}
 		}
 		if (gmt_polygon_is_open (GMT, L[side]->data[GMT_X], L[side]->data[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) gmt_alloc_datasegment (GMT, L[side], n_alloc << 2, S->n_columns, false);
+			if (m == n_alloc) L[side] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_alloc << 2, S->n_columns, NULL, L[side]);
 			L[side]->data[GMT_X][m] = L[side]->data[GMT_X][0];	L[side]->data[GMT_Y][m] = L[side]->data[GMT_Y][0];	m++;	/* Yes. */
 		}
-		if (m != n_alloc) gmt_alloc_datasegment (GMT, L[side], m, S->n_columns, false);
+		if (m != n_alloc) L[side] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, m, S->n_columns, NULL, L[side]);
 		L[side]->n_rows = m;
 		if (S->label) {
 			snprintf (label, GMT_LEN256, "%s part %c", S->label, part[side]);
@@ -8796,9 +8795,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
 	
-	S = gmt_M_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
-	if (gmt_alloc_datasegment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
-
+	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, m+4, 2, NULL, NULL);	/* The output segment - allocate array space (+ 4 extra) */
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
 	gmt_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
 	xlat = (plat > 0.0) ? plat - colat : plat + colat;	/* Starting point along meridian through P but colat degrees away */
