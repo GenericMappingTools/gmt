@@ -31,30 +31,33 @@
 
 /*! Structure to control which options are transmited to gmt_gdalwrite */
 struct GMT_GDALWRITE_CTRL {
-	char *driver;		/* The GDAL diver name */
-	char *type;			/* Data type */
-	char *command;		/* command line */
-	char *title;
-	char *remark;
-	int  geog;
-	int  n_columns, n_rows;		/* Number of columns & rows of the region to be saved */
-	int  nXSizeFull;	/* Total number of columns of the data array including padding */
-	int  n_bands;
-	int  pad[4];
-	int  flipud;
-	int  registration;		/* Registration type. 0 -> grid registration; 1 -> pixel reg */
-	double	ULx, ULy;		/* x_min & y_max */
-	double	x_inc, y_inc;	/* Grid/Image increments */
-	double	nan_value; /* unlike the nan_value in struct GMT_GRID_HEADER this one is of type double */
-	void	*data;
-	struct GW_C {	/* Color map */
-		int active;
-		int n_colors;
+	char   *driver;            /* The GDAL diver name */
+	char   *type;              /* Data type */
+	char   *command;           /* command line */
+	char   *title;
+	char   *remark;
+	char   *alpha;             /* In case this is used to transmit an image that has a transparency layer */
+	void   *data;              /* To store the grid/image array */
+	char    layout[4];         /* A 3 letter code specifying the image memory layout plus a A|a if alpha data in array */
+	int     geog;
+	int     n_columns, n_rows; /* Number of columns & rows of the region to be saved */
+	int     nXSizeFull;        /* Total number of columns of the data array including padding */
+	int     n_bands;
+	int     pad[4];
+	int     flipud;
+	int     registration;      /* Registration type. 0 -> grid registration; 1 -> pixel reg */
+	double	ULx, ULy;          /* x_min & y_max */
+	double	x_inc, y_inc;      /* Grid/Image increments */
+	double	nan_value;         /* unlike the nan_value in struct GMT_GRID_HEADER this one is of type double */
+	struct  GW_C {             /* Color map */
+		int    active;
+		int    n_colors;
 		float *cpt;
 	} C;
-	struct GW_P {			/* Proj4 string */
-		int	active;
-		char	*ProjectionRefPROJ4;
+	struct  GW_P {             /* Proj4/WKT string */
+		int    active;
+		char  *ProjectionRefPROJ4;
+		char  *ProjectionRefWKT;
 	} P;
 };
 
