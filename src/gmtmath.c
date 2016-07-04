@@ -386,10 +386,6 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		}
 		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_NOERROR)
 			return (GMT->parent->error);
-#if 0
-		if (GMT_Destroy_Data (GMT->parent, &D) != GMT_NOERROR)
-			return (GMT->parent->error);
-#endif
 	}
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
 		double value;
@@ -647,7 +643,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					Ctrl->T.file = strdup (opt->arg);
 				else {	/* Presumably gave tmin/tmax/tinc */
 					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc) != 3) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -T\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T: Unable to decode arguments\n");
 						n_errors++;
 					}
 					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
@@ -4533,13 +4529,13 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -A requires a file with at least 3 (t,f(t),w(t)|s(t)) columns\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Requires a file with at least 3 (t,f(t),w(t)|s(t)) columns\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 		else {	/* Need at least 2 columns */
 			if (rhs->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -A requires a file with at least 2 (t,f(t)) columns\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Requires a file with at least 2 (t,f(t)) columns\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -4575,17 +4571,17 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		/* Make sure the min/man/inc values harmonize */
 		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
 			case 1:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T options: (max - min) is not a whole multiple of inc\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is not a whole multiple of inc\n");
 				Return (GMT_RUNTIME_ERROR);
 				break;
 			case 2:
 				if (Ctrl->T.inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T options: (max - min) is <= 0\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is <= 0\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				break;
 			case 3:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T options: inc is <= 0\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: inc is <= 0\n");
 				Return (GMT_RUNTIME_ERROR);
 				break;
 			default:	/* OK */

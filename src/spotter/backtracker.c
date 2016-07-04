@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 						Ctrl->A.mode = 1;
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Append <young>/<old> age or stage limits.\n");
 						n_errors++;
 					}
 				}
@@ -248,7 +248,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D: Append b or f\n");
 						break;
 				}
 				break;
@@ -283,7 +283,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L: Append f or b\n");
 						break;
 				}
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
@@ -301,7 +301,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 					Ctrl->S.active = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S: Append a file stem\n");
 					n_errors++;
 				}
 				break;

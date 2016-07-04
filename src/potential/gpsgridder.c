@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"gpsgridder"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet"
-#define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG},RG-"
+#define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 
 #include "gmt_dev.h"
 

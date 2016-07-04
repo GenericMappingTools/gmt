@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtspatial"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Geospatial operations on lines and polygons"
-#define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D},RG-,>TD,>TI,>TN+r"
+#define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D},>TD,>TI,>TN+r"
 
 #include "gmt_dev.h"
 

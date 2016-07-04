@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"grdimage"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
-#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},RG-,>IA,<ID"
+#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
 
 #include "gmt_dev.h"
 

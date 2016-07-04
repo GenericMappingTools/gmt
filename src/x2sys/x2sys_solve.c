@@ -388,7 +388,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 #ifdef SAVEFORLATER
 	if (Ctrl->I.file && x2sys_read_namedatelist (GMT, Ctrl->I.file, &trk_list, &start, &n_tracks) == X2SYS_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I: Problems reading %s\n", Ctrl->I.file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
@@ -403,7 +403,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -C must specify a single column name\n");
 		x2sys_end (GMT, S);
 		Return (GMT_RUNTIME_ERROR);
 	}

@@ -26,7 +26,7 @@
 #define THIS_MODULE_NAME	"grdconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert between different grid formats"
-#define THIS_MODULE_KEYS	"<G{,>G},RG-"
+#define THIS_MODULE_KEYS	"<G{,>G}"
 
 #include "gmt_dev.h"
 

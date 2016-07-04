@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
-#define THIS_MODULE_KEYS	">?},RG-"
+#define THIS_MODULE_KEYS	">?}"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -360,13 +360,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'c':	/* Carter correction adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 11) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -375,13 +375,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'd':	/* depth adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 7) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -390,13 +390,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'f':	/* faa adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 15) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.GF_version = atoi (&opt->arg[k+3]);
 							if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Af<code>,<field>.  Select <field> is 1-4 range.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Af<code>,<field>.  Select <field> is 1-4 range.\n");
 								n_errors++;
 							}
 						}
@@ -408,14 +408,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 							Ctrl->A.cable_adjust = true;
 							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]) * dist_scale;
 							if (Ctrl->A.sensor_offset < 0.0) {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Amc: Cable length offset must be positive or zero.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Amc: Cable length offset must be positive or zero.\n");
 								n_errors++;
 							}
 						}
 						else {
 							code = atoi (&opt->arg[k+1]);
 							if (code < 1 || code > 7) {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
 								n_errors++;
 							}
 							Ctrl->A.code[ADJ_MG] |= code;
@@ -425,7 +425,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->A.fake_times = true;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -A<flag>.  <flag> must be c, d, g, m, or t.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A<flag>.  <flag> must be c, d, g, m, or t.\n");
 						n_errors++;
 						break;
 				}
@@ -437,7 +437,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -C: Flag must be f, g, or e\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -450,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -459,7 +459,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -555,7 +555,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->N.active[N_D] = true;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_D][0])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
@@ -563,12 +563,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->N.active[N_S] = true;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_S][0])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -N: Syntax is -Nd|s<unit>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: Syntax is -Nd|s<unit>\n");
 						n_errors++;
 						break;
 				}
@@ -578,7 +578,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				switch (opt->arg[0]) {
 					case 'a':	/* Azimuth min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_A], &Ctrl->Q.max[Q_A]) != 2) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Qa: append min/max azimuth limits [0/360]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Qa: append min/max azimuth limits [0/360]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_A] = true;
@@ -587,7 +587,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->Q.c_abs = true;
 					case 'c':	/* Course change min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_C], &Ctrl->Q.max[Q_C]) != 2) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Qc: append min/max course change limits [-360/+360]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Qc: append min/max course change limits [-360/+360]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_C] = true;
@@ -597,13 +597,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						if (code == 1)
 							Ctrl->Q.max[Q_V] = DBL_MAX;
 						else if (code <= 0) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Qv: append min[/max] velocity limits [0]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Qv: append min[/max] velocity limits [0]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Q: Syntax is -Qa|c|v<min>/<max>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q: Syntax is -Qa|c|v<min>/<max>\n");
 						n_errors++;
 						break;
 				}
@@ -636,7 +636,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->T.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -T: append m, e, or neither\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -663,7 +663,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "Syntax error -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Syntax error -Qc: Minimum course change equals or exceeds maximum course change!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Syntax error -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error ERROR -D: Start time exceeds stop time!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error -D: Start time exceeds stop time!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

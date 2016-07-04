@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"psclip"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
-#define THIS_MODULE_KEYS	"<D{,>X},C-(,RG-"
+#define THIS_MODULE_KEYS	"<D{,>X},C-("
 
 #include "gmt_dev.h"
 

@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_list"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
-#define THIS_MODULE_KEYS	">D},RG-"
+#define THIS_MODULE_KEYS	">D}"
 
 #include "x2sys.h"
 
@@ -239,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				else if (opt->arg[0])
 					Ctrl->S.file = strdup (opt->arg);
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S: Must supply a track name.\n");
 					n_errors++;
 				}
 				break;
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Must use -F to specify output items.\n");
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */

@@ -55,7 +55,7 @@
 #define THIS_MODULE_NAME	"img2grd"
 #define THIS_MODULE_LIB		"img"
 #define THIS_MODULE_PURPOSE	"Extract a subset from an img file in Mercator or Geographic format"
-#define THIS_MODULE_KEYS	"<G{,GG},RG-"
+#define THIS_MODULE_KEYS	"<G{,GG}"
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"
@@ -508,7 +508,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.value && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Bad choice of navg in -N.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

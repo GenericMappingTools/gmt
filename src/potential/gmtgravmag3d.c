@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
-#define THIS_MODULE_KEYS	"TD{,FD(,GG),>D},RG-"
+#define THIS_MODULE_KEYS	"TD{,FD(,GG),>D}"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"
@@ -445,7 +445,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
 			Return (API->error);
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
 			Return (GMT_PARSE_ERROR);
 		}

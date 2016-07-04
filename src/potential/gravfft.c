@@ -247,7 +247,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
 				if (Ctrl->E.n_terms > 10) {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -E option: n_terms must be <= 10\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E: n_terms must be <= 10\n");
 					n_errors++;
 				}
 				else if (Ctrl->E.n_terms <= 0) {

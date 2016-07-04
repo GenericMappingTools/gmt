@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"x2sys_init"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Initialize a new x2sys track database"
-#define THIS_MODULE_KEYS	"RG-"
+#define THIS_MODULE_KEYS	""
 
 #include "x2sys.h"
 
@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   and append d for discontinuity at Dateline (output -180/+180).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set bin size for track bin index output [1/1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Cartesian distance (user-dist-units, user user-dist-units/user-time-units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c Cartesian distance (user-dist-units, user-dist-units/user-time-units).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US I (feet, feet/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 			case 'C':	/* Distance calculation flag */
 				Ctrl->C.active = true;
 				if (!strchr ("cefg", (int)opt->arg[0])) {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -C: Flag must be c, f, g, or e\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be c, f, g, or e\n");
 					n_errors++;
 				}
 				if (!n_errors) Ctrl->C.string = strdup (opt->arg);
@@ -220,12 +220,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 						break;
 					case 's':	/* Speed unit selection */
 						if (!strchr ("c" GMT_LEN_UNITS2, (int)opt->arg[1])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -N: Choose from -Nd and -Ns\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: Choose from -Nd and -Ns\n");
 						n_errors++;
 						break;
 				}
@@ -332,18 +332,18 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (!Ctrl->F.active) {	/* Directory exists but -F not on */
-		GMT_Report (API, GMT_MSG_NORMAL, "TAG directory already exists: %s\n", path);
+		GMT_Report (API, GMT_MSG_VERBOSE, "TAG directory already exists: %s\n", path);
 		fclose (fp_def);	/* Close local def file */
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	/* Initialize the system TAG files in X2SYS_HOME/TAG */
 
-	sprintf (tag_file, "%s/%s.tag", Ctrl->In.TAG, Ctrl->In.TAG);
-	sprintf (def_file, "%s/%s.def", Ctrl->In.TAG, &Ctrl->D.file[d_start]);
-	sprintf (path_file, "%s/%s_paths.txt", Ctrl->In.TAG, Ctrl->In.TAG);
-	sprintf (track_file, "%s/%s_tracks.d", Ctrl->In.TAG, Ctrl->In.TAG);
-	sprintf (bin_file, "%s/%s_index.b", Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (tag_file,   "%s/%s.tag",       Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (def_file,   "%s/%s.def",       Ctrl->In.TAG, &Ctrl->D.file[d_start]);
+	sprintf (path_file,  "%s/%s_paths.txt", Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (track_file, "%s/%s_tracks.d",  Ctrl->In.TAG, Ctrl->In.TAG);
+	sprintf (bin_file,   "%s/%s_index.b",   Ctrl->In.TAG, Ctrl->In.TAG);
 
 	if (!x2sys_access (GMT, tag_file, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "File exists: %s\n", tag_file);
@@ -352,7 +352,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			if (remove (path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -364,7 +364,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			if (remove (path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -376,7 +376,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			if (remove (path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -388,7 +388,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			if (remove (path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
@@ -400,7 +400,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			if (remove (path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;

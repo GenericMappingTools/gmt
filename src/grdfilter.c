@@ -49,7 +49,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_NAME	"grdfilter"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
-#define THIS_MODULE_KEYS	"<G{,FG(=1,GG},RG-"
+#define THIS_MODULE_KEYS	"<G{,FG(=1,GG}"
 
 #include "gmt_dev.h"
 #include "gmt_glib.h"
@@ -669,7 +669,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n",
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F%c: Cannot access filter weight grid %s\n",
 								            Ctrl->F.filter, &opt->arg[1]);
 								n_errors++;
 							}
@@ -697,7 +697,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							if ((p = strstr (b, "+s"))) {
 								Ctrl->F.span = atof (&p[2]) / 100.0;	/* Got span in percent */
 								if (Ctrl->F.span <= 0.0 || Ctrl->F.span > 0.5) {
-									GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Fp: Span must be in 0-0.5 range\n");
+									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Fp: Span must be in 0-0.5 range\n");
 									n_errors++;
 								}
 							}
@@ -872,13 +872,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -Dp requires filter width given as an odd number of pixels\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
 			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter y-width given as an odd number of pixels\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -Dp requires filter y-width given as an odd number of pixels\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
@@ -920,7 +920,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	same_grid = !(GMT->common.R.active || Ctrl->I.active || Gin->header->registration == one_or_zero);
 	if (!fast_way) {	/* Not optimal... */
 		if (Ctrl->F.custom) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Ff or -Fo the input and output grids must be coregistered.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: For -Ff or -Fo the input and output grids must be coregistered.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");

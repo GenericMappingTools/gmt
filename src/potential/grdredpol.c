@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"grdredpol"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the Continuous Reduction To the Pole, AKA differential RTP"
-#define THIS_MODULE_KEYS	"<G{,EG(,GG},RG-,ZG)"
+#define THIS_MODULE_KEYS	"<G{,EG(,GG},ZG)"
 
 #include "gmt_dev.h"
 
@@ -1106,7 +1106,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 								Ctrl->E.dip_dec_grd = true;
 								break;
 							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR using option -E\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error using option -E\n");
 								n_errors++;
 								break;
 						}

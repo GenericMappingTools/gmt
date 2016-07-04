@@ -8390,7 +8390,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
 	 * THIS_MODULE_KEYS.  For instance, here are the keys for grdtrack:
 	 *
-	 * #define THIS_MODULE_KEYS        "<D{,DD),GG(,>D},RG-"
+	 * #define THIS_MODULE_KEYS        "<D{,DD),GG(,>D}"
 	 *
 	 * Here are the GMT_Encode_Options arguments:
 	 *   API	Controls all things within GMT.
@@ -8608,7 +8608,13 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		mod_pos = api_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
 		if (api_found_marker (argument)) {	/* Found an explicit questionmark within the option, e.g., -G?, -R? or -<? */
-			if (k == GMT_NOTSET) {	/* Found questionmark but no corresponding key found? */
+			if (opt->option == 'R' && !strcmp (opt->arg, "?")) {	/* -R? means append a grid so set those parameters here */
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -R? found: explicit grid will be substituted\n");
+				family = GMT_IS_GRID;
+				geometry = GMT_IS_SURFACE;
+				direction = GMT_IN;
+			}
+			else if (k == GMT_NOTSET) {	/* Found questionmark but no corresponding key found? */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>? argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}

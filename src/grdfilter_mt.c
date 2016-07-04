@@ -504,7 +504,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
 								n_errors++;
 							}
 						Ctrl->F.width = 1.0;	/* To avoid error checking below */
@@ -684,13 +684,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -Dp requires filter width given as an odd number of pixels\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
 			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "ERROR: -Dp requires filter y-width given as an odd number of pixels\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -Dp requires filter y-width given as an odd number of pixels\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
@@ -728,7 +728,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	same_grid = !(GMT->common.R.active || Ctrl->I.active || Gin->header->registration == one_or_zero);
 	if (!fast_way) {	/* Not optimal... */
 		if (Ctrl->F.custom) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Ff or -Fo the input and output grids must be coregistered.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: For -Ff or -Fo the input and output grids must be coregistered.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");

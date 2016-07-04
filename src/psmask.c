@@ -39,7 +39,7 @@
 #define THIS_MODULE_NAME	"psmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
-#define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG),RG-"
+#define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 
 #include "gmt_dev.h"
 
