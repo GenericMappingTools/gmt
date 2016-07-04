@@ -154,7 +154,7 @@ enum GMT_swap_direction {
 #define GMT_PAIR_DIM_NODUP	3	/* Tell gmt_get_pair to get both x and y as dimensions, and if only x then leave y alone */
 
 #define GMT_GRID_LAYOUT		"TRS"	/* Standard GMT scanline single-item grid */
-#define GMT_IMAGE_LAYOUT	"TRB"	/* Standard GMT scanline band-interleaved image */
+#define GMT_IMAGE_LAYOUT	"TRBa"	/* Standard GMT scanline band-interleaved image */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

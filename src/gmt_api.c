@@ -8879,7 +8879,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 	else if (!strncmp (keyword, "CORES", 5U))	/* Report number of cores */
 		sprintf (value, "%d", API->n_cores);
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
-		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 3, char);
+		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Report grid layout */
 		if (API->shape == GMT_IS_COL_FORMAT)
 			strcpy (value, "columns");
@@ -8922,12 +8922,12 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 		}
 	}
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U)) {	/* Change image/band layout */
-		if (strlen (value) != 3U) {
+		if (strlen (value) != 4U) {
 			error = 1;
-			GMT_Report (API, GMT_MSG_NORMAL, "API_IMAGE_LAYOUT requires a 3-character specification. %s is ignored",  value);
+			GMT_Report (API, GMT_MSG_NORMAL, "API_IMAGE_LAYOUT requires a 4-character specification. %s is ignored",  value);
 		}
 		else
-			gmt_M_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 3, char);
+			gmt_M_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 4, char);
 	}
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
 		if (!strncmp (keyword, "columns", 7U))
