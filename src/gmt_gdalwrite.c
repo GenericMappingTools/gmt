@@ -62,6 +62,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	to_GDALW->n_rows = (int)I->header->n_rows;
 	to_GDALW->n_bands = I->header->n_bands;
 	to_GDALW->registration = I->header->registration;
+	to_GDALW->alpha = NULL;
 	/* Those are for the non-georeferenced case */
 	to_GDALW->ULx = 1;
 	to_GDALW->ULy = I->header->n_columns;
@@ -95,6 +96,12 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			}
 		}
 	}
+	if (I->alpha) {		/* We have a transparency layer */
+		to_GDALW->alpha = gmt_M_memory (GMT, NULL, I->header->nm, char);
+		for (k = row = 0; row < I->header->n_rows; row++)
+			for (col = 0; col < I->header->n_columns; col++)
+				to_GDALW->alpha[k++] = I->alpha[(uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI]];
+	}
 
 	to_GDALW->data = data;
 	gmt_gdalwrite(GMT, fname, to_GDALW);
@@ -120,10 +127,10 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALColorEntry   sEntry;
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int  n_columns, n_rows, i;
+	int  n_cols, n_rows, i;
 	int  typeCLASS, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
-	uint64_t nn, ijk;
+	uint64_t nn, ijk = 0;
 	void *data;
 	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
 	float *ptr;
@@ -135,7 +142,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	adfGeoTransform[5] = -prhs->y_inc;
 	registration = prhs->registration;
 	is_geog = prhs->geog;
-	n_columns = prhs->n_columns;
+	n_cols = prhs->n_columns;
 	n_rows = prhs->n_rows;
 	n_bands = prhs->n_bands;
 	data = prhs->data;
@@ -145,7 +152,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
 		typeCLASS = GDT_Byte;
 		n_byteOffset = 1;
-		outByte = gmt_M_memory (GMT, NULL, n_columns*n_rows, unsigned char);
+		outByte = gmt_M_memory (GMT, NULL, n_cols*n_rows, unsigned char);
 	}
 	else if (!strcmp(prhs->type,"uint8")) {
 		typeCLASS = GDT_Byte;
@@ -238,7 +245,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		return(-1);
 	}
 
-	hDstDS = GDALCreate(hDriver, "mem", n_columns, n_rows, n_bands, typeCLASS, NULL);
+	hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS, NULL);
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -252,8 +259,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (!strcasecmp(pszFormat,"GTiff")) {
 		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE"); 
 		/* tiles are less efficient in small grids (padding) and are not
-		 * supported everywhere, when n_columns < tile_width || n_rows < tile_height */
-		if (n_columns > 3 * GDAL_TILE_SIZE && n_rows > 3 * GDAL_TILE_SIZE)
+		 * supported everywhere, when n_cols < tile_width || n_rows < tile_height */
+		if (n_cols > 3 * GDAL_TILE_SIZE && n_rows > 3 * GDAL_TILE_SIZE)
 			papszOptions = CSLAddString(papszOptions, "TILED=YES");
 
 		/* Be respectful to data type registration */
@@ -278,6 +285,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		GDALSetProjection(hDstDS, pszSRS_WKT);
 	}
 
+	if (prhs->alpha) n_bands++;		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
+
 	for (i = 0; i < n_bands; i++) {
 		/* A problem with writing to the MEM driver is that it tests that we dont overflow
 		   but the issue is that the test is done on the MEM declared size, whilst we are
@@ -301,17 +310,23 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					/* This case arrives here from a separate path. It started in grdimage and an originaly
 					   data was in uchar but padded and possibly 3D (RGB) */
 					tmpByte = (unsigned char *)data;
-					for (nn = 0; nn < n_columns*n_rows; nn++) {
+					for (nn = 0; nn < n_cols*n_rows; nn++) {
 						outByte[nn] = tmpByte[nn*n_bands + i];
 					}
-					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_columns, n_rows, outByte, n_columns, n_rows, typeCLASS, 0, 0)) != CE_None)
+					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, outByte, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				}
 				else
 					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
-					ijk = i * n_columns * n_rows;
-					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_columns, n_rows, &img[ijk], n_columns, n_rows, typeCLASS, 0, 0)) != CE_None)
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+					if (i < n_bands) {
+						ijk = i * n_cols * n_rows;
+						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+					}
+					else if (prhs->alpha) {		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
+						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
+					}
 				break;
 			case GDT_UInt16:
 			case GDT_Int16:
@@ -320,12 +335,12 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				if (rint(prhs->nan_value) == prhs->nan_value)
 					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_columns, n_rows, data, n_columns, n_rows, typeCLASS, 0, 0)) != CE_None)
+				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_columns, n_rows, data, n_columns, n_rows, typeCLASS, 0, 
+				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 
 				                 prhs->nXSizeFull * n_byteOffset)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				break;
