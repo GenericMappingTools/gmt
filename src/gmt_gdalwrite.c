@@ -285,8 +285,6 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		GDALSetProjection(hDstDS, pszSRS_WKT);
 	}
 
-	if (prhs->alpha) n_bands++;		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
-
 	for (i = 0; i < n_bands; i++) {
 		/* A problem with writing to the MEM driver is that it tests that we dont overflow
 		   but the issue is that the test is done on the MEM declared size, whilst we are
