@@ -1042,7 +1042,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 */
 
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode) {
-	double w_abs, sing_max, total_variance, variance = 0.0, limit;
+	double w_abs, sing_max, total_variance, variance = 0.0, limit = 0;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_unused(m);	/* Since we are actually only doing square matrices... */
