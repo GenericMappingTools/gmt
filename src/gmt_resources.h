@@ -296,12 +296,12 @@ struct GMT_GRID_HEADER {
 
 	/* == The types of the following 12 elements must not be changed.
 	 * == They are also copied verbatim to the native grid header. */
-	double wesn[4];                   /* Min/max x and y coordinates */
-	double z_min;                     /* Minimum z value */
-	double z_max;                     /* Maximum z value */
-	double inc[2];                    /* x and y increment */
-	double z_scale_factor;            /* grd values must be multiplied by this */
-	double z_add_offset;              /* After scaling, add this */
+	double wesn[4];                        /* Min/max x and y coordinates */
+	double z_min;                          /* Minimum z value */
+	double z_max;                          /* Maximum z value */
+	double inc[2];                         /* x and y increment */
+	double z_scale_factor;                 /* grd values must be multiplied by this */
+	double z_add_offset;                   /* After scaling, add this */
 	char x_units[GMT_GRID_UNIT_LEN80];     /* units in x-direction */
 	char y_units[GMT_GRID_UNIT_LEN80];     /* units in y-direction */
 	char z_units[GMT_GRID_UNIT_LEN80];     /* grid value units */
@@ -423,17 +423,17 @@ enum GMT_enum_pol {
 /* Return codes for GMT_Get_Record: */
 
 enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */
-	GMT_IO_DATA_RECORD 	=  0,		/* Read a data record and had no issues */
-	GMT_IO_TABLE_HEADER 	=  1U,		/* Read a table header */
-	GMT_IO_SEGMENT_HEADER	=  2U,		/* Read a segment header */
-	GMT_IO_ANY_HEADER	=  3U,		/* Read either table or segment header */
-	GMT_IO_MISMATCH		=  4U,		/* Read incorrect number of columns */
-	GMT_IO_EOF		=  8U,		/* Read end-of-file */
-	GMT_IO_NAN		= 16U,		/* Read a NaN record */
-	GMT_IO_NEW_SEGMENT	= 18U,		/* Read either segment header or NaN-record */
-	GMT_IO_GAP		= 32U,		/* Determined a gap should occur before this record */
-	GMT_IO_LINE_BREAK	= 58U,		/* Segment break caused by seg header, gap, nan, or EOF */
-	GMT_IO_NEXT_FILE	= 64U};		/* Like EOF except for an individual file (with more files to follow) */
+	GMT_IO_DATA_RECORD    =  0,		/* Read a data record and had no issues */
+	GMT_IO_TABLE_HEADER   =  1U,	/* Read a table header */
+	GMT_IO_SEGMENT_HEADER =  2U,	/* Read a segment header */
+	GMT_IO_ANY_HEADER     =  3U,	/* Read either table or segment header */
+	GMT_IO_MISMATCH       =  4U,	/* Read incorrect number of columns */
+	GMT_IO_EOF            =  8U,	/* Read end-of-file */
+	GMT_IO_NAN            = 16U,	/* Read a NaN record */
+	GMT_IO_NEW_SEGMENT    = 18U,	/* Read either segment header or NaN-record */
+	GMT_IO_GAP            = 32U,	/* Determined a gap should occur before this record */
+	GMT_IO_LINE_BREAK     = 58U,	/* Segment break caused by seg header, gap, nan, or EOF */
+	GMT_IO_NEXT_FILE      = 64U};	/* Like EOF except for an individual file (with more files to follow) */
 
 /* Here are the GMT data types used for tables */
 
@@ -665,14 +665,16 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	/* Variables we document for the API: */
-	enum GMT_enum_type type;    /* Data type, e.g. GMT_FLOAT */
-	int *colormap;              /* Array with color lookup values */
-	int n_indexed_colors;       /* Number of colors in a paletted image */
+	enum   GMT_enum_type type;      /* Data type, e.g. GMT_FLOAT */
+	int   *colormap;                /* Array with color lookup values */
+	int    n_indexed_colors;        /* Number of colors in a paletted image */
+	char   layout[4];               /* A 4 code code (T|B R|C B|L|P) to store the memory layout plus alpha info (A|a) */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
-	unsigned char *data;		/* Pointer to actual image */
+	unsigned char *data;            /* Pointer to actual image */
+	unsigned char *alpha;           /* Pointer to an optional transparency layer stored in a separate variable */
 /* ---- Variables "hidden" from the API ---- */
-	uint64_t id;                /* The internal number of the data set */
-	unsigned int alloc_level;   /* The level it was allocated at */
+	uint64_t id;                    /* The internal number of the data set */
+	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	const char *ColorInterp;
 #ifdef GMT_BACKWARDS_API
@@ -681,16 +683,18 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 #endif
 };
 
-/*============================================================ */
+/*==================================================================== */
 /*================= GMT_POSTSCRIPT Public Declaration ================ */
-/*============================================================ */
+/*==================================================================== */
 
 /* The GMT_POSTSCRIPT container is used to pass PostScript objects */
 
-enum GMT_enum_ps {GMT_PS_EMPTY=0,
+enum GMT_enum_ps {
+	GMT_PS_EMPTY = 0,
 	GMT_PS_HEADER,
 	GMT_PS_TRAILER,
-	GMT_PS_COMPLETE};
+	GMT_PS_COMPLETE
+};
 
 struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 	/* Variables we document for the API: */
