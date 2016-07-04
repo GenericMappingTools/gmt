@@ -8260,12 +8260,12 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	}
 	if (p_func == NULL) {	/* Not in any of the shared libraries */
 		status = GMT_NOT_A_VALID_MODULE;
-		if (strncasecmp(module, "gmt", 3)) {
+		if (strncasecmp (module, "gmt", 3)) {	/* For any module not already starting with "gmt..." */
 			char gmt_module[32] = "gmt";
-			strncat(gmt_module, module, 28);
-			status = GMT_Call_Module(V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix */
+			strncat (gmt_module, module, 28);	/* Prepend "gmt" to module and try again */
+			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix */
 			if (status != GMT_NOERROR && mode != GMT_MODULE_EXIST)		/* If no error it means we got it */
-				GMT_Report(API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s OR error while running it.\n", module);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s OR error while running it.\n", module);
 		}
 	}
 	else if (mode == GMT_MODULE_EXIST)	/* Just wanted to know it is there */
@@ -8277,13 +8277,12 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 
 #ifdef FORTRAN_API
 int GMT_Call_Module_ (const char *module, int *mode, void *args, int *length) {
-
 	return (GMT_Call_Module (GMT_FORTRAN, module, *mode, args));
 }
 #endif
 
 /*! . */
-const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+GMT_LOCAL const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
 	/* Function that returns a pointer to the module keys in specified shared library lib_no, or NULL if not found  */
 	char function[GMT_LEN64] = {""};
 	const char *keys = NULL;       /* char pointer to module keys */
@@ -8302,7 +8301,7 @@ const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, 
 }
 
 /*! . */
-const char * gmt_get_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+GMT_LOCAL const char * gmt_get_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
 	if (lib_no == 0)	/* Get core module */
 		return (gmt_core_module_info (API, module));
 	/* Else we get custom module below */
@@ -8310,7 +8309,7 @@ const char * gmt_get_module_info (struct GMTAPI_CTRL *API, char *module, unsigne
 }
 
 /*! . */
-const char * gmtapi_get_moduleinfo (void *V_API, char *module) {
+GMT_LOCAL const char * gmtapi_get_moduleinfo (void *V_API, char *module) {
 	/* Call the specified shared module and retrieve the API developer options keys.
  	 * This function, while in the API, is only for API developers and thus has a
 	 * "undocumented" status in the API documentation.
