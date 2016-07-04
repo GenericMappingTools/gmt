@@ -245,7 +245,10 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		return(-1);
 	}
 
-	hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS, NULL);
+	if (prhs->alpha)
+		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands+1, typeCLASS, NULL);
+	else
+		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS, NULL);
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -316,12 +319,11 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				}
 				else
 					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
-					if (i < n_bands) {
-						ijk = i * n_cols * n_rows;
-						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
-					}
-					else if (prhs->alpha) {		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
+					ijk = i * n_cols * n_rows;
+					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+					if (i == n_bands - 1 && prhs->alpha) {		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
+						hBand = GDALGetRasterBand(hDstDS, i+2); 
 						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
 					}
