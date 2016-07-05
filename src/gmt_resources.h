@@ -668,7 +668,6 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	enum   GMT_enum_type type;      /* Data type, e.g. GMT_FLOAT */
 	int   *colormap;                /* Array with color lookup values */
 	int    n_indexed_colors;        /* Number of colors in a paletted image */
-	char   layout[4];               /* A 4 code code (T|B R|C B|L|P) describing the memory layout + alpha info (A|a) */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
 	unsigned char *data;            /* Pointer to actual image */
 	unsigned char *alpha;           /* Pointer to an optional transparency layer stored in a separate variable */
