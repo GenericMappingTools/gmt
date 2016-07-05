@@ -3290,6 +3290,7 @@ contains the grid values.
        double       r_inc[2];           /* Reciprocal incs, i.e. 1/inc */
        char         flags[4];           /* Flags used for ESRI grids */
        char        *pocket;             /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+       char         mem_layout[4];      /* 3 or 4 char code T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing mem layout and interleaving */
        double       bcr_threshold;      /* sum of cardinals must >= threshold in bilinear; else NaN */
        unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
        unsigned int bcr_n;              /* Width of the interpolation function */
