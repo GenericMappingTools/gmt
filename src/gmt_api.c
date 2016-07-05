@@ -10085,6 +10085,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	 *	    The GMT Default settings in effect will control any output to files later.
 	 * 	Finally, if converting from TEXTSET to floating point representations, if the flag contains
 	 * GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
+	 * If the flag contains GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
 	 * [Note if that happens it is not considered an error, so API->error is GMT_NOERROR].
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
@@ -10135,7 +10136,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 			}
 			break;
 		case GMT_IS_TEXTSET:
-			may_fail = (flag[GMT_HEADER_MODE] & GMT_STRICT_CONVERSION);	/* Not an error if we "fail" to convert */
+			may_fail = (flag[GMT_HEADER_MODE] & (GMT_STRICT_CONVERSION | GMT_LAX_CONVERSION));	/* Not an error if we "fail" to convert */
 			switch (family_out) {
 				case GMT_IS_DATASET:
 					X = api_textset2dataset (API, In, Out, flag[GMT_HEADER_MODE], flag[GMT_COLUMN_MODE], flag[GMT_FORMAT_MODE]);
