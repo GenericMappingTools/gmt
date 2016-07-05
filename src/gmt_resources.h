@@ -394,12 +394,13 @@ struct GMT_GRID_HEADER {
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
-	float *data;			/* Pointer to the float grid */
+	char   layout[3];               /* A 3 code code (T|B R|C S|R|I) describing the memory layout */
+	float *data;                    /* Pointer to the float grid */
 /* ---- Variables "hidden" from the API ---- */
-	unsigned int id;		/* The internal number of the grid */
-	unsigned int alloc_level;	/* The level it was allocated at */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
-	void *extra;			/* Row-by-row machinery information [NULL] */
+	unsigned int id;                /* The internal number of the grid */
+	unsigned int alloc_level;       /* The level it was allocated at */
+	enum GMT_enum_alloc alloc_mode; /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	void *extra;                    /* Row-by-row machinery information [NULL] */
 };
 
 /*============================================================ */
@@ -668,7 +669,7 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	enum   GMT_enum_type type;      /* Data type, e.g. GMT_FLOAT */
 	int   *colormap;                /* Array with color lookup values */
 	int    n_indexed_colors;        /* Number of colors in a paletted image */
-	char   layout[4];               /* A 4 code code (T|B R|C B|L|P) to store the memory layout plus alpha info (A|a) */
+	char   layout[4];               /* A 4 code code (T|B R|C B|L|P) describing the memory layout + alpha info (A|a) */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
 	unsigned char *data;            /* Pointer to actual image */
 	unsigned char *alpha;           /* Pointer to an optional transparency layer stored in a separate variable */
