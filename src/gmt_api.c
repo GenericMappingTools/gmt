@@ -4082,8 +4082,8 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			if (S_obj->region) return (gmtapi_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_GRID_HEADER_ONLY) return (gmtapi_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to GMT_GRID memory location\n");
-			if (api_adjust_grdpadding (G_obj->header, GMT->current.io.pad))
-				gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);	/* Adjust pad */
+			// if (api_adjust_grdpadding (G_obj->header, GMT->current.io.pad)) /* PW: 7/5/2016: Cannot do this since any change to region/pad would be overturned */
+			//	gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);	/* Adjust pad */
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtapi_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
@@ -4621,7 +4621,7 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 			continue;
 		}
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session) */
-			if (S_obj->reset_pad) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this */
+			if (S_obj->reset_pad && S_obj->no_longer_owner == false) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this if still the owner */
 				address = (S_obj->data) ? S_obj->data : S_obj->resource;	/* Try to get the data object */
 				gmtlib_contract_pad (API->GMT, address, S_obj->family, S_obj->orig_pad, S_obj->orig_wesn);
 				S_obj->reset_pad = 0;
