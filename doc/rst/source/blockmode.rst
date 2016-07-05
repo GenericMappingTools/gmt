@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
 [ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\ \|\ **o**] ]
+[ |-W|\ [**i**\ \|\ **o**][**+s**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -115,13 +115,15 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\ \|\ **o**]
+**-W**\ [**i**\ \|\ **o**][**+s**]
     Weighted modifier[s]. Unweighted input and output has 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted mean values in
     blocks. Weight sums can be reported in output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, **-Wo** for weighted output only. [Default uses unweighted i/o]. 
+    If your weights are actually uncertainties (sigma)
+    then append **+s** and we compute weight = 1/sigma.
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_

@@ -43,7 +43,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -65,8 +65,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options, select one:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Wi reads 4 cols (x,y,z,w) but writes only (x,y,z[,s,l,h]) output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Wo reads 3 cols (x,y,z) but writes sum (x,y,z[,s,l,h],w) output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -W with no modifier has both weighted Input and Output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is no weights used].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s read/write standard deviations instead, with w = 1/s.\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set), or 2 for -Sn.\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
@@ -82,6 +82,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
+	bool sigma;
+	char arg[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -132,15 +134,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 				break;
 			case 'W':	/* Use in|out weights */
 				Ctrl->W.active = true;
-				switch (opt->arg[0]) {
+				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
+				switch (arg[0]) {
 					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true; break;
+						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true;
+						Ctrl->W.sigma[GMT_IN] = Ctrl->W.sigma[GMT_OUT] = sigma;
+						break;
 					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = true; break;
+						Ctrl->W.weighted[GMT_IN] = true;
+						Ctrl->W.sigma[GMT_IN] = sigma;
+						break;
 					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = true; break;
+						Ctrl->W.weighted[GMT_OUT] = true;
+						Ctrl->W.sigma[GMT_OUT] = sigma;
+						break;
 					default:
-						n_errors++; break;
+						n_errors++; 
+						break;
 				}
 				break;
 
@@ -288,7 +298,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 		/* OK, this point is definitively inside and will be used */
 
-		if (use_weight) weight = in[3];		/* Use provided weight instead of 1 */
+		if (use_weight) weight = (Ctrl->W.sigma[GMT_IN]) ? 1.0 / in[3] : in[3];		/* Use provided weight instead of 1 */
 		weighted_z = in[GMT_Z] * weight;			/* Weighted value */
 		node = gmt_M_ij0 (Grid->header, row, col);		/* Bin node */
 		if (use_xy) {						/* Must keep track of weighted location */
@@ -355,7 +365,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		if (zw[node].a[BLK_W] == 0.0) continue;	/* No values in this block; skip */
 
 		n_cells_filled++;	/* Increase number of blocks with values found so far */
-		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = zw[node].a[BLK_W];
+		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / zw[node].a[BLK_W] : zw[node].a[BLK_W];
 		iw = 1.0 / zw[node].a[BLK_W];	/* Inverse weight to avoid divisions later */
 		if (use_xy) {	/* Determine and report mean point location */
 			out[GMT_X] = xy[node].a[GMT_X] * iw;

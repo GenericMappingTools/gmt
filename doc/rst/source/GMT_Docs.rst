@@ -268,6 +268,39 @@ to highlight recently added capabilities.  For specific enhancements, we have:
 *  We continue to extend support for OpenMP in GMT.  New modules that are
    OpenMP-enabled are :doc:`grdgradient`, :doc:`grdlandmask`, and :doc:`sph2grd`.
 
+*  :doc:`blockmean`, :doc:`blockmedian` and :doc:`blockmode` have a new 
+   modifier **+s** to the **-W** option.  When used we expect 1-sigma
+   uncertainties instead of weights and compute weight = 1/sigma. 
+
+*  :doc:`filter1d`: can now compute high-pass filtered output via a new
+   **+h** modifier to the filter settings, similar to existing capability
+   in :doc:`grdfilter`.
+
+*  :doc:`gmtconvert` has a new option (**-F**) for line segmentation and
+   network configuration.
+
+*  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
+   **RMS** and **DENAN**.
+
+*  :doc:`grdfft` has a new modifier to the **-E** that allows for more
+   control of the power normalization for radial spectra.
+
+*  :doc:`grdvolume` can now accept **-Cr**\ *cval* which will evaluate
+   the volume between *cval* and the grid's minimum value.
+
+*  :doc:`greenspline` now offers a new **-E** option that evaluates the
+   model fit at the input data locations and optionally saves the model
+   misfits to a secondary output file.
+
+*  :doc:`pstext` has new modifiers to its **-F** option that allows users
+   to generate automatic labels such as record numbers of formatting of a
+   third data column into a textual representation.  We also allow any
+   baseline angles to be interpreted as *orientations*, i.e., they will be
+   modified to fall in the -90/+90 range.
+
+*  :doc:`psrose` can now control the attributes of vectors in a windrose
+   diagram via **-M**.
+
 *  :doc:`psxy` have seen numerous enhancements.  New features include
    *decorated* lines, which are similar to quoted lines except we place
    symbols rather than text along the line.  Users also gain new controls
@@ -282,35 +315,6 @@ to highlight recently added capabilities.  For specific enhancements, we have:
    head selections now include inward-pointing arrows.  Custom symbols
    may now simply be a preexisting EPS figure.  Many of these enhancements
    are also available in :doc:`psxyz`.
-
-*  :doc:`greenspline` now offers a new **-E** option that evaluates the
-   model fit at the input data locations and optionally saves the model
-   misfits to a secondary output file.
-
-*  :doc:`pstext` has new modifiers to its **-F** option that allows users
-   to generate automatic labels such as record numbers of formatting of a
-   third data column into a textual representation.  We also allow any
-   baseline angles to be interpreted as *orientations*, i.e., they will be
-   modified to fall in the -90/+90 range.
-
-*  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
-   **RMS** and **DENAN**.
-
-*  :doc:`filter1d`: can now compute high-pass filtered output via a new
-   **+h** modifier to the filter settings, similar to existing capability
-   in :doc:`grdfilter`.
-
-*  :doc:`gmtconvert` has a new option (**-F**) for line segmentation and
-   network configuration.
-
-*  :doc:`grdfft` has a new modifier to the **-E** that allows for more
-   control of the power normalization for radial spectra.
-
-*  :doc:`grdvolume` can now accept **-Cr**\ *cval* which will evaluate
-   the volume between *cval* and the grid's minimum value.
-
-*  :doc:`psrose` can now control the attributes of vectors in a windrose
-   diagram via **-M**.
 
 The API
 -------

@@ -77,9 +77,10 @@ struct BLOCK_CTRL {
 		bool active;
 		unsigned int mode;
 	} S;
-	struct W {	/* -W[i][o] */
+	struct W {	/* -W[i][o][+s] */
 		bool active;
 		bool weighted[2];
+		bool sigma[2];
 	} W;
 };
 

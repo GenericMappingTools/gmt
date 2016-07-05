@@ -43,7 +43,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n\t[-W[i][o]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n\t[-W[i][o][+s]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -65,6 +65,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s read/write standard deviations instead, with w = 1/s.\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
@@ -80,6 +81,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	 */
 
 	unsigned int n_errors = 0;
+	bool sigma;
+	char arg[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -124,15 +127,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				break;
 			case 'W':	/* Use in|out weights */
 				Ctrl->W.active = true;
-				switch (opt->arg[0]) {
+				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
+				switch (arg[0]) {
 					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true; break;
+						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true;
+						Ctrl->W.sigma[GMT_IN] = Ctrl->W.sigma[GMT_OUT] = sigma;
+						break;
 					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = true; break;
+						Ctrl->W.weighted[GMT_IN] = true;
+						Ctrl->W.sigma[GMT_IN] = sigma;
+						break;
 					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = true; break;
+						Ctrl->W.weighted[GMT_OUT] = true;
+						Ctrl->W.sigma[GMT_OUT] = sigma;
+						break;
 					default:
-						n_errors++; break;
+						n_errors++;
+						break;
 				}
 				break;
 
@@ -375,7 +386,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		if (n_pitched == n_alloc) data = gmt_M_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
 		data[n_pitched].src_id = (Ctrl->E.mode & BLK_DO_SRC_ID) ? (uint64_t)lrint (in[sid_col]) : n_read;
-		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
+		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? ((Ctrl->W.sigma[GMT_IN]) ? 1.0 / in[3] : in[3]) : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
 			data[n_pitched].a[GMT_Y] = in[GMT_Y];
@@ -467,7 +478,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			else
 				out[3] = GMT->session.d_NaN;
 		}
-		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
+		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / weight : weight;
 		if (emode) out[i_col] = extra[3];
 
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
