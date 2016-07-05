@@ -85,29 +85,37 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		return GMT_NOTSET;
 	}
 
-	data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
+	if (!strncmp(I->header->mem_layout, "TCB", 3)) {
+		data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
 
-	for (k = band = 0; band < I->header->n_bands; band++) {
-		b = (uint64_t)band * I->header->size;
-		for (row = 0; row < I->header->n_rows; row++) {
-			for (col = 0; col < I->header->n_columns; col++) {
-				ijk = (uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI] + b;
-				data[k++] = I->data[ijk];
+		for (k = band = 0; band < I->header->n_bands; band++) {
+			b = (uint64_t)band * I->header->size;
+			for (row = 0; row < I->header->n_rows; row++) {
+				for (col = 0; col < I->header->n_columns; col++) {
+					ijk = (uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI] + b;
+					data[k++] = I->data[ijk];
+				}
 			}
 		}
+		if (I->alpha) {		/* We have a transparency layer */
+			to_GDALW->alpha = gmt_M_memory (GMT, NULL, I->header->nm, char);
+			for (k = row = 0; row < I->header->n_rows; row++)
+				for (col = 0; col < I->header->n_columns; col++)
+					to_GDALW->alpha[k++] = I->alpha[(uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI]];
+		}
+		strncpy(to_GDALW->layout, I->header->mem_layout, 4);
 	}
-	if (I->alpha) {		/* We have a transparency layer */
-		to_GDALW->alpha = gmt_M_memory (GMT, NULL, I->header->nm, char);
-		for (k = row = 0; row < I->header->n_rows; row++)
-			for (col = 0; col < I->header->n_columns; col++)
-				to_GDALW->alpha[k++] = I->alpha[(uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI]];
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Only supported memory layout for now is T(op)C(ol)B(and) \n");
+		return GMT_NOTSET;
 	}
 
 	to_GDALW->data = data;
-	gmt_gdalwrite(GMT, fname, to_GDALW);
+	gmt_gdalwrite (GMT, fname, to_GDALW);
 	gmt_M_free (GMT, data);
 	free (to_GDALW->driver);
 	free (to_GDALW->type);
+	if (to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha); 
 	gmt_M_free (GMT, to_GDALW);
 
 	return GMT_NOERROR;
@@ -245,7 +253,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		return(-1);
 	}
 
-	if (prhs->alpha)
+	if (prhs->alpha)		/* If transparency, number of requested bands must increment by one */
 		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands+1, typeCLASS, NULL);
 	else
 		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS, NULL);
@@ -322,7 +330,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					ijk = i * n_cols * n_rows;
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
-					if (i == n_bands - 1 && prhs->alpha) {		/* OK, THIS NEEDS TO BE PROTECTED WITH A CHECK TO PRHS->LAYOUT) */
+					if (i == n_bands - 1 && prhs->alpha && prhs->layout[2] == 'B') {		/* Time to write the alpha layer. */
 						hBand = GDALGetRasterBand(hDstDS, i+2); 
 						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
