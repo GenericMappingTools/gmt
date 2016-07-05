@@ -343,9 +343,9 @@ struct GMT_GRID_HEADER {
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char   flags[4];                 /* Flags used for ESRI grids */
 	char  *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-	char   mem_layout[4];            /* GDAL: Four char codes T|B R|C L|R P|L|S to describe array layout in mem and interleaving */
+	char   mem_layout[4];            /* Three or Four char codes T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing array layout in mem and interleaving */
 	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
-	unsigned int has_NaNs;		 /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
+	unsigned int has_NaNs;           /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
 	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
 	unsigned int bcr_n;              /* Width of the interpolation function */
 	unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */
@@ -394,7 +394,6 @@ struct GMT_GRID_HEADER {
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
-	char   layout[3];               /* A 3 code code (T|B R|C S|R|I) describing the memory layout */
 	float *data;                    /* Pointer to the float grid */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;                /* The internal number of the grid */
