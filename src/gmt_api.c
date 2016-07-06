@@ -6632,11 +6632,14 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 						}
 						if (p[GMT_SEG] == T_obj->n_alloc) T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_DATASEGMENT *);
 						T_obj->segment[p[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-						if (record) T_obj->segment[p[GMT_SEG]]->header = strdup (record);		/* Default to last segment record if NULL */
+						if (record) {
+							if (T_obj->segment[p[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[p[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
+							T_obj->segment[p[GMT_SEG]]->header = strdup (record);		/* Default to last segment record if NULL */
+						}
 						break;
 					case GMT_WRITE_DOUBLE:		/* Export a segment row */
 						gmt_prep_tmp_arrays (API->GMT, p[GMT_ROW], T_obj->n_columns);	/* Init or reallocate tmp read vectors */
-						for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) API->GMT->hidden.mem_coord[col][p[GMT_ROW]] = ((double *)record)[col];
+						for (col = 0; col < T_obj->n_columns; col++) API->GMT->hidden.mem_coord[col][p[GMT_ROW]] = ((double *)record)[col];
 						p[GMT_ROW]++;	/* Increment rows in this segment */
 						break;
 					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */

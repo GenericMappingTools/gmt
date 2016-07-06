@@ -1086,12 +1086,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 
 		gmt_M_memset (line, GMT_BUFSIZ, char);
-		if (Ctrl->Z.active) {
-			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z all columns */
+		if (Ctrl->Z.active) {	/* Special case were number of output columns is known before reading input records */
+			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
 			n_out = Ctrl->G.n_grids;
 			if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
+			out = gmt_M_memory (GMT, NULL, n_out, double);
 		}
-		
+	
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
@@ -1113,11 +1114,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					continue;
 				}
 				if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
-					if (API->mode && n_out == 0) {	/* Need to set output columns now */
-						n_out = n_fields + Ctrl->G.n_grids;	/* Get new # of output cols */
-						if (Ctrl->T.mode == 2) n_out += 3;
-						if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
-					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}
@@ -1126,11 +1122,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
-			if (n_out == 0) {
-				n_out = gmt_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get new # of output cols */
+			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
+				n_out = gmt_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get total # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
 				if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
+				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
 			}
+			
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
@@ -1174,17 +1172,12 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}
 			else {	/* Simply copy other columns, append value, and output */
-				if (!out) {
-					n_out = n_fields + Ctrl->G.n_grids;	/* Get new # of output cols */
-					if (Ctrl->T.mode == 2) n_out += 3;
-					out = gmt_M_memory(GMT, NULL, n_out, double);
-				}
 				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 				for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
 				if (Ctrl->T.mode == 2) {	/* Add extra columns */
 					out[ks++] = Ctrl->T.S->x[Ctrl->T.S->col];	/* Add our output x value */
 					out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
-					out[ks++] = Ctrl->T.S->radius;			/* Add our radius */
+					out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
 				}
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
