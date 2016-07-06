@@ -304,6 +304,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			
 			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
+			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
 				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
