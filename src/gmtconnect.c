@@ -674,7 +674,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			}
 			else {	/* Good. Trace the connection to the next segment */
 				/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
-				//GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+#if 0
+				GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+#endif
 				end_order = !segment[id].buddy[end_order].end_order;
 				id = id2;	/* Update what is the current segment */
 				n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
@@ -698,7 +700,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				}
 				else {	/* Good. Trace the connection to the next segment */
 					/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
-					//GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+#if 0
+					GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+#endif
 					end_order = !segment[id].buddy[end_order].end_order;
 					id = id2;	/* Update what is the current segment */
 					n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */

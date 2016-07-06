@@ -36,7 +36,6 @@ int main (int argc, char *argv[]) {
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_GRID **G = NULL;
 	struct GMT_PALETTE **C = NULL;
-	//struct GMT_IMAGE **I = NULL;
 	struct GMT_POSTSCRIPT **P = NULL;
 	unsigned int flag[3] = {0, 0, 0};
 

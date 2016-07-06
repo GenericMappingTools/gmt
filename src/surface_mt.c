@@ -585,7 +585,6 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, float *b, doub
 	b_4 = 4.0 * inv_delta;
 	/* We also need to normalize by the sum of the b[k] values, so sum them here */
 	b[5] = b[0] + b[1] + b[2] + b[3] + b_4;
-	//fprintf (stderr, "b: %g %g %g %g %g %g [%g/%g]\n", b[0], b[1], b[2], b[3], b[4], b[5], xx, yy);
 	/* We need to sum k = 0<5 of u[k]*b[k], where u[k] are the nodes of the points A-D,
 	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
 	 * add add b[4] to the rest of the sum inside the iteration loop. */

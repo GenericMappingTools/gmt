@@ -1066,7 +1066,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						if (topdown)
 							colVec[n] = n * nY + i_x_nXYSize;
 						else
-							//colVec[n] = (n + 1) * nY - 1 + i_x_nXYSize;
 							colVec[n] = n + i_x_nXYSize;
 					}
 				}
@@ -1099,7 +1098,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					else if (topdown) {			/* No BIP option yet, and maybe never */
 						for (m = 0; m < nYSize; m++) {
 							for (n = 0; n < nXSize; n++) {
-								//ij = colVec[n] - m;
 								ij = colVec[n] + m;
 								Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
 							}

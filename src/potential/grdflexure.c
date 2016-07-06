@@ -475,7 +475,6 @@ GMT_LOCAL void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	/* Do the spectral convolution for isostatic response in the Freq domain. */
 	uint64_t k;
 	double  mk[3], transfer_fn;
-	//FILE *fp = fopen ("Crap.txt", "w");
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Apply the Transfer Function\n");
 	R->setup (GMT, Ctrl, K, R);	/* Set up parameters */
@@ -492,9 +491,7 @@ GMT_LOCAL void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *G
 		transfer_fn = R->transfer (mk, R);
 		Grid->data[k] *= (float)transfer_fn;
 		Grid->data[k+1] *= (float)transfer_fn;
-		//fprintf (fp, "%g\t%g\t%g\t%g\n", mk[0], mk[1], mk[2], transfer_fn);
 	}
-	//fclose (fp);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {

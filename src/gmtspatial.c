@@ -1809,7 +1809,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (crossing) {
 					n_split_tot++; 
 					for (kseg = 0; kseg < n_split; kseg++) {
-						//gmt_free_segment (GMT, &(T->segment[seg_out]), Dout->alloc_mode);
 						T->segment[seg_out++] = L[kseg];	/* Add the remaining segments to the end */
 					}
 					gmt_M_free (GMT, L);

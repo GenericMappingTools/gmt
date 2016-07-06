@@ -1056,7 +1056,6 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 				M->term[n_model].order[GMT_X] = (unsigned int)order;
 				got_pol = M->intercept = true;
 				n_model++;
-				//n_P++;
 				M->type |= 1;	/* Polynomial */
 				continue;
 			}
@@ -11753,15 +11752,21 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'f':
 			switch (item[0]) {
 				case 'i':
-					//error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_IN], "Warning Option -fi given more than once\n");
+#if 0
+					error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_IN], "Warning Option -fi given more than once\n");
+#endif
 					GMT->common.f.active[GMT_IN] = true;
 					break;
 				case 'o':
-					//error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_OUT], "Warning Option -fo given more than once\n");
+#if 0
+					error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_OUT], "Warning Option -fo given more than once\n");
+#endif
 					GMT->common.f.active[GMT_OUT] = true;
 					break;
 				default:
-					//error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_IN] | GMT->common.f.active[GMT_OUT], "Warning Option -f given more than once\n");
+#if 0
+					error += gmt_M_check_condition (GMT, GMT->common.f.active[GMT_IN] | GMT->common.f.active[GMT_OUT], "Warning Option -f given more than once\n");
+#endif
 					GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = true;
 					break;
 			}

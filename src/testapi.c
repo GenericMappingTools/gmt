@@ -168,7 +168,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); bailout (code);}
-//#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
@@ -206,7 +205,9 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	//GMT = gmt_begin_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+#if 0
+	GMT = gmt_begin_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+#endif
 	GMT = API->GMT;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

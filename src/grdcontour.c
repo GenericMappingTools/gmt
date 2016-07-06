@@ -706,7 +706,6 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			x_lbl = 0.5 * (save[pol].xlabel + save[k].xlabel);
 			y_lbl = 0.5 * (save[pol].ylabel + save[k].ylabel);
 			if (mode & 1) {
-				//gmt_setpen (GMT, &save[pol].pen);
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}
@@ -715,7 +714,6 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		}
 		else {
 			if (mode & 1) {
-				//gmt_setpen (GMT, &save[pol].pen);
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
 			}

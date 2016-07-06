@@ -432,7 +432,6 @@ GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical)
 		phi = M_SQRT2 * sqrt (-log (B/(1 + 4.5 * phi0*phi0))) / 3.0;
 		n++;
 	} while (fabs (phi-phi0) > 1e-6);
-	//fprintf (stderr, "Gauss_solver: n = %d phi = %g\n", n, phi);
 	return (phi);
 }
 
@@ -943,7 +942,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
 	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 	

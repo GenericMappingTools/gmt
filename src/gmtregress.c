@@ -533,7 +533,6 @@ GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, doub
 			if (w[GMT_Z]) corr_i = w[GMT_Z][i];
 			W[i] = w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i);
 			if (alpha) alpha[i] = alpha_i;
-			//fprintf (stderr, "i = %d: alpha_i = %g W[i] = %g\n", (int)i, alpha_i, W[i]);
 		}
 		/*  Step 4: Compute weighted X_mean, Y_mean, then U, V, and beta */
 		S = gmt_sum (W, n);					/* Get sum of weights */
@@ -545,7 +544,6 @@ GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, doub
 			for (i = 0; i < n; i++) {
 				if (w[GMT_Z]) corr_i = w[GMT_Z][i];
 				beta[i] = W[i] * (U[i] / w[GMT_Y][i] + par[GMTREGRESS_SLOPE] * V[i] / w[GMT_X][i] - (par[GMTREGRESS_SLOPE] * U[i] + V[i]) * corr_i / alpha[i]);
-				//fprintf (stderr, "i = %d: U[i] = %g V[i] = %g beta_i = %g\n", (int)i, U[i], V[i], beta[i]);
 			}
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed single weights from separate x- and y-weights %s\n",

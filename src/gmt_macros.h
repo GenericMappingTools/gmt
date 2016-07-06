@@ -132,7 +132,6 @@
 
 /*! Macros for conversion of RGB in 0-255 range to 0-1 range */
 #define gmt_M_is255(s) ((s) / 255.0)
-//#define gmt_M_it255(t) gmt_M_is255(t[0]),gmt_M_is255(t[1]),gmt_M_is255(t[2])
 
 /*! Macro to avoid small numbers in color codes */
 #define gmt_M_q(s) ((s) < 1e-5 ? 0.0 : (s))

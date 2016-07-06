@@ -1065,7 +1065,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		fonts = gmt_M_memory (GMT, NULL, m, char *);
 		for (kk = 0; kk < m; kk++) {
 			PSL_setfont (PSL, c_font[kk].id);
-			//psl_encodefont (PSL, PSL->current.font_no);
+#if 0
+			psl_encodefont (PSL, PSL->current.font_no);
+#endif
 			font = PSL_makefont (PSL, c_font[kk].size, c_font[kk].fill.rgb);
 			fonts[kk] = strdup (font);
 		}

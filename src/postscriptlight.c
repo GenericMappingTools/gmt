@@ -182,15 +182,17 @@
 #define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
 #define PSL_SUP_UP_UC		0.35	/* Baseline shift up in font size for superscript after uppercase letter */
-//#define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
-//#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
-//#define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
-//#define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
-//#define PSL_SUP_UP_UC		0.45	/* Baseline shift up in font size for superscript after uppercase letter */
-//#define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
-//#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
-//#define PSL_SUB_DOWN		0.33	/* Baseline shift down in font size for subscript */
-//#define PSL_SUP_UP		0.33	/* Baseline shift up in font size for superscript */
+#if 0
+#define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
+#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
+#define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
+#define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
+#define PSL_SUP_UP_UC		0.45	/* Baseline shift up in font size for superscript after uppercase letter */
+#define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
+#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
+#define PSL_SUB_DOWN		0.33	/* Baseline shift down in font size for subscript */
+#define PSL_SUP_UP		0.33	/* Baseline shift up in font size for superscript */
+#endif
 
 /*--------------------------------------------------------------------
  *			PSL FUNCTION MACRO DEFINITIONS
@@ -3589,7 +3591,9 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 
 		case PSL_WEDGE:		/* A wedge or pie-slice. size[0] = radius, size[1..2] = azimuth range of arc */
 			psl_wedge (PSL, x, y, size);
-			//PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
+#if 0
+			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
+#endif
 			break;
 		case PSL_MARC:		/* An arc with optional arrows. size[0] = radius, size[1..2] = azimuth range of arc, size[3] = shape, size[4] = arrows (0 = none, 1 = backward, 2 = foreward, 3 = both) */
 			psl_matharc (PSL, x, y, size);
@@ -4550,7 +4554,6 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
 		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
-		//fprintf (stderr, "text = %s kase = %d\n", ptr, kase);
 	}
 
 	while (ptr) {

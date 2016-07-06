@@ -4443,7 +4443,6 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 					gmtlib_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
-					//gmt_matrix_vect_mult (Rot, P, X);				/* Rotate the current FZ point along the normal */
 					gmt_matrix_vect_mult (GMT, 3U, Rot, P, X);				/* Rotate the current FZ point along the normal */
 					gmt_cart_to_geo (GMT, &S->data[GMT_Y][ii], &S->data[GMT_X][ii], X, true);	/* Get lon/lat of this point along crossing profile */
 					dist_inc = (ii) ? gmt_distance (GMT, S->data[GMT_X][ii], S->data[GMT_Y][ii], S->data[GMT_X][ii-1], S->data[GMT_Y][ii-1]) : 0.0;
@@ -6837,7 +6836,6 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	dim_nz[0] = nz - 1;
 	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
 
-	//P = gmtlib_create_palette (GMT, nz - 1);
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
 	i += gmt_M_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
@@ -7623,9 +7621,6 @@ void gmtlib_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_col
 		cycleBegin = i;
 		t = A[i];
 		do {
-			// Input matrix [n_rows x n_cols]
-			// Output matrix 1
-			// i_new = (i*n_rows)%(N-1)
 			next = (i * n_rows) % size;
 			float_swap (A[next], t);
 			support_set_bit (mark, i, bits);

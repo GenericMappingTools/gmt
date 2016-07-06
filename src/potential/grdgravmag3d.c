@@ -853,12 +853,12 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		/* This retains several of the original FORTRAN code variable names (easy to tell) */
 		double sa, si, ci, si0, sa0, ca0, cisa, cica, h1, h2, h3;
 
-		sa = -Ctrl->H.t_dec * D2R;		// Earth field declination
-		si =  Ctrl->H.t_dip * D2R;		// Earth field dip (inclination)
-		ci = cos(si);					// cos of field INC
-		si0= sin(si);					// sin of field INC
-		sa0= sin(sa);					// sin of field DEC
-		ca0= cos(sa);					// cos of field DEC
+		sa = -Ctrl->H.t_dec * D2R;		/* Earth field declination */
+		si =  Ctrl->H.t_dip * D2R;		/* Earth field dip (inclination) */
+		ci = cos(si);					/* cos of field INC */
+		si0= sin(si);					/* sin of field INC */
+		sa0= sin(sa);					/* sin of field DEC */
+		ca0= cos(sa);					/* cos of field DEC */
 		cisa= ci * sa0;
 		cica= ci * ca0;
 
@@ -867,8 +867,8 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		h3 = si0;
 
 		if (Ctrl->H.koningsberg != 0) {		/* This option is not currently implemented */
-			sa = (-Ctrl->H.t_dec - Ctrl->H.m_dec) * D2R;	// Earth field DEC - Mag DEC
-			ci = cos(Ctrl->H.m_dip * D2R);					// cos of mag INC
+			sa = (-Ctrl->H.t_dec - Ctrl->H.m_dec) * D2R;	/* Earth field DEC - Mag DEC */
+			ci = cos(Ctrl->H.m_dip * D2R);					/* cos of mag INC */
 			h1 += Ctrl->H.koningsberg * ci * sin(sa);
 			h2 += Ctrl->H.koningsberg * ci * cos(sa);
 			h3 += Ctrl->H.koningsberg * sin(Ctrl->H.m_dip * D2R);
@@ -1231,7 +1231,6 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
 			GMT_Message(GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
-			//GMT_Message (GMT->parent, GMT_TIME_NONE, "Thread %d\tRow = %d\t of = %.3d\r", t->thread_num+1, row+1, Grid->header->n_rows - !indf);
 
 		if (Ctrl->H.do_igrf) {                                     /* Compute a row of IGRF dec & dip */
 			for (col = 0; col < Grid->header->n_columns - 1 + MIN(indf,1); col++) {
@@ -1391,9 +1390,9 @@ GMT_LOCAL double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_
 	eps1 = 1.0e-12;
 	eps2 = 5.0e-3;
 
-	a[0][0] = (body_verts[1].y - body_verts[0].y) / 2;		// thickness (arbitrary, could also be the 'length')
+	a[0][0] = (body_verts[1].y - body_verts[0].y) / 2;		/* thickness (arbitrary, could also be the 'length') */
 	a[0][1] = -a[0][0];
-	a[1][0] = (body_verts[1].x - body_verts[0].x) / 2;		// length
+	a[1][0] = (body_verts[1].x - body_verts[0].x) / 2;		/* length */
 	a[1][1] = -a[1][0];
 	a[2][0] =  body_verts[1].z;
 	a[2][1] =  body_verts[0].z;

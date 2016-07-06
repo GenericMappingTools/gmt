@@ -477,7 +477,9 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	//gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
+#if 0
+	gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
+#endif
 
 	if (Ctrl->N.active) gmt_M_free (GMT, t_out);
 	gmt_M_free (GMT, nan_flag);

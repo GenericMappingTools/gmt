@@ -576,7 +576,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +q<quantile> to select another quantile (in 0-1 range) [0.5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     p: Maximum likelihood probability estimator : return mode of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        We approximate the mode using the Least Median of Squares estimator.\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t        Append +c<span> to select a different LMS span, in percent [50].\n");
+#if 0
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append +c<span> to select a different LMS span, in percent [50].\n");
+#endif
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +l to return the lowest mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : return maximum of all points.\n");
@@ -1487,7 +1489,6 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 							this_estimate = gmt_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
 							break;
 						case GRDFILTER_LMS_SPH: /* Weighted Mode */
-							// n_span = urint (Ctrl->F.span * n_in_median);
 							this_estimate = gmt_mode_weighted (GMT, work_data, n_in_median);
 							break;
 						case GRDFILTER_HIST_SPH: /* Weighted histogram Mode */

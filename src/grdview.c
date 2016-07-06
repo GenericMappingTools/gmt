@@ -1299,13 +1299,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			for (k = 0, i = i_start+1; i != i_stop; i += i_inc, k++) {
 				ij  = gmt_M_ijp(Topo->header, j, i);
 				if (gmt_M_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
-				gmt_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],		// i_inc = -1
-				                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+				gmt_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],
+	                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
 			gmt_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
 			gmt_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
-			//PSL_plotline (PSL, xx, yy, k+2, PSL_MOVE + PSL_STROKE);
 		}
 		gmt_M_free (GMT, xval);
 		gmt_M_free (GMT, yval);

@@ -415,7 +415,9 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
 	}
 #ifdef OPENMP
-	//separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
+#if 0
+	separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
+#endif
 #endif
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, Surf, &Out);	/* true if input is a read-only array */
 	

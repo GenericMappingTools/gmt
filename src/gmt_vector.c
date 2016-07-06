@@ -501,7 +501,6 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 				gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
 				gmtlib_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
-				//gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
 				gmt_matrix_vect_mult (GMT, 3U, Rot, a, c);			/* Rotate from a to get c */
 				gmt_cart_to_geo (GMT, &lat_out[row_out], &lon_out[row_out], c, true);
 				lat_out[row_out] = gmt_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
@@ -1135,7 +1134,6 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		if (w[j] == 0.0) continue;	/* No point adding up if multiplying the sum by zero */
 		s = 0.0;
 		for (i = 0; i < n; i++) s += u[j*n+i]*b[i];	/* Calculate v'*b */
-		//s = cblas_ddot (n, &u[j*n], 1, b, 1);
 		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
 	}
 #ifdef _OPENMP
@@ -1143,7 +1141,6 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #endif
 	for (j = 0; j < n; j++) {	/* Now premultiply by v */
 		s = 0.0;
-		//s = cblas_ddot (n, &u[j], n, tmp, 1);
 		for (i = 0; i < n; i++) s += u[i*n+j]*tmp[i];
 		x[j] = s;
 	}
@@ -1165,7 +1162,6 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #endif
 
 	gmt_M_free (GMT, tmp);
-	//n_use = n;
 	return (n_use);
 }
 

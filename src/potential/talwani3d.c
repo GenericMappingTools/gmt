@@ -518,7 +518,6 @@ GMT_LOCAL double definite_integral (double a, double s, double c) {
 	if (gmt_M_is_zero2 (a - M_PI_2)) return (0.0);
 	else if (gmt_M_is_zero2 (a)) return (0.0);
 	else if (gmt_M_is_zero2 (a - M_PI)) return (0.0);
-	//s = sin (a);
 	s2 = s * s;
 	c2 = c * c;
 	u2 = 1.0 / s2;
@@ -613,7 +612,9 @@ GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, doubl
 						c = z_j / fabs (p_i);
 						part1 = integral (fi_i, s_fi, theta_i, s_th, c);
 						part2 = z_j * (part1 - del_alpha);
-						//if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
+#if 0
+						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
+#endif
 					}
 				}
 			}

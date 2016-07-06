@@ -4963,7 +4963,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			dim[GMT_COL] = n_columns;
 			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				return (GMT->parent->error);
-			//N = gmt_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
+#if 0
+			N = gmt_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
+#endif
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				row = (Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1;
 				for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][0] = R->table[0]->segment[seg]->data[c][row];

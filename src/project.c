@@ -807,7 +807,6 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
-			//if (Ctrl->Q.active) Ctrl->L.max *= (GMT->current.proj.DIST_KM_PR_DEG * sin_lat_to_pole);
 			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}

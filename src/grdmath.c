@@ -4564,7 +4564,6 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "= %s", opt->arg);
 
-			//if (n_items && new_stack < 0 && stack[nstack-1]->constant) {	/* Only a constant provided, set grid accordingly */
 			if (n_items && (new_stack < 0 || stack[nstack-1]->constant)) {	/* Only a constant provided, set grid accordingly */
 				if (!stack[nstack-1]->G)
 					stack[nstack-1]->G = alloc_stack_grid (GMT, info.G);

@@ -1377,7 +1377,6 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	 * which side of a rectangular box it occurs.  There are exception for round maps, etc.  It is a bit nebulous and could
 	 * need a better explanation.  For instance, I commented out the Gnomonic case which is needed for annotations but not here, apparently */
 	set_angle = ((!GMT->common.R.oblique && !(gmt_M_is_azimuthal(GMT) || gmt_M_is_conical(GMT))) || GMT->common.R.oblique);
-	//if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
 	if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
 
 	for (i = 0; i < nx; i++) {
@@ -2729,7 +2728,6 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 
 		for (seg = 0; seg < G->n_segments; seg++) {
 			L = G->segment[seg];	/* Pointer to current segment */
-			//if (!L->annot || L->n_labels == 0) continue;
 			n_segments++;			/* Number of segments */
 			n_points += (unsigned int)L->n;		/* Total number of points in all segments so far */
 			n_labels += L->n_labels;	/* Number of labels so far */
@@ -2753,10 +2751,8 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 		pen   = gmt_M_memory (GMT, NULL, n_segments, char *);
 		fonts = gmt_M_memory (GMT, NULL, n_labels, char *);
 		PSL_setfont (PSL, G->font_label.id);
-		//psl_encodefont (PSL, PSL->current.font_no);
 		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
 			L = G->segment[seg];	/* Pointer to current segment */
-			//if (!L->annot || L->n_labels == 0) continue;
 			npoints_per_segment[this_seg] = (int)L->n;	/* Points along this segment path */
 			if (this_seg > 0) first_point_in_segment += npoints_per_segment[this_seg-1];		/* First point id in combined path */
 			gmt_M_memcpy (&xpath[first_point_in_segment], L->x, L->n, double);	/* Append this segment path to the combined path array */
@@ -2936,7 +2932,6 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 		/* Just draw optional outline, no fill, nor pattern */
 	}
 	else if (gmt_M_is_azimuthal (GMT) || !GMT->current.map.is_world) {	/* Testing without !is_world map to rediscover the original issue */
-	//else if (gmt_M_is_azimuthal (GMT)) {
 		/* Because points way outside the map might get close to the antipode we must
 		 * clip the polygon first.  The new radial clip handles this by excluding points
 		 * beyond the horizon and adding arcs along the boundary between exit points
@@ -2971,7 +2966,6 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 
 		/* Check if there are any boundary jumps in the data as evidenced by pen up [PSL_MOVE] */
 
-		//for (first = 1, jump = false; first < n && !jump; first++) jump = (GMT->current.plot.pen[first] != PSL_DRAW);
 		jump = (*GMT->current.map.will_it_wrap) (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &first);	/* Polygon does indeed wrap */
 
 		if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
@@ -3207,7 +3201,6 @@ GMT_LOCAL uint64_t plot_great_circle_arc (struct GMT_CTRL *GMT, double *A, doubl
 		w = k * step;					/* Opening angle from A to this point X */
 		gmt_M_memcpy (R, R0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 		gmtlib_load_rot_matrix (w, R, P);			/* Build the actual rotation matrix for this angle */
-		//gmt_matrix_vect_mult (R, A, X);			/* Rotate point A towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, A, X);			/* Rotate point A towards B and get X */
 		gmt_cart_to_geo (GMT, &yy[k], &xx[k], X, true);	/* Get lon/lat of this point along arc */
 	}
@@ -3230,7 +3223,6 @@ GMT_LOCAL uint64_t plot_small_circle_arc (struct GMT_CTRL *GMT, double *A, doubl
 		w = k * step;					/* Opening angle from A to this point X */
 		gmt_M_memcpy (R, R0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 		gmtlib_load_rot_matrix (w, R, P);			/* Build the actual rotation matrix for this angle */
-		//gmt_matrix_vect_mult (R, A, X);			/* Rotate point A towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, A, X);			/* Rotate point A towards B and get X */
 		gmt_cart_to_geo (GMT, &yy[k], &xx[k], X, true);	/* Get lon/lat of this point along arc */
 	}
@@ -3278,10 +3270,8 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 		w = k * step;					/* Opening angle from A to this point X */
 		gmt_M_memcpy (R, R0, 9U, double);			/* Get a copy of the "0-angle" rotation matrix */
 		gmtlib_load_rot_matrix (w, R, C->P);			/* Build the actual rotation matrix for this angle */
-		//gmt_matrix_vect_mult (R, Ai, X);		/* Rotate point Ai towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, Ai, X);		/* Rotate point Ai towards B and get X */
 		gmt_cart_to_geo (GMT, &L->data[GMT_Y][k], &L->data[GMT_X][k], X, true);	/* Get lon/lat of this point along arc */
-		//gmt_matrix_vect_mult (R, Ao, X);		/* Rotate point Ai towards B and get X */
 		gmt_matrix_vect_mult (GMT, 3U, R, Ao, X);		/* Rotate point Ai towards B and get X */
 		gmt_cart_to_geo (GMT, &L->data[GMT_Y][n2-k], &L->data[GMT_X][n2-k], X, true);	/* Get lon/lat of this point along arc */
 	}
@@ -3519,8 +3509,10 @@ GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double
 	double *rgb = S->v.fill.rgb;
 	struct GMT_CIRCLE C;
 
+#if 0
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
-	//justify = gmt_M_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	justify = gmt_M_vec_justify (S->v.status);	/* Return justification as 0-3 */
+#endif
 
 	plot_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
 	perspective = GMT_IS_PERSPECTIVE (GMT);
@@ -4862,7 +4854,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (symbol->PS) {	/* Special Encapsulated PostScript-only symbol */
-		//int c;
 		double off = 0.5*size[0], fy = (symbol->PS_BB[3] - symbol->PS_BB[2]) / (symbol->PS_BB[1] - symbol->PS_BB[0]);
 		if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
 			double scl;
@@ -4882,7 +4873,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		}
 		PSL_command (PSL, "V ");
 		PSL_setorigin (PSL, x0-off, y0-fy*off, 0.0, PSL_FWD);
-		//for (c = (int)symbol->n_required; c >= 0; c--) PSL_command (PSL, "%g ", size[c]);
 		PSL_command (PSL, "%g dup scale ", size[0]);
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
 		return (GMT_OK);

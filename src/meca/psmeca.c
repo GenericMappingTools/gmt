@@ -688,7 +688,6 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			}
 			else
 				meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
-			//meca.NP2.rake = meca_computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
 			T.val = atof (col[2+new_fmt]);

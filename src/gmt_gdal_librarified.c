@@ -64,7 +64,6 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	return args;
 }
 
-// EXTERN_MSC int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts);
 GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 	char	*info = NULL, **args;
 	GDALDatasetH	hDataset;

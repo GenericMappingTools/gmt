@@ -1125,7 +1125,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	int64_t (*read_source) (struct GMT_CTRL *, char **, size_t *, FILE *, char *, uint64_t *);	/* Pointer to source reader function */
 	void (*rewind_source) (FILE *, uint64_t *);	/* Pointer to source rewind function */
-	//unsigned char *(*gs_func)(char *, int , int *) = NULL;	/* Function pointer to gsrasterize_rip */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -3321,7 +3321,9 @@ GMT_LOCAL bool map_init_tm (struct GMT_CTRL *GMT) {
 	GMT->current.map.wrap_around_check = &map_wrap_around_check_tm;
 	GMT->current.map.jump = &map_jump_tm;
 	GMT->current.map.will_it_wrap = &map_will_it_wrap_tm;
-	// GMT->current.map.this_point_wraps = &map_this_point_wraps_tm;
+#if 0
+	GMT->current.map.this_point_wraps = &map_this_point_wraps_tm;
+#endif
 	GMT->current.map.get_crossings = &map_get_crossings_tm;
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 1.0;	/* Select default map scale for TM */
@@ -3823,11 +3825,13 @@ GMT_LOCAL bool map_init_genper (struct GMT_CTRL *GMT) {
 		GMT->current.map.outside = &map_rect_outside2;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
-		//GMT->current.map.crossing = &map_genper_crossing;
-		//GMT->current.map.overlap = &map_genperw_overlap;
+#if 0
+		GMT->current.map.crossing = &map_genper_crossing;
+		GMT->current.map.overlap = &map_genperw_overlap;
+		GMT->current.map.left_edge = &map_left_rect;
+		GMT->current.map.right_edge = &map_right_rect;
+#endif
 		GMT->current.map.clip = &map_rect_clip_old;
-		//GMT->current.map.left_edge = &map_left_rect;
-		//GMT->current.map.right_edge = &map_right_rect;
 		GMT->current.map.left_edge = &gmt_left_genper;
 		GMT->current.map.right_edge = &gmt_right_genper;
 		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
@@ -7557,8 +7561,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 		}
 	}
 
-	//gmt_M_grd_loop (GMT, O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
-		//for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = gmt_M_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
+#if 0
+	gmt_M_grd_loop (GMT, O, row_out, col_out, ij_out) 		/* So that nodes outside will have the NaN color */
+		for (b = 0; b < nb; b++) O->data[nb*ij_out+b] = gmt_M_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
+#endif
 	for (b = 0; b < 4; b++) z_int_bg[b] = gmt_M_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
 
 	/* PART 1: Project input image points and do a blockmean operation */
@@ -8485,7 +8491,9 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.wrap_around_check = &map_wrap_around_check_x;
 	GMT->current.map.jump = &map_jump_x;
 	GMT->current.map.will_it_wrap = &map_will_it_wrap_x;
-	//GMT->current.map.this_point_wraps = &map_this_point_wraps_x;
+#if 0
+	GMT->current.map.this_point_wraps = &map_this_point_wraps_x;
+#endif
 	GMT->current.map.get_crossings = &map_get_crossings_x;
 
 	GMT->current.map.lon_wrap = true;

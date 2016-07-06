@@ -3054,7 +3054,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
-			//GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output was requested */
+#if 0
+			GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output was requested */
+#endif
 			*status = 0;
 			return (NULL);
 		}
@@ -6640,8 +6642,6 @@ struct GMT_TEXTSET * gmtlib_create_textset (struct GMT_CTRL *GMT, uint64_t n_tab
 			T->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_TEXTSEGMENT);
 			T->segment[seg]->data = gmt_M_memory (GMT, NULL, n_rows, char *);
 			T->segment[seg]->n_alloc = n_rows;
-			//T->segment[seg]->n_rows = n_rows;
-
 		}
 	}
 	D->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
@@ -6783,7 +6783,6 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uin
 	}
 	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
-			//S->data[col] = gmt_M_memory (GMT, NULL, n_rows, double);
 			S->data[col] = gmt_M_memory (GMT, S->data[col], n_rows, double);
 			gmt_M_memcpy (S->data[col], GMT->hidden.mem_coord[col], n_rows, double);
 		}
@@ -7016,7 +7015,6 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
 				while (!gmt_M_rec_is_eof (GMT) && (in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
 			}
-			//T->segment[seg]->n_columns = n_expected_fields;	/* This is where number of columns are determined */
 			T->segment[seg]->n_columns = (n_returned) ? n_returned : n_expected_fields;	/* This is where number of columns are determined */
 			no_segments = false;	/* This has now served its purpose */
 		}
@@ -7600,7 +7598,7 @@ unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsig
 	return (k);
 }
 
-//*! . */
+/*! . */
 int gmtlib_ogr_get_type (char *item) {
 	if (!strcmp (item, "double")   || !strcmp (item, "DOUBLE")) return (GMT_DOUBLE);
 	if (!strcmp (item, "float")    || !strcmp (item, "FLOAT")) return (GMT_FLOAT);

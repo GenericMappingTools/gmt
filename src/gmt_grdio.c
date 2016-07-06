@@ -593,7 +593,8 @@ GMT_LOCAL struct GMT_GRID_HEADER *grdio_duplicate_gridheader (struct GMT_CTRL *G
  */
 
 #ifdef DEBUG
-//#define GMT_DUMPING	/* Uncomment this to have gmt_grd_dump be called and do something */
+/* Uncomment this to have gmt_grd_dump be called and do something */
+/* #define GMT_DUMPING */
 #ifdef GMT_DUMPING
 void gmt_grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt) {
 	unsigned int row, col;
@@ -2217,7 +2218,9 @@ unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, b
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
 	if (G->extra) gmtapi_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
-	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free (GMT, G->header);
+#if 0
+	if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free (GMT, G->header);
+#endif
 	if (G->header) {	/* Free the header structure and anything allocated by it */
 		gmt_M_str_free (G->header->ProjRefWKT);
 		gmt_M_str_free (G->header->ProjRefPROJ4);

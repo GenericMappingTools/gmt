@@ -1353,8 +1353,6 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		gmtlib_grd_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
-	// gmtnc_pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
-
 	gmtnc_pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
 
 #ifdef NC4_DEBUG
