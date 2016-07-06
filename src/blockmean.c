@@ -383,15 +383,14 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			out[GMT_Z] = zw[node].a[BLK_Z] * iw;
 		if (Ctrl->E.active) {	/* Compute and report extended attributes */
 			if (Ctrl->W.weighted[GMT_IN]) {	/* Weighted standard deviation */
-				if (Ctrl->E.mode == 1) {	/* Error propagation assuming weights were 1/sigma^2 */
+				if (Ctrl->E.mode == 1)	/* Error propagation assuming weights were 1/sigma^2 */
 					out[3] = d_sqrt (slhg[node].a[BLK_G]) / np[node];
-				}
-				else {
+				else {	/* Weighted Std.dev of the values in this bin */
 					out[3] = (np[node] > 1) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
 					/ (zw[node].a[BLK_W] * zw[node].a[BLK_W] * ((np[node] - 1.0) / np[node]))) : GMT->session.d_NaN;
 				}
 			}
-			else {					/* Normal standard deviation */
+			else {		/* Normal standard deviation of the values in this bin */
 				out[3] = (zw[node].a[BLK_W] > 1.0) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
 				/ (zw[node].a[BLK_W] * (zw[node].a[BLK_W] - 1.0))) : GMT->session.d_NaN;
 			}

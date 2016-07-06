@@ -4289,10 +4289,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 {	unsigned int i;
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) {
-		if (stack[i]->alloc_mode == 2)
-			GMT_Destroy_Data (API, &stack[i]->D);
-		else if (stack[i]->alloc_mode == 1 && stack[i]->D)
-			gmt_free_dataset (API->GMT, &stack[i]->D);
+		GMT_Destroy_Data (API, &stack[i]->D);
 		gmt_M_free (API->GMT, stack[i]);
 	}
 }
