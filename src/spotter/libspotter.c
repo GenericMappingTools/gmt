@@ -523,6 +523,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		last_t = e[i].t_start;
+		if (e[i].omega == 0.0) continue;	/* skip null rotations */
 		if (e[i].t_stop >= e[i].t_start) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			gmt_fclose (GMT, fp);
