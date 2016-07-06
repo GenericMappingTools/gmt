@@ -1174,7 +1174,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}
 			else {	/* Simply copy other columns, append value, and output */
-				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
+				if (!out) {
+					n_out = n_fields + Ctrl->G.n_grids;	/* Get new # of output cols */
+					if (Ctrl->T.mode == 2) n_out += 3;
+					out = gmt_M_memory(GMT, NULL, n_out, double);
+				}
 				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 				for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
 				if (Ctrl->T.mode == 2) {	/* Add extra columns */
