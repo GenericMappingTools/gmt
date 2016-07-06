@@ -135,7 +135,6 @@ struct GRDMATH_STACK {
 	struct GMT_GRID *G;		/* The grid */
 	bool constant;			/* true if a constant (see factor) and S == NULL */
 	double factor;			/* The value if constant is true */
-	unsigned int alloc_mode;	/* 0 is not allocated, 1 is allocated in this program, 2 = allocated elsewhere, 3 for externals */
 };
 
 struct GRDMATH_STORE {
@@ -1601,7 +1600,6 @@ GMT_LOCAL void grd_EXCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		float_swap (stack[last]->G->data[node], stack[prev]->G->data[node]);
 	}
 	double_swap (stack[last]->factor, stack[prev]->factor);
-	uint_swap (stack[last]->alloc_mode, stack[prev]->alloc_mode);
 	bool_swap (stack[last]->constant, stack[prev]->constant);
 }
 
@@ -3311,7 +3309,6 @@ GMT_LOCAL void assign_grdstack (struct GRDMATH_STACK *Sto, struct GRDMATH_STACK 
 {	/* Copy contents of Sfrom to Sto */
 	Sto->G          = Sfrom->G;
 	Sto->constant   = Sfrom->constant;
-	Sto->alloc_mode = Sfrom->alloc_mode;
 	Sto->factor     = Sfrom->factor;
 }
 
@@ -4326,9 +4323,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	unsigned int k;
 
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (stack[k]->alloc_mode == 3)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Let stack item %d survive module\n", k);
-		else if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_NOERROR) {
+		if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
 		gmt_M_free (GMT, stack[k]);
@@ -4571,10 +4566,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 			//if (n_items && new_stack < 0 && stack[nstack-1]->constant) {	/* Only a constant provided, set grid accordingly */
 			if (n_items && (new_stack < 0 || stack[nstack-1]->constant)) {	/* Only a constant provided, set grid accordingly */
-				if (!stack[nstack-1]->G) {
+				if (!stack[nstack-1]->G)
 					stack[nstack-1]->G = alloc_stack_grid (GMT, info.G);
-					stack[nstack-1]->alloc_mode = 1;
-				}
 				if (stack[nstack-1]->constant) {
 					gmt_M_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->G->data[node] = (float)stack[nstack-1]->factor;
 				}
@@ -4589,7 +4582,6 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			gmt_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
-			stack[this_stack]->alloc_mode = (gmt_M_file_is_memory (opt->arg)) ? 3 : 2;	/* Since it now is registered (but set to 3 for external memory) */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
 			continue;
@@ -4661,10 +4653,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				}
 				else {	/* Place the stored grid on the stack */
 					stack[nstack]->constant = false;
-					if (!stack[nstack]->G) {
+					if (!stack[nstack]->G)
 						stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-						stack[nstack]->alloc_mode = 1;
-					}
 					gmt_M_memcpy (stack[nstack]->G->data, recall[k]->stored.G->data, info.G->header->size, float);
 				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
@@ -4694,7 +4684,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 			if (op == GRDMATH_ARG_IS_X_MATRIX) {		/* Need to set up matrix of x-values */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "X ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
 					gmt_M_memcpy (&stack[nstack]->G->data[node], info.f_grd_x, info.G->header->mx, float);
@@ -4702,7 +4692,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_x_MATRIX) {		/* Need to set up matrix of normalized x-values */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "XNORM ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
 					gmt_M_memcpy (&stack[nstack]->G->data[node], info.f_grd_xn, info.G->header->mx, float);
@@ -4710,27 +4700,27 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_XCOL_MATRIX) {		/* Need to set up matrix of column numbers */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "XCOL ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(col - stack[nstack]->G->header->pad[XLO]);
 			}
 			else if (op == GRDMATH_ARG_IS_Y_MATRIX) {	/* Need to set up matrix of y-values */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Y ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.f_grd_y[row];
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "YNORM ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.f_grd_yn[row];
 			}
 			else if (op == GRDMATH_ARG_IS_YROW_MATRIX) {		/* Need to set up matrix of row numbers */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "YROW ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				grdmath_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(row - stack[nstack]->G->header->pad[YHI]);
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				gmt_M_str_free (info.ASCII_file);
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
 				info.ASCII_file = strdup (opt->arg);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "(%s) ", opt->arg);
 			}
@@ -4751,7 +4741,6 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
 				}
-				stack[nstack]->alloc_mode = (gmt_M_file_is_memory (opt->arg)) ? 3 : 2;	/* Since it now is registered (but set to 3 if external memory) */
 			}
 			nstack++;
 			continue;
@@ -4776,18 +4765,14 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			if (stack[nstack+k-1]->G) continue;
 
 			/* Must make space for more */
-
 			stack[nstack+k-1]->G = alloc_stack_grid (GMT, info.G);
-			stack[nstack+k-1]->alloc_mode = 1;
 		}
 
 		/* If operators operates on constants only we may have to make space as well */
 
 		for (kk = 0, k = nstack - consumed_operands[op]; kk < produced_operands[op]; kk++, k++) {
-			if (stack[k]->constant && !stack[k]->G) {
+			if (stack[k]->constant && !stack[k]->G)
 				stack[k]->G = alloc_stack_grid (GMT, info.G);
-				stack[k]->alloc_mode = 1;
-			}
 		}
 
 		GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;

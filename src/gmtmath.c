@@ -143,10 +143,9 @@ struct GMTMATH_INFO {
 };
 
 struct GMTMATH_STACK {
-	struct GMT_DATASET *D;		/* The dataset */
+	struct GMT_DATASET *D;	/* The dataset */
 	bool constant;			/* true if a constant (see factor) and S == NULL */
 	double factor;			/* The value if constant is true */
-	unsigned int alloc_mode;	/* 0 is not allocated yet, 1 is allocated locally in this program, 2 = allocated via API */
 };
 
 struct GMTMATH_STORED {
@@ -1833,7 +1832,6 @@ GMT_LOCAL int table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	D = S[last]->D;
 	S[last]->D = S[prev]->D;	S[prev]->D = D;
 	bool_swap (S[last]->constant, S[prev]->constant);
-	uint_swap (S[last]->alloc_mode, S[prev]->alloc_mode);
 	double_swap (S[last]->factor, S[prev]->factor);
 	return 0;
 }
@@ -3442,7 +3440,6 @@ GMT_LOCAL void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK 
 {	/* Copy contents of Sfrom to Sto */
 	Sto->D          = Sfrom->D;
 	Sto->constant   = Sfrom->constant;
-	Sto->alloc_mode = Sfrom->alloc_mode;
 	Sto->factor     = Sfrom->factor;
 }
 
@@ -4289,7 +4286,9 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 {	unsigned int i;
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) {
-		GMT_Destroy_Data (API, &stack[i]->D);
+		if (GMT_Destroy_Data (API, &stack[i]->D) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free stack item %d\n", i);
+		}
 		gmt_M_free (API->GMT, stack[i]);
 	}
 }
@@ -4609,7 +4608,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		dim[GMT_COL] = n_columns;	dim[GMT_ROW] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 	}
-	stack[0]->alloc_mode = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? false : true;
 
@@ -4655,10 +4653,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	gmt_set_tbl_minmax (GMT, info.T);
 
 	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | [w | ] b ], with w the optional weights */
-		if (!stack[0]->D) {
+		if (!stack[0]->D)
 			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-			stack[0]->alloc_mode = 1;
-		}
 		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Always put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		if (!Ctrl->A.null) load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Optionally, put the t vector in the time column of the item on the stack */
 		gmt_set_tbl_minmax (GMT, stack[0]->D->table[0]);
@@ -4736,7 +4732,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
-				else {	/* Need new named storage place; use gmt_duplicate_dataset/gmt_free_dataset since no point adding to registered resources since internal use only */
+				else {	/* Need new named storage place; use gmt_duplicate_dataset/gmt_free_dataset since no point adding to registered resources when internal use only */
 					k = n_stored;
 					recall[k] = gmt_M_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);
@@ -4763,10 +4759,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				else {/* Place the stored dataset on the stack */
 					stack[nstack]->constant = false;
-					if (!stack[nstack]->D) {
+					if (!stack[nstack]->D)
 						stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-						stack[nstack]->alloc_mode = 1;
-					}
 					for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
 					gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 				}
@@ -4797,10 +4791,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "T is not defined for plain data files!\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (!stack[nstack]->D) {
+				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-					stack[nstack]->alloc_mode = 1;
-				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
@@ -4810,19 +4802,15 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "TNORM is not defined for plain data files!\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (!stack[nstack]->D) {
+				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-					stack[nstack]->alloc_mode = 1;
-				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_J_MATRIX) {	/* Need to set up matrix of row numbers */
-				if (!stack[nstack]->D) {
+				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-					stack[nstack]->alloc_mode = 1;
-				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TJ);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
@@ -4830,10 +4818,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
 				struct GMT_DATASET *F = NULL;
 				struct GMT_DATATABLE *T_in = NULL;
-				if (!stack[nstack]->D) {
+				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-					stack[nstack]->alloc_mode = 1;
-				}
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
 					T_in = I;
 					if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "<stdin> ");
@@ -4885,12 +4871,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s ", operator[op]);
 
 		for (i = produced_operands[op] - consumed_operands[op]; i > 0; i--) {
-			if (stack[nstack+i-1]->D)	continue;
+			if (stack[nstack+i-1]->D) continue;
 
 			/* Must make space for more */
-
 			stack[nstack+i-1]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-			stack[nstack+i-1]->alloc_mode = 1;
 		}
 
 		/* If operators operates on constants only we may have to make space as well */
@@ -4898,7 +4882,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				stack[i]->alloc_mode = 1;
 				if (!Ctrl->T.notime) load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
@@ -4930,10 +4913,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 
 	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
-		if (!stack[0]->D) {
+		if (!stack[0]->D)
 			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-			stack[0]->alloc_mode = 1;
-		}
 		for (j = 0; j < n_columns; j++) {
 			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
 				load_column (stack[0]->D, j, info.T, COL_T);
