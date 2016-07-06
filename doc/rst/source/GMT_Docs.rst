@@ -242,7 +242,8 @@ General improvements
 
 There are many changes to GMT, mostly under the hood, but also changes that
 affect users directly.  We have added two new examples and one new animation
-to highlight recently added capabilities.  For specific enhancements, we have:
+to highlight recently added capabilities.  There have been many bug fixes
+as well. For specific enhancements, we have:
 
 *  All GMT-distributed color palette tables (CPTs, now a total of 40) are
    *dynamic* and many have a *hinge* and a default *range*.  What this means
