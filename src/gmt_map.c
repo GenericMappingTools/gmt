@@ -7417,7 +7417,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				}
 				if (gmt_M_is_fnan (O->data[ij_out])) continue;
 				if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
-				if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
+				else if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
 			}
 		}
 	}
