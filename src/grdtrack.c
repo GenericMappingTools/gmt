@@ -1088,6 +1088,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		gmt_M_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {	/* Special case were number of output columns is known before reading input records */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
+			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			n_out = Ctrl->G.n_grids;
 			if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 			out = gmt_M_memory (GMT, NULL, n_out, double);
