@@ -47,6 +47,8 @@ Required Arguments
     care to detect the format of the file being read. This mechanism is actually used in a automatic
     form when the file format is not one of those that GMT recognize. However, sometimes the guessing
     may fail and than stating *id=gd* forces a read via GDAL.
+    See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
+    of the GMT Technical Reference and Cookbook for more information.
 
 *outgrdfile*
     The grid file to be written. Append format =\ *id* code if not a
@@ -73,6 +75,8 @@ Required Arguments
     where 'i' and 'u' denote signed and unsigned integers respectively.
     The default type is *float32*. Note also that both driver names and
     data types are case insensitive.
+    See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
+    of the GMT Technical Reference and Cookbook for more information.
 
     Consider setting :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>`
     to reduce file size and to further increase read/write performance.
