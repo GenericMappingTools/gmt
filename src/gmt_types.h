@@ -257,7 +257,10 @@ struct GMT_INTERNAL {
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
+	size_t mem_txt_alloc;
+	size_t mem_txt_dup;
 	double **mem_coord;		/* Columns of temp memory */
+	char **mem_txt;			/* For temp text */
 	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
 #ifdef DEBUG
 	bool gridline_debug;

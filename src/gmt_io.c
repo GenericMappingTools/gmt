@@ -6868,11 +6868,80 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 	return (D);
 }
 
+#if NEWTEXT
+GMT_LOCAL void gmt_prep_txt_array (struct GMT_CTRL *GMT, size_t row) {
+	/* Check if this is the very first time, if so we initialize the array */
+	if (GMT->hidden.mem_txt_alloc == 0) {
+		GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT_INITIAL_MEM_ROW_ALLOC, char *);	/* These are all NULL */
+		GMT->hidden.mem_txt_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
+	}
+
+	/* Check if we are exceeding our allocated count for this column.  If so allocate more rows */
+
+	if (row < GMT->hidden.mem_txt_alloc) return;	/* Nothing to do */
+
+	/* Here we must allocate more rows, this is expected to happen rarely given the large initial allocation */
+
+	while (row >= GMT->hidden.mem_txt_alloc) GMT->hidden.mem_txt_alloc <<= 1;	/* Double up until enough */
+	/* Add more memory via realloc */
+	GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT->hidden.mem_txt_alloc, char *);
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Increase temporary text arrays to new length : %" PRIuS "\n", GMT->hidden.mem_txt_alloc);
+	/* Note: Any additions to these arrays are not guaranteed to be set to NULL */
+}
+
+GMT_LOCAL void alloc_record_text (struct GMT_CTRL *GMT, uint64_t row, uint64_t n_col) {
+	/* Find the start of the n'th column where text begins and return a copy */
+	uint64_t col = 0;
+	size_t k = 0;
+	char *text = GMT->current.io.current_record;
+	if (n_col == 0 || text == NULL) return;
+	while (text[k] && strchr (" \t", text[k])) k++; /* Scan pass leading whitespace */
+	while (text[k] && col < n_col) {
+		while (text[k] && !strchr (" ,;\t", text[k])) k++;	/* Scan past this item until next "white-space" */
+		col++;
+		while (text[k] && strchr (" ,;\t", text[k])) k++;	/* Scan past consecutive "white-space" */
+	}
+	if (text[k]) {
+		GMT->hidden.mem_txt[row] = strdup (&text[k]);
+		GMT->hidden.mem_txt_dup++;
+	}
+	else
+		GMT->hidden.mem_txt[row] = NULL;
+}
+
+/*! . */
+GMT_LOCAL void gmtio_assign_text (struct GMT_CTRL *GMT, uint64_t n_rows, struct GMT_DATASEGMENT *S) {
+	/* Allocates and memcpy over text from GMT->hidden.mem_txt.
+  	 * If n_rows > GMT_INITIAL_MEM_ROW_ALLOC then we pass the arrays and reset the tmp arrays to NULL
+	 */
+	if (n_rows == 0) return;	/* Nothing to do */
+	if (GMT->hidden.mem_txt_dup == 0) return;	/* Nothing to do */
+
+	if (n_rows > GMT_INITIAL_MEM_ROW_ALLOC) {	/* Large segment, just pass allocated pointers and start over with new tmp vectors later */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtio_assign_text: Pass text array with length = %"
+		            PRIu64 " off and get new tmp array\n", n_rows);
+		if (n_rows < GMT->hidden.mem_txt_alloc)
+				GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, n_rows, char *);	/* Trim back */
+		S->text = GMT->hidden.mem_txt;	/* Pass the pointer */
+		GMT->hidden.mem_txt = NULL;	/* Null this out to start over for next segment */
+		GMT->hidden.mem_txt_dup = GMT->hidden.mem_txt_alloc = 0;
+	}
+	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
+		S->text = gmt_M_memory (GMT, S->text, n_rows, char *);
+		gmt_M_memcpy (S->text, GMT->hidden.mem_txt, n_rows, char *);
+		gmt_M_memset (GMT->hidden.mem_txt, n_rows, char *);
+	}
+	GMT->hidden.mem_txt_dup = 0;
+}
+#endif
+
 /*! . */
 struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, bool use_GMT_io) {
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
-	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false, pol_check, check_geometry;
+	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false;
+	bool pol_check, check_geometry, check_text = true;
 	int status;
 	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
@@ -6947,9 +7016,12 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	}
 
 	/* Skip binary header first, if binary and there is a header given in # of bytes */
-	if (GMT->common.b.active[GMT_IN] && GMT->current.setting.io_n_header_items) {
-		gmtlib_io_binary_header (GMT, fp, GMT_IN);
-		header = false;	/* No more binary header */
+	if (GMT->common.b.active[GMT_IN]) {
+		if (GMT->current.setting.io_n_header_items) {
+			gmtlib_io_binary_header (GMT, fp, GMT_IN);
+			header = false;	/* No more binary header */
+		}
+		check_text = false;	/* No text items read from binary files */
 	}
 
 	in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
@@ -7045,6 +7117,12 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			}
 
 			gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or reallocate tmp read vectors */
+#if NEWTEXT
+			if (check_text) {
+				gmt_prep_txt_array (GMT, row);	/* Init or reallocate text read vectors */
+				alloc_record_text (GMT, row, T->segment[seg]->n_columns);
+			}
+#endif			
 			for (col = 0; col < T->segment[seg]->n_columns; col++) {
 				GMT->hidden.mem_coord[col][row] = in[col];
 				if (GMT->current.io.col_type[GMT_IN][col] & GMT_IS_LON) {	/* Must handle greenwich/dateline alignments */
@@ -7091,6 +7169,10 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		}
 		else {	/* OK to populate segment and increment counters */
 			gmtlib_assign_segment (GMT, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
+#if NEWTEXT
+			if (check_text)
+				gmtio_assign_text (GMT, row, T->segment[seg]);
+#endif
 			gmt_set_seg_minmax (GMT, T->segment[seg]);	/* Set min/max */
 			if (poly && (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO)) gmt_set_seg_polar (GMT, T->segment[seg]);
 			T->n_records += row;		/* Total number of records so far */

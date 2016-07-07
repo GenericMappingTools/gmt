@@ -473,6 +473,7 @@ struct GMT_DATASEGMENT {		/* For holding segment lines in memory */
 	double **data;			/* Data x,y, and possibly other columns */
 	char *label;			/* Label string (if applicable) */
 	char *header;			/* Segment header (if applicable) */
+	char **text;			/* text beyond the data */
 /* ---- Variables "hidden" from the API ---- */
 	enum GMT_enum_write mode;	/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	enum GMT_enum_pol pol_mode;	/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
