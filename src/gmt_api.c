@@ -5579,7 +5579,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	 * For memory output we finalized the container, register it, sets the alloc_level to the calling entity
 	 * and pass the resource upwards.
 	 */
-	int error = 0, object_ID, check;
+	int error = 0, object_ID;
 	unsigned int item;
 	enum GMT_enum_method method;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -5599,6 +5599,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 			S_obj->status = GMT_IS_USED;	/* Done writing to this destination */
 			method = api_split_via_method (API, S_obj->method, NULL);
 			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE)) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
+				int check = GMT_NOTSET;
 				if (S_obj->actual_family == GMT_IS_DATASET) {	/* Dataset type */
 					struct GMT_DATASET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
@@ -5665,6 +5666,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 					}
 				}
+				if (check != GMT_NOTSET) API->object[check]->no_longer_owner = true;	/* Since we passed it via S_obj */
 				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for GMT_Retrieve_Data to work */
 			}
 			if (S_obj->close_file) {	/* Close file that we opened earlier */
