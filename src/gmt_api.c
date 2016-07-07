@@ -5576,8 +5576,10 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	 * mode:	Either GMT_IO_DONE (nothing), GMT_IO_RESET (let all resources be accessible again), or GMT_IO_UNREG (unreg all accessed resources).
 	 * NOTE: 	Mode not yet implemented until we see a use.
 	 * Returns:	false if successfull, true if error.
+	 * For memory output we finalized the container, register it, sets the alloc_level to the calling entity
+	 * and pass the resource upwards.
 	 */
-	int error = 0;
+	int error = 0, object_ID, check;
 	unsigned int item;
 	enum GMT_enum_method method;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -5613,6 +5615,11 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						gmt_set_tbl_minmax (GMT, T_obj);		/* Update the min/max values for this table */
 						gmtlib_set_dataset_minmax (GMT, D_obj);	/* Update the min/max values for this dataset */
 						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
+						if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, D_obj->geometry, GMT_OUT, NULL, D_obj)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to register */
+						if ((check = gmtapi_validate_id (API, GMT_IS_DATASET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to validate */
+						D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_MATRIX) {	/* Matrix type */
@@ -5622,6 +5629,11 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						size *= M_obj->n_columns;
 						if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK)
 							return_error (V_API, error);
+						if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, M_obj)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to register */
+						if ((check = gmtapi_validate_id (API, GMT_IS_MATRIX, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to validate */
+						M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_VECTOR) {	/* Vector type */
@@ -5630,6 +5642,11 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						S_obj->n_alloc = API->current_rec[GMT_OUT];
 						if ((error = api_alloc_vectors (GMT, V_obj, S_obj->n_alloc)) != GMT_OK)
 							return_error (V_API, error);
+						if ((object_ID = GMT_Register_IO (API, GMT_IS_VECTOR, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, V_obj)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to register */
+						if ((check = gmtapi_validate_id (API, GMT_IS_VECTOR, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to validate */
+						V_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_TEXTSET) {	/* Textset type */
@@ -5641,6 +5658,11 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						T_obj->segment = gmt_M_memory (GMT, T_obj->segment, T_obj->n_segments, struct GMT_TEXTSEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
 						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
+						if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, D_obj)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to register */
+						if ((check = gmtapi_validate_id (API, GMT_IS_TEXTSET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
+							return_error (API, API->error);	/* Failure to validate */
+						D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 					}
 				}
 				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for GMT_Retrieve_Data to work */
