@@ -420,6 +420,12 @@ enum GMT_enum_pol {
 	GMT_IS_PERIMETER = 0,
 	GMT_IS_HOLE = 1U};
 
+/* Modes for setting output columns for rec-by-rec output */
+enum GMT_enum_columns {
+	GMT_COL_FIX = 0,
+	GMT_COL_ADD,
+	GMT_COL_SUB};
+
 /* Return codes for GMT_Get_Record: */
 
 enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */

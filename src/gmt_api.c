@@ -10283,3 +10283,40 @@ EXTERN_MSC void * GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t 
 	}
 	return (X); 
 }
+
+EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
+	/* Specify how many output columns to use for record-by-record output */
+	int error;
+	uint64_t n_in;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	
+	if ((n_in = gmt_get_cols (API->GMT, GMT_IN)) == 0) {	/* Get number of input columns */
+		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Premature call - number of input columns not known yet\n");
+		return_error (API, GMT_N_COLS_NOT_SET);
+	}
+	if (n_cols == 0 && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
+			return_error (API, GMT_N_COLS_NOT_SET);
+
+	/* Get here when n_cols is not zero */
+	
+	switch (mode) {
+		case GMT_COL_FIX:	/* Specific a fixed number of columns */
+			error = gmt_set_cols (API->GMT, GMT_OUT, n_cols);
+			break;
+		case GMT_COL_ADD:	/* Add to the input columns */
+			error = gmt_set_cols (API->GMT, GMT_OUT, n_in + n_cols);
+			break;
+		case GMT_COL_SUB:	/* Specif a fixed number of columns */
+			if (n_cols >= n_in) {
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Cannot specify less than one output column!\n");
+				return_error (API, GMT_DIM_TOO_SMALL);
+			}
+			error = gmt_set_cols (API->GMT, GMT_OUT, n_in - n_cols);
+			break;
+	}
+	if (error) return_error (API, GMT_N_COLS_NOT_SET);
+	return (GMT_NOERROR);
+}
