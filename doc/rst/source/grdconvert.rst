@@ -46,7 +46,7 @@ Required Arguments
     offset = 0). When *id=gd*, the file will be read using the GDAL library, which will take
     care to detect the format of the file being read. This mechanism is actually used in a automatic
     form when the file format is not one of those that GMT recognize. However, sometimes the guessing
-    may fail and than sating *id=gd* forces a read via GDAL.
+    may fail and than stating *id=gd* forces a read via GDAL.
 
 *outgrdfile*
     The grid file to be written. Append format =\ *id* code if not a

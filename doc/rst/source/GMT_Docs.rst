@@ -4941,12 +4941,16 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
 Grid file format specifications
 -------------------------------
 
-GMT has the ability to read and write grids using
-more than one grid file format (see Table :ref:`grdformats <tbl-grdformats>` for supported
-format and their IDs). For reading, GMT will automatically determine
-the format of grid files, while for writing you will normally have to
-append *=ID* to the filename if you want GMT to use a different format
-than the default.
+GMT has the ability to read and write grids using more than one grid file format
+(see Table :ref:`grdformats <tbl-grdformats>` for supported format and their IDs).
+For reading, GMT will automatically determine the format of grid files, while for
+writing you will normally have to append *=ID* to the filename if you want GMT to
+use a different format than the default. The automatic reading procedure follows an heuristic
+where certain formats are tentatively decoded with GMT internal drivers and if they fail than
+we resort to use the GDAL library to do the readings. This normally works pretty well but in case
+of failure (e.g. a GMT driver failed to read binary file with a separate header that also could
+have been stored in an ASCII file with embed header) the user should explicitly try to force a
+reading via GDAL. That is, to append a *=gd* suffix to file name. 
 
 By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
@@ -5084,6 +5088,9 @@ Everything looks clearer after a few examples:
 
 *  To write an 8-bit integer netCDF grid file with an auto-adjusted
    offset, give filename as ``=nb//a``.
+
+*  To read a short integer *.bil* grid file stored in binary and and force
+   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
 
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
