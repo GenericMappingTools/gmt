@@ -117,10 +117,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	}
 	else {
 #ifdef HAVE_GDAL
-		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
+		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>]\n",
+		             GMT_J_OPT, GMT_B_OPT); 
 		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I<intensgrid>|<value>] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 #else
-		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n", GMT_J_OPT, GMT_B_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
+		             GMT_J_OPT, GMT_B_OPT);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I<intensgrid>|<value>] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 #endif
 	}
@@ -339,18 +341,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
-					"Syntax error: Must specify one (or three) input file(s)\n");
+	if (!API->mode) {	/* I.e, not an External interface */
+		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
+		                                   "Syntax error: Must specify one (or three) input file(s)\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, 
-					"Syntax error -I option: Must specify intensity file or value\n");
+	                                   "Syntax error -I option: Must specify intensity file or value\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0, 
-					"Syntax error -E option: dpi must be positive\n");
+	                                   "Syntax error -E option: dpi must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
-					"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
+	                                   "Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
-					"Syntax error -Q option:  Cannot use -M when doing colormasking\n");
+	                                   "Syntax error -Q option: Cannot use -M when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
-		"Syntax error -A option:  Must provide an output filename for image\n");
+	                                   "Syntax error -A option: Must provide an output filename for image\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -479,6 +483,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {
 		/* One more test though */
+		unsigned int mode = 0;
 		if (Ctrl->D.mode && !GMT->common.R.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = false;
@@ -494,8 +499,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active)	/* Apply illumination to an image but no -R provided */
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
-
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
+		
+		mode = GMT_GRID_ALL;
+		if (API->mode && Ctrl->In.file[0] == NULL) mode = GMT_GRID_DATA_ONLY;	/* An in memory resource */
+		if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -613,7 +620,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Get grid data */
 		}
-		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns || Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
+		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns ||
+		                Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -663,25 +671,30 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
+			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[0]);
 			if (Ctrl->A.active)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			gmt_set_grddim (GMT, Img_proj->header);
-			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
+				Return (API->error);
 			gmt_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 		for (k = 0; k < n_grids; k++) {
-			if (!Grid_proj[k] && (Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL) Return (API->error);	/* Just to get a header we can change */
+			if (!Grid_proj[k] && (Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL)
+				Return (API->error);	/* Just to get a header we can change */
 					
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
+			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[k]);
 			gmt_set_grddim (GMT, Grid_proj[k]->header);
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL)
+				Return (API->error);
 			gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
 			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_NOERROR) {
 				Return (API->error);
@@ -697,9 +710,11 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				nx_proj = Intens_orig->header->n_columns;
 				ny_proj = Intens_orig->header->n_rows;
 			}
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
+			gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->I.file);
 			gmt_set_grddim (GMT, Intens_proj->header);
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL)
+				Return (API->error);
 			gmt_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {
 				Return (API->error);
