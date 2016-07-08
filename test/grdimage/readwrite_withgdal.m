@@ -33,7 +33,9 @@ function [ps, path] = readwrite_withgdal(out_path)
 	% Create a .png from a dummy grid and import it
 	Glixo = gmt('grdmath -R-5/5/-5/5 -I1 X Y MUL =');
 	lixo_cpt = gmt('makecpt -T-25/25/1');
-	gmt(['grdimage -A' path 'lixo.png=PNG -JX4c -C'], lixo_cpt, Glixo)
-	gmt(['grdimage -D ' path 'lixo.png -JX4c -Y-5c -O >> ' ps])
+% 	gmt(['grdimage -A' path 'lixo.png=PNG -JX4c -C'], Glixo, lixo_cpt)
+% 	gmt(['grdimage -D ' path 'lixo.png -JX4c -Y-5c -O >> ' ps])
+	I = gmt('grdimage -A -JX4c -C', Glixo, lixo_cpt);
+	gmt(['grdimage -D -JX4c -Y-5c -O >> ' ps], I)
 
 	builtin('delete','gmt.conf');
