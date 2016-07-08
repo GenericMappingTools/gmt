@@ -50,17 +50,17 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	   The image format is inferred from the image name (in *fname) file extension */
 	uint32_t row, col, band;
 	uint64_t k, ijk, b;
+	bool     free_data = false;
 	char    *data, *ext;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-	to_GDALW->type = strdup("uint8");
 	to_GDALW->P.ProjectionRefPROJ4 = I->header->ProjRefPROJ4;
 	to_GDALW->flipud = 0;
-	to_GDALW->geog = 0;
+	to_GDALW->geog   = 0;
 	to_GDALW->n_columns = (int)I->header->n_columns;
-	to_GDALW->n_rows = (int)I->header->n_rows;
-	to_GDALW->n_bands = I->header->n_bands;
+	to_GDALW->n_rows    = (int)I->header->n_rows;
+	to_GDALW->n_bands   = I->header->n_bands;
 	to_GDALW->registration = I->header->registration;
 	to_GDALW->alpha = NULL;
 	/* Those are for the non-georeferenced case */
@@ -86,6 +86,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	}
 
 	if (!strncmp(I->header->mem_layout, "TCB", 3)) {
+		to_GDALW->type = strdup("uint8");
 		data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
 
 		for (k = band = 0; band < I->header->n_bands; band++) {
@@ -103,16 +104,21 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 				for (col = 0; col < I->header->n_columns; col++)
 					to_GDALW->alpha[k++] = I->alpha[(uint64_t)col * I->header->my + row + I->header->pad[GMT_YHI]];
 		}
-		strncpy(to_GDALW->layout, I->header->mem_layout, 4);
+		free_data = true;
+	}
+	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {
+		to_GDALW->type = strdup("byte");
+		data = I->data;
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Only supported memory layout for now is T(op)C(ol)B(and) \n");
 		return GMT_NOTSET;
 	}
 
+	strncpy(to_GDALW->layout, I->header->mem_layout, 4);
 	to_GDALW->data = data;
 	gmt_gdalwrite (GMT, fname, to_GDALW);
-	gmt_M_free (GMT, data);
+	if (free_data) gmt_M_free (GMT, data);
 	free (to_GDALW->driver);
 	free (to_GDALW->type);
 	if (to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha); 
