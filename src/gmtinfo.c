@@ -541,7 +541,6 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
 			}
 			else {
-				strcat (record, "\n");
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
 			}
 			got_stuff = true;		/* We have at least reported something */

@@ -5657,8 +5657,10 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_TEXTTABLE *T_obj = D_obj->table[0];
 						int64_t *count = GMT->current.io.curr_pos[GMT_OUT];
-						if (count[GMT_SEG] >= 0)
-							T_obj->segment[count[GMT_SEG]]->data = gmt_M_memory (GMT, T_obj->segment[count[GMT_SEG]]->data, T_obj->segment[count[GMT_SEG]]->n_rows, char *);	/* Last segment */
+						if (count[GMT_SEG] >= 0) {	/* Last segment */
+							T_obj->segment[count[GMT_SEG]]->data = gmt_M_memory (GMT, T_obj->segment[count[GMT_SEG]]->data, count[GMT_ROW], char *);
+							T_obj->segment[count[GMT_SEG]]->n_rows = count[GMT_ROW];
+						}
 						count[GMT_SEG]++;	/* Final number of segments */
 						T_obj->n_segments++;
 						/* Realloc final number of segments */
