@@ -6711,13 +6711,17 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 						count[GMT_SEG]++;	/* Start of new segment */
-						if (count[GMT_SEG] > 0) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
-							gmtlib_assign_segment (API->GMT, T_obj->segment[count[GMT_SEG]-1], count[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into previous segment */
-							count[GMT_ROW] = 0;	/* Reset for next segment */
-							T_obj->n_segments++;
+						if (count[GMT_SEG]) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
+							if (count[GMT_ROW]) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
+								gmtlib_assign_segment (API->GMT, T_obj->segment[count[GMT_SEG]-1], count[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into previous segment */
+								count[GMT_ROW] = 0;	/* Reset for next segment */
+								T_obj->n_segments++;
+							}
+							else	/* Oops empty segment, go back one */
+								count[GMT_SEG]--;
 						}
 						if (count[GMT_SEG] == T_obj->n_alloc) T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, count[GMT_SEG], &T_obj->n_alloc, struct GMT_DATASEGMENT *);
-						T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
+						if (!T_obj->segment[count[GMT_SEG]]) T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
 						s = (record) ? record : API->GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
 						if (s) {	/* Found a segment header */
 							if (T_obj->segment[count[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
@@ -6765,10 +6769,14 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 						count[GMT_SEG]++;	/* Start of new segment */
 						if (count[GMT_SEG] > 0) {
-							T_obj->segment[count[GMT_SEG]-1]->data = gmt_M_memory (API->GMT, T_obj->segment[count[GMT_SEG]-1]->data, count[GMT_ROW], char *);
-							T_obj->segment[count[GMT_SEG]-1]->n_rows = count[GMT_ROW];
-							T_obj->n_segments++;
-							count[GMT_ROW] = 0;	/* Reset for next segment */
+							if (count[GMT_ROW]) {
+								T_obj->segment[count[GMT_SEG]-1]->data = gmt_M_memory (API->GMT, T_obj->segment[count[GMT_SEG]-1]->data, count[GMT_ROW], char *);
+								T_obj->segment[count[GMT_SEG]-1]->n_rows = count[GMT_ROW];
+								T_obj->n_segments++;
+								count[GMT_ROW] = 0;	/* Reset for next segment */
+							}
+							else	/* Oops empty segment, go back one */
+								count[GMT_SEG]--;
 						}
 						if (count[GMT_SEG] == T_obj->n_alloc)
 							T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, count[GMT_SEG], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);
