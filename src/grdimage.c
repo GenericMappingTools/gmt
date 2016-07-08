@@ -703,6 +703,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 			else
 				gmt_M_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);
+
 			if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
 				nx_proj = Intens_orig->header->n_columns;
 				ny_proj = Intens_orig->header->n_rows;
@@ -870,7 +871,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (P && Ctrl->Q.active) {	/* Check that we found an unused r/g/b value so colormasking will work OK */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
-				for (index = 0, ks = -1; ks == -1 && index < 256*256*256; index++) if (!rgb_used[index]) ks = index;
+				for (index = 0, ks = -1; ks == -1 && index < 256*256*256; index++)
+					if (!rgb_used[index]) ks = index;
 				if (ks == -1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning: Colormasking will fail as there is no unused color that can represent transparency\n");
 					done = true;
@@ -891,9 +893,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
-		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_NOERROR) {
+		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_NOERROR)
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[k]\n");
-		}
 	}
 	if (use_intensity_grid) {
 		if (need_to_project || !n_grids) {
@@ -918,6 +919,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		to_GDALW->geog = 0;
 		to_GDALW->n_columns = (int)n_columns;
 		to_GDALW->n_rows = (int)n_rows;
+		strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
+		if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
 		if (Ctrl->D.active)
 			to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
 		else if ((P && gray_only) || Ctrl->M.active)
@@ -1030,13 +1033,24 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else {	/* 24-bit image */
 		if (Ctrl->A.active) {
-			if (Ctrl->A.return_image) {	/* Create a GMT_IMAGE with 3 bands and write output */
+			if (Ctrl->A.return_image) {     /* Create a GMT_IMAGE with 3 bands and write output */
+				double dx2 = 0, dy2 = 0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color GMT_IMAGE object\n");
-				wesn[XLO] = x0;	wesn[XHI] = x_side; wesn[YLO] = y0;	wesn[YHI] = y_side; inc[GMT_X] = dx;	inc[GMT_Y] = dy;
-				if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, wesn, inc, grid_registration, 0, NULL)) == NULL)
+				/* wesn[XLO] = x0;	wesn[XHI] = x_side; wesn[YLO] = y0;	wesn[YHI] = y_side; inc[GMT_X] = dx;	inc[GMT_Y] = dy; */
+				dx = gmt_M_get_inc(GMT, wesn[XLO], wesn[XHI], header_work->n_columns, grid_registration);
+				dy = gmt_M_get_inc(GMT, wesn[YLO], wesn[YHI], header_work->n_rows, grid_registration);
+				inc[GMT_X] = dx;	inc[GMT_Y] = dy;
+				if (grid_registration == GMT_GRID_NODE_REG) {
+					dx2 = 0.5 * dx;		dy2 = 0.5 * dy;
+				}
+				wesn[XLO] = GMT->common.R.wesn[XLO] - dx2;			wesn[XHI] = GMT->common.R.wesn[XHI] + dx2;
+				wesn[YLO] = GMT->common.R.wesn[YLO] - dy2;			wesn[YHI] = GMT->common.R.wesn[YHI] + dy2;
+				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, wesn, inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
-				Out->data = bitimage_24;	/* Pass out the 3*byte data */
-				bitimage_24 = NULL;	/* So we dont free this memory on exit */
+				Out->data = bitimage_24;    /* Pass out the 3*byte data */
+				bitimage_24 = NULL;         /* So we dont free this memory on exit */
+				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
+				if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);
 			}
