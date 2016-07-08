@@ -1131,7 +1131,7 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 				else
 					this_k = o_id;
 				if (change_type) {
-					if (s[k][K_DIR] == '{') {
+					if (strchr ("{<", s[this_k][K_DIR])) {
 						int new_family = 0, old_family = 0;
 						(void)api_key_to_family (API, s[k], &new_family, &geometry);
 						(void)api_key_to_family (API, s[this_k], &old_family, &geometry);
