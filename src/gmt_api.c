@@ -1781,8 +1781,8 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	S_obj->close_file = false;		/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
 	S_obj->n_expected_fields = (GMT->common.b.ncol[direction]) ? GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
-	gmt_M_memset (GMT->current.io.curr_pos[direction], 4U, uint64_t);	/* Reset file, seg, point, header counters */
-	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_ROW] = UINTMAX_MAX;	/* First row of input is UINTMAX_MAX until first segment header have been dealt with */
+	gmt_M_memset (GMT->current.io.curr_pos[direction], 4U, int64_t);	/* Reset file, seg, point, header counters */
+	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segent of input is -1 until first segment header have been dealt with */
 	(void)api_split_via_method (API, S_obj->method, &via);
 
 	switch (S_obj->method) {	/* File, array, stream etc ? */
@@ -5604,18 +5604,20 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 					struct GMT_DATASET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_DATATABLE *T_obj = D_obj->table[0];
-						uint64_t *p = GMT->current.io.curr_pos[GMT_OUT];	/* Short-hand for counts of tbl, seg, rows */
-						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-						gmtlib_assign_segment (GMT, T_obj->segment[p[GMT_SEG]], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
-						if (GMT->current.io.current_record[0]) T_obj->segment[p[GMT_SEG]]->header = strdup (GMT->current.io.current_record);
-						p[GMT_SEG]++;	/* Total number of segments */
+						int64_t *count = GMT->current.io.curr_pos[GMT_OUT];	/* Short-hand for counts of tbl, seg, rows */
+						if (count[GMT_SEG] >= 0) {
+							if (!T_obj->segment[count[GMT_SEG]]) T_obj->segment[count[GMT_SEG]] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+							gmtlib_assign_segment (GMT, T_obj->segment[count[GMT_SEG]], count[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
+							if (T_obj->segment[count[GMT_SEG]]->header == NULL && GMT->current.io.current_record[0]) T_obj->segment[count[GMT_SEG]]->header = strdup (GMT->current.io.current_record);
+						}
+						count[GMT_SEG]++;	/* Final number of segments */
 						T_obj->n_segments++;
 						/* Realloc final number of segments */
-						if (p[GMT_SEG] < T_obj->n_alloc) T_obj->segment = gmt_M_memory (GMT, T_obj->segment, T_obj->n_segments, struct GMT_DATASEGMENT *);
+						if (count[GMT_SEG] < T_obj->n_alloc) T_obj->segment = gmt_M_memory (GMT, T_obj->segment, T_obj->n_segments, struct GMT_DATASEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
 						gmt_set_tbl_minmax (GMT, T_obj);		/* Update the min/max values for this table */
 						gmtlib_set_dataset_minmax (GMT, D_obj);	/* Update the min/max values for this dataset */
-						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
+						D_obj->n_records = T_obj->n_records = count[GMT_ROW];
 						if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, D_obj->geometry, GMT_OUT, NULL, D_obj)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to register */
 						if ((check = gmtapi_validate_id (API, GMT_IS_DATASET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
@@ -5654,11 +5656,15 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 					struct GMT_TEXTSET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_TEXTTABLE *T_obj = D_obj->table[0];
-						uint64_t *p = GMT->current.io.curr_pos[GMT_OUT];
-						if (p[GMT_SEG] > 0) T_obj->segment[p[GMT_SEG]]->data = gmt_M_memory (GMT, T_obj->segment[p[GMT_SEG]]->data, T_obj->segment[p[GMT_SEG]]->n_rows, char *);	/* Last segment */
+						int64_t *count = GMT->current.io.curr_pos[GMT_OUT];
+						if (count[GMT_SEG] >= 0)
+							T_obj->segment[count[GMT_SEG]]->data = gmt_M_memory (GMT, T_obj->segment[count[GMT_SEG]]->data, T_obj->segment[count[GMT_SEG]]->n_rows, char *);	/* Last segment */
+						count[GMT_SEG]++;	/* Final number of segments */
+						T_obj->n_segments++;
+						/* Realloc final number of segments */
 						T_obj->segment = gmt_M_memory (GMT, T_obj->segment, T_obj->n_segments, struct GMT_TEXTSEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
-						D_obj->n_records = T_obj->n_records = p[GMT_ROW];
+						D_obj->n_records = T_obj->n_records = count[GMT_ROW];
 						if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, D_obj)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to register */
 						if ((check = gmtapi_validate_id (API, GMT_IS_TEXTSET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
@@ -6284,25 +6290,25 @@ int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
 }
 #endif
 
-static inline int api_wind_to_next_datarecord (uint64_t *p, struct GMT_DATASET *D, unsigned int mode) {
+static inline int api_wind_to_next_datarecord (int64_t *count, struct GMT_DATASET *D, unsigned int mode) {
 	/* Increment row, seg, tbl to next record and return current record status */
-	if (p[GMT_ROW] == UINTMAX_MAX) {	/* Special flag to processes table header(s) */
-		if (p[GMTAPI_HDR_POS] < D->table[p[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
-			p[GMTAPI_HDR_POS]++;	/* Increment counter for each one we return until done */
+	if (count[GMT_SEG] == -1) {	/* Special flag to processes table header(s) */
+		if (count[GMTAPI_HDR_POS] < D->table[count[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
+			count[GMTAPI_HDR_POS]++;	/* Increment counter for each one we return until done */
 			return GMT_IO_TABLE_HEADER;
 		}
 		/* Must be out of table headers - time for the segment header */
-		p[GMT_ROW] = 0;
+		count[GMT_SEG] = count[GMT_ROW] = 0;
 		return GMT_IO_SEGMENT_HEADER;
 	}
-	if (p[GMT_ROW] == D->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
-		p[GMT_SEG]++;	/* Next segment number */
-		p[GMT_ROW] = UINTMAX_MAX;	/* Flag to processes next segment's header first */
-		if (p[GMT_SEG] == D->table[p[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
-			p[GMT_TBL]++;	/* Next table number */
-			p[GMT_SEG] = 0;	/* Reset to start at first segment in this table */
-			p[GMTAPI_HDR_POS] = 0;	/* Ready to process headers from next table */
-			if (p[GMT_TBL] == D->n_tables)	/* End of entire data set */
+	if (count[GMT_ROW] == D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
+		count[GMT_SEG]++;	/* Next segment number */
+		count[GMT_ROW] = 0;
+		if (count[GMT_SEG] == D->table[count[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
+			count[GMT_TBL]++;	/* Next table number */
+			count[GMT_SEG] = -1;	/* Reset to start at first segment in this table */
+			count[GMTAPI_HDR_POS] = 0;	/* Ready to process headers from next table */
+			if (count[GMT_TBL] == D->n_tables)	/* End of entire data set */
 				return GMT_IO_EOF;
 			/* Just end of a file */
 			if (mode & GMT_READ_FILEBREAK)	/* Return empty handed to indicate a break between files */
@@ -6314,25 +6320,25 @@ static inline int api_wind_to_next_datarecord (uint64_t *p, struct GMT_DATASET *
 	return GMT_IO_DATA_RECORD;
 }
 
-static inline int api_wind_to_next_textrecord (uint64_t *p, struct GMT_TEXTSET *D, unsigned int mode) {
+static inline int api_wind_to_next_textrecord (int64_t *count, struct GMT_TEXTSET *D, unsigned int mode) {
 	/* Increment row, seg, tbl to next record and return current record status */
-	if (p[GMT_ROW] == UINTMAX_MAX) {	/* Special flag to processes table header(s) */
-		if (p[GMTAPI_HDR_POS] < D->table[p[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
-			p[GMTAPI_HDR_POS]++;	/* Increment counter for each one we return until done */
+	if (count[GMT_SEG] == -1) {	/* Special flag to processes table header(s) */
+		if (count[GMTAPI_HDR_POS] < D->table[count[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
+			count[GMTAPI_HDR_POS]++;	/* Increment counter for each one we return until done */
 			return GMT_IO_TABLE_HEADER;
 		}
 		/* Must be out of table headers - time for the segment header */
-		p[GMT_ROW] = 0;
+		count[GMT_SEG] = count[GMT_ROW] = 0;
 		return GMT_IO_SEGMENT_HEADER;
 	}
-	if (p[GMT_ROW] == D->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
-		p[GMT_SEG]++;	/* Next segment number */
-		p[GMT_ROW] = UINTMAX_MAX;	/* Flag to processes next segment's header first */
-		if (p[GMT_SEG] == D->table[p[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
-			p[GMT_TBL]++;	/* Next table number */
-			p[GMT_SEG] = 0;	/* Reset to start at first segment in this table */
-			p[GMTAPI_HDR_POS] = 0;	/* Ready to process headers from next table */
-			if (p[GMT_TBL] == D->n_tables)	/* End of entire data set */
+	if (count[GMT_ROW] == D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
+		count[GMT_SEG]++;	/* Next segment number */
+		count[GMT_ROW] = 0;
+		if (count[GMT_SEG] == D->table[count[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
+			count[GMT_TBL]++;	/* Next table number */
+			count[GMT_SEG] = -1;	/* Reset to start at first segment in this table */
+			count[GMTAPI_HDR_POS] = 0;	/* Ready to process headers from next table */
+			if (count[GMT_TBL] == D->n_tables)	/* End of entire data set */
 				return GMT_IO_EOF;
 			/* Just end of a file */
 			if (mode & GMT_READ_FILEBREAK)	/* Return empty handed to indicate a break between files */
@@ -6360,8 +6366,8 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	 */
 
 	int status;
-	int64_t n_fields = 0;
-	uint64_t *p = NULL, col, ij, n_use, col_pos, n_columns = 0;
+	int64_t *count = NULL, n_fields = 0;
+	uint64_t col, ij, n_use, col_pos, n_columns = 0;
 	bool get_next_record;
 	void *record = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
@@ -6512,32 +6518,32 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				break;
 
 			case GMT_IS_REFERENCE:	/* Only for textsets and datasets */
-				p = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
+				count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
 				if (S_obj->family == GMT_IS_DATASET) {
 					DS_obj = S_obj->resource;	/* Get the right dataset */
-					status = api_wind_to_next_datarecord (p, DS_obj, mode);	/* Get current record status and wind counters if needed */
+					status = api_wind_to_next_datarecord (count, DS_obj, mode);	/* Get current record status and wind counters if needed */
 					n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : DS_obj->n_columns;
 					switch (status) {
 						case GMT_IO_DATA_RECORD:	/* Got a data record */
 							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
 							for (col = 0; col < n_columns; col++) {	/* Copy from row to curr_rec */
 								col_pos = api_pick_in_col_number (GMT, (unsigned int)col);
-								GMT->current.io.curr_rec[col] = DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->data[col_pos][p[GMT_ROW]];
+								GMT->current.io.curr_rec[col] = DS_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos][count[GMT_ROW]];
 							}
 							record = GMT->current.io.curr_rec;	/* We will return this double array */
 							n_fields = GMT->common.b.ncol[GMT_IN] = n_columns;
-							p[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
+							count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 							break;
 						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
-							if (DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)
-								strncpy (GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ-1);
+							if (DS_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->header)
+								strncpy (GMT->current.io.segment_header, DS_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->header, GMT_BUFSIZ-1);
 							else
 								GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
 						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
-							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
+							strncpy (GMT->current.io.current_record, DS_obj->table[count[GMT_TBL]]->header[count[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
@@ -6555,11 +6561,11 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				}
 				else if (S_obj->family == GMT_IS_TEXTSET) {
 					DT_obj = S_obj->resource;
-					status = api_wind_to_next_textrecord (p, DT_obj, mode);	/* Get current record status and wind counters if needed */
+					status = api_wind_to_next_textrecord (count, DT_obj, mode);	/* Get current record status and wind counters if needed */
 					switch (status) {
 						case GMT_IO_DATA_RECORD:	/* Got a data record */
 							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
-							record = strncpy (GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->data[p[GMT_ROW]], GMT_BUFSIZ-1);	/* Copy record */
+							record = strncpy (GMT->current.io.current_record, DT_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[count[GMT_ROW]], GMT_BUFSIZ-1);	/* Copy record */
 							if (GMT->current.io.current_record[0] == GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Got a seg header pretending to be data */
 								strncpy (GMT->current.io.segment_header, gmtlib_trim_segheader (GMT, GMT->current.io.current_record), GMT_BUFSIZ-1);
 								record = NULL;	/* No data record to return */
@@ -6569,18 +6575,18 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							else {	/* A read data record */
 								n_fields = 1;	/* Can only be one string since it is the entire record */
 							}
-							p[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
+							count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 							break;
 						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
-							if (DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)	/* Copy segment header */
-								strncpy (GMT->current.io.segment_header, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ-1);
+							if (DT_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->header)	/* Copy segment header */
+								strncpy (GMT->current.io.segment_header, DT_obj->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->header, GMT_BUFSIZ-1);
 							else
 								GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
 						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
-							strncpy (GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
+							strncpy (GMT->current.io.current_record, DT_obj->table[count[GMT_TBL]]->header[count[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
@@ -6628,7 +6634,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	 * If an error occurs we return GMT_NOTSET and set API->error.
 	 */
 	int error = 0;
-	uint64_t *p = NULL, col, ij;
+	int64_t *count = NULL;
+	uint64_t col, ij;
 	char *s = NULL;
 	double *d = NULL, value;
 	p_func_uint64_t GMT_2D_to_index = NULL;
@@ -6684,35 +6691,47 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				if (!D_obj) {	/* First time allocation of the single output table */
 					D_obj = gmtlib_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
-					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = 0;	/* Start at seg = 0 */
+					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
 					if (API->GMT->common.b.ncol[GMT_OUT] == 0 && API->GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
 				if (D_obj->n_columns == 0) D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Last resort */
-				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
+				count = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
 				switch (mode) {
 					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 						s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
-						/* Hook into table header list [NOT DONE YET] */
+						/* Hook into table header list */
+						if (count[GMT_SEG] == -1) {	/* Only allow headers for first segment in a table */
+							T_obj->header = gmt_M_memory (API->GMT, T_obj->header, T_obj->n_headers+1, char *);
+							T_obj->header[T_obj->n_headers++] = strdup (s);
+						}
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
-						if (p[GMT_SEG] > 0) {	/* Must first copy over records for the previous segments; last segment done by GMT_End_IO */
-							gmtlib_assign_segment (API->GMT, T_obj->segment[p[GMT_SEG]-1], p[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into segment */
-							p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
+						count[GMT_SEG]++;	/* Start of new segment */
+						if (count[GMT_SEG] > 0) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
+							gmtlib_assign_segment (API->GMT, T_obj->segment[count[GMT_SEG]-1], count[GMT_ROW], T_obj->n_columns);	/* Allocate and place arrays into previous segment */
+							count[GMT_ROW] = 0;	/* Reset for next segment */
 							T_obj->n_segments++;
 						}
-						if (p[GMT_SEG] == T_obj->n_alloc) T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_DATASEGMENT *);
-						T_obj->segment[p[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-						if (record) {
-							if (T_obj->segment[p[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[p[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
-							T_obj->segment[p[GMT_SEG]]->header = strdup (record);		/* Default to last segment record if NULL */
+						if (count[GMT_SEG] == T_obj->n_alloc) T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, count[GMT_SEG], &T_obj->n_alloc, struct GMT_DATASEGMENT *);
+						T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
+						s = (record) ? record : API->GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
+						if (s) {	/* Found a segment header */
+							if (T_obj->segment[count[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
+							T_obj->segment[count[GMT_SEG]]->header = strdup (s);
 						}
 						break;
 					case GMT_WRITE_DOUBLE:		/* Export a segment row */
-						gmt_prep_tmp_arrays (API->GMT, p[GMT_ROW], T_obj->n_columns);	/* Init or reallocate tmp read vectors */
-						for (col = 0; col < T_obj->n_columns; col++) API->GMT->hidden.mem_coord[col][p[GMT_ROW]] = ((double *)record)[col];
-						p[GMT_ROW]++;	/* Increment rows in this segment */
+						if (gmt_skip_output (API->GMT, record, T_obj->n_columns))	/* Record was skipped via -s[a|r] */
+							break;
+						if (count[GMT_SEG] == -1) {	/* Most likely a file with one segment but no segment header */
+							GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Internal Warning: GMT_Put_Record (double) called before any segments declared\n");
+							count[GMT_SEG] = 0;
+						}
+						gmt_prep_tmp_arrays (API->GMT, count[GMT_ROW], T_obj->n_columns);	/* Init or reallocate tmp read vectors */
+						for (col = 0; col < T_obj->n_columns; col++) API->GMT->hidden.mem_coord[col][count[GMT_ROW]] = ((double *)record)[col];
+						count[GMT_ROW]++;	/* Increment rows in this segment */
 						break;
 					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
 						break;	/* Ignore for this method */
@@ -6728,38 +6747,48 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				if (!D_obj) {	/* First time allocation of one table */
 					D_obj = gmtlib_create_textset (API->GMT, 1, GMT_TINY_CHUNK, 0, true);
 					S_obj->resource = D_obj;
-					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = 0;	/* Start at seg = 0 */
+					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table */
-				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table, segment, row */
+				count = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table, segment, row */
 				switch (mode) {
 					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 						s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
 						/* Hook into table header list */
+						if (count[GMT_SEG] == -1) {	/* Only allow headers for first segment in a table */
+							T_obj->header = gmt_M_memory (API->GMT, T_obj->header, T_obj->n_headers+1, char *);
+							T_obj->header[T_obj->n_headers++] = strdup (s);
+						}
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
-						p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
-						if (p[GMT_SEG] > 0)
-							T_obj->segment[p[GMT_SEG]-1]->data = gmt_M_memory (API->GMT, T_obj->segment[p[GMT_SEG]-1]->data,
-							                                                   T_obj->segment[p[GMT_SEG]-1]->n_rows, char *);
-						if (p[GMT_SEG] == T_obj->n_alloc)
-							T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);
-						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);
-						if (record) T_obj->segment[p[GMT_SEG]]->header = strdup (record);	/* Default to last segment record if NULL */
-						T_obj->n_segments++;
+						count[GMT_SEG]++;	/* Start of new segment */
+						if (count[GMT_SEG] > 0) {
+							T_obj->segment[count[GMT_SEG]-1]->data = gmt_M_memory (API->GMT, T_obj->segment[count[GMT_SEG]-1]->data, count[GMT_ROW], char *);
+							T_obj->segment[count[GMT_SEG]-1]->n_rows = count[GMT_ROW];
+							T_obj->n_segments++;
+							count[GMT_ROW] = 0;	/* Reset for next segment */
+						}
+						if (count[GMT_SEG] == T_obj->n_alloc)
+							T_obj->segment = gmt_M_malloc (API->GMT, T_obj->segment, count[GMT_SEG], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);
+						if (!T_obj->segment[count[GMT_SEG]]) T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);
+						s = (record) ? record : API->GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
+						if (s) {	/* Found a segment header */
+							if (T_obj->segment[count[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
+							T_obj->segment[count[GMT_SEG]]->header = strdup (s);
+						}
 						break;
 					case GMT_WRITE_TEXT:		/* Export a record */
-						if (p[GMT_SEG] == 0) {
-							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n");
-							p[GMT_SEG] = 0; T_obj->n_segments = 1;
+						if (count[GMT_SEG] == -1) {	/* Most likely a file with one segment but no segment header */
+							GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n");
+							count[GMT_SEG] = 0;
 						}
-						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);	/* Allocate new segment */
-						if (p[GMT_ROW] == T_obj->segment[p[GMT_SEG]]->n_alloc) {	/* Allocate more records */
-							T_obj->segment[p[GMT_SEG]]->n_alloc = (T_obj->segment[p[GMT_SEG]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[GMT_SEG]]->n_alloc << 1;
-							T_obj->segment[p[GMT_SEG]]->data = gmt_M_memory (API->GMT, NULL, T_obj->segment[p[GMT_SEG]]->n_alloc, char *);
+						if (!T_obj->segment[count[GMT_SEG]]) T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);	/* Allocate new segment */
+						if (count[GMT_ROW] == T_obj->segment[count[GMT_SEG]]->n_alloc) {	/* Allocate more records */
+							T_obj->segment[count[GMT_SEG]]->n_alloc = (T_obj->segment[count[GMT_SEG]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[count[GMT_SEG]]->n_alloc << 1;
+							T_obj->segment[count[GMT_SEG]]->data = gmt_M_memory (API->GMT, NULL, T_obj->segment[count[GMT_SEG]]->n_alloc, char *);
 						}
-						T_obj->segment[p[GMT_SEG]]->data[p[GMT_ROW]] = strdup (record);
-						p[GMT_ROW]++;	T_obj->segment[p[GMT_SEG]]->n_rows++;
+						T_obj->segment[count[GMT_SEG]]->data[count[GMT_ROW]] = strdup (record);
+						count[GMT_ROW]++;
 						break;
 					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
 						break;	/* Ignore for this method */
