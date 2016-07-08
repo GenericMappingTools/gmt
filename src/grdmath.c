@@ -4319,20 +4319,37 @@ GMT_LOCAL char *grdmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 }
 
 GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_STORE *recall[], struct GRDMATH_INFO *info) {
-	/* Free allocated memory before quitting */
+	/* Free allocated memory before quitting.  Some memory is registered while other is local
+	 * so we must first use GMT_Destroy_Data and if it fails then use gmt_free_grid. */
 	unsigned int k;
+	int error;
 
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_NOERROR) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
+		if (stack[k]->G) {	/* Must free unless being passed back out */
+			if ((error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
+			else if (error == GMT_OBJECT_NOT_FOUND) {
+				/* Failures should only be from local objects not passed up */
+				if (gmt_this_alloc_level (GMT, stack[k]->G->alloc_level)) {
+					gmt_free_grid (GMT, &stack[k]->G, true);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_free_dataset freed stack item %d\n", k);
+				}
+				else
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No freeing, returning stack item %d\n", k);
+			}
+			else
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
 		gmt_M_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
 		if (recall[k] && !recall[k]->stored.constant) {
-			if (GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G) != GMT_NOERROR) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
+			if ((error = GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G)) != GMT_NOERROR) {
+				if (error == GMT_OBJECT_NOT_FOUND && gmt_this_alloc_level (GMT, recall[k]->stored.G->alloc_level))
+					gmt_free_grid (GMT, &recall[k]->stored.G, true);
+				else
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 			}
 		}
 		gmt_M_free (GMT, recall[k]);

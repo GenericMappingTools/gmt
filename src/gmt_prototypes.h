@@ -254,6 +254,7 @@ EXTERN_MSC void gmt_set_meminc (struct GMT_CTRL *GMT, size_t increment);
 EXTERN_MSC void gmt_reset_meminc (struct GMT_CTRL *GMT);
 EXTERN_MSC void * gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where);
 EXTERN_MSC void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where);
+EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_level);
 
 /* gmt_support.c: */
 

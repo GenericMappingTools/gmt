@@ -4284,21 +4284,34 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 #include "gmtmath.h"
 
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
-{	unsigned int i;
-	for (i = 0; i < GMTMATH_STACK_SIZE; i++) {
-		if (GMT_Destroy_Data (API, &stack[i]->D) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free stack item %d\n", i);
+{	unsigned int k, error;
+	for (k = 0; k < GMTMATH_STACK_SIZE; k++) {
+		if (stack[k]->D) {	/* Must free unless being passed back out */
+			if ((error = GMT_Destroy_Data (API, &stack[k]->D)) == GMT_NOERROR)
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
+			else if (error == GMT_OBJECT_NOT_FOUND) {
+				/* Failures should only be from local objects not passed up */
+				if (gmt_this_alloc_level (API->GMT, stack[k]->D->alloc_level)) {
+					gmt_free_dataset (API->GMT, &stack[k]->D);
+					GMT_Report (API, GMT_MSG_DEBUG, "gmt_free_dataset freed stack item %d\n", k);
+				}
+				else
+					GMT_Report (API, GMT_MSG_DEBUG, "No freeing, returning stack item %d\n", k);
+			}
+			else
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to free stack item %d, error = %d\n", k, error);
 		}
-		gmt_M_free (API->GMT, stack[i]);
+		gmt_M_free (API->GMT, stack[k]);
 	}
 }
 
 GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
-{	unsigned int i;
-	for (i = 0; i < GMTMATH_STORE_SIZE; i++) {
-		if (recall[i] && !recall[i]->stored.constant) {
-			gmt_free_dataset (API->GMT, &recall[i]->stored.D);
-			gmt_M_free (API->GMT, recall[i]);
+{	unsigned int k;
+	for (k = 0; k < GMTMATH_STORE_SIZE; k++) {
+		if (recall[k] && !recall[k]->stored.constant) {
+			gmt_free_dataset (API->GMT, &recall[k]->stored.D);
+			gmt_M_str_free (recall[k]->label);
+			gmt_M_free (API->GMT, recall[k]);
 		}
 	}
 }
@@ -4963,9 +4976,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			dim[GMT_COL] = n_columns;
 			if ((N = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				return (GMT->parent->error);
-#if 0
-			N = gmt_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
-#endif
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				row = (Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1;
 				for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][0] = R->table[0]->segment[seg]->data[c][row];

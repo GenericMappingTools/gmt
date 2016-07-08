@@ -633,6 +633,11 @@ void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_all
 	return (ptr);
 }
 
+bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_level) {
+	/* Returns true if the tested alloc_level matches the current function level */
+	return (alloc_level == GMT->hidden.func_level);
+}
+
 #ifdef FISH_STRDUP_LEAKS
 char *gmt_strdup(struct GMT_CTRL *GMT, const char *s) {
 	char *p = gmt_M_memory(GMT, NULL, strlen(s) + 1, unsigned char);
