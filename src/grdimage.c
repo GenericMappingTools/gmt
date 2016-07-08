@@ -483,7 +483,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {
 		/* One more test though */
-		unsigned int mode = 0;
 		if (Ctrl->D.mode && !GMT->common.R.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = false;
@@ -500,9 +499,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active)	/* Apply illumination to an image but no -R provided */
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
 		
-		mode = GMT_GRID_ALL;
-		if (API->mode && Ctrl->In.file[0] == NULL) mode = GMT_GRID_DATA_ONLY;	/* An in memory resource */
-		if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->In.file[0], NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
 

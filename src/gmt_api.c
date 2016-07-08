@@ -8608,7 +8608,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
 	}
 	/* 1b. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
-	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
+	else if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
 		struct GMT_OPTION *delete = NULL;
 		for (opt = *head; opt && opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
@@ -8621,26 +8621,26 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (delete != *head) GMT_Delete_Option (API, delete);
 	}
 	/* 1c. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
-	if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
+	else if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
 		/* Found a -<"file" option; this is indeed the input file but the 2nd "input" is actually output */
 		if (opt->next && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt->next)))	/* Found the next input file option */
 			opt->option = GMT_OPT_OUTFILE;	/* Switch it to an output option */
 	}
 	/* 1d. Check if this is the greenspline module, where output type is grid for dimension == 2 else it is dataset */
-	if (!strncmp (module, "greenspline", 11U) && (opt = GMT_Find_Option (API, 'R', *head))) {
+	else if (!strncmp (module, "greenspline", 11U) && (opt = GMT_Find_Option (API, 'R', *head))) {
 		/* Found the -R"domain" option; determine the dimensionality of the output */
 		unsigned dim = api_determine_dimension (API, opt->arg);
 		type = (dim == 2) ? 'G' : 'D';
 	}
 	/* 1e. Check if this is the triangulate module, where primary dataset output should be turned off if -G given without -M,N,Q,S */
-	if (!strncmp (module, "triangulate", 11U) && (opt = GMT_Find_Option (API, 'G', *head))) {
+	else if (!strncmp (module, "triangulate", 11U) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G<grid> option; determine if any of -M,N,Q,S are also set */
 		if (!((opt = GMT_Find_Option (API, 'M', *head)) || (opt = GMT_Find_Option (API, 'N', *head))
 			|| (opt = GMT_Find_Option (API, 'Q', *head)) || (opt = GMT_Find_Option (API, 'S', *head))))
 				deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
 	/* 1f. Check if this is the mgd77list module, which writes text or data depending on -F choices */
-	if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
+	else if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
 		/* Found the -F option, check if any strings are requested */
 		type = 'D';	/* Default is dataset output unless any of the below were requested */
 		if (strstr (opt->arg, "all") || strstr (opt->arg, "mgd77") || strstr (opt->arg, "id") || strstr (opt->arg, "ngdcid")
@@ -8648,13 +8648,13 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			type = 'T';
 	}
 	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
-	if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
+	else if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we dont want this at all and set type = ! */
 		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : '!');
 	}
 	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with ! */
-	if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
+	else if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we dont want this at all and set type = ! */
 		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : ((opt->arg[1] == 'x') ? 'D' : 'T');
@@ -8712,7 +8712,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
-			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
+			if (k >= 0 && key[k][K_DIR] != '-')
+				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
 			/* Add this item to our list */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
