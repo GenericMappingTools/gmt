@@ -1422,7 +1422,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (just < 0) {
 			/* Garbage before first slash: we simply have -U<string> */
-			strncpy (GMT->current.ps.map_logo_label, item, GMT_BUFSIZ-1);
+			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
 		}
 		else {
 			GMT->current.setting.map_logo_justify = just;
@@ -1431,7 +1431,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		}
 	}
 	else
-		strncpy (GMT->current.ps.map_logo_label, item, GMT_BUFSIZ-1);
+		strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
 	if ((item[0] == '/' && n_slashes == 1) || (item[0] == '/' && n_slashes >= 2 && n < 2)) error++;
 	return (error);
 }

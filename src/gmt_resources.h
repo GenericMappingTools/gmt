@@ -707,7 +707,9 @@ struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 	size_t n_alloc;             /* Memory allocated so far */
 	size_t n_bytes;             /* Length of data array */
 	unsigned int mode;          /* GMT_PS_HEADER = Has header, GMT_PS_TRAILER = Has trailer, GMT_PS_COMPLETE = Has both */
+	unsigned int n_headers;     /* Number of PS header records (0 if no header) */
 	char *data;		    /* Pointer to actual PS text */
+	char **header;		    /* Array with all PS header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;                /* The internal number of the data set */
 	unsigned int alloc_level;   /* The level it was allocated at */

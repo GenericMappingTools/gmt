@@ -5393,7 +5393,6 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
 	unsigned int this_proj, write_to_mem = 0;
-	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
@@ -5459,10 +5458,11 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	/* Get title */
 
-	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
+
+	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, GMT->common.O.active, GMT->current.setting.ps_color_mode,
-	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
+	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, GMT->current.ps.title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 
@@ -5504,7 +5504,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_BUFSIZ-1);
+		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
@@ -5566,6 +5566,11 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	
 	if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
 		struct GMT_POSTSCRIPT *P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
+		if (GMT->current.ps.title[0]) {
+			P->header = gmt_M_memory (GMT, NULL, 1, char *);
+			P->header[0] = strdup (GMT->current.ps.title);
+			P->n_headers = 1;
+		}
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
 		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
@@ -5575,6 +5580,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
 	}
+	GMT->current.ps.title[0] = '\0';	/* Reset title */
 }
 
 void gmt_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
@@ -6293,6 +6299,7 @@ struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length)
 /*! . */
 void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	/* Free the memory allocated to hold a PostScript plot (which is pointed to by P->data) */
+	unsigned k;
 	if (P->n_alloc && P->data) {
 		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
 			gmt_M_free (GMT, P->data);
@@ -6300,6 +6307,9 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	}
 	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
 	P->n_alloc = P->n_bytes = 0;
+	/* Use free() to free the headers since they were allocated with strdup */
+	for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
+	gmt_M_free (GMT, P->header);
 	P->mode = GMT_PS_EMPTY;
 }
 
@@ -6318,7 +6328,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	 * mode is not yet used.
 	 */
 
-	char ps_file[GMT_BUFSIZ] = {""};
+	char ps_file[GMT_LEN256] = {""}, buffer[GMT_LEN256] = {""};
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
@@ -6331,7 +6341,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		struct stat buf;
 		char path[GMT_BUFSIZ] = {""};
-		strncpy (ps_file, source, GMT_BUFSIZ-1);
+		strncpy (ps_file, source, GMT_LEN256-1);
 		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PostScript file %s\n", ps_file);
 			return (NULL);
@@ -6382,7 +6392,10 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading PostScript from %s\n", ps_file);
 
 	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
-
+	P->header = gmt_M_memory (GMT, NULL, 1, char *);
+	sprintf (buffer, "PostScript read from file: %s", ps_file);
+	P->header[0] = strdup (buffer);
+	P->n_headers = 1;
 	if (n_alloc) P->data = gmt_M_memory (GMT, NULL, n_alloc, char);
 	
 	/* Start reading PostScript from fp */

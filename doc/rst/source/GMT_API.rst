@@ -368,10 +368,12 @@ The full structure definition can be found in :ref:`GMT_POSTSCRIPT <struct-posts
 .. code-block:: c
 
    struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
+       unsigned int n_headers;          /* Number of PostScript header records (0 if no header) */
        size_t n_alloc;                  /* Size of array allocated so far */
        size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to actual PostScript text */
+       char **header;                   /* Array with all PostScript header records, if any) */
    };
 
 Text tables
@@ -3427,10 +3429,12 @@ Bulk PostScript is represented by a :ref:`GMT_POSTSCRIPT <struct-postscript>` st
 
    struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript code */
        /* Variables we document for the API: */
+       unsigned int n_headers;          /* Number of PostScript header records (0 if no header) */
        size_t n_alloc;                  /* Length of array allocated so far */
        size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to PostScript code */
+       char **header;                   /* Array with all PostScript header records, if any) */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t id;                     /* The internal number of the data set */
        unsigned int alloc_level;        /* The level it was allocated at */
