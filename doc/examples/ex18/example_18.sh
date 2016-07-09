@@ -61,16 +61,11 @@ gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 gmt grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
 area=`gmt grdvolume tmp.nc -C50 -Sk | cut -f2`
 volume=`gmt grdvolume tmp.nc -C50 -Sk | cut -f3`
+gmt pstext -R -J -O -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i >> $ps << END
+> -149 52.5 14p 2.6i j
+Volumes: $volume mGal\264km@+2@+
 
-gmt psxy -R -J -A -O -K -L -Wthin -Gwhite >> $ps << END
--148.5	52.75
--141	52.75
--141	53.75
--148.5	53.75
-END
-gmt pstext -R -J -O -F+f14p,Helvetica-Bold+jLM >> $ps << END
--148 53.08 Areas: $area km@+2@+
--148 53.42 Volumes: $volume mGal\264km@+2@+
+Areas: $area km@+2@+
 END
 
 # Clean up

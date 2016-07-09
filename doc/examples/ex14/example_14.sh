@@ -4,7 +4,7 @@
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, gmtinfo, project
-# GMT modules:	gmtset, gmtconvert, pstext, psbasemap, psxy, surface
+# GMT modules:	gmtset, pstext, psbasemap, psxy, surface
 # Unix progs:	rm
 #
 ps=example_14.ps
@@ -20,9 +20,8 @@ gmt blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
 
 gmt psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> $ps
 gmt psxy -R0/7/0/7 -J -B2f1 -BeSNw mean.xyz -Ss0.05i -Gblack -O -K >> $ps
-# Reformat to one decimal for annotation purposes
-gmt convert mean.xyz --FORMAT_FLOAT_OUT=%.1f | \
-	gmt pstext -R -J -D0.15c/0 -F+f6p+jLM -O -K -Gwhite -W -C0.01i -N >> $ps
+# Label data values using one decimal
+gmt pstext -R -J -D0.15c/0 -F+f6p+jLM+z%.1f -O -K -Gwhite -W -C0.01i -N mean.xyz >> $ps
 
 # Then gmt surface and contour the data
 

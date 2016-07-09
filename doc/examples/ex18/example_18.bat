@@ -59,17 +59,15 @@ REM and then evaluate area/volume for the 50 mGal contour
 gmt grdmath -R -142.65 56.25 SDIST = mask.nc
 gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 gmt grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
-echo -148.5	52.75 > tmp
-echo -140.5	52.75 >> tmp
-echo -140.5	53.75 >> tmp
-echo -148.5	53.75 >> tmp
-gmt psxy -R -J -A -O -K -L -Wthin -Gwhite tmp >> %ps%
-echo {printf "-148 53.08 Areas: %%s km@+2@+\n-148 53.42 Volumes: %%s km@+2@+\n", $2, $3} > t
-gmt grdvolume tmp.nc -C50 -Sk | gawk -f t | gmt pstext -R -J -F+f14p,Helvetica-Bold+jLM -O >> %ps%
+echo "> -149 52.5 14p 2.6i j" > tmp
+echo {printf "Volumes: %%s km@+2@+\n\nAreas: %%s km@+2@+\n", $3, $2} > t
+gmt grdvolume tmp.nc -C50 -Sk | gawk -f t >> tmp
+gmt pstext pstext -R -J -O -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i tmp >> %ps%
 
 REM Clean up
 
 del t
+del tmp
 del grav.cpt
 del sm_*.txt
 del *_i.nc

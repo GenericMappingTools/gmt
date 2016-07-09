@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
-REM GMT progs:	gmtset, gmtconvert, blockmean, grdcontour, grdtrack, grdtrend
+REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend
 REM GMT progs:	gmtinfo, project, pstext, psbasemap, psxy, surface
 REM DOS calls:	del
 REM
@@ -17,7 +17,8 @@ gmt blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
 REM Then draw blocmean cells
 gmt psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> %ps%
 gmt psxy -R0/7/0/7 -J -B2f1 -BeSNw mean.xyz -Ss0.05i -Gblack -O -K >> %ps%
-gmt convert mean.xyz --FORMAT_FLOAT_OUT=%%.1f | gmt pstext -R -J -D0.15c/0 -F+f6p+jLM -O -K -Gwhite -W -C0.01i -N >> %ps%
+REM Label data values using one decimal
+gmt pstext -R -J -D0.15c/0 -F+f6p+jLM+z%%.1f -O -K -Gwhite -W -C0.01i -N mean.xyz >> %ps%
 REM Then gmt surface and contour the data
 gmt surface mean.xyz -R -I1 -Gdata.nc
 gmt grdcontour data.nc -J -B2f1 -BWSne -C25 -A50 -Gd3i -S4 -O -K -X-3.25i -Y-3.55i >> %ps%
