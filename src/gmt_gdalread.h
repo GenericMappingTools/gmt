@@ -56,8 +56,8 @@ struct GMT_GDALWRITE_CTRL {
 	} C;
 	struct  GW_P {             /* Proj4/WKT string */
 		int    active;
-		char  *ProjectionRefPROJ4;
-		char  *ProjectionRefWKT;
+		char  *ProjRefPROJ4;
+		char  *ProjRefWKT;
 	} P;
 };
 
@@ -171,8 +171,8 @@ struct GMT_GDALREAD_OUT_CTRL {
 	double	hdr[9];
 	double	GeoTransform[6];
 	double	nodata;
-	char	*ProjectionRefPROJ4;
-	char	*ProjectionRefWKT;
+	char	*ProjRefPROJ4;
+	char	*ProjRefWKT;
 	const char	*DriverShortName;
 	const char	*DriverLongName;
 	const char	*ColorInterp;

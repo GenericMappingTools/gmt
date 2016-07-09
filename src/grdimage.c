@@ -433,8 +433,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	double	img_wesn[4], img_inc[2];    /* Image increments & min/max for writing images or external interfaces */
-	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, wesn[4], inc[2] = {1.0, 1.0};
+	double	img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
+	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, wesn[4];
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
@@ -933,7 +933,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 			to_GDALW->driver = Ctrl->A.driver;
 			to_GDALW->type = strdup("byte");
-			to_GDALW->P.ProjectionRefPROJ4 = NULL;
+			to_GDALW->P.ProjRefPROJ4 = NULL;
 			to_GDALW->flipud = 0;
 			to_GDALW->geog = 0;
 			to_GDALW->n_columns = (int)n_columns;
@@ -956,7 +956,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				if (img_ProjectionRefPROJ4[1] == 'x' && img_ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
 					to_GDALW->P.active = false;
 				else {
-					to_GDALW->P.ProjectionRefPROJ4 = img_ProjectionRefPROJ4;
+					to_GDALW->P.ProjRefPROJ4 = img_ProjectionRefPROJ4;
 					to_GDALW->P.active = true;
 				}
 			}
@@ -1110,7 +1110,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->A.active && !Ctrl->A.return_image) {
-		gmt_M_str_free (to_GDALW->P.ProjectionRefPROJ4);
+		gmt_M_str_free (to_GDALW->P.ProjRefPROJ4);
 		gmt_M_str_free (to_GDALW->type);
 		gmt_M_free (GMT, to_GDALW);
 		gmt_M_str_free (Ctrl->A.driver);

@@ -2688,8 +2688,8 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 	I->n_indexed_colors = from_gdalread->nIndexedColors;
 	gmt_M_str_free (I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
 	gmt_M_str_free (I->header->ProjRefWKT);
-	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
-	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
+	I->header->ProjRefPROJ4 = from_gdalread->ProjRefPROJ4;
+	I->header->ProjRefWKT   = from_gdalread->ProjRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->n_columns = from_gdalread->RasterXsize;

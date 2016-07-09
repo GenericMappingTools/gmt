@@ -1699,8 +1699,8 @@ static inline void free_from_gdalread (struct GMT_CTRL *GMT, struct GMT_GDALREAD
 	gmt_M_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
 		gmt_M_str_free (from_gdalread->band_field_names[i].DataType); /* Those were allocated with strdup */
-	gmt_M_str_free (from_gdalread->ProjectionRefPROJ4);
-	gmt_M_str_free (from_gdalread->ProjectionRefWKT);
+	gmt_M_str_free (from_gdalread->ProjRefPROJ4);
+	gmt_M_str_free (from_gdalread->ProjRefWKT);
 	gmt_M_free (GMT, from_gdalread->band_field_names);
 }
 
@@ -1749,11 +1749,11 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	/* Make sure we don't leak due to a previous copy */
 	gmt_M_str_free (header->ProjRefPROJ4);
 	gmt_M_str_free (header->ProjRefWKT);
-	if (from_gdalread->ProjectionRefPROJ4)
+	if (from_gdalread->ProjRefPROJ4)
 		/* Need to strdup because from_gdalread is freed later */
-		header->ProjRefPROJ4 = strdup(from_gdalread->ProjectionRefPROJ4);
-	if (from_gdalread->ProjectionRefWKT)
-		header->ProjRefWKT   = strdup(from_gdalread->ProjectionRefWKT);
+		header->ProjRefPROJ4 = strdup(from_gdalread->ProjRefPROJ4);
+	if (from_gdalread->ProjRefWKT)
+		header->ProjRefWKT   = strdup(from_gdalread->ProjRefWKT);
 
 	gmt_M_free (GMT, to_gdalread);
 	free_from_gdalread (GMT, from_gdalread);
@@ -1983,7 +1983,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	sscanf (header->pocket, "%[^/]/%s", driver, type);
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 	to_GDALW->driver = strdup(driver);
-	to_GDALW->P.ProjectionRefPROJ4 = NULL;
+	to_GDALW->P.ProjRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		to_GDALW->geog = 1;

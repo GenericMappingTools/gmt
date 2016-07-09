@@ -271,7 +271,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
  * This routine queries the GDAL raster file for some metadata
  *
  * Fields:
- *    ProjectionRefPROJ4:  a Proj4 type string describing the projection
+ *    ProjRefPROJ4:  a Proj4 type string describing the projection
  *    GeoTransform:
  *        a 6-tuple.  Entries are as follows.
  *            [0] --> top left x
@@ -357,21 +357,21 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		/* First in PROJ4 format */
 		if (OSRImportFromWkt(hSRS, &pszProjection) == CE_None) {
 			OSRExportToProj4(hSRS, &pszResult);
-			Ctrl->ProjectionRefPROJ4 = strdup(pszResult);
+			Ctrl->ProjRefPROJ4 = strdup(pszResult);
 			CPLFree(pszResult);
 		}
 		else
-			Ctrl->ProjectionRefPROJ4 = NULL;
+			Ctrl->ProjRefPROJ4 = NULL;
 
 		/* Now in WKT format */
 		if (OSRImportFromWkt(hSRS, &pszProjection) == CE_None) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
-			Ctrl->ProjectionRefWKT = strdup(pszPrettyWkt);
+			Ctrl->ProjRefWKT = strdup(pszPrettyWkt);
 			CPLFree(pszPrettyWkt);
 		}
 		else
-			Ctrl->ProjectionRefWKT = NULL;
+			Ctrl->ProjRefWKT = NULL;
 
 		OSRDestroySpatialReference(hSRS);
 	}
@@ -805,20 +805,19 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (prhs->W.active) {
 		OGRSpatialReferenceH  hSRS;
-		/* const char *str = Ctrl->ProjectionRefPROJ4; */
 
 		hSRS = OSRNewSpatialReference(NULL);
 
-		if (OSRImportFromProj4(hSRS, Ctrl->ProjectionRefPROJ4) == CE_None) {
+		if (OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
-			Ctrl->ProjectionRefWKT = strdup(pszPrettyWkt);
+			Ctrl->ProjRefWKT = strdup(pszPrettyWkt);
 			CPLFree(pszPrettyWkt);
 		}
 		else {
-			Ctrl->ProjectionRefWKT = NULL;
+			Ctrl->ProjRefWKT = NULL;
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
-					Ctrl->ProjectionRefPROJ4);
+					Ctrl->ProjRefPROJ4);
 		}
 
 		OSRDestroySpatialReference(hSRS);

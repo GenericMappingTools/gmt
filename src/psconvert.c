@@ -1798,9 +1798,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
 				from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 				to_gdalread->W.active = true;
-				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
+				from_gdalread->ProjRefPROJ4 = proj4_cmd;
 				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
-				if (from_gdalread->ProjectionRefWKT != NULL) {
+				if (from_gdalread->ProjRefWKT != NULL) {
 					double x0, y0, x1;	/* Projected coordinates */
 					double h0, v0, h1;	/* Correspnding point coordinates */
 					double a, H, V;		/* a -> coeff of affine matrix; H,V -> origin shift in projected coords */
@@ -1838,7 +1838,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
 					fprintf (fpo, "\t\t\t\t/WKT\n");
-					fprintf (fpo, "\t\t\t\t(%s)\n", from_gdalread->ProjectionRefWKT);
+					fprintf (fpo, "\t\t\t\t(%s)\n", from_gdalread->ProjRefWKT);
 					fprintf (fpo, "\t\t\t>>\n");
 					fprintf (fpo, "\t\t>>\n");
 					fprintf (fpo, "\t>>]\n");

@@ -55,7 +55,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-	to_GDALW->P.ProjectionRefPROJ4 = I->header->ProjRefPROJ4;
+	to_GDALW->P.ProjRefPROJ4 = I->header->ProjRefPROJ4;
 	to_GDALW->flipud = 0;
 	to_GDALW->geog   = 0;
 	to_GDALW->n_columns = (int)I->header->n_columns;
@@ -109,6 +109,10 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {
 		to_GDALW->type = strdup("byte");
 		data = I->data;
+		if (I->header->ProjRefPROJ4) {
+			to_GDALW->P.ProjRefPROJ4 = I->header->ProjRefPROJ4;
+			to_GDALW->P.active = true;
+		}
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Only supported memory layout for now is T(op)C(ol)B(and) \n");
@@ -223,14 +227,14 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 		hSRS_2 = OSRNewSpatialReference(NULL);
 
-		if (OSRImportFromProj4(hSRS_2, prhs->P.ProjectionRefPROJ4) == CE_None) {
+		if (OSRImportFromProj4(hSRS_2, prhs->P.ProjRefPROJ4) == CE_None) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS_2, &pszPrettyWkt, false);
 			projWKT = pszPrettyWkt;
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
-					prhs->P.ProjectionRefPROJ4);
+					prhs->P.ProjRefPROJ4);
 		}
 
 		OSRDestroySpatialReference(hSRS_2);
