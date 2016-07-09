@@ -1713,8 +1713,24 @@ GMT_LOCAL void api_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, 
 	}
 }
 
-/*! Append or replace text table headers with given text or commmand-line options */
+/*! Append or replace CPT headers with given text or commmand-line options */
 GMT_LOCAL void api_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_PALETTE *P) {
+	unsigned int k;
+	char *txt = gmtapi_create_header_item (API, mode, arg);
+
+	if (!api_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
+
+	/* Here we process free-form comments; these go into the CPT's header structures */
+	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
+		for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
+		P->n_headers = 0;
+	}
+	P->header = gmt_M_memory (API->GMT, P->header, P->n_headers + 1, char *);
+	P->header[P->n_headers++] = strdup (txt);
+}
+
+/*! Append or replace Postscript container headers with given text or commmand-line options */
+GMT_LOCAL void api_ps_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_POSTSCRIPT *P) {
 	unsigned int k;
 	char *txt = gmtapi_create_header_item (API, mode, arg);
 
@@ -7524,7 +7540,7 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 			api_cpt_comment (API, mode, arg, container);
 			break;
 		case GMT_IS_POSTSCRIPT:		/* GMT PS */
-			GMT_Report (API, GMT_MSG_NORMAL, "Not possible to set header coments for %s\n", GMT_family[family]);
+			api_ps_comment (API, mode, arg, container);
 			break;
 		case GMT_IS_VECTOR:	/* GMT Vector [PW: Why do we need these?]*/
 			api_vector_comment (API, mode, arg, container);
