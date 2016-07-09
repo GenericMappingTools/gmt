@@ -280,6 +280,9 @@ as well. For specific enhancements, we have:
 *  :doc:`gmtconvert` has a new option (**-F**) for line segmentation and
    network configuration.
 
+*  :doc:`gmtinfo` has a new option **-L** for finding the common bounds
+   across multiple files or segments.
+
 *  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
    **RMS** and **DENAN**.
 

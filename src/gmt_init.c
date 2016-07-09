@@ -10686,6 +10686,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->u_set = false;
 	p->font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	if (p->read_size)  p->given_size_x = p->given_size_y = p->size_x = p->size_y = 0.0;
+	p->factor = 1.0;
 
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
@@ -10935,7 +10936,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				decode_error = true;
 		}
 	}
-
 	switch (symbol_type) {
 		case '*':
 			p->symbol = GMT_SYMBOL_NOT_SET;
@@ -10944,7 +10944,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_XDASH;
 			break;
 		case 'A':
-			p->size_x *= 1.67289326141;	/* To equal area of circle with same diameter */
+			p->factor = 1.67289326141;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;	
 		case 'a':
 			p->symbol = GMT_SYMBOL_STAR;
 			break;
@@ -10982,7 +10983,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_CIRCLE;
 			break;
 		case 'D':
-			p->size_x *= 1.25331413732;	/* To equal area of circle with same diameter */
+			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 'd':
 			p->symbol = GMT_SYMBOL_DIAMOND;
 			break;
@@ -11098,17 +11100,20 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		case 'G':
-			p->size_x *= 1.05390736526;	/* To equal area of circle with same diameter */
+			p->factor = 1.05390736526;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 'g':
 			p->symbol = GMT_SYMBOL_OCTAGON;
 			break;
 		case 'H':
-			p->size_x *= 1.09963611079;	/* To equal area of circle with same diameter */
+			p->factor = 1.09963611079;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 'h':
 			p->symbol = GMT_SYMBOL_HEXAGON;
 			break;
 		case 'I':
-			p->size_x *= 1.55512030156;	/* To equal area of circle with same diameter */
+			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 'i':
 			p->symbol = GMT_SYMBOL_INVTRIANGLE;
 			break;
@@ -11155,7 +11160,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->nondim_col[p->n_nondim++] = 4 + col_off;	/* Angle */
 			break;
 		case 'N':
-			p->size_x *= 1.14948092619;	/* To equal area of circle with same diameter */
+			p->factor = 1.14948092619;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 'n':
 			p->symbol = GMT_SYMBOL_PENTAGON;
 			break;
@@ -11217,12 +11223,14 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			check = false;
 			break;
 		case 'S':
-			p->size_x *= 1.25331413732;	/* To equal area of circle with same diameter */
+			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 's':
 			p->symbol = GMT_SYMBOL_SQUARE;
 			break;
 		case 'T':
-			p->size_x *= 1.55512030156;	/* To equal area of circle with same diameter */
+			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
+			p->size_x *= p->factor;
 		case 't':
 			p->symbol = GMT_SYMBOL_TRIANGLE;
 			break;

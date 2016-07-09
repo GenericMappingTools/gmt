@@ -37,30 +37,20 @@ gmt spectrum1d -S256 -D1 -W -C shipsat.dos -T
 REM 
 REM Now we want to plot the spectra.  The following commands will plot the ship and sat 
 REM power in one diagram and the coherency on another diagram,  both on the same page.  
-REM Note the extended use of gmt pstext and gmt psxy to put labels and legends directly on the plots.  
+REM We end by adding a map legends and some labels on the plots.
 REM For that purpose we often use -Jx1i and specify positions in inches directly:
 REM
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i -R1/1000/0/1 -P -K -X2.5i -Sc0.07i -Gpurple -Ey/0.5p -Y1.5i > %ps%
-echo 3.85 3.6 Coherency@+2@+ | gmt pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> %ps%
-echo 2.375 3.75 > box.d
-echo 2.375 3.25 >> box.d
-echo 4 3.25 >> box.d
-gmt psxy -R -Jx -O -K -Wthicker box.d >> %ps%
+echo Coherency@+2@+ | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
 gmt psxy -Gred -ST0.07i -O -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity"+g240/255/240 spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> %ps%
 gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> %ps%
-echo 3.9 3.6 Input Power | gmt pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> %ps%
-gmt psxy -R -Jx -O -K -Wthicker box.d >> %ps%
-echo 0.25 0.25 > box.d
-echo 1.4 0.25 >> box.d
-echo 1.4 0.9 >> box.d
-echo 0.25 0.9 >> box.d
-gmt psxy -R -Jx -O -K -G240 -L -Wthicker box.d >> %ps%
-echo 0.4 0.7 | gmt psxy -R -Jx -O -K -ST0.07i -Gred >> %ps%
-echo 0.5 0.7 Ship | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> %ps%
-echo 0.4 0.4 | gmt psxy -R -Jx -O -K -Sc0.07i -Gblue >> %ps%
-echo 0.5 0.4 Satellite | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> %ps%
+echo Input Power | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
+echo S 0.1i T 0.07i black - 0.3i Ship > tmp
+echo S 0.1i c 0.07i black - 0.3i Satellite >> tmp
+gmt pslegend -R0/4/0/3.75 -Jx -O -DjBL+w1.2i+o0.25i -F+glightgray+pthicker \
+	--FONT_ANNOT_PRIMARY=14p,Helvetica-Bold tmp >> %ps%
 REM
-del box.d
+del tmp
 del *.pg
 del spectrum.*
 del samp.x

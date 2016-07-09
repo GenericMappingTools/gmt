@@ -15,8 +15,10 @@ Synopsis
 
 **gmtinfo** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
 [ |-C| ]
-[ |-D|\ [*dx*\ [/*dy*\ ]] ] [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
+[ |-D|\ [*dx*\ [/*dy*\ ]] ]
+[ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
 [ |-I|\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
+[ |-L| ]
 [ |-S|\ [**x**\ ][**y**] ]
 [ |-T|\ *dz*\ [/*col*] ]
 [ |SYN_OPT-V| ]
@@ -107,6 +109,13 @@ Optional Arguments
     give grid dimensions for fastest results in programs like surface.
     If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
 
+.. _-L:
+
+**-L**
+    Determines common limits across tables (**-Af**) or segments (**-As**).
+    If used with **-I** it will round inwards so that the resulting bounds
+    lie within the actual data domain.
+
 .. _-S:
 
 **-S**\ [**x**][**y**]
@@ -188,6 +197,14 @@ file, use
   ::
 
     gmt info profile_*.txt -C -I1/1/1/1
+
+Given seven profiles with different start and stop positions, we
+want to find a range of positions, with increment of 5, that are
+common to all the profiles.  We use
+
+  ::
+
+    gmt info profile_[123567].txt -L -I5
 
 Bugs
 ----

@@ -1032,7 +1032,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				i = (unsigned int)strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
-				
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 				if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
@@ -1153,7 +1152,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				bcol = (S.read_size) ? ex2 : ex1;
 				S.base = in[bcol];	/* Got base from input column */
 			}
-			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
+			if (S.read_size) S.size_x = in[ex1] * S.factor;	/* Got size from input column; scale by factor if area unifier is on */
 			dim[0] = S.size_x;
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear

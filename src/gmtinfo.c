@@ -71,6 +71,9 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
 		double inc[GMT_MAX_COLUMNS];
 	} I;
+	struct L {	/* -L */
+		bool active;
+	} L;
 	struct S {	/* -S[x|y] */
 		bool active;
 		bool xbar, ybar;
@@ -111,7 +114,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -135,6 +138,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Determine limiting region. With -I it rounds inward so bounds are within data range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A to find the limiting common bounds of all segments or tables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
@@ -229,6 +234,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				}
 				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
+			case 'L':	/* Detect limiting range */
+				Ctrl->L.active = true;
+				break;
 			case 'S':	/* Error bar output */
 				Ctrl->S.active = true;
 				j = 0;
@@ -283,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
@@ -296,6 +304,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
+	double *xyzminL = NULL, *xyzmaxL = NULL;
 
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
@@ -388,6 +397,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			/* Here we must issue a report */
 			
 			do_report = true;
+			if (Ctrl->L.active && !gmt_M_rec_is_eof (GMT)) do_report = false;	/* Only final report for -L */
  			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must finalize longitudes first */
 				j = gmt_quad_finalize (GMT, &Q[col]);
 				GMT->current.io.geo.range = Q[col].range[j];		/* Override this setting explicitly */
@@ -409,7 +419,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					west  = xyzmin[GMT_X];	east  = xyzmax[GMT_X];
 					south = xyzmin[GMT_Y];	north = xyzmax[GMT_Y];
 				}
-				else { /* Round off to nearest inc */
+				else if (Ctrl->L.active) { /* Round down to nearest inc for this segment or table */
+					west  = (ceil ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					east  = (floor  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					south = (ceil ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					north = (floor  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+				}
+				else { /* Round up to nearest inc */
 					west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
 					east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
 					south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
@@ -440,6 +456,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 							east = (west < 0.0) ? +180.0 : 360.0;
 							full_range = true;
 						}
+					}
+				}
+				if (Ctrl->L.active) {
+					for (col = 0; col < ncol; col++) {	/* Report innermost min/max for each column */
+						if (xyzmin[col] > xyzminL[col]) xyzminL[col] = xyzmin[col];
+						if (xyzmax[col] < xyzmax[col])  xyzmaxL[col] = xyzmax[col];
 					}
 				}
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting n_columns/n_rows */
@@ -512,6 +534,16 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 							low  = south;
 							high = north;
 						}
+						else if (Ctrl->L.active) {
+							low  = (Ctrl->I.active) ? ceil  (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
+							high = (Ctrl->I.active) ? floor (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
+							if (low  > xyzminL[col]) xyzminL[col] = low;
+							if (high < xyzmax[col])  xyzmaxL[col] = high;
+							if (do_report) {	/* Last time so finalize */
+								low  = xyzminL[col];
+								high = xyzmaxL[col];
+							}
+						}
 						else {
 							low  = (Ctrl->I.active) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
 							high = (Ctrl->I.active) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
@@ -537,11 +569,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (Ctrl->C.active) {	/* Plain data record */
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
-			}
-			else {
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+			if (do_report) {
+				if (Ctrl->C.active) {	/* Plain data record */
+					GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
+				}
+				else {
+					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+				}
 			}
 			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
@@ -586,10 +620,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			Q = gmt_quad_init (GMT, ncol);
 			xyzmin = gmt_M_memory (GMT, NULL, ncol, double);
 			xyzmax = gmt_M_memory (GMT, NULL, ncol, double);
+			xyzminL = gmt_M_memory (GMT, NULL, ncol, double);
+			xyzmaxL = gmt_M_memory (GMT, NULL, ncol, double);
 
 			for (col = 0; col < ncol; col++) {	/* Initialize */
-				xyzmin[col] = DBL_MAX;
-				xyzmax[col] = -DBL_MAX;
+				xyzmin[col] = xyzmaxL[col] = DBL_MAX;
+				xyzmax[col] = xyzminL[col] = -DBL_MAX;
 			}
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
