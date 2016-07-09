@@ -1,6 +1,6 @@
 .. _example_42:
 
-(42) Antarctica and Stereographic Data
+(42) Antarctica and stereographic data
 --------------------------------------
 
 In this example we demonstrate how one can use combine Cartesian data for

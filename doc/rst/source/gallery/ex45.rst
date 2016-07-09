@@ -1,7 +1,7 @@
 .. _example_45:
 
-(45) Trend Modeling
---------------------------------------------
+(45) Trend modeling
+-------------------
 
 In this example show how the module :doc:`trend1d </trend1d>`
 is used to fit the CO2 data set collected from the top of

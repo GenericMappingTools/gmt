@@ -1,7 +1,7 @@
 .. _example_44:
 
-(44) Map Inserts
---------------------------------------------
+(44) Map inserts
+----------------
 
 In this example show how the two modules :doc:`psbasemap </psbasemap>`
 and :doc:`mapproject </mapproject>` can be used

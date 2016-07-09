@@ -1,6 +1,6 @@
 .. _example_43:
 
-(43) Robust Regression and Outlier Detection
+(43) Robust regression and outlier detection
 --------------------------------------------
 
 In this example show how :doc:`gmtregress </gmtregress>` can be used to determine a

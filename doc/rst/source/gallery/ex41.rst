@@ -1,6 +1,6 @@
 .. _example_41:
 
-(41) Legend with Tables
+(41) Legend with tables
 -----------------------
 
 In this example we demonstrate how one can use the tool :doc:`pslegend </pslegend>`
