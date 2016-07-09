@@ -820,7 +820,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				S.base = in[bcol];
 			}
 			if (S.read_size) {	/* Update sizes from input */
-				S.size_x = in[ex1];
+				S.size_x = in[ex1] * S.factor;
 				S.size_y = in[ex2];
 			}
 			data[n].dim[0] = S.size_x;
