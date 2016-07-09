@@ -422,15 +422,18 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
+	bool do_indexed = false;
 	unsigned int k, n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
 	unsigned int colormask_offset = 0, try, row, actual_row, col;
-	uint64_t node_RGBA = 0;		/* uint64_t for the RGB(A) image array. */
+	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
 	uint64_t node, kk, nm, byte, dim[3] = {0, 0, 3};
 	int index = 0, ks, error = 0;
 	
+	char   *img_ProjectionRefPROJ4 = NULL;
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
-	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	double	img_wesn[4], img_inc[2];    /* Image increments & min/max for writing images or external interfaces */
 	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, wesn[4], inc[2] = {1.0, 1.0};
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
@@ -439,14 +442,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;        /* General PSL interal parameters */
 	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	bool do_indexed = false;
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
-	struct GMT_IMAGE *Out = NULL;		/* A GMT image datatype, if external interface is used with -A */
+	struct GMT_IMAGE *Out = NULL;       /* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
@@ -908,46 +910,56 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	dx = gmt_M_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], header_work->n_columns, header_work->registration);
 	dy = gmt_M_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], header_work->n_rows, header_work->registration);
 
-	if (Ctrl->A.active && !Ctrl->A.return_image) {
+	if (Ctrl->A.active) {
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
-		to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-		to_GDALW->driver = Ctrl->A.driver;
-		to_GDALW->type = strdup("byte");
-		to_GDALW->P.ProjectionRefPROJ4 = NULL;
-		to_GDALW->flipud = 0;
-		to_GDALW->geog = 0;
-		to_GDALW->n_columns = (int)n_columns;
-		to_GDALW->n_rows = (int)n_rows;
-		strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
-		if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
-		if (Ctrl->D.active)
-			to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
-		else if ((P && gray_only) || Ctrl->M.active)
-			to_GDALW->n_bands = 1;
-		else
-			to_GDALW->n_bands = 3;
-		to_GDALW->registration = 1;
 		if (!need_to_project) {
-			to_GDALW->ULx = GMT->common.R.wesn[XHI];
-			to_GDALW->ULy = GMT->common.R.wesn[YHI];
-			to_GDALW->x_inc = dx;
-			to_GDALW->y_inc = dy;
+			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
+			img_wesn[YHI] = GMT->common.R.wesn[YHI];		img_wesn[YLO] = GMT->common.R.wesn[YLO];
 		}
 		else {
-			to_GDALW->ULx = GMT->current.proj.rect_m[XLO];
-			to_GDALW->ULy = GMT->current.proj.rect_m[YHI];
-			to_GDALW->x_inc = (GMT->current.proj.rect_m[XHI] - GMT->current.proj.rect_m[XLO]) / n_columns;
-			to_GDALW->y_inc = (GMT->current.proj.rect_m[YHI] - GMT->current.proj.rect_m[YLO]) / n_rows;
+			img_wesn[XLO] = GMT->current.proj.rect_m[XLO];	img_wesn[XHI] = GMT->current.proj.rect_m[XHI];
+			img_wesn[YHI] = GMT->current.proj.rect_m[YHI];	img_wesn[YLO] = GMT->current.proj.rect_m[YLO];
 		}
+		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (n_columns - !grid_registration);
+		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows    - !grid_registration);
 
 		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
 			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
-		if (id >= 0) {			/* Valid projection for creating world file info */
-			to_GDALW->P.active = true;
-			to_GDALW->P.ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
-			if (to_GDALW->P.ProjectionRefPROJ4[1] == 'x' && to_GDALW->P.ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
-				to_GDALW->P.active = false;
+		if (id >= 0) 			/* Valid projection for creating world file info */
+			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
+
+		if (!Ctrl->A.return_image) {		/* That is, write an image file with a call to gmt_gdalwrite() */
+			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			to_GDALW->driver = Ctrl->A.driver;
+			to_GDALW->type = strdup("byte");
+			to_GDALW->P.ProjectionRefPROJ4 = NULL;
+			to_GDALW->flipud = 0;
+			to_GDALW->geog = 0;
+			to_GDALW->n_columns = (int)n_columns;
+			to_GDALW->n_rows = (int)n_rows;
+			strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
+			if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
+			if (Ctrl->D.active)
+				to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
+			else if ((P && gray_only) || Ctrl->M.active)
+				to_GDALW->n_bands = 1;
+			else
+				to_GDALW->n_bands = 3;
+			to_GDALW->registration = 1;
+			to_GDALW->ULx = img_wesn[XLO];
+			to_GDALW->ULy = img_wesn[YHI];
+			to_GDALW->x_inc = img_inc[0];
+			to_GDALW->y_inc = img_inc[1];
+
+			if (img_ProjectionRefPROJ4 != NULL) {
+				if (img_ProjectionRefPROJ4[1] == 'x' && img_ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
+					to_GDALW->P.active = false;
+				else {
+					to_GDALW->P.ProjectionRefPROJ4 = img_ProjectionRefPROJ4;
+					to_GDALW->P.active = true;
+				}
+			}
 		}
 	}
 
@@ -1010,9 +1022,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (Ctrl->A.return_image) {	/* Create a GMT_IMAGE with 1 band and write output */
 				dim[GMT_Z] = 1;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade GMT_IMAGE object\n");
-				wesn[XLO] = x0;	wesn[XHI] = x_side; wesn[YLO] = y0;	wesn[YHI] = y_side; inc[GMT_X] = dx;	inc[GMT_Y] = dy;
-				if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, wesn, inc, grid_registration, 0, NULL)) == NULL)
+				if (grid_registration == GMT_GRID_NODE_REG) {
+					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
+					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
+				}
+				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
+				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
 				Out->data = bitimage_8;	/* Pass out the byte data */
 				bitimage_8 = NULL;	/* So we dont free this memory on exit */
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
@@ -1034,19 +1050,14 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else {	/* 24-bit image */
 		if (Ctrl->A.active) {
 			if (Ctrl->A.return_image) {     /* Create a GMT_IMAGE with 3 bands and write output */
-				double dx2 = 0, dy2 = 0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color GMT_IMAGE object\n");
-				/* wesn[XLO] = x0;	wesn[XHI] = x_side; wesn[YLO] = y0;	wesn[YHI] = y_side; inc[GMT_X] = dx;	inc[GMT_Y] = dy; */
-				dx = gmt_M_get_inc(GMT, wesn[XLO], wesn[XHI], header_work->n_columns, grid_registration);
-				dy = gmt_M_get_inc(GMT, wesn[YLO], wesn[YHI], header_work->n_rows, grid_registration);
-				inc[GMT_X] = dx;	inc[GMT_Y] = dy;
 				if (grid_registration == GMT_GRID_NODE_REG) {
-					dx2 = 0.5 * dx;		dy2 = 0.5 * dy;
+					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
+					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 				}
-				wesn[XLO] = GMT->common.R.wesn[XLO] - dx2;			wesn[XHI] = GMT->common.R.wesn[XHI] + dx2;
-				wesn[YLO] = GMT->common.R.wesn[YLO] - dy2;			wesn[YHI] = GMT->common.R.wesn[YHI] + dy2;
-				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, wesn, inc, 1, 0, NULL)) == NULL)
+				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
+				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
 				Out->data = bitimage_24;    /* Pass out the 3*byte data */
 				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
