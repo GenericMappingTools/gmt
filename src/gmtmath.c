@@ -1565,7 +1565,7 @@ GMT_LOCAL int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double c, left, next_left;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	/* Central 1st difference in t */
+	/* Central 1st difference in t, using zero-curvature boundary conditions at the ends */
 
 	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning, DDT called on irregularly spaced data (not supported)!\n");
 	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to DDT is constant!\n");
@@ -1595,7 +1595,7 @@ GMT_LOCAL int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	double c, left, next_left;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	/* Central 2nd difference in t */
+	/* Central 2nd difference in t, using zero curvature boundary conditions */
 
 	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning, D2DT2 called on irregularly spaced data (not supported)!\n");
 	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to D2DT2 is constant!\n");
@@ -1652,7 +1652,7 @@ GMT_LOCAL int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: DIFF 1 1 Difference between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., 0). */
+/*OPERATOR: DIFF 1 1 Difference (forward) between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., NaN). */
 {
 	uint64_t s, row;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -1663,7 +1663,7 @@ GMT_LOCAL int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		for (row = 0; row < info->T->segment[s]->n_rows - 1; row++)
 			T->segment[s]->data[col][row] = T->segment[s]->data[col][row+1] - T->segment[s]->data[col][row];
 
-		T->segment[s]->data[col][info->T->segment[s]->n_rows - 1] = 0;
+		T->segment[s]->data[col][info->T->segment[s]->n_rows - 1] = GMT->session.d_NaN;
 	}
 	return 0;
 }
