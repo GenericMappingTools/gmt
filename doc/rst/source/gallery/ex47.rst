@@ -6,7 +6,7 @@
 In this example we show how the module :doc:`gmtregress </gmtregress>`
 is used to fit a multitude of different linear regression models to
 a data set with extreme outliers that can also act as leverage points.
-The data forms the basis for the main sequence
+This data set forms the basis for the main sequence
 in a Hertzsprung-Russell diagram of the star cluster CYG OB1, which includes
 four red giants that are outlying with respect to the main trend.
 

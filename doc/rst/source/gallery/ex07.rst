@@ -18,11 +18,7 @@ with the following script:
 .. literalinclude:: /_verbatim/example_07.txt
    :language: bash
 
-The same figure could equally well be made in color, which could be
-rasterized and made into a slide for a meeting presentation. The script
-is similar to the one outlined above, except we would choose a color for
-land and oceans, and select colored symbols and pens rather than black
-and white.
+Here a simple one-liner creates a simple legend in the upper-right corner.
 
 .. figure:: /_images/example_07.*
    :width: 500 px
