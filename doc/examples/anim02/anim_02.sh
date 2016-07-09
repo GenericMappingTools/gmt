@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
-# GMT modules   gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, psconvert
+# GMT modules   gmtmath, grdgradient, makecpt, grdimage psxy, psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
@@ -17,7 +17,7 @@ n_frames=36
 name=anim_02
 ps=${name}.ps
 # 1b) setup
-del_angle=`gmt gmtmath -Q 360 ${n_frames} DIV =`
+del_angle=`gmt math -Q 360 ${n_frames} DIV =`
 gmt makecpt -Crainbow -T500/4500 > $$.cpt
 # 2. Main loop
 mkdir -p $$
@@ -25,8 +25,8 @@ frame=0
 while [ ${frame} -lt ${n_frames} ]; do
 	# Create file name using a name_##.tif format
 	file=`gmt_set_framename ${name} ${frame}`
-	angle=`gmt gmtmath -Q ${frame} ${del_angle} MUL =`
-	dir=`gmt gmtmath -Q ${angle} 180 ADD =`
+	angle=`gmt math -Q ${frame} ${del_angle} MUL =`
+	dir=`gmt math -Q ${angle} 180 ADD =`
 	gmt grdgradient us.nc -A${angle} -Nt2 -fg -G$$.us_int.nc
 	gmt grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps

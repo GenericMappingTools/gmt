@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates various color pattern effects for maps
-# GMT modules:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage
+# GMT modules:	grdimage, grdmath, makecpt, pscoast, pstext, psimage
 # Unix progs:	rm
 #
 ps=example_19.ps

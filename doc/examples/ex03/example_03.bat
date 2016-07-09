@@ -19,7 +19,7 @@ REM
 gmt project  sat.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > sat.pg
 gmt project ship.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > ship.pg
 REM Now we can use sampr in gawk to make a sampling points file for gmt sample1d:
-gmt gmtmath -T-1167/1169/1 -N1/0 = samp.x
+gmt math -T-1167/1169/1 -N1/0 = samp.x
 REM
 REM Now we can resample the gmt projected satellite data:
 REM

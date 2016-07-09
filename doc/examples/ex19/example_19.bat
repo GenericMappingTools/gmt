@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
-REM GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage
+REM GMT progs:	grdimage, grdmath, makecpt, pscoast, pstext, psimage
 REM DOS calls:	echo, del
 REM
 echo GMT EXAMPLE 19

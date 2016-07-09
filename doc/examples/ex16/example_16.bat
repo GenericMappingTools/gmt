@@ -13,7 +13,7 @@ set ps=example_16.ps
 REM
 REM Illustrate various means of contouring, using triangulate and surface.
 REM
-gmt gmtset FONT_ANNOT_PRIMARY 9p
+gmt set FONT_ANNOT_PRIMARY 9p
 REM
 gmt pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1 -BWSne table_5.11 -Cex16.cpt -I > %ps%
 echo 3.25 7 pscontour (triangulate) | gmt pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> %ps%

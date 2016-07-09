@@ -3,11 +3,11 @@
 #               $Id$
 #
 # Purpose:      Illustrate pscoast with DCW country polygons
-# GMT modules:  pscoast, makecpt, grdimage, grdgradient
+# GMT modules:  gmtset, pscoast, makecpt, grdimage, grdgradient
 # Unix progs:   rm
 #
 ps=example_34.ps
-gmt gmtset FORMAT_GEO_MAP dddF
+gmt set FORMAT_GEO_MAP dddF
 gmt pscoast -JM4.5i -R-6/20/35/52 -EFR,IT+gP300/8 -Glightgray -Baf -BWSne -P -K -X2i > $ps
 # Extract a subset of ETOPO2m for this part of Europe
 # gmt grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns

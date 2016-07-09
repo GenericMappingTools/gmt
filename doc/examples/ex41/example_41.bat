@@ -2,14 +2,14 @@ REM             GMT EXAMPLE 41
 REM             $Id$
 REM
 REM Purpose:      Illustrate typesetting of legend with table
-REM GMT progs:    pscoast, pslegend, psxy
+REM GMT progs:    gmtset, pscoast, pslegend, psxy
 REM DOS calls:	  
 REM
 
 echo GMT EXAMPLE 41
 set ps=example_41.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p
+gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p
 
 gmt pscoast -R130W/50W/8N/56N -JM5.6i -B0 -P -K -Glightgray -Sazure1 -A1000 -Wfaint -Xc -Y1.2i --MAP_FRAME_TYPE=plain > %ps%
 gmt pscoast -R -J -O -K -EUS+glightyellow+pfaint -ECU+glightred+pfaint -EMX+glightgreen+pfaint -ECA+glightblue+pfaint >> %ps%

@@ -2,14 +2,14 @@ REM             GMT EXAMPLE 42
 REM             $Id$
 REM
 REM Purpose:      Illustrate Antarctica and stereographic projection
-REM GMT progs:    makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy [grdreformat]
+REM GMT progs:    gmtset, makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy [grdreformat]
 REM DOS calls:	  [curl]
 REM
 
 echo GMT EXAMPLE 42
 set ps=example_42.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p PROJ_ELLIPSOID WGS-84 FORMAT_GEO_MAP dddF
+gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p PROJ_ELLIPSOID WGS-84 FORMAT_GEO_MAP dddF
 REM Data obtained via website and converted to netCDF thus:
 REM curl http://www.antarctica.ac.uk//bas_research/data/access/bedmap/download/bedelev.asc.gz
 REM gunzip bedelev.asc.gz

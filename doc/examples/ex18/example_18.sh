@@ -11,7 +11,7 @@
 ps=example_18.ps
 
 # Use spherical gmt projection since SS data define on sphere
-gmt gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
+gmt set PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
 
 # Define location of Pratt seamount and the 400 km diameter
 echo "-142.65 56.25 400" > pratt.txt
@@ -45,11 +45,11 @@ rm -f sm_*_O.txt	# Only consider the closed contours
 # First determine mean location of each closed contour and
 # add it to the file centers.txt
 
-gmt gmtspatial -Q -fg sm_*_C.txt > centers.txt
+gmt spatial -Q -fg sm_*_C.txt > centers.txt
 
 # Only plot the ones within 200 km
 
-gmt gmtselect -Cpratt.txt+d200k centers.txt -fg | gmt psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> $ps
+gmt select -Cpratt.txt+d200k centers.txt -fg | gmt psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> $ps
 gmt psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.txt >> $ps
 
 # Then report the volume and area of these seamounts only

@@ -18,7 +18,7 @@ echo LinBiolinumOB 0.700 0 >> PSL_custom_fonts.txt
 echo LinLibertineOB 0.700 0 >> PSL_custom_fonts.txt
 
 REM common settings
-gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
 
 REM map of countries
 gmt pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > %ps%
@@ -51,7 +51,7 @@ REM append city names and population to legend
 gawk "BEGIN {FS=\",\"; f=\"L 8 LinBiolinumO L\"} ($4 > 1000000) {printf \"%%s %%s:\n%%s %%.2f\n\", f, $3, f, $4/1e6}" europe-capitals.csv >> legend.txt
 
 REM reduce annotation font size for legend
-gmt gmtset FONT_ANNOT_PRIMARY 8p
+gmt set FONT_ANNOT_PRIMARY 8p
 
 REM plot legend
 gmt pslegend -R -J -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite -O legend.txt >> %ps%

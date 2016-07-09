@@ -26,8 +26,8 @@ gmt psxy -R -J -O -K -Sc0.1i -Gblue ridge.txt >> $ps
 gmt grdtrack ridge.txt -Gspac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 gmt psxy -R -J -O -K -W0.5p table.txt >> $ps
 # Show upper/lower values encountered as an envelope
-gmt gmtconvert stack.txt -o0,5 > env.txt
-gmt gmtconvert stack.txt -o0,6 -I -T >> env.txt
+gmt convert stack.txt -o0,5 > env.txt
+gmt convert stack.txt -o0,6 -I -T >> env.txt
 gmt psxy -R-200/200/-3500/-2000 -Bxafg1000+l"Distance from ridge (km)" -Byaf+l"Depth (m)" -BWSne \
 	-JX6i/3i -O -K -Glightgray env.txt -Y6.5i >> $ps
 gmt psxy -R -J -O -K -W3p stack.txt >> $ps

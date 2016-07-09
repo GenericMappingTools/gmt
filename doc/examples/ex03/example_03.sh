@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
-# GMT modules:	filter1d, fitcircle, gmtinfo, project, sample1d
+# GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
 # GMT modules:	spectrum1d, trend1d, pshistogram, psxy, pstext
 # Unix progs:	$AWK, cat, echo, head, paste, rm, tail
 #
@@ -70,17 +70,17 @@ $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | gmt pshistogram  -W
 # data, we use a median filter to clean up the ship values.  We will want to use "paste"
 # to put the two sampled data sets together, so they must start and end at the same
 # point, without NaNs.  So we want to get a starting and ending point which works for
-# both of them.  This is a job for gmt gmtmath UPPER/LOWER.
+# both of them.  This is a job for gmt math UPPER/LOWER.
 #
 head -1 ship.pg > tmp
 head -1 sat.pg >> tmp
-sampr1=`gmt gmtmath tmp -Ca -Sf -o0 UPPER CEIL =`
+sampr1=`gmt math tmp -Ca -Sf -o0 UPPER CEIL =`
 tail -1 ship.pg > tmp
 tail -1 sat.pg >> tmp 
-sampr2=`gmt gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =`
+sampr2=`gmt math tmp -Ca -Sf -o0 LOWER FLOOR =`
 #
-# Now we can use sampr1|2 in gmt gmtmath to make a sampling points file for gmt sample1d:
-gmt gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
+# Now we can use sampr1|2 in gmt math to make a sampling points file for gmt sample1d:
+gmt math -T$sampr1/$sampr2/1 -N1/0 T = samp.x
 #
 # Now we can resample the gmt projected satellite data:
 #
@@ -102,7 +102,7 @@ gmt psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 # data, we do this:
 # 
-gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
+gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 # Now we want to plot the spectra. The following commands will plot the ship and sat 
 # power in one diagram and the coherency on another diagram, both on the same page.  
@@ -165,7 +165,7 @@ gmt psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 # the previous one (example_03d.ps) we see that throwing out the large feature has reduced
 # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
 #
-gmt gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
+gmt convert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
 	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \

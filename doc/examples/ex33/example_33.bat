@@ -25,8 +25,8 @@ REM and stack these using the median, write stacked profile
 gmt grdtrack ridge.txt -Gspac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 gmt psxy -R -J -O -K -W0.5p table.txt >> %ps%
 REM Show upper/lower values encountered as an envelope
-gmt gmtconvert stack.txt -o0,5 > env.txt
-gmt gmtconvert stack.txt -o0,6 -I -T >> env.txt
+gmt convert stack.txt -o0,5 > env.txt
+gmt convert stack.txt -o0,6 -I -T >> env.txt
 gmt psxy -R-200/200/-3500/-2000 -JX6i/3i -Bxafg1000+l"Distance from ridge (km)" -Byaf+l"Depth (m)" -BWSne -O -K -Glightgray env.txt -Y6.5i >> %ps%
 gmt psxy -R -J -O -K -W3p stack.txt >> %ps%
 echo 0 -2000 MEDIAN STACKED PROFILE | gmt pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> %ps%

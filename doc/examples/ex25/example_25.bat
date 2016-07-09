@@ -21,21 +21,21 @@ gmt grdmath -Rg -I%D%m -r Y COSD 60 %D% DIV 360 MUL DUP MUL PI DIV DIV 100 MUL =
 gmt grdmath -fg key.nc -1 EQ 0 NAN scale.nc MUL = tmp.nc
 gmt grd2xyz tmp.nc -s -ZTLa > key.d
 echo { printf "set ocean=%%d\n", $1} > awk.txt
-gmt gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt > script0.bat
+gmt math -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt > script0.bat
 gmt grdmath -fg key.nc 1 EQ 0 NAN scale.nc MUL = tmp.nc
 gmt grd2xyz tmp.nc -s -ZTLa > key.d
 echo { printf "set land=%%d\n", $1} > awk.txt
-gmt gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
+gmt math -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
 gmt grdmath -fg key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
 gmt grd2xyz tmp.nc -s -ZTLa > key.d
 echo { printf "set mixed=%%d\n", $1} > awk.txt
-gmt gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
+gmt math -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
 REM Generate corresponding color table
 echo -1.5	blue	-0.5	blue > key.cpt
 echo -0.5	gray	0.5	gray >> key.cpt
 echo 0.5	red	1.5	red >> key.cpt
 REM Create the final plot and overlay coastlines
-gmt gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
+gmt set FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
 gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i -nn > %ps%
 gmt pscoast -R -J -O -K -Wthinnest -Dc -A500 >> %ps%
 REM Place an explanatory legend below

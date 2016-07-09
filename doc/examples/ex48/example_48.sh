@@ -44,6 +44,6 @@ gmt psxy airports.txt -R -J -O -K -Fn -W1.5p+o250k+v0.2i+gred --MAP_VECTOR_SHAPE
 gmt psxy airports.txt -R -J -O -K -SE-500 -Gorange -W0.25p >> $ps
 # Make an arc of radius 4.5 inches from 45 to 135 degrees around map center and use it to place text
 gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca 4.5 MUL = path.txt
-# Move up 3.5 inches so irigin is at the map center
+# Move up 3.5 inches so origin is at the map center
 gmt psxy -R-3.5/3.5/0/6 -Jx1i -O -Y3.5i path.txt -Sqn1:+l"IMPORTANT PACIFIC AIRPORTS"+v+f32p -Wfaint,white -N >> $ps
 rm -f airports.txt g.cpt t.cpt int.nc near_area.txt path.txt tmp

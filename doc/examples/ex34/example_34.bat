@@ -11,7 +11,7 @@ set ps=example_34.ps
 
 REM Extract a subset of ETOPO2m for this part of Europe
 REM gmt grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns
-gmt gmtset FORMAT_GEO_MAP dddF
+gmt set FORMAT_GEO_MAP dddF
 gmt pscoast -JM4.5i -R-6/20/35/52 -EFR,IT+gP300/8 -Glightgray -Baf -BWSne -P -K -X2i > %ps%
 gmt makecpt -Cglobe -T-5000/5000 > z.cpt
 gmt grdgradient FR+IT.nc -A15 -Ne0.75 -GFR+IT_int.nc

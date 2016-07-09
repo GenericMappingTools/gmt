@@ -11,7 +11,7 @@ REM
 echo GMT EXAMPLE 22
 set ps=example_22.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 REM Get the data (-q quietly) from USGS using the wget (comment out in case
 REM your system does not have wget or curl)

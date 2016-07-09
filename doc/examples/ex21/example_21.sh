@@ -10,8 +10,8 @@ ps=example_21.ps
 
 # File has time stored as dd-Mon-yy so set input format to match it
 
-gmt gmtset FORMAT_DATE_IN dd-o-yy FORMAT_DATE_MAP o FONT_ANNOT_PRIMARY +10p
-gmt gmtset FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
+gmt set FORMAT_DATE_IN dd-o-yy FORMAT_DATE_MAP o FONT_ANNOT_PRIMARY +10p
+gmt set FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format
 
@@ -29,9 +29,9 @@ gmt psbasemap $R -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " \
 
 # Plot main window with open price as red line over yellow envelope of low/highs
 
-gmt gmtset FORMAT_DATE_OUT dd-o-yy
-gmt gmtconvert -o0,2 -f0T RHAT_price.csv > RHAT.env
-gmt gmtconvert -o0,3 -f0T -I -T RHAT_price.csv >> RHAT.env
+gmt set FORMAT_DATE_OUT dd-o-yy
+gmt convert -o0,2 -f0T RHAT_price.csv > RHAT.env
+gmt convert -o0,3 -f0T -I -T RHAT_price.csv >> RHAT.env
 gmt psxy -R -J -Gyellow -O -K RHAT.env >> $ps
 gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
 
@@ -44,9 +44,9 @@ gmt psxy -R -J RHAT.pw -Wthinner,- -O -K >> $ps
 echo "01-Jan-99	25" > RHAT.pw
 echo "01-Jan-02	25" >> RHAT.pw
 gmt psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
-gmt gmtset FORMAT_DATE_IN yyyy-mm-dd
+gmt set FORMAT_DATE_IN yyyy-mm-dd
 echo "$w 25 PW buy" | gmt pstext -R -J -O -K -D1.5i/0.05i -N -F+f12p,Bookman-Demi+jLB >> $ps
-gmt gmtset FORMAT_DATE_IN dd-o-yy
+gmt set FORMAT_DATE_IN dd-o-yy
 
 # Draw P Wessel's sales price as line and label it.
 
@@ -56,10 +56,10 @@ gmt psxy -R -J RHAT.pw -Wthinner,- -O -K >> $ps
 echo "01-Aug-06	23.8852" > RHAT.pw
 echo "01-Jan-08	23.8852" >> RHAT.pw
 gmt psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
-gmt gmtset FORMAT_DATE_IN yyyy-mm-dd
+gmt set FORMAT_DATE_IN yyyy-mm-dd
 echo "$e 23.8852 PW sell" | gmt pstext -R -J -O -K -Dj0.8i/0.05i -N \
 	-F+f12p,Bookman-Demi+jRB >> $ps
-gmt gmtset FORMAT_DATE_IN dd-o-yy
+gmt set FORMAT_DATE_IN dd-o-yy
 
 # Get smaller region for insert for trend since 2004
 

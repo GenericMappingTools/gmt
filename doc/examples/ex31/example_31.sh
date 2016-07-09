@@ -21,7 +21,7 @@ LinLibertineOB
 EOF
 
 # common settings
-gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF \
+gmt set FORMAT_GEO_MAP ddd:mm:ssF \
 MAP_DEGREE_SYMBOL colon \
 MAP_TITLE_OFFSET 20p \
 MAP_GRID_CROSS_SIZE_PRIMARY 0.4c \
@@ -72,7 +72,7 @@ $AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
   europe-capitals-ru.csv >> legend.txt
 
 # reduce annotation font size for legend
-gmt gmtset FONT_ANNOT_PRIMARY 8p
+gmt set FONT_ANNOT_PRIMARY 8p
 
 # plot legend
 gmt pslegend -R -J -DjTR+o0.1c+w8.0c+l1.2 \

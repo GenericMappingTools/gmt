@@ -7,7 +7,7 @@
 # Unix progs:	rm
 #
 ps=example_02.ps
-gmt gmtset FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
+gmt set FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
 gmt makecpt -Crainbow -T-2/14/2 > g.cpt
 gmt grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
             -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
