@@ -1140,11 +1140,13 @@ and pass the ``par`` array as indicated below:
     (GMT_GRID_NODE_REG) registration.  The domain can be prescribed on one of two ways:
     (1) The ``par`` argument is NULL. Then ``wesn`` and ``inc`` can also be NULL but only if
     **-R** and **-I** have been set because they are inquired to get the necessary info. If they
-    were not set, than ``wesn`` and ``inc`` must in fact be transmitted. 
+    were not set, than ``wesn`` and ``inc`` must in fact be transmitted.  If `wesn`` and ``inc``
+    are set (directly or indirectly) then ``par`` is ignored, even if not NULL.
     (2) The ``par`` argument is not NULL but both ``wesn`` and ``inc`` are NULL.
     Now, par[0] has the number of columns and par[1] has the number of rows in the grid.  Here,
     ``inc`` will be set to 1/1 and ``wesn`` will be set to 0/n_columns/0/n_rows (pixel registration)
-    or 0/n_columns-1/0/n_rows-1 (gridline registration).
+    or 0/n_columns-1/0/n_rows-1 (gridline registration). As an option, add GMT_GRID_XY to the mode
+    and we also allocate the grids's *x* and *y* coordinate vectors.
 
   **GMT_IS_IMAGE**
     Same as **GMT_IS_GRID** above but return an empty :ref:`GMT_IMAGE <struct-image>`.  In either
@@ -1450,6 +1452,8 @@ different data types.
     using GMT_Get_Row_ By default the rows will be automatically
     processed in order. To completely specify which row to be read, use
     ``GMT_GRID_ROW_BY_ROW_MANUAL`` instead.
+    Finally, as an option you may add GMT_GRID_XY to the mode and we also
+    allocate the *x* and *y* coordinate vectors for the grid or image.
 
 **PostScript**
     ``mode`` is currently not used.

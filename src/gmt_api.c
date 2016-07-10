@@ -361,6 +361,17 @@ GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 }
 
 /*! . */
+GMT_LOCAL int api_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *Grid) {
+	/* Use information in Grid header to allocate the grid data.
+	 * We assume gmtgrdio_init_grdheader has been called. */
+
+	if (Grid->x || Grid->y) return (GMT_PTR_NOT_NULL);
+	Grid->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);	/* Get array of x coordinates */
+	Grid->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);	/* Get array of y coordinates */
+	return (GMT_NOERROR);
+}
+
+/*! . */
 GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	/* Use information in Image header to allocate the image data.
 	 * We assume gmtgrdio_init_grdheader has been called. */
@@ -368,6 +379,17 @@ GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	if (Image->data) return (GMT_PTR_NOT_NULL);
 	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((Image->data = gmt_M_memory_aligned (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	return (GMT_NOERROR);
+}
+
+/*! . */
+GMT_LOCAL int api_alloc_image_xy (struct GMTAPI_CTRL *API, struct GMT_IMAGE *Image) {
+	/* Use information in Grid header to allocate the grid data.
+	 * We assume gmtgrdio_init_grdheader has been called. */
+
+	if (Image->x || Image->y) return (GMT_PTR_NOT_NULL);
+	Image->x = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_X, Image);	/* Get array of x coordinates */
+	Image->y = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_Y, Image);	/* Get array of y coordinates */
 	return (GMT_NOERROR);
 }
 
@@ -4027,7 +4049,10 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 	G_obj->header->nx = G_obj->header->n_columns;
 	G_obj->header->ny = G_obj->header->n_rows;
 #endif
-
+	if (mode & GMT_GRID_XY) {	/* Also allocate and initialize the x and y vectors */
+		G_obj->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_obj);	/* Get array of x coordinates */
+		G_obj->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_obj);	/* Get array of y coordinates */
+	}
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	if (!via) S_obj->data = G_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 
@@ -7267,6 +7292,10 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 				if ((error = api_alloc_grid (API->GMT, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 			}
+			if (mode & GMT_GRID_XY) {	/* Also allocate and populate the x,y vectors */
+				if ((error = api_alloc_grid_xy (API, new_obj)) != GMT_NOERROR)
+					return_null (API, error);	/* Allocation error */
+			}
 			break;
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
@@ -7284,6 +7313,10 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			}
 			if (def_direction == GMT_IN && (mode & GMT_GRID_HEADER_ONLY) == 0) {	/* Allocate the image array unless we asked for header only */
 				if ((error = api_alloc_image (API->GMT, new_obj)) != GMT_NOERROR)
+					return_null (API, error);	/* Allocation error */
+			}
+			if (mode & GMT_GRID_XY) {	/* Also allocate and populate the image x,y vectors */
+				if ((error = api_alloc_image_xy (API, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 			}
 			break;

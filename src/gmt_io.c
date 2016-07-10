@@ -7478,6 +7478,13 @@ void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free
 		if (I->alloc_mode == GMT_ALLOC_INTERNALLY)
 			gmt_M_free_aligned (GMT, I->data);
 	}
+	if (I->x && I->y && free_image) {
+		if (I->alloc_mode == GMT_ALLOC_INTERNALLY) {
+			gmt_M_free (GMT, I->x);
+			gmt_M_free (GMT, I->y);
+		}
+		I->x = I->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
+	}
 	if (I->header) {	/* Free the header structure and anything allocated by it */
 		gmt_M_str_free (I->header->ProjRefWKT);
 		gmt_M_str_free (I->header->ProjRefPROJ4);

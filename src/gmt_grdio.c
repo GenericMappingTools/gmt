@@ -2217,6 +2217,13 @@ unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, b
 		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
+	if (G->x && G->y && free_grid) {
+		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) {
+			gmt_M_free (GMT, G->x);
+			gmt_M_free (GMT, G->y);
+		}
+		G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
+	}
 	if (G->extra) gmtapi_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 #if 0
 	if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free (GMT, G->header);
