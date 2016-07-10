@@ -430,7 +430,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	int index = 0, ks, error = 0;
 	
 	char   *img_ProjectionRefPROJ4 = NULL;
-	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
+	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, *alpha = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double	img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
@@ -855,7 +855,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					else
 						gmt_illuminate (GMT, Ctrl->I.value, rgb);
 				}
-				
+
 				if (P && gray_only)		/* Color table only has grays, pick r */
 					bitimage_8[byte++] = gmt_M_u255 (rgb[0]);
 				else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
@@ -1058,10 +1058,15 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				Out->data = bitimage_24;    /* Pass out the 3*byte data */
+				Out->data = &bitimage_24[colormask_offset];    /* Pass out the 3*byte data but without eventual transparency color */
 				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-				if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
+				if (Ctrl->Q.active) {
+					alpha = gmt_M_memory (GMT, NULL, nm, unsigned char);
+					for (node = 0; node < nm; node++)
+						if (gmt_M_is_fnan (Grid_proj[0]->data[node])) alpha[node] = 255;
+					Out->alpha = alpha;
+				}
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);
 			}
