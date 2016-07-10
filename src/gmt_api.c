@@ -10418,7 +10418,7 @@ EXTERN_MSC void * GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t 
 
 EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
 	/* Specify how many output columns to use for record-by-record output */
-	int error;
+	int error = 0;
 	uint64_t n_in;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
