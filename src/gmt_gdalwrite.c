@@ -51,7 +51,8 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	uint32_t row, col, band;
 	uint64_t k, ijk, b;
 	bool     free_data = false;
-	char    *data, *ext;
+	char    *ext;
+	unsigned char *data;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
@@ -78,7 +79,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->driver = strdup("JPEG");
 	else if (!strcasecmp (ext, "png"))
 		to_GDALW->driver = strdup("PNG");
-	else if (!strcasecmp (ext, "tif"))
+	else if (!strncasecmp (ext, "tif", 3))
 		to_GDALW->driver = strdup("GTiff");
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Non supported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
@@ -110,7 +111,10 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->type = strdup("byte");
 		data = I->data;
 		if (I->header->ProjRefPROJ4) {
-			to_GDALW->P.ProjRefPROJ4 = I->header->ProjRefPROJ4;
+			to_GDALW->ULx = I->header->wesn[XLO];
+			to_GDALW->ULy = I->header->wesn[YHI];
+			to_GDALW->x_inc = I->header->inc[0];
+			to_GDALW->y_inc = I->header->inc[1];
 			to_GDALW->P.active = true;
 		}
 	}
@@ -329,22 +333,23 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					/* This case arrives here from a separate path. It started in grdimage and an originaly
 					   data was in uchar but padded and possibly 3D (RGB) */
 					tmpByte = (unsigned char *)data;
-					for (nn = 0; nn < n_cols*n_rows; nn++) {
+					for (nn = 0; nn < n_cols*n_rows; nn++)
 						outByte[nn] = tmpByte[nn*n_bands + i];
-					}
+
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, outByte, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				}
-				else
+				else {
 					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
 					ijk = i * n_cols * n_rows;
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 					if (i == n_bands - 1 && prhs->alpha && prhs->layout[2] == 'B') {		/* Time to write the alpha layer. */
-						hBand = GDALGetRasterBand(hDstDS, i+2); 
+						hBand = GDALGetRasterBand(hDstDS, i + 2);
 						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
+							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
 					}
+				}
 				break;
 			case GDT_UInt16:
 			case GDT_Int16:
