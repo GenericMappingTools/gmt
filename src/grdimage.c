@@ -430,7 +430,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	int index = 0, ks, error = 0;
 	
 	char   *img_ProjectionRefPROJ4 = NULL;
-	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, *alpha = NULL, i_rgb[3];
+	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double	img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
@@ -1020,13 +1020,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit image */
 		if (Ctrl->A.active) {
 			if (Ctrl->A.return_image) {	/* Create a GMT_IMAGE with 1 band and write output */
-				dim[GMT_Z] = 1;
+				dim[GMT_Z] = 1;	/* 8-bit image */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade GMT_IMAGE object\n");
 				if (grid_registration == GMT_GRID_NODE_REG) {
 					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
 					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 				}
-				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
+				if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
 				Out->data = bitimage_8;	/* Pass out the byte data */
@@ -1055,6 +1055,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
 					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 				}
+				if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag we need transparency array */
 				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
@@ -1062,10 +1063,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
 				if (Ctrl->Q.active) {
-					alpha = gmt_M_memory (GMT, NULL, nm, unsigned char);
 					for (node = 0; node < nm; node++)
-						if (gmt_M_is_fnan (Grid_proj[0]->data[node])) alpha[node] = 255;
-					Out->alpha = alpha;
+						if (gmt_M_is_fnan (Grid_proj[0]->data[node])) Out->alpha[node] = 255;
 				}
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);

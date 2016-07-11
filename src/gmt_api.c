@@ -372,13 +372,17 @@ GMT_LOCAL int api_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *Grid)
 }
 
 /*! . */
-GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
+GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_IMAGE *Image) {
 	/* Use information in Image header to allocate the image data.
-	 * We assume gmtgrdio_init_grdheader has been called. */
+	 * We assume gmtgrdio_init_grdheader has been called.
+	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel */
 
 	if (Image->data) return (GMT_PTR_NOT_NULL);
 	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((Image->data = gmt_M_memory_aligned (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {
+		if ((Image->alpha = gmt_M_memory_aligned (GMT, NULL, Image->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	}
 	return (GMT_NOERROR);
 }
 
@@ -1397,7 +1401,10 @@ GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, ui
 /*! . */
 GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
+	uint64_t alpha = (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4));	/* Must allocate alpha array later */
+	if (alpha) dim[GMT_Z]--;	/* Remove this flag before grdheader is set */
 	gmtgrdio_init_grdheader (API->GMT, I->header, opt, dim, range, inc, registration, mode);
+	if (alpha) dim[GMT_Z]++;	/* Restore */
 	return (GMT_OK);
 }
 
@@ -3593,11 +3600,13 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if (!I_obj->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I_obj->header->size = api_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 				I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+				if (I_orig->alpha) I_obj->alpha = gmt_M_memory (GMT, NULL, I_obj->header->size , unsigned char);
 			}
 			I_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (!S_obj->region && gmt_grd_pad_status (GMT, I_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating image data from GMT_IMAGE memory location\n");
 				gmt_M_memcpy (I_obj->data, I_orig->data, I_orig->header->size * I_orig->header->n_bands, char);
+				if (I_orig->alpha) gmt_M_memcpy (I_obj->alpha, I_orig->alpha, I_orig->header->size, char);
 				break;		/* Done with this image */
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extracting subset image data from GMT_IMAGE memory location\n");
@@ -3614,6 +3623,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 					ij_orig = gmt_M_ijp (I_orig->header, row, col);	/* Position of this (row,col) in original grid organization */
 					ij = gmt_M_ijp (I_obj->header, row, col);		/* Position of this (row,col) in output grid organization */
 					I_obj->data[ij] = I_orig->data[ij_orig];
+					if (I_orig->alpha) I_obj->alpha[ij] = I_orig->alpha[ij_orig];
 				}
 			}
 			break;
@@ -7312,7 +7322,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 				already_registered = true;
 			}
 			if (def_direction == GMT_IN && (mode & GMT_GRID_HEADER_ONLY) == 0) {	/* Allocate the image array unless we asked for header only */
-				if ((error = api_alloc_image (API->GMT, new_obj)) != GMT_NOERROR)
+				if ((error = api_alloc_image (API->GMT, dim, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 			}
 			if (mode & GMT_GRID_XY) {	/* Also allocate and populate the image x,y vectors */

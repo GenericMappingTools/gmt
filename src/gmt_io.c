@@ -7478,6 +7478,10 @@ void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free
 		if (I->alloc_mode == GMT_ALLOC_INTERNALLY)
 			gmt_M_free_aligned (GMT, I->data);
 	}
+	if (free_image && I->alpha) {
+		if (I->alloc_mode == GMT_ALLOC_INTERNALLY)
+			gmt_M_free_aligned (GMT, I->alpha);
+	}
 	if (I->x && I->y && free_image) {
 		if (I->alloc_mode == GMT_ALLOC_INTERNALLY) {
 			gmt_M_free (GMT, I->x);

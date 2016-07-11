@@ -461,6 +461,58 @@ GMT_LOCAL void grd_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
+GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G) {
+	/* Calculate geographic spherical area in km^2 */
+	uint64_t node;
+	unsigned int row, col, first_row = 0, last_row = G->header->n_rows - 1;
+	float area;
+	double c, R2 = pow (R2D * GMT->current.proj.KM_PR_DEG, 2.0);	/* squared mean radius in km */
+
+	if (G->header->registration == GMT_GRID_NODE_REG) {	/* May need special treatment of pole points */
+		if (doubleAlmostEqualZero (G->header->wesn[YHI], 90.0)) {	/* North pole point */
+			area = (float)(R2 * (1.0 - cosd (0.5 * G->header->inc[GMT_Y])));
+			gmt_M_col_loop (GMT, info->G, first_row, col, node) {	/* There are all the NP points in a gridline registered grid */
+				G->data[node] = area;
+			}
+			first_row++;
+		}
+		if (doubleAlmostEqualZero (G->header->wesn[YLO], -90.0)) {	/* South pole point */
+			area = (float)(R2 * (1.0 - cosd (0.5 * G->header->inc[GMT_Y])));
+			gmt_M_col_loop (GMT, info->G, last_row, col, node) {	/* There are all the SP points in a gridline registered grid */
+				G->data[node] = area;
+			}
+			last_row--;
+		}
+	}
+	/* Below we just use the standard graticule equation */
+	c = 2.0 * R2 * (G->header->inc[GMT_X] * D2R) * sind (0.5 * G->header->inc[GMT_Y]);
+	for (row = first_row; row <= last_row; row++) {
+		area = (float)(c * cosd (info->d_grd_y[row]));
+		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
+			G->data[node] = area;
+		}
+	}
+}
+
+GMT_LOCAL void cart_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G) {
+	/* Calculate geographic spherical area in km^2 */
+	uint64_t node;
+	unsigned int row, col;
+	float area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All cells have same area */
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		G->data[node] = area;
+	}
+}
+
+GMT_LOCAL void grd_AREA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: AREA 0 1 Area of each gridnode cell (in km^2 if geographic).  */
+{
+	if (gmt_M_is_geographic (GMT, GMT_IN))
+		geo_area (GMT, info, stack[last]->G);
+	else
+		cart_area (GMT, info, stack[last]->G);
+}
+
 GMT_LOCAL void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ASEC 1 1 asec (A).  */
 {
@@ -2546,6 +2598,40 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 }
 
+GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LMSSCLW 1 1 Weighted LMS scale estimate (LMS STD) of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	double mode;
+	float lmsscl;
+	struct GMT_OBSERVATION *pair = NULL;
+
+	if (stack[prev]->constant) {	/* Trivial case if data are constant: mad = 0 */
+		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		return;
+	}
+
+	/* 1. Create array of value,weight pairs, skipping NaNs */
+	pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		pair[n].value  = stack[prev]->G->data[node];
+		pair[n].weight = stack[last]->G->data[node];
+		n++;
+	}
+	/* 2. Find the weighted mode */
+	mode = gmt_mode_weighted (GMT, pair, n);
+	/* 3. Compute the absolute deviations from this mode */
+	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - mode);
+	/* 4. Find the weighted median absolue deviation */
+	lmsscl = (float)(1.4826 * gmt_median_weighted (GMT, pair, n, 0.5));
+	gmt_M_free (GMT, pair);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl;
+}
+
 GMT_LOCAL void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LOWER 1 1 The lowest (minimum) value of A.  */
 {
@@ -2619,7 +2705,7 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	double mad, med;
 	float mad_f;
 
-	if (stack[last]->constant) {	/* Trivial case */
+	if (stack[last]->constant) {	/* Trivial case: mad = 0 */
 		gmt_M_memset (stack[last], info->size, float);
 		return;
 	}
@@ -2640,6 +2726,40 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 
 	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = mad_f;
+}
+
+GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: MADW 2 1 Weighted Median Absolute Deviation (L1 STD) of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	double med;
+	float wmad;
+	struct GMT_OBSERVATION *pair = NULL;
+
+	if (stack[prev]->constant) {	/* Trivial case if data are constant: mad = 0 */
+		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		return;
+	}
+
+	/* 1. Create array of value,weight pairs, skipping NaNs */
+	pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		pair[n].value  = stack[prev]->G->data[node];
+		pair[n].weight = stack[last]->G->data[node];
+		n++;
+	}
+	/* 2. Find the weighted median */
+	med = gmt_median_weighted (GMT, pair, n, 0.5);
+	/* 3. Compute the absolute deviations from this median */
+	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - med);
+	/* 4. Find the weighted median absolue deviation */
+	wmad = (float)gmt_median_weighted (GMT, pair, n, 0.5);
+	gmt_M_free (GMT, pair);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmad;
 }
 
 GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2815,6 +2935,33 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)mode;
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
+}
+
+GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: MODEW 2 1 Weighted mode value of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	float wmod;
+	struct GMT_OBSERVATION *pair = NULL;
+
+	if (stack[prev]->constant) {	/* Trivial case if data are constant */
+		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		return;
+	}
+
+	pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		pair[n].value  = stack[prev]->G->data[node];
+		pair[n].weight = stack[last]->G->data[node];
+		n++;
+	}
+	wmod = (float)gmt_mode_weighted (GMT, pair, n);
+	gmt_M_free (GMT, pair);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmod;
 }
 
 GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3713,9 +3860,10 @@ GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	double mean = 0.0, sum2 = 0.0, delta;
+	float std;
 	gmt_M_unused(GMT);
 
-	if (stack[last]->constant) {	/* Trivial case */
+	if (stack[last]->constant) {	/* Trivial case: std = 0 */
 		gmt_M_memset (stack[last], info->size, float);
 		return;
 	}
@@ -3728,8 +3876,40 @@ GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		mean += delta / n;
 		sum2 += delta * (stack[last]->G->data[node] - mean);
 	}
-	sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : 0.0;
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum2;
+	std = (n > 1) ? (float)sqrt (sum2 / (n - 1.0)) : 0.0;
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = std;
+}
+
+GMT_LOCAL void grd_STDW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: STDW 2 1 Weighted standard deviation of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0;
+	float std;
+	gmt_M_unused(GMT);
+
+	if (stack[last]->constant) {	/* Trivial case: std = 0 */
+		gmt_M_memset (stack[prev], info->size, float);
+		return;
+	}
+
+	/* Use West (1979) algorithm to compute mean and corrected sum of squares.
+	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		temp = stack[last]->G->data[node] + sumw;
+		delta = stack[prev]->G->data[node] - mean;
+		R = delta * stack[last]->G->data[node] / temp;
+		mean += R;
+		M2 += sumw * delta * R;
+		sumw = temp;
+		n++;
+	}
+	std = (float)sqrt ((n * M2 / sumw) / (n - 1.0));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = std;
 }
 
 GMT_LOCAL void grd_STEP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4022,6 +4202,38 @@ GMT_LOCAL void grd_VAR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 	sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum2;
+}
+
+GMT_LOCAL void grd_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: VARW 2 1 Weighted variance of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0;
+	float var;
+	gmt_M_unused(GMT);
+
+	if (stack[last]->constant) {	/* Trivial case: std = 0 */
+		gmt_M_memset (stack[prev], info->size, float);
+		return;
+	}
+
+	/* Use West (1979) algorithm to compute mean and corrected sum of squares.
+	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		temp = stack[last]->G->data[node] + sumw;
+		delta = stack[prev]->G->data[node] - mean;
+		R = delta * stack[last]->G->data[node] / temp;
+		mean += R;
+		M2 += sumw * delta * R;
+		sumw = temp;
+		n++;
+	}
+	var = (float) ((n * M2 / sumw) / (n - 1.0));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = var;
 }
 
 GMT_LOCAL void grd_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
