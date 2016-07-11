@@ -152,6 +152,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	int  n_cols, n_rows, i;
 	int  typeCLASS, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
+	bool not_yet = false;
 	uint64_t nn, ijk = 0;
 	void *data;
 	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
@@ -184,18 +185,26 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	else if (!strcmp(prhs->type,"uint16")) {
 		typeCLASS = GDT_UInt16;
 		n_byteOffset = 2;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: uint16 data class not implemented yet!\n");
+		not_yet = true;
 	}
 	else if (!strcmp(prhs->type,"int16")) {
 		typeCLASS = GDT_Int16;
 		n_byteOffset = 2;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: int16 data class not implemented yet!\n");
+		not_yet = true;
 	}
 	else if (!strcmp(prhs->type,"uint32")) {
 		typeCLASS = GDT_UInt32;
 		n_byteOffset = 4;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: uint32 data class not implemented yet!\n");
+		not_yet = true;
 	}
 	else if (!strcmp(prhs->type,"int32")) {
 		typeCLASS = GDT_Int32;
 		n_byteOffset = 4;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: int32 data class not implemented yet!\n");
+		not_yet = true;
 	}
 	else if (!strcmp(prhs->type,"float32")) {
 		typeCLASS = GDT_Float32;
@@ -203,8 +212,9 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Unsupported input data class!\n");
-		return(-1);
+		return -1;
 	}
+	if (not_yet) return -1;
 
 	if (prhs->C.active) {
 		nColors = prhs->C.n_colors;
