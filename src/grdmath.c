@@ -482,7 +482,7 @@ GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	if (doubleAlmostEqualZero (G->header->wesn[YHI], 90.0)) {	/* North pole row */
 		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
 		gmt_M_col_loop (GMT, info->G, first_row, col, node) {
-			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
 			G->data[node] = (float)(row_weight * col_weight * area);
 		}
 		first_row++;
@@ -490,7 +490,7 @@ GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	if (doubleAlmostEqualZero (G->header->wesn[YLO], -90.0)) {	/* South pole row */
 		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
 		gmt_M_col_loop (GMT, info->G, last_row, col, node) {
-			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
 			G->data[node] = (float)(row_weight * col_weight * area);
 		}
 		last_row--;
@@ -500,7 +500,7 @@ GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (row = first_row, j = first_row + G->header->pad[YHI]; row <= last_row; row++, j++) {
 		row_weight = cosd (info->d_grd_y[j]);
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
-			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
 			G->data[node] = (float)(row_weight * col_weight * area);
 		}
 	}
@@ -511,10 +511,10 @@ GMT_LOCAL void cart_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	uint64_t node;
 	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
 	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
-	gmt_M_row_loop (GMT, A, row) {	/* Loop over the rows */
-		if ((A->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
-		gmt_M_col_loop (GMT, A, row, col, node) {	/* Now loop over the columns */
-			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;	/* half-cells in x */
+	gmt_M_row_loop (GMT, info->G, row) {	/* Loop over the rows */
+		if (G->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
+		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Now loop over the columns */
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;	/* half-cells in x */
 			G->data[node] = (float)(row_weight * col_weight * area);
 		}
 	}

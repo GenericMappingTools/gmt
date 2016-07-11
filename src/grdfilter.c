@@ -508,7 +508,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 			row_weight = sind (lat_n) - sind (lat_s);
 		}
 		else if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data, and watch for poles */
-			if ((row == 0 && doubleAlmostEqualZero (A->wesn[YHI], 90.0)) || (row == last_row && doubleAlmostEqualZero (A->wesn[YLO], -90.0)) 	/* Poles are different */
+			if ((row == 0 && doubleAlmostEqualZero (A->header->wesn[YHI], 90.0)) || (row == last_row && doubleAlmostEqualZero (A->header->wesn[YLO], -90.0))) 	/* Poles are different */
 				row_weight = 1.0 - cosd (f * A->header->inc[GMT_Y]);
 			else {	/* All other points away from poles */
 				lat = gmt_M_grd_row_to_y (GMT, row, A->header);	/* Current input latitude */
