@@ -462,34 +462,46 @@ GMT_LOCAL void grd_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 }
 
 GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G) {
-	/* Calculate geographic spherical area in km^2 */
+	/* Calculate geographic SPHERICAL area in km^2.
+	 * Integrating the area between two parallels +/- yinc/2 to either side of latitude y on a sphere
+	 * and partition it amount all cells in longitude yields the exact area (angles in radians)
+	 *     A(y) = 2 * R^2 * xinc * sin (0.5 * yinc) * cos(y)
+	 * except at the points at the pole (gridline registration) or near the pole (pixel reg).
+	 * There, the integration yields
+	 *     A(pole) = R^2 * xinc * (1.0 - cos (f * yinc))
+	 * where f = 0.5 for gridline-registered and f = 1 for pixel-registered grids.
+	 * P.Wessel, July 2016.
+	 */
 	uint64_t node;
-	unsigned int row, col, first_row = 0, last_row = G->header->n_rows - 1;
-	float area;
-	double c, R2 = pow (R2D * GMT->current.proj.KM_PR_DEG, 2.0);	/* squared mean radius in km */
+	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	double area, f, row_weight, col_weight = 1.0, R2 = pow (R2D * GMT->current.proj.KM_PR_DEG, 2.0);	/* squared mean radius in km */
 
-	if (G->header->registration == GMT_GRID_NODE_REG) {	/* May need special treatment of pole points */
-		if (doubleAlmostEqualZero (G->header->wesn[YHI], 90.0)) {	/* North pole point */
-			area = (float)(R2 * (1.0 - cosd (0.5 * G->header->inc[GMT_Y])));
-			gmt_M_col_loop (GMT, info->G, first_row, col, node) {	/* There are all the NP points in a gridline registered grid */
-				G->data[node] = area;
-			}
-			first_row++;
+	/* May need special treatment of pole points */
+	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */
+	area = R2 * (G->header->inc[GMT_X] * D2R);
+	if (doubleAlmostEqualZero (G->header->wesn[YHI], 90.0)) {	/* North pole row */
+		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
+		gmt_M_col_loop (GMT, info->G, first_row, col, node) {
+			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
 		}
-		if (doubleAlmostEqualZero (G->header->wesn[YLO], -90.0)) {	/* South pole point */
-			area = (float)(R2 * (1.0 - cosd (0.5 * G->header->inc[GMT_Y])));
-			gmt_M_col_loop (GMT, info->G, last_row, col, node) {	/* There are all the SP points in a gridline registered grid */
-				G->data[node] = area;
-			}
-			last_row--;
-		}
+		first_row++;
 	}
-	/* Below we just use the standard graticule equation */
-	c = 2.0 * R2 * (G->header->inc[GMT_X] * D2R) * sind (0.5 * G->header->inc[GMT_Y]);
-	for (row = first_row; row <= last_row; row++) {
-		area = (float)(c * cosd (info->d_grd_y[row]));
+	if (doubleAlmostEqualZero (G->header->wesn[YLO], -90.0)) {	/* South pole row */
+		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
+		gmt_M_col_loop (GMT, info->G, last_row, col, node) {
+			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
+		last_row--;
+	}
+	/* Below we just use the standard graticule equation. Must use j instead of row in d_grd_y due to pad */
+	area *= 2.0 * sind (0.5 * G->header->inc[GMT_Y]);	/* Since no longer any special cases with poles below */
+	for (row = first_row, j = first_row + G->header->pad[YHI]; row <= last_row; row++, j++) {
+		row_weight = cosd (info->d_grd_y[j]);
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
-			G->data[node] = area;
+			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
 		}
 	}
 }
@@ -497,15 +509,19 @@ GMT_LOCAL void geo_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 GMT_LOCAL void cart_area (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G) {
 	/* Calculate geographic spherical area in km^2 */
 	uint64_t node;
-	unsigned int row, col;
-	float area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All cells have same area */
-	gmt_M_grd_loop (GMT, info->G, row, col, node) {
-		G->data[node] = area;
+	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
+	gmt_M_row_loop (GMT, A, row) {	/* Loop over the rows */
+		if ((A->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
+		gmt_M_col_loop (GMT, A, row, col, node) {	/* Now loop over the columns */
+			if ((A->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;	/* half-cells in x */
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
 	}
 }
 
 GMT_LOCAL void grd_AREA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: AREA 0 1 Area of each gridnode cell (in km^2 if geographic).  */
+/*OPERATOR: AREA 0 1 Area of each gridnode cell (spherical calculation in km^2 if geographic).  */
 {
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		geo_area (GMT, info, stack[last]->G);
@@ -4678,7 +4694,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 
 int GMT_grdmath (void *V_API, int mode, void *args) {
 	int k, op = 0, new_stack = -1, rowx, colx, status, start, error = 0;
-	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack;
+	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, pos;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool subset;
 	char *in_file = NULL, *label = NULL;
@@ -5100,7 +5116,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 		
-		(*call_operator[op]) (GMT, &info, stack, nstack - 1);	/* Do it */
+		pos = (consumed_operands[op]) ? nstack - 1 : nstack;
+		(*call_operator[op]) (GMT, &info, stack, pos);	/* Do it */
 
 		if (info.error) Return (info.error);	/* Got an error inside the operator */
 

@@ -482,9 +482,9 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	 * 3. Grid-registered grids have boundary nodes that only apply to 1/2 the area
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
-	unsigned int row, col;
+	unsigned int row, col, last_row;
 	uint64_t ij;
-	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
+	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0, f;
 	struct GMT_GRID *A = NULL;
 
 	/* Base the area weight grid on the input grid domain and increments. */
@@ -497,6 +497,8 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	}
 	else	/* Cartesian */
 		dx = A->header->inc[GMT_X];
+	f = (A->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Pole-scaling for geographic gridline/pixel grids */
+	last_row = A->header->n_rows - 1;
 	gmt_M_row_loop (GMT, A, row) {	/* Loop over the rows */
 		if (mode == GRDFILTER_GEO_MERCATOR) {		/* Adjust lat if IMG grid.  Note: these grids can never reach a pole. */
 			y = gmt_M_grd_row_to_y (GMT, row, A->header);	/* Current input Merc y */
@@ -506,10 +508,10 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 			row_weight = sind (lat_n) - sind (lat_s);
 		}
 		else if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data, and watch for poles */
-			lat = gmt_M_grd_row_to_y (GMT, row, A->header);	/* Current input latitude */
-			if (gmt_M_is_pole (lat))	/* Poles are different */
-				row_weight = 1.0 - cosd (0.5 * A->header->inc[GMT_Y]);
-			else {	/* All other points */
+			if ((row == 0 && doubleAlmostEqualZero (A->wesn[YHI], 90.0)) || (row == last_row && doubleAlmostEqualZero (A->wesn[YLO], -90.0)) 	/* Poles are different */
+				row_weight = 1.0 - cosd (f * A->header->inc[GMT_Y]);
+			else {	/* All other points away from poles */
+				lat = gmt_M_grd_row_to_y (GMT, row, A->header);	/* Current input latitude */
 				row_weight = 2.0 * cosd (lat) * s2;
 				/* Note: No need for special weight-sharing between w/e gridline-reg grids since we explicitly only use the west node */
 			}
