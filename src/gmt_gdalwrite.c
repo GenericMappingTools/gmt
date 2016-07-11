@@ -117,6 +117,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			to_GDALW->y_inc = I->header->inc[1];
 			to_GDALW->P.active = true;
 		}
+		to_GDALW->alpha = I->alpha;
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Only supported memory layout for now is T(op)C(ol)B(and) \n");
@@ -129,7 +130,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	if (free_data) gmt_M_free (GMT, data);
 	free (to_GDALW->driver);
 	free (to_GDALW->type);
-	if (to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha); 
+	if (free_data && to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha); 
 	gmt_M_free (GMT, to_GDALW);
 
 	return GMT_NOERROR;
@@ -354,11 +355,11 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					ijk = i * n_cols * n_rows;
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
-					if (i == n_bands - 1 && prhs->alpha && prhs->layout[2] == 'B') {		/* Time to write the alpha layer. */
-						hBand = GDALGetRasterBand(hDstDS, i + 2);
-						if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
-							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
-					}
+				}
+				if (i == n_bands - 1 && prhs->alpha && prhs->layout[3] != 'A') {		/* Time to write the alpha layer. */
+					hBand = GDALGetRasterBand(hDstDS, i + 2);
+					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, prhs->alpha, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
+						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write alpha band [err = %d]\n", gdal_err);
 				}
 				break;
 			case GDT_UInt16:
