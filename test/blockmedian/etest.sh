@@ -1,11 +1,11 @@
 #!/bin/bash
-#	$Id$
+#	$Id: etest.sh 15178 2015-11-06 10:45:03Z fwobbe $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
-# This test is just for blockmean
+# This test is only for blockmedian
 log=etest.log
 
 cat << EOF > data.d
@@ -28,9 +28,9 @@ cat << EOF > data.d
 1.2	0.8	7
 1.9	0.18	8
 EOF
-echo "All the mean values should be 5" > $log
-echo "Plain means" >> $log
-gmt blockmean -R0/2/0/2 -I1 -r data.d >> $log
-echo "Extended means" >> $log
-gmt blockmean -R0/2/0/2 -I1 -r -E data.d >> $log
+echo "All the median values should be 5" > $log
+echo "Plain medians" >> $log
+gmt blockmedian -R0/2/0/2 -I1 -r data.d >> $log
+echo "Extended medians" >> $log
+gmt blockmedian -R0/2/0/2 -I1 -r -E data.d >> $log
 $AWK '{if (NF == 6 && $3 != 5) print $0}' $log > fail

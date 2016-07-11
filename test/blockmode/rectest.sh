@@ -1,14 +1,13 @@
 #!/bin/bash
-#	$Id$
+#	$Id: rectest.sh 11490 2013-05-16 06:26:21Z pwessel $
 #
 # Test to make sure the -Ei option works as advertised.
 # We have data that will fall in to 4 separate blocks
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.  However, we
 # are returning the record numbers that go with those
-# median, and compare to given answers.
-# This test is only for blockmedian
-
+# median/modes, and compare to given answers.
+# This test is only for blockmode
 log=rectest.log
 
 cat << EOF > data.d
@@ -34,14 +33,14 @@ EOF
 cat << EOF > truth.d
 1
 2
-6
-11
+5
+10
 1
 3
-6
-12
+7
+13
 EOF
 # Record numbers should match truth.d"
-gmt blockmedian -R0/2/0/2 -I1 -Er- -r data.d -o3 > $log
-gmt blockmedian -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Er- -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
 diff $log truth.d --strip-trailing-cr > fail
