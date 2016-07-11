@@ -353,6 +353,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	                                   "Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
 	                                   "Syntax error -Q option: Cannot use -M when doing colormasking\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->Q.active,
+	                                   "Syntax error -Q option: Cannot use -D when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
 	                                   "Syntax error -A option: Must provide an output filename for image\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -430,7 +432,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	int index = 0, ks, error = 0;
 	
 	char   *img_ProjectionRefPROJ4 = NULL;
-	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
+	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, *alpha = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double	img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
@@ -700,7 +702,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 		if (use_intensity_grid) {
-			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL) Return (API->error);	/* Just to get a header we can change */
+			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL)	/* Just to get a header we can change */
+				Return (API->error);
 			if (n_grids)
 				gmt_M_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 			else
@@ -741,10 +744,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (n_grids) {
 		Grid_proj[0]->header->n_bands = 1;
-		header_work = Grid_proj[0]->header;	/* Later when need to refer to the header, use this copy */
+		header_work = Grid_proj[0]->header;     /* Later when need to refer to the header, use this copy */
 	}
 	if (Ctrl->D.active)
-		header_work = Img_proj->header;	/* Later when need to refer to the header, use this copy */
+		header_work = Img_proj->header;         /* Later when need to refer to the header, use this copy */
 
 	nm = header_work->nm;
 	n_columns = header_work->n_columns;
@@ -795,7 +798,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since image is gray only */
 			gmt_M_memcpy (P->bfn[GMT_NAN].rgb, red, 4, double);
 		}
-		rgb_used = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);
+		if (!Ctrl->A.return_image) rgb_used = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);
 	}
 	if (Ctrl->M.active || gray_only)
 		bitimage_8 = gmt_M_memory (GMT, NULL, nm, unsigned char);
@@ -862,7 +865,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					bitimage_8[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 				else {
 					for (k = 0; k < 3; k++) bitimage_24[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
-					if (Ctrl->Q.active && index != GMT_NAN - 3) /* Keep track of all r/g/b combinations used except for NaN */
+					if (Ctrl->Q.active && !Ctrl->A.return_image && index != GMT_NAN - 3) /* Keep track of all r/g/b combinations used except for NaN */
 						rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = true;
 				}
 			}
@@ -870,7 +873,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (!n_grids) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);
 		}
 
-		if (P && Ctrl->Q.active) {	/* Check that we found an unused r/g/b value so colormasking will work OK */
+		if (P && Ctrl->Q.active && !Ctrl->A.return_image) {	/* Check that we found an unused r/g/b value so colormasking will work OK */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
 				for (index = 0, ks = -1; ks == -1 && index < 256*256*256; index++)
@@ -892,7 +895,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else
 			done = true;
 	}
-	if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
+	if (Ctrl->Q.active && !Ctrl->A.return_image) gmt_M_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
 		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_NOERROR)
@@ -939,7 +942,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			to_GDALW->n_columns = (int)n_columns;
 			to_GDALW->n_rows = (int)n_rows;
 			strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
-			if (Ctrl->Q.active) Out->header->mem_layout[3] = 'A';
 			if (Ctrl->D.active)
 				to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
 			else if ((P && gray_only) || Ctrl->M.active)
@@ -1049,6 +1051,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else {	/* 24-bit image */
 		if (Ctrl->A.active) {
+			if (Ctrl->Q.active) {
+				alpha = gmt_M_memory (GMT, NULL, nm, unsigned char);
+				memset (alpha, 255, header_work->nm);
+				for (node = row = 0; row < n_rows; row++) {
+					kk = gmt_M_ijpgi (header_work, row, 0); 
+					for (col = 0; col < n_columns; col++) { 
+						if (gmt_M_is_fnan (Grid_proj[0]->data[kk + col])) alpha[node] = 0;
+						node++;
+					}
+				}
+			}
 			if (Ctrl->A.return_image) {     /* Create a GMT_IMAGE with 3 bands and write output */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color GMT_IMAGE object\n");
 				if (grid_registration == GMT_GRID_NODE_REG) {
@@ -1062,18 +1075,18 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				Out->data = bitimage_24;    /* Pass out the 3*byte data */
 				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-				if (Ctrl->Q.active) {
-					for (node = 0; node < nm; node++)
-						if (gmt_M_is_fnan (Grid_proj[0]->data[node])) Out->alpha[node] = 255;
-				}
+				Out->alpha = alpha;
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);
+				/* if (alpha) gmt_M_free (GMT, alpha);	But aren't this and the above bitimage_24 leaking? */
 			}
 #ifdef HAVE_GDAL
 			else {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image via GDAL\n");
 				to_GDALW->data = bitimage_24;
+				to_GDALW->alpha = alpha;
 				gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
+				if (alpha) gmt_M_free (GMT, alpha);
 			}
 #endif
 		}
