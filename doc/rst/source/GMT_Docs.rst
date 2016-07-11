@@ -284,7 +284,11 @@ as well. For specific enhancements, we have:
    across multiple files or segments.
 
 *  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
-   **RMS** and **DENAN**.
+   **RMS**, **DENAN**, as well as the weighted statistical operators
+   **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
+   **STDWW**, and **VARW**.  Finally, doc:`grdmath` also gains the
+   **AREA** operator which computes the gridcell area (in km^2 if the
+   grid is geographic).
 
 *  :doc:`grdfft` has a new modifier to the **-E** that allows for more
    control of the power normalization for radial spectra.

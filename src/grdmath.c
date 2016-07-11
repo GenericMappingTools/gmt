@@ -2572,7 +2572,7 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	double mode, lmsscl;
 	float lmsscl_f;
 
-	if (stack[last]->constant) {	/* Trivial case */
+	if (stack[last]->constant) {	/* Trivial case: lmsscale = 0 */
 		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
@@ -2604,12 +2604,12 @@ GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	uint64_t node, n = 0;
 	unsigned int prev = last - 1;
 	unsigned int row, col;
-	double mode;
+	double wmode;
 	float lmsscl;
 	struct GMT_OBSERVATION *pair = NULL;
 
-	if (stack[prev]->constant) {	/* Trivial case if data are constant: mad = 0 */
-		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+	if (stack[prev]->constant) {	/* Trivial case: lmsscale = 0 */
+		gmt_M_memset (stack[prev]->G->data, info->size, float);
 		return;
 	}
 
@@ -2623,13 +2623,13 @@ GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		n++;
 	}
 	/* 2. Find the weighted mode */
-	mode = gmt_mode_weighted (GMT, pair, n);
+	wmode = gmt_mode_weighted (GMT, pair, n);
 	/* 3. Compute the absolute deviations from this mode */
-	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - mode);
-	/* 4. Find the weighted median absolue deviation */
+	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - wmode);
+	/* 4. Find the weighted median absolue deviation and scale it */
 	lmsscl = (float)(1.4826 * gmt_median_weighted (GMT, pair, n, 0.5));
 	gmt_M_free (GMT, pair);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = lmsscl;
 }
 
 GMT_LOCAL void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2739,7 +2739,7 @@ GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	struct GMT_OBSERVATION *pair = NULL;
 
 	if (stack[prev]->constant) {	/* Trivial case if data are constant: mad = 0 */
-		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		return;
 	}
 
@@ -2759,7 +2759,7 @@ GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	/* 4. Find the weighted median absolue deviation */
 	wmad = (float)gmt_median_weighted (GMT, pair, n, 0.5);
 	gmt_M_free (GMT, pair);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmad;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmad;
 }
 
 GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2813,7 +2813,7 @@ GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for MEANW!\n");
 	
 	if (stack[prev]->constant) {	/* Trivial case if data are constant */
-		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		return;
 	}
 
@@ -2825,7 +2825,7 @@ GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		n++;
 	}
 	zm = (n == 0 || sum_w == 0.0) ? GMT->session.f_NaN : (float)(sum_zw / sum_w);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = zm;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = zm;
 }
 
 GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2863,7 +2863,7 @@ GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	struct GMT_OBSERVATION *pair = NULL;
 
 	if (stack[prev]->constant) {	/* Trivial case if data are constant */
-		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		return;
 	}
 
@@ -2877,7 +2877,7 @@ GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	}
 	wmed = (float)gmt_median_weighted (GMT, pair, n, 0.5);
 	gmt_M_free (GMT, pair);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmed;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmed;
 }
 
 GMT_LOCAL void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2947,7 +2947,7 @@ GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	struct GMT_OBSERVATION *pair = NULL;
 
 	if (stack[prev]->constant) {	/* Trivial case if data are constant */
-		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		return;
 	}
 
@@ -2961,7 +2961,7 @@ GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 	wmod = (float)gmt_mode_weighted (GMT, pair, n);
 	gmt_M_free (GMT, pair);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmod;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmod;
 }
 
 GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3324,6 +3324,43 @@ GMT_LOCAL void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	}
 
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = p;
+}
+
+GMT_LOCAL void grd_PQUANTW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: PQUANTW 3 1 The C'th Quantile (0-100%) of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1, prev2 = last - 2;
+	unsigned int row, col;
+	float p;
+	struct GMT_OBSERVATION *pair = NULL;
+
+	if (!stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANTW must be given a constant quantile (no calculations performed)\n");
+		return;
+	}
+	if (stack[last]->factor < 0.0 || stack[last]->factor > 100.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANTW must be given a constant quantile between 0-100%% (no calculations performed)\n");
+		return;
+	}
+	if (stack[prev]->constant) {	/* Trivial case */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PQUANTW of a constant is set to NaN\n");
+		p = GMT->session.f_NaN;
+		for (node = 0; node < info->size; node++) stack[prev2]->G->data[node] = p;
+		return;
+	}
+
+	pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev2]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		pair[n].value  = stack[prev2]->G->data[node];
+		pair[n].weight = stack[prev]->G->data[node];
+		n++;
+	}
+	p = (float)gmt_median_weighted (GMT, pair, n, 0.01 * stack[last]->factor);
+	gmt_M_free (GMT, pair);
+	for (node = 0; node < info->size; node++) stack[prev2]->G->data[node] = p;
 }
 
 GMT_LOCAL void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3890,7 +3927,7 @@ GMT_LOCAL void grd_STDW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float std;
 	gmt_M_unused(GMT);
 
-	if (stack[last]->constant) {	/* Trivial case: std = 0 */
+	if (stack[prev]->constant) {	/* Trivial case: std = 0 */
 		gmt_M_memset (stack[prev], info->size, float);
 		return;
 	}
@@ -3909,7 +3946,7 @@ GMT_LOCAL void grd_STDW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		n++;
 	}
 	std = (float)sqrt ((n * M2 / sumw) / (n - 1.0));
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = std;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = std;
 }
 
 GMT_LOCAL void grd_STEP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4214,7 +4251,7 @@ GMT_LOCAL void grd_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float var;
 	gmt_M_unused(GMT);
 
-	if (stack[last]->constant) {	/* Trivial case: std = 0 */
+	if (stack[prev]->constant) {	/* Trivial case: std = 0 */
 		gmt_M_memset (stack[prev], info->size, float);
 		return;
 	}
@@ -4233,7 +4270,7 @@ GMT_LOCAL void grd_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		n++;
 	}
 	var = (float) ((n * M2 / sumw) / (n - 1.0));
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = var;
+	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = var;
 }
 
 GMT_LOCAL void grd_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4591,12 +4628,14 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	 * so we must first use GMT_Destroy_Data and if it fails then use gmt_free_grid. */
 	unsigned int k;
 	int error;
+	bool is_object;
 
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (stack[k]->G) {	/* Must free unless being passed back out */
-			if ((error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
+			is_object = gmtlib_is_an_object (API->GMT, &stack[k]->G));
+			if (is_object && (error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
-			else if (error == GMT_OBJECT_NOT_FOUND) {
+			else if (!is_object || error == GMT_OBJECT_NOT_FOUND) {
 				/* Failures should only be from local objects not passed up */
 				if (gmt_this_alloc_level (GMT, stack[k]->G->alloc_level)) {
 					gmt_free_grid (GMT, &stack[k]->G, true);

@@ -2120,6 +2120,11 @@ GMT_LOCAL int api_get_object_id_from_data_ptr (struct GMTAPI_CTRL *API, void *pt
 }
 
 /*! . */
+bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr) {
+	return (api_get_object_id_from_data_ptr (GMT->parent, ptr) == GMT_NOTSET) ? false : true;
+}
+
+/*! . */
 GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, enum GMT_enum_geometry geometry, enum GMT_enum_std direction, unsigned int mode, char *filename, void *resource) {
 	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
