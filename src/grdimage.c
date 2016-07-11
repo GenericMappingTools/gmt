@@ -800,7 +800,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active || gray_only)
 		bitimage_8 = gmt_M_memory (GMT, NULL, nm, unsigned char);
 	else {
-		if (Ctrl->Q.active) colormask_offset = 3;
+		if (Ctrl->Q.active && !(Ctrl->A.active && Ctrl->A.return_image)) colormask_offset = 3;
 		bitimage_24 = gmt_M_memory (GMT, NULL, 3 * nm + colormask_offset, unsigned char);
 		if (P && Ctrl->Q.active) {
 			for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);
@@ -1058,7 +1058,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				Out->data = &bitimage_24[colormask_offset];    /* Pass out the 3*byte data but without eventual transparency color */
+				Out->data = bitimage_24;    /* Pass out the 3*byte data */
 				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
 				if (Ctrl->Q.active) {

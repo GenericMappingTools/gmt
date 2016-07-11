@@ -2679,6 +2679,35 @@ GMT_LOCAL void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum_a;
 }
 
+GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: MEANW 2 1 Weighted mean value of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	double sum_zw = 0.0, sum_w = 0.0;
+	float zm;
+	gmt_M_unused(GMT);
+
+	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for MEANW!\n");
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for MEANW!\n");
+	
+	if (stack[prev]->constant) {	/* Trivial case if data are constant */
+		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		return;
+	}
+
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		sum_zw += stack[prev]->G->data[node] * stack[last]->G->data[node];
+		sum_w  += stack[last]->G->data[node];
+		n++;
+	}
+	zm = (n == 0 || sum_w == 0.0) ? GMT->session.f_NaN : (float)(sum_zw / sum_w);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = zm;
+}
+
 GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: MEDIAN 1 1 Median value of A.  */
 {
@@ -2702,6 +2731,33 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = med;
+}
+
+GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: MEDIANW 2 1 Weighted median value of A for weights in B.  */
+{
+	uint64_t node, n = 0;
+	unsigned int prev = last - 1;
+	unsigned int row, col;
+	float wmed;
+	struct GMT_OBSERVATION *pair = NULL;
+
+	if (stack[prev]->constant) {	/* Trivial case if data are constant */
+		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)stack[prev]->factor;
+		return;
+	}
+
+	pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[prev]->G->data[node])) continue;
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		pair[n].value  = stack[prev]->G->data[node];
+		pair[n].weight = stack[last]->G->data[node];
+		n++;
+	}
+	wmed = (float)gmt_median_weighted (GMT, pair, n, 0.5);
+	gmt_M_free (GMT, pair);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = wmed;
 }
 
 GMT_LOCAL void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
