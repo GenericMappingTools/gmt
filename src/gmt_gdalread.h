@@ -36,7 +36,7 @@ struct GMT_GDALWRITE_CTRL {
 	char   *command;           /* command line */
 	char   *title;
 	char   *remark;
-	char   *alpha;             /* In case this is used to transmit an image that has a transparency layer */
+	unsigned char   *alpha;    /* In case this is used to transmit an image that has a transparency layer */
 	void   *data;              /* To store the grid/image array */
 	char    layout[4];         /* A 3 letter code specifying the image memory layout plus a A|a if alpha data in array */
 	int     geog;

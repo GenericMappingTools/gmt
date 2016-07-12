@@ -11856,7 +11856,7 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 	if (!T->active) return (0);	/* Nothing to do */
 
 	if (GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
-		n = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], tolower((unsigned char) T->type), array, labels);
+		n = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
 		return (n);
 	}
 
