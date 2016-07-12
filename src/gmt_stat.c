@@ -1824,7 +1824,7 @@ double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data
 	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile) {
+double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n) {
 	/* Just hardwire quantile to 0.5 */
 	return gmt_quantile_weighted (GMT, data, n, 0.5);
 }
