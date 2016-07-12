@@ -2531,9 +2531,8 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
-GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: LMSSCLW 1 1 Weighted LMS scale estimate (LMS STD) of A for weights in B.  */
-{
 	uint64_t s, row, k = 0;
 	unsigned int prev;
 	double wmode, lmsscl, w;
@@ -2560,15 +2559,15 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				continue;
 			else
 				w = T->segment[s]->data[col][row];
-			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = w;
+			pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+			pair[k].weight = (float)w;
 			k++;
 		}
 		if (info->local) {	/* Report per segment */
 			/* 2. Find the weighted mode */
 			wmode = gmt_mode_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this mode */
-			for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmode);
+			for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmode);
 			/* 4. Find the weighted median absolue deviation and scale it */
 			lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
@@ -2578,7 +2577,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	/* 2. Find the weighted mode */
 	wmode = gmt_mode_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this mode */
-	for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmode);
+	for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmode);
 	/* 4. Find the weighted median absolue deviation and scale it */
 	lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
@@ -2587,9 +2586,8 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	return 0;
 }
 
-GMT_LOCAL int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: LOG 1 1 log (A) (natural log).  */
-{
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2805,15 +2803,15 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 				continue;
 			else
 				w = T->segment[s]->data[col][row];
-			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = w;
+			pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+			pair[k].weight = (float)w;
 			k++;
 		}
 		if (info->local) {	/* Report per segment */
 			/* 2. Find the weighted median */
 			wmed = gmt_median_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this median */
-			for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmed);
+			for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmed);
 			/* 4. Find the weighted median absolue deviation */
 			wmad = gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
@@ -2823,7 +2821,7 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	/* 2. Find the weighted median */
 	wmed = gmt_median_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this median */
-	for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmed);
+	for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmed);
 	/* 4. Find the weighted median absolue deviation */
 	wmad = gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
@@ -2991,8 +2989,8 @@ GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				continue;
 			else
 				w = T->segment[s]->data[col][row];
-			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = w;
+			pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+			pair[k].weight = (float)w;
 			k++;
 		}
 		if (info->local) {
@@ -3068,8 +3066,8 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			for (row = k = 0; row < info->T->segment[s]->n_rows; row++) {
 				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
 				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-				pair[k].value  = T_prev->segment[s]->data[col][row];
-				pair[k].weight = T->segment[s]->data[col][row];
+				pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+				pair[k].weight = (float)T->segment[s]->data[col][row];
 				k++;
 			}
 			wmed = (float)gmt_mode_weighted (GMT, pair, k);
@@ -3079,8 +3077,8 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
 				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-				pair[k].value  = T_prev->segment[s]->data[col][row];
-				pair[k].weight = T->segment[s]->data[col][row];
+				pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+				pair[k].weight = (float)T->segment[s]->data[col][row];
 				k++;
 			}
 		}
@@ -3121,8 +3119,8 @@ GMT_LOCAL int table_MODEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 				continue;
 			else
 				w = T->segment[s]->data[col][row];
-			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = w;
+			pair[k].value  = (float)T_prev->segment[s]->data[col][row];
+			pair[k].weight = (float)w;
 			k++;
 		}
 		if (info->local) {
@@ -3498,8 +3496,8 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 				continue;
 			else
 				w = T_prev1->segment[s]->data[col][row];
-			pair[k].value  = T_prev2->segment[s]->data[col][row];
-			pair[k].weight = w;
+			pair[k].value  = (float)T_prev2->segment[s]->data[col][row];
+			pair[k].weight = (float)w;
 			
 			k++;
 		}
@@ -4672,8 +4670,8 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 #include "gmtmath.h"
 
-GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
-{	unsigned int k, error;
+GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
+	unsigned int k, error = 0;
 	bool is_object;
 	for (k = 0; k < GMTMATH_STACK_SIZE; k++) {
 		if (stack[k]->D) {	/* Must free unless being passed back out */
@@ -4696,8 +4694,8 @@ GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack
 	}
 }
 
-GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
-{	unsigned int k;
+GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall) {
+	unsigned int k;
 	for (k = 0; k < GMTMATH_STORE_SIZE; k++) {
 		if (recall[k] && !recall[k]->stored.constant) {
 			gmt_free_dataset (API->GMT, &recall[k]->stored.D);

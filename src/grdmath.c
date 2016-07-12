@@ -516,6 +516,7 @@ GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GRDMATH_INFO *inf
 	uint64_t node;
 	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
 	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
+	gmt_M_unused(GMT);
 	gmt_M_row_loop (GMT, info->G, row) {	/* Loop over the rows */
 		if (G->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Now loop over the columns */
@@ -525,18 +526,16 @@ GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GRDMATH_INFO *inf
 	}
 }
 
-GMT_LOCAL void grd_AREA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_AREA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: AREA 0 1 Area of each gridnode cell (spherical calculation in km^2 if geographic).  */
-{
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		get_geo_cellarea (GMT, info, stack[last]->G);
 	else
 		get_cart_cellarea (GMT, info, stack[last]->G);
 }
 
-GMT_LOCAL void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ASEC 1 1 asec (A).  */
-{
 	uint64_t node;
 	float a = 0.0f;
 
@@ -547,9 +546,8 @@ GMT_LOCAL void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (1.0f / stack[last]->G->data[node]);
 }
 
-GMT_LOCAL void grd_ASECH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_ASECH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ASECH 1 1 asech (A).  */
-{
 	uint64_t node;
 	float a = 0.0f;
 
@@ -2595,7 +2593,7 @@ GMT_LOCAL float grd_wlmsscl_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmode, lmsscl;
-	double w;
+	double w = 1;
 	if (!use_grid) w = weight;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
@@ -2608,21 +2606,20 @@ GMT_LOCAL float grd_wlmsscl_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 				w = W->data[node];
 		}
 		pair[n].value    = G->data[node];
-		pair[n++].weight = w;
+		pair[n++].weight = (float)w;
 	}
 	/* 2. Find the weighted mode */
 	wmode = (float)gmt_mode_weighted (GMT, pair, n);
 	/* 3. Compute the absolute deviations from this mode */
-	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - wmode);
+	for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - wmode);
 	/* 4. Find the weighted median absolue deviation and scale it */
 	lmsscl = (float)(1.4826 * gmt_median_weighted (GMT, pair, n));
 	gmt_M_free (GMT, pair);
 	return lmsscl;
 }
 
-GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LMSSCL 1 1 LMS scale estimate (LMS STD) of A.  */
-{
 	uint64_t node;
 	float lmsscl_f;
 
@@ -2661,9 +2658,8 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl_f;
 }
 
-GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LMSSCLW 1 1 Weighted LMS scale estimate (LMS STD) of A for weights in B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1;
 	float lmsscl;
@@ -2677,9 +2673,8 @@ GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = lmsscl;
 }
 
-GMT_LOCAL void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LOWER 1 1 The lowest (minimum) value of A.  */
-{
 	uint64_t node;
 	unsigned int row, col;
 	float low = FLT_MAX;
@@ -2699,9 +2694,8 @@ GMT_LOCAL void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	for (node = 0; node < info->size; node++) if (!gmt_M_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = low;
 }
 
-GMT_LOCAL void grd_LPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LPDF 1 1 Laplace probability density function for z = A.  */
-{
 	uint64_t node;
 	double a = 0.0;
 	gmt_M_unused(GMT);
@@ -2710,9 +2704,8 @@ GMT_LOCAL void grd_LPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 0.5 * expf (-fabsf (stack[last]->G->data[node])));
 }
 
-GMT_LOCAL void grd_LRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LRAND 2 1 Laplace random noise with mean A and std. deviation B.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	double a = 0.0, b = 0.0;
@@ -2727,9 +2720,8 @@ GMT_LOCAL void grd_LRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 }
 
-GMT_LOCAL void grd_LT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_LT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LT 2 1 1 if A < B, else 0.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a, b;
@@ -2745,7 +2737,7 @@ GMT_LOCAL void grd_LT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct G
 GMT_LOCAL float grd_wmad_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G, struct GMT_GRID *W, bool use_grid, double weight) {
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double med, w;
+	double med, w = 1;
 	if (!use_grid) w = weight;
 	float wmad;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
@@ -2759,21 +2751,20 @@ GMT_LOCAL float grd_wmad_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 				w = W->data[node];
 		}
 		pair[n].value    = G->data[node];
-		pair[n++].weight = w;
+		pair[n++].weight = (float)w;
 	}
 	/* 2. Find the weighted median */
 	med = gmt_median_weighted (GMT, pair, n);
 	/* 3. Compute the absolute deviations from this median */
-	for (node = 0; node < n; node++) pair[node].value = fabs (pair[node].value - med);
+	for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - med);
 	/* 4. Find the weighted median absolue deviation */
 	wmad = (float)gmt_median_weighted (GMT, pair, n);
 	gmt_M_free (GMT, pair);
 	return wmad;
 }
 
-GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MAD 1 1 Median Absolute Deviation (L1 STD) of A.  */
-{
 	uint64_t node;
 	float mad_f;
 
@@ -2811,9 +2802,8 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = mad_f;
 }
 
-GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MADW 2 1 Weighted Median Absolute Deviation (L1 STD) of A for weights in B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1;
 	float wmad;
@@ -2827,9 +2817,8 @@ GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmad;
 }
 
-GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MAX 2 1 Maximum of A and B.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a, b;
@@ -2845,7 +2834,7 @@ GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL float grd_wmean_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G, struct GMT_GRID *W, bool use_grid, double weight) {
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double sum_zw = 0.0, sum_w = 0.0, w;
+	double sum_zw = 0.0, sum_w = 0.0, w = 1;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
@@ -2862,9 +2851,8 @@ GMT_LOCAL float grd_wmean_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	return (n == 0 || sum_w == 0.0) ? GMT->session.f_NaN : (float)(sum_zw / sum_w);
 }
 
-GMT_LOCAL void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MEAN 1 1 Mean value of A.  */
-{
 	uint64_t node;
 	float zm;
 	gmt_M_unused(GMT);
@@ -2893,9 +2881,8 @@ GMT_LOCAL void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = zm;
 }
 
-GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MEANW 2 1 Weighted mean value of A for weights in B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1;
 	float zm;
@@ -2917,7 +2904,7 @@ GMT_LOCAL float grd_wmedian_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmed;
-	double w;
+	double w = 1;
 	if (!use_grid) w = weight;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
@@ -2930,7 +2917,7 @@ GMT_LOCAL float grd_wmedian_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 				w = W->data[node];
 		}
 		pair[n].value    = G->data[node];
-		pair[n++].weight = w;
+		pair[n++].weight = (float)w;
 	}
 	/* 2. Find the weighted median */
 	wmed = (float)gmt_median_weighted (GMT, pair, n);
@@ -2938,9 +2925,8 @@ GMT_LOCAL float grd_wmedian_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	return wmed;
 }
 
-GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MEDIAN 1 1 Median value of A.  */
-{
 	uint64_t node;
 	float med;
 
@@ -2971,9 +2957,8 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = med;
 }
 
-GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MEDIANW 2 1 Weighted median value of A for weights in B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1;
 	float wmed;
@@ -2987,9 +2972,8 @@ GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmed;
 }
 
-GMT_LOCAL void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MIN 2 1 Minimum of A and B.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a, b;
@@ -3002,9 +2986,8 @@ GMT_LOCAL void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
-GMT_LOCAL void grd_MOD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MOD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MOD 2 1 A mod B (remainder after floored division).  */
-{
 	uint64_t node;
 	unsigned int prev;
 	double a, b;
@@ -3022,7 +3005,7 @@ GMT_LOCAL float grd_wmode_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmode;
-	double w;
+	double w = 1;
 	if (!use_grid) w = weight;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
@@ -3035,7 +3018,7 @@ GMT_LOCAL float grd_wmode_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 				w = W->data[node];
 		}
 		pair[n].value    = G->data[node];
-		pair[n++].weight = w;
+		pair[n++].weight = (float)w;
 	}
 	/* 2. Find the weighted mode */
 	wmode = (float)gmt_mode_weighted (GMT, pair, n);
@@ -3043,9 +3026,8 @@ GMT_LOCAL float grd_wmode_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	return wmode;
 }
 
-GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MODE 1 1 Mode value (Least Median of Squares) of A.  */
-{
 	uint64_t node;
 	float mode = 0.0f;
 
@@ -3079,9 +3061,8 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = mode;
 }
 
-GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MODEW 2 1 Weighted mode value of A for weights in B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1;
 	float wmode;
@@ -3095,9 +3076,8 @@ GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmode;
 }
 
-GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: MUL 2 1 A * B.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	double a, b;
@@ -3112,9 +3092,8 @@ GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
-GMT_LOCAL void grd_NAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NAN 2 1 NaN if A == B, else A.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a = 0.0f, b = 0.0f;
@@ -3129,9 +3108,8 @@ GMT_LOCAL void grd_NAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
-GMT_LOCAL void grd_NEG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NEG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NEG 1 1 -A.  */
-{
 	uint64_t node;
 	float a = 0.0f;
 
@@ -3140,9 +3118,8 @@ GMT_LOCAL void grd_NEG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : -stack[last]->G->data[node];
 }
 
-GMT_LOCAL void grd_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NEQ 2 1 1 if A != B, else 0.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a, b;
@@ -3156,9 +3133,8 @@ GMT_LOCAL void grd_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	}
 }
 
-GMT_LOCAL void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
-{
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float z, zmin = FLT_MAX, zmax = -FLT_MAX;
@@ -3181,9 +3157,8 @@ GMT_LOCAL void grd_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * stack[last]->G->data[node]);
 }
 
-GMT_LOCAL void grd_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NOT 1 1 NaN if A == NaN, 1 if A == 0, else 0.  */
-{
 	uint64_t node;
 	float a = 0.0f;
 
@@ -3192,9 +3167,8 @@ GMT_LOCAL void grd_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : ((fabsf (stack[last]->G->data[node]) > GMT_CONV8_LIMIT) ? 0.0f : 1.0f);
 }
 
-GMT_LOCAL void grd_NRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_NRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NRAND 2 1 Normal, random values with mean A and std. deviation B.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	double a = 0.0, b = 0.0;
@@ -3209,9 +3183,8 @@ GMT_LOCAL void grd_NRAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 }
 
-GMT_LOCAL void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: OR 2 1 NaN if B == NaN, else A.  */
-{
 	uint64_t node;
 	unsigned int prev;
 	float a, b;
@@ -3224,9 +3197,8 @@ GMT_LOCAL void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct G
 	}
 }
 
-GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: PDIST 1 1 Compute minimum distance (in km if -fg) from points in ASCII file A.  */
-{
 	uint64_t dummy[2], node, row, col;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -3244,9 +3216,8 @@ GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	ASCII_free (GMT, info, &D, "PDIST");	/* Free memory used for points */
 }
 
-GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: PDIST2 2 1 As PDIST, from points in ASCII file B but only to nodes where A != 0.  */
-{
 	uint64_t dummy[2], node, row, col;
 	unsigned int prev;
 	struct GMT_DATATABLE *T = NULL;
@@ -3270,9 +3241,8 @@ GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	ASCII_free (GMT, info, &D, "PDIST2");	/* Free memory used for points */
 }
 
-GMT_LOCAL void grd_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+GMT_LOCAL void grd_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: PERM 2 1 Permutations n_P_r, with n = A and r = B.  */
-{
 	uint64_t node;
 	unsigned int prev = last - 1, row, col, error = 0;
 	double a, b;
@@ -3429,7 +3399,7 @@ GMT_LOCAL float grd_wquant_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float p;
-	double w;
+	double w = 1;
 	if (!use_grid) w = weight;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
@@ -3442,7 +3412,7 @@ GMT_LOCAL float grd_wquant_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 				w = W->data[node];
 		}
 		pair[n].value    = G->data[node];
-		pair[n++].weight = w;
+		pair[n++].weight = (float)w;
 	}
 	/* 2. Find the weighted quantile */
 	p = (float)gmt_quantile_weighted (GMT, pair, n, 0.01*q);
@@ -4045,7 +4015,7 @@ GMT_LOCAL float grd_wstd_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
@@ -4385,7 +4355,7 @@ GMT_LOCAL float grd_wvar_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
@@ -4806,7 +4776,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	/* Free allocated memory before quitting.  Some memory is registered while other is local
 	 * so we must first use GMT_Destroy_Data and if it fails then use gmt_free_grid. */
 	unsigned int k;
-	int error;
+	int error = 0;
 	bool is_object;
 
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
