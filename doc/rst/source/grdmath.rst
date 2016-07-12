@@ -594,6 +594,12 @@ The following symbols have special meaning:
 Notes On Operators
 ------------------
 
+#. For Cartesian grids the operators **MEAN**, **MEDIAN**, **MODE**,
+   **LMSSCL**, **MAD**, **OQUANT**, **STD**, and **VAR** return the
+   expected value from the given matrix.  However, for geographic grids
+   we perform a spherically weighted calculation where each node value
+   is weighted by the geographic area represented by that node.
+
 #. The operator **SDIST** calculates spherical distances in km between the
    (lon, lat) point on the stack and all node positions in the grid. The
    grid domain and the (lon, lat) point are expected to be in degrees.
@@ -606,8 +612,9 @@ Notes On Operators
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
 
-   The operator **LDISTG** is a version of **LDIST** that operates on the GSHHG data. Instead of reading an ASCII file,
-   it directly accesses one of the GSHHG data sets as determined by the **-D** and **-A** options.
+   The operator **LDISTG** is a version of **LDIST** that operates on the
+   GSHHG data. Instead of reading an ASCII file, it directly accesses one of
+   the GSHHG data sets as determined by the **-D** and **-A** options.
 
 #. The operator **POINT** reads a ASCII table, computes the mean x and mean
    y values and places these on the stack.  If geographic data then we use
@@ -637,7 +644,7 @@ Notes On Operators
    as argument.
 
 #. All the derivatives are based on central finite differences, with
-   natural boundary conditions.
+   natural boundary conditions, and are Cartesian derivatives.
 
 #. Files that have the same names as some operators, e.g., **ADD**,
    **SIGN**, **=**, etc. should be identified by prepending the current

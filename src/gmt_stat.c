@@ -24,65 +24,66 @@
  *
  * PUBLIC functions (59):
  *
- *	gmt_sig_f :	    : Returns true if reduction in model misfit was significant
- *	gmt_bei:	    : Kelvin-Bessel function bei(x)
- *	gmt_ber:	    : Kelvin-Bessel function ber(x)
- *	gmt_kei:	    : Kelvin-Bessel function kei(x)
- *	gmt_ker:	    : Kelvin-Bessel function ker(x)
- *	gmt_plm:	    : Legendre polynomial of degree L order M
- *	gmt_plm_bar:	    : Normalized Legendre polynomial of degree L order M
- *	gmt_plm_bar_all     : 
- *	gmt_i0:		    : Modified Bessel function 1st kind order 0
- *	gmt_i1:		    : Modified Bessel function 1st kind order 1
- *	gmt_in:		    : Modified Bessel function 1st kind order N
- *	gmt_k0:		    : Modified Kelvin function 2nd kind order 0
- *	gmt_k1:		    : Modified Kelvin function 2nd kind order 1
- *	gmt_kn:		    : Modified Kelvin function 2nd kind order N
- *	gmt_dilog:	    : The dilog function
- *	gmt_erfinv:	    : The inverse error function
- *	gmt_rand:	    : Uniformly distributed random numbers 0 < x < 1
- *	gmt_nrand:	    : Normally distributed random numbers from N(0,1)
- *	gmt_lrand:	    : Laplace random number generator
- *	gmt_corrcoeff:	    : Correlation coefficient.
- *	gmt_psi:	    : Digamma (psi) function.
- *	gmt_PvQv:	    : Legendre functions Pv and Qv for imaginary v and real x (-1/+1).
- *	gmt_factorial:	    : Factorials.
- *	gmt_sinc            :
- *	gmt_permutation     :
- *	gmt_combination     :
- *	gmt_f_pdf           :
- *	gmt_f_cdf           :
- *	gmt_t_pdf           :
- *	gmt_t_cdf           :
- *	gmt_weibull_pdf     :
- *	gmt_weibull_cdf     :
- *	gmt_weibull_crit    :
- *	gmt_binom_pdf       :
- *	gmt_binom_cdf       :
- *	gmt_zdist           :
- *	gmt_zcrit           :
- *	gmt_tcrit           :
- *	gmt_chi2_pdf        :
- *	gmt_chi2crit        :
- *	gmt_Fcrit           :
- *	gmt_chi2            :
- *	gmt_poissonpdf      :
- *	gmt_poisson_cdf     :
- *	gmt_mean_and_std    :
- *	gmt_median          :
- *	gmt_mean_weighted   :
- *	gmt_median_weighted :
- *	gmt_mode_weighted   :
- *	gmt_mode            :
- *	gmt_mode_f          :
- *	gmt_getmad          :
- *	gmt_getmad_f        :
- *	gmt_extreme         :
- *	gmt_chebyshev       :
- *	gmt_corrcoeff       :
- *	gmt_corrcoeff_f     :
- *	gmt_quantile        :
- *	gmt_quantile_f      :
+ *	gmt_sig_f :	      : Returns true if reduction in model misfit was significant
+ *	gmt_bei:	      : Kelvin-Bessel function bei(x)
+ *	gmt_ber:	      : Kelvin-Bessel function ber(x)
+ *	gmt_kei:	      : Kelvin-Bessel function kei(x)
+ *	gmt_ker:	      : Kelvin-Bessel function ker(x)
+ *	gmt_plm:	      : Legendre polynomial of degree L order M
+ *	gmt_plm_bar:	      : Normalized Legendre polynomial of degree L order M
+ *	gmt_plm_bar_all       : 
+ *	gmt_i0:		      : Modified Bessel function 1st kind order 0
+ *	gmt_i1:		      : Modified Bessel function 1st kind order 1
+ *	gmt_in:		      : Modified Bessel function 1st kind order N
+ *	gmt_k0:		      : Modified Kelvin function 2nd kind order 0
+ *	gmt_k1:		      : Modified Kelvin function 2nd kind order 1
+ *	gmt_kn:		      : Modified Kelvin function 2nd kind order N
+ *	gmt_dilog:	      : The dilog function
+ *	gmt_erfinv:	      : The inverse error function
+ *	gmt_rand:	      : Uniformly distributed random numbers 0 < x < 1
+ *	gmt_nrand:	      : Normally distributed random numbers from N(0,1)
+ *	gmt_lrand:	      : Laplace random number generator
+ *	gmt_corrcoeff:	      : Correlation coefficient.
+ *	gmt_psi:	      : Digamma (psi) function.
+ *	gmt_PvQv:	      : Legendre functions Pv and Qv for imaginary v and real x (-1/+1).
+ *	gmt_factorial:	      : Factorials.
+ *	gmt_sinc              :
+ *	gmt_permutation       :
+ *	gmt_combination       :
+ *	gmt_f_pdf             :
+ *	gmt_f_cdf             :
+ *	gmt_t_pdf             :
+ *	gmt_t_cdf             :
+ *	gmt_weibull_pdf       :
+ *	gmt_weibull_cdf       :
+ *	gmt_weibull_crit      :
+ *	gmt_binom_pdf         :
+ *	gmt_binom_cdf         :
+ *	gmt_zdist             :
+ *	gmt_zcrit             :
+ *	gmt_tcrit             :
+ *	gmt_chi2_pdf          :
+ *	gmt_chi2crit          :
+ *	gmt_Fcrit             :
+ *	gmt_chi2              :
+ *	gmt_poissonpdf        :
+ *	gmt_poisson_cdf       :
+ *	gmt_mean_and_std      :
+ *	gmt_median            :
+ *	gmt_mean_weighted     :
+ *	gmt_quantile_weighted :
+ *	gmt_median_weighted   :
+ *	gmt_mode_weighted     :
+ *	gmt_mode              :
+ *	gmt_mode_f            :
+ *	gmt_getmad            :
+ *	gmt_getmad_f          :
+ *	gmt_extreme           :
+ *	gmt_chebyshev         :
+ *	gmt_corrcoeff         :
+ *	gmt_corrcoeff_f       :
+ *	gmt_quantile          :
+ *	gmt_quantile_f        :
  */
 
 #include "gmt_dev.h"
@@ -1800,7 +1801,7 @@ double gmt_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n
 	return (sum_xw / sum_w);
 }
 
-double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile) {
+double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile) {
 	uint64_t k;
 	double weight_half = 0.0, weight_count;
 
@@ -1821,6 +1822,11 @@ double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, 
 	while (weight_count < weight_half) weight_count += data[++k].weight;	/* Wind up until weight_count hits the mark */
 
 	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
+}
+
+double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile) {
+	/* Just hardwire quantile to 0.5 */
+	return gmt_quantile_weighted (GMT, data, n, 0.5);
 }
 
 double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n) {

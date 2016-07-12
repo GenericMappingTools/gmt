@@ -55,7 +55,7 @@
  *  gmt_grd_pad_on          :
  *  gmt_grd_pad_zero        :
  *  gmt_create_grid         :
- *  gmtlib_duplicate_grid      :
+ *  gmt_duplicate_grid      :
  *  gmt_free_grid           :
  *  gmt_set_outgrid         :
  *  gmt_change_grdreg       :
@@ -2192,7 +2192,7 @@ struct GMT_GRID * gmt_create_grid (struct GMT_CTRL *GMT) {
 	return (G);
 }
 
-struct GMT_GRID *gmtlib_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode) {
+struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode) {
 	/* Duplicates an entire grid, including data if requested. */
 	struct GMT_GRID *Gnew = NULL;
 
@@ -2202,7 +2202,7 @@ struct GMT_GRID *gmtlib_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	if (G->header->ProjRefPROJ4) Gnew->header->ProjRefPROJ4 = strdup (G->header->ProjRefPROJ4);
 	if (G->header->pocket) Gnew->header->pocket = strdup (G->header->pocket);
 
-	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
 		Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
 		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, float);
 	}

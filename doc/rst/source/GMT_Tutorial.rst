@@ -769,7 +769,7 @@ apply when one (or more) of the following conditions are met:
    we will instead draw a "box-and-whisker" symbol and the *sigma_x* (or
    *sigma_y*) must represent 4 columns containing the minimum, the 25 and 75%
    quartiles, and the maximum value.  The given *x* (or *y*) coordinate is taken as the 50%
-   quartile (median).
+   quantile (median).
 
 #. If you draw vectors with **-Sv** (or **-SV**) then *size* is
    actually two columns containing the *direction* (or *azimuth*)

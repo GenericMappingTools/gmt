@@ -110,7 +110,7 @@ static char *blk_name[BLK_N_ITEMS] =
 	"mode",
 	"min",
 	"max",
-	"quartile",
+	"quantile",
 	"range",
 	"n",
 	"sum_z",

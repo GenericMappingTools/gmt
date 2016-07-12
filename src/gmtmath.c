@@ -2536,7 +2536,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 {
 	uint64_t s, row, k = 0;
 	unsigned int prev;
-	double wmode, lmsscl;
+	double wmode, lmsscl, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 	struct GMT_OBSERVATION *pair = NULL;
 
@@ -2554,9 +2554,14 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
 			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = T->segment[s]->data[col][row];
+			pair[k].weight = w;
 			k++;
 		}
 		if (info->local) {	/* Report per segment */
@@ -2565,7 +2570,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			/* 3. Compute the absolute deviations from this mode */
 			for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmode);
 			/* 4. Find the weighted median absolue deviation and scale it */
-			lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k, 0.5);
+			lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 		}
 	}
@@ -2575,7 +2580,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	/* 3. Compute the absolute deviations from this mode */
 	for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmode);
 	/* 4. Find the weighted median absolue deviation and scale it */
-	lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k, 0.5);
+	lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
@@ -2776,7 +2781,7 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 {
 	uint64_t s, row, k = 0;
 	unsigned int prev;
-	double wmed, wmad;
+	double wmed, wmad, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 	struct GMT_OBSERVATION *pair = NULL;
 
@@ -2794,28 +2799,33 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
 			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = T->segment[s]->data[col][row];
+			pair[k].weight = w;
 			k++;
 		}
 		if (info->local) {	/* Report per segment */
 			/* 2. Find the weighted median */
-			wmed = gmt_median_weighted (GMT, pair, k, 0.5);
+			wmed = gmt_median_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this median */
 			for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmed);
 			/* 4. Find the weighted median absolue deviation */
-			wmad = gmt_median_weighted (GMT, pair, k, 0.5);
+			wmad = gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	/* 2. Find the weighted median */
-	wmed = gmt_median_weighted (GMT, pair, k, 0.5);
+	wmed = gmt_median_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this median */
 	for (row = 0; row < k; row++) pair[row].value = fabs (pair[row].value - wmed);
 	/* 4. Find the weighted median absolue deviation */
-	wmad = gmt_median_weighted (GMT, pair, k, 0.5);
+	wmad = gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
@@ -2875,7 +2885,7 @@ GMT_LOCAL int table_MEANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 {
 	uint64_t s, row, n_a = 0;
 	unsigned int prev;
-	double sum_zw = 0.0, sum_w = 0.0, zm;
+	double sum_zw = 0.0, sum_w = 0.0, zm, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
@@ -2889,9 +2899,14 @@ GMT_LOCAL int table_MEANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 		if (info->local) sum_zw = sum_w = 0.0, n_a = 0;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-			sum_zw += T_prev->segment[s]->data[col][row] * T->segment[s]->data[col][row];
-			sum_w += T->segment[s]->data[col][row];
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
+			sum_zw += T_prev->segment[s]->data[col][row] * w;
+			sum_w += w;
 			n_a++;
 		}
 		if (info->local) {
@@ -2953,7 +2968,7 @@ GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 {
 	uint64_t s, row, k = 0;
 	unsigned int prev;
-	double wmed;
+	double wmed, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 	struct GMT_OBSERVATION *pair = NULL;
 
@@ -2970,18 +2985,23 @@ GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		if (info->local) k = 0;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
 			pair[k].value  = T_prev->segment[s]->data[col][row];
-			pair[k].weight = T->segment[s]->data[col][row];
+			pair[k].weight = w;
 			k++;
 		}
 		if (info->local) {
-			wmed = (float)gmt_median_weighted (GMT, pair, k, 0.5);
+			wmed = (float)gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmed;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	wmed = (float)gmt_median_weighted (GMT, pair, k, 0.5);
+	wmed = (float)gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmed;
@@ -3078,7 +3098,7 @@ GMT_LOCAL int table_MODEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 {
 	uint64_t s, row, k = 0;
 	unsigned int prev;
-	double wmode;
+	double wmode, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 	struct GMT_OBSERVATION *pair = NULL;
 
@@ -3092,25 +3112,22 @@ GMT_LOCAL int table_MODEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	pair = gmt_M_memory (GMT, NULL, info->T->n_records, struct GMT_OBSERVATION);
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
+		if (info->local) k = 0;
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
+			pair[k].value  = T_prev->segment[s]->data[col][row];
+			pair[k].weight = w;
+			k++;
+		}
 		if (info->local) {
-			for (row = k = 0; row < info->T->segment[s]->n_rows; row++) {
-				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-				pair[k].value  = T_prev->segment[s]->data[col][row];
-				pair[k].weight = T->segment[s]->data[col][row];
-				k++;
-			}
 			wmode = (float)gmt_mode_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmode;
-		}
-		else {	/* Just accumulate the total table */
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-				pair[k].value  = T_prev->segment[s]->data[col][row];
-				pair[k].weight = T->segment[s]->data[col][row];
-				k++;
-			}
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
@@ -3448,7 +3465,7 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 {
 	uint64_t s, row, k = 0;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
-	double p, q;
+	double p, q, w;
 	struct GMT_DATATABLE *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 	struct GMT_OBSERVATION *pair = NULL;
 
@@ -3475,18 +3492,24 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		if (info->local) k = 0;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev2->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T_prev1->segment[s]->data[col][row])) continue;
+			if (S[prev1]->constant)
+				w = S[prev1]->factor;
+			else if (gmt_M_is_dnan (T_prev1->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T_prev1->segment[s]->data[col][row];
 			pair[k].value  = T_prev2->segment[s]->data[col][row];
-			pair[k].weight = T_prev1->segment[s]->data[col][row];
+			pair[k].weight = w;
+			
 			k++;
 		}
 		if (info->local) {
-			p = (float)gmt_median_weighted (GMT, pair, k, q);
+			p = (float)gmt_quantile_weighted (GMT, pair, k, q);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = p;
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	p = (float)gmt_median_weighted (GMT, pair, k, q);
+	p = (float)gmt_quantile_weighted (GMT, pair, k, q);
 	gmt_M_free (GMT, pair);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = p;
@@ -4021,7 +4044,7 @@ GMT_LOCAL int table_STDW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 {
 	uint64_t s, row, n = 0;
 	unsigned int prev;
-	double std, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0;
+	double std, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
@@ -4036,10 +4059,15 @@ GMT_LOCAL int table_STDW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-			temp = T->segment[s]->data[col][row] + sumw;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
+			temp = w + sumw;
 			delta = T_prev->segment[s]->data[col][row] - mean;
-			R = delta * T->segment[s]->data[col][row] / temp;
+			R = delta * w / temp;
 			mean += R;
 			M2 += sumw * delta * R;
 			sumw = temp;
@@ -4357,7 +4385,7 @@ GMT_LOCAL int table_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 {
 	uint64_t s, row, n = 0;
 	unsigned int prev;
-	double var, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0;
+	double var, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
@@ -4372,10 +4400,15 @@ GMT_LOCAL int table_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-			temp = T->segment[s]->data[col][row] + sumw;
+			if (S[last]->constant)
+				w = S[last]->factor;
+			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+				continue;
+			else
+				w = T->segment[s]->data[col][row];
+			temp = w + sumw;
 			delta = T_prev->segment[s]->data[col][row] - mean;
-			R = delta * T->segment[s]->data[col][row] / temp;
+			R = delta * w / temp;
 			mean += R;
 			M2 += sumw * delta * R;
 			sumw = temp;

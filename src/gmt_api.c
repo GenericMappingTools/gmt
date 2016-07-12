@@ -6159,7 +6159,7 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	GMT = API->GMT;
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
-			new_obj = gmtlib_duplicate_grid (GMT, data, mode);
+			new_obj = gmt_duplicate_grid (GMT, data, mode);
 			geometry = GMT_IS_SURFACE;
 			break;
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */

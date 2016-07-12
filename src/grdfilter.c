@@ -1488,7 +1488,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 							this_estimate = gmt_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
 							break;
 						case GRDFILTER_MEDIAN_SPH:	/* Weighted Median */
-							this_estimate = gmt_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
+							this_estimate = gmt_quantile_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
 							break;
 						case GRDFILTER_LMS_SPH: /* Weighted Mode */
 							this_estimate = gmt_mode_weighted (GMT, work_data, n_in_median);

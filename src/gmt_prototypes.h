@@ -143,6 +143,7 @@ EXTERN_MSC int gmt_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 EXTERN_MSC void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double shift);
 EXTERN_MSC void gmt_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int n_columns, int *ij_inc);
 EXTERN_MSC double * gmt_grd_coord (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, int dir);
+EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode);
 
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
@@ -528,7 +529,8 @@ EXTERN_MSC int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j
 EXTERN_MSC int gmt_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est);
 EXTERN_MSC double gmt_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std);
 EXTERN_MSC double gmt_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n);
-EXTERN_MSC double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile);
+EXTERN_MSC double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile);
+EXTERN_MSC double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
 EXTERN_MSC double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
 EXTERN_MSC int gmt_sig_f (struct GMT_CTRL *GMT, double chi1, uint64_t n1, double chi2, uint64_t n2, double level, double *prob);
 EXTERN_MSC double gmt_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu);

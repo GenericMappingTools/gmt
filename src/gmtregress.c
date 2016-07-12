@@ -381,7 +381,7 @@ GMT_LOCAL double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uin
 	}
 	switch (norm) {
 		case GMTREGRESS_NORM_L1:	/* Return weighted median */
-			intercept = gmt_median_weighted (GMT, ee, n, 0.5);
+			intercept = gmt_median_weighted (GMT, ee, n);
 			break;
 		case GMTREGRESS_NORM_L2:	/* Return weighted mean */
 			intercept = gmt_mean_weighted (GMT, e, W, n);
@@ -459,7 +459,7 @@ GMT_LOCAL double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t
 		ee[k].weight = (float)W[k];
 		ee[k].value  = (float)fabs (ey[k]);
 	}
-	MAD = gmt_median_weighted (GMT, ee, n, 0.5);
+	MAD = gmt_median_weighted (GMT, ee, n);
 	gmt_M_free (GMT, ee);
 	return (MAD);
 }
