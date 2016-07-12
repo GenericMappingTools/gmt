@@ -788,8 +788,84 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT only apply to -T\n");
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
 
+	if (Ctrl->A.active) {
+		int	id, k;
+		unsigned int this_proj = GMT->current.proj.projection;
+		if (!need_to_project) {
+			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
+			img_wesn[YHI] = GMT->common.R.wesn[YHI];		img_wesn[YLO] = GMT->common.R.wesn[YLO];
+		}
+		else {
+			img_wesn[XLO] = GMT->current.proj.rect_m[XLO];	img_wesn[XHI] = GMT->current.proj.rect_m[XHI];
+			img_wesn[YHI] = GMT->current.proj.rect_m[YHI];	img_wesn[YLO] = GMT->current.proj.rect_m[YLO];
+		}
+		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (n_columns - !grid_registration);
+		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows    - !grid_registration);
+
+		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
+			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
+		if (id >= 0) 			/* Valid projection for creating world file info */
+			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
+
+		if (!Ctrl->A.return_image) {		/* That is, write an image file with a call to gmt_gdalwrite() */
+			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			to_GDALW->driver = Ctrl->A.driver;
+			to_GDALW->type = strdup("byte");
+			to_GDALW->P.ProjRefPROJ4 = NULL;
+			to_GDALW->flipud = 0;
+			to_GDALW->geog = 0;
+			to_GDALW->n_columns = (int)n_columns;
+			to_GDALW->n_rows = (int)n_rows;
+			strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
+			if (Ctrl->D.active)
+				to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
+			else if ((P && gray_only) || Ctrl->M.active)
+				to_GDALW->n_bands = 1;
+			else
+				to_GDALW->n_bands = 3;
+			to_GDALW->registration = 1;
+			to_GDALW->ULx = img_wesn[XLO];
+			to_GDALW->ULy = img_wesn[YHI];
+			to_GDALW->x_inc = img_inc[0];
+			to_GDALW->y_inc = img_inc[1];
+
+			if (img_ProjectionRefPROJ4 != NULL) {
+				if (img_ProjectionRefPROJ4[1] == 'x' && img_ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
+					to_GDALW->P.active = false;
+				else {
+					to_GDALW->P.ProjRefPROJ4 = img_ProjectionRefPROJ4;
+					to_GDALW->P.active = true;
+				}
+			}
+		}
+
+		if (grid_registration == GMT_GRID_NODE_REG) {
+			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
+			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
+		}
+		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag we need transparency array */
+		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
+			Return (API->error);
+
+		if (Ctrl->M.active || gray_only)
+			bitimage_8  = Out->data;
+		else
+			bitimage_24 = Out->data;
+	}
+	else {
+		if (Ctrl->M.active || gray_only)
+			bitimage_8 = gmt_M_memory (GMT, NULL, nm, unsigned char);
+		else {
+			if (Ctrl->Q.active) colormask_offset = 3;
+			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * nm + colormask_offset, unsigned char);
+		}
+		if (P && Ctrl->Q.active && !(Ctrl->M.active || gray_only)) {
+			for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);
+		}
+	}
+
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
 	if (Ctrl->Q.active) {
 		if (gray_only) {
@@ -800,15 +876,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->A.return_image) rgb_used = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);
 	}
-	if (Ctrl->M.active || gray_only)
-		bitimage_8 = gmt_M_memory (GMT, NULL, nm, unsigned char);
-	else {
-		if (Ctrl->Q.active && !(Ctrl->A.active && Ctrl->A.return_image)) colormask_offset = 3;
-		bitimage_24 = gmt_M_memory (GMT, NULL, 3 * nm + colormask_offset, unsigned char);
-		if (P && Ctrl->Q.active) {
-			for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);
-		}
-	}
+
 	normal_x = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
 	normal_y = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
@@ -895,75 +963,22 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else
 			done = true;
 	}
-	if (Ctrl->Q.active && !Ctrl->A.return_image) gmt_M_free (GMT, rgb_used);
+	if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 	
-	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
+	for (k = 1; k < n_grids; k++) {		/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
 		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_NOERROR)
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[k]\n");
 	}
 	if (use_intensity_grid) {
 		if (need_to_project || !n_grids) {
-			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR) {
+			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR)
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Intens_proj\n");
-			}
 		}
 	}
 	
 	/* Get actual size of each pixel */
 	dx = gmt_M_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], header_work->n_columns, header_work->registration);
 	dy = gmt_M_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], header_work->n_rows, header_work->registration);
-
-	if (Ctrl->A.active) {
-		int	id, k;
-		unsigned int this_proj = GMT->current.proj.projection;
-		if (!need_to_project) {
-			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
-			img_wesn[YHI] = GMT->common.R.wesn[YHI];		img_wesn[YLO] = GMT->common.R.wesn[YLO];
-		}
-		else {
-			img_wesn[XLO] = GMT->current.proj.rect_m[XLO];	img_wesn[XHI] = GMT->current.proj.rect_m[XHI];
-			img_wesn[YHI] = GMT->current.proj.rect_m[YHI];	img_wesn[YLO] = GMT->current.proj.rect_m[YLO];
-		}
-		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (n_columns - !grid_registration);
-		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows    - !grid_registration);
-
-		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
-			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
-		if (id >= 0) 			/* Valid projection for creating world file info */
-			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
-
-		if (!Ctrl->A.return_image) {		/* That is, write an image file with a call to gmt_gdalwrite() */
-			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-			to_GDALW->driver = Ctrl->A.driver;
-			to_GDALW->type = strdup("byte");
-			to_GDALW->P.ProjRefPROJ4 = NULL;
-			to_GDALW->flipud = 0;
-			to_GDALW->geog = 0;
-			to_GDALW->n_columns = (int)n_columns;
-			to_GDALW->n_rows = (int)n_rows;
-			strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
-			if (Ctrl->D.active)
-				to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
-			else if ((P && gray_only) || Ctrl->M.active)
-				to_GDALW->n_bands = 1;
-			else
-				to_GDALW->n_bands = 3;
-			to_GDALW->registration = 1;
-			to_GDALW->ULx = img_wesn[XLO];
-			to_GDALW->ULy = img_wesn[YHI];
-			to_GDALW->x_inc = img_inc[0];
-			to_GDALW->y_inc = img_inc[1];
-
-			if (img_ProjectionRefPROJ4 != NULL) {
-				if (img_ProjectionRefPROJ4[1] == 'x' && img_ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
-					to_GDALW->P.active = false;
-				else {
-					to_GDALW->P.ProjRefPROJ4 = img_ProjectionRefPROJ4;
-					to_GDALW->P.active = true;
-				}
-			}
-		}
-	}
 
 	/* Set lower left position of image on map */
 
@@ -1022,24 +1037,16 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit image */
 		if (Ctrl->A.active) {
 			if (Ctrl->A.return_image) {	/* Create a GMT_IMAGE with 1 band and write output */
-				dim[GMT_Z] = 1;	/* 8-bit image */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade GMT_IMAGE object\n");
-				if (grid_registration == GMT_GRID_NODE_REG) {
-					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
-					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
-				}
-				if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
-					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				Out->data = bitimage_8;	/* Pass out the byte data */
-				bitimage_8 = NULL;	/* So we dont free this memory on exit */
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);
 			}
 #ifdef HAVE_GDAL
 			else {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image via GDAL\n");
-				to_GDALW->data = bitimage_8;
+				to_GDALW->data  = bitimage_8;
+				to_GDALW->alpha = Out->alpha;
 				gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 			}
 #endif
@@ -1052,41 +1059,28 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else {	/* 24-bit image */
 		if (Ctrl->A.active) {
 			if (Ctrl->Q.active) {
-				alpha = gmt_M_memory (GMT, NULL, nm, unsigned char);
-				memset (alpha, 255, header_work->nm);
+				memset (Out->alpha, 255, header_work->nm);
 				for (node = row = 0; row < n_rows; row++) {
 					kk = gmt_M_ijpgi (header_work, row, 0); 
 					for (col = 0; col < n_columns; col++) { 
-						if (gmt_M_is_fnan (Grid_proj[0]->data[kk + col])) alpha[node] = 0;
+						if (gmt_M_is_fnan (Grid_proj[0]->data[kk + col])) Out->alpha[node] = 0;
 						node++;
 					}
 				}
 			}
 			if (Ctrl->A.return_image) {     /* Create a GMT_IMAGE with 3 bands and write output */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color GMT_IMAGE object\n");
-				if (grid_registration == GMT_GRID_NODE_REG) {
-					img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
-					img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
-				}
-				if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag we need transparency array */
-				if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
-					Return (API->error);
 				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				Out->data = bitimage_24;    /* Pass out the 3*byte data */
-				bitimage_24 = NULL;         /* So we dont free this memory on exit */
 				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-				Out->alpha = alpha;
 				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 					Return (API->error);
-				/* if (alpha) gmt_M_free (GMT, alpha);	But aren't this and the above bitimage_24 leaking? */
 			}
 #ifdef HAVE_GDAL
 			else {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image via GDAL\n");
 				to_GDALW->data = bitimage_24;
-				to_GDALW->alpha = alpha;
+				to_GDALW->alpha = Out->alpha;
 				gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
-				if (alpha) gmt_M_free (GMT, alpha);
 			}
 #endif
 		}
@@ -1106,8 +1100,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	/* Free bitimage arrays. gmt_M_free will not complain if they have not been used (NULL) */
-	gmt_M_free (GMT, bitimage_8);
-	gmt_M_free (GMT, bitimage_24);
+	if (!Ctrl->A.active) {
+		gmt_M_free (GMT, bitimage_8);
+		gmt_M_free (GMT, bitimage_24);
+	}
 
 	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
