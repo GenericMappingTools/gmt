@@ -8445,7 +8445,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* PROJ GROUP */
 
 		case GMTCASE_PROJ_AUX_LATITUDE:
-			if (!strncmp (lower_value, "none", 4U)) /* Use lat as is */
+			if (!strncmp (lower_value, "none", 4U)) /* Use lat as is [backwards compatibility] */
+				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_NONE;
+			else if (!strncmp (lower_value, "geodetic", 8U)) /* Use lat as is */
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_NONE;
 			else if (!strncmp (lower_value, "authalic", 8U)) /* Authalic latitude */
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2A;
@@ -9565,7 +9567,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_PROJ_AUX_LATITUDE:
 			switch (GMT->current.setting.proj_aux_latitude) {
 				case GMT_LATSWAP_NONE:
-					strcpy (value, "none");
+					strcpy (value, "geodetic");
 					break;
 				case GMT_LATSWAP_G2A:
 					strcpy (value, "authalic");

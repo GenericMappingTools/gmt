@@ -474,9 +474,12 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	 */
 	uint64_t node;
 	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
-	double area, f, row_weight, col_weight = 1.0, R2 = pow (R2D * GMT->current.proj.KM_PR_DEG, 2.0);	/* squared mean radius in km */
+	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
+	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
+	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Compute spherical node areas\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
+		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[1+GMT->current.setting.proj_aux_latitude/2]);
 	/* May need special treatment of pole points */
 	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */
 	area = R2 * (G->header->inc[GMT_X] * D2R);
@@ -499,7 +502,8 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	/* Below we just use the standard graticule equation. Must use j instead of row in d_grd_y due to pad */
 	area *= 2.0 * sind (0.5 * G->header->inc[GMT_Y]);	/* Since no longer any special cases with poles below */
 	for (row = first_row, j = first_row + G->header->pad[YHI]; row <= last_row; row++, j++) {
-		row_weight = cosd (info->d_grd_y[j]);
+		lat = gmt_lat_swap (GMT, info->d_grd_y[j], GMT->current.setting.proj_aux_latitude);	/* Convert to selected auxiliary latitude */
+		row_weight = cosd (lat);
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
 			G->data[node] = (float)(row_weight * col_weight * area);
@@ -1268,7 +1272,7 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [CURV]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to CURV is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1313,7 +1317,7 @@ GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [D2DX2]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to D2DX2 is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1348,7 +1352,7 @@ GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [D2DY2]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to D2DY2 is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1385,7 +1389,7 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [D2DXY]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to D2DXY is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1440,7 +1444,7 @@ GMT_LOCAL void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [DDX]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to DDX is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1474,7 +1478,7 @@ GMT_LOCAL void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, geographic grid given to a Cartesian operator [DDY]!\n");
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to DDY is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -1747,7 +1751,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 	if (stack[last]->constant) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to EXTREMA is constant!\n");
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -2669,7 +2673,7 @@ GMT_LOCAL void grd_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		return;
 	}
 
-	lmsscl = grd_wlmsscl_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	lmsscl = grd_wlmsscl_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = lmsscl;
 }
 
@@ -2774,7 +2778,7 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	float mad_f;
 
 	if (stack[last]->constant) {	/* Trivial case: mad = 0 */
-		gmt_M_memset (stack[last], info->size, float);
+		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
@@ -2819,7 +2823,7 @@ GMT_LOCAL void grd_MADW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		return;
 	}
 
-	wmad = grd_wmad_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	wmad = grd_wmad_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmad;
 }
 
@@ -2905,7 +2909,7 @@ GMT_LOCAL void grd_MEANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		return;
 	}
 
-	zm = grd_wmean_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	zm = grd_wmean_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = zm;
 }
 
@@ -2979,7 +2983,7 @@ GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		return;
 	}
 
-	wmed = grd_wmedian_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	wmed = grd_wmedian_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmed;
 }
 
@@ -3087,7 +3091,7 @@ GMT_LOCAL void grd_MODEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		return;
 	}
 
-	wmode = grd_wmode_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	wmode = grd_wmode_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmode;
 }
 
@@ -3499,12 +3503,12 @@ GMT_LOCAL void grd_PQUANTW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANTW must be given a constant quantile between 0-100%% (no calculations performed)\n");
 		return;
 	}
-	if (stack[prev]->constant) {	/* Trivial case */
+	if (stack[prev2]->constant) {	/* Trivial case */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PQUANTW of a constant is set to NaN\n");
 		p = GMT->session.f_NaN;
 	}
 	else
-		p = grd_wquant_sub (GMT, info, stack[prev2]->G, stack[prev]->G, stack[last]->factor, stack[prev]->constant, stack[prev]->factor);
+		p = grd_wquant_sub (GMT, info, stack[prev2]->G, stack[prev]->G, stack[last]->factor, !stack[prev]->constant, stack[prev]->factor);
 	for (node = 0; node < info->size; node++) stack[prev2]->G->data[node] = p;
 }
 
@@ -4059,7 +4063,7 @@ GMT_LOCAL float grd_wstd_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		sumw = temp;
 		n++;
 	}
-	return (n <= 1 || sumw == 0.0) ? GMT->session.f_NaN : (float)sqrt ((n * M2) / (sumw / (n - 1.0)));
+	return (n <= 1 || sumw == 0.0) ? GMT->session.f_NaN : (float)sqrt ((n * M2) / (sumw * (n - 1.0)));
 }
 
 GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4069,12 +4073,9 @@ GMT_LOCAL void grd_STD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	float std;
 	gmt_M_unused(GMT);
 
-	if (stack[last]->constant) {	/* Trivial case: std = 0 */
-		gmt_M_memset (stack[last], info->size, float);
-		return;
-	}
-
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
+	if (stack[last]->constant)	/* Trivial case: std is undefined */
+		std = GMT->session.f_NaN;
+	else if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
 		struct GMT_GRID *W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		get_geo_cellarea (GMT, info, W);
 		std = grd_wstd_sub (GMT, info, stack[last]->G, W, true, 0.0);
@@ -4104,11 +4105,10 @@ GMT_LOCAL void grd_STDW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float std;
 	gmt_M_unused(GMT);
 
-	if (stack[prev]->constant) {	/* Trivial case: std = 0 */
-		gmt_M_memset (stack[prev], info->size, float);
-		return;
-	}
-	std = grd_wstd_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	if (stack[prev]->constant)	/* Trivial case: std is undefined */
+		std = GMT->session.f_NaN;
+	else
+		std = grd_wstd_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = std;
 }
@@ -4403,7 +4403,7 @@ GMT_LOCAL float grd_wvar_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		sumw = temp;
 		n++;
 	}
-	return (n <= 1 || sumw == 0.0) ? GMT->session.f_NaN : (float) ((n * M2) / (sumw / (n - 1.0)));
+	return (n <= 1 || sumw == 0.0) ? GMT->session.f_NaN : (float) ((n * M2) / (sumw * (n - 1.0)));
 }
 
 GMT_LOCAL void grd_VAR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4413,12 +4413,9 @@ GMT_LOCAL void grd_VAR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	float var;
 	gmt_M_unused(GMT);
 
-	if (stack[last]->constant) {	/* Trivial case */
-		gmt_M_memset (stack[last], info->size, float);
-		return;
-	}
-
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
+	if (stack[last]->constant)	/* Trivial case: variance is undefined */
+		var = GMT->session.f_NaN;
+	else if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
 		struct GMT_GRID *W = gmt_duplicate_grid (GMT, stack[last]->G, GMT_DUPLICATE_ALLOC);
 		get_geo_cellarea (GMT, info, W);
 		var = grd_wvar_sub (GMT, info, stack[last]->G, W, true, 0.0);
@@ -4448,12 +4445,10 @@ GMT_LOCAL void grd_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float var;
 	gmt_M_unused(GMT);
 
-	if (stack[prev]->constant) {	/* Trivial case: std = 0 */
-		gmt_M_memset (stack[prev], info->size, float);
-		return;
-	}
-
-	var = grd_wvar_sub (GMT, info, stack[prev]->G, stack[last]->G, stack[last]->constant, stack[last]->factor);
+	if (stack[prev]->constant)	/* Trivial case: variance is undefined  */
+		var = GMT->session.f_NaN;
+	else
+		var = grd_wvar_sub (GMT, info, stack[prev]->G, stack[last]->G, !stack[last]->constant, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = var;
 }
 

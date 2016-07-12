@@ -4009,77 +4009,77 @@ GMT_LOCAL int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: STD 1 1 Standard deviation of A.  */
 {
-	uint64_t s, row, n = 0;
-	double mean = 0.0, sum2 = 0.0, delta;
+	uint64_t s, row;
+	double var;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
-		return 0;
-	}
-
-	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
-	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-			n++;
-			delta = T->segment[s]->data[col][row] - mean;
-			mean += delta / n;
-			sum2 += delta * (T->segment[s]->data[col][row] - mean);
+	if (S[last]->constant)	/* Trivial case: std is underfined */
+		var = GMT->session.d_NaN;
+	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+		uint64_t n = 0;
+		double mean = 0.0, sum2 = 0.0, delta;
+		for (s = 0; s < info->T->n_segments; s++) {
+			if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+				n++;
+				delta = T->segment[s]->data[col][row] - mean;
+				mean += delta / n;
+				sum2 += delta * (T->segment[s]->data[col][row] - mean);
+			}
+			if (info->local) {
+				var = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
+				for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = var;
+			}
 		}
-		if (info->local) {
-			sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
-		}
+		if (info->local) return 0;	/* Done with local */
+		var = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
 	}
-	if (info->local) return 0;	/* Done with local */
-	sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = var;
 	return 0;
 }
 
 GMT_LOCAL int table_STDW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: STDW 2 1 Weighted standard deviation of A for weights in B.  */
 {
-	uint64_t s, row, n = 0;
+	uint64_t s, row;
 	unsigned int prev;
-	double std, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+	double std;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant) {	/* Trivial case: std = 0 */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T_prev->segment[s]->data[col], info->T->segment[s]->n_rows, double);
-		return 0;
-	}
-
-	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
-	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (S[last]->constant)
-				w = S[last]->factor;
-			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
-				continue;
-			else
-				w = T->segment[s]->data[col][row];
-			temp = w + sumw;
-			delta = T_prev->segment[s]->data[col][row] - mean;
-			R = delta * w / temp;
-			mean += R;
-			M2 += sumw * delta * R;
-			sumw = temp;
-			n++;
+	if (S[prev]->constant)	/* Trivial case: std = 0 */
+		std = GMT->session.d_NaN;
+	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+		uint64_t n = 0;
+		double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+		for (s = 0; s < info->T->n_segments; s++) {
+			if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
+				if (S[last]->constant)
+					w = S[last]->factor;
+				else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+					continue;
+				else
+					w = T->segment[s]->data[col][row];
+				temp = w + sumw;
+				delta = T_prev->segment[s]->data[col][row] - mean;
+				R = delta * w / temp;
+				mean += R;
+				M2 += sumw * delta * R;
+				sumw = temp;
+				n++;
+			}
+			if (info->local) {
+				std = (n > 1) ? sqrt ((n * M2 / sumw) / (n - 1.0)) : GMT->session.d_NaN;
+				for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = std;
+			}
 		}
-		if (info->local) {
-			std = (n > 1) ? sqrt ((n * M2 / sumw) / (n - 1.0)) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = std;
-		}
+		if (info->local) return 0;	/* Done with local */
+		std = (n > 1) ? sqrt ((n * M2 / sumw) / (n - 1.0)) : GMT->session.d_NaN;
 	}
-	if (info->local) return 0;	/* Done with local */
-	std = (n > 1) ? sqrt ((n * M2 / sumw) / (n - 1.0)) : GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = std;
 	return 0;
 }
@@ -4350,77 +4350,77 @@ GMT_LOCAL int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 GMT_LOCAL int table_VAR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: VAR 1 1 Variance of A.  */
 {
-	uint64_t s, row, n = 0;
-	double mean = 0.0, sum2 = 0.0, delta;
+	uint64_t s, row;
+	double var;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
-		return 0;
-	}
-
-	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
-	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
-			n++;
-			delta = T->segment[s]->data[col][row] - mean;
-			mean += delta / n;
-			sum2 += delta * (T->segment[s]->data[col][row] - mean);
+	if (S[last]->constant)	/* Trivial case: variance is undefined */
+		var = GMT->session.d_NaN;
+	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+		uint64_t n = 0;
+		double mean = 0.0, sum2 = 0.0, delta;
+		for (s = 0; s < info->T->n_segments; s++) {
+			if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T->segment[s]->data[col][row])) continue;
+				n++;
+				delta = T->segment[s]->data[col][row] - mean;
+				mean += delta / n;
+				sum2 += delta * (T->segment[s]->data[col][row] - mean);
+			}
+			if (info->local) {
+				sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
+				for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
+			}
 		}
-		if (info->local) {
-			sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
-		}
+		if (info->local) return 0;	/* Done with local */
+		var = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
 	}
-	if (info->local) return 0;	/* Done with local */
-	sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = sum2;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = var;
 	return 0;
 }
 
 GMT_LOCAL int table_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: VARW 2 1 Weighted variance of A for weights in B.  */
 {
-	uint64_t s, row, n = 0;
+	uint64_t s, row;
 	unsigned int prev;
-	double var, temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+	double var;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant) {	/* Trivial case: std = 0 */
-		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T_prev->segment[s]->data[col], info->T->segment[s]->n_rows, double);
-		return 0;
-	}
-
-	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
-	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-			if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
-			if (S[last]->constant)
-				w = S[last]->factor;
-			else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
-				continue;
-			else
-				w = T->segment[s]->data[col][row];
-			temp = w + sumw;
-			delta = T_prev->segment[s]->data[col][row] - mean;
-			R = delta * w / temp;
-			mean += R;
-			M2 += sumw * delta * R;
-			sumw = temp;
-			n++;
+	if (S[prev]->constant)	/* Trivial case: cariance is undefined */
+		var = GMT->session.d_NaN;
+	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+		uint64_t n = 0;
+		double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w;
+		for (s = 0; s < info->T->n_segments; s++) {
+			if (info->local) {n = 0; mean = sumw = M2 = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
+				if (S[last]->constant)
+					w = S[last]->factor;
+				else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+					continue;
+				else
+					w = T->segment[s]->data[col][row];
+				temp = w + sumw;
+				delta = T_prev->segment[s]->data[col][row] - mean;
+				R = delta * w / temp;
+				mean += R;
+				M2 += sumw * delta * R;
+				sumw = temp;
+				n++;
+			}
+			if (info->local) {
+				var = (n > 1) ? (n * M2 / sumw) / (n - 1.0) : GMT->session.d_NaN;
+				for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = var;
+			}
 		}
-		if (info->local) {
-			var = (n > 1) ? (n * M2 / sumw) / (n - 1.0) : GMT->session.d_NaN;
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = var;
-		}
+		if (info->local) return 0;	/* Done with local */
+		var = (n > 1) ? (n * M2 / sumw) / (n - 1.0) : GMT->session.d_NaN;
 	}
-	if (info->local) return 0;	/* Done with local */
-	var = (n > 1) ? (n * M2 / sumw) / (n - 1.0) : GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = var;
 	return 0;
 }
