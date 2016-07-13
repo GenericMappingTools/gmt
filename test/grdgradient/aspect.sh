@@ -20,10 +20,7 @@ gmt triangulate $pts -R0/10/0/10 -I0.2 -Gpiramide.nc > /dev/null
 
 gmt grdgradient piramide.nc -D -Gaspect.nc
 
-echo   -45  red     45 red     > pal.cpt
-echo  45  green  135 green  >> pal.cpt
-echo 135  blue   225 blue   >> pal.cpt
-echo 225  yellow 315 yellow >> pal.cpt
+gmt makecpt -Cred,green,blue,yellow -T-45/315/90 -N > pal.cpt
 
 gmt grdimage aspect.nc -JX10c -Cpal.cpt -P -K -B2 -BWSne -Xc > $ps
 gmt psscale -D11c/5c+w6c/0.6c+jML+e+n -Cpal.cpt -B90+u"\\312" -O -K >> $ps

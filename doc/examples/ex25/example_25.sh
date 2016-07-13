@@ -24,11 +24,7 @@ gmt grdmath -fg key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
 gmt grd2xyz tmp.nc -s -ZTLf > key.b
 mixed=`gmt math -bi1f -Ca -S key.b SUM UPPER RINT =`
 # Generate corresponding color table
-cat << END > key.cpt
--1.5	blue	-0.5	blue
--0.5	gray	0.5	gray
-0.5	red	1.5	red
-END
+gmt makecpt -Cblue,gray,red -T-1.5/1.5/1 -N > key.cpt
 # Create the final plot and overlay coastlines
 gmt set FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
 gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i -nn > $ps

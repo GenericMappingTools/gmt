@@ -5,7 +5,7 @@
 
 ps=mask.ps
 
-echo "-10000 white +10000 white" > tt.cpt
+gmt makecpt -Cwhite -T-10000,10000 -N > tt.cpt
 echo "N black" >> tt.cpt
 # Must split a 5x5 degree shore bin across L and R boundary
 gmt grdlandmask -Gtt.i2=bs -I60m -R-3/357/-90/90 -Di -N1/NaN/NaN/NaN/NaN -A500/1/1

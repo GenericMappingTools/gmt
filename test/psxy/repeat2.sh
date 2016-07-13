@@ -12,11 +12,7 @@ cat << EOF > t.txt
 356	-45	1.5	0.3i
 5	0	2.5	0.1i
 EOF
-cat << EOF > t.cpt
-0	red	1	red
-1	blue	2	blue
-2	green	3	green
-EOF
+gmt makecpt -Cred,blue,green -T0/3/1 -N > t.cpt
 gmt psxy -Rg -JH4.4i -T -P -K -Xc > $ps
 map "" Default >> $ps
 map -N -N  -Y2.3i >> $ps

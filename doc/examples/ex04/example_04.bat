@@ -10,8 +10,7 @@ REM CPS: topo.cpt
 REM CPS: geoid.cpt
 echo GMT EXAMPLE 04
 set ps=example_04.ps
-echo -10     255     0       255 > zero.cpt
-echo 0       100     10      100 >> zero.cpt
+gmt makecpt -C255,100 -T-10/10/10 -N > zero.cpt
 gmt grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P -X1.5i -Y1.5i > %ps%
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K -TdjBR+o0.1i+w1i+l >> %ps%
 gmt grdview HI_topo4.nc -R195/210/18/25/-6/4 -J -Jz0.34i -p -Czero.cpt -N-6+glightgray -Qsm -O -K -B2 -Bz2+l"Topo (km)" -BneswZ -Y2.2i >> %ps%

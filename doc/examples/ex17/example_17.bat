@@ -22,9 +22,9 @@ gmt pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> %ps%
 
 REM Now generate topography image w/shading
 
-echo -10000 150 10000 150 > gray.cpt
+gmt makecpt -C150 -T-10000,10000 -N > shade.cpt
 gmt grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.nc
-gmt grdimage india_topo.nc -Iindia_topo_i.nc -J -Cgray.cpt -O -K >> %ps%
+gmt grdimage india_topo.nc -Iindia_topo_i.nc -J -Cshade.cpt -O -K >> %ps%
 
 REM Finally undo clipping and overlay basemap
 

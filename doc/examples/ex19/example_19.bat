@@ -12,7 +12,7 @@ REM First make a worldmap with graded blue oceans and rainbow continents
 
 gmt grdmath -Rd -I1 -r Y COSD 2 POW = lat.nc
 gmt grdmath -Rd -I1 -r X = lon.nc
-echo 0 white 1 blue > lat.cpt
+gmt makecpt -Cwhite,blue -T0,1 -Z -N > lat.cpt
 gmt makecpt -Crainbow -T-180/180 > lon.cpt
 gmt grdimage lat.nc -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 -nl > %ps%
 gmt pscoast -R -J -O -K -Dc -A5000 -Gc >> %ps%

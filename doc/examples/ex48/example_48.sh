@@ -17,7 +17,7 @@ cat << EOF > airports.txt
 118.2437W	34.0522N	142	306	LAX	BL	0.80i
 EOF
 gmt makecpt -Ccategorical -T0/6/1 -N > t.cpt
-echo "-12000	lightgray	12000 lightgray" > g.cpt
+gmt makecpt -Clightgray -T-12000,12000 -N > g.cpt
 gmt sphtriangulate airports.txt -Qv > near_area.txt
 gmt grdgradient etopo10m.nc -Nt2 -A45 -Gint.nc
 gmt grdimage etopo10m.nc -Iint.nc -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps

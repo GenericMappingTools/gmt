@@ -40,9 +40,7 @@ set me=GMT guru @@ GMTbox
 
 REM Create standard seismicity color table
 
-echo 0	red	100	red > neis.cpt
-echo 100	green	300	green >> neis.cpt
-echo 300	blue	10000	blue >> neis.cpt
+gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 

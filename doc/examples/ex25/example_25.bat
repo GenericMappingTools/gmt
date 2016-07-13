@@ -31,9 +31,7 @@ gmt grd2xyz tmp.nc -s -ZTLa > key.d
 echo { printf "set mixed=%%d\n", $1} > awk.txt
 gmt math -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
 REM Generate corresponding color table
-echo -1.5	blue	-0.5	blue > key.cpt
-echo -0.5	gray	0.5	gray >> key.cpt
-echo 0.5	red	1.5	red >> key.cpt
+gmt makecpt -Cblue,gray,red -T-1.5/1.5/1 -N > key.cpt
 REM Create the final plot and overlay coastlines
 gmt set FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
 gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i -nn > %ps%

@@ -29,8 +29,7 @@ REM gmt grdcut W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
 gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 REM The color map assigns "Reflex Blue" to the lower half of the 0-255 range and "Yellow" to the upper half.
-echo 0   0/51/153   127 0/51/153   > euflag.cpt
-echo 127 255/204/0  255 255/204/0 >> euflag.cpt
+gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N > euflag.cpt
 
 REM The next step is the plotting of the image.
 REM We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give the shading.

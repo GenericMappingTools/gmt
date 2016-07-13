@@ -31,10 +31,7 @@ gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 # "Yellow" to the upper half.
-cat << EOF > euflag.cpt
-0	0/51/153	127	0/51/153
-127	255/204/0	255	255/204/0
-EOF
+gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N > euflag.cpt
 
 # The next step is the plotting of the image.
 # We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give

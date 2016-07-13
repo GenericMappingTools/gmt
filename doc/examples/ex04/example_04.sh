@@ -7,8 +7,7 @@
 # Unix progs:	echo, rm
 #
 ps=example_04.ps
-echo '-10  255   0  255' > zero.cpt
-echo '  0  100  10  100' >> zero.cpt
+gmt makecpt -C255,100 -T-10/10/10 -N > zero.cpt
 gmt grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P \
 	-X1.25i -Y1.25i > $ps
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K -TdjBR+o0.1i+w1i+l >> $ps

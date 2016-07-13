@@ -3,7 +3,7 @@
 # Test grdlandmask across Greenwich
 
 ps=greenwich.ps
-echo "0.5	red	1.5	red" > t.cpt
+gmt makecpt -Cred -T0.5,1.5 -N > t.cpt
 # ORIGINAL:
 gmt grdlandmask -R-1.05/0.05/50.95/52.05 -I3s -Glandmask.grd=ns -Df -NNaN/1/1/1/1
 gmt grdimage landmask.grd -Jx2.5id -P -Ba1g1 -BWSne -Ct.cpt -K -Xc > $ps

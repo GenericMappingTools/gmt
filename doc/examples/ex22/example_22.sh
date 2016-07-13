@@ -33,11 +33,7 @@ me="GMT guru @@ GMTbox"
 
 # Create standard seismicity color table
 
-cat > neis.cpt << END
-0	red	100	red
-100	green	300	green
-300	blue	10000	blue
-END
+gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 
 # Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
