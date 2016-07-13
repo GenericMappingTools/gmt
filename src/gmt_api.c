@@ -2179,6 +2179,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 	 */
 
 	int item, kind;
+	unsigned int flag = 0;
 	char tmp_cptfile[GMT_LEN64] = {""};
 	struct GMT_PALETTE *P_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2201,10 +2202,12 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 		case GMT_IS_FILE:
 			/* gmtlib_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
-			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->filename, S_obj->method, mode)) == NULL)
-				return_null (API, GMT_CPT_READ_ERROR);
 			snprintf (tmp_cptfile, GMT_LEN64, "api_colors2cpt_%d.cpt", (int)getpid());
-			if (!strcmp (tmp_cptfile, S_obj->filename)) {	/* This file was created when we gave "name" as red,blue instead */
+			if (!strcmp (tmp_cptfile, S_obj->filename))	/* This file was created when we gave "name" as red,blue,... instead */
+			 	flag = GMT_CPT_TEMPORARY;	/* So we can take action later when we learn if user wanted a discrete or continuous CPT */
+			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->filename, S_obj->method, mode|flag)) == NULL)
+				return_null (API, GMT_CPT_READ_ERROR);
+			if (flag == GMT_CPT_TEMPORARY) {	/* Remove teh empt file */
 				GMT_Report (API, GMT_MSG_DEBUG, "Remove temporary CPT %s\n", S_obj->filename);
 				remove (tmp_cptfile);
 			}
@@ -5998,7 +6001,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			gmt_M_memcpy (API->object[item]->wesn, wesn, 4, double);
 		}
 	}
-	else if (input) {	/* Case 1: Load from a single, given source. Register it first. */
+	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;

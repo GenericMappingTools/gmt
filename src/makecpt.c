@@ -272,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high),
 	                                   "Syntax error -T option: Give z_min < z_max\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
 	                                   "Syntax error -T option: For interpolation, give z_inc > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
 	                                   "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);

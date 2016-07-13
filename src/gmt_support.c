@@ -6285,15 +6285,15 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 		if (strstr (line, "COLOR_MODEL")) {	/* CPT overrides default color model */
 			if (strstr (line, "+RGB") || strstr (line, "rgb"))
-				X->model = GMT_RGB + GMT_COLORINT;
+				X->model = GMT_RGB | GMT_COLORINT;
 			else if (strstr (line, "RGB"))
 				X->model = GMT_RGB;
 			else if (strstr (line, "+HSV") || strstr (line, "hsv"))
-				X->model = GMT_HSV + GMT_COLORINT;
+				X->model = GMT_HSV | GMT_COLORINT;
 			else if (strstr (line, "HSV"))
 				X->model = GMT_HSV;
 			else if (strstr (line, "+CMYK") || strstr (line, "cmyk"))
-				X->model = GMT_CMYK + GMT_COLORINT;
+				X->model = GMT_CMYK | GMT_COLORINT;
 			else if (strstr (line, "CMYK"))
 				X->model = GMT_CMYK;
 			else {
@@ -7250,6 +7250,8 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			P->data[n].z_low, P->data[n].z_high, gmt_putrgb (GMT, P->data[n].rgb_low), gmt_putrgb (GMT, P->data[n].rgb_high),
 			P->data[n].i_dz, P->data[n].rgb_diff[0], P->data[n].rgb_diff[1], P->data[n].rgb_diff[2]);
 	}
+	GMT->current.setting.color_model = (P->model | GMT_COLORINT);	/* So color interpolation will happen in the color system */
+
 	/* We leave BNF as we got them from the external API */
 #ifdef GMT_BACKWARDS_API
 	P->range = P->data;	
@@ -7316,7 +7318,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 	}
 	else {	/* Do linear interpolation between low and high colors */
 		rel = (value - P->data[index].z_low) * P->data[index].i_dz;
-		if (GMT->current.setting.color_model == GMT_HSV + GMT_COLORINT) {	/* Interpolation in HSV space */
+		if (GMT->current.setting.color_model == (GMT_HSV | GMT_COLORINT)) {	/* Interpolation in HSV space */
 			for (i = 0; i < 4; i++) hsv[i] = P->data[index].hsv_low[i] + rel * P->data[index].hsv_diff[i];
 			support_hsv_to_rgb (rgb, hsv);
 		}
