@@ -4665,7 +4665,12 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 			return (0);
 		/* Because gmtlib_is_color cannot uniquely determine what a single number is, check for that separately first. */
 		for (k = 0; gray && k < strlen (*str); k++)
-			if (!isdigit (*str[k])) gray = false;	/* Not just a bunch of integers */
+			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
+		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
+			sprintf (tmp_file, "%s.cpt", *str);	/* Try this as a filename */
+			if (!gmt_access (API->GMT, tmp_file, F_OK))
+				return 0;	/* Probably a process id temp file like 13223.cpt */
+		}
 		if (!gray && !gmtlib_is_color (API->GMT, *str))	/* Not a single color/shade, skip */
 			return (0);
 	}
