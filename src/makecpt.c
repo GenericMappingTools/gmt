@@ -63,8 +63,9 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[r|R|h|c] */
+	struct F {	/* -F[r|R|h|c][+c] */
 		bool active;
+		bool cat;
 		unsigned int model;
 	} F;
 	struct G {	/* -Glow/high for input CPT truncation */
@@ -121,8 +122,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table> | -T<z1,z2,...zn>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-L] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table> | -T<z1,z2,...zn>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -137,7 +138,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   determine data range (use -i to select a data column, else last column is used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <nlevels> is not set we use the number of color slices in the chosen CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set to other to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
@@ -210,8 +212,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Sets format for color reporting */
+				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
+					Ctrl->F.cat = true;
+					if (txt_a[0] == '\0') break;
+				}
 				Ctrl->F.active = true;
-				switch (opt->arg[0]) {
+				switch (txt_a[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
@@ -275,6 +281,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	                                   "Syntax error: No input files expected unless -E is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
+	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.file || Ctrl->T.list) && (Ctrl->T.low >= Ctrl->T.high),
 	                                   "Syntax error -T option: Give z_min < z_max\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.list == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
@@ -415,7 +423,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just copy what was in the CPT */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);	/* Stretch to given range or use natural range if 0/0 */
+		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high, Ctrl->Z.active);	/* Stretch to given range or use natural range if 0/0 */
 		if (Ctrl->I.active)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
 	}
@@ -438,6 +446,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
+	if (Ctrl->F.cat) Pout->categorical = 1;
 
 	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 		Return (API->error);

@@ -290,6 +290,9 @@ as well. For specific enhancements, we have:
    **AREA** operator which computes the gridcell area (in km^2 if the
    grid is geographic).
 
+*  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c++
+   for writing a discrete palette using the categorical format.
+
 *  :doc:`grdfft` has a new modifier to the **-E** that allows for more
    control of the power normalization for radial spectra.
 
@@ -303,6 +306,8 @@ as well. For specific enhancements, we have:
 *  :doc:`makecpt` can also let you build either a discrete or continuous custom
    color palette table from a comma-separated list of colors and
    *z*-values provided via a file, an equidistant setup, or comma-separated list.
+   The **-F** option now takes a new modifier **+c++ for writing a discrete
+   palette using the categorical format.
 
 *  :doc:`pstext` has new modifiers to its **-F** option that allows users
    to generate automatic labels such as record numbers of formatting of a

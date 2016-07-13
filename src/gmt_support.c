@@ -6712,7 +6712,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
-		gmt_stretch_cpt (GMT, P, zmin, zmax);
+		gmt_stretch_cpt (GMT, P, zmin, zmax, 1);
 	}
 	return (P);
 }
@@ -6734,11 +6734,22 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 }
 
 /*! . */
-void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high, unsigned int continuous) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead. */
 	int i, k;
 	double z_min, z_start, scale;
+	bool set_z_only = (P->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
+	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
+		for (i = 1; i < P->n_colors; i++) {
+			for (k = 0; k < 4; k++) P->data[i-1].rgb_high[k] = P->data[i].rgb_low[k];
+		}
+		P->n_colors--;	/* We loose one slice going to continuous */
+		P->is_continuous = 1;
+		P->mode -= GMT_CPT_TEMPORARY;	/* Served its purpose */
+		if (P->cpt_flags & GMT_CPT_TEMPORARY) P->cpt_flags -= GMT_CPT_TEMPORARY;
+		gmtlib_init_cpt (GMT, P);	/* Recalculate delta rgb's */
+	}
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");

@@ -16,7 +16,7 @@ Synopsis
 **grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**\ \|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ]
+[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
 [ |-G|\ *zlo*\ /\ *zhi* ] [ |-I| ]
 [ |-L|\ *minlimit/maxlimit* ]
 [ |-M| ] [ |-N| ]
@@ -114,10 +114,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
+**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**).
+    codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
+    append **+c** to write discrete palettes in categorical format.
 
 .. _-G:
 

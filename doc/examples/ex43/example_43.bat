@@ -15,8 +15,7 @@ gmt regress -Ey -N2 -i0-1l bb_weights.asc -Fxm -T-2/6/8 > ls_line.txt
 grep -v '^>' model.txt > A.txt
 grep -v '^#' bb_weights.asc > B.txt
 gawk "{if ($7 == 0) printf "%dp\n", NR}" A.txt > sed.txt
-echo 0 lightred > t.cpt
-echo 1 green >> t.cpt
+gmt makecpt -Clightred,green -T0/2/1 -F+c -N > t.cpt
 gmt psbasemap -R0.01/1e6/0.1/1e5 -JX6il -P -Ba1pf3 -Bx+l"Log@-10@- body weight (kg)" -By+l"Log@-10@- brain weight (g)" -BWSne+glightblue -K -X1.5i -Y4i > %ps%
 gmt psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -L+yt -Glightgoldenrod >> %ps%
 sed -n -f sed.txt B.txt | gmt pstext -R0.01/1e6/0.1/1e5 -JX6il -O -K -F+f12p+jRM -Dj0.15i >> %ps%

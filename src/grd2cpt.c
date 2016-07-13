@@ -69,8 +69,9 @@ struct GRD2CPT_CTRL {
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[R|r|h|c] */
+	struct F {	/* -F[r|R|h|c][+c] */
 		bool active;
+		bool cat;
 		unsigned int model;
 	} F;
 	struct G {	/* -Glow/high for input CPT truncation */
@@ -134,7 +135,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E[<nlevels>]] [-F[R|r|h|c]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-S<z_start>/<z_stop>/<z_inc> or -S<n>]\n\t[-T<-|+|=|_>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -149,7 +150,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set CPT to go from grid zmin to zmax (i.e., a linear scale).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append <nlevels> to sample equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the sense of the color table as well as back- and foreground color.\n");
@@ -228,8 +230,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Set color model for output */
+				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
+					Ctrl->F.cat = true;
+					if (txt_a[0] == '\0') break;
+				}
 				Ctrl->F.active = true;
-				switch (opt->arg[0]) {
+				switch (txt_a[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
@@ -316,6 +322,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Syntax error: -W and -Z cannot be used simultaneously\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
+	                                "Syntax error: -F+c and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
 					"Syntax error -L option: min_limit must be less than max_limit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
@@ -494,9 +502,14 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
+		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max, Ctrl->Z.active);
 		if (Ctrl->I.active)
 			gmt_invert_cpt (GMT, Pout);
+		cpt_flags = 0;
+		if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
+		if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+		if (Ctrl->F.active) Pout->model = Ctrl->F.model;
+		if (Ctrl->F.cat) Pout->categorical = 1;
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -623,6 +636,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
+	if (Ctrl->F.cat) Pout->categorical = 1;
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
