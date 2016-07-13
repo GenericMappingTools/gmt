@@ -4657,7 +4657,18 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 	double z = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
 
-	if (!(pch = strchr (*str, ','))) return (0);	/* Presumably gave a regular CPT name */
+	if (!(pch = strchr (*str, ','))) {	/* No comma so presumably a regular CPT name, but check for single color entry */
+		bool gray = true;
+		size_t k;
+		 /* Since "gray" is both a master CPT and a shade we must let the CPT take precedence */
+		if (!strcmp (*str, "gray"))
+			return (0);
+		/* Because gmtlib_is_color cannot uniquely determine what a single number is, check for that separately first. */
+		for (k = 0; gray && k < strlen (*str); k++)
+			if (!isdigit (*str[k])) gray = false;	/* Not just a bunch of integers */
+		if (!gray && !gmtlib_is_color (API->GMT, *str))	/* Not a single color/shade, skip */
+			return (0);
+	}
 
 	snprintf (tmp_file, GMT_LEN256, "api_colors2cpt_%d.cpt", (int)getpid());
 	if ((fp = fopen (tmp_file, "w")) == NULL) {

@@ -49,6 +49,7 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word);
 EXTERN_MSC char * gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F);
 EXTERN_MSC char * gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk);
 EXTERN_MSC char * gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv);

@@ -675,32 +675,36 @@ GMT_LOCAL bool support_is_pattern (char *word) {
 }
 
 /*! . */
-GMT_LOCAL bool support_is_color (struct GMT_CTRL *GMT, char *word) {
-	int i, k, n, n_hyphen = 0;
+bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
+	int i, k, n, n_hyphen = 0, n_slashes = 0;
 
 	/* Returns true if we are sure the word is a color string - else false.
-	 * color syntax is <gray>|<r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>.
-	 * NOTE: we are not checking if the values are kosher; just the pattern  */
+	 * color syntax is <r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>.
+	 * NOTES: 1) <gray> is excluded since this function is called in places where
+	 *  a single integer may be used for font size or pen width...
+	 *        2) We are not checking if the values are kosher; just that they follow the pattern  */
 
 	n = (int)strlen (word);
 	if (n == 0) return (false);
 
 	if (word[0] == '#') return (true);		/* Probably #rrggbb */
 	if (gmt_colorname2index (GMT, word) >= 0) return (true);	/* Valid color name */
+	/* Skip dimension specifications with units c|i|m|p or a colon */
 	if (strchr(word,'t')) return (false);		/* Got a t somewhere */
 	if (strchr(word,':')) return (false);		/* Got a : somewhere */
 	if (strchr(word,'c')) return (false);		/* Got a c somewhere */
 	if (strchr(word,'i')) return (false);		/* Got a i somewhere */
 	if (strchr(word,'m')) return (false);		/* Got a m somewhere */
 	if (strchr(word,'p')) return (false);		/* Got a p somewhere */
-	for (i = k = 0; word[i]; i++) if (word[i] == '/') k++;
-	if (k == 1 || k > 3) return (false);	/* No color spec takes only 1 slash or more than 3 */
+	for (i = k = 0; word[i]; i++) if (word[i] == '/') n_slashes++;	/* Count slashes */
+	if (n_slashes == 1 || n_slashes > 3) return (false);	/* No color spec takes only 1 slash or more than 3 */
 	n--;
-	while (n >= 0 && (word[n] == '-' || word[n] == '.' || isdigit ((int)word[n]))) {
+	/* Check for h-s-v as well.  Must find 2 hyphens */
+	while (n >= 0 && (strchr ("/-.", word[n]) || isdigit ((int)word[n]))) {
 		if (word[n] == '-') n_hyphen++;
-		n--;	/* Wind down as long as we find -,., or digits */
+		n--;	/* Wind down as long as we find -,.,/ or digits */
 	}
-	return ((n == -1 && n_hyphen == 2));	/* true if we only found h-s-v and false otherwise */
+	return ((n == -1 && (n_slashes || n_hyphen == 2)));	/* Hence <gray> will fail the slash test */
 }
 
 /*! . */
@@ -4952,7 +4956,7 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 }
 
 /*! . */
-#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || support_is_pattern (word) || support_is_color (GMT, word))
+#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || support_is_pattern (word) || gmtlib_is_color (GMT, word))
 
 /* The two flip_angle functions are needed when vectors given by angle/length is to be plotted
  * using Cartesian projections in which the direction of positive x and/or y-axis might have
@@ -5658,7 +5662,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		else if (support_is_penstyle (color)) {	/* style got stored in color */
 			strncpy (style, color, GMT_LEN256-1);
 			color[0] = '\0';
-			if (support_is_color (GMT, width)) {	/* color got stored in width */
+			if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 				strncpy (color, width, GMT_LEN256-1);
 				width[0] = '\0';
 			}
@@ -5677,7 +5681,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 			strncpy (style, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
-		else if (support_is_color (GMT, width)) {	/* color got stored in width */
+		else if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 			strncpy (color, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
@@ -6737,7 +6741,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	double z_min, z_start, scale;
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Passing z_low == z_high but CPT has no default range.  No changes made\n");
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
 			return;
 		}
 		z_low =  P->minmax[0];	z_high = P->minmax[1];
