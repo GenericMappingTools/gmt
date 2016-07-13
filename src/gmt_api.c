@@ -4647,12 +4647,13 @@ GMT_LOCAL struct GMTAPI_DATA_OBJECT * api_make_dataobject (struct GMTAPI_CTRL *A
 
 /*! . */
 GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
-	/* Take comma-separated color entries and build a linear, continuous CPT.
+	/* Take comma-separated color entries and build a linear, discrete CPT.
+	 * This may be converted to a continuous CPT if -Z is used by makecpt/grd2cpt.
 	 * We check if color is valid then write the given entries verbatim.
 	 * Returns GMT_NOTSET on error, 0 if no CPT is created (str presumably holds a CPT name) and 1 otherwise.
 	*/
 	unsigned int pos = 0;
-	char *pch = NULL, last[GMT_BUFSIZ] = {""}, first[GMT_LEN64] = {""}, tmp_file[GMT_LEN256] = "";
+	char *pch = NULL, color[GMT_LEN256] = {""}, tmp_file[GMT_LEN256] = "";
 	double z = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
 
@@ -4664,19 +4665,12 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 		return (GMT_NOTSET);
 	}
 
-	gmt_strtok (*str, ",", &pos, last);	/* Get first color entry */
-	strncpy (first, last, GMT_LEN64-1);	/* Make this the first color */
-	if (gmt_getrgb (API->GMT, first, rgb)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", first);
-		return (GMT_NOTSET);
-	}
-	while (gmt_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
-		if (gmt_getrgb (API->GMT, last, rgb)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", last);
+	while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
+		if (gmt_getrgb (API->GMT, color, rgb)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
 			return (GMT_NOTSET);
 		}
-		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
-		strncpy (first, last, GMT_LEN64-1);	/* Make last the new first color */
+		fprintf (fp, "%g\t%s\t%g\t%s\n", z, color, z+1.0, color);
 		z += 1.0;				/* Increment z-slice values */
 	}
 	fclose (fp);

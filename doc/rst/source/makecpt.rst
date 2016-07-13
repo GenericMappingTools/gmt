@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I| ] [ |-M| ]
 [ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
-[ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* ]
+[ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn* ]
 [ |-V|\ [*level*\ ] ] [ |-W| ] [ |-Z| ]
 
 |No-spaces|
@@ -31,7 +31,7 @@ Description
 
 **makecpt** is a utility that will help you make static color palette tables
 (CPTs). You define an equidistant set of contour intervals or pass
-your own z-table, and create a new CPT based on an existing master (dynamic)
+your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
 standard GMT offerings, visit cpt-city:
@@ -151,13 +151,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
+**-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn*
     Defines the range of the new CPT by giving the lowest and
     highest z-value and interval.  Append /*z_inc* to sample the input CPT
     discretely at intervals *z_inc* between *z_min* and *z_max*;
     append a trailing **+** to interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
-    per record. If **-T** is not given, the existing range in the master
+    per record, or provide a list of comma-separated z-values instead
+    If **-T** is not given, the existing range in the master
     CPT will be used intact.
 
 .. _-V:
@@ -239,6 +240,21 @@ the data table depths.txt (with lon, lat, depths), run
    ::
 
     gmt makecpt -Cgebco depths.txt -i2 -Z -E24 > my_depths.cpt
+
+To make a custom discrete color table for depth of seismicity, using red color for
+hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1000 km)
+earthquakes, use
+
+   ::
+   
+    gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
+
+Finally, to make a continuous CPT from white to blue as z goes from
+3 to 10, try
+
+   ::
+   
+    gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
 
 Bugs
 ----

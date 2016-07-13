@@ -6817,6 +6817,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	unsigned int i = 0, j, k, upper, lower, nz;
 	uint64_t dim_nz[1];
 	bool even = false;	/* even is true when nz is passed as negative */
+	bool set_z_only = false;
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
 	double hsv_low[4], hsv_high[4], hsv_fore[4], hsv_back[4];
@@ -6824,6 +6825,18 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
 
+	set_z_only = (Pin->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
+	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
+		for (i = 1; i < Pin->n_colors; i++) {
+			for (k = 0; k < 4; k++) Pin->data[i-1].rgb_high[k] = Pin->data[i].rgb_low[k];
+		}
+		Pin->n_colors--;	/* We loose one slice going to continuous */
+		Pin->is_continuous = 1;
+		Pin->mode -= GMT_CPT_TEMPORARY;	/* Served its purpose */
+		if (Pin->cpt_flags & GMT_CPT_TEMPORARY) Pin->cpt_flags -= GMT_CPT_TEMPORARY;
+		gmtlib_init_cpt (GMT, Pin);	/* Recalculate delta rgb's */
+	}
+	
 	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Warning: Making a continuous cpt from a discrete cpt may give unexpected results!\n");
 
 	if (nz_in < 0) {	/* Called from grd2cpt which wants equal area colors */
@@ -6838,7 +6851,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
-	i += gmt_M_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
+	i += gmt_M_check_condition (GMT, (no_inter || set_z_only) && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
+
 
 	/* First normalize old CPT so z-range is 0-1 */
 
@@ -6899,7 +6913,13 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		lower = i;
 		upper = i + 1;
 
-		if (no_inter) { /* Just pick the first n_colors */
+		if (set_z_only) { /* Just duplicate the RGB colors */
+			gmt_M_memcpy (rgb_low, Pin->data[i].rgb_low, 4, double);
+			gmt_M_memcpy (rgb_high, Pin->data[i].rgb_high, 4, double);
+			support_rgb_to_hsv (rgb_low, hsv_low);
+			support_rgb_to_hsv (rgb_high, hsv_high);
+		}
+		else if (no_inter) { /* Just pick the first n_colors */
 			j = MIN (i, Pin->n_colors);
 			if (Pin->model & GMT_HSV) {	/* Pick in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = lut[j].hsv_low[k], hsv_high[k] = lut[j].hsv_high[k];

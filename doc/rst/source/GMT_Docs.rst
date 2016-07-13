@@ -300,6 +300,10 @@ as well. For specific enhancements, we have:
    model fit at the input data locations and optionally saves the model
    misfits to a secondary output file.
 
+*  :doc:`makecpt` can also let you build either a discrete or continuous custom
+   color palette table from a comma-separated list of colors and
+   *z*-values provided via a file, an equidistant setup, or comma-separated list.
+
 *  :doc:`pstext` has new modifiers to its **-F** option that allows users
    to generate automatic labels such as record numbers of formatting of a
    third data column into a textual representation.  We also allow any

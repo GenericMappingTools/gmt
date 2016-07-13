@@ -80,11 +80,12 @@ struct MAKECPT_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct T {	/* -T<z_min/z_max[/z_inc>] */
+	struct T {	/* -T<z_min/z_max[/z_inc>]|<zfile>|<z0,z1,...,zn> */
 		bool active;
 		bool interpolate;
 		double low, high, inc;
 		char *file;
+		char *list;
 	} T;
 	struct Q {	/* -Q[i|o] */
 		bool active;
@@ -113,6 +114,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->T.file);
+	gmt_M_str_free (C->T.list);
 	gmt_M_free (GMT, C);
 }
 
@@ -120,7 +122,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table> | -T<z1,z2,...zn>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -149,8 +151,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>/<z_max> to change the z-range for the colorscale in z-units.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append /<z_inc> to sample the cpt discretely instead, or append + to <z_inc>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to indicate the number of z-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a filename with custom z-values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to let <z_inc> indicate the number of z-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply (1) a filename with custom z-values or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (2) a comma-separated list of custom z-values.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
@@ -237,6 +240,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				if (!gmt_access (GMT, opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
+				else if (strchr (opt->arg, ','))
+					Ctrl->T.list = strdup (opt->arg);
 				else {
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
 					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify z_min/z_max[/z_inc[+]]\n");
@@ -270,9 +275,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	                                   "Syntax error: No input files expected unless -E is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.file || Ctrl->T.list) && (Ctrl->T.low >= Ctrl->T.high),
 	                                   "Syntax error -T option: Give z_min < z_max\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.list == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
 	                                   "Syntax error -T option: For interpolation, give z_inc > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
 	                                   "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
@@ -293,11 +298,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 int GMT_makecpt (void *V_API, int mode, void *args) {
 	int i, nz = 0, error = 0;
-	unsigned int cpt_flags = 0;
+	unsigned int cpt_flags = 0, pos = 0;
 
 	double *z = NULL;
 
-	char *l = NULL, *kind[2] = {"discrete", "continuous"};
+	char *l = NULL, *kind[2] = {"discrete", "continuous"}, p[GMT_LEN128] = {""};
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -364,6 +369,13 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		z = T->table[0]->segment[0]->data[GMT_X];
 		nz = (int)T->table[0]->segment[0]->n_rows;
+	}
+	else if (Ctrl->T.list) {	/* Array passed as a comma-separated list of z-values */
+		for (i = 0, nz = 1; i < (int)strlen (Ctrl->T.list); i++) if (Ctrl->T.list[i] == ',') nz++;	/* Count the commas */
+		z = gmt_M_memory (GMT, NULL, nz, double);
+		i = 0;
+		while ((gmt_strtok (Ctrl->T.list, ",", &pos, p)))
+			z[i++] = atof (p);
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
