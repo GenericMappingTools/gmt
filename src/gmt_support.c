@@ -7235,7 +7235,8 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 
 /*! . */
 void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
-	/* For CPTs passed to/from external APIs we need to initialize some derived CPT quantities */
+	/* For CPTs passed to/from external APIs we need to initialize some derived CPT quantities.
+	 * The data is received as r/b/g regardless of model so we must set hsv quantities. */
 	unsigned int k, n;
 
 	for (n = 0; n < P->n_colors; n++) {
@@ -7249,8 +7250,7 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			P->data[n].z_low, P->data[n].z_high, gmt_putrgb (GMT, P->data[n].rgb_low), gmt_putrgb (GMT, P->data[n].rgb_high),
 			P->data[n].i_dz, P->data[n].rgb_diff[0], P->data[n].rgb_diff[1], P->data[n].rgb_diff[2]);
 	}
-	/* We leave BNF as we got them from the external API, but clarify the model is only RGB */
-	P->model = GMT_RGB;
+	/* We leave BNF as we got them from the external API */
 #ifdef GMT_BACKWARDS_API
 	P->range = P->data;	
 	P->patch = P->bfn;	
