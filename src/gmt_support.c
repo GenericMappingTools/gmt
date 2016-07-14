@@ -6737,7 +6737,7 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high, unsigned int continuous) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead. */
-	int i, k;
+	unsigned int i, k;
 	double z_min, z_start, scale;
 	bool set_z_only = (P->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
 	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
@@ -6767,7 +6767,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
 	
-	for (i = 0; i < (int)P->n_colors; i++) {
+	for (i = 0; i < P->n_colors; i++) {
 		if (i == k) {	/* Must change scale and z_min for cpt above the hinge */
 			z_min = z_start = P->hinge;
 			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);

@@ -2593,10 +2593,10 @@ GMT_LOCAL float grd_wlmsscl_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmode, lmsscl;
-	double w = 1;
-	if (!use_grid) w = weight;
+	double w = 1.0;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
+	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
 		if (use_grid) {
@@ -2737,11 +2737,11 @@ GMT_LOCAL void grd_LT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct G
 GMT_LOCAL float grd_wmad_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G, struct GMT_GRID *W, bool use_grid, double weight) {
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double med, w = 1;
-	if (!use_grid) w = weight;
+	double med, w = 1.0;
 	float wmad;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
+	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
 		if (use_grid) {
@@ -2834,7 +2834,7 @@ GMT_LOCAL void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL float grd_wmean_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G, struct GMT_GRID *W, bool use_grid, double weight) {
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double sum_zw = 0.0, sum_w = 0.0, w = 1;
+	double sum_zw = 0.0, sum_w = 0.0, w = 1.0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
@@ -2904,10 +2904,10 @@ GMT_LOCAL float grd_wmedian_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmed;
-	double w = 1;
-	if (!use_grid) w = weight;
+	double w = 1.0;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
+	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
 		if (use_grid) {
@@ -3005,10 +3005,10 @@ GMT_LOCAL float grd_wmode_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float wmode;
-	double w = 1;
-	if (!use_grid) w = weight;
+	double w = 1.0;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
+	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
 		if (use_grid) {
@@ -3399,10 +3399,10 @@ GMT_LOCAL float grd_wquant_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	uint64_t node, n = 0;
 	unsigned int row, col;
 	float p;
-	double w = 1;
-	if (!use_grid) w = weight;
+	double w = 1.0;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
 	/* 1. Create array of value,weight pairs, skipping NaNs */
+	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
 		if (use_grid) {
@@ -4015,7 +4015,7 @@ GMT_LOCAL float grd_wstd_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 0;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 1.0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
@@ -4355,7 +4355,7 @@ GMT_LOCAL float grd_wvar_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
 	uint64_t node, n = 0;
 	unsigned int row, col;
-	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 0;
+	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 1.0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		if (gmt_M_is_fnan (G->data[node])) continue;
