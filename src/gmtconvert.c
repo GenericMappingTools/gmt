@@ -557,7 +557,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}
 	
-	if (Ctrl->T.active && gmt_M_file_is_memory (Ctrl->Out.file)) {
+	if (Ctrl->T.active && gmt_M_file_is_memory (Ctrl->Out.file) && D[GMT_OUT]->n_segments > 1) {
 		/* Since no file is written we must physically collate segments into a single segment per table first */
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;
