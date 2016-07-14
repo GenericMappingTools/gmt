@@ -334,7 +334,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					/* This case arrives here from a separate path. It started in grdimage and an originaly
 					   data was in uchar but padded and possibly 3D (RGB) */
 					tmpByte = (unsigned char *)data;
-					for (nn = 0; nn < n_cols*n_rows; nn++)
+					for (nn = 0; nn < (uint64_t)n_cols*n_rows; nn++)
 						outByte[nn] = tmpByte[nn*n_bands + i];
 
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, outByte, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
