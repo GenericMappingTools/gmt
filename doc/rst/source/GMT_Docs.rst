@@ -219,6 +219,12 @@ an issue in the bug tracker
 New Features in GMT 5.3
 =======================
 
+Between 5.2 and 5.3 we spent much time working on the underlying API
+needed to support the modules and especially the external interfaces
+we are building toward MATLAB and Python.  Nevertheless, there have
+been many user-level enhancements as well.
+Here is a summary of these changes in three key areas:
+
 New modules
 -----------
 
@@ -241,7 +247,7 @@ General improvements
 --------------------
 
 There are many changes to GMT, mostly under the hood, but also changes that
-affect users directly.  We have added two new examples and one new animation
+affect users directly.  We have added four new examples and one new animation
 to highlight recently added capabilities.  There have been many bug fixes
 as well. For specific enhancements, we have:
 
