@@ -7337,6 +7337,76 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	return (D);
 }
 
+void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	/* Given the -o option, rearrange the columns of the dataset.
+	 * This is needed by the API when returning a dataset by reference
+	 * as the normal -o path for printing is not taken. */
+	uint64_t tbl, seg, col, src_col;
+	unsigned int *used = NULL;
+	bool extend = false, adjust = false;
+	double **temp = NULL;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASEGMENT *S;
+	if (!GMT->common.o.active) return;	/* Nutin' to do */
+	temp = gmt_M_memory (GMT, NULL, D->n_columns, double *);
+	used = gmt_M_memory (GMT, NULL, D->n_columns, unsigned int);
+	if (GMT->common.o.n_cols > D->n_columns)	/* Must allocate more columns first */
+		extend = true;
+	if (GMT->common.o.n_cols != D->n_columns)	/* Must free/realloc some columns afterwards */
+		adjust = true;
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		T = D->table[tbl];	/* Current atble */
+		for (seg = 0; seg < T->n_segments; seg++) {
+			S = T->segment[seg];	/* Current segment */
+			if (extend)	{/* Allocate more arrays first */
+				S->data = gmt_M_memory (GMT, S->data, GMT->common.o.n_cols, double *);
+				for (col = D->n_columns; col < GMT->common.o.n_cols; col++)
+					S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
+			}
+			for (col = 0; col < S->n_columns; col++)	/* Keep pointers to original arrays */
+				temp[col] = S->data[col];
+			gmt_M_memset (used, S->n_columns, unsigned int);	/* Reset used counters */
+			gmt_M_memset (S->data, S->n_columns, double *);	/* Reset pointers */
+			/* During the first pass we can set pointers only once per source column */
+			for (col = 0; col < GMT->common.o.n_cols; col++) {	/* These are final output columns */
+				src_col = GMT->current.io.col[GMT_OUT][col].col;	/* Corresponding original column */
+				if (used[src_col] == 0)	/* Can set pointer the first time */
+					S->data[col] = temp[src_col];
+				used[src_col]++;	/* Used this column one more time */
+			}
+			/* During second pass we must allocate space for any repeated columns */
+			for (col = 0; col < GMT->common.o.n_cols; col++) {	/* These are again final output columns */
+				if (S->data[col]) continue;	/* Set this one via pointer in pass one */
+				S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
+				src_col = GMT->current.io.col[GMT_OUT][col].col;	/* Corresponding original column */
+				gmt_M_memcpy (S->data[col], temp[src_col], S->n_rows, double);	/* Duplicate contents in second pass */
+			}
+			for (col = 0; col < S->n_columns; col++) {		/* Free the unused columns */
+				if (used[col] == 0) gmt_M_free (GMT, temp[col]);
+			}
+			if (adjust) {	/* Modify length of min/max arrays */
+				S->min  = gmt_M_memory (GMT, S->min, GMT->common.o.n_cols, double);
+				S->max  = gmt_M_memory (GMT, S->max, GMT->common.o.n_cols, double);
+				if (!extend) S->data = gmt_M_memory (GMT, S->data, GMT->common.o.n_cols, double *);
+			}
+			S->n_columns = GMT->common.o.n_cols;	/* New column count */
+		}
+		if (adjust) {	/* Modify length of table min/max arrays */
+			T->min = gmt_M_memory (GMT, T->min, GMT->common.o.n_cols, double);
+			T->max = gmt_M_memory (GMT, T->max, GMT->common.o.n_cols, double);
+		}
+		T->n_columns = GMT->common.o.n_cols;	/* New column count */
+	}
+	gmt_M_free (GMT, temp);
+	gmt_M_free (GMT, used);
+	if (adjust) {	/* Modify length of dataset min/max arrays */
+		D->min = gmt_M_memory (GMT, D->min, GMT->common.o.n_cols, double);
+		D->max = gmt_M_memory (GMT, D->max, GMT->common.o.n_cols, double);
+	}
+	D->n_columns = GMT->common.o.n_cols;	/* New column count */
+	gmtlib_set_dataset_minmax (GMT, D);		/* Update column stats */
+}
+
 /*! . */
 void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GMT_enum_alloc alloc_mode) {
 	/* Free memory allocated by gmtlib_read_table */

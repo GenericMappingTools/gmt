@@ -261,7 +261,7 @@ enum GMT_enum_bc {
 	GMT_BC_IS_NOTSET = 0, /* BC not yet set */
 	GMT_BC_IS_NATURAL,    /* Use natural BC */
 	GMT_BC_IS_PERIODIC,   /* Use periodic BC */
-	GMT_BC_IS_GEO,        /* Geographic BC condition */
+	GMT_BC_IS_GEO,        /* Geographic BC condition at N or S pole */
 	GMT_BC_IS_DATA};      /* Fill in BC with actual data */
 
 enum GMT_enum_anchors {	/* Various anchor strings */

@@ -3145,6 +3145,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_DATASET memory location\n");
+			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
 			S_obj->resource = D_obj;			/* Set resource pointer from object to this dataset */
 			D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
@@ -5672,8 +5673,8 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						/* Realloc final number of segments */
 						if (count[GMT_SEG] < (int64_t)T_obj->n_alloc) T_obj->segment = gmt_M_memory (GMT, T_obj->segment, T_obj->n_segments, struct GMT_DATASEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
-						gmt_set_tbl_minmax (GMT, T_obj);		/* Update the min/max values for this table */
 						gmtlib_set_dataset_minmax (GMT, D_obj);	/* Update the min/max values for this dataset */
+						gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
 						D_obj->n_records = T_obj->n_records = count[GMT_ROW];
 						if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, D_obj->geometry, GMT_OUT, NULL, D_obj)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to register */
