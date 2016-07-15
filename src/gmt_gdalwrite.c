@@ -120,7 +120,8 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->alpha = I->alpha;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Only supported memory layout for now is T(op)C(ol)B(and) \n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %s memory layout is not supported, for now only: T(op)C(ol)B(and) or TRP\n",
+		            I->header->mem_layout);
 		return GMT_NOTSET;
 	}
 
