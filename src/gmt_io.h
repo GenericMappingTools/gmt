@@ -269,9 +269,9 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char current_record[GMT_BUFSIZ];	/* Current ASCII record */
+	char record[GMT_BUFSIZ];	/* Current ASCII record */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
-	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variablesin netCDF file */

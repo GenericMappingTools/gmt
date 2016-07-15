@@ -936,7 +936,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				 * will then be the user text that we want to preserve.  Since strtok places
 				 * 0 to indicate start of next token we count our way to the start of the text. */
 
-				strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
+				strncpy (line, GMT->current.io.record, GMT_BUFSIZ);
 				gmt_chop (line);	/* Chop of line feed */
 				pos = record[0] = 0;	/* Start with blank record */
 				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
@@ -1069,7 +1069,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
-					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
+					strncpy (line, GMT->current.io.record, GMT_BUFSIZ);
 					gmt_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
@@ -1116,7 +1116,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
-					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
+					strncpy (line, GMT->current.io.record, GMT_BUFSIZ);
 					gmt_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */

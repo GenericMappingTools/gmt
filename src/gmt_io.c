@@ -3024,8 +3024,11 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 }
 
 GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
-	while (strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace */
-	strncpy (GMT->current.io.current_record, text, GMT_BUFSIZ-1);
+	while (*text && strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace */
+	if (*text)	/* Got some text to remember */
+		strncpy (GMT->current.io.record, text, GMT_BUFSIZ-1);
+	else	/* Nutin' */
+		gmt_M_memset (GMT->current.io.record, GMT_BUFSIZ, char);
 }
 
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
@@ -4611,7 +4614,7 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 	GMT->current.io.pt_no++;	/* Got a valid text record */
 	*n = 1ULL;			/* We always return 1 item as there are no columns */
 	*status = 1;
-	return (GMT->current.io.current_record);
+	return (GMT->current.io.record);
 }
 
 /*! Returns true if we should skip this line (because it is blank) */
@@ -6087,7 +6090,7 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 	while (status >= 0 && !gmt_M_rec_is_eof (GMT)) {	/* Not yet EOF */
 		if (header) {
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) || gmt_M_rec_is_table_header (GMT)) { /* Process headers */
-				T->header[T->n_headers] = strdup (GMT->current.io.current_record);
+				T->header[T->n_headers] = strdup (GMT->current.io.record);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
 					n_head_alloc <<= 1;
@@ -6900,7 +6903,7 @@ GMT_LOCAL void alloc_record_text (struct GMT_CTRL *GMT, uint64_t row, uint64_t n
 	/* Find the start of the n'th column where text begins and return a copy */
 	uint64_t col = 0;
 	size_t k = 0;
-	char *text = GMT->current.io.current_record;
+	char *text = GMT->current.io.record;
 	if (n_col == 0 || text == NULL) return;
 	while (text[k] && strchr (" \t", text[k])) k++; /* Scan pass leading whitespace */
 	while (text[k] && col < n_col) {
@@ -7053,7 +7056,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		if (header) {	/* Only true at start of an ASCII file */
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) ||
 			        gmt_M_rec_is_table_header (GMT)) { /* Process headers */
-				T->header[T->n_headers] = strdup (GMT->current.io.current_record);
+				T->header[T->n_headers] = strdup (GMT->current.io.record);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
 					n_head_alloc <<= 1;

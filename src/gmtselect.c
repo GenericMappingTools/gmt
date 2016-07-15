@@ -923,7 +923,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (just_copy_record) {	/* Want to (or can) do text output */
 			if (GMT->common.a.active) {	/* Add selected aspatial fields to output record */
 				ogr_to_text (GMT, GMT->current.io.OGR, extra);
-				strcat (API->GMT->current.io.current_record, extra);
+				strcat (API->GMT->current.io.record, extra);
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
 		}
