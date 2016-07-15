@@ -298,7 +298,7 @@ as well. For specific enhancements, we have:
    when working on a geographic grid, will weight the result using the
    **AREA** function for proper spherical statistics.
 
-*  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c++
+*  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c**
    for writing a discrete palette using the categorical format.
 
 *  :doc:`grdfft` has a new modifier to the **-E** that allows for more
@@ -314,7 +314,7 @@ as well. For specific enhancements, we have:
 *  :doc:`makecpt` can also let you build either a discrete or continuous custom
    color palette table from a comma-separated list of colors and
    *z*-values provided via a file, an equidistant setup, or comma-separated list.
-   The **-F** option now takes a new modifier **+c++ for writing a discrete
+   The **-F** option now takes a new modifier **+c** for writing a discrete
    palette using the categorical format.
 
 *  :doc:`pstext` has new modifiers to its **-F** option that allows users
