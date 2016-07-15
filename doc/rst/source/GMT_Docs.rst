@@ -292,9 +292,11 @@ as well. For specific enhancements, we have:
 *  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
-   **STDWW**, and **VARW**.  Finally, doc:`grdmath` also gains the
+   **STDWW**, and **VARW**.  Also, doc:`grdmath` gains a new
    **AREA** operator which computes the gridcell area (in km^2 if the
-   grid is geographic).
+   grid is geographic).  Finally, the operators **MEAN**, **MEDIAN**, etc.,
+   when working on a geographic grid, will weight the result using the
+   **AREA** function for proper spherical statistics.
 
 *  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c++
    for writing a discrete palette using the categorical format.
@@ -319,7 +321,7 @@ as well. For specific enhancements, we have:
    to generate automatic labels such as record numbers of formatting of a
    third data column into a textual representation.  We also allow any
    baseline angles to be interpreted as *orientations*, i.e., they will be
-   modified to fall in the -90/+90 range.
+   modified to fall in the -90/+90 range when **-F**\ ...\ **+A** is set.
 
 *  :doc:`psrose` can now control the attributes of vectors in a windrose
    diagram via **-M**.
@@ -338,6 +340,10 @@ as well. For specific enhancements, we have:
    head selections now include inward-pointing arrows.  Custom symbols
    may now simply be a preexisting EPS figure.  Many of these enhancements
    are also available in :doc:`psxyz`.
+
+*  The spotter supplement now comes with the latest rotation files from
+   EarthByte, U. of Sydney.
+
 
 The API
 -------
