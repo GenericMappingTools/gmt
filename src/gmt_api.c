@@ -6016,6 +6016,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
 			if ((c_err = api_colors2cpt (API, &file)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
+				gmt_M_str_free (file);
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */

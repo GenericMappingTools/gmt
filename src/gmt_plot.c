@@ -5978,7 +5978,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	bool skip;
 	uint64_t i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
-	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[3];
+	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[4];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (n < 2) return;
@@ -6089,7 +6089,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							dir1 = R2D * angle;
 							dir2 = dir1 + 180.0;
 							if (dir1 > dir2) dir1 -= 360.0;
-							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;
+							dim[0] = len2, dim[1] = dir1, dim[2] = dir2;	dim[3] = 0.0;
 							PSL_plotsymbol (PSL, x0, y0, dim, PSL_WEDGE);
 							break;
 					}
