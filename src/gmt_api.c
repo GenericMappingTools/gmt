@@ -4958,8 +4958,8 @@ unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family
 	*first_ID = GMT_NOTSET;	/* Not found yet */
 	for (i = n = 0; i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				  /* A freed object, skip it */
-		if (API->object[i]->direction != (int)direction) continue;	  /* Wrong direction */
-		if (API->object[i]->geometry  != (int)geometry) continue;	  /* Wrong geometry */
+		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue;	  /* Wrong direction */
+		if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;	  /* Wrong geometry */
 		if (API->object[i]->status    != GMT_IS_UNUSED) continue; /* Already used */
 		if (family != API->object[i]->family) continue;		  /* Wrong data type */
 		n++;	/* Found one that satisfied requirements */
@@ -5755,7 +5755,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	API->current_rec[direction] = 0;	/* Reset for next use */
 	for (item = 0; item < API->n_objects; item++) {
 		if (!API->object[item]) continue;	/* Skip empty object */
-		if (API->object[item]->direction != (int)direction) continue;	/* Not the required direction */
+		if (API->object[item]->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
 		if (API->object[item]->selected) API->object[item]->selected = false;	/* No longer a selected resource */
 	}
 
@@ -5866,8 +5866,8 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				/* Empty object */
 		if (!API->object[i]->resource) continue;		/* Empty resource */
-		if (API->object[i]->family != (int)family) continue;		/* Not the required data type */
-		if (API->object[i]->direction != (int)direction) continue;	/* Not the required direction */
+		if (API->object[i]->family != (enum GMT_enum_family)family) continue;		/* Not the required data type */
+		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
 		if (API->object[i]->resource == resource) item = i;	/* Pick the requested object regardless of direction */
 	}
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such resource found */
@@ -8841,7 +8841,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && key[k][K_DIR] != '-') {	/* Got some option like -G or -Lu with further args */
 			bool implicit = true;
-			if ((len = strlen (argument)) == n_pre_arg)	/* Got some option like -G or -Lu with no further args */
+			if ((len = strlen (argument)) == (size_t)n_pre_arg)	/* Got some option like -G or -Lu with no further args */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg [offset = %d]\n", opt->option, n_pre_arg);
 			else if (mod_pos && (argument[mod_pos] == '\0' || argument[mod_pos] == '+'))	/* Found an embedded +q<noarg> */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg via argument-less +%c modifier\n", opt->option, key[k][K_MODIFIER]);

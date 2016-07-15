@@ -216,7 +216,7 @@ enum surface_iter { GRID_NODES = 0, GRID_DATA = 1 };
 
 struct SURFACE_DATA {	/* Data point and index to node it currently constrains  */
 	float x, y, z;
-	int kind;
+	unsigned int kind;
 	uint64_t index;
 #ifdef DEBUG	/* For debugging purposes only - it is the original input data point number before sorting */
 	int64_t number;
@@ -1448,7 +1448,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 
 	uint64_t last_index, n_outside, k,  n_ignored;
 #ifdef DEBUG
-	unsigned int last_kind;
+	unsigned int last_kind = 0;
 	char *point_type[2] = {"original", "breakline"};
 #endif
 
@@ -1668,7 +1668,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 	uint64_t new_n = 0, n_int = 0, nb = 0;
 	uint64_t k = 0, n, kmax = 0, kmin = 0, row, seg, node_this, node_prev;
 	size_t n_alloc, n_alloc_b;
-	double dx, dy, dz, r, r_this, r_prev, r_min, x0_prev, y0_prev, x0_this, y0_this;
+	double dx, dy, dz, r, r_this, r_min, x0_prev, y0_prev, x0_this, y0_this;
 	double xx, yy, zz, half_dx, half_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 	double *xline = NULL, *yline = NULL, *zline = NULL;
 	double *x = NULL, *y = NULL, *z = NULL, *xb = NULL, *yb = NULL, *zb = NULL;
@@ -1738,7 +1738,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 		for (k = 1; k < new_n; k++) {
 			//fprintf (stderr, "-------------------------------------------------\n");
 			/* Reset what is the previous point */
-			r_prev = r_this;	node_prev = node_this;
+			node_prev = node_this;
 			x0_prev = x0_this;	y0_prev = y0_this;
 			scol = x_to_col (x[k], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
 			srow = y_to_row (y[k], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);

@@ -6738,6 +6738,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead. */
 	unsigned int i, k;
+	int ks = 0;
 	double z_min, z_start, scale;
 	bool set_z_only = (P->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
 	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
@@ -6759,7 +6760,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	}
 	z_min = P->data[0].z_low;
 	z_start = z_low;
-	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (k = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
+	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 		P->has_hinge = 0;
 		k = (unsigned int)GMT_NOTSET;
