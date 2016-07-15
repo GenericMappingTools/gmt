@@ -10430,9 +10430,21 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
-	/* Try this to fix valgrind leak */
+	/* Try this to fix valgrind leaks */
 	if (Ccopy->session.GSHHGDIR != GMT->session.GSHHGDIR) gmt_M_str_free (Ccopy->session.GSHHGDIR);
 	Ccopy->session.GSHHGDIR = GMT->session.GSHHGDIR;
+	if (Ccopy->session.DCWDIR != GMT->session.DCWDIR) gmt_M_str_free (Ccopy->session.DCWDIR);
+	Ccopy->session.DCWDIR = GMT->session.DCWDIR;
+	if (Ccopy->session.SHAREDIR != GMT->session.SHAREDIR) gmt_M_str_free (Ccopy->session.SHAREDIR);
+	Ccopy->session.SHAREDIR = GMT->session.SHAREDIR;
+	if (Ccopy->session.HOMEDIR != GMT->session.HOMEDIR) gmt_M_str_free (Ccopy->session.HOMEDIR);
+	Ccopy->session.HOMEDIR = GMT->session.HOMEDIR;
+	if (Ccopy->session.USERDIR != GMT->session.USERDIR) gmt_M_str_free (Ccopy->session.USERDIR);
+	Ccopy->session.USERDIR = GMT->session.USERDIR;
+	if (Ccopy->session.DATADIR != GMT->session.DATADIR) gmt_M_str_free (Ccopy->session.DATADIR);
+	Ccopy->session.DATADIR = GMT->session.DATADIR;
+	if (Ccopy->session.TMPDIR != GMT->session.TMPDIR) gmt_M_str_free (Ccopy->session.TMPDIR);
+	Ccopy->session.TMPDIR = GMT->session.TMPDIR;
 
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {
