@@ -2603,13 +2603,14 @@ bool gmtlib_check_url_name (char *fname) {
 }
 
 unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
-	unsigned int tmp_pad[4] = {0, 0, 0, 0}, k = 0;
+	unsigned int tmp_pad[4] = {0, 0, 0, 0}, delta[4] = {0, 0, 0, 0}, k = 0;
 	/* When using subset with memory grids we must temporarily change the pad to match the region wesn */
 	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] = h->pad[XLO] + urint ((new_wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
 	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] = h->pad[XHI] + urint ((h->wesn[XHI] - new_wesn[XHI]) * h->r_inc[GMT_X]);
 	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] = h->pad[YLO] + urint ((new_wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]);
 	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] = h->pad[YHI] + urint ((h->wesn[YHI] - new_wesn[YHI]) * h->r_inc[GMT_Y]);
 	if (k) {	/* Yes, pad will change since region is different */
+		for (k = 0; k < 4; k++) delta[k] = tmp_pad[k] - h->pad[k];	/* Columns with data being passed */
 		gmt_M_memcpy (orig_pad, h->pad, 4, unsigned int);	/* Place the original grid pad in the provided array */
 		gmt_M_memcpy (orig_wesn, h->wesn, 4, double);		/* Place the original grid wesn in the provided array */
 		gmt_M_memcpy (h->pad, tmp_pad, 4, unsigned int);	/* Place the new pad in the grid header */
@@ -2617,6 +2618,9 @@ unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: %d pad sides changed. Now %u/%u/%u/%u\n",
 		            k, h->pad[XLO], h->pad[XHI], h->pad[YLO], h->pad[YHI]);
+		for (k = 0; k < 4; k++) {
+			if (delta[k] >= 2) h->BC[k] = GMT_BC_IS_DATA;
+		}
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: No pad adjustment needed\n");

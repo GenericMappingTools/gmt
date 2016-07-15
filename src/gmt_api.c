@@ -226,7 +226,7 @@ static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Poi
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
-	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire set */
+	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset or texset */
 	GMTAPI_BY_REC	= 1};	/* Means we will access the registere files on a record-by-record basis */
 
 /*! Entries into dim[] for matrix or vector */
