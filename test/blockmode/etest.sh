@@ -5,7 +5,7 @@
 # We have data that will fall in to 4 separate blocks
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
-# With the new mode calculation we are unable to get 5 for the EW block, it comes out as 5.5
+# With the new mode calculation we are unable to get 5 for the SW block, it comes out as 5.5
 # This test is only for blockmode
 log=etest.log
 
