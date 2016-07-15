@@ -29,19 +29,19 @@
  *
  * Here lie the 13 public functions used for GMT API command parsing:
  *
- * GMT_Create_Options	: Convert an array of text args to a linked option list
- * GMT_Destroy_Options	: Delete the linked option list
- * GMT_Create_Args	: Convert a struct option list back to an array of text args
- * GMT_Destroy_Args	: Delete the array of text args
- * GMT_Create_Cmd	: Convert a struct option list to a single command text. 
- * GMT_Destroy_Cmd	: Delete the command string
- * GMT_Make_Option	: Create a single option structure given arguments
- * GMT_Find_Option	: Find a specified option in the linked option list
- * GMT_Update_Option	: Update the arguments of the specified option in the list
- * GMT_Append_Option	: Append the given option to the end of the structure list
- * GMT_Delete_Option	: Delete the specified option and adjust the linked list
- * GMT_Parse_Common	: Parse the common GMT options
- * GMT_Expand_Option	: Replace special marker (?) with new argument [external API only]
+ * GMT_Create_Options   : Convert an array of text args to a linked option list
+ * GMT_Destroy_Options  : Delete the linked option list
+ * GMT_Create_Args      : Convert a struct option list back to an array of text args
+ * GMT_Destroy_Args     : Delete the array of text args
+ * GMT_Create_Cmd       : Convert a struct option list to a single command text. 
+ * GMT_Destroy_Cmd      : Delete the command string
+ * GMT_Make_Option      : Create a single option structure given arguments
+ * GMT_Find_Option      : Find a specified option in the linked option list
+ * GMT_Update_Option    : Update the arguments of the specified option in the list
+ * GMT_Append_Option    : Append the given option to the end of the structure list
+ * GMT_Delete_Option    : Delete the specified option and adjust the linked list
+ * GMT_Parse_Common     : Parse the common GMT options
+ * GMT_Expand_Option    : Replace special marker (?) with naemd argument [external API only]
 
  * This part of the API helps the developer create, manipulate, modify, find, and
  * update options that will be passed to various GMT_* modules ("The GMT programs").
@@ -50,7 +50,7 @@
  * creating text arrays from the linked list.  All these functions are pass the
  * API pointer and if that is NULL then errors will be issued.
  *
- * There are no GMT devel functions in this file.
+ * There are no GMT devel functions exported by this file.
  */
 
 /*!

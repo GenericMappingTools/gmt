@@ -1513,16 +1513,16 @@ needs to read that data.  The syntax is
 	                             void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
-desired filename via ``string``.  The other
-arguments have been discussed earlier.  Simply pass this filename in
-the calling sequence to the module you want to use.
+desired filename via ``string``.  This string must be at least GMT_STR16 bytes (16).
+The other arguments have been discussed earlier.  Simply pass this filename in
+the calling sequence to the module you want to use for reading from this resource.
 
 Let module write output to a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Likewise, if you want the module to write its result to memory (rather than file),
 you have to associate that memory object with another VirtualFile.  At this point
-you have no memory variable yet we need another function.  The syntax is
+you have no memory variable yet so we need another function.  The syntax is
 
 .. _GMT_Create_VirtualFile:
 
@@ -1531,9 +1531,19 @@ you have no memory variable yet we need another function.  The syntax is
     void *GMT_Create_VirtualFile (void *API, unsigned int family, unsigned int geometry,
 	                               char *string);
 
-The function returns the desired output filename via ``string``. The other
+The function returns the desired output filename via ``string``.
+This string must be at least GMT_STR16 bytes (16).  The other
 arguments have been discussed earlier.  Simply use this filename in
 the calling sequence to the module to set the output destination.
+
+Access the data written to a memory location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the module completes it will have written its output to the MemoryFile
+you initialized with GMT_Create_VirtualFile.  To get your hands on the actual
+data you need to read it into your program.  Actually, the data are already
+in memory but to access it you need to use GMT_Read_VirtualFile which takes
+the output filename you obtained from GMT_Create_VirtualFile.  The syntax is
 
 .. _GMT_Read_VirtualFile:
 
@@ -1541,6 +1551,8 @@ the calling sequence to the module to set the output destination.
 
     void *GMT_Read_VirtualFile (void *API, void *string);
 
+The function requires the output filename via ``string`` and then returns
+the data object, similar to what GMT_Read_Data does.
 
 Import from a memory location, version 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
