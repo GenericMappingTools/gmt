@@ -3114,7 +3114,8 @@ GMT_LOCAL void map_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double la
 	gmt_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
 	gmt_normalize3v (GMT, P);			/* Make sure P has unit length */
 	gmt_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
-	if (GMT->current.proj.N_hemi && plat < 0.0) {	/* Insist on a Northen hemisphere pole */
+	if (plat < 0.0) GMT->current.proj.o_spole = true;
+	if (GMT->current.proj.N_hemi && plat < 0.0) {	/* Insist on a Northern hemisphere pole */
 		plat = -plat;
 		plon += 180.0;
 		if (plon >= 360.0) plon -= 360.0;
@@ -3169,6 +3170,7 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 	 * origin and the oblique equator, but we need to shift that up to the selected oblique latitude through
 	 * the user's origin. */
 	gmt_oblmrc (GMT, GMT->current.proj.lon0, GMT->current.proj.lat0, &dummy, &GMT->current.proj.o_shift);
+	if (GMT->current.proj.o_spole) GMT->current.proj.o_shift = -GMT->current.proj.o_shift;
 
 	if (GMT->common.R.oblique) {	/* wesn is lower left and upper right corners in normal lon/lats */
 		gmt_oblmrc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
