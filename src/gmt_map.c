@@ -3129,7 +3129,7 @@ GMT_LOCAL void map_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double la
 
 /*! . */
 GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
-	double xmin, xmax, ymin, ymax;
+	double xmin, xmax, ymin, ymax, dummy;
 	double o_x, o_y, p_x, p_y, c, az, b_x, b_y, w, e, s, n;
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
@@ -3165,6 +3165,10 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 
 	gmtlib_set_oblique_pole_and_origin (GMT, GMT->current.proj.o_pole_lon, GMT->current.proj.o_pole_lat, o_x, o_y);
 	gmt_vmerc (GMT, 0.0, 0.0);
+	/* Internally, the origin is at the intersection between the meridian through the pole and the selected
+	 * origin and the oblique equator, but we need to shift that up to the selected oblique latitude through
+	 * the user's origin. */
+	gmt_oblmrc (GMT, GMT->current.proj.lon0, GMT->current.proj.lat0, &dummy, &GMT->current.proj.o_shift);
 
 	if (GMT->common.R.oblique) {	/* wesn is lower left and upper right corners in normal lon/lats */
 		gmt_oblmrc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);

@@ -299,6 +299,7 @@ struct GMT_PROJ {
 	double o_sin_pole_lat, o_cos_pole_lat;	/* Pole of rotation */
 	double o_pole_lon, o_pole_lat;	/* In degrees */
 	double o_beta;			/* lon' = beta for central_meridian (degrees) */
+	double o_shift;			/* Projected distance between oblique equator and chosen oblique latitude */
 	double o_FP[3], o_FC[3], o_IP[3], o_IC[3];
 
 	/* TM and UTM Projections */

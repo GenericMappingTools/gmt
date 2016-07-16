@@ -1049,19 +1049,22 @@ void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	/* Convert a longitude/latitude point to Oblique Mercator coordinates
 	 * by way of rotation coordinates and then using regular Mercator */
 	double tlon, tlat;
+	/* o_shift deals with difference between user's origin and our logical origin */
 
 	gmt_obl (GMT, lon * D2R, lat * D2R, &tlon, &tlat);
 
 	*x = GMT->current.proj.j_x * tlon;
-	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) : copysign (DBL_MAX, tlat);
+	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) - GMT->current.proj.o_shift : copysign (DBL_MAX, tlat);
 }
 
 void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert a longitude/latitude point from Oblique Mercator coordinates
 	 * by way of regular Mercator and then rotate coordinates */
 	double tlon, tlat;
+	/* o_shift deals with difference between user's origin and our logical origin */
 
 	tlon = x * GMT->current.proj.j_ix;
+	y += GMT->current.proj.o_shift;
 	tlat = atan (sinh (y * GMT->current.proj.j_ix));
 
 	gmt_iobl (GMT, lon, lat, tlon, tlat);
