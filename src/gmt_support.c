@@ -6738,7 +6738,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead. */
 	unsigned int i, k;
-	int ks = 0;
+	int is, ks = 0;
 	double z_min, z_start, scale;
 	bool set_z_only = (P->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
 	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
@@ -6763,19 +6763,19 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 		P->has_hinge = 0;
-		k = (unsigned int)GMT_NOTSET;
+		ks = (unsigned int)GMT_NOTSET;
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
 	
-	for (i = 0; i < P->n_colors; i++) {
-		if (i == k) {	/* Must change scale and z_min for cpt above the hinge */
+	for (is = 0; is < (int)P->n_colors; is++) {
+		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
 			z_min = z_start = P->hinge;
 			scale = (z_high - P->hinge) / (P->data[P->n_colors-1].z_high - P->hinge);
 		}
-		P->data[i].z_low  = z_start + (P->data[i].z_low  - z_min) * scale;
-		P->data[i].z_high = z_start + (P->data[i].z_high - z_min) * scale;
-		P->data[i].i_dz /= scale;
+		P->data[is].z_low  = z_start + (P->data[is].z_low  - z_min) * scale;
+		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
+		P->data[is].i_dz /= scale;
 	}
 }
 
