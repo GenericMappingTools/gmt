@@ -1984,15 +1984,15 @@ GMT_LOCAL bool api_validate_geometry (struct GMTAPI_CTRL *API, int family, int g
 	gmt_M_unused(API);
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
 	switch (family) {
-		case GMT_IS_TEXTSET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Textsets can hold many things... */
-		case GMT_IS_DATASET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Datasets can hold many things... */
-		case GMT_IS_GRID:    if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
-		case GMT_IS_IMAGE:   if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
-		case GMT_IS_PALETTE:     if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
-		case GMT_IS_POSTSCRIPT:      if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
-		case GMT_IS_VECTOR:  if (geometry != GMT_IS_POINT) problem = true;   break;	/* Only point is valid */
-		case GMT_IS_MATRIX:  if (geometry == GMT_IS_NONE) problem = true;    break;	/* Matrix can hold surfaces or TEXTSETs */
-		case GMT_IS_COORD:   if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
+		case GMT_IS_TEXTSET:     if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Textsets can hold many things... */
+		case GMT_IS_DATASET:     if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Datasets can hold many things... */
+		case GMT_IS_GRID:        if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
+		case GMT_IS_IMAGE:       if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
+		case GMT_IS_PALETTE:     if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
+		case GMT_IS_POSTSCRIPT:  if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
+		case GMT_IS_VECTOR:      if ((geometry & GMT_IS_PLP) == 0) problem = true;  break; 	/* Must be one of those three */
+		case GMT_IS_MATRIX:      if (geometry == GMT_IS_NONE) problem = true;       break;	/* Matrix can hold surfaces or TEXTSETs */
+		case GMT_IS_COORD:       if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 	}
 	return (problem);
 }
@@ -5713,7 +5713,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						S_obj->n_alloc = API->current_rec[GMT_OUT];
 						if ((error = api_alloc_vectors (GMT, V_obj, S_obj->n_alloc)) != GMT_OK)
 							return_error (V_API, error);
-						if ((object_ID = GMT_Register_IO (API, GMT_IS_VECTOR, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, V_obj)) == GMT_NOTSET)
+						if ((object_ID = GMT_Register_IO(API, GMT_IS_VECTOR, GMT_IS_REFERENCE, S_obj->geometry, GMT_OUT, NULL, V_obj)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to register */
 						if ((check = gmtapi_validate_id (API, GMT_IS_VECTOR, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to validate */
