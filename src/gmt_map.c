@@ -3108,13 +3108,14 @@ GMT_LOCAL void map_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double la
 	double plon, plat, beta, dummy;
 	double A[3], B[3], P[3];
 	/* Given A = (lon1, lat1) and B = (lon2, lat2), get P = A x B */
-	
 	gmt_geo_to_cart (GMT, lat1, lon1, A, true);	/* Cartesian vector for origin */
 	gmt_geo_to_cart (GMT, lat2, lon2, B, true);	/* Cartesian vector for 2nd point along oblique Equator */
 	gmt_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
 	gmt_normalize3v (GMT, P);			/* Make sure P has unit length */
 	gmt_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
-	if (plat < 0.0) GMT->current.proj.o_spole = true;
+
+	if (plat < 0.0 && GMT->hidden.func_level == 0 && !strncmp (GMT->init.module_name, "mapproject", 10U))	/* Only allowed in mapproject at top level */
+		GMT->current.proj.o_spole = true;
 	if (GMT->current.proj.N_hemi && plat < 0.0) {	/* Insist on a Northern hemisphere pole */
 		plat = -plat;
 		plon += 180.0;
@@ -3134,6 +3135,9 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 	double o_x, o_y, p_x, p_y, c, az, b_x, b_y, w, e, s, n;
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
+
+	if (strncmp (GMT->init.module_name, "mapproject", 10U))
+		GMT->current.proj.o_spole = false;	/* Only used in mapproject */
 
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[4] /= GMT->current.proj.M_PR_DEG;	/* To get plot-units / m */
 
