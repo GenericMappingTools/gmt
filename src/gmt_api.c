@@ -6940,7 +6940,12 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				S_obj->resource = V_obj;	/* Save so we can get it next time */
 			}
 			V_obj = S_obj->resource;
-			api_put_val = api_select_put_function (API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
+			if (V_obj == NULL) {
+				GMT_Report(API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL resource pointer for method _VIA_VECTOR\n");
+				return GMT_NOTSET;
+			}
+
+			api_put_val = api_select_put_function(API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < V_obj->n_columns; col++)	/* Place the output items */
 					api_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], API->GMT->session.d_NaN);
