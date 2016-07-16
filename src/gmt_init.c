@@ -4980,6 +4980,21 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
+GMT_LOCAL void gmtinit_free_dirnames (struct GMT_CTRL *GMT) {
+	/* Free any directory settings */
+
+	gmt_M_str_free (GMT->session.SHAREDIR);
+	gmt_M_str_free (GMT->session.HOMEDIR);
+	gmt_M_str_free (GMT->session.DATADIR);
+	gmt_M_str_free (GMT->session.DCWDIR);
+	gmt_M_str_free (GMT->session.GSHHGDIR);
+	gmt_M_str_free (GMT->session.USERDIR);
+	gmt_M_str_free (GMT->session.TMPDIR);
+	gmt_M_str_free (GMT->session.CUSTOM_LIBS);
+}
+
+
+/*! . */
 GMT_LOCAL void gmtinit_free_GMT_ctrl (struct GMT_CTRL *GMT) {	/* Deallocate control structure */
 	if (!GMT) return;	/* Never was allocated */
 	gmt_M_str_free (GMT);
@@ -10254,14 +10269,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmt_M_str_free (GMT->init.runtime_bindir);
 	gmt_M_str_free (GMT->init.runtime_libdir);
 	gmt_M_str_free (GMT->init.runtime_plugindir);
-	gmt_M_str_free (GMT->session.SHAREDIR);
-	gmt_M_str_free (GMT->session.HOMEDIR);
-	gmt_M_str_free (GMT->session.DATADIR);
-	gmt_M_str_free (GMT->session.DCWDIR);
-	gmt_M_str_free (GMT->session.GSHHGDIR);
-	gmt_M_str_free (GMT->session.USERDIR);
-	gmt_M_str_free (GMT->session.TMPDIR);
-	gmt_M_str_free (GMT->session.CUSTOM_LIBS);
+	gmtinit_free_dirnames (GMT);
 	for (i = 0; i < GMT_N_PROJ4; i++)
 		gmt_M_str_free (GMT->current.proj.proj4[i].name);
 	gmt_M_free (GMT, GMT->current.proj.proj4);
@@ -10353,6 +10361,17 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	if (GMT->common.h.remark) Csave->common.h.remark = strdup (GMT->common.h.remark);
 	if (GMT->common.h.colnames) Csave->common.h.colnames = strdup (GMT->common.h.colnames);
 
+	/* DIR NAMES */
+	
+	Csave->session.GSHHGDIR = (GMT->session.GSHHGDIR) ? strdup (GMT->session.GSHHGDIR) : NULL;
+	Csave->session.DCWDIR = (GMT->session.DCWDIR) ? strdup (GMT->session.DCWDIR) : NULL;
+	Csave->session.SHAREDIR = (GMT->session.SHAREDIR) ? strdup (GMT->session.SHAREDIR) : NULL;
+	Csave->session.HOMEDIR = (GMT->session.HOMEDIR) ? strdup (GMT->session.HOMEDIR) : NULL;
+	Csave->session.USERDIR = (GMT->session.USERDIR) ? strdup (GMT->session.USERDIR) : NULL;
+	Csave->session.DATADIR = (GMT->session.DATADIR) ? strdup (GMT->session.DATADIR) : NULL;
+	Csave->session.TMPDIR = (GMT->session.TMPDIR) ? strdup (GMT->session.TMPDIR) : NULL;
+	Csave->session.CUSTOM_LIBS = (GMT->session.CUSTOM_LIBS) ? strdup (GMT->session.CUSTOM_LIBS) : NULL;
+	
 	/* Reset all the common.?.active settings to false */
 
 	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
@@ -10421,32 +10440,29 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* GMT_IO */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmtlib_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
-	gmtinit_reset_colformats (GMT);			/* Wipe previous settings */
+	gmtlib_free_tmp_arrays (GMT);		/* Free emp memory for vector io or processing */
+	gmtinit_reset_colformats (GMT);		/* Wipe previous settings */
+	gmtinit_free_dirnames (GMT);		/* Wipe previous dir names */
 
 	gmt_fft_cleanup (GMT); /* Clean FFT resources */
 
 	/* Overwrite GMT with what we saved in gmt_begin_module */
 	gmt_M_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
+	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
 	/* Try this to fix valgrind leaks */
-	if (Ccopy->session.GSHHGDIR != GMT->session.GSHHGDIR) gmt_M_str_free (Ccopy->session.GSHHGDIR);
-	Ccopy->session.GSHHGDIR = GMT->session.GSHHGDIR;
-	if (Ccopy->session.DCWDIR != GMT->session.DCWDIR) gmt_M_str_free (Ccopy->session.DCWDIR);
-	Ccopy->session.DCWDIR = GMT->session.DCWDIR;
-	if (Ccopy->session.SHAREDIR != GMT->session.SHAREDIR) gmt_M_str_free (Ccopy->session.SHAREDIR);
-	Ccopy->session.SHAREDIR = GMT->session.SHAREDIR;
-	if (Ccopy->session.HOMEDIR != GMT->session.HOMEDIR) gmt_M_str_free (Ccopy->session.HOMEDIR);
-	Ccopy->session.HOMEDIR = GMT->session.HOMEDIR;
-	if (Ccopy->session.USERDIR != GMT->session.USERDIR) gmt_M_str_free (Ccopy->session.USERDIR);
-	Ccopy->session.USERDIR = GMT->session.USERDIR;
-	if (Ccopy->session.DATADIR != GMT->session.DATADIR) gmt_M_str_free (Ccopy->session.DATADIR);
-	Ccopy->session.DATADIR = GMT->session.DATADIR;
-	if (Ccopy->session.TMPDIR != GMT->session.TMPDIR) gmt_M_str_free (Ccopy->session.TMPDIR);
-	Ccopy->session.TMPDIR = GMT->session.TMPDIR;
-
+	
+	GMT->session.GSHHGDIR = (Ccopy->session.GSHHGDIR) ? strdup (Ccopy->session.GSHHGDIR) : NULL;
+	GMT->session.DCWDIR = (Ccopy->session.DCWDIR) ? strdup (Ccopy->session.DCWDIR) : NULL;
+	GMT->session.SHAREDIR = (Ccopy->session.SHAREDIR) ? strdup (Ccopy->session.SHAREDIR) : NULL;
+	GMT->session.HOMEDIR = (Ccopy->session.HOMEDIR) ? strdup (Ccopy->session.HOMEDIR) : NULL;
+	GMT->session.USERDIR = (Ccopy->session.USERDIR) ? strdup (Ccopy->session.USERDIR) : NULL;
+	GMT->session.DATADIR = (Ccopy->session.DATADIR) ? strdup (Ccopy->session.DATADIR) : NULL;
+	GMT->session.TMPDIR = (Ccopy->session.TMPDIR) ? strdup (Ccopy->session.TMPDIR) : NULL;
+	GMT->session.CUSTOM_LIBS = (Ccopy->session.CUSTOM_LIBS) ? strdup (Ccopy->session.CUSTOM_LIBS) : NULL;
+	
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {
 		GMT->session.n_user_media = Ccopy->session.n_user_media;
