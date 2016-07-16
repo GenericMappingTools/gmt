@@ -2547,8 +2547,8 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	/* Appended one of the allowed units, or l or p for log10/pow */
 	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
 		unit = s[0];
-	else if (A->type == GMT_TIME)				/* Default time system unit implied */
-		unit = GMT->current.setting.time_system.unit;
+	else if (A->type == GMT_TIME)	/* Default time system unit implied, but use s if custom to avoid resetting of flag below */
+		unit = (A->special == GMT_CUSTOM) ? 's' : GMT->current.setting.time_system.unit;
 	else
 		unit = 0;	/* Not specified */
 
