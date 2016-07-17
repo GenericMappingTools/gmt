@@ -663,6 +663,8 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | constant                 | description                                           |
 +==========================+=======================================================+
+| GMT_Alloc_Segment_       | Allocate data and text segments                       |
++--------------------------+-------------------------------------------------------+
 | GMT_Append_Option_       | Append new option structure to linked list            |
 +--------------------------+-------------------------------------------------------+
 | GMT_Begin_IO_            | Enable record-by-record i/o                           |
@@ -735,6 +737,8 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Get_Index_           | Convert row, col into a grid or image index           |
 +--------------------------+-------------------------------------------------------+
+| GMT_Get_Pixel_           | Get grid or image node                                |
++--------------------------+-------------------------------------------------------+
 | GMT_Get_Record_          | Import a single data record                           |
 +--------------------------+-------------------------------------------------------+
 | GMT_Get_Row_             | Import a single grid row                              |
@@ -771,9 +775,13 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Retrieve_Data_       | Obtained link to data in memory via ID                |
 +--------------------------+-------------------------------------------------------+
+| GMT_Set_Default_         | Set one of the API or GMT default settings            |
++--------------------------+-------------------------------------------------------+
 | GMT_Set_Comment_         | Assign a comment to a data resource                   |
 +--------------------------+-------------------------------------------------------+
-| GMT_Set_Default_         | Set one of the API or GMT default settings            |
+| GMT_Set_Columns_         | Specify how many output columns to use for rec-by-rec |
++--------------------------+-------------------------------------------------------+
+| GMT_Set_Index_           | Convert row, col into a grid or image index           |
 +--------------------------+-------------------------------------------------------+
 | GMT_Status_IO_           | Check status of record-by-record i/o                  |
 +--------------------------+-------------------------------------------------------+
@@ -1763,6 +1771,14 @@ where the ``header`` is the header of either a grid or image, and ``row`` and
 ``col`` is the 2-D position in the grid or image.  We return the 1-D array
 position; again this function is used below in our example.
 
+.. _GMT_Get_Pixel:
+
+  ::
+
+    int64_t GMT_Get_Pixel (struct GMT_GRID_HEADER *header, int row, int col, int layer);
+
+where the ``header`` is the header of either a grid or image, and ``row``, ``col`` and
+``layer`` (= 1 for grids) is the position in the grid or image.
 
 Manipulate grids
 ~~~~~~~~~~~~~~~~
@@ -2078,6 +2094,14 @@ where as before ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <P
 Note that all settings are passed as text strings even if man are
 inherently integers or floats.
 
+.. _GMT_Set_Index:
+
+  ::
+
+    int64_t GMT_Set_Index (struct GMT_GRID_HEADER *header, char *code);
+
+where the ``header`` is the header of either a grid or image, and ``code`` ...
+
 .. _sec-func:
 
 Prepare module options
@@ -2290,6 +2314,18 @@ set an error code via ``API->error``, and return NULL.
 Append an option to the linked list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+``GMT_Alloc_Segment`` allocates a new DATASET or TEXTSET segment for multi-segment files
+
+.. _GMT_Alloc_Segment:
+
+  ::
+
+    struct GMT_OPTION *GMT_Alloc_Segment (void *API, unsigned int family, uint64_t n_rows,
+                                          uint64_t n_columns, char *header, void *S);
+
+where ``header`` is the segment's header string and `family` selects which
+kind of resource is passed via ``S``, which in this case should either be ``GMT_IS_DATASET``
+or ``GMT_IS_TEXTSET``.
 
 ``GMT_Append_Option`` will append the specified ``option`` to the end of
 the doubly-linked ``list``. The prototype is
@@ -3246,6 +3282,7 @@ contains the grid values.
        unsigned int            id;          /* The internal number of the grid */
        unsigned int            alloc_level; /* The level it was allocated at */
        enum GMT_enum_alloc     alloc_mode;  /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
+       double                 *x, *y;       /* Vector of coordinates */
        void                   *extra;       /* Row-by-row machinery information [NULL] */
    };
 
@@ -3353,6 +3390,7 @@ contains the image values.  The type of the array is determined by the value of 
       unsigned int            alloc_level;      /* Level of initial allocation */
       enum GMT_enum_alloc     alloc_mode;       /* Allocation info [0] */
       const char             *ColorInterp;
+      double                 *x, *y;            /* Vector of coordinates */
   };
 
 CPT palette table
