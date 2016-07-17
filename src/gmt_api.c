@@ -2440,7 +2440,7 @@ GMT_LOCAL int api_export_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned in
 	return GMT_OK;
 }
 
-int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_MATRIX *M) {
+GMT_LOCAL int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_MATRIX *M) {
 	/* We write the MATRIX to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.
@@ -2565,7 +2565,7 @@ GMT_LOCAL int api_export_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigne
 	return GMT_OK;
 }
 
-int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_VECTOR *V) {
+GMT_LOCAL int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_VECTOR *V) {
 	/* We write the VECTOR to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.
@@ -2667,13 +2667,13 @@ GMT_LOCAL int api_export_vector (struct GMTAPI_CTRL *API, int object_ID, unsigne
 			if ((error = gmt_write_vector (GMT, S_obj->filename, S_obj->method, mode, V_obj))) return (gmtapi_report_error (API, error));
 			break;
 	 	case GMT_IS_STREAM:
-			/* gmt_write_matrix will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_write_vector will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (S_obj->fp == GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write VECTOR to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((error = gmt_write_vector (GMT, S_obj->fp, S_obj->method, mode, V_obj))) return (gmtapi_report_error (API, error));
 			break;
 	 	case GMT_IS_FDESC:
-			/* gmt_write_matrix will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_write_vector will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (*((int *)S_obj->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write VECTOR to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
 			if ((error = gmt_write_vector (GMT, S_obj->fp, S_obj->method, mode, V_obj))) return (gmtapi_report_error (API, error));
@@ -2687,6 +2687,146 @@ GMT_LOCAL int api_export_vector (struct GMTAPI_CTRL *API, int object_ID, unsigne
 	S_obj->data = NULL;
 
 	return GMT_OK;
+}
+
+GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+	/* We read the VECTOR from fp [or stdin].
+	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
+	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
+	 */
+	
+	bool close_file = false;
+	int error = 0;
+	uint64_t row = 0, col, dim[2] = {0, 0};
+	char V_file[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""};
+	FILE *fp = NULL;
+	struct GMT_VECTOR *V = NULL;
+	GMT_putfunction api_put_val = NULL;
+	gmt_M_unused(mode);
+
+	if (src_type == GMT_IS_FILE && !source) src_type = GMT_IS_STREAM;	/* No filename given, default to stdin */
+	
+	if (src_type == GMT_IS_FILE) {	/* dest is a file name */
+		strncpy (V_file, source, GMT_BUFSIZ-1);
+		if ((fp = fopen (V_file, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open Vector file %s\n", V_file);
+			return_null (GMT->parent, GMT_ERROR_ON_FOPEN);
+		}
+		close_file = true;	/* We only close files we have opened here */
+	}
+	else if (src_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)source;
+		if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* Default destination */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (V_file, "<stdin>");
+		else
+			strcpy (V_file, "<input stream>");
+	}
+	else if (src_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		int *fd = source;
+		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert Vector file descriptor %d to stream in api_read_vector\n", *fd);
+			return_null (GMT->parent, GMT_ERROR_ON_FDOPEN);
+		}
+		if (fd == NULL) fp = GMT->session.std[GMT_IN];	/* Default destination */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (V_file, "<stdin>");
+		else
+			strcpy (V_file, "<input file descriptor>");
+		close_file = true;	/* since fdopen allocates space */
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in api_read_vector\n", src_type);
+		return_null (GMT->parent, GMT_NOT_A_VALID_METHOD);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Vector from %s\n", V_file);
+	
+	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '>') continue;
+		if (row == 0)
+			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec);
+		gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+		for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
+		row++;
+	}
+	dim[1] = row;
+	if ((V = GMT_Create_Data (GMT->parent, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+		return_null (GMT->parent, GMT_MEMORY_ERROR);
+	if ((error = api_alloc_vectors (GMT, V, V->n_rows)) != GMT_OK)
+		return_null (GMT->parent, GMT_MEMORY_ERROR);
+	for (col = 0; col < V->n_columns; col++) {
+		api_put_val = api_select_put_function (GMT->parent, V->type[col]);
+		for (row = 0; row < V->n_rows; row++)
+			api_put_val (&(V->data[col]), row, GMT->hidden.mem_coord[col][row]);
+	}
+		
+	if (close_file) fclose (fp);
+	return (V);
+}
+
+/*! . */
+GMT_LOCAL struct GMT_VECTOR * api_import_vector (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+	/* Does the actual work of loading in a GMT vector table.
+	 */
+
+	int item, kind;
+	struct GMT_VECTOR *V_obj = NULL;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+
+	GMT_Report (API, GMT_MSG_DEBUG, "api_import_vector: Passed ID = %d and mode = %d\n", object_ID, mode);
+
+	if (object_ID == GMT_NOTSET) return_null (API, GMT_NO_INPUT);
+	if ((item = gmtapi_validate_id (API, GMT_IS_VECTOR, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET)
+		return_null (API, API->error);
+
+	S_obj = API->object[item];	/* Use S_obj as shorthand */
+	if (S_obj->status != GMT_IS_UNUSED) { /* Already read this resource before; are we allowed to re-read? */
+		if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC)
+			return_null (API, GMT_READ_ONCE); /* Not allowed to re-read streams */
+		if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+	}
+
+	switch (S_obj->method) {	/* File, array, stream etc ? */
+		case GMT_IS_FILE:
+			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading VECTOR from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
+			if ((V_obj = api_read_vector (GMT, S_obj->filename, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_DATA_READ_ERROR);
+			break;
+		case GMT_IS_STREAM:
+ 			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			kind = (S_obj->fp == GMT->session.std[GMT_IN]) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading VECTOR from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			if ((V_obj = api_read_vector (GMT, S_obj->fp, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_DATA_READ_ERROR);
+			break;
+		case GMT_IS_FDESC:
+			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			kind = (*((int *)S_obj->fp) == GMT_IN) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading VECTOR from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			if ((V_obj = api_read_vector (GMT, S_obj->fp, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_CPT_READ_ERROR);
+			break;
+		case GMT_IS_DUPLICATE:	/* Duplicate the input VECTOR */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating VECTOR from VECTOR memory location\n");
+			if (S_obj->resource == NULL) return_null (API, GMT_PTR_IS_NULL);
+			//V_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_VECTOR);
+			//gmtlib_copy_vector (GMT, V_obj, S_obj->resource);
+			break;
+		case GMT_IS_REFERENCE:	/* Just pass memory location, so nothing is allocated */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing VECTOR from VECTOR memory location\n");
+			if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			break;
+		default:	/* Barking up the wrong tree here... */
+			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import VECTOR\n");
+			return_null (API, GMT_NOT_A_VALID_METHOD);
+			break;
+	}
+	S_obj->status = GMT_IS_USED;	/* Mark as read */
+	S_obj->data = V_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	return (V_obj);	/* Pass back the vector */
 }
 
 #if 0
@@ -3175,7 +3315,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			/* Allocate output matrix space or die */
 			if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (gmtapi_report_error (API, error));
 			GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			api_put_val  = api_select_put_function (API, M_obj->type);
+			api_put_val = api_select_put_function (API, M_obj->type);
 
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
@@ -4271,6 +4411,9 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 			break;
 		case GMT_IS_IMAGE:
 			new_obj = api_import_image (API, object_ID, mode, data);	/* Try to import a image */
+			break;
+		case GMT_IS_VECTOR:
+			new_obj = api_import_vector (API, object_ID, mode);		/* Try to import a vector */
 			break;
 		case GMT_IS_POSTSCRIPT:
 			new_obj = api_import_ps (API, object_ID, mode);		/* Try to import PS */
@@ -7409,8 +7552,8 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			if (geometry & GMT_IS_NONE) actual_family = GMT_IS_TEXTSET;
 		}
 		else if (family == GMT_IS_VECTOR) {	/* Data sets passed via a vector need to remember their initial family */
-			method = GMT_IS_REFERENCE_VIA_VECTOR;
-			actual_family = GMT_IS_DATASET;
+			//method = GMT_IS_REFERENCE_VIA_VECTOR;
+			//actual_family = GMT_IS_DATASET;
 		}
 		if ((object_ID = GMT_Register_IO (API, actual_family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET)
 			return_null (API, API->error);	/* Failure to register */

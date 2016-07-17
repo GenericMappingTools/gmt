@@ -11,11 +11,11 @@ int main (int argc, char *argv[]) {
     /* Read in our data table to memory */
     V = GMT_Read_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "table_5.11", NULL);
     /* Associate our data table with a virtual file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, V, input);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_PLP, V, input);
     /* Create a virtual file to hold the sampled points */
-    GMT_Create_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, output);
+    GMT_Create_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_PLP, output);
     /* Prepare the module arguments */
-    sprintf (args, "-sa %s -Gtopo.nc > %s", input, output);
+    sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
     /* Call the greenspline module */
     GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args);
     /* Obtain the data from the virtual file */
