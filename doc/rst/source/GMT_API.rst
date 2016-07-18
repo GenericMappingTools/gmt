@@ -956,27 +956,6 @@ it returns 0.
 +-------------------------------+-------+-------------------------------------------------------------+
 | GMT_IS_REFERENCE              | 4     | Pointer to memory we may *reference* data from              |
 +-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_DUPLICATE_VIA_VECTOR   | 103   | Pointer to memory we may *duplicate* data from via vectors  |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_REFERENCE_VIA_VECTOR   | 104   | Pointer to memory we may *reference* data from via vectors  |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_DUPLICATE_VIA_MATRIX   | 203   | Pointer to memory we may *duplicate* data from via a matrix |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_REFERENCE_VIA_MATRIX   | 204   | Pointer to memory we may *reference* data from via a matrix |
-+-------------------------------+-------+-------------------------------------------------------------+
-
-
-
-.. _tbl-via:
-
-+------------------+-------------------------------------------------------------+
-| approach         | how method is modified                                      |
-+==================+=============================================================+
-| GMT_VIA_VECTOR   | User's data columns are accessed via a GMT_VECTOR structure |
-+------------------+-------------------------------------------------------------+
-| GMT_VIA_MATRIX   | User's matrix is accessed via a GMT_MATRIX structure        |
-+------------------+-------------------------------------------------------------+
-
 
 
 .. _tbl-geometry:

@@ -1802,35 +1802,6 @@ GMT_LOCAL void api_ps_comment (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	P->header[P->n_headers++] = strdup (txt);
 }
 
-/*! Split a combined method/via enum into two array indices for use with GMT_method[] and GMT_via[] */
-GMT_LOCAL enum GMT_enum_method api_split_via_method (struct GMTAPI_CTRL *API, enum GMT_enum_method method, unsigned int *via) {
-	enum GMT_enum_method m;
-	gmt_M_unused(API);
-	switch (method) {
-		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
-			m = GMT_IS_DUPLICATE;
-			if (via) *via = 0;
-			break;
-		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
-			m = GMT_IS_REFERENCE;
-			if (via) *via = 0;
-			break;
-		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
-			m = GMT_IS_DUPLICATE;
-			if (via) *via = 1;
-			break;
-		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
-			m = GMT_IS_REFERENCE;
-			if (via) *via = 1;
-			break;
-		default:	/* Nothing to break up */
-			m = method;
-			if (via) *via = 0;
-			break;
-	}
-	return (m);
-}
-
 GMT_LOCAL unsigned int api_set_method (struct GMTAPI_DATA_OBJECT *S) {
 	/* Most objects have a one-to-one path but for vectors and matrices
 	 * we need to set the bit that correspond to their type */
@@ -6275,7 +6246,12 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				/* Empty object */
 		if (!API->object[i]->resource) continue;		/* Empty resource */
-		if (API->object[i]->family != (enum GMT_enum_family)family) continue;		/* Not the required data type */
+		if (API->object[i]->family != (enum GMT_enum_family)family) {		/* Not the required data type, but check for exceptions */
+			if (family == GMT_IS_DATASET && (API->object[i]->family == GMT_IS_MATRIX || API->object[i]->family == GMT_IS_VECTOR))
+				API->object[i]->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */
+			else
+				continue;
+		}
 		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
 		if (API->object[i]->resource == resource) item = i;	/* Pick the requested object regardless of direction */
 	}
@@ -6359,7 +6335,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
 	int in_ID = GMT_NOTSET, item = GMT_NOTSET;
-	unsigned int via = 0, module_input = 0;
+	unsigned int module_input = 0;
 	bool just_get_data, reset;
 	void *new_obj = NULL;
 	char *input = NULL;
@@ -6369,8 +6345,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	if (infile) input = strdup (infile);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	(void)api_split_via_method (API, method, &via);
-	just_get_data = (gmt_M_file_is_memory (input) && via == 0);	/* Memory is passed and it is a regular GMT resource, not matrix or vector */
+	just_get_data = (gmt_M_file_is_memory (input));	/* A regular GMT resource passed via memory */
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
@@ -6462,9 +6437,8 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			gmt_M_str_free (input);
 			return_null (API, API->error);
 		}
-		/* Try to catch a matrix masquerading as datatable by examining the object's method too */
-		(void)api_split_via_method (API, API->object[item]->method, &via);
-		if (via == 0) {	/* True to its word, otherwise we fall through and read the data */
+		/* Try to catch a matrix or vector masquerading as dataset by examining the object's actual family  */
+		if (family == API->object[item]->actual_family) {	/* True to its word, otherwise we fall through and read the data */
 #ifdef DEBUG
 			api_set_object (API, API->object[item]);
 #endif
