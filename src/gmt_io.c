@@ -7588,7 +7588,6 @@ struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns,
 	if (n_columns) V->type = gmt_M_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
 	/* We expect external memory for input and GMT-allocated memory on output */
-	V->alloc_mode = (direction == GMT_IN) ? GMT_ALLOC_EXTERNALLY : GMT_ALLOC_INTERNALLY;
 	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 

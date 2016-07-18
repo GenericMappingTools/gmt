@@ -2583,7 +2583,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 	 *    $<n>[+X|Y|T]  Format the numerical variable $<n>; if
 	 *      followed by +X|Y|T we format as lon, lat, or time,
 	 *      else we use FORMAT_FLOAT_OUT.
-	 * Limitation: Currently, $<n> expects <n< to be 0-9 only.
+	 * Limitation: Currently, $<n> expects <n> to be 0-9 only.
 	 */
 	unsigned int n;
 	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
@@ -2591,7 +2591,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 	else if (s->string[0] == '$' && strlen (s->string) == 2 && isdigit (s->string[1]) && type[n=(s->string[1]-'1')] == GMT_IS_STRING) {	/* Get entire string from input */
 		unsigned int want_col, col, pos;
 		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
-		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
+		   we must scan the GMT->io.current.record for the col'th item and strcpy that into text.  The reason n -> col is
 		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt> was used or if this is psxyz, no? */
 		want_col = start + n;
 		for (col = pos = 0; col <= want_col; col++) (void)gmt_strtok (GMT->current.io.record, GMT_TOKEN_SEPARATORS, &pos, text);
