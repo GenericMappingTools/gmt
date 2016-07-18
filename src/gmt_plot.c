@@ -3992,11 +3992,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		if (!flip) justify = gmt_flip_justify (GMT, justify);
 		text_angle += 180.0;
 	}
-	else if (flip)
-		justify = gmt_flip_justify (GMT, justify);
+//	else if (flip)
+//		justify = gmt_flip_justify (GMT, justify);
 
 	/* Ready to draw axis */
-
 	if (axis == GMT_X)
 		PSL_comment (PSL, below ? "Start of lower x-axis\n" : "Start of upper x-axis\n");
 	else if (axis == GMT_Y)
