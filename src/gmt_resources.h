@@ -84,19 +84,13 @@ enum GMT_enum_method {
 	GMT_IS_STREAM = 1,	/* Entity is an open stream */
 	GMT_IS_FDESC = 2,	/* Entity is an open file descriptor */
 	GMT_IS_DUPLICATE = 3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE = 4,	/* Entity is a memory location and we just pass the ref (no copying) */
-	GMT_IS_DUPLICATE_VIA_VECTOR = 103,	/* Entity is a memory location that should be duplicated via a vector intermediary */
-	GMT_IS_REFERENCE_VIA_VECTOR = 104,	/* Entity is a memory location and we just pass the ref (no copying) via a vector intermediary */
-	GMT_IS_DUPLICATE_VIA_MATRIX = 203,	/* Entity is a memory location that should be duplicated via a matrix intermediary */
-	GMT_IS_REFERENCE_VIA_MATRIX = 204};	/* Entity is a memory location and we just pass the ref (no copying) via a matrix intermediary */
+	GMT_IS_REFERENCE = 4};	/* Entity is a memory location and we just pass the ref (no copying) */
 
 /* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_NONE = 0,	/* No via anything */
-	GMT_VIA_MODULE_INPUT = 64,	/* To flag resources destined for another module's "command-line" input */
-	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
-	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
+	GMT_VIA_MODULE_INPUT = 64};	/* To flag resources destined for another module's "command-line" input */
 
 /*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {

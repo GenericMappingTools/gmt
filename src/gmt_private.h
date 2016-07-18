@@ -73,6 +73,7 @@ struct GMTAPI_DATA_OBJECT {
 	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
+	uint64_t delay;				/* Number of leading NaN-records we oculd not write initially before knowning the row dim */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
 	unsigned int ID;			/* Unique identifier which is >= 0 */
 	unsigned int alloc_level;		/* Nested module level when object was allocated */

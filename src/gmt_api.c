@@ -164,6 +164,12 @@
  * Thus, at the session (gmt) level all GMT objects have alloc_level = 0 since anything higher will
  * have been freed by a module.  GMT_Destroy_Session finally calls gmtapi_garbage_collection a final
  * time and he frees any remaining GMT objects.
+ *
+ * Notes on family vs actual_family:
+ * The S->actual_family contains the object type that we allocated.  However, we allow modules
+ * that expect a DATASET to insted be passed a GMT_VECTOR or GMT_MATRIX.  If so then S->family
+ * will be GMT_IS_DATASET while the actual_family is GMT_VECTOR|GMT_MATRIX.  The i/o functions
+ * GMT_Read_Data, GMT_Put_Record, etc knows how to deal with this.
  */
 
 /*!
@@ -228,7 +234,6 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
 static const char *GMT_family[] = {"Data Table", "GMT Grid", "GMT Image", "CPT", "GMT PostScript", "Text Table", "GMT Matrix", "GMT Vector", "GMT Coord"};
-static const char *GMT_via[] = {"User Vector", "User Matrix"};
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
@@ -253,6 +258,10 @@ enum GMTAPI_enum_status {
 	GMTAPI_GOT_SEGHEADER 	= -1,	/* Read a segment header */
 	GMTAPI_GOT_SEGGAP 	= -2};	/* Detected a gap and insertion of new segment header */
 
+enum GMTAPI_enum_via {
+	GMT_VIA_VECTOR = 128,	/* Data passed via user matrix */
+	GMT_VIA_MATRIX = 256};	/* Data passed via user vectors */
+	
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
@@ -873,7 +882,7 @@ GMT_LOCAL double api_get_record_value (struct GMT_CTRL *GMT, double *record, uin
 /*! . */
 GMT_LOCAL int api_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use) {
 	/* Read function which gets one record from the memory reference.
- 	 * The current data record has already been read from wherever and is avaialble in GMT->current.io.curr_rec */
+ 	 * The current data record has already been read from wherever and is available in GMT->current.io.curr_rec */
 	unsigned int status;
 #if 0
 	uint64_t n_read;
@@ -1409,7 +1418,9 @@ GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, u
 /*! . */
 GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_MATRIX *M) {
 	double off = 0.5 * registration;
+	int error;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
+	size_t size = 0;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s [mode = %u]\n", GMT_direction[direction], mode);
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
@@ -1424,11 +1435,18 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 	}
+	M->type = dim[3];	/* Use selected data type for export */
+	M->dim = M->n_columns;
+	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
+	if (size && (error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_OK)
+		return (GMT_MEMORY_ERROR);
 	return (GMT_OK);
 }
 
 /*! . */
 GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int direction, struct GMT_VECTOR *V) {
+	int error;
+	uint64_t col;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	if (dim[GMTAPI_DIM_COL] == 0 && direction == GMT_IN) return (GMT_VALUE_NOT_SET);	/* Must know the number of columns to do this */
@@ -1443,6 +1461,11 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		V->n_rows = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 		gmt_M_memcpy (V->range, range, 2, double);
 	}
+	for (col = 0; col < V->n_columns; col++)	/* Set same export data type for all vectors */
+		V->type[col] = dim[2];
+	if (V->n_rows && (error = api_alloc_vectors (API->GMT, V, V->n_rows)) != GMT_OK)
+		return (GMT_MEMORY_ERROR);
+
 	return (GMT_OK);
 }
 
@@ -1777,19 +1800,19 @@ GMT_LOCAL enum GMT_enum_method api_split_via_method (struct GMTAPI_CTRL *API, en
 	enum GMT_enum_method m;
 	gmt_M_unused(API);
 	switch (method) {
-		case GMT_IS_DUPLICATE_VIA_VECTOR:
+		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
 			m = GMT_IS_DUPLICATE;
 			if (via) *via = 0;
 			break;
-		case GMT_IS_REFERENCE_VIA_VECTOR:
+		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 			m = GMT_IS_REFERENCE;
 			if (via) *via = 0;
 			break;
-		case GMT_IS_DUPLICATE_VIA_MATRIX:
+		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
 			m = GMT_IS_DUPLICATE;
 			if (via) *via = 1;
 			break;
-		case GMT_IS_REFERENCE_VIA_MATRIX:
+		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			m = GMT_IS_REFERENCE;
 			if (via) *via = 1;
 			break;
@@ -1801,6 +1824,17 @@ GMT_LOCAL enum GMT_enum_method api_split_via_method (struct GMTAPI_CTRL *API, en
 	return (m);
 }
 
+GMT_LOCAL unsigned int api_set_method (struct GMTAPI_DATA_OBJECT *S) {
+	unsigned int m;
+	if (S->method < GMT_IS_DUPLICATE) return S->method;
+	switch (S->actual_family) {
+		case GMT_IS_VECTOR: m = S->method | GMT_VIA_VECTOR; break;
+		case GMT_IS_MATRIX: m = S->method | GMT_VIA_MATRIX; break;
+		default: m = S->method;
+	}
+	return m;
+}
+
 /*! . */
 GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int direction) {
 	/* Get ready for the next source/destination (open file, initialize counters, etc.).
@@ -1809,7 +1843,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	 * Not used by modules who read entire datasets in one go via GMT_{Read|Write}_Data. */
 	int *fd = NULL;	/* !!! This MUST be int* due to nature of UNIX system function */
 	int kind;
-	unsigned int via = 0;
+	unsigned int method;
 	static const char *dir[2] = {"from", "to"};
 	static const char *operation[2] = {"Reading", "Writing"};
 	char *mode = NULL;
@@ -1826,9 +1860,9 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	S_obj->n_expected_fields = (GMT->common.b.ncol[direction]) ? GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
 	gmt_M_memset (GMT->current.io.curr_pos[direction], 4U, int64_t);	/* Reset file, seg, point, header counters */
 	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segent of input is -1 until first segment header have been dealt with */
-	(void)api_split_via_method (API, S_obj->method, &via);
 
-	switch (S_obj->method) {	/* File, array, stream etc ? */
+	method = api_set_method (S_obj);	/* Get the actual method to use */
+	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:	/* Filename given; we must open file ourselves */
 			if (S_obj->family == GMT_IS_GRID) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids not allowed here */
 			if ((S_obj->fp = gmt_fopen (GMT, S_obj->filename, mode)) == NULL) {	/* Trouble opening file */
@@ -1889,11 +1923,11 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				operation[direction], GMT_family[S_obj->family], dir[direction]);
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* These 2 mean reading or writing a dataset record-by-record via a user matrix */
-		case GMT_IS_REFERENCE_VIA_MATRIX:
+	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* These 2 mean reading or writing a dataset record-by-record via a user matrix */
+		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			if (S_obj->family != GMT_IS_DATASET) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n",
-				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via matrix\n",
+				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction]);
 			if (direction == GMT_IN) {	/* Hard-wired limits are passed in from calling program; for outout we have nothing yet */
 				M_obj = S_obj->resource;
 				S_obj->n_rows = M_obj->n_rows;
@@ -1905,11 +1939,11 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 			strcpy (GMT->current.io.filename[direction], "<matrix memory>");
 			break;
 
-		 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* These 2 mean reading or writing a dataset record-by-record via user vector arrays */
-		 case GMT_IS_REFERENCE_VIA_VECTOR:
+		 case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* These 2 mean reading or writing a dataset record-by-record via user vector arrays */
+		 case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 			if (S_obj->family != GMT_IS_DATASET) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n",
-					operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via vector\n",
+					operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction]);
 			if (direction == GMT_IN) {	/* Hard-wired limits are passed in from calling program; for outout we have nothing yet */
 				V_obj = S_obj->resource;
 				S_obj->n_rows = V_obj->n_rows;
@@ -2440,6 +2474,161 @@ GMT_LOCAL int api_export_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned in
 	return GMT_OK;
 }
 
+GMT_LOCAL struct GMT_MATRIX * api_read_matrix (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+	/* We read the MATRIX from fp [or stdin].
+	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
+	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
+	 */
+	
+	bool close_file = false, first = true, add_first_segheader = false;
+	int error = 0;
+	uint64_t row = 0, col, ij, dim[4] = {0, 0, 0, GMT->current.setting.export_type};
+	char M_file[GMT_BUFSIZ] = {""};
+	char line[GMT_BUFSIZ] = {""};
+	FILE *fp = NULL;
+	struct GMT_MATRIX *M = NULL;
+	GMT_putfunction api_put_val = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
+	gmt_M_unused(mode);
+
+	if (src_type == GMT_IS_FILE && !source) src_type = GMT_IS_STREAM;	/* No filename given, default to stdin */
+	
+	if (src_type == GMT_IS_FILE) {	/* dest is a file name */
+		strncpy (M_file, source, GMT_BUFSIZ-1);
+		if ((fp = fopen (M_file, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open Matrix file %s\n", M_file);
+			return_null (GMT->parent, GMT_ERROR_ON_FOPEN);
+		}
+		close_file = true;	/* We only close files we have opened here */
+	}
+	else if (src_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)source;
+		if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* Default destination */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (M_file, "<stdin>");
+		else
+			strcpy (M_file, "<input stream>");
+	}
+	else if (src_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		int *fd = source;
+		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert Matrix file descriptor %d to stream in api_read_matrix\n", *fd);
+			return_null (GMT->parent, GMT_ERROR_ON_FDOPEN);
+		}
+		if (fd == NULL) fp = GMT->session.std[GMT_IN];	/* Default destination */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (M_file, "<stdin>");
+		else
+			strcpy (M_file, "<input file descriptor>");
+		close_file = true;	/* since fdopen allocates space */
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in api_read_matrix\n", src_type);
+		return_null (GMT->parent, GMT_NOT_A_VALID_METHOD);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Matrix from %s\n", M_file);
+	
+	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
+		if (line[0] == '#') continue;	/* Just skip headers */
+		if (line[0] == '>') {
+			if (first) {	/* Have not allocated yet so just skip that row for now */
+				first = false;
+				add_first_segheader = true;
+			}
+			else {	/* Already allocated so place NaNs */
+				gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+				for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
+			}
+		}
+		else {	/* Regular data record */
+			gmt_chop (line);	/* Remove linefeeds */
+			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec);
+			gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
+		}
+		row++;
+	}
+	if (add_first_segheader) for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][0] = GMT->session.d_NaN;
+	dim[1] = row;	/* Allocate all vectors using current type setting in the defaults [GMT_DOUBLE] */
+	if ((M = GMT_Create_Data (GMT->parent, GMT_IS_MATRIX, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+		return_null (GMT->parent, GMT_MEMORY_ERROR);
+	api_put_val = api_select_put_function (GMT->parent, M->type);
+	GMT_2D_to_index = api_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);
+	for (col = 0; col < M->n_columns; col++) {
+		for (row = 0; row < M->n_rows; row++) {
+			ij = GMT_2D_to_index (row, col, M->dim);	/* Index into the user data matrix depends on layout (M->shape) */
+			api_put_val (&(M->data), ij, GMT->hidden.mem_coord[col][row]);
+		}
+	}
+		
+	if (close_file) fclose (fp);
+	return (M);
+}
+
+/*! . */
+GMT_LOCAL struct GMT_MATRIX * api_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+	/* Does the actual work of loading in a GMT vector table.
+	 */
+
+	int item, kind;
+	struct GMT_MATRIX *M_obj = NULL;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+
+	GMT_Report (API, GMT_MSG_DEBUG, "api_import_matrix: Passed ID = %d and mode = %d\n", object_ID, mode);
+
+	if (object_ID == GMT_NOTSET) return_null (API, GMT_NO_INPUT);
+	if ((item = gmtapi_validate_id (API, GMT_IS_MATRIX, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET)
+		return_null (API, API->error);
+
+	S_obj = API->object[item];	/* Use S_obj as shorthand */
+	if (S_obj->status != GMT_IS_UNUSED) { /* Already read this resource before; are we allowed to re-read? */
+		if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC)
+			return_null (API, GMT_READ_ONCE); /* Not allowed to re-read streams */
+		if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+	}
+
+	switch (S_obj->method) {	/* File, array, stream etc ? */
+		case GMT_IS_FILE:
+			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading MATRIX from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
+			if ((M_obj = api_read_matrix (GMT, S_obj->filename, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_DATA_READ_ERROR);
+			break;
+		case GMT_IS_STREAM:
+ 			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			kind = (S_obj->fp == GMT->session.std[GMT_IN]) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading MATRIX from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			if ((M_obj = api_read_matrix (GMT, S_obj->fp, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_DATA_READ_ERROR);
+			break;
+		case GMT_IS_FDESC:
+			/* api_read_vector will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			kind = (*((int *)S_obj->fp) == GMT_IN) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading MATRIX from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
+			if ((M_obj = api_read_matrix (GMT, S_obj->fp, S_obj->method, mode)) == NULL)
+				return_null (API, GMT_CPT_READ_ERROR);
+			break;
+		case GMT_IS_DUPLICATE:	/* Duplicate the input VECTOR */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating MATRIX from MATRIX memory location\n");
+			if (S_obj->resource == NULL) return_null (API, GMT_PTR_IS_NULL);
+			//M_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_VECTOR);
+			//gmtlib_copy_vector (GMT, M_obj, S_obj->resource);
+			break;
+		case GMT_IS_REFERENCE:	/* Just pass memory location, so nothing is allocated */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing MATRIX from MATRIX memory location\n");
+			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			break;
+		default:	/* Barking up the wrong tree here... */
+			GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import MATRIX\n");
+			return_null (API, GMT_NOT_A_VALID_METHOD);
+			break;
+	}
+	S_obj->status = GMT_IS_USED;	/* Mark as read */
+	S_obj->data = M_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	return (M_obj);	/* Pass back the vector */
+}
+
 GMT_LOCAL int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_MATRIX *M) {
 	/* We write the MATRIX to fp [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
@@ -2448,7 +2637,6 @@ GMT_LOCAL int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int d
 	
 	bool close_file = false, append = false;
 	uint64_t row, col, ij;
-	double value;
 	char M_file[GMT_BUFSIZ] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
@@ -2501,16 +2689,20 @@ GMT_LOCAL int gmt_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned int d
 	api_get_val = api_select_get_function (GMT->parent, M->type);
 
 	for (row = 0; row < M->n_rows; row++) {
-		ij = GMT_2D_to_index (row, 0, M->dim);	/* Index into the user data matrix depends on layout (M->shape) */
-		api_get_val (&(M->data), ij, &value);
-		fprintf (fp, GMT->current.setting.format_float_out, value);
-		for (col = 1; col < M->n_columns; col++) {
+		for (col = 0; col < M->n_columns; col++) {
 			ij = GMT_2D_to_index (row, col, M->dim);	/* Index into the user data matrix depends on layout (M->shape) */
-			api_get_val (&(M->data), ij, &value);
-			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-			fprintf (fp, GMT->current.setting.format_float_out, value);
+			api_get_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
 		}
-		fprintf (fp, "\n");
+		if (api_bin_input_memory (GMT, M->n_columns, M->n_columns) < 0)	/* Segment header found, finish the segment we worked on and goto next */
+			gmt_write_segmentheader (GMT, fp, M->n_columns);
+		else {
+			fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[0]);
+			for (col = 1; col < M->n_columns; col++) {
+				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
+				fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[col]);
+			}
+			fprintf (fp, "\n");
+		}
 	}
 	
 	if (close_file) fclose (fp);
@@ -2573,7 +2765,6 @@ GMT_LOCAL int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int d
 	
 	bool close_file = false, append = false;
 	uint64_t row, col;
-	double value;
 	char V_file[GMT_BUFSIZ] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
@@ -2626,14 +2817,18 @@ GMT_LOCAL int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int d
 		api_get_val[col] = api_select_get_function (GMT->parent, V->type[col]);
 
 	for (row = 0; row < V->n_rows; row++) {
-		api_get_val[0] (&(V->data[0]), row, &value);
-		fprintf (fp, GMT->current.setting.format_float_out, value);
-		for (col = 1; col < V->n_columns; col++) {
-			api_get_val[col] (&(V->data[col]), row, &value);
-			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-			fprintf (fp, GMT->current.setting.format_float_out, value);
+		for (col = 0; col < V->n_columns; col++)
+			api_get_val[col] (&(V->data[col]), row, &(GMT->current.io.curr_rec[col]));
+		if (api_bin_input_memory (GMT, V->n_columns, V->n_columns) < 0)	/* Segment header found, finish the segment we worked on and goto next */
+			gmt_write_segmentheader (GMT, fp, V->n_columns);
+		else {
+			fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[0]);
+			for (col = 1; col < V->n_columns; col++) {
+				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
+				fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[col]);
+			}
+			fprintf (fp, "\n");
 		}
-		fprintf (fp, "\n");
 	}
 	gmt_M_free (GMT, api_get_val);
 	
@@ -2695,9 +2890,9 @@ GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *sourc
 	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
 	 */
 	
-	bool close_file = false;
+	bool close_file = false, first = true, add_first_segheader = false;
 	int error = 0;
-	uint64_t row = 0, col, dim[2] = {0, 0};
+	uint64_t row = 0, col, dim[3] = {0, 0, GMT->current.setting.export_type};
 	char V_file[GMT_BUFSIZ] = {""};
 	char line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
@@ -2743,17 +2938,28 @@ GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *sourc
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Vector from %s\n", V_file);
 	
 	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '>') continue;
-		if (row == 0)
+		if (line[0] == '#') continue;	/* Just skip headers */
+		if (line[0] == '>') {
+			if (first) {	/* Have not allocated yet so just skip that row for now */
+				first = false;
+				add_first_segheader = true;
+			}
+			else {	/* Already allocated so place NaNs */
+				gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+				for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
+			}
+		}
+		else {	/* Regular data record */
+			gmt_chop (line);	/* Remove linefeeds */
 			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec);
-		gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
-		for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
+			gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
+		}
 		row++;
 	}
-	dim[1] = row;
+	if (add_first_segheader) for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][0] = GMT->session.d_NaN;
+	dim[1] = row;	/* Allocate all vectors using current type setting in the defaults [GMT_DOUBLE] */
 	if ((V = GMT_Create_Data (GMT->parent, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
-		return_null (GMT->parent, GMT_MEMORY_ERROR);
-	if ((error = api_alloc_vectors (GMT, V, V->n_rows)) != GMT_OK)
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
 	for (col = 0; col < V->n_columns; col++) {
 		api_put_val = api_select_put_function (GMT->parent, V->type[col]);
@@ -2863,7 +3069,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
-	unsigned int geometry = GMT_IS_PLP, n_used = 0;
+	unsigned int geometry = GMT_IS_PLP, n_used = 0, method;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
@@ -2924,7 +3130,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		if (this_item == GMT_NOTSET) this_item = item;	/* First item that worked */
 		via = false;
 		geometry = (GMT->common.a.output) ? GMT->common.a.geometry : S_obj->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
-		switch (S_obj->method) {	/* File, array, stream etc ? */
+		method = api_set_method (S_obj);	/* Get the actual method to use */
+		switch (method) {	/* File, array, stream, reference, etc ? */
 	 		case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
 				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
@@ -2979,8 +3186,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				break;
 
-		 	case GMT_IS_DUPLICATE_VIA_MATRIX:
-		 	case GMT_IS_REFERENCE_VIA_MATRIX:
+		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
+		 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 				/* Each array source becomes a separate table with a single segment unless there are NaN-records as segment headers */
 				if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user matrix location\n");
@@ -3035,7 +3242,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				update = via = true;
 				break;
 
-	 		case GMT_IS_DUPLICATE_VIA_VECTOR:
+	 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
 				/* Each column array source becomes column arrays in a separate table with one (or more if NaN-records) segments */
 				if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
@@ -3095,7 +3302,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				update = via = true;
 				break;
 
-		 	case GMT_IS_REFERENCE_VIA_VECTOR:
+		 	case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 				if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				if (V_obj->type[0] != GMT_DOUBLE) return_null (API, GMT_NOT_A_VALID_TYPE);
 				/* Each column array source becomes preallocated column arrays in a separate table with a single segment */
@@ -3238,6 +3445,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	 * See the GMT API documentation for how mode is used to create multiple files from segments or tables.
 	 */
 	int item, error, default_method;
+	unsigned int method;
 	uint64_t tbl, col, row_out, row, seg, ij;
 	bool save;
 	double value;
@@ -3274,7 +3482,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	}
 	gmtlib_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
 	D_obj->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
-	switch (S_obj->method) {	/* File, array, stream, etc. */
+	method = api_set_method (S_obj);	/* Get the actual method to use */
+	switch (method) {	/* File, array, stream, etc. */
 	 	case GMT_IS_STREAM:
 #ifdef SET_IO_MODE
 			gmt_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
@@ -3300,8 +3509,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
 
-		case GMT_IS_DUPLICATE_VIA_MATRIX:
-		case GMT_IS_REFERENCE_VIA_MATRIX:
+		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
+		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user matrix location\n");
 			M_obj = gmtlib_create_matrix (GMT, 1U, GMT_OUT);	/* 1-layer matrix (i.e., 2-D) */
 			/* Allocate final output space since we now know all dimensions */
@@ -3342,8 +3551,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			GMT->current.io.multi_segments[GMT_OUT] = save;
 			break;
 
-		case GMT_IS_DUPLICATE_VIA_VECTOR:
-		case GMT_IS_REFERENCE_VIA_VECTOR:
+		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
+		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
 			col = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			if ((V_obj = gmt_create_vector (GMT, col, GMT_OUT)) == NULL)
@@ -3487,8 +3696,8 @@ GMT_LOCAL struct GMT_TEXTSET *api_import_textset (struct GMTAPI_CTRL *API, int o
 				gmt_M_free (GMT, T_obj);
 				if ((T_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				break;
-		 	case GMT_IS_DUPLICATE_VIA_MATRIX:
-		 	case GMT_IS_REFERENCE_VIA_MATRIX:
+		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
+		 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 				/* Each matrix source becomes a separate table with one segment */
 			 	if ((M_obj = S_obj->resource) == NULL) {
 					gmt_M_free (GMT, T_obj->table);	gmt_M_free (GMT, T_obj);
@@ -3613,8 +3822,8 @@ GMT_LOCAL int api_export_textset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			T_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = T_obj;		/* Set resource pointer from object to this textset */
 			break;
-		case GMT_IS_DUPLICATE_VIA_MATRIX:
-		case GMT_IS_REFERENCE_VIA_MATRIX:	/* Probably never tested [PW] */
+		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
+		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* Probably never tested [PW] */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table to user array location\n");
 			M_obj = gmtlib_duplicate_matrix (GMT, S_obj->resource, false);
 			/* Must allocate output space */
@@ -3800,7 +4009,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Return from GMT_IS_REFERENCE\n");
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* The user's 2-D image array of some sort, + info in the args [NOT YET FULLY TESTED] */
+	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D image array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			I_obj = (image == NULL) ? gmtlib_create_image (GMT) : image;	/* Only allocate when not already allocated */
@@ -3838,7 +4047,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			}
 			break;
 
-	 	case GMT_IS_REFERENCE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
+	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			I_obj = (image == NULL) ? gmtlib_create_image (GMT) : image;	/* Only allocate when not already allocated */
@@ -4116,7 +4325,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
+	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			G_obj = (grid == NULL) ? gmt_create_grid (GMT) : grid;	/* Only allocate when not already allocated */
@@ -4158,7 +4367,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			via = true;
 			break;
 
-	 	case GMT_IS_REFERENCE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
+	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			G_obj = (grid == NULL) ? gmt_create_grid (GMT) : grid;	/* Only allocate when not already allocated */
@@ -4327,7 +4536,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			G_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
 
-	 	case GMT_IS_DUPLICATE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
+	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
 			if (S_obj->resource == NULL) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));	/* The output resource pointer cannot be NULL for matrix */
 			if (mode & GMT_GRID_HEADER_ONLY) return (gmtapi_report_error (API, GMT_NOT_A_VALID_MODE));
 			M_obj = gmtlib_duplicate_matrix (GMT, S_obj->resource, false);
@@ -4345,7 +4554,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
 			break;
 
-	 	case GMT_IS_REFERENCE_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
+	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
 			if (S_obj->resource == NULL) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));	/* The output resource pointer cannot be NULL for matrix */
 			if (mode & GMT_GRID_HEADER_ONLY) return (gmtapi_report_error (API, GMT_NOT_A_VALID_MODE));
 			if (api_adjust_grdpadding (G_obj->header, GMT->current.io.pad))
@@ -4411,6 +4620,9 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 			break;
 		case GMT_IS_IMAGE:
 			new_obj = api_import_image (API, object_ID, mode, data);	/* Try to import a image */
+			break;
+		case GMT_IS_MATRIX:
+			new_obj = api_import_matrix (API, object_ID, mode);		/* Try to import a matrix */
 			break;
 		case GMT_IS_VECTOR:
 			new_obj = api_import_vector (API, object_ID, mode);		/* Try to import a vector */
@@ -4894,15 +5106,10 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
 		if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {	/* Give debug feedback so some calcs are needed */
-			unsigned int via, m = S_obj->method;
-			if (m >= GMT_VIA_VECTOR) {
-				via = (m / GMT_VIA_VECTOR) - 1;
-				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
-			}
-			if (m <= GMT_IS_REFERENCE)
+			if (S_obj->method <= GMT_IS_REFERENCE)
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_garbage_collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 				            S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction],
-				            GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2], (size_t)S_obj->resource,
+				            GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status&2], (size_t)S_obj->resource,
 				            (size_t)S_obj->data, S_obj->filename);
 		}
 		if (S_obj->data) {
@@ -5038,7 +5245,12 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 		if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
 #endif
 		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;			/* Already used this input object */
-		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) continue;		/* Not the required data type */
+		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) {		/* Not the required data type; check for exceptions */
+			if (family == GMT_IS_DATASET && (S_obj->family == GMT_IS_VECTOR || S_obj->family == GMT_IS_MATRIX))
+				S_obj->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset is valid */
+			else
+				continue;
+		}
 		if (object_ID == GMT_NOTSET && (int)S_obj->direction == direction) item = i;	/* Pick the first object with the specified direction */
 		if (object_ID == GMT_NOTSET && !(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
 		else if (direction == GMT_NOTSET && (int)S_obj->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
@@ -5378,11 +5590,6 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	 *   GMT_IS_FDESC:	A file descriptor to an open file is passed via output. --"--
 	 *   GMT_IS_DUPLICATE:	A pointer to a data set to be copied
 	 *   GMT_IS_REFERENCE:	A pointer to a data set to be passed as is [we may reallocate sizes only if GMT-allocated]
-	 * The following approaches can be added to the method for all but CPT:
-	 *   GMT_VIA_MATRIX:	A 2-D user matrix is passed via input as a source for copying.
-	 *			The GMT_MATRIX structure must have parameters filled out.
-	 *   GMT_VIA_VECTOR:	An array of user column vectors is passed via input as a source for copying.
-	 *			The GMT_VECTOR structure must have parameters filled out.
 	 * geometry:	One of GMT_IS_{TEXT|POINT|LINE|POLY|SURF} (the last for GMT grids)
 	 * output:	Pointer to the destination filename, stream, handle, array position, etc.
 	 * wesn:	Grid subset defined by 4 doubles; otherwise use NULL
@@ -5394,12 +5601,9 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	 * is appended to the data list maintained by the GMTAPI_CTRL API structure.
 	 */
 	int item, object_ID;
-	unsigned int via = 0, module_input, mode = method & GMT_IO_RESET;	/* In case we wish to reuse this resource */
-	enum GMT_enum_method m;
+	unsigned int module_input, mode = method & GMT_IO_RESET;	/* In case we wish to reuse this resource */
 	char message[GMT_LEN256];
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
-	struct GMT_MATRIX *M_obj = NULL;
-	struct GMT_VECTOR *V_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
@@ -5424,7 +5628,6 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 		return (object_ID);	/* Already registered so we are done */
 	}
 	method -= mode;	/* Remove GMT_IO_RESET if it was passed */
-	m = api_split_via_method (API, method, &via);
 	GMT = API->GMT;
 
 	switch (method) {	/* Consider CPT, data, text, and grids, accessed via a variety of methods */
@@ -5464,7 +5667,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) S_obj->filename = strdup (resource);
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_STREAM:	/* Methods that indirectly involve a file */
@@ -5476,59 +5679,20 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_DUPLICATE:
 		case GMT_IS_REFERENCE:
-#if 0
-			if (direction == GMT_OUT && resource != NULL) {
-				return_value (API, GMT_PTR_NOT_NULL, GMT_NOTSET);	/* Output registration of memory takes no resource */
-			} else
-#endif
 			if (direction == GMT_IN && resource == NULL) {
 				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Input registration of memory takes a resource */
 			}
 			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
-		 case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Here, a data grid is passed via a GMT_MATRIX structure */
-		 case GMT_IS_REFERENCE_VIA_MATRIX:
-			if ((M_obj = resource) == NULL) {
-				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Matrix container must be given for both input and output */
-			}
-			if (direction == GMT_IN) {	/* For input we can check if the GMT_MATRIX structure has proper parameters. */
-				if (M_obj->n_rows <= 0 || M_obj->n_columns <= 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Matrix dimensions not set.\n", GMT_direction[direction]);
-					return_value (API, GMT_NO_PARAMETERS, GMT_NOTSET);
-				}
-			}
-			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
-				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
-			}
-			GMT->common.b.active[direction] = true;
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
-			break;
-		 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* Here, some data vectors are passed via a GMT_VECTOR structure */
-		 case GMT_IS_REFERENCE_VIA_VECTOR:
-			if ((V_obj = resource) == NULL) {
-				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Vector container must be given for both input and output */
-			}
-			if (direction == GMT_IN) {	/* For input we can check if the GMT_VECTOR structure has proper parameters. */
-				if (V_obj->n_rows <= 0 || V_obj->n_columns <= 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Vector parameters not set.\n", GMT_direction[direction]);
-					return_value (API, GMT_NO_PARAMETERS, GMT_NOTSET);
-				}
-			}
-			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
-				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
-			}
-			GMT->common.b.active[direction] = true;
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
-			break;
 		case GMT_IS_COORD:	/* Internal registration of coordinate arrays so that GMT_Destroy_Data can free them */
 			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
@@ -5600,18 +5764,39 @@ int GMT_Create_VirtualFile_ (unsigned int *family, unsigned int *geometry, char 
  /*! . */
 int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, void *data, char *string) {
 	/* Open up a VirtualFile for an existing resource that a module may read its input from. */
-	int object_ID;
+	int object_ID = GMT_NOTSET, item;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);
-	/* Re-register the object for reading [GMT_IN] and reset its status to unread */
-	if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
-		return (API->error);
-	/* Obtain the unique VirtualFile name */
-	if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
-		return (API->error);
+	
+	/* See if this one is known to us already */
+	for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
+		if (!API->object[item]) continue;	/* Skip freed objects */
+		if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+	}
+	
+	if (object_ID != GMT_NOTSET) {
+		/* Recycle the object */
+		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+			return_error (API, API->error);	/* Could not find that item */
+		/* Here we have the item and can recycle the address */
+		API->object[item]->status = 0;							/* Open for business */
+		API->object[item]->resource = API->object[item]->data;	/* Switch from consumer to provider */
+		API->object[item]->data = NULL;							/* No longer consumer */
+		API->object[item]->method = GMT_IS_REFERENCE;			/* Now in memory */
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
+			return (API->error);
+	}
+	else {	/* Register a new object */
+		/* Register the object for reading [GMT_IN] and reset its status to unread */
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
+			return (API->error);
+		/* Obtain the unique VirtualFile name */
+		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
+			return (API->error);
+	}
 	return (GMT_NOERROR);
 }
 
@@ -5792,7 +5977,6 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	 */
 	int error = 0, object_ID;
 	unsigned int item;
-	enum GMT_enum_method method;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -5808,8 +5992,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 		S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 		if (S_obj) {	/* Dealt with file i/o */
 			S_obj->status = GMT_IS_USED;	/* Done writing to this destination */
-			method = api_split_via_method (API, S_obj->method, NULL);
-			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE)) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
+			if ((S_obj->method == GMT_IS_DUPLICATE || S_obj->method == GMT_IS_REFERENCE)) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
 				int check = GMT_NOTSET;
 				if (S_obj->actual_family == GMT_IS_DATASET) {	/* Dataset type */
 					struct GMT_DATASET *D_obj = S_obj->resource;
@@ -5843,11 +6026,24 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						size *= M_obj->n_columns;
 						if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK)
 							return_error (V_API, error);
-						if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, M_obj)) == GMT_NOTSET)
+						if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, M_obj)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to register */
 						if ((check = gmtapi_validate_id (API, GMT_IS_MATRIX, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to validate */
 						M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+						if (S_obj->delay) {
+							GMT_putfunction api_put_val = api_select_put_function (API, M_obj->type);
+							p_func_uint64_t GMT_2D_to_index = NULL;
+							uint64_t col, ij;
+							GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+							while (S_obj->delay) {	/* Place delayed NaN-rows(s) up front */
+								S_obj->delay--;
+								for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
+									ij = GMT_2D_to_index (S_obj->delay, col, M_obj->dim);
+									api_put_val (&(M_obj->data), ij, API->GMT->session.d_NaN);
+								}
+							}
+						}
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_VECTOR) {	/* Vector type */
@@ -5861,6 +6057,15 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 						if ((check = gmtapi_validate_id (API, GMT_IS_VECTOR, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
 							return_error (API, API->error);	/* Failure to validate */
 						V_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+						if (S_obj->delay) {
+							GMT_putfunction api_put_val = api_select_put_function (API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
+							uint64_t col;
+							while (S_obj->delay) {	/* Place delayed NaN-record(s) up front */
+								S_obj->delay--;
+								for (col = 0; col < V_obj->n_columns; col++)	/* Place the output items */
+									api_put_val (&(V_obj->data[col]), S_obj->delay, API->GMT->session.d_NaN);
+							}
+						}
 					}
 				}
 				else if (S_obj->actual_family == GMT_IS_TEXTSET) {	/* Textset type */
@@ -6580,6 +6785,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	 */
 
 	int status;
+unsigned int method;
 	int64_t *count = NULL, n_fields = 0;
 	uint64_t col, ij, n_use, col_pos, n_columns = 0;
 	bool get_next_record;
@@ -6604,6 +6810,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	API->GMT->current.io.read_mixed = (mode == GMT_READ_MIXED);	/* Cannot worry about constant # of columns if text is present */
 	GMT = API->GMT;
 
+	method = api_set_method (S_obj);	/* Get the actual method to use */
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		get_next_record = false;	/* We expect to read one data record and return */
 		GMT->current.io.status = 0;	/* Initialize status to OK */
@@ -6617,7 +6824,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 			}
 			continue;
 		}
-		switch (S_obj->method) {
+		switch (method) {
 			case GMT_IS_FILE:	/* File, stream, and fd are all the same for us, regardless of data or text input */
 		 	case GMT_IS_STREAM:
 		 	case GMT_IS_FDESC:
@@ -6648,8 +6855,8 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					GMT->common.b.ncol[GMT_IN] = S_obj->n_expected_fields;	/* Set the actual column count */
 				break;
 
-			case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Here we copy/read from a user memory location */
-			case GMT_IS_REFERENCE_VIA_MATRIX:
+			case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Here we copy/read from a user memory location */
+			case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 				if (S_obj->rec >= S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
 					if (api_next_data_object (API, S_obj->family, GMT_IN) == EOF) {	/* That was the last source, return */
@@ -6690,8 +6897,8 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				}
 				break;
 
-			 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
-			 case GMT_IS_REFERENCE_VIA_VECTOR:
+			 case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
+			 case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 				if (S_obj->rec == S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows in this vector */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
 					if (api_next_data_object (API, S_obj->family, GMT_IN) == EOF) {	/* That was the last source, return */
@@ -6848,6 +7055,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	 * If an error occurs we return GMT_NOTSET and set API->error.
 	 */
 	int error = 0;
+unsigned int method;
 	int64_t *count = NULL;
 	uint64_t col, ij;
 	char *s = NULL;
@@ -6866,7 +7074,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 
 	S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 	if (S_obj->status == GMT_IS_USED) return_error (API, GMT_WRITTEN_ONCE);	/* Only allow writing of a data set once [unless we reset status] */
-	switch (S_obj->method) {	/* File, array, stream etc ? */
+	method = api_set_method (S_obj);	/* Get the actual method to use */
+	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 	 	case GMT_IS_STREAM:
 	 	case GMT_IS_FDESC:
@@ -7021,19 +7230,26 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			}
 			break;
 
-		case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Data matrix only */
-		case GMT_IS_REFERENCE_VIA_MATRIX:
+		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Data matrix only */
+		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			/* At the first output record the output matrix has not been allocated.
 			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
-				size_t size = S_obj->n_alloc = GMT_CHUNK;
+				size_t size;
+				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {
+					/* Cannot place the NaN records since we dont know the number of columns yet */
+					S_obj->delay++;
+					API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
+					break;
+				}
+				size = S_obj->n_alloc = GMT_CHUNK;
 				M_obj = gmtlib_create_matrix (API->GMT, 1U, GMT_OUT);
 				M_obj->type = API->GMT->current.setting.export_type;	/* Use selected data type for export */
-				M_obj->n_columns = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
-				M_obj->dim = M_obj->n_columns;
+				M_obj->dim = M_obj->n_columns = col;
 				size *= M_obj->n_columns;	/* Size in bytes of the initial matrix allocation */
 				if ((error = gmtlib_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (gmtapi_report_error (API, error));
 				S_obj->resource = M_obj;	/* Save so we can get it next time */
@@ -7068,13 +7284,19 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			}
 			break;
 
-		case GMT_IS_DUPLICATE_VIA_VECTOR:	/* List of column arrays */
-		case GMT_IS_REFERENCE_VIA_VECTOR:
+		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* List of column arrays */
+		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
-				S_obj->n_alloc = GMT_CHUNK;	/* Size in bytes of the initial matrix allocation */
 				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {
+					/* Cannot place the NaN records since we dont know the number of columns yet */
+					S_obj->delay++;
+					API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
+					break;
+				}
+				S_obj->n_alloc = GMT_CHUNK;	/* Size in bytes of the initial matrix allocation */
 				if ((V_obj = gmt_create_vector (API->GMT, col, GMT_OUT)) == NULL)
 					return_error (API, GMT_MEMORY_ERROR);
 				for (col = 0; col < V_obj->n_columns; col++)	/* Set same export data type for all vectors */
@@ -7084,7 +7306,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			}
 			V_obj = S_obj->resource;
 			if (V_obj == NULL) {
-				GMT_Report(API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL resource pointer for method _VIA_VECTOR\n");
+				GMT_Report(API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL resource pointer for method GMT_IS_REFERENCE|GMT_VIA_VECTOR\n");
 				return GMT_NOTSET;
 			}
 
@@ -7124,7 +7346,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory */
 		S_obj->n_alloc += GMT_CHUNK;
-		if (S_obj->method == GMT_IS_DUPLICATE_VIA_MATRIX || S_obj->method == GMT_IS_REFERENCE_VIA_MATRIX) {
+		if ((S_obj->method == GMT_IS_DUPLICATE || S_obj->method == GMT_IS_REFERENCE) && S_obj->actual_family == GMT_IS_MATRIX) {
 			size_t size = S_obj->n_alloc * M_obj->n_columns;
 			if ((error = gmtlib_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 		}
@@ -7396,9 +7618,10 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	 *	   3: dim[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
 	 *     The dim array is ignored for CPTs.
 	 *     For GMT_IS_IMAGE & GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of bands or layers (dim == NULL means just 1).
-	 *     For GMT_IS_GRID, GMT_IS_IMAGE, & GMT_IS_MATRIX: par[0] holds the number of columns and par[1] holds the number
+	 *     For GMT_IS_GRID, GMT_IS_IMAGE, & GMT_IS_MATRIX: dim[0] holds the number of columns and dim[1] holds the number
 	 *         of rows; this implies that wesn = 0-<dim-1>, inc = 1, and registration is pixel-registration.
-	 *     For GMT_IS_VECTOR, par[0] holds the number of columns, optionally par[1] holds number of rows, if known
+	 *     For GMT_IS_VECTOR, dim[0] holds the number of columns, optionally dim[1] holds number of rows, if known, or 0.
+	 *	   dim[2] can hold the data type (GMT_DOUBLE, etc). If dim[1] > 0 then we allocate the rows.
 	 * (B) Via range, inc, registration:
 	 *     Convert user domain range, increments, and registration into dimensions
 	 *     for the container.  For grids and images we fill out the GMT_GRID_HEADER;
@@ -7542,22 +7765,11 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 
 	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or gmtapi_garbage_collection */
 		enum GMT_enum_method method = GMT_IS_REFERENCE;
-		enum GMT_enum_family actual_family = family;
 		int item = GMT_NOTSET, object_ID = GMT_NOTSET;
 		if (def_direction == GMT_OUT && family == GMT_IS_TEXTSET) method = GMT_IS_DUPLICATE;	/* PW: TEMPORARY WHILE TESTING */
-		if (family == GMT_IS_MATRIX) {	/* Data sets passed via a matrix need to remember their initial family */
-			method = GMT_IS_REFERENCE_VIA_MATRIX;
-			if (geometry & GMT_IS_PLP) actual_family = GMT_IS_DATASET;
-			if (geometry & GMT_IS_SURFACE) actual_family = GMT_IS_GRID;
-			if (geometry & GMT_IS_NONE) actual_family = GMT_IS_TEXTSET;
-		}
-		else if (family == GMT_IS_VECTOR) {	/* Data sets passed via a vector need to remember their initial family */
-			//method = GMT_IS_REFERENCE_VIA_VECTOR;
-			//actual_family = GMT_IS_DATASET;
-		}
-		if ((object_ID = GMT_Register_IO (API, actual_family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET)
+		if ((object_ID = GMT_Register_IO (API, family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET)
 			return_null (API, API->error);	/* Failure to register */
-		if ((item = gmtapi_validate_id (API, actual_family, object_ID, def_direction, GMT_NOTSET)) == GMT_NOTSET)
+		if ((item = gmtapi_validate_id (API, family, object_ID, def_direction, GMT_NOTSET)) == GMT_NOTSET)
 			return_null (API, API->error);
 		API->object[item]->data = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 		API->object[item]->actual_family = family;	/* So that if we got a matrix posing as dataset we can destroy the matrix later */
