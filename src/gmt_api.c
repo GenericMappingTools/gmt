@@ -2757,6 +2757,10 @@ GMT_LOCAL int gmt_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned int d
 	GMT_getfunction *api_get_val = NULL;
 	gmt_M_unused(mode);
 
+	if (V == NULL) {
+		GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GMTAPI: gmt_write_vector passed a NULL pointer *V\n");
+		return GMT_NOTSET;
+	}
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 	
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
@@ -6094,7 +6098,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	 * For memory output we finalized the container, register it, sets the alloc_level to the calling entity
 	 * and pass the resource upwards.
 	 */
-	unsigned int item;
+	unsigned int item = 0;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -7093,7 +7097,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	 * If an error occurs we return GMT_NOTSET and set API->error.
 	 */
 	int error = 0;
-unsigned int method;
+	unsigned int method;
 	int64_t *count = NULL;
 	uint64_t col, ij;
 	char *s = NULL;
@@ -7153,7 +7157,8 @@ unsigned int method;
 					D_obj = gmtlib_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
 					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
-					if (API->GMT->common.b.ncol[GMT_OUT] == 0 && API->GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+					if (API->GMT->common.b.ncol[GMT_OUT] == 0 && API->GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS)
+						API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
@@ -7241,7 +7246,8 @@ unsigned int method;
 						if (!T_obj->segment[count[GMT_SEG]]) T_obj->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);
 						s = (record) ? record : API->GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
 						if (s) {	/* Found a segment header */
-							if (T_obj->segment[count[GMT_SEG]]->header) gmt_M_str_free (T_obj->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
+							if (T_obj->segment[count[GMT_SEG]]->header)
+								gmt_M_str_free (T_obj->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
 							T_obj->segment[count[GMT_SEG]]->header = strdup (s);
 						}
 						break;
@@ -7344,10 +7350,6 @@ unsigned int method;
 				S_obj->resource = V_obj;	/* Save so we can get it next time */
 			}
 			V_obj = S_obj->resource;
-			if (V_obj == NULL) {
-				GMT_Report(API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL resource pointer for method GMT_IS_REFERENCE|GMT_VIA_VECTOR\n");
-				return GMT_NOTSET;
-			}
 
 			api_put_val = api_select_put_function(API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
@@ -10821,7 +10823,7 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	return (X);
 }
 
-GMT_LOCAL struct GMT_DATASEGMENT * api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
+GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
 	/* Allocates space for a complete data segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_DATASEGMENT *S = NULL;
@@ -10843,7 +10845,7 @@ GMT_LOCAL struct GMT_DATASEGMENT * api_alloc_datasegment (void *V_API, uint64_t 
 	return S;
 }
 
-EXTERN_MSC struct GMT_TEXTSEGMENT * api_alloc_textsegment (void *V_API, uint64_t n_rows, char *header, struct GMT_TEXTSEGMENT *Sin) {
+EXTERN_MSC struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n_rows, char *header, struct GMT_TEXTSEGMENT *Sin) {
 	/* Allocates space for a complete text segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_TEXTSEGMENT *S = NULL;
@@ -10862,7 +10864,7 @@ EXTERN_MSC struct GMT_TEXTSEGMENT * api_alloc_textsegment (void *V_API, uint64_t
 	return S;
 }
 
-EXTERN_MSC void * GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
+EXTERN_MSC void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
 	/* Deal with the two segment types */
 	void *X = NULL;
 	switch (family) {
