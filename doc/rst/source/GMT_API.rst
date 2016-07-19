@@ -1191,6 +1191,29 @@ The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
 error code via ``API->error``.
 
+Manually add segments
+---------------------
+
+If you do now know the number of rows in segments or expect different segments to have different
+lengths then you should set the row dimension to zero in GMT_Create_Data and add the segments
+manually with  GMT_Alloc_Segment.
+``GMT_Alloc_Segment`` allocates a new DATASET or TEXTSET segment for multi-segment table.
+
+.. _GMT_Alloc_Segment:
+
+  ::
+
+    struct GMT_OPTION *GMT_Alloc_Segment (void *API, unsigned int family, uint64_t n_rows,
+                                          uint64_t n_columns, char *header, void *S);
+
+where ``header`` is the segment's header string and `family` selects which
+kind of resource is passed via ``S``, which in this case should either be ``GMT_IS_DATASET``
+or ``GMT_IS_TEXTSET``.
+
+For DATASETs there is also the option of controlling the allocation of the segment
+array by setting n_rows = 0.  This would allow external arrays to connected to
+S->data[col] arrays and not be freed by GMT's garbage collector.
+
 Duplicate resources
 -------------------
 
@@ -2292,19 +2315,6 @@ set an error code via ``API->error``, and return NULL.
 
 Append an option to the linked list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``GMT_Alloc_Segment`` allocates a new DATASET or TEXTSET segment for multi-segment files
-
-.. _GMT_Alloc_Segment:
-
-  ::
-
-    struct GMT_OPTION *GMT_Alloc_Segment (void *API, unsigned int family, uint64_t n_rows,
-                                          uint64_t n_columns, char *header, void *S);
-
-where ``header`` is the segment's header string and `family` selects which
-kind of resource is passed via ``S``, which in this case should either be ``GMT_IS_DATASET``
-or ``GMT_IS_TEXTSET``.
 
 ``GMT_Append_Option`` will append the specified ``option`` to the end of
 the doubly-linked ``list``. The prototype is
