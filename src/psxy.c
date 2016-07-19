@@ -1749,7 +1749,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.f.f_pen == 0) gmt_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 				if (duplicate)	/* Free duplicate segment */
-					gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+					gmt_free_segment (GMT, &L);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {

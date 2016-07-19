@@ -8351,7 +8351,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		if (error) {
 			gmt_M_free (GMT, T->segment);
 			gmt_M_free (GMT, T);
-			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
 			return (NULL);
 		}
@@ -8412,7 +8412,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	dim[GMT_COL] = n_cols;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return (NULL);
-	gmt_free_table (GMT, D->table[0], D->alloc_mode);	/* Since we will add our own below */
+	gmt_free_table (GMT, D->table[0]);	/* Since we will add our own below */
 	D->table[0] = T;
 	gmtlib_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
@@ -12844,7 +12844,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No need to insert new points at 180\n");
-		gmt_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
+		gmt_free_segment (GMT, &Sx);
 		gmt_M_free (GMT, pos);
 		return 0;
 	}
@@ -12864,7 +12864,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}
-	gmt_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &Sx);
 	gmt_M_free (GMT, pos);
 
 	*Lout = L;		/* Pass pointer to the array of segments */

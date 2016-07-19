@@ -1163,7 +1163,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S->data[GMT_Y][0] = S->data[GMT_Y][1] = S->data[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S->data[GMT_Y][2] = S->data[GMT_Y][3] = GMT->common.R.wesn[YHI];
 				(void)area_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, info, geo);
-				gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+				gmt_free_segment (GMT, &S);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
 				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
@@ -1551,11 +1551,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 			
 		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
-			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S2);
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
-			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S2);
 			Return (API->error);				/* Enables data output and sets access mode */
 		}
 
@@ -1617,7 +1617,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		if (same_feature) {
 			for (col = 0; col < S2->n_columns; col++) S2->data[col] = NULL;	/* Since they were not allocated */
-			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S2);
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) gmt_M_free (GMT, Info[tbl]);
 		gmt_M_free (GMT, Info);

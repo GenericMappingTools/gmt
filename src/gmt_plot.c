@@ -3285,7 +3285,7 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 	gmt_geo_polygons (GMT, L);	/* "Draw" the line */
 	PSL_command (GMT->PSL, "U\n");
 
-	gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &L);
 }
 
 GMT_LOCAL void plot_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C) {
@@ -4542,7 +4542,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			if ((panel->mode & 1)) gmt_setfill (GMT, &panel->fill, outline);
 			if ((panel->mode & 2)) gmt_setpen (GMT, &panel->pen1);
 			gmt_geo_polygons (GMT, S);
-			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S);
 			return;	/* Done here */
 		}
 	}
@@ -5811,7 +5811,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	px[N] = px[0], py[N] = py[0];
 	gmt_geo_polygons (GMT, S);
 
-	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S);
 }
 
 void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius, char unit, double az_start, double az_stop, unsigned int mode) {
@@ -5879,7 +5879,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 
 	gmt_geo_polygons (GMT, S);
 
-	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S);
 }
 
 unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S) {
