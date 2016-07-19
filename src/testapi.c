@@ -158,10 +158,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID;
 	int geometry[] = {GMT_IS_POINT, GMT_IS_SURFACE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_NONE};
-	uint64_t k;
-	
-	float *fdata = NULL;
-	double *ddata = NULL;
 	
 	char *ikind[] = {"DATASET", "GRID", "IMAGE", "PALETTE", "POSTSCRIPT", "TEXTSET", "MATRIX", "VECTOR", "COORD"};
 	char *method[] = {"FILE", "STREAM", "FDESC", "COPY", "REF"};
@@ -175,7 +171,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	struct TESTAPI_CTRL *Ctrl = NULL;
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
-	void *In = NULL, *Out = NULL, *Intmp = NULL, *Outtmp = NULL;
+	void *In = NULL, *Out = NULL, *Intmp = NULL;
 	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
