@@ -5779,7 +5779,8 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		API->object[item]->status = 0;							/* Open for business */
 		API->object[item]->resource = API->object[item]->data;	/* Switch from consumer to provider */
 		API->object[item]->data = NULL;							/* No longer consumer */
-		API->object[item]->method = GMT_IS_REFERENCE;			/* Now in memory */
+		API->object[item]->method = GMT_IS_REFERENCE;			/* Now a memory resource */
+		API->object[item]->direction = GMT_IN;					/* Make sure it now is for reading */
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
 			return (API->error);
 	}
