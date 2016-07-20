@@ -21,13 +21,22 @@
 #--------------------------------------------------------------------*/
 #
 GMT_EXEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
+# Use the executable dir to figure out the lib and include dirs
+GMT_TOP=`dirname $GMT_EXEDIR`
+CONFIG_INCLUDEDIR="$GMT_TOP/@GMT_INCLUDEDIR@"
+if [ -d $CONFIG_INCLUDEDIR ]; then	# Seems OK
+	CONFIG_CFLAGS="-I$CONFIG_INCLUDEDIR"
+	CONFIG_LIBS="-L$GMT_TOP/@GMT_LIBDIR@ -lgmt"
+else	# No go, perhaps GMT_TOP is a link?
+	# These dont work for relocatable installations:
+	CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
+	CONFIG_INCLUDEDIR="@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
+	CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
+fi
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)
 CONFIG_DCW=$($GMT_EXEDIR/gmt gmtget DIR_DCW)
-CONFIG_INCLUDEDIR="@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
-CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
 CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
 CONFIG_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
 
@@ -77,7 +86,7 @@ Available values for OPTIONS include:
   --help        display this help message and exit
   --bits        whether library is build 32-bit or 64-bit
   --cflags      pre-processor and compiler flags
-  --datadir     GMT's data directory
+  --datadir     GMT's data directories
   --dcw         location of used DCW
   --dep-libs    dependent libraries
   --gshhg       location of used GSHHG
@@ -85,7 +94,7 @@ Available values for OPTIONS include:
   --has-gdal    whether GDAL is used in build
   --has-pcre    whether PCRE is used in build
   --has-lapack  whether LAPACK is used in build
-  --has-openmp  whether GMT was built with Open-MP support
+  --has-openmp  whether GMT was built with OpenMP support
   --includedir  include directory
   --libs        library linking information
   --prefix      install prefix
