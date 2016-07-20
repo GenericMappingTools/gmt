@@ -1737,6 +1737,11 @@ GMT_LOCAL void api_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, 
 	char *txt = gmtapi_create_header_item (API, mode, arg);
 
 	if (api_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
+	
+	if (D->table == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "api_dataset_comment: Trying to access an empty D->table object\n");
+		return;
+	}
 
 	/* Here we process free-form comments; these go into the dataset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
@@ -1757,6 +1762,11 @@ GMT_LOCAL void api_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, 
 	char *txt = gmtapi_create_header_item (API, mode, arg);
 
 	if (api_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
+	
+	if (D->table == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "api_textset_comment: Trying to access an empty D->table object\n");
+		return;
+	}
 
 	/* Here we process free-form comments; these go into the textset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
