@@ -5103,12 +5103,6 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 			S_obj->alloc_mode = GMT_ALLOC_INTERNALLY;	/* To ensure it will be Unregistered below */
 			i++;	continue;
 		}
-#if 0	/* PW: This cannot possibly be a useful check. Leaving it here until we are sure */
-		else if (S_obj->direction == GMT_OUT && S_obj->method == GMT_IS_REFERENCE) {	/* Do not free data pointers for output memory objects */
-			S_obj->data = S_obj->resource = NULL;
-			i++;	continue;
-		}
-#endif
 		/* Here we will try to free the memory pointed to by S_obj->resource */
 		if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {	/* Give debug feedback so some calcs are needed */
 			if (S_obj->method <= GMT_IS_REFERENCE)
