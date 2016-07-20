@@ -131,25 +131,6 @@ while read old; do
 	let k=k+1
 done < /tmp/t.lis
 
-# Fix gmt-config so it returns correct paths
-cat << EOF > /tmp/skip
-GMT_EXEDIR=
-CONFIG_CFLAGS=
-CONFIG_INCLUDEDIR=
-CONFIG_LIBS=
-CONFIG_PREFIX=
-EOF
-sed '/GMT_EXEDIR/q' gmt-config > /tmp/new
-cat << EOF >> /tmp/new
-CONFIG_CFLAGS="-I/opt/gmt/include/gmt"
-CONFIG_DATA=\$(\$GMT_EXEDIR/gmt --show-datadir)
-CONFIG_INCLUDEDIR="/opt/gmt/include/gmt"
-CONFIG_LIBS="-L/opt/gmt/lib -lgmt"
-CONFIG_PREFIX="/opt/gmt"
-EOF
-sed -n '/GMT_EXEDIR/,$p' gmt-config | grep -v -f/tmp/skip >> /tmp/new
-mv -f /tmp/new gmt-config
-chmod +x gmt-config
 version=`gmt-config --version`
 # Report
 cat << EOF >&2
