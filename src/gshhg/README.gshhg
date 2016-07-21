@@ -7,6 +7,18 @@ Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory. It was formerly called
 GSHHS (... Shorelines instead of Geography).
 
+Version August 17, 2016
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.6 which fixed 11 crossings in Antarctica
+grounding line and one in the Antarctica ice front line.
+
+Version April 12, 2016
+
+No source code changes but expected to work with the latest GSHHG
+data set version 2.3.5 which added missing boundary between Sudan and South Sudan.
+Fixed non-closure of the Slovenia, Croatia and Hungary borders.
+
 Version January 1, 2015
 
 No source code changes but expected to work with the latest GSHHG
