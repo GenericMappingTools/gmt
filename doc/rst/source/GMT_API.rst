@@ -2822,7 +2822,8 @@ function, whose prototype is
 
     int GMT_Destroy_Data (void *API, void *data);
 
-where ``data`` is the address of the pointer to a data container.  Note that
+where ``data`` is the address of the pointer to a data container, i.e., not
+the pointer to the container but the *address* of that pointer (e.g. &pointer).  Note that
 when each module completes it will automatically free memory created by
 the API; similarly, when the session is destroyed we also automatically
 free up memory. Thus, ``GMT_Destroy_Data`` is therefore generally only

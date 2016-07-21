@@ -2080,6 +2080,8 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_DATASET *D = NULL;
 	
+	if (object->resource && object->data && (object->resource != object->data))
+		GMT_Report (API, GMT_MSG_NORMAL, "ERROR: api_pass_object given resource = %" PRIxS " and data = %" PRIxS " and cannot choose sensibly: data was selected\n", object->resource, object->data);
 	switch (family) {	/* Do family-specific prepping before passing back the input object */
 		case GMT_IS_PALETTE:	/* Make sure the hidden support arrays etc have been initialized */
 			if (data) gmtlib_init_cpt (API->GMT, data);
@@ -7825,7 +7827,10 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or gmtapi_garbage_collection */
 		enum GMT_enum_method method = GMT_IS_REFERENCE;	/* Since it is a memory object */
 		int item = GMT_NOTSET, object_ID = GMT_NOTSET;
-		if (def_direction == GMT_OUT && family == GMT_IS_TEXTSET) method = GMT_IS_DUPLICATE;	/* PW: TEMPORARY WHILE TESTING */
+		if (def_direction == GMT_OUT && family == GMT_IS_TEXTSET) {
+			method = GMT_IS_DUPLICATE;	/* PW: TEMPORARY WHILE TESTING */
+			GMT_Report (API, GMT_MSG_NORMAL, "Output TEXTSET attempt now trying GMT_IS_REFERENCE as for the others\n");
+		}
 		if ((object_ID = GMT_Register_IO (API, family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET)
 			return_null (API, API->error);	/* Failure to register */
 		if ((item = gmtapi_validate_id (API, family, object_ID, def_direction, GMT_NOTSET)) == GMT_NOTSET)
