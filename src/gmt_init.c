@@ -3377,7 +3377,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 	GMT->current.proj.units_pr_degree = (answer != 0);
 	if (GMT->current.proj.units_pr_degree) {	/* Check if we got "1" and this is grd|map-project */
 		size_t k = strlen (scale_or_width);
-		if (k == 1 && scale_or_width[0] == '1' && GMT_is_grdmapproject (GMT)) {	/* OK, pretend we got 1:1 */
+		if (k == 1 && scale_or_width[0] == '1' && gmt_M_is_grdmapproject (GMT)) {	/* OK, pretend we got 1:1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -J option: Your scale of 1 was interpreted to mean 1:1 since no plotting is involved.\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "If a scale of 1 was intended, please append a unit from %s.\n", GMT_DIM_UNITS_DISPLAY);
 			gmtinit_scale_or_width (GMT, strcat(scale_or_width,":1"), value);
@@ -4271,7 +4271,7 @@ GMT_LOCAL int gmtinit_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_
 		if (gmtlib_g_ymd_is_bad (yy, mo, dd) ) return (-1);
 		rd = gmt_rd_from_gymd (GMT, yy, mo, dd);
 	}
-	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
+	if (gmt_M_hms_is_bad (hh, mm, ss)) return (-1);
 
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */

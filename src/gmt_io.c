@@ -3767,7 +3767,7 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	 * We append a newline (\n) if not is present */
 
 	if (!GMT->current.setting.io_header[GMT_OUT]) return;	/* No output headers requested */
-	if (GMT_binary_header (GMT, GMT_OUT))		/* Must write a binary header */
+	if (gmt_M_binary_header (GMT, GMT_OUT))		/* Must write a binary header */
 		gmtlib_io_binary_header (GMT, fp, GMT_OUT);
 	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");

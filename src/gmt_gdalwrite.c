@@ -389,9 +389,9 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		/* Change some attributes written by GDAL (not finished) */
 		int ncid;
 		int err;
-		GMT_err_trap (nc_open (fname, NC_WRITE, &ncid));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
-		GMT_err_trap (nc_close (ncid));
+		gmt_M_err_trap (nc_open (fname, NC_WRITE, &ncid));
+		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
+		gmt_M_err_trap (nc_close (ncid));
 	}
 
 	return (GMT_NOERROR);

@@ -119,6 +119,8 @@ EXTERN_MSC int64_t gmt_parse_range (struct GMT_CTRL *GMT, char *p, int64_t *star
 
 static char *GMT_just_code[12] = {"--", "LB", "CB", "RB", "--", "LM", "CM", "RM", "--", "LT", "CT", "RT"};
 
+#define gmt_M_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? true : false)	/* true for uneven units */
+
 /** @brief XYZ color of the D65 white point */
 #define WHITEPOINT_X	0.950456
 #define WHITEPOINT_Y	1.0
@@ -11938,7 +11940,7 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 		if (((*pos) - GMT_CONV8_LIMIT) < min || ((*pos) + GMT_CONV8_LIMIT) > max) return (true);	/* Outside axis range */
 	}
 	else if (T->type == 'i' || T->type == 'I') {
-		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
+		if (gmt_M_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			gmt_M_memset (&Inext, 1, struct GMT_MOMENT_INTERVAL);	/* Wipe it */
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */

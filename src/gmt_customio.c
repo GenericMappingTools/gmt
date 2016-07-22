@@ -669,7 +669,7 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		piping = true;
 	}
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
-		GMT_err_trap (customio_native_skip_grd_header (fp, header));
+		gmt_M_err_trap (customio_native_skip_grd_header (fp, header));
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -940,7 +940,7 @@ int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 		piping = true;
 	}
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL)	{	/* Skip header */
-		GMT_err_trap (customio_native_skip_grd_header (fp, header));
+		gmt_M_err_trap (customio_native_skip_grd_header (fp, header));
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);

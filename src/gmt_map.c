@@ -1102,7 +1102,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size;
 
-	if (!(gmt_M_is_cylindrical (GMT) || GMT_IS_PERSPECTIVE (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
+	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
 
 	if (!gmt_M_is_geographic (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
@@ -6209,7 +6209,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
 	/* Now determine 'round' major and minor tick intervals */
-	if (GMT_axis_is_geo (GMT, axis))	/* Geographical coordinate */
+	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
 		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
 	else	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
@@ -6913,7 +6913,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* SOUTH BORDER */
 
-		if (gmt_M_is_geographic (GMT, GMT_IN) && s == -90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
+		if (gmt_M_is_geographic (GMT, GMT_IN) && s == -90.0 && gmt_M_pole_is_point(GMT)) {	/* No path, just a point */
 			gmt_M_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
@@ -6933,7 +6933,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		/* NORTH BORDER */
 
-		if (gmt_M_is_geographic (GMT, GMT_IN) && n == 90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
+		if (gmt_M_is_geographic (GMT, GMT_IN) && n == 90.0 && gmt_M_pole_is_point(GMT)) {	/* No path, just a point */
 			add = 0;
 			gmt_M_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
@@ -7608,7 +7608,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 				if (nz[ij_out] < SHRT_MAX) {	/* Avoid overflow */
 					for (b = 0; b < nb; b++) {
 						rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_in+b])/(nz[ij_out] + 1.0);	/* Update the mean pix values inside this rect... */
-						O->data[nb*ij_out+b] = (unsigned char) lrint (GMT_0_255_truncate (rgb[b]));
+						O->data[nb*ij_out+b] = (unsigned char) lrint (gmt_M_0_255_truncate (rgb[b]));
 					}
 					nz[ij_out]++;		/* ..and how many points there were */
 				}
@@ -7648,7 +7648,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 				inv_nz = 1.0 / nz[ij_out];
 				for (b = 0; b < nb; b++) {
 					rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + z_int[b] * inv_nz) / (nz[ij_out] + inv_nz);
-					O->data[nb*ij_out+b] = (unsigned char) lrint (GMT_0_255_truncate (rgb[b]));
+					O->data[nb*ij_out+b] = (unsigned char) lrint (gmt_M_0_255_truncate (rgb[b]));
 				}
 			}
 		}
@@ -8668,7 +8668,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 
-	if (GMT->current.map.width > 400.0 && GMT_is_grdmapproject (GMT)) {	/* ***project calling with true scale, probably  */
+	if (GMT->current.map.width > 400.0 && gmt_M_is_grdmapproject (GMT)) {	/* ***project calling with true scale, probably  */
 		search = false;	/* Safe-guard that prevents region search below for (map|grd)project and others (400 inch = ~> 10 meters) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: gmt_map_setup perimeter search skipped when using true scale with grdproject or mapproject.\n");
 	}

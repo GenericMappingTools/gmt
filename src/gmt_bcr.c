@@ -342,7 +342,7 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
-			z[b] = (unsigned char) lrint (GMT_0_255_truncate (retval[b]));
+			z[b] = (unsigned char) lrint (gmt_M_0_255_truncate (retval[b]));
 		}
 	}
 	else

@@ -1638,7 +1638,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 				if (!gmt_map_outside (GMT, x[i], y[j])) {	/* Inside map */
 					yj = y[j];
-					if (GMT_POLE_IS_POINT(GMT) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
+					if (gmt_M_pole_is_point(GMT) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
 						xi = GMT->current.proj.central_meridian;
 						i = nx;	/* This ends the loop for this particular latitude */
 					}
@@ -3515,7 +3515,7 @@ GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double
 #endif
 
 	plot_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
-	perspective = GMT_IS_PERSPECTIVE (GMT);
+	perspective = gmt_M_is_perspective (GMT);
 
 	/* Here we have the endpoints A and B of the great (or small) circle arc */
 
@@ -3755,7 +3755,7 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
 	plot_gcircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
-	perspective = GMT_IS_PERSPECTIVE (GMT);
+	perspective = gmt_M_is_perspective (GMT);
 
 	/* Here we have the endpoints A and B of the great (or small) circle arc */
 
@@ -4056,7 +4056,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 		is_interval = (T->type == 'i' || T->type == 'I');	/* Interval or tick mark annotation? */
 		nx = gmtlib_coordinate_array (GMT, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
-		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !GMT_axis_is_geo (GMT, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
+		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !gmt_M_axis_is_geo (GMT, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
 		nx1 = (nx > 0 && is_interval) ? nx - 1 : nx;
 		/* First plot all the tick marks */
@@ -4135,7 +4135,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	/* Finally do axis label */
 
-	if (A->label[0] && annotate && !GMT_axis_is_geo (GMT, axis)) {
+	if (A->label[0] && annotate && !gmt_M_axis_is_geo (GMT, axis)) {
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_command (PSL, "/PSL_LH ");
@@ -4240,7 +4240,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	/* Do we have duplicate e and w boundaries ? */
 	idup = (gmt_M_is_azimuthal(GMT) && doubleAlmostEqual(e-w, 360.0)) ? 1 : 0;
 
-	if (GMT_POLE_IS_POINT(GMT)) {	/* Might have two separate domains of gridlines */
+	if (gmt_M_pole_is_point(GMT)) {	/* Might have two separate domains of gridlines */
 		if (GMT->current.proj.projection == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
 			ys = cap_stop[0] = cap_stop[1] = p_cap = 90.0 - GMT->current.setting.map_polar_cap[0];
 			yn = n;

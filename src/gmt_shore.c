@@ -515,35 +515,35 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_M_memset (c, 1, struct GMT_SHORE);
 
 	/* Open shoreline file */
-	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
+	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NetCDF Library Version: %s\n", nc_inq_libvers());
 	
 	/* Get global attributes */
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
 
 	/* Get all id tags */
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Micro_fraction_of_full_resolution_area", &c->GSHHS_areafrac_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_polygons_in_file", &c->n_poly_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_nodes_in_file", &c->n_node_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_parent_polygons", &c->GSHHS_parent_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_node_polygons", &c->GSHHS_node_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Micro_fraction_of_full_resolution_area", &c->GSHHS_areafrac_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_polygons_in_file", &c->n_poly_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_nodes_in_file", &c->n_node_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_parent_polygons", &c->GSHHS_parent_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_node_polygons", &c->GSHHS_node_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 
 	if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
@@ -553,24 +553,24 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
 	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT) == NC_NOERR) {	/* New file with two Antarcticas */
-		GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));
+		gmt_M_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));
 		two_Antarcticas = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GSHHG with two Antarcticas, read in extra ANT flgs.\n");
 	}
 
 	/* Get attributes */
-	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
 
 	/* Get global variables */
 
 	start[0] = 0;
 
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
 
 	c->fraction = info->fraction;
 	c->skip_feature = info->flag;
@@ -902,42 +902,42 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	if (!shore_getpathname (GMT, stem, path))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
-	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
+	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
 
 	/* Get all id tags */
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
 
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
 
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_for_a_segment", &c->seg_n_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Hierarchial_level_of_a_segment", &c->seg_level_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "N_points_for_a_segment", &c->seg_n_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Hierarchial_level_of_a_segment", &c->seg_level_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
 
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
+	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
 
 	/* Get attributes */
-	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
-	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	gmt_M_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
 
 	/* Get global variables */
 
 	start[0] = 0;
 
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
+	gmt_M_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
 
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;

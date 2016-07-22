@@ -1631,17 +1631,17 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 			gmtlib_write_grd_info (GMT, file, G->header);
 	}
 	else /* Fallback to existing header */
-		GMT_err_trap (gmt_grd_get_format (GMT, file, G->header, magic));
+		gmt_M_err_trap (gmt_grd_get_format (GMT, file, G->header, magic));
 	if (R->open) return (GMT_NOERROR);	/* Already set the first time */
 	fmt = GMT->session.grdformat[G->header->type];
 	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
-		GMT_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = G->header->n_columns;
 		R->start[0] = 0;
 		R->start[1] = 0;
 	}
 	else if (fmt[0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
-		GMT_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = 1;
 		R->edge[1] = G->header->n_columns;
 		R->start[0] = G->header->n_rows-1;
@@ -1842,10 +1842,12 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	/* Get ready for the next source/destination (open file, initialize counters, etc.).
 	 * Note this is only a mechanism for dataset and textset files where it is common
 	 * to give many files on the command line (e.g., *.txt) and we do rec-by-rec processing.
-	 * Not used by modules who read entire datasets in one go via GMT_{Read|Write}_Data. */
+	 * Not used by modules who read entire datasets in one go via GMT_{Read|Write}_Data,
+	 * such as grids, images, palettes, postscript, but also datasets and texsets when
+	 * GMT_Read_Data are used.  This section is strictly related to GMT_Get_Record. */
+	
 	int *fd = NULL;	/* !!! This MUST be int* due to nature of UNIX system function */
-	int kind;
-	unsigned int method;
+	unsigned int method, kind;
 	static const char *dir[2] = {"from", "to"};
 	static const char *operation[2] = {"Reading", "Writing"};
 	char *mode = NULL;
@@ -1854,16 +1856,16 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	S_obj = API->object[API->current_item[direction]];		/* For shorthand purposes only */
+	S_obj = API->object[API->current_item[direction]];	/* For shorthand purposes only */
 	GMT_Report (API, GMT_MSG_DEBUG, "api_next_io_source: Selected object %d\n", S_obj->ID);
-	mode = (direction == GMT_IN) ? GMT->current.io.r_mode : GMT->current.io.w_mode;	/* Reading or writing */
-	S_obj->close_file = false;		/* Do not want to close file pointers passed to us unless WE open them below */
-	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
+	mode = (direction == GMT_IN) ? GMT->current.io.r_mode : GMT->current.io.w_mode;	/* Set reading or writing mode */
+	S_obj->close_file = false;	/* Do not want to close file pointers passed to us unless WE open them below */
+	/* Either use binary n_columns settings or initialize to unknown if ascii input, i.e., GMT_MAX_COLUMNS */
 	S_obj->n_expected_fields = (GMT->common.b.ncol[direction]) ? GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
 	gmt_M_memset (GMT->current.io.curr_pos[direction], 4U, int64_t);	/* Reset file, seg, point, header counters */
-	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segent of input is -1 until first segment header have been dealt with */
+	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segent of input is set to -1 until first segment header have been dealt with */
 
-	method = api_set_method (S_obj);	/* Get the actual method to use */
+	method = api_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as DATASET */
 	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:	/* Filename given; we must open the file here */
 			if (S_obj->family == GMT_IS_GRID) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids not allowed here */
@@ -1875,7 +1877,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 			strncpy (GMT->current.io.filename[direction], S_obj->filename, GMT_BUFSIZ-1);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s file %s\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
-			if (GMT_binary_header (GMT, direction)) {
+			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
 				GMT_Report (API, GMT_MSG_NORMAL, "%s %d bytes of header %s binary file %s\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], S_obj->filename);
@@ -1891,7 +1893,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 			snprintf (GMT->current.io.filename[direction], GMT_BUFSIZ, "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s %s stream\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
-			if (GMT_binary_header (GMT, direction)) {
+			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
 				GMT_Report (API, GMT_MSG_NORMAL, "%s %d bytes of header %s binary %s stream\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
@@ -1908,7 +1910,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 			snprintf (GMT->current.io.filename[direction], GMT_BUFSIZ, "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s %s stream via supplied file descriptor\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
-			if (GMT_binary_header (GMT, direction)) {
+			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
 				GMT_Report (API, GMT_MSG_NORMAL, "%s %d bytes of header %s binary %s stream via supplied file descriptor\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
@@ -7460,7 +7462,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 			R->row = row_no;
 			R->start[0] = R->row * R->edge[0];
 		}
-		GMT_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+		gmt_M_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
 		if (R->auto_advance) R->start[0] += R->edge[0];	/* Advance to next row if auto */
 	}
 	else if (fmt[0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
@@ -7473,7 +7475,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 			R->row = row_no;
 			R->start[0] = G->header->n_rows - 1 - R->row;
 		}
-		GMT_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+		gmt_M_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
 		if (R->auto_advance) R->start[0] --;	/* Advance to next row if auto */
 	}
 	else {			/* Get a native binary row */
@@ -7523,7 +7525,7 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row) {
 	 * In this case row_no is not used.
 	 */
 
-	unsigned int err;	/* Required by GMT_err_trap */
+	unsigned int err;	/* Required by gmt_M_err_trap */
 	unsigned int col;
 	size_t n_items;
 	struct GMTAPI_CTRL *API = NULL;
@@ -7547,12 +7549,12 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row) {
 	switch (fmt[0]) {
 		case 'c':
 			if (!R->auto_advance) R->start[0] = rec_no * R->edge[0];
-			GMT_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+			gmt_M_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] += R->edge[0];
 			break;
 		case 'n':
 			if (!R->auto_advance) R->start[0] = G->header->n_rows - 1 - rec_no;
-			GMT_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+			gmt_M_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] --;
 			break;
 		default:

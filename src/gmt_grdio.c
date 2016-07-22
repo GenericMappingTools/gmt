@@ -318,7 +318,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 
 	char type_code[3];
 	char *p;
-	int err; /* GMT_err_trap */
+	int err; /* gmt_M_err_trap */
 
 	/* decode grid type */
 	strncpy (type_code, format, 2);
@@ -1105,20 +1105,20 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	 * called requesting a subset then these will be reset accordingly.
 	 */
 
-	int err;	/* Implied by GMT_err_trap */
+	int err;	/* Implied by gmt_M_err_trap */
 	unsigned int n_columns, n_rows;
 	double scale, offset;
 	float invalid;
 
 	/* Save parameters on file name suffix before issuing GMT->session.readinfo */
-	GMT_err_trap (gmt_grd_get_format (GMT, file, header, true));
+	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));
 
 	/* remember scale, offset, and invalid: */
 	scale = header->z_scale_factor;
 	offset = header->z_add_offset;
 	invalid = header->nan_value;
 
-	GMT_err_trap ((*GMT->session.readinfo[header->type]) (GMT, header));
+	gmt_M_err_trap ((*GMT->session.readinfo[header->type]) (GMT, header));
 	GMT_Set_Index (GMT->parent, header, GMT_GRID_LAYOUT);
 
 	grdio_grd_xy_scale (GMT, header, GMT_IN);	/* Possibly scale wesn,inc */
@@ -1170,9 +1170,9 @@ int gmtlib_write_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEA
 	 * header:	grid structure header
 	 */
 
-	int err;	/* Implied by GMT_err_trap */
+	int err;	/* Implied by gmt_M_err_trap */
 
-	GMT_err_trap (gmt_grd_get_format (GMT, file, header, false));
+	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, false));
 
 	grdio_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 	/* pack z-range: */
@@ -1205,18 +1205,18 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 	 */
 
 	bool expand;		/* true or false */
-	int err;		/* Implied by GMT_err_trap */
+	int err;		/* Implied by gmt_M_err_trap */
 	struct GRD_PAD P;
 
 	complex_mode &= GMT_GRID_IS_COMPLEX_MASK;	/* Remove any non-complex flags */
 	/* If we are reading a 2nd grid (e.g., real, then imag) we must update info about the file since it will be a different file */
-	if (header->complex_mode && (header->complex_mode & complex_mode) == 0) GMT_err_trap (gmt_grd_get_format (GMT, file, header, true));
+	if (header->complex_mode && (header->complex_mode & complex_mode) == 0) gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));
 
 	expand = grdio_padspace (GMT, header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
 	grdio_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN);	/* Deal with complex layout */
 
-	GMT_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, grid, P.wesn, P.pad, complex_mode));
+	gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, grid, P.wesn, P.pad, complex_mode));
 
 	if (expand) /* Must undo the region extension and reset n_columns, n_rows using original pad  */
 		gmt_M_memcpy (header->wesn, wesn, 4, double);
@@ -1241,9 +1241,9 @@ int gmtlib_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int err;	/* Implied by GMT_err_trap */
+	int err;	/* Implied by gmt_M_err_trap */
 
-	GMT_err_trap (gmt_grd_get_format (GMT, file, header, false));
+	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, false));
 	grdio_pack_grid (GMT, header, grid, k_grd_pack); /* scale and offset */
 	grdio_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
@@ -1545,7 +1545,7 @@ void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	h->mx = gmt_M_grd_get_nxpad (h, h->pad);	/* Set mx, my based on h->{n_columns,n_rows} and the current pad */
 	h->my = gmt_M_grd_get_nypad (h, h->pad);
 	h->nm = gmt_M_grd_get_nm (h);		/* Sets the number of actual data items */
-	h->size = gmt_grd_get_size (h);		/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
+	h->size = gmt_M_grd_get_size (h);	/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
 	h->xy_off = 0.5 * h->registration;
 	gmt_set_grdinc (GMT, h);
 #ifdef GMT_BACKWARDS_API
@@ -2749,7 +2749,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	expand = grdio_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
-	/*GMT_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
+	/*gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
 
 	/* Allocate new control structures */
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
