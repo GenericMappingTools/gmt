@@ -693,6 +693,8 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Destroy_Data_        | Delete a data resource                                |
 +--------------------------+-------------------------------------------------------+
+| GMT_Destroy_Group_       | Delete a group of data resources                      |
++--------------------------+-------------------------------------------------------+
 | GMT_Destroy_Options_     | Delete the linked list of option structures           |
 +--------------------------+-------------------------------------------------------+
 | GMT_Destroy_Session_     | Terminate a GMT session                               |
@@ -2831,6 +2833,22 @@ needed when you wish to directly free up memory to avoid running out of
 it. The function returns 1 if there is an error when trying to
 free the memory (the error code is passed back with ``API->error``),
 otherwise it returns 0.
+
+Destroy groups of allocated resources
+-------------------------------------
+
+If you obtained an array of resources via ``GMT_Read_Group`` then
+you will need to destroy these resources with ``GMT_Destroy_Group`` instead,
+whose prototype is
+
+.. _GMT_Destroy_Group:
+
+  ::
+
+    int GMT_Destroy_Group (void *API, void *data, unsigned int n);
+
+where ``data`` is the address of the array with data containers, i.e., not
+the array to the containers but the *address* of that array (e.g. &array).
 
 Terminate a GMT session
 -----------------------
