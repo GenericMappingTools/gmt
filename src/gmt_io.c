@@ -6799,6 +6799,7 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uin
 	}
 	S->n_rows = n_rows;
 	S->n_columns = n_columns;
+	S->alloc_mode = GMT_ALLOC_INTERNALLY;
 }
 
 /*! . */
@@ -7756,14 +7757,14 @@ unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsig
 	/* Used when we read records from GMT_TEXTSETs and need to obtain doubles */
 	/* Convert the first ncols fields in the record string to numbers that we
 	 * store in GMT->current.io.curr_rec, which is what normal GMT_DATASET processing do.
-	 * We stop if we run out of fields and ignore conversion errors.  */
+	 * We stop if we run out of fields or fail to convert.  */
 
 	unsigned int k = 0, pos = 0;
 	char p[GMT_BUFSIZ];
 
 	while (k < ncols && gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
-		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
-		if (strchr (p, '/')) continue;	/* Somehow got to a color triplet? */
+		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) break;	/* Numbers must be [+|-][.][<digits>] */
+		if (strchr (p, '/')) break;	/* Somehow got to a color triplet? */
 		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &out[k]);	/* Be tolerant of errors */
 		k++;
 	}

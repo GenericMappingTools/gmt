@@ -28,7 +28,7 @@
 #include <string.h>
 
 int main (int argc, char *argv[]) {
-	unsigned int k, n = 0;
+	unsigned int n = 0;
 	void *API = NULL;
 	struct GMT_DATASET *D = NULL, *D2 = NULL;
 	struct GMT_TEXTSET *T = NULL;
@@ -49,26 +49,22 @@ int main (int argc, char *argv[]) {
 	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, "*.nc", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	/* Then read grid data */
 	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
-	for (k = 0; k < n; k++)
-		if (GMT_Destroy_Data (API, &G[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Group (API, &G, n) != GMT_NOERROR) exit (EXIT_FAILURE);
 	/* Test reading several CPTs */
 	n = 0;
 	if ((C = GMT_Read_Group (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.cpt", &n, NULL)) == NULL) exit (EXIT_FAILURE);
-	for (k = 0; k < n; k++)
-		if (GMT_Destroy_Data (API, &C[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Group (API, &C, n) != GMT_NOERROR) exit (EXIT_FAILURE);
 #if 0
 	/* Test reading several image files but allow for this to fail due to GDAL etc */
 	n = 0;
 	if ((I = GMT_Read_Group (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "*.png", &n, NULL)) != NULL) {
-		for (k = 0; k < n; k++)
-			if (GMT_Destroy_Data (API, &I[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Group (API, &I, n) != GMT_NOERROR) exit (EXIT_FAILURE);
 	}
 #endif
 	/* Test reading several Postscript files */
 	n = 0;
 	if ((P = GMT_Read_Group (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, "*.ps", &n, NULL)) == NULL) exit (EXIT_FAILURE);
-	for (k = 0; k < n; k++)
-		if (GMT_Destroy_Data (API, &P[k]) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Group (API, &P, n) != GMT_NOERROR) exit (EXIT_FAILURE);
 	
 	/* 1. Read in two data tables; this DATASET is our starting point */
 

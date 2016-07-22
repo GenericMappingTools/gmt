@@ -477,7 +477,7 @@ GMT_LOCAL void *api_return_address (void *data, unsigned int type) {
 		case GMT_IS_DATASET:	p = api_get_dataset_ptr (data);	break;
 		case GMT_IS_TEXTSET:	p = api_get_textset_ptr (data);	break;
 		case GMT_IS_PALETTE:	p = api_get_cpt_ptr (data);	break;
-		case GMT_IS_POSTSCRIPT:		p = api_get_ps_ptr (data);	break;
+		case GMT_IS_POSTSCRIPT:	p = api_get_ps_ptr (data);	break;
 		case GMT_IS_MATRIX:	p = api_get_matrix_ptr (data);	break;
 		case GMT_IS_VECTOR:	p = api_get_vector_ptr (data);	break;
 		case GMT_IS_COORD:	p = api_get_coord_ptr (data);	break;
@@ -7657,8 +7657,126 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 
 #ifdef FORTRAN_API
 int GMT_Destroy_Data_ (void *object) {
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Data (GMT_FORTRAN, object));
+}
+#endif
+
+int api_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_GRID **G = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &G[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, G);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_DATASET **D = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &D[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, D);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_textsets (struct GMTAPI_CTRL *API, struct GMT_TEXTSET ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_TEXTSET **T = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &T[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, T);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_IMAGE **I = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &I[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, I);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_PALETTE **C = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &C[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, C);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_pss (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_POSTSCRIPT **P = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &P[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, P);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_MATRIX **M = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &M[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, M);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+int api_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsigned int n_items)
+{
+	unsigned int k;
+	int error;
+	struct GMT_VECTOR **V = *obj;
+	for (k = 0; k < n_items; k++) if ((error = GMT_Destroy_Data (API, &V[k]))) return_error (API, error);
+	gmt_M_free (API->GMT, V);	*obj = NULL;
+	return_error (API, GMT_OK);
+}
+
+void **void3_to_void2 (void ***p) { return (*p); }
+
+/*! . */
+int GMT_Destroy_Group (void *V_API, void *object, unsigned int n_items) {
+	/* Destroy an array of resources that are no longer needed.
+	 * Returns the error code.
+	 */
+	int error, object_ID, item;
+	void **ptr = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* This is a cardinal sin */
+	if (object == NULL) return (false);	/* Null address, quietly skip */
+	API = api_get_api_ptr (V_API);		/* Now we need to get that API pointer to check further */
+	ptr = void3_to_void2 (object);		/* Get the array of pointers */
+	if ((object_ID = api_get_object_id_from_data_ptr (API, ptr)) == GMT_NOTSET) return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find the object in the list */
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);	/* Could not find that item */
+	switch (API->object[item]->actual_family) {
+		case GMT_IS_GRID:       error = api_destroy_grids    (API, object, n_items); break;
+		case GMT_IS_DATASET:    error = api_destroy_datasets (API, object, n_items); break;
+		case GMT_IS_TEXTSET:    error = api_destroy_textsets (API, object, n_items); break;
+		case GMT_IS_IMAGE:      error = api_destroy_images   (API, object, n_items); break;
+		case GMT_IS_PALETTE:    error = api_destroy_palettes (API, object, n_items); break;
+		case GMT_IS_POSTSCRIPT: error = api_destroy_pss      (API, object, n_items); break;
+		case GMT_IS_MATRIX:     error = api_destroy_matrices (API, object, n_items); break;
+		case GMT_IS_VECTOR:     error = api_destroy_vectors  (API, object, n_items); break;
+		default: return_error (API, GMT_NOT_A_VALID_FAMILY); break;
+	}
+	return_error (API, GMT_OK);
+}
+
+#ifdef FORTRAN_API
+int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Destroy_Group (GMT_FORTRAN, object, *n_items));
 }
 #endif
 
@@ -9408,8 +9526,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 }
 
 #ifdef FORTRAN_API
-struct GMT_RESOURCE *GMT_Encode_Options_ (const char *module, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+struct GMT_RESOURCE *GMT_Encode_Options_ (const char *module, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Encode_Options (GMT_FORTRAN, module, *n_in, head, n));
 }
 #endif
@@ -10264,7 +10382,7 @@ GMT_LOCAL void *api_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET 
 GMT_LOCAL bool text2double_is_viable (struct GMT_CTRL *GMT, struct GMT_TEXTSET *In, bool strict) {
 	/* Determine if we can convert text to data values.  Action depends on strict:
 	 * strict = true: Determines if all records in the textset can be converted to floating point data.
-	 * strict = false: Determines if one or more field can be converted using first record only.
+	 * strict = false: Determines if two or more fields can be converted using first record only.
 	 */
 	bool viable = true;
 	uint64_t tbl, seg, row, k;
@@ -10273,7 +10391,7 @@ GMT_LOCAL bool text2double_is_viable (struct GMT_CTRL *GMT, struct GMT_TEXTSET *
 	
 	if (!strict) {
 		unsigned int n_columns = gmtlib_conv_text2datarec (GMT, In->table[0]->segment[0]->data[0], GMT_BUFSIZ, GMT->current.io.curr_rec);
-		return (n_columns) ? true : false;
+		return (n_columns > 1) ? true : false;
 	}
 	/* Do full strict check */
 	for (tbl = 0; viable && tbl < In->n_tables; tbl++) {

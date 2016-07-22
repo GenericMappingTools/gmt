@@ -344,6 +344,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	S->min[GMT_X] = h->wesn[XLO];	S->max[GMT_X] = h->wesn[XHI];
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
 	S->pole = 0;
+	S->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (D);
 }
