@@ -452,7 +452,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_IMAGE *Out = NULL;       /* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
+#ifdef HAVE_GDAL
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
+#endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -808,6 +810,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (id >= 0) 			/* Valid projection for creating world file info */
 			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
 
+#ifdef HAVE_GDAL
 		if (!Ctrl->A.return_image) {		/* That is, write an image file with a call to gmt_gdalwrite() */
 			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 			to_GDALW->driver = Ctrl->A.driver;
@@ -839,7 +842,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-
+#endif
 		if (grid_registration == GMT_GRID_NODE_REG) {
 			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
@@ -1122,6 +1125,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+#ifdef hAVE_GDAL
 	if (Ctrl->A.active && !Ctrl->A.return_image) {
 		gmt_M_str_free (to_GDALW->P.ProjRefPROJ4);
 		gmt_M_str_free (to_GDALW->type);
@@ -1129,6 +1133,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_M_str_free (Ctrl->A.driver);
 		gmt_M_str_free (Ctrl->A.file);
 	}
+#endif
 	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 		Return (API->error);
 	}
