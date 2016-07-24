@@ -9966,6 +9966,7 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
 	gmt_M_str_free (file);
@@ -10009,6 +10010,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
 
@@ -10017,6 +10019,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (gmtlib_read_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
 	gmt_M_str_free (file);
@@ -10060,11 +10063,13 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_ARG_IS_NULL;
 	}
 	if (inc[GMT_X] == 0.0 || inc[GMT_Y] == 0.0) {	/* Here that means grid spacing was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid spacing not specified for %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_ARG_IS_NULL;
 	}
 
@@ -10085,6 +10090,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (gmtlib_write_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing file %s\n", file);
 		gmt_M_str_free (file);
+		GMT_Destroy_Session (API);
 		return GMT_GRID_WRITE_ERROR;
 	}
 	gmt_M_str_free (file);
@@ -10430,7 +10436,7 @@ GMT_LOCAL void *api_textset2dataset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET
 	 * If mode == GMT_WRITE_TABLE then we collect all segments into ONE table.
 	 * If mode == GMT_WRITE_SEGMENT then we combine segments into ONE segment per table.
 	 * If header & GMT_STRICT_CONVERSION then we only do the conversion if possible 1:1, else return NULL.
-	 * If header & GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
+	 * If header & GMT_LAX_CONVERSION then we do the conversion if at least the first two field convert, else return NULL.
 	 */
 	unsigned int hdr;
 	uint64_t tbl, seg, row, col, n_rows, tbl_out = 0, row_out = 0, seg_out = 0;
@@ -10520,7 +10526,7 @@ GMT_LOCAL void *api_textset2matrix (struct GMTAPI_CTRL *API, struct GMT_TEXTSET 
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
 	 * If there are more than one segment we will insert NaN-records between segments.
 	 * If header & GMT_STRICT_CONVERSION then we only do the conversion if possible 1:1, else return NULL.
-	 * If header & GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
+	 * If header & GMT_LAX_CONVERSION then we do the conversion if at least the two first field convert, else return NULL.
 	 */
 	uint64_t tbl, seg, row, row_out, col, ij;
 	bool alloc = (Out == NULL), add_NaN_record = (In->n_segments > 1 && do_seg_header(header));
@@ -10852,17 +10858,17 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
 	/* Convert between valid pairs of objects,  If Out == NULL then we allocate an output object,
 	 * otherwise we assume we are given adequate space already.  This is most likely restricted to a GMT_MATRIX.
-	 * flag is up to three unsigned integers controlling various aspects of the conversion:
+	 * flag is an array with three unsigned integers controlling various aspects of the conversion:
 	 * flag[0]: Controls how headers are handled on output:
-	 * 	0 : All headers are passed on as is.  For Matrix/Vector all table headers are always ignored but
-	 * 	    segment headers will be encoded as NaN records
-	 * 	1 : Headers are not copied, segment headers are preserved
-	 * 	2 : Headers are preserved, segment headers are blank
-	 * 	3 : All headers headers are eliminated
-	 *	    The GMT Default settings in effect will control any output to files later.
-	 * 	Finally, if converting from TEXTSET to floating point representations, if the flag contains
-	 * GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
-	 * If the flag contains GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
+	 * 	 0 : All headers are passed on as is.  For Matrix/Vector all table headers are always ignored but
+	 * 	     segment headers will be encoded as NaN records
+	 * 	 1 : Headers are not copied, but segment headers are preserved
+	 * 	 2 : Headers are preserved, but segment headers are initialized to blank
+	 * 	 3 : All headers headers are eliminated
+	 *	     The GMT Default settings in effect will control any output to files later.
+	 * 	 Finally, if converting from TEXTSET to floating point representations, if the flag contains
+	 *   GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
+	 *   If the flag contains GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
 	 * [Note if that happens it is not considered an error, so API->error is GMT_NOERROR].
 	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
 	 *	0 : We determine number of columns by decoding the very first data record
@@ -10986,7 +10992,6 @@ GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	bool first = true;
-	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	if ((S = Sin))	/* Existing segment given */
@@ -11007,7 +11012,6 @@ EXTERN_MSC struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t 
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_TEXTSEGMENT *S = NULL;
 	struct GMTAPI_CTRL *API = NULL;
-	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	if ((S = Sin) == NULL && (S = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT)) == NULL) /* Something went wrong */
@@ -11022,8 +11026,11 @@ EXTERN_MSC struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t 
 }
 
 EXTERN_MSC void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
-	/* Deal with the two segment types */
+	/* Deal with the two segment types or data and text.
+	 * The n_columns is only used for data segments.
+	 * header, if not NULL or blank, sets the segment header. */
 	void *X = NULL;
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	switch (family) {
 		case GMT_IS_DATASET:
 			X = api_alloc_datasegment (V_API, n_rows, n_columns, header, S);
@@ -11051,10 +11058,11 @@ EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int m
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Premature call - number of input columns not known yet\n");
 		return_error (API, GMT_N_COLS_NOT_SET);
 	}
+	/* If no columns specified we set output to the same as input columns */
 	if (n_cols == 0 && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
 			return_error (API, GMT_N_COLS_NOT_SET);
 
-	/* Get here when n_cols is not zero */
+	/* Get here when n_cols is not zero, so must consult mode */
 	
 	switch (mode) {
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
@@ -11063,7 +11071,7 @@ EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int m
 		case GMT_COL_ADD:	/* Add to the input columns */
 			error = gmt_set_cols (API->GMT, GMT_OUT, n_in + n_cols);
 			break;
-		case GMT_COL_SUB:	/* Specif a fixed number of columns */
+		case GMT_COL_SUB:	/* Subtract from the number of input columns */
 			if (n_cols >= n_in) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Cannot specify less than one output column!\n");
 				return_error (API, GMT_DIM_TOO_SMALL);
