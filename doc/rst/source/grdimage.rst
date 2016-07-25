@@ -20,7 +20,6 @@ Synopsis
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ] [ |-K| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-Rz| ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
