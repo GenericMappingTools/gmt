@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
-[ |-A|\ *out_img*\ **=**\ *driver* ] [ |-C|\ *cpt* ]
+[ |-A|\ *out_img*\ [**=**\ *driver*] ] [ |-C|\ *cpt* ]
 [ |-D|\ [**r**\ ] ] [ |-E|\ **i**\ [\|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ] [ |-I|\ *intensfile*\ \|\ *intensity* ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ] [ |-K| ] [ |-M| ] [ |-N| ]
@@ -84,14 +84,16 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *out_img*\ **=**\ *driver*
-    With GDAL aware versions: save image in a raster format instead of
-    PostScript. Append *out_img*\ **=**\ *driver* to select the file
-    name and image format. The *driver* is the driver code name used by
-    GDAL. For example, **-A**\ img.tif=GTiff will write a GeoTiff image
-    if the subset of GMT syntax projections that is currently possible
-    to translate into the PROJ4 syntax allows it, or a plain tiff file
-    otherwise. Note: any vector elements are lost. 
+**-A**\ *out_img*\ [**=**\ *driver*]
+    For GDAL-aware versions: Save an image in a raster format instead of
+    PostScript. Append *out_img*\ to select the image file name and extension.
+    If the extension is one of .bmp, .gif, .jpg, .png, or .tif then no driver
+    information is required.  For other output formats you must append the
+    required GDAL driver.  The *driver* is the driver code name used by
+    GDAL; see your GDAL installation's documentation for available drivers.
+    Notes: (1) If a tiff file (.tif) is selected then we will write a GeoTiff image
+    if the GMT projection syntax translates into a PROJ4 syntax, otherwise
+    a plain tiff file is produced. (2) Any vector elements will be lost.
 
 .. include:: explain_-B.rst_
 

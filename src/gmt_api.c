@@ -4683,7 +4683,6 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 /*! . */
 GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
 	/* Function that will export the single data object referred to by the object_ID as registered by GMT_Register_IO.
-	 * Note: While there is no api_export_image, these are handles as grids via api_export_grid.
 	 */
 	int error, item;
 
