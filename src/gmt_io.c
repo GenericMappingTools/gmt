@@ -7518,6 +7518,7 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	I->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	I->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	gmt_grd_init (GMT, I->header, NULL, false); /* Set default values */
+	strncpy (I->header->mem_layout, "TRPa", 4);	/* Set the default array memory layout */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 	return (I);
 }

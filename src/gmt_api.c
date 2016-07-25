@@ -4144,9 +4144,33 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	return ((mode & GMT_GRID_DATA_ONLY) ? NULL : I_obj);	/* Pass back out what we have so far */
 }
 
-/*! Writes out a single grid to destination */
+GMT_LOCAL int gmt_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
+	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns */
+	uint32_t row, col, band;
+	char *ext = gmt_get_ext (fname), *magic = "P6\n# Produced by GMT\n", dim[GMT_LEN32] = {""};
+	FILE *fp = NULL;
+	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file */
+	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot create file %s\n", fname);
+		return -1;
+	}
+	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and linefeed */
+	sprintf (dim, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
+	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
+	for (row = 0; row < I->header->n_rows; row++) {
+		for (col = 0; col < I->header->n_columns; col++) {
+			for (band = 0; band < I->header->n_bands; band++) {
+				fwrite (&(I->data[row+col*I->header->n_rows+band*I->header->nm]), sizeof(char), 1, fp);
+			}
+		}
+	}
+	gmt_fclose (GMT, fp);
+	return GMT_NOERROR;
+}
+
+/*! Writes out a single image to destination */
 GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *I_obj) {
-	int item;
+	int item, error;
 	bool done = true;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_IMAGE *I_copy = NULL;
@@ -4162,12 +4186,19 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of an image file on disk */
-#ifdef HAVE_GDAL
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Writing image to file %s\n", S_obj->filename);
-			if (gmt_M_err_pass (API->GMT, gmt_export_image (API->GMT, S_obj->filename, I_obj), S_obj->filename)) 
+			if ((error = gmt_export_ppm (API->GMT, S_obj->filename, I_obj)) == 0)
+				break;	/* OK, wrote a PPM and we are done */
+			else if (error == -1) {	/* Failed to open file */
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to export image\n");
+				return (gmtapi_report_error (API, GMT_ERROR_ON_FOPEN));
+			}
+#ifdef HAVE_GDAL
+			else if (gmt_M_err_pass (API->GMT, gmt_export_image (API->GMT, S_obj->filename, I_obj), S_obj->filename)) 
 				return (gmtapi_report_error (API, GMT_IMAGE_WRITE_ERROR));
 #else
-			GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to write image to file %s\n", S_obj->filename);
+			else
+				GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to write image to file %s\n", S_obj->filename);
 #endif
 			break;
 

@@ -36,9 +36,8 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcfnptxy" GMT_OPT("S")
 
 #ifdef HAVE_GDAL
-#define N_GDAL_EXTENSIONS 5
-static char *gdal_ext[N_GDAL_EXTENSIONS] = {"tif", "png", "jpg", "gif", "mbp"};
-static char *gdal_drv[N_GDAL_EXTENSIONS] = {"GTiff", "PNG", "JPEG", "GIF", "BMP"};
+#define N_IMG_EXTENSIONS 5
+static char *gdal_ext[N_IMG_EXTENSIONS] = {"tif", "gif", "png", "jpg", "bmp"};
 #endif
 
 /* Control structure for grdimage */
@@ -57,15 +56,14 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct GRDIMG_D {	/* -D to read GDAL file */
+	struct GRDIMG_D {	/* -D to read image instead of grid */
 		bool active;
 		bool mode;	/* Use info of -R option to reference image */
 	} D;
-	struct GRDIMG_A {	/* -A to write a GDAL file or return image to API */
+	struct GRDIMG_A {	/* -A to write a raster file or return image to API */
 		bool active;
 		bool return_image;
 		char *file;
-		char *driver;
 	} A;
 	struct GRDIMG_E {	/* -Ei|<dpi> */
 		bool active;
@@ -110,8 +108,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* De
 	int k;
 	if (!C) return;
 	for (k = 0; k < 3; k++) gmt_M_str_free (C->In.file[k]);	
+	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->Out.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -158,6 +158,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   If filename does not have any of these extensions then append =<driver> to select\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   the desired image format. The 'driver' is the driver code name used by GDAL.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   See GDAL documentation for available drivers. Note: any vector elements are lost. \n");
+#else
+		GMT_Message (API, GMT_TIME_NONE, "\t-A Save image in a PPM format (give .ppm extension) instead of PostScript.\n");
 #endif
 	}
 	GMT_Option (API, "B-");
@@ -234,6 +236,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: No output name provided\n");
 					n_errors++;
 				}
+				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
+					Ctrl->A.file = strdup (opt->arg);
+				}
 #ifdef HAVE_GDAL
 				else {	/* Must give file and GDAL driver and this requires GDAL support */
 					Ctrl->A.file = strdup (opt->arg);
@@ -242,32 +247,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						n = strlen (Ctrl->A.file) - 1;
 						while (n && Ctrl->A.file[n] != '.') n--;
 						if (n == 0) {	/* Gave no image extension either... */
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Missing image extension or =driver name.\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Missing image extension or =<driver> name.\n");
 							n_errors++;
 						}
 						else {	/* Check if we got a recognized extension */
-							unsigned int k;
+							unsigned int k, found = 0;
 							n++;	/* Start of extension */
-							for (k = 0; Ctrl->A.driver == NULL && k < N_GDAL_EXTENSIONS; k++) {
+							for (k = 0; !found && k < N_IMG_EXTENSIONS; k++) {
 								if (!strcmp (&(Ctrl->A.file[n]), gdal_ext[k]))
-									Ctrl->A.driver = strdup (gdal_drv[k]);
+									found = 1;
 							}
+							if (found == 0) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Missing the required =<driver> name.\n");
+								n_errors++;
+							}
+							else
+								GMT_Report (API, GMT_MSG_DEBUG, "grdimage: Auto-recognized GDAL driver from filename extension.\n");
 						}
-						if (Ctrl->A.driver == NULL) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Missing the required =driver name.\n");
-							n_errors++;
-						}
-						else
-							GMT_Report (API, GMT_MSG_DEBUG, "grdimage: Auto-recognized GDAL driver from filename to be %s.\n", Ctrl->A.driver);
-					}
-					else {
-						Ctrl->A.file[n] = '\0';		/* Strip =driver from file name */
-						Ctrl->A.driver = strdup (&Ctrl->A.file[n+1]);
 					}
 				}
 #else
 				else
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Requires building GMT with GDAL support.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Your selection requires building GMT with GDAL support.\n");
 #endif
 				break;
 
@@ -277,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 
-			case 'D':	/* Get via GDAL */
+			case 'D':	/* Get an image via GDAL */
 				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
@@ -382,6 +383,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	                                   "Syntax error -Q option: Cannot use -D when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
 	                                   "Syntax error -A option: Must provide an output filename for image\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
+								       "Syntax error -A, -> options: Cannot provide two output files\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -456,7 +459,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	uint64_t node, kk, byte, dim[3] = {0, 0, 3};
 	int index = 0, ks, error = 0;
 	
-	char   *img_ProjectionRefPROJ4 = NULL;
+	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
@@ -477,9 +480,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_IMAGE *Out = NULL;       /* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
-#ifdef HAVE_GDAL
-	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
-#endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -501,6 +501,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
+	if (Ctrl->A.file) {Ctrl->Out.file = Ctrl->A.file; Ctrl->A.file = NULL;}	/* Only use Out.file for writing */
 
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid) {	/* Illumination grid wanted */
@@ -667,21 +668,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* Resize illumination grid to match the dimensions of the image */
 
 			char in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""}, cmd[GMT_LEN64] = {""};
-#if 0
-			int object_ID;
-			/* Create option list, register Intens_orig as input source via reference */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, Intens_orig)) == GMT_NOTSET) 
-				Return (API->error);
-			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_NOERROR) {
-				Return (API->error);	/* Make filename with embedded object ID for grid G */
-			}
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
-				Return (API->error);
-			}
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_NOERROR) {
-				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
-			}
-#endif
     		/* Associate the intensity grid with an open virtual file - in_string will then hold the name of this input "file" */
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, Intens_orig, in_string);
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
@@ -692,11 +678,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				return (API->error);
    			/* Obtain the resmapled intensity grid from the virtual file */
     		G2 = GMT_Read_VirtualFile (API, out_string);
-#if 0
-			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
-				Return (API->error);
-			}
-#endif
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {	/* We can now delete the original intensity grid ... */
 				Return (API->error);
 			}
@@ -839,6 +820,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* We desire a raster image, not a PostScript plot */
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
+		if (Ctrl->M.active || gray_only) dim[GMT_Z] = 1;	/* Only one band */
 		if (!need_to_project) {	/* Stick with original -R */
 			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
 			img_wesn[YHI] = GMT->common.R.wesn[YHI];		img_wesn[YLO] = GMT->common.R.wesn[YLO];
@@ -857,39 +839,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (id >= 0) 			/* Valid projection for creating world file info */
 			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);	/* Get the proj4 string */
 
-#ifdef HAVE_GDAL
-		if (!Ctrl->A.return_image) {		/* That is, write an image file with a call to gmt_gdalwrite() */
-			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-			to_GDALW->driver = Ctrl->A.driver;
-			to_GDALW->type = strdup("byte");
-			to_GDALW->P.ProjRefPROJ4 = NULL;
-			to_GDALW->flipud = 0;
-			to_GDALW->geog = 0;
-			to_GDALW->n_columns = (int)n_columns;
-			to_GDALW->n_rows = (int)n_rows;
-			strncpy (to_GDALW->layout, "TRPa", 4);	/* Set the array memory layout */
-			if (Ctrl->D.active)
-				to_GDALW->n_bands = (int)MIN(Img_proj->header->n_bands, 3);	/* Transparency not accounted yet */
-			else if ((P && gray_only) || Ctrl->M.active)
-				to_GDALW->n_bands = 1;
-			else
-				to_GDALW->n_bands = 3;
-			to_GDALW->registration = 1;
-			to_GDALW->ULx = img_wesn[XLO];
-			to_GDALW->ULy = img_wesn[YHI];
-			to_GDALW->x_inc = img_inc[0];
-			to_GDALW->y_inc = img_inc[1];
-
-			if (img_ProjectionRefPROJ4 != NULL) {
-				if (img_ProjectionRefPROJ4[1] == 'x' && img_ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
-					to_GDALW->P.active = false;
-				else {
-					to_GDALW->P.ProjRefPROJ4 = img_ProjectionRefPROJ4;
-					to_GDALW->P.active = true;
-				}
-			}
-		}
-#endif
 		if (grid_registration == GMT_GRID_NODE_REG) {	/* Adjust domain by 1/2 pixel since they are outside the domain */
 			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
@@ -897,6 +846,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array */
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
 			Return (API->error);	/* Well, no luck with that allocation */
+		//strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
+		Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
 
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8  = Out->data;
@@ -1091,20 +1042,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
-			if (Ctrl->A.return_image) {	/* Create a GMT_IMAGE with 1 band and send the output to the external program */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade GMT_IMAGE object\n");
-				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
-					Return (API->error);
-			}
-#ifdef HAVE_GDAL
-			else {	/* Write the image to file via GDAL */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image via GDAL\n");
-				to_GDALW->data  = bitimage_8;
-				to_GDALW->alpha = Out->alpha;
-				gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
-			}
-#endif
+			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.return_image]);
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
+				Return (API->error);
 		}
 		else {	/* Lay down a PostScript 8-bit image */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image\n");
@@ -1122,21 +1062,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (Ctrl->A.return_image) {     /* Create a GMT_IMAGE with 3 bands and send the output to the external program  */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color GMT_IMAGE object\n");
-				Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
-				strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-				if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
-					Return (API->error);
-			}
-#ifdef HAVE_GDAL
-			else {	/* Write the image to file via GDAL */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image via GDAL\n");
-				to_GDALW->data = bitimage_24;
-				to_GDALW->alpha = Out->alpha;
-				gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
-			}
-#endif
+			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image %s\n", way[Ctrl->A.return_image]);
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
+				Return (API->error);
 		}
 		else {	/* Lay down a PostScript 24-bit color image */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image\n");
@@ -1175,15 +1103,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-#ifdef HAVE_GDAL
-	if (Ctrl->A.active && !Ctrl->A.return_image) {
-		gmt_M_str_free (to_GDALW->P.ProjRefPROJ4);
-		gmt_M_str_free (to_GDALW->type);
-		gmt_M_free (GMT, to_GDALW);
-		gmt_M_str_free (Ctrl->A.driver);
-		gmt_M_str_free (Ctrl->A.file);
-	}
-#endif
 	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 		Return (API->error);
 	}

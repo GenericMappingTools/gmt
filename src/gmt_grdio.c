@@ -1560,14 +1560,16 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	 * update = true if we only want to update command line */
 
 	int i;
-	void *ptr = NULL;
 
 	if (update)	/* Only clean the command history */
 		gmt_M_memset (header->command, GMT_GRID_COMMAND_LEN320, char);
 	else {		/* Wipe the slate clean */
-		ptr = header->index_function;	/* Keep this one */
+		void *ptr = header->index_function;	/* Keep these two */
+		char mem[4];
+		gmt_M_memcpy (mem, header->mem_layout, 4, char);
 		gmt_M_memset (header, 1, struct GMT_GRID_HEADER);
 		header->index_function = ptr;
+		gmt_M_memcpy (header->mem_layout, mem, 4, char);
 
 		/* Set the variables that are not initialized to 0/false/NULL */
 		header->z_scale_factor = 1.0;

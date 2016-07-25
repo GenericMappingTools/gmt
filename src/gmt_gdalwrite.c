@@ -40,6 +40,10 @@
 
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
+#define N_GDAL_EXTENSIONS 5
+static char *gdal_ext[N_GDAL_EXTENSIONS] = {"tif", "gif", "png", "jpg", "bmp"};
+static char *gdal_drv[N_GDAL_EXTENSIONS] = {"GTiff", "GIF", "PNG", "JPEG", "BMP"};
+
 /*----------------------------------------------------------|
  * Public functions that are part of the GMT Devel library  |
  *----------------------------------------------------------|
@@ -47,16 +51,32 @@
 
 int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	/* Take the image stored in the I structure and write to file by calling gmt_gdalwrite()
-	   The image format is inferred from the image name (in *fname) file extension */
+	   The image format is inferred from the image name (in *fname) file extension,
+	   or optionally by appending =<driver> to the file name, where <driver> is a
+	   known GDAL driver. */
 	uint32_t row, col, band;
 	uint64_t k, ijk, b;
 	bool     free_data = false;
-	char    *ext;
-	unsigned char *data;
+	char    *ext = NULL, *c = NULL;
+	unsigned char *data = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
+	/* NOTE: in grdimage we have done this so may have to deal with this here.
+	if (grid_registration == GMT_GRID_NODE_REG) {	Adjust domain by 1/2 pixel since they are outside the domain
+		img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
+		img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
+	}
+	*/
+	
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-	to_GDALW->P.ProjRefPROJ4 = I->header->ProjRefPROJ4;
+	if (I->header->ProjRefPROJ4 != NULL) {
+		if (I->header->ProjRefPROJ4[1] == 'x' && I->header->ProjRefPROJ4[2] == 'y') /* -JX. Forget conversion */
+			to_GDALW->P.active = false;
+		else {
+			to_GDALW->P.ProjRefPROJ4 = I->header->ProjRefPROJ4;
+			to_GDALW->P.active = true;
+		}
+	}
 	to_GDALW->flipud = 0;
 	to_GDALW->geog   = 0;
 	to_GDALW->n_columns = (int)I->header->n_columns;
@@ -71,19 +91,18 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	to_GDALW->y_inc = I->header->inc[1];
 
 	ext = gmt_get_ext (fname);
-	if (!strcasecmp (ext, "bmp"))
-		to_GDALW->driver = strdup("BMP");
-	else if (!strcasecmp (ext, "gif"))
-		to_GDALW->driver = strdup("GIF");
-	else if (!strcasecmp (ext, "jpg"))
-		to_GDALW->driver = strdup("JPEG");
-	else if (!strcasecmp (ext, "png"))
-		to_GDALW->driver = strdup("PNG");
-	else if (!strncasecmp (ext, "tif", 3))
-		to_GDALW->driver = strdup("GTiff");
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Non supported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
-		return GMT_NOTSET;
+	/* See if the extension if one of the well known image formats */
+	for (k = 0; to_GDALW->driver == NULL && k < N_GDAL_EXTENSIONS; k++) {
+		if (!strcasecmp (ext, gdal_drv[k])) to_GDALW->driver = strdup(gdal_drv[k]);
+	}
+	if (to_GDALW->driver == NULL) {	/* None of those; need to give a driver */
+		if ((c = strchr (fname, '=')))	/* Found an '=<driver>' part */
+			to_GDALW->driver = strdup(&c[1]);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, append =<driver> for a valid GDAL driver\n");
+			return GMT_NOTSET;
+		}
 	}
 
 	if (!strncmp(I->header->mem_layout, "TCB", 3)) {
@@ -110,12 +129,11 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {
 		to_GDALW->type = strdup("byte");
 		data = I->data;
-		if (I->header->ProjRefPROJ4) {
+		if (to_GDALW->P.ProjRefPROJ4) {
 			to_GDALW->ULx = I->header->wesn[XLO];
 			to_GDALW->ULy = I->header->wesn[YHI];
 			to_GDALW->x_inc = I->header->inc[0];
 			to_GDALW->y_inc = I->header->inc[1];
-			to_GDALW->P.active = true;
 		}
 		to_GDALW->alpha = I->alpha;
 	}

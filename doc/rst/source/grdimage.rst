@@ -85,8 +85,9 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    For GDAL-aware versions: Save an image in a raster format instead of
-    PostScript. Append *out_img*\ to select the image file name and extension.
+    Save an image in a raster format instead of PostScript. Use extension
+    .ppm for a Portable Pixel Map format.  For GDAL-aware versions there are more choices:
+    Append *out_img*\ to select the image file name and extension.
     If the extension is one of .bmp, .gif, .jpg, .png, or .tif then no driver
     information is required.  For other output formats you must append the
     required GDAL driver.  The *driver* is the driver code name used by
