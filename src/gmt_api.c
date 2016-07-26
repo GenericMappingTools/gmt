@@ -4144,7 +4144,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	return ((mode & GMT_GRID_DATA_ONLY) ? NULL : I_obj);	/* Pass back out what we have so far */
 }
 
-GMT_LOCAL int gmt_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
+GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns */
 	uint32_t row, col, band;
 	char *ext = gmt_get_ext (fname), *magic = "P6\n# Produced by GMT\n", dim[GMT_LEN32] = {""};
@@ -4187,7 +4187,7 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of an image file on disk */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Writing image to file %s\n", S_obj->filename);
-			if ((error = gmt_export_ppm (API->GMT, S_obj->filename, I_obj)) == 0)
+			if ((error = api_export_ppm (API->GMT, S_obj->filename, I_obj)) == 0)
 				break;	/* OK, wrote a PPM and we are done */
 			else if (error == -1) {	/* Failed to open file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to export image\n");
