@@ -11152,24 +11152,35 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
 	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
-	/* Remove the high bit for complex data */
+	/* Remove the high bits for complex data */
 	old_layout &= 3;	new_layout &= 3;
 	/* Grids may be column vs row oriented and from top or from bottom */
 	gmt_M_memcpy (pad, G->header->pad, 4, unsigned int);	/* Remember the pad */
+	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->size, float)) == NULL) /* Something went wrong */
+		return (GMT_MEMORY_ERROR);
 	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
-	if (old_layout == 0 && new_layout == 3) {
-		/* Change from TR to BC */
-		if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->nm, float)) == NULL) /* Something went wrong */
-			return (GMT_MEMORY_ERROR);
-		for (row = 0, in_node = 0; row < G->header->n_rows; row++) {
-			for (col = 0; col < G->header->n_columns; col++, in_node++) {
-				out_node = col * G->header->n_rows + (G->header->n_rows - row - 1);
-				tmp[out_node] = G->data[in_node];
-			}
-		}
+	if (old_layout == 0 && new_layout == 2) { /* Change from TR to TC */
+		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, in_node++)
+				tmp[col * G->header->n_rows + row] = G->data[in_node];
 	}
-	/* Other cases ...*/
-	if (out == 0) {	/* Means we update the grid and reset pad */
+	else if (old_layout == 0 && new_layout == 3) {	/* Change from TR to BC */
+		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, in_node++)
+				tmp[col * G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[in_node];
+	}
+	else if (old_layout == 2 && new_layout == 0) {	/* Change from TC to TR */
+		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, out_node++)
+				tmp[out_node] = G->data[col * G->header->n_rows + row];
+	}
+	else if (old_layout == 3 && new_layout == 0) {	/* Change from BC to TR */
+		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, out_node++)
+				tmp[out_node] = G->data[col * G->header->n_rows + (G->header->n_rows - row - 1)];
+	}
+	/* Other cases can be added later ...*/
+	if (out == 0) {	/* Means we must update the grid data */
 		gmt_M_free_aligned (API->GMT, G->data);			/* Free previous aligned grid memory */
 		G->data = tmp;
 	}
@@ -11186,7 +11197,9 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 }
 
 EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out) {
-	/* Reorder the memory layout of a grid or image given the new desired layout.
+	/* Reorder the memory layout of a grid or image given the new desired layout in code.
+	 * If out == NULL then we allocate space to hold the new grid and replace G->data with this grid.  We preserve padding;
+	 * Otherwise we assume out points to allcoated memory and we simply fill it out, assuming no pad.
 	 * mode is presently unused.
 	 */
 	struct GMTAPI_CTRL *API = NULL;
