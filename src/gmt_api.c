@@ -4146,17 +4146,23 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 
 GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns */
-	uint32_t row, col, band;
+	//uint32_t row, col, band;
 	char *ext = gmt_get_ext (fname), *magic = "P6\n# Produced by GMT\n", dim[GMT_LEN32] = {""};
 	FILE *fp = NULL;
-	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file */
-	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot create file %s\n", fname);
+	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
+	
+	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {	/* Return -1 to signify failure */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot create file %s\n", fname);
 		return -1;
 	}
-	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and linefeed */
+	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and another linefeed */
 	sprintf (dim, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
 	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
+	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
+	if (strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
+		fwrite (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp);
+	else
+#if 0
 	for (row = 0; row < I->header->n_rows; row++) {
 		for (col = 0; col < I->header->n_columns; col++) {
 			for (band = 0; band < I->header->n_bands; band++) {
@@ -4164,6 +4170,7 @@ GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAG
 			}
 		}
 	}
+#endif
 	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
@@ -11020,6 +11027,13 @@ EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in
 	return (X);
 }
 
+#ifdef FORTRAN_API
+void *GMT_Convert_Data_ (void *V_API, void *In, unsigned int *family_in, void *Out, unsigned int *family_out, unsigned int flag[]) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Convert_Data (GMT_FORTRAN, In, *family_in, Out, *family_out, flag));
+}
+#endif
+
 GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
 	/* Allocates space for a complete data segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
@@ -11041,7 +11055,7 @@ GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n
 	return S;
 }
 
-EXTERN_MSC struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n_rows, char *header, struct GMT_TEXTSEGMENT *Sin) {
+GMT_LOCAL struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n_rows, char *header, struct GMT_TEXTSEGMENT *Sin) {
 	/* Allocates space for a complete text segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_TEXTSEGMENT *S = NULL;
@@ -11079,6 +11093,13 @@ EXTERN_MSC void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n
 	return (X); 
 }
 
+#ifdef FORTRAN_API
+void *GMT_Alloc_Segment_ (void *V_API, unsigned int *family, uint64_t *n_rows, uint64_t *n_columns, char *header, void *S, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Columns (GMT_FORTRAN, *family, *n_rows, *n_columns, header, S));
+}
+#endif
+
 EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
 	/* Specify how many output columns to use for record-by-record output */
 	int error = 0;
@@ -11115,4 +11136,74 @@ EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int m
 	}
 	if (error) return_error (API, GMT_N_COLS_NOT_SET);
 	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Columns_ (void *V_API, unsigned int *n_cols, unsigned int *mode) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Columns (GMT_FORTRAN, *n_cols, *mode));
+}
+#endif
+
+GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_GRID *G, float *out) {
+	unsigned int row, col, family, pad[4], old_layout, new_layout = api_decode_layout (API, code, &family);
+	uint64_t in_node, out_node;
+	float *tmp = NULL;
+	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
+	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
+	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
+	/* Remove the high bit for complex data */
+	old_layout &= 3;	new_layout &= 3;
+	/* Grids may be column vs row oriented and from top or from bottom */
+	gmt_M_memcpy (pad, G->header->pad, 4, unsigned int);	/* Remember the pad */
+	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
+	if (old_layout == 0 && new_layout == 3) {
+		/* Change from TR to BC */
+		if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->nm, float)) == NULL) /* Something went wrong */
+			return (GMT_MEMORY_ERROR);
+		for (row = 0, in_node = 0; row < G->header->n_rows; row++) {
+			for (col = 0; col < G->header->n_columns; col++, in_node++) {
+				out_node = col * G->header->n_rows + (G->header->n_rows - row - 1);
+				tmp[out_node] = G->data[in_node];
+			}
+		}
+	}
+	/* Other cases ...*/
+	if (out == 0) {	/* Means we update the grid and reset pad */
+		gmt_M_free_aligned (API->GMT, G->data);			/* Free previous aligned grid memory */
+		G->data = tmp;
+		gmt_grd_pad_on (API->GMT, G, pad);
+	}
+	return (GMT_NOERROR);
+}
+
+GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out) {
+	unsigned int family, old_layout, new_layout = api_decode_layout (API, code, &family);
+	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
+	old_layout = api_decode_layout (API, I->header->mem_layout, &family);
+	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
+	return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out) {
+	/* Reorder the memory layout of a grid or image given the new desired layout.
+	 * mode is presently unused.
+	 */
+	struct GMTAPI_CTRL *API = NULL;
+	int error;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	switch (family) {
+		case GMT_IS_GRID:
+			error = api_change_gridlayout (V_API, code, mode, obj, out);
+			break;
+		case GMT_IS_IMAGE:
+			error = api_change_imagelayout (V_API, code, mode, obj, out);
+			break;
+		default:
+			error = GMT_NOT_A_VALID_FAMILY;
+			break;
+	}
+	return_error (API, error);
 }
