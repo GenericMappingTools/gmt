@@ -4185,6 +4185,7 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_image: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
+	if (I_obj->data == NULL && (mode != GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 	if ((item = gmtapi_validate_id (API, GMT_IS_IMAGE, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
@@ -4526,6 +4527,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_grid: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
+	if (G_obj->data == NULL && (mode != GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 	if ((item = gmtapi_validate_id (API, GMT_IS_GRID, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
@@ -6722,6 +6724,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	if (outfile) output = strdup (outfile);
@@ -6791,6 +6794,7 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data) {
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
