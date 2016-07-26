@@ -104,6 +104,7 @@ EXTERN_MSC void * GMT_Convert_Data	(void *API, void *In, unsigned int family_in,
 EXTERN_MSC void * GMT_Alloc_Segment	(void *API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
 EXTERN_MSC int GMT_Set_Columns		(void *API, unsigned int n_columns, unsigned int mode);
 EXTERN_MSC int GMT_Destroy_Group	(void *API, void *object, unsigned int n_items);
+EXTERN_MSC int GMT_Change_Layout	(void *API, unsigned int family, char *code, unsigned int mode, void *obj, void *data);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
