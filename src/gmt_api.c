@@ -11151,8 +11151,8 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	uint64_t in_node, out_node;
 	float *tmp = NULL;
 
-	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
 	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
+	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
 	new_layout = api_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
@@ -11210,8 +11210,8 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	unsigned int old_layout, new_layout;
 	uint64_t band, row, col, in_node, out_node;
 
-	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
 	old_layout = api_decode_layout (API, I->header->mem_layout, &family);
+	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
 	new_layout = api_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
