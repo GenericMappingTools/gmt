@@ -11146,18 +11146,23 @@ int GMT_Set_Columns_ (void *V_API, unsigned int *n_cols, unsigned int *mode) {
 #endif
 
 GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_GRID *G, float *out) {
-	unsigned int row, col, family, pad[4], old_layout, new_layout = api_decode_layout (API, code, &family);
+	enum GMT_enum_family family;
+	unsigned int row, col, pad[4], old_layout, new_layout;
 	uint64_t in_node, out_node;
 	float *tmp = NULL;
+
 	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
 	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
+	new_layout = api_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
+
 	/* Remove the high bits for complex data */
 	old_layout &= 3;	new_layout &= 3;
 	/* Grids may be column vs row oriented and from top or from bottom */
 	gmt_M_memcpy (pad, G->header->pad, 4, unsigned int);	/* Remember the pad */
-	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->size, float)) == NULL) /* Something went wrong */
-		return (GMT_MEMORY_ERROR);
+	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->size, float)) == NULL)
+		return (GMT_MEMORY_ERROR);		/* Something went wrong */
+
 	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
 	if (old_layout == 0 && new_layout == 2) { /* Change from TR to TC */
 		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
@@ -11179,7 +11184,12 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 			for (col = 0; col < G->header->n_columns; col++, out_node++)
 				tmp[out_node] = G->data[col * G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
-	/* Other cases can be added later ...*/
+	else {		/* Other cases to be added later ...*/
+		GMT_Report (API, GMT_MSG_NORMAL, "api_change_gridlayout: reordering function for case %s -> %s not yet written\n",
+		            G->header->mem_layout, code);
+		return (GMT_NOTSET);
+	}
+
 	if (out == 0) {	/* Means we must update the grid data */
 		gmt_M_free_aligned (API->GMT, G->data);			/* Free previous aligned grid memory */
 		G->data = tmp;
@@ -11189,10 +11199,47 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 }
 
 GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out) {
-	unsigned int family, old_layout, new_layout = api_decode_layout (API, code, &family);
+	/* code: The new memory layout code
+	   mode:
+	   out:  Array with the data converted to the new layout.
+	         If NULL on input the necessary memory is allocated in this function, otherwise
+	         it is ASSUMED that it points a memory chunk big enough to hold the reshuffled data.
+	*/
+	unsigned char *tmp = NULL;
+	enum GMT_enum_family family;
+	unsigned int old_layout, new_layout;
+	uint64_t band, row, col, in_node, out_node;
+
 	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
 	old_layout = api_decode_layout (API, I->header->mem_layout, &family);
+	new_layout = api_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
+
+	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
+	   That sums up to a lot of combinations. We will add them on a by-need basis. */
+	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL)
+		return (GMT_MEMORY_ERROR);		/* Something went wrong */
+
+	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
+		out_node = 0;
+		for (row = 0; row < I->header->n_rows; row++)
+			for (col = 0; col < I->header->n_columns; col++)
+				for (band = 0; band < 3; band++) {
+					in_node = row + col*I->header->n_rows + band*I->header->nm;
+					tmp[in_node] = (uint8_t)I->data[out_node++];
+				}
+	}
+	else {		/* Other cases to be added later ...*/
+		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written\n",
+		            I->header->mem_layout, code);
+		return (GMT_NOTSET);
+	}
+
+	if (out == 0) {	/* Means we must update the Image data */
+		gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
+		I->data = tmp;
+	}
+
 	return (GMT_NOERROR);
 }
 
