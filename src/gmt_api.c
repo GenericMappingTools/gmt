@@ -11172,8 +11172,8 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	if (out == 0) {	/* Means we update the grid and reset pad */
 		gmt_M_free_aligned (API->GMT, G->data);			/* Free previous aligned grid memory */
 		G->data = tmp;
-		gmt_grd_pad_on (API->GMT, G, pad);
 	}
+	gmt_grd_pad_on (API->GMT, G, pad);	/* Restore pad on grid */
 	return (GMT_NOERROR);
 }
 
