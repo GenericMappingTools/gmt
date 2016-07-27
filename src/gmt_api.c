@@ -11202,14 +11202,15 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out) {
+GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out1, unsigned char *out2) {
 	/* code: The new memory layout code
 	   mode:
-	   out:  Array with the data converted to the new layout.
+	   out1:  Array with the data converted to the new layout.
+	   out2:  Array with the transparencies converted to the new layout.
 	         If NULL on input the necessary memory is allocated in this function, otherwise
 	         it is ASSUMED that it points a memory chunk big enough to hold the reshuffled data.
 	*/
-	unsigned char *tmp = NULL;
+	unsigned char *tmp = NULL, *alpha = NULL;
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
 	uint64_t band, row, col, in_node, out_node;
@@ -11221,7 +11222,9 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 
 	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
 	   That sums up to a lot of combinations. We will add them on a by-need basis. */
-	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL)
+	if ((tmp = out1) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->n_bands * I->header->size, unsigned char)) == NULL)
+		return (GMT_MEMORY_ERROR);		/* Something went wrong */
+	if (I->alpha && (alpha = out2) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 
 	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
@@ -11239,19 +11242,24 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 		return (GMT_NOTSET);
 	}
 
-	if (out == 0) {	/* Means we must update the Image data */
+	if (out1 == 0) {	/* Means we must update the Image data */
 		gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
 		I->data = tmp;
+	}
+	if (out2 == 0 && alpha) {	/* Means we must update the alpha data */
+		gmt_M_free_aligned (API->GMT, I->alpha);			/* Free previous aligned image transparency */
+		I->alpha = alpha;
 	}
 
 	return (GMT_NOERROR);
 }
 
-EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out) {
+EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out, void *alpha) {
 	/* Reorder the memory layout of a grid or image given the new desired layout in code.
 	 * If out == NULL then we allocate space to hold the new grid and replace G->data with this grid.  We preserve padding;
 	 * Otherwise we assume out points to allcoated memory and we simply fill it out, assuming no pad.
 	 * mode is presently unused.
+	 * alpha is only considered for images and may be used to return a modified transparency array.
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	int error;
@@ -11263,7 +11271,7 @@ EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, 
 			error = api_change_gridlayout (V_API, code, mode, obj, out);
 			break;
 		case GMT_IS_IMAGE:
-			error = api_change_imagelayout (V_API, code, mode, obj, out);
+			error = api_change_imagelayout (V_API, code, mode, obj, out, alpha);
 			break;
 		default:
 			error = GMT_NOT_A_VALID_FAMILY;
