@@ -691,9 +691,9 @@ static void psl_remove_spaces (char *label[], int n_labels, int m[]) {
 
 static void psl_prepare_buffer (struct PSL_CTRL *C, size_t len) {
 	/* Ensure buffer is large enough to accept additional text of length len */
-	size_t new_len = C->internal.n + len;
-	if (new_len <= C->internal.n_alloc) return;
-	while (new_len > C->internal.n_alloc)	/* Wind past what is needed */
+	size_t new_len = C->internal.n + len;	/* Need a buffer at least this large */
+	if (new_len <= C->internal.n_alloc) return;	/* Already have a buffer that is large enough */
+	while (new_len > C->internal.n_alloc)	/* Wind past what is needed, growing by 1.75 */
 		C->internal.n_alloc = (size_t)(C->internal.n_alloc * 1.75);
 	if ((C->internal.buffer = PSL_memory (C, C->internal.buffer, C->internal.n_alloc, char)) == NULL) {
 		PSL_message (C, PSL_MSG_NORMAL, "Error: Could not allocate %d additional buffer space - this will not end well\n", len);
@@ -770,7 +770,7 @@ static size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf
 		const size_t buf_size = dst_ptr - dst_buf;
 		assert (buf_size <= dst_buf_size); /* check length */
 		if (PSL->internal.memory) {
-			psl_prepare_buffer (PSL, buf_size); /* Make sure we have enough memory to hlpd the EPS */
+			psl_prepare_buffer (PSL, buf_size); /* Make sure we have enough memory to hold the entire EPS */
 			strncat (&(PSL->internal.buffer[PSL->internal.n]), (const char *)dst_buf, buf_size);
 			PSL->internal.n += buf_size;
 		}

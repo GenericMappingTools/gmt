@@ -11256,7 +11256,8 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 
 EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out, void *alpha) {
 	/* Reorder the memory layout of a grid or image given the new desired layout in code.
-	 * If out == NULL then we allocate space to hold the new grid and replace G->data with this grid.  We preserve padding;
+	 * If out == NULL then we allocate space to hold the new grid|image and replace obj->data with this new array.
+	 *   For grids we preserve any padding in effect for the object but for out we have no padding.
 	 * Otherwise we assume out points to allcoated memory and we simply fill it out, assuming no pad.
 	 * mode is presently unused.
 	 * alpha is only considered for images and may be used to return a modified transparency array.
