@@ -223,7 +223,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 
 int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
-
+	bool grid_was_read = false;
+	
 	unsigned int row, col;
 	int error;
 
@@ -260,7 +261,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_GRID_ALL : GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
-
+	grid_was_read = Ctrl->G.active;
+	
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_Report (API, GMT_MSG_NORMAL, "(Use grdconvert to convert to GMT default format and work on that file)\n");
@@ -291,8 +293,9 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
+			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
+			grid_was_read = true;
 			/* Recalculate z_min/z_max */
 			gmt_grd_zminmax (GMT, G->header, G->data);
 		}
@@ -305,9 +308,10 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Shifting longitudes in file %s by %g degrees\n", out_file, shift_amount);
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
+		grid_was_read = true;
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -320,10 +324,11 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		int in_ID;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		/* Must register Ctrl->N.file first since we are going to read rec-by-rec from all available source */
+		grid_was_read = true;
+		/* Must register Ctrl->N.file first since we are going to read rec-by-rec from all available sources */
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, NULL, Ctrl->N.file)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to register file %s\n", Ctrl->N.file);
 			Return (GMT_RUNTIME_ERROR);
@@ -379,9 +384,10 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		uint64_t ij, ij_tr = 0;
 		float *a_tr = NULL, *save_grid_pointer = NULL;
 
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
+		grid_was_read = true;
 
 		switch (Ctrl->E.mode) {
 			case 'a': /* Rotate grid around 180 degrees */
