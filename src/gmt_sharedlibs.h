@@ -5,11 +5,9 @@
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
-/* gmt_module.h declares structures needed by the various modules libraries. */
-
 /*!
  * \file gmt_sharedlibs.h
- * \brief Structures needed by the various modules libraries. 
+ * \brief Structures needed by the various shared libraries. 
  */
 
 #pragma once

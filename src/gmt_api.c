@@ -230,7 +230,8 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
 /* DATASET and TEXTSET can be given via many individual files. */
 #define multiple_files_ok(family) (family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)
 
-/* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd) */
+/* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd).
+ * NOTE: THe order of these depends on the order in the enums in gmt_resources.h! */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
 static const char *GMT_family[] = {"Data Table", "GMT Grid", "GMT Image", "CPT", "GMT PostScript", "Text Table", "GMT Matrix", "GMT Vector", "GMT Coord"};
@@ -2225,7 +2226,7 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 }
 
 /*! . */
-GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_PALETTE * api_import_palette (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a CPT palette table.
  	 * The mode controls how the back-, fore-, NaN-color entries are handled.
 	 * Note: Memory is allocated to hold the GMT_PALETTE structure except for method GMT_IS_REFERENCE.
@@ -2238,7 +2239,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	GMT_Report (API, GMT_MSG_DEBUG, "api_import_cpt: Passed ID = %d and mode = %d\n", object_ID, mode);
+	GMT_Report (API, GMT_MSG_DEBUG, "api_import_palette: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return_null (API, GMT_NO_INPUT);	/* Need to know the ID to do anything */
 	if ((item = gmtapi_validate_id (API, GMT_IS_PALETTE, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET)
@@ -2308,7 +2309,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 }
 
 /*! . */
-GMT_LOCAL int api_export_cpt (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_PALETTE *P_obj) {
+GMT_LOCAL int api_export_palette (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_PALETTE *P_obj) {
 	/* Does the actual work of writing out the specified CPT to a destination.
 	 * The mode controls how the back, for, NaN color entries are handled.
 	 */
@@ -2318,7 +2319,7 @@ GMT_LOCAL int api_export_cpt (struct GMTAPI_CTRL *API, int object_ID, unsigned i
 	struct GMT_PALETTE *P_copy = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	GMT_Report (API, GMT_MSG_DEBUG, "api_export_cpt: Passed ID = %d and mode = %d\n", object_ID, mode);
+	GMT_Report (API, GMT_MSG_DEBUG, "api_export_palette: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = gmtapi_validate_id (API, GMT_IS_PALETTE, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
@@ -2374,7 +2375,7 @@ GMT_LOCAL int api_export_cpt (struct GMTAPI_CTRL *API, int object_ID, unsigned i
 }
 
 /*! . */
-GMT_LOCAL struct GMT_POSTSCRIPT * api_import_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_POSTSCRIPT * api_import_postscript (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a PS struct.
  	 * The mode is not used yet.
 	 * Note: Memory is allocated to hold the GMT_POSTSCRIPT structure except for method GMT_IS_REFERENCE.
@@ -2386,7 +2387,7 @@ GMT_LOCAL struct GMT_POSTSCRIPT * api_import_ps (struct GMTAPI_CTRL *API, int ob
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	GMT_Report (API, GMT_MSG_DEBUG, "api_import_ps: Passed ID = %d and mode = %d\n", object_ID, mode);
+	GMT_Report (API, GMT_MSG_DEBUG, "api_import_postscript: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return_null (API, GMT_NO_INPUT);
 	if ((item = gmtapi_validate_id (API, GMT_IS_POSTSCRIPT, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET)
@@ -2444,7 +2445,7 @@ GMT_LOCAL struct GMT_POSTSCRIPT * api_import_ps (struct GMTAPI_CTRL *API, int ob
 }
 
 /*! . */
-GMT_LOCAL int api_export_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_POSTSCRIPT *P_obj) {
+GMT_LOCAL int api_export_postscript (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_POSTSCRIPT *P_obj) {
 	/* Does the actual work of writing out the specified PS to a destination.
 	 * The mode not used yet.
 	 */
@@ -2454,7 +2455,7 @@ GMT_LOCAL int api_export_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned in
 	struct GMT_POSTSCRIPT *P_copy = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	GMT_Report (API, GMT_MSG_DEBUG, "api_export_ps: Passed ID = %d and mode = %d\n", object_ID, mode);
+	GMT_Report (API, GMT_MSG_DEBUG, "api_export_postscript: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = gmtapi_validate_id (API, GMT_IS_POSTSCRIPT, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
@@ -4689,7 +4690,7 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 
 	switch (family) {
 		case GMT_IS_PALETTE:
-			new_obj = api_import_cpt (API, object_ID, mode);		/* Try to import a CPT */
+			new_obj = api_import_palette (API, object_ID, mode);		/* Try to import a CPT */
 			break;
 		case GMT_IS_DATASET:
 			new_obj = api_import_dataset (API, object_ID, mode);		/* Try to import data tables */
@@ -4710,7 +4711,7 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 			new_obj = api_import_vector (API, object_ID, mode);		/* Try to import a vector */
 			break;
 		case GMT_IS_POSTSCRIPT:
-			new_obj = api_import_ps (API, object_ID, mode);		/* Try to import PS */
+			new_obj = api_import_postscript (API, object_ID, mode);		/* Try to import PS */
 			break;
 		default:
 			API->error = GMT_NOT_A_VALID_FAMILY;
@@ -4726,7 +4727,8 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	 */
 	int error, item;
 
-	if (API == NULL) return (GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (API == NULL) return (GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (data == NULL) return (GMT_PTR_IS_NULL);		/* Got a NULL data pointer */
 	if (!API->registered[GMT_OUT]) return (gmtapi_report_error (API, GMT_NO_OUTPUT));		/* No destination registered yet */
 
 	/* Get information about this resource first */
@@ -4750,7 +4752,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 #endif
 	switch (family) {
 		case GMT_IS_PALETTE:	/* Export a CPT */
-			error = api_export_cpt (API, object_ID, mode, data);
+			error = api_export_palette (API, object_ID, mode, data);
 			break;
 		case GMT_IS_DATASET:	/* Export a Data set */
 			error = api_export_dataset (API, object_ID, mode, data);
@@ -4765,7 +4767,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 			error = api_export_image (API, object_ID, mode, data);
 			break;
 		case GMT_IS_POSTSCRIPT:	/* Export PS */
-			error = api_export_ps (API, object_ID, mode, data);
+			error = api_export_postscript (API, object_ID, mode, data);
 			break;
 		case GMT_IS_MATRIX:	/* Export MATRIX */
 			error = api_export_matrix (API, object_ID, mode, data);
@@ -5004,11 +5006,11 @@ GMT_LOCAL int api_destroy_textset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *
 }
 
 /*! . */
-GMT_LOCAL int api_destroy_cpt (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj) {
+GMT_LOCAL int api_destroy_palette (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj) {
 	/* Delete the given CPT resource. */
 
 	if (!(*P_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_cpt: Passed NULL pointer - skipped\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_palette: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
@@ -5018,11 +5020,11 @@ GMT_LOCAL int api_destroy_cpt (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_o
 }
 
 /*! . */
-GMT_LOCAL int api_destroy_ps (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT **P_obj) {
+GMT_LOCAL int api_destroy_postscript (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT **P_obj) {
 	/* Delete the given GMT_POSTSCRIPT resource. */
 
 	if (!(*P_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_ps: Passed NULL pointer - skipped\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_postscript: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
@@ -7666,13 +7668,13 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 			error = api_destroy_textset (API, object);
 			break;
 		case GMT_IS_PALETTE:
-			error = api_destroy_cpt (API, object);
+			error = api_destroy_palette (API, object);
 			break;
 		case GMT_IS_IMAGE:
 			error = api_destroy_image (API, object);
 			break;
 		case GMT_IS_POSTSCRIPT:
-			error = api_destroy_ps (API, object);
+			error = api_destroy_postscript (API, object);
 			break;
 
 		/* Also allow destroying of intermediate vector and matrix containers */
@@ -7767,7 +7769,7 @@ int api_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, un
 	return_error (API, GMT_OK);
 }
 
-int api_destroy_pss (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
+int api_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
 {
 	unsigned int k;
 	int error;
@@ -7820,7 +7822,7 @@ int GMT_Destroy_Group (void *V_API, void *object, unsigned int n_items) {
 		case GMT_IS_TEXTSET:    error = api_destroy_textsets (API, object, n_items); break;
 		case GMT_IS_IMAGE:      error = api_destroy_images   (API, object, n_items); break;
 		case GMT_IS_PALETTE:    error = api_destroy_palettes (API, object, n_items); break;
-		case GMT_IS_POSTSCRIPT: error = api_destroy_pss      (API, object, n_items); break;
+		case GMT_IS_POSTSCRIPT: error = api_destroy_postscripts      (API, object, n_items); break;
 		case GMT_IS_MATRIX:     error = api_destroy_matrices (API, object, n_items); break;
 		case GMT_IS_VECTOR:     error = api_destroy_vectors  (API, object, n_items); break;
 		default: return_error (API, GMT_NOT_A_VALID_FAMILY); break;
