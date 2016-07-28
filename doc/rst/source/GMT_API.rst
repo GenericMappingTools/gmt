@@ -1109,7 +1109,7 @@ etc.), then you can obtain a "blank slate" by calling
                            double *inc, unsigned int registration, int pad, void *data)
 
 which returns a pointer to the allocated resource. Pass :ref:`family <tbl-family>` as
-one of ``GMT_IS_GRID``, ``GMT_IS_IMAGE``, ``GMT_IS_DATASET``,
+one of ``GMT_IS_GRID``, ``GMT_IS_IMAGE``, ``GMT_IS_DATASET``, ``GMT_IS_POSTSCRIPT``,
 ``GMT_IS_TEXTSET``, or ``GMT_IS_PALETTE``, or via the modifiers ``GMT_IS_VECTOR``
 or ``GMT_IS_MATRIX`` when handling user data. Also pass a compatible
 :ref:`geometry <tbl-geometry>`. Depending on the family and your particular way of
