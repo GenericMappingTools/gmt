@@ -125,8 +125,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   than all other segments [All segments are written to one file; see -D].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   with the remaining open segments written separately to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [All segments are written to a single output file; but see -D].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write individual segments to separate files [Default writes one multisegment file to stdout].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen)\n");
