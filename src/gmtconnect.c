@@ -660,10 +660,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		 * the nearest next endpoint is beyond the separation threshold. */
 
 		id = start_id;	/* This is the first line segment in a new chain */
-		buffer[0] = 0;
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		b_len = strlen (buffer);
-		end_order = 0;	/* Start at the start point of segment */
+		end_order = 0;	/* Start at the start point of the segment */
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
@@ -671,9 +670,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
 			b_len += strlen (text);
-			if (b_len >= b_alloc) {
+			if (b_len >= b_alloc) {	/* Resize buffer for header */
 				b_alloc <<= 1;
-				buffer = gmt_M_memory (GMT, buffer, b_alloc, char);	/* Resize buffer for header */
+				buffer = gmt_M_memory (GMT, buffer, b_alloc, char);
 			}
 			strcat (buffer, text);	/* Append this connnection */
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
@@ -705,7 +704,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 					b_alloc <<= 1;
 					buffer = gmt_M_memory (GMT, buffer, b_alloc, char);
 				}
-				/* Shift buffer to the right first */
+				/* Shift buffer to the right first by len characters */
 				memmove (&buffer[len], buffer, b_len);
 				b_len += len;
 				memcpy (buffer, text, len);	/* Prepend to buffer */
@@ -734,14 +733,13 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_alloc_pts, n_columns, NULL, NULL);
 
 		if (n_steps_pass_1 == 1) {
-			sprintf (msg, "Connect %s -> none [1 segment]\n", buffer);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Connect %s -> none [1 segment]\n", buffer);
 			sprintf (buffer, "Single open segment not enlarged by connection");
 		}
 		else {
-			sprintf (msg, "Connect %s [%" PRIu64 " segments]\n", buffer, n_steps_pass_1);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Connect %s [%" PRIu64 " segments]\n", buffer, n_steps_pass_1);
 			sprintf (buffer, "Composite segment made from %" PRIu64 " line segments", n_steps_pass_1);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, msg);
 		T[OPEN][out_seg]->header = strdup (buffer);
 
 		start_id = id;	/* Having reached the end of a chain, we let the last line segment be our starting line segment for the output */
@@ -872,7 +870,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were already closed\n", n_islands);
 	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
 
-	gmt_M_str_free (buffer);
+	gmt_M_free (GMT, buffer);
 	
 	Return (GMT_NOERROR);
 }
