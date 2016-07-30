@@ -264,7 +264,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order;
 	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 
-	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts;
+	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts, b_alloc = GMT_BUFSIZ, b_len = 0, len;
 
 	uint64_t tbl, n_columns, n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2;
 	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps_pass_1;
@@ -272,7 +272,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;
 
-	char buffer[GMT_BUFSIZ] = {""}, msg[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, *BE = "BE", *ofile = NULL;
+	char *buffer = NULL, msg[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, *BE = "BE", *ofile = NULL;
 
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
@@ -304,6 +304,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
+	buffer = gmt_M_memory (GMT, NULL, b_alloc, char);	/* Initial buffer size for header */
+	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes to stdout] */
@@ -658,7 +660,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		 * the nearest next endpoint is beyond the separation threshold. */
 
 		id = start_id;	/* This is the first line segment in a new chain */
+		buffer[0] = 0;
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
+		b_len = strlen (buffer);
 		end_order = 0;	/* Start at the start point of segment */
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
@@ -666,7 +670,12 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
-			strcat (buffer, text);
+			b_len += strlen (text);
+			if (b_len >= b_alloc) {
+				b_alloc <<= 1;
+				buffer = gmt_M_memory (GMT, buffer, b_alloc, char);	/* Resize buffer for header */
+			}
+			strcat (buffer, text);	/* Append this connnection */
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = closed = true;
 			if (id2 == id || n_steps_pass_1 > ns) {	/* Not good... [NOT SURE WHAT THIS MEANS BUT SEEMS LIKE A CRAZY SAFETY VALVE AND SHOULD NEVER HAPPEN] */
@@ -691,8 +700,15 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
-				strcat (text, buffer);	/* Prepend to message */
-				strcpy (buffer, text);
+				len = strlen (text);
+				if ((b_len + len) >= b_alloc) {	/* Resize buffer for header */
+					b_alloc <<= 1;
+					buffer = gmt_M_memory (GMT, buffer, b_alloc, char);
+				}
+				/* Shift buffer to the right first */
+				memmove (&buffer[len], buffer, b_len);
+				b_len += len;
+				memcpy (buffer, text, len);	/* Prepend to buffer */
 				if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 					done = closed = true;
 				if (id2 == id || n_steps_pass_1 > ns) {	/* Not good... [NOT SURE WHAT THIS MEANS BUT SEEMS LIKE A CRAZY SAFETY VALVE AND SHOULD NEVER HAPPEN] */
@@ -856,5 +872,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were already closed\n", n_islands);
 	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
 
+	gmt_M_str_free (buffer);
+	
 	Return (GMT_NOERROR);
 }
