@@ -484,6 +484,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
+		gmt_M_free (GMT, buffer);
 		Return (GMT_NOERROR);	/* That is it, we are done here */
 	}
 
