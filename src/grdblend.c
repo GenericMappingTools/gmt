@@ -193,7 +193,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	int type, status, not_supported;
 	unsigned int one_or_zero = !h->registration, n = 0, nr, do_sample;
 	struct GRDBLEND_INFO *B = NULL;
-	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ] = {""};
+	char *sense[2] = {"normal", "inverse"}, *V_level = "qntcvld", buffer[GMT_BUFSIZ] = {""};
 	char Targs[GMT_LEN256] = {""}, Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
 	struct BLEND_LIST {
 		char *file;
@@ -299,8 +299,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 		if (!(doubleAlmostEqualZero (B[n].G->header->inc[GMT_X], h->inc[GMT_X])
 					&& doubleAlmostEqualZero (B[n].G->header->inc[GMT_Y], h->inc[GMT_Y]))) {
-			sprintf (Iargs, "-I%g/%g", h->inc[GMT_X], h->inc[GMT_Y]);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s has different increments (%g/%g) than the output grid (%g/%g) - must resample\n",
+			sprintf (Iargs, "-I%.12g/%.12g", h->inc[GMT_X], h->inc[GMT_Y]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
 				B[n].file, B[n].G->header->inc[GMT_X], B[n].G->header->inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}

@@ -4186,7 +4186,7 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_image: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
-	if (I_obj->data == NULL && (mode != GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
+	if (I_obj->data == NULL && !(mode & GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 	if ((item = gmtapi_validate_id (API, GMT_IS_IMAGE, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
@@ -4528,7 +4528,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_grid: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (gmtapi_report_error (API, GMT_OUTPUT_NOT_SET));
-	if (G_obj->data == NULL && (mode != GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
+	if (G_obj->data == NULL && !(mode & GMT_GRID_HEADER_ONLY)) return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 	if ((item = gmtapi_validate_id (API, GMT_IS_GRID, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
