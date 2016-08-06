@@ -289,20 +289,29 @@ as well. For specific enhancements, we have:
 *  :doc:`gmtinfo` has a new option **-L** for finding the common bounds
    across multiple files or segments.
 
-*  :doc:`gmtmath` and :doc:`grdmath` have new operators **VAR**, 
+*  :doc:`gmtmath` has gained new operators **VAR**, 
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
-   **STDWW**, and **VARW**.  Also, doc:`grdmath` gains a new
-   **AREA** operator which computes the gridcell area (in km^2 if the
-   grid is geographic).  Finally, the operators **MEAN**, **MEDIAN**, etc.,
-   when working on a geographic grid, will weight the result using the
-   **AREA** function for proper spherical statistics.
+   **STDW**, and **VARW**.
+
+*  :doc:`gmtspatial` has two new modifiers for the **-Q** option that allow
+   output segments to be limited based on the segment length (or area for
+   polygons) as well as sorting the output in ascending or descending order.
 
 *  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c**
    for writing a discrete palette using the categorical format.
 
 *  :doc:`grdfft` has a new modifier to the **-E** that allows for more
    control of the power normalization for radial spectra.
+
+*  :doc:`grdmath` also has the new operators **VAR**, 
+   **RMS**, **DENAN**, as well as the weighted statistical operators
+   **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
+   **STDW**, and **VARW**.  In addition it gains a new
+   **AREA** operator which computes the gridcell area (in km^2 if the
+   grid is geographic).  Finally, operators **MEAN**, **MEDIAN**, etc.,
+   when working on a geographic grid, will weight the result using the
+   **AREA** function for proper spherical statistics.
 
 *  :doc:`grdvolume` can now accept **-Cr**\ *cval* which will evaluate
    the volume between *cval* and the grid's minimum value.
