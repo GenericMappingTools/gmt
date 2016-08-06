@@ -1249,6 +1249,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
+		static char *type[2] = {"length", "area"}, upper[GMT_LEN16] = {"infinity"};
 		bool new_data = (Ctrl->Q.header || Ctrl->E.active);
 		uint64_t seg, row_f, row_l, tbl, col, n_seg = 0, n_alloc_seg = 0;
 		unsigned int handedness = 0;
@@ -1283,6 +1284,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 			if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, gmtry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				Return (API->error);
+			if (Ctrl->Q.area && Ctrl->Q.limit[1] < DBL_MAX) sprintf (upper, "%.12g", Ctrl->Q.limit[1]);
 		}
 		else {	/* Just write results as one line per segment to stdout */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
@@ -1310,8 +1312,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					length_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out);
 				/* Must determine if this segment passes our dimension test */
 				if (Ctrl->Q.area && (out[GMT_Z] < Ctrl->Q.limit[0] || out[GMT_Z] > Ctrl->Q.limit[1])) {
-					static char *type[2] = {"length", "area"};
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input segment %s %g is outside the desired range %g to %g\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], Ctrl->Q.limit[1]);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input segment %s %g is outside the desired range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
 					continue;
 				}
 				if (Ctrl->Q.header) {	/* Add the information to the segment header */
@@ -1356,7 +1357,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			n_seg = D->n_segments - Dout->n_segments;	/* Lost segments */
-			if (n_seg) GMT_Report (API, GMT_MSG_VERBOSE, "%d segments were outside the desired %s range of %g to %g\n", n_seg, type[poly], Ctrl->Q.limit[0], Ctrl->Q.limit[1]);
+			if (n_seg) GMT_Report (API, GMT_MSG_VERBOSE, "%d segments were outside the desired %s range of %g to %s\n", n_seg, type[poly], Ctrl->Q.limit[0], upper);
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
