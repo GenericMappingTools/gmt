@@ -12290,7 +12290,7 @@ bool gmt_polygon_is_open (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 
 /*! . */
 int gmt_polygon_centroid (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *Cx, double *Cy) {
-	/* Compute polygon centroid location */
+	/* Compute polygon centroid location. */
 	uint64_t i, last;
 	double A, d, xold, yold;
 
@@ -13457,7 +13457,7 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 
 /*! . */
 void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo) {
-	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean) */
+	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean)  Input data remains unchanged. */
 	uint64_t i, k;
 
 	assert (n > 0);
@@ -13469,11 +13469,11 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 	if (n <= 0) return;
 
 	if (geo) {	/* Geographic data, must use vector mean */
-		double P[3], M[3];
+		double P[3], M[3], yc;
 		gmt_M_memset (M, 3, double);
 		for (i = 0; i < n; i++) {
-			y[i] = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-			gmt_geo_to_cart (GMT, y[i], x[i], P, true);
+			yc = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			gmt_geo_to_cart (GMT, yc, x[i], P, true);
 			for (k = 0; k < 3; k++) M[k] += P[k];
 		}
 		gmt_normalize3v (GMT, M);
