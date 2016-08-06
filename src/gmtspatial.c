@@ -1312,21 +1312,21 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					length_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out);
 				/* Must determine if this segment passes our dimension test */
 				if (Ctrl->Q.area && (out[GMT_Z] < Ctrl->Q.limit[0] || out[GMT_Z] > Ctrl->Q.limit[1])) {
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input segment %s %g is outside the desired range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input segment %s %g is outside the chosen range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
 					continue;
 				}
 				if (Ctrl->Q.header) {	/* Add the information to the segment header */
 					if (S->header) {
 						if (poly)
-							snprintf (line, GMT_LEN128, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "%s -Z%.12g (area) %.12g/%.12g (centroid) %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							snprintf (line, GMT_LEN128, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "%s -Z%.12g (length) %.12g/%.12g (midpoint)", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
 					}
 					else {
 						if (poly)
-							snprintf (line, GMT_LEN128, "-A%.12g -C%.12g/%.12g %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "-Z%.12g (area) %.12g/%.12g (centroid) %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							snprintf (line, GMT_LEN128, "-D%.12g -M%.12g/%.12g", out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "-Z%.12g (length) %.12g/%.12g (midpoint)", out[GMT_Z], out[GMT_X], out[GMT_Y]);
 					}
 				}
 				if (new_data) {	/* Must create the output segment and duplicate */
@@ -1349,7 +1349,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 		}
-		if (Ctrl->Q.header || Ctrl->E.active) {		/* Write out revised dataset */
+		if (Ctrl->Q.header || Ctrl->E.active) {		/* Must write out a revised dataset */
 			Dout->n_segments = Dout->table[0]->n_segments = n_seg;
 			Dout->table[0]->segment = gmt_M_memory (GMT, Dout->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
 			if (Dout->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
@@ -1357,9 +1357,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			n_seg = D->n_segments - Dout->n_segments;	/* Lost segments */
-			if (n_seg) GMT_Report (API, GMT_MSG_VERBOSE, "%d segments were outside the desired %s range of %g to %s\n", n_seg, type[poly], Ctrl->Q.limit[0], upper);
+			if (n_seg) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were outside and %" PRIu64 " were inside the chosen %s range of %g to %s\n",
+				n_seg, Dout->n_segments, type[poly], Ctrl->Q.limit[0], upper);
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		if (!new_data && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
