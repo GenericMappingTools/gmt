@@ -250,6 +250,14 @@ their areas to the segment headers, run
 
     gmt spatial polygons.txt -Q+h -E+ > areas.txt
 
+To determine the areas of all the polygon segments in the file janmayen_land_full.txt,
+add this information to the segment headers, sort the segments from largest
+to smallest in area but only keep polygons with area larger than 1000 sq. meters, run
+
+   ::
+
+    gmt spatial -Qe+h+p+c1000+sd -V janmayen_land_full.txt > largest_pols.txt
+
 To determine the intersections between the polygons A.txt and B.txt, run
 
    ::
