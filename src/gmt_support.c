@@ -4732,6 +4732,46 @@ GMT_LOCAL uint64_t support_read_list (struct GMT_CTRL *GMT, char *file, char ***
 }
 
 /*! . */
+GMT_LOCAL int gmtsupport_sort_order_descend (const void *p_1, const void *p_2) {
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	bool bad_1, bad_2;
+	const struct GMT_ORDER *point_1 = p_1, *point_2 = p_2;
+
+	bad_1 = gmt_M_is_dnan (point_1->value);
+	bad_2 = gmt_M_is_dnan (point_2->value);
+
+	if (bad_1 && bad_2) return (0);
+	if (bad_1) return (+1);
+	if (bad_2) return (-1);
+
+	if (point_1->value > point_2->value) return (-1);
+	if (point_1->value < point_2->value) return (+1);
+	return (0);
+}
+
+/*! . */
+GMT_LOCAL int gmtsupport_sort_order_ascend (const void *p_1, const void *p_2) {
+	/* Returns -1 if point_1 is < that point_2,
+	   +1 if point_2 > point_1, and 0 if they are equal
+	*/
+	bool bad_1, bad_2;
+	const struct GMT_ORDER *point_1 = p_1, *point_2 = p_2;
+
+	bad_1 = gmt_M_is_dnan (point_1->value);
+	bad_2 = gmt_M_is_dnan (point_2->value);
+
+	if (bad_1 && bad_2) return (0);
+	if (bad_1) return (+1);
+	if (bad_2) return (-1);
+
+	if (point_1->value < point_2->value) return (-1);
+	if (point_1->value > point_2->value) return (+1);
+	return (0);
+}
+
+/*! . */
 void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 	/* Properly free memory allocated by support_read_list */
 	uint64_t i;
@@ -5122,6 +5162,17 @@ void gmt_sort_array (struct GMT_CTRL *GMT, void *base, uint64_t n, unsigned int 
 	gmt_M_unused(GMT);
 
 	qsort (base, n, width[type], compare[type]);
+}
+
+/*! . */
+void gmt_sort_order (struct GMT_CTRL *GMT, struct GMT_ORDER *base, uint64_t n, int dir) {
+	/* Sort the order array in ascending or descending direction */
+	if (dir == -1)
+		qsort (base, n, sizeof (struct GMT_ORDER), gmtsupport_sort_order_descend);
+	else if (dir == +1)
+		qsort (base, n, sizeof (struct GMT_ORDER), gmtsupport_sort_order_ascend);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_sort_order: Given illegal direction %d\n", dir);
 }
 
 /*! . */

@@ -120,12 +120,14 @@ struct GMTSPATIAL_CTRL {
 		unsigned int ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
-	struct Q {	/* -Q[+c<min>/<max>][+h][+l][+p] */
+	struct Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
 		bool active;
-		bool header;
-		bool area;
+		bool header;	/* Place dimension and centroid in segment headers */
+		bool area;		/* Apply range test on dimension */
+		bool sort;		/* Sort segments based on dimension */
 		unsigned int mode;	/* 0 use input as is, 1 force to line, 2 force to polygon */
 		unsigned int dmode;	/* for geo data: 1 = flat earth, 2 = great circle, 3 = geodesic (for distances) */
+		int dir;			/* For segment sorting: -1 is descending, +1 is ascending [Default] */
 		double limit[2];	/* Min and max area or length for output segments */
 		char unit;
 	} Q;
@@ -678,9 +680,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[[-|+]<unit>][+c<min>[/<max>]][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[[-|+]<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[[-|+]<unit>][+c<min>[/<max>]][+h][+l][+p]]\n", GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[[-|+]<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]]\n", GMT_DIST_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -732,6 +734,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to consider all input as polygons and close them if necessary\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [only closed polygons are considered polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to consider all input as lines even if closed [closed polygons are considered polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to sort segments based on area or length; append descending [ascending].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
@@ -864,6 +867,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				if (n == 3) Ctrl->L.box_offset = atof (txt_c);
 				break;
 #endif
+			case 'N':	/* Determine containing polygons for features */
+				Ctrl->N.active = true;
+				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */
+					Ctrl->N.file = strdup (opt->arg);
+					continue;
+				}
+				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
+				pos = 0;
+				while (gmt_strtok (s, "+", &pos, p)) {
+					switch (p[0]) {
+						case 'a':	/* All points must be inside polygon */
+							Ctrl->N.all = true;
+							break;
+						case 'p':	/* Set start of running numbers [0] */
+							Ctrl->N.ID = (p[1]) ? atoi (&p[1]) : 1;
+							break;
+						case 'r':	/* Just give a report */
+							Ctrl->N.mode = 1;
+							break;
+						case 'z':	/* Gave a new +s<fact> value */
+							Ctrl->N.mode = 2;
+							break;
+					}
+				}
+				break;
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = true;
 				s = opt->arg;
@@ -897,6 +925,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 						case 'h':	/* Place result in output header */
 							Ctrl->Q.header = true;
 							break;
+						case 's':	/* Sort segments on output based on dimension */
+							Ctrl->Q.sort = true;
+							switch (p[1]) {	/* Ascending or descending sort */
+								case 'a':	case '\0':	Ctrl->Q.dir = +1;	break;	/* Ascending [Default] */
+								case 'd':	Ctrl->Q.dir = -1;	break;	/* Descending */
+								default:
+									GMT_Report (API, GMT_MSG_NORMAL, "Error -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
+									n_errors++;
+									break;
+							}
+							break;
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL, "Error -Q: Unrecognized modifier +%c\n", p[0]);
 							n_errors++;
@@ -906,31 +945,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				if (strstr (s, "++") || (s[0] && s[strlen(s)-1] == '+')) {	/* Deal with the old-style single "+" to mean header */
 					Ctrl->Q.header = true;
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning:-Q+ is interpreted as -Q+h\n");
-				}
-				break;
-			case 'N':	/* Determine containing polygons for features */
-				Ctrl->N.active = true;
-				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */
-					Ctrl->N.file = strdup (opt->arg);
-					continue;
-				}
-				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
-				pos = 0;
-				while (gmt_strtok (s, "+", &pos, p)) {
-					switch (p[0]) {
-						case 'a':	/* All points must be inside polygon */
-							Ctrl->N.all = true;
-							break;
-						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (p[1]) ? atoi (&p[1]) : 1;
-							break;
-						case 'r':	/* Just give a report */
-							Ctrl->N.mode = 1;
-							break;
-						case 'z':	/* Gave a new +s<fact> value */
-							Ctrl->N.mode = 2;
-							break;
-					}
 				}
 				break;
 			case 'S':	/* Spatial polygon operations */
@@ -1256,6 +1270,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		int qmode, poly, geo;
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATASEGMENT *Sout = NULL;
+		struct GMT_ORDER *Q = NULL;
 
 		char line[GMT_LEN128] = {""};
 		
@@ -1285,6 +1300,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, gmtry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				Return (API->error);
 			if (Ctrl->Q.area && Ctrl->Q.limit[1] < DBL_MAX) sprintf (upper, "%.12g", Ctrl->Q.limit[1]);
+			if (Ctrl->Q.sort) Q = gmt_M_memory (GMT, NULL, D->n_segments, struct GMT_ORDER);
 		}
 		else {	/* Just write results as one line per segment to stdout */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
@@ -1337,6 +1353,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					Sout = GMT_Alloc_Segment (API, GMT_IS_DATASET, S->n_rows, S->n_columns, line, NULL);
 					for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (Sout->data[col], S->data[col], S->n_rows, double);
 					Dout->table[0]->segment[n_seg] = Sout;
+					if (Ctrl->Q.sort) Q[n_seg].value = out[GMT_Z], Q[n_seg].order = n_seg;
 					n_seg++;
 				}
 				if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
@@ -1352,6 +1369,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.header || Ctrl->E.active) {		/* Must write out a revised dataset */
 			Dout->n_segments = Dout->table[0]->n_segments = n_seg;
 			Dout->table[0]->segment = gmt_M_memory (GMT, Dout->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
+			if (Ctrl->Q.sort) {	/* Sort on area or length and shuffle the order of segments before output */
+				struct GMT_DATASEGMENT **tmp = gmt_M_memory (GMT, NULL, n_seg, struct GMT_DATASEGMENT *);
+				gmt_sort_order (GMT, Q, n_seg, Ctrl->Q.dir);
+				for (seg = 0; seg < n_seg; seg++) tmp[seg] = Dout->table[0]->segment[Q[seg].order];
+				gmt_M_memcpy (Dout->table[0]->segment, tmp, n_seg, struct GMT_DATASEGMENT *);
+				gmt_M_free (GMT, tmp);
+				gmt_M_free (GMT, Q);
+			}
 			if (Dout->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 				Return (API->error);

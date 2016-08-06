@@ -290,7 +290,7 @@ EXTERN_MSC bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P);
 EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
 EXTERN_MSC void gmt_str_toupper (char *string);
 EXTERN_MSC char * gmt_memory_use (size_t bytes);
-
+EXTERN_MSC void gmt_sort_order (struct GMT_CTRL *GMT, struct GMT_ORDER *base, uint64_t n, int dir);
 EXTERN_MSC bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
 EXTERN_MSC bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *h, bool wrap_180);
 EXTERN_MSC bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col);

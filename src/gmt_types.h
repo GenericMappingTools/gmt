@@ -98,6 +98,11 @@ struct GMT_MODEL {	/* A model consists of n_terms */
 	struct GMT_MODEL_TERM term[GMT_N_MAX_MODEL];
 };
 
+struct GMT_ORDER {	/* Used to sort some item (e.g., structure) based on a value */
+	double value;		/* The value to sort on */
+	uint64_t order;		/* Original position of item in the array */
+};
+
 /*! For segments */
 struct GMT_SEGMENTIZE {	/* Information about segmentation */
 	unsigned int method;	/* Type of segmentation [0] */

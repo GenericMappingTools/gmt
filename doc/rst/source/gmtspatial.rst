@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\ \|\ **i**] ]
 [ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ |-Q|\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ] ]
+[ |-Q|\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
@@ -142,7 +142,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ]
+**-Q**\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
@@ -159,6 +159,8 @@ Optional Arguments
     will be be reflected on output.  Use **c** to restrict processing to
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
+    To sort the segments based on their lengths or area, use **s** and
+    append **a** for ascending and **d** for descending order [ascending]. 
     By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
     as polygons, or append **+l** to consider all input as lines, even
