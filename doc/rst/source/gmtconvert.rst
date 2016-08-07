@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtconvert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
-[ |-D|\ [*template*] ]
+[ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ |-L| ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
 [ |-I|\ [**tsr**] ] [ |-Q|\ [**~**]\ *selection*]
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*template*]
+**-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to stdout]. Append a
     format template for the individual file names; this template
@@ -89,10 +89,14 @@ Optional Arguments
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
-    **-bo**]. Alternatively, give a template with
+    **-bo**]. Append **+o**\ *orig* to start the numbering from *orig*
+    instead of zero.  Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
-
+    Append **+o**\ *torig*\ /*sorig* to start the numbering of tables
+    from *torig* and numbering of segments within a table from *sorig*
+    instead of zero.  The **+o** modifier will be stripped off before
+    the *template* is used.
 .. _-E:
 
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]

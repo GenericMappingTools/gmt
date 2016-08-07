@@ -58,9 +58,11 @@ struct GMTCONVERT_CTRL {
 		bool active, invert;
 		uint64_t min, max;
 	} C;
-	struct D {	/* -D[<template>] */
+	struct D {	/* -D[<template>][+o<orig>] */
 		bool active;
+		bool origin;
 		unsigned int mode;
+		unsigned int t_orig, s_orig;
 		char *name;
 	} D;
 	struct E {	/* -E */
@@ -114,7 +116,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -134,8 +136,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for an integer (e.g., %%d) that represents\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses gmtconvert_segment_%%d.txt (or .bin for binary)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +o<orig> to start numbering at <orig> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +o<t_orig>/<s_orig> to start numbering at <t_orig> for tables and <s_orig> for segments [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extract first and last point per segment only [Output all points].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f for first only or l for last only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
@@ -172,8 +176,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int pos, n_errors = 0, k, n_files = 0;
+	int n = 0;
 	int64_t value = 0;
-	char p[GMT_BUFSIZ] = {""};
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -221,8 +226,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				Ctrl->D.active = true;
+				if ((c = strstr (opt->arg, "+o"))) {	/* Gave new origins for tables and segments (or just segments) */
+					n = sscanf (&c[2], "%d/%d", &Ctrl->D.t_orig, &Ctrl->D.s_orig);
+					if (n == 1) Ctrl->D.s_orig = Ctrl->D.t_orig, Ctrl->D.t_orig = 0;
+					c[0] = '\0';	/* Chop off modifier */
+					Ctrl->D.origin = true;
+				}
 				if (*opt->arg) /* optarg is optional */
 					Ctrl->D.name = strdup (opt->arg);
+				if (Ctrl->D.origin) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'E':	/* Extract ends only */
 				Ctrl->E.active = true;
@@ -551,6 +563,13 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		D[GMT_OUT]->io_mode = Ctrl->D.mode;
+		if (Ctrl->D.origin) {	/* Update IDs */
+			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* For each table */
+				D[GMT_OUT]->table[tbl]->id += Ctrl->D.t_orig;
+				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++)	/* For each segment */
+					D[GMT_OUT]->table[tbl]->segment[seg]->id += Ctrl->D.s_orig;
+			}
+		}
 	}
 	else {	/* Just register output to stdout or the given file via ->outfile */
 		if (GMT->common.a.output)	/* Must notify the machinery of this output type */

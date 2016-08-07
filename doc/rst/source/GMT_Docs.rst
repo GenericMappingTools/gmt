@@ -284,7 +284,8 @@ as well. For specific enhancements, we have:
    in :doc:`grdfilter`.
 
 *  :doc:`gmtconvert` has a new option (**-F**) for line segmentation and
-   network configuration.
+   network configuration. Also, the **-D** option has a new modifier **+o**
+   that sets the origin used for the numbering of tables and segments.
 
 *  :doc:`gmtinfo` has a new option **-L** for finding the common bounds
    across multiple files or segments.
