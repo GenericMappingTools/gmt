@@ -311,6 +311,14 @@ at 23.5/19, try
 
     gmt convert sensors.txt -F23.5/19 > lines.txt
 
+To write all segments in the two files A.txt and B.txt to
+individual files named profile_005000.txt, profile_005001.txt, etc.,
+where we reset the origin of the sequential numbering from 0 to 5000, try
+
+   ::
+
+    gmt convert A.txt B.txt -Dprofile_%6.6d.txt+o5000
+
 See Also
 --------
 
