@@ -16,8 +16,10 @@ Synopsis
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ] [ |-C|\ *cpt* ]
 [ |-D|\ [**r**\ ] ] [ |-E|\ **i**\ [\|\ *dpi*] ] |-J|\ *parameters*
-[ |-G|\ [**f**\ \|\ **b**]\ *color* ] [ |-I|\ *intensfile*\ \|\ *intensity* ]
-[ |-J|\ **z**\ \|\ **-Z**\ *parameters* ] [ |-K| ] [ |-M| ] [ |-N| ]
+[ |-G|\ [**f**\ \|\ **b**]\ *color* ]
+[ |-I|\ [*intensfile*\ \|\ *intensity*] ]
+[ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
+[ |-K| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
@@ -147,9 +149,13 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *intensfile*\ \|\ *intensity*
+**-I**\ [*intensfile*\ \|\ *intensity*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
-    or a constant intensity to apply everywhere.
+    or a constant intensity to apply everywhere; this simply affects the
+    ambient light.  If no argument is given then we derive an intensity
+    grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
+    using the arguments **-A45** and **-Nt1** for that module. If you want
+    other settings then run :doc:`grdgradient` separately first.
     [Default is no illumination]. 
 
 .. include:: explain_-Jz.rst_
@@ -241,12 +247,12 @@ linear projection, or (b) use :doc:`grdview` **-Ts** instead.
 Examples
 --------
 
-For a quick-and-dirty color map of the data in the file stuff.nc, with
+For a quick-and-dirty illuminated color map of the data in the file stuff.nc, with
 the maximum map dimension limited to be 6 inches, try
 
    ::
 
-    gmt grdimage stuff.nc -JX6i+ > quick.ps
+    gmt grdimage stuff.nc -JX6i+ -I > quick.ps
 
 To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
