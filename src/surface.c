@@ -1268,7 +1268,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		if (C->data[k].index == last_index) {
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
 #endif
 			n_outside++;
 		}
