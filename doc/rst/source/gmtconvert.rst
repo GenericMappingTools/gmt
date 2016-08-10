@@ -97,6 +97,7 @@ Optional Arguments
     from *torig* and numbering of segments within a table from *sorig*
     instead of zero.  The **+o** modifier will be stripped off before
     the *template* is used.
+
 .. _-E:
 
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]

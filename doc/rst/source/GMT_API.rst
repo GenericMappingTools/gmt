@@ -514,7 +514,7 @@ another memory location.  No actual processing of the data or further
 calculation will be done here (so a bit of a boring program, but the
 point is to get something short to test).  We also completely ignore
 the return codes of the modules for now.  We will call our program
-:ref:`example1.c <_example-code1>`.  Here are the steps:
+:ref:`example1.c <example-code1>`.  Here are the steps:
 
 #. Initialize a new GMT session with GMT_Create_Session_, which
    allocates a hidden GMT API control structure and returns an opaque
