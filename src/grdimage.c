@@ -507,17 +507,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
 		char int_grd[GMT_LEN16] = {""}, args[GMT_LEN256] = {""};
- 		GMT_Report (API, GMT_MSG_VERBOSE, "Derive intensity grid from data grid\n");
-   		/* Create a virtual file to hold the intensity grid */
-    	if (GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, int_grd))
- 			Return (API->error);
-   		/* Prepare the grdgradient arguments using default -A45 -Nt1 */
-    	sprintf (args, "%s -G%s -A45 -Nt1", Ctrl->In.file[0], int_grd);
-    	/* Call the grdgradient module */
-    	if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, args))
+		GMT_Report (API, GMT_MSG_VERBOSE, "Derive intensity grid from data grid\n");
+		/* Create a virtual file to hold the intensity grid */
+		if (GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, int_grd))
 			Return (API->error);
-    	/* Obtain the data from the virtual file */
-    	if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
+		/* Prepare the grdgradient arguments using default -A-45 -Nt1 */
+		sprintf (args, "%s -G%s -A-45 -Nt1", Ctrl->In.file[0], int_grd);
+		/* Call the grdgradient module */
+		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, args))
+			Return (API->error);
+		/* Obtain the data from the virtual file */
+		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
 	}
 	
