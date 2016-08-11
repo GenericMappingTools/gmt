@@ -154,7 +154,7 @@ Optional Arguments
     or a constant intensity to apply everywhere; this simply affects the
     ambient light.  If no argument is given then we derive an intensity
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
-    using the arguments **-A45** and **-Nt1** for that module. If you want
+    using the arguments **-A-45** and **-Nt1** for that module. If you want
     other settings then run :doc:`grdgradient` separately first.
     [Default is no illumination]. 
 
