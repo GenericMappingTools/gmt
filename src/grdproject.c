@@ -284,7 +284,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		}
 		else {			/* Do inverse transformation */
-			double x_c, y_c, lon_t, lat_t, ww, ee, ss, nn;
+			double x_c, y_c, lon_t, lat_t, xSW, ySW, xNW, yNW, xNE, yNE, xSE, ySE;
 			/* Obtain a first crude estimation of the good -R */
 			x_c = (wesn[XLO] + wesn[XHI]) / 2.0; 		/* mid point of projected coords */
 			y_c = (wesn[YLO] + wesn[YHI]) / 2.0; 
@@ -335,9 +335,12 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				wesn[YLO] += GMT->current.proj.origin[GMT_Y];	wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 			}
 
-			gmt_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
-			gmt_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
-			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
+			gmt_xy_to_geo (GMT, &xSW, &ySW, wesn[XLO], wesn[YLO]);		/* SW corner */
+			gmt_xy_to_geo (GMT, &xNW, &yNW, wesn[XLO], wesn[YHI]);		/* NW corner */
+			gmt_xy_to_geo (GMT, &xNE, &yNE, wesn[XHI], wesn[YHI]);		/* NE corner */
+			gmt_xy_to_geo (GMT, &xSE, &ySE, wesn[XHI], wesn[YLO]);		/* SE corner */
+			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), ySW, MAX(xNE, xSE), yNE);
+
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
