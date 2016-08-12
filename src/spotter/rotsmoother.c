@@ -258,7 +258,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	double azimuth, norm, t_lo, t_hi, rot_angle_in_radians, this_rot_angle, lon_mean_pole, lat_mean_pole;
 	double x_in_plane[3], y_in_plane[3], C[9], EigenValue[3], EigenVector[9], work1[3], work2[3];
 	double R[3][3], DR[3][3], Ri[3][3], E[3], this_h[3], xyz_mean_pole[3], xyz_mean_quat[4], z_unit_vector[3];
-	double TMP_mean[3], mean_rot_age, std_rot_age, *H[3], mean_H[3], Ccopy[9], *mangle = NULL, this_lon, this_lat;
+	double mean_rot_age, std_rot_age, *H[3], mean_H[3], Ccopy[9], *mangle = NULL, this_lon, this_lat;
 	struct AGEROT *D = NULL;
 	struct ROTSMOOTHER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -467,7 +467,6 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		}
 		
 		/* Now get the covariance matrix */
-		for (k = 0; k < 3; k++) TMP_mean[k] = xyz_mean_quat[k+1] * mean_rot_angle * D2R;	/* Components of mean quaternion */
 
 		/* Here we also want to get the covariance matrix.  To do so we want to parameterize all
 		 * the n_use rotations as a small incremental rotation DR_i followed by the mean rotation
