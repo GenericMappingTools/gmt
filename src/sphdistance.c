@@ -487,10 +487,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	else
 		V = &T.V;
 
-#ifdef _OPENMP_NOTWORKINGYET
-#pragma omp parallel for private(node,P,p_alloc,node_new,node_stop,vertex_new,vertex,node_last,vertex_last,f_val,south_row,north_row,\
-w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,Table,V,Grid,n,nx1,grid_lon,grid_lat,lon,lat,n_set,duplicate_col)
-#endif
 	for (node = 0; node < n; node++) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
