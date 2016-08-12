@@ -1136,13 +1136,14 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	unsigned char *status = C->status;	/* Quadrant or status information for each node */
 	char *mode_name[2] = {"node", "data"};
 	bool finished;
-	//bool dump;
 	double current_limit = C->converge_limit / C->current_stride;
 	double u_change, max_u_change, max_z_change, sum_bk_uk, u_00;
 	float *b = NULL;
 #ifdef _OPENMP	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
+	bool dump;
 	float *u_new = C->Grid->data, *u_old = C->alternate_grid;
 #else		/* Here they are the same single grid */
+	//bool dump;
 	float *u_new = C->Grid->data, *u_old = C->Grid->data;
 #endif
 #ifdef DEBUG_SURF
