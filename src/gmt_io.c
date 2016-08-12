@@ -2075,7 +2075,7 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 	double dd, dm, ds;
 
 	k = strlen (s);
-	if (k == 0) return (GMT_IS_NAN);
+	if (k == 0 || (int)s[k - 1] < 0) return (GMT_IS_NAN);		/* On Win and debug mode isdigit assert crashes with negative argument */
 	if (!(isdigit ((int)s[k-1]))) {
 		suffix = s[k-1];
 		switch (suffix) {
@@ -5871,7 +5871,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		if (s[callen] == '\"') { s[callen] = '\0'; s++;}	/* Strip off trailing quote and advance pointer over the first */
 	}
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
-		if (!isdigit ((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
+		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
 	}
 	else if (isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
