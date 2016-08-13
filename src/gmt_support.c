@@ -8536,7 +8536,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 			S = T->table[0]->segment[seg];	/* Current segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				n_fields = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				n_fields = sscanf (S->data[row], "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
 				if (n_fields < n_col) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %"
 					            PRIu64 " in file %s.\n",
@@ -8666,7 +8666,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			S = T->table[0]->segment[seg];	/* Curent segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				n_fields = sscanf (S->data[row], "%s %s %[^\0]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+				n_fields = sscanf (S->data[row], "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
 				if (n_fields < n_col) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
 						n_fields, n_col, rec, G->file);

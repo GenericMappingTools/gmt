@@ -5834,7 +5834,8 @@ int GMT_Create_VirtualFile_ (unsigned int *family, unsigned int *geometry, char 
  /*! . */
 int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, void *data, char *string) {
 	/* Open up a VirtualFile for an existing resource that a module may read its input from. */
-	int object_ID = GMT_NOTSET, item;
+	int object_ID = GMT_NOTSET, item_s;
+	unsigned int item;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
@@ -5848,14 +5849,14 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	}
 	
 	if (object_ID != GMT_NOTSET) {	/* Recycle the object */
-		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		if ((item_s = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
 			return_error (API, API->error);	/* Could not find that item in the array? */
 		/* Here we have the item and can recycle the address */
-		API->object[item]->status = 0;							/* Open for business */
-		API->object[item]->resource = API->object[item]->data;	/* Switch from consumer to provider */
-		API->object[item]->data = NULL;							/* No longer consumer */
-		API->object[item]->method = GMT_IS_REFERENCE;			/* Now a memory resource */
-		API->object[item]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
+		API->object[item_s]->status = 0;							/* Open for business */
+		API->object[item_s]->resource = API->object[item_s]->data;	/* Switch from consumer to provider */
+		API->object[item_s]->data = NULL;							/* No longer consumer */
+		API->object[item_s]->method = GMT_IS_REFERENCE;			/* Now a memory resource */
+		API->object[item_s]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
 			return (API->error);
 	}
@@ -7827,7 +7828,7 @@ int GMT_Destroy_Group (void *V_API, void *object, unsigned int n_items) {
 		case GMT_IS_VECTOR:     error = api_destroy_vectors  (API, object, n_items); break;
 		default: return_error (API, GMT_NOT_A_VALID_FAMILY); break;
 	}
-	return_error (API, GMT_OK);
+	return_error (API, error);
 }
 
 #ifdef FORTRAN_API

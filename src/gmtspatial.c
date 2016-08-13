@@ -1267,7 +1267,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		bool new_data = (Ctrl->Q.header || Ctrl->E.active);
 		uint64_t seg, row_f, row_l, tbl, col, n_seg = 0, n_alloc_seg = 0;
 		unsigned int handedness = 0;
-		int qmode, poly, geo;
+		int qmode, poly = 0, geo;
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATASEGMENT *Sout = NULL;
 		struct GMT_ORDER *Q = NULL;
@@ -1316,8 +1316,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S = D->table[tbl]->segment[seg];
 				if (S->n_rows == 0) continue;
 				switch (Ctrl->Q.mode) {	/* Set or determine line vs polygon type */
-					case GMT_IS_LINE:	poly = false;	break;
-					case GMT_IS_POLY:	poly = true;	break;
+					case GMT_IS_LINE:	poly = 0;	break;
+					case GMT_IS_POLY:	poly = 1;	break;
 					default:
 						poly = !gmt_polygon_is_open (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows);	/* Line or polygon */
 						break;

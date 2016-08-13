@@ -41,7 +41,6 @@
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
 #define N_GDAL_EXTENSIONS 5
-static char *gdal_ext[N_GDAL_EXTENSIONS] = {"tif", "gif", "png", "jpg", "bmp"};
 static char *gdal_drv[N_GDAL_EXTENSIONS] = {"GTiff", "GIF", "PNG", "JPEG", "BMP"};
 
 /*----------------------------------------------------------|
