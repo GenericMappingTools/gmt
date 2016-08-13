@@ -6884,7 +6884,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
 	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false;
-	bool pol_check, check_geometry, check_text = true;
+	bool pol_check, check_geometry;
 	int status;
 	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
@@ -6964,7 +6964,6 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			gmtlib_io_binary_header (GMT, fp, GMT_IN);
 			header = false;	/* No more binary header */
 		}
-		check_text = false;	/* No text items read from binary files */
 	}
 
 	in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
