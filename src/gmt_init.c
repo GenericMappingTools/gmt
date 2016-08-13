@@ -12180,12 +12180,8 @@ void gmt_setmode (struct GMT_CTRL *GMT, int direction) {
 
 		fp = (direction == 0) ? GMT->session.std[GMT_IN] : GMT->session.std[GMT_OUT];
 		fflush (fp);	/* Should be untouched but anyway... */
-#ifdef WIN32
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Set binary mode for %s\n", IO_direction[direction]);
 		setmode (fileno (fp), _O_BINARY);
-#else
-		_fsetmode (fp, "b");
-#endif
 	}
 }
 
