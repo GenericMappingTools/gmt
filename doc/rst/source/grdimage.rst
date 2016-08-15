@@ -66,14 +66,14 @@ value. Interpolation and aliasing is controlled with the **-n** option.
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
-A (color) PostScript file is output. 
+A (color) PostScript file is output.
 
 Required Arguments
 ------------------
 
 *grd_z* \| *grd_r grd_g grd_b*
     2-D gridded data set (or red, green, blue grids) to be imaged (See
-    GRID FILE FORMATS below.) 
+    GRID FILE FORMATS below.)
 
 .. _-J:
 
@@ -88,7 +88,7 @@ Optional Arguments
 **-A**\ *out_img*\ [**=**\ *driver*]
     Save an image in a raster format instead of PostScript. Use extension
     .ppm for a Portable Pixel Map format.  For GDAL-aware versions there are more choices:
-    Append *out_img*\ to select the image file name and extension.
+    Append *out_img* to select the image file name and extension.
     If the extension is one of .bmp, .gif, .jpg, .png, or .tif then no driver
     information is required.  For other output formats you must append the
     required GDAL driver.  The *driver* is the driver code name used by
@@ -107,9 +107,9 @@ Optional Arguments
     automatically determine a continuous CPT from
     the grid's z-range.  If the dynamic CPT has a default range then
     that range will be imposed instead.
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous CPT from those colors automatically.  
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    Yet another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
+    to build a linear continuous CPT from those colors automatically.
+    In this case *color1* etc can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
 .. _-D:
@@ -156,7 +156,7 @@ Optional Arguments
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
     using the arguments **-A-45** and **-Nt1** for that module. If you want
     other settings then run :doc:`grdgradient` separately first.
-    [Default is no illumination]. 
+    [Default is no illumination].
 
 .. include:: explain_-Jz.rst_
 
@@ -174,7 +174,7 @@ Optional Arguments
 
 **-N**
     Do not clip the image at the map boundary (only relevant for
-    non-rectangular maps). 
+    non-rectangular maps).
 
 .. _-O:
 
@@ -188,7 +188,7 @@ Optional Arguments
 
 **-Q**
     Make grid nodes with z = NaN transparent, using the colormasking
-    feature in PostScript Level 3 (the PS device must support PS Level 3). 
+    feature in PostScript Level 3 (the PS device must support PS Level 3).
 
 .. _-R:
 
@@ -284,7 +284,7 @@ remotely located Jessica Rabbit
 
    ::
 
-    gmt grdimage -JI15c -Rd -Dr
+    gmt grdimage -JI15c -Rd -Dr \
         http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
         -P > jess.ps
 
