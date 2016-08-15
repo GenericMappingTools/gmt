@@ -92,11 +92,16 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	ext = gmt_get_ext (fname);
 	/* See if the extension if one of the well known image formats */
 	for (k = 0; to_GDALW->driver == NULL && k < N_GDAL_EXTENSIONS; k++) {
-		if (!strcasecmp (ext, gdal_drv[k])) to_GDALW->driver = strdup(gdal_drv[k]);
+		if (k == 0 && (!strcasecmp(ext, "tif") || !strcasecmp(ext, "tiff")))	/* Tiffs happen to have a different extension<->driver naming */
+			to_GDALW->driver = strdup(gdal_drv[k]);
+		else if (!strcasecmp (ext, gdal_drv[k]))
+			to_GDALW->driver = strdup(gdal_drv[k]);
 	}
 	if (to_GDALW->driver == NULL) {	/* None of those; need to give a driver */
-		if ((c = strchr (fname, '=')))	/* Found an '=<driver>' part */
+		if ((c = strchr(fname, '='))) {	/* Found an '=<driver>' part */
 			to_GDALW->driver = strdup(&c[1]);
+			c[0] = '\0';			/* Remove the driver code from the name */
+		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, append =<driver> for a valid GDAL driver\n");
