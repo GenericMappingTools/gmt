@@ -590,7 +590,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #elif  defined(__APPLE__)	/* Look for both .so and .dylib shared libs on OSX */
 	char *extension[2] = {".so", ".dylib"};
 	unsigned int n_extensions = 2;
-#else	/* Linux, etc. onlyl use .so */
+#else	/* Linux, etc. only use .so */
 	char *extension[1] = {".so"};
 	unsigned int n_extensions = 1;
 #endif
