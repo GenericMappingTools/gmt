@@ -87,11 +87,16 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	to_GDALW->n_bands   = I->header->n_bands;
 	to_GDALW->registration = I->header->registration;
 	to_GDALW->alpha = NULL;
-	/* Those are for the non-georeferenced case */
-	to_GDALW->ULx = 1;
-	to_GDALW->ULy = I->header->n_columns;
 	to_GDALW->x_inc = I->header->inc[0];
 	to_GDALW->y_inc = I->header->inc[1];
+	if (to_GDALW->P.active) {		/* A referenced image */
+		to_GDALW->ULx = I->header->wesn[XLO];
+		to_GDALW->ULy = I->header->wesn[YHI];
+	}
+	else {
+		to_GDALW->ULx = 1;
+		to_GDALW->ULy = I->header->n_rows;
+	}
 
 	ext = gmt_get_ext (fname);
 	/* See if the extension if one of the well known image formats */

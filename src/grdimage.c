@@ -36,8 +36,8 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcfnptxy" GMT_OPT("S")
 
 #ifdef HAVE_GDAL
-#define N_IMG_EXTENSIONS 5
-static char *gdal_ext[N_IMG_EXTENSIONS] = {"tif", "gif", "png", "jpg", "bmp"};
+#define N_IMG_EXTENSIONS 6
+static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "bmp"};
 #endif
 
 /* Control structure for grdimage */
