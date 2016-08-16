@@ -75,7 +75,9 @@ if (NOT DEFINED FLOCK)
 endif (NOT DEFINED FLOCK)
 
 # Build supplements is on
-set (BUILD_SUPPLEMENTS TRUE)
+if (NOT DEFINED BUILD_SUPPLEMENTS)
+	set (BUILD_SUPPLEMENTS TRUE)
+endif (NOT DEFINED BUILD_SUPPLEMENTS)
 
 # Install into traditional directory structure per default
 if (NOT DEFINED GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
@@ -173,7 +175,9 @@ if (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 
 # prefer shared libs over static
-set (BUILD_SHARED_LIBS true)
+if (NOT DEFINED BUILD_SHARED_LIBS)
+	set (BUILD_SHARED_LIBS true)
+endif (NOT DEFINED BUILD_SHARED_LIBS)
 set (CMAKE_FIND_STATIC LAST)
 
 # look also for lib64 when building 64-bit binaries
@@ -185,6 +189,8 @@ endif (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)
 set (CMAKE_FIND_FRAMEWORK LAST)
 
 # install GMT developer include files
-set (BUILD_DEVELOPER TRUE)
+if (NOT DEFINED BUILD_DEVELOPER)
+	set (BUILD_DEVELOPER true)
+endif (NOT DEFINED BUILD_DEVELOPER)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

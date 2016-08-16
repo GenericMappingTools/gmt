@@ -200,7 +200,7 @@ message(
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
-	"*  Build GMT Developer        : ${DEVEL}\n"
+	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
 	"*\n"
 	"*  Locations:\n"
