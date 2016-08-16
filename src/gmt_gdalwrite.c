@@ -68,7 +68,11 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	*/
 	
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
-	if (I->header->ProjRefPROJ4 != NULL) {
+	if (I->header->ProjRefWKT != NULL) {
+		to_GDALW->P.ProjRefWKT = I->header->ProjRefWKT;
+		to_GDALW->P.active = true;
+	}
+	else if (I->header->ProjRefPROJ4 != NULL) {
 		if (I->header->ProjRefPROJ4[1] == 'x' && I->header->ProjRefPROJ4[2] == 'y') /* -JX. Forget conversion */
 			to_GDALW->P.active = false;
 		else {
@@ -251,11 +255,14 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 	/* If we have a PROJ4 string, convert (try) it to WKT */
 	if (prhs->P.active) {
-		OGRSpatialReferenceH  hSRS_2;
+		OGRSpatialReferenceH  hSRS_2 = NULL;
 
 		hSRS_2 = OSRNewSpatialReference(NULL);
 
-		if (OSRImportFromProj4(hSRS_2, prhs->P.ProjRefPROJ4) == CE_None) {
+		if (prhs->P.ProjRefWKT != NULL) {
+			projWKT = prhs->P.ProjRefWKT;
+		}
+		else if (OSRImportFromProj4(hSRS_2, prhs->P.ProjRefPROJ4) == CE_None) {
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS_2, &pszPrettyWkt, false);
 			projWKT = pszPrettyWkt;

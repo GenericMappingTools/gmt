@@ -851,23 +851,29 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		/* Determine raster image pixel sizes in the final units */
 		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (n_columns - !grid_registration);
-		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows    - !grid_registration);
-
-		/* See if the chosen projection has a valid PROJ4 setting */
-		for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) 
-			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
-		if (id >= 0) 			/* Valid projection for creating world file info */
-			img_ProjectionRefPROJ4 = gmt_export2proj4 (GMT);	/* Get the proj4 string */
+		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows - !grid_registration);
 
 		if (grid_registration == GMT_GRID_NODE_REG) {	/* Adjust domain by 1/2 pixel since they are outside the domain */
 			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 		}
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array */
-		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
-			Return (API->error);	/* Well, no luck with that allocation */
+		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL)
+			Return(API->error);	/* Well, no luck with that allocation */
 		//strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-		Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
+
+		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
+		if (header_work->ProjRefWKT != NULL)
+			Out->header->ProjRefWKT = strdup(header_work->ProjRefWKT);
+		else if (header_work->ProjRefPROJ4 != NULL)
+			Out->header->ProjRefPROJ4 = strdup(header_work->ProjRefPROJ4);
+		else {
+			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
+				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
+			if (id >= 0) 			/* Valid projection for creating world file info */
+				img_ProjectionRefPROJ4 = gmt_export2proj4(GMT);	/* Get the proj4 string */
+			Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
+		}
 
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8  = Out->data;
