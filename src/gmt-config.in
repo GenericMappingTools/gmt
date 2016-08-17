@@ -35,6 +35,7 @@ else
   CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
 fi
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
+CONFIG_PLUGINDIR=$($GMT_EXEDIR/gmt --show-plugindir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)
 CONFIG_DCW=$($GMT_EXEDIR/gmt gmtget DIR_DCW)
@@ -98,6 +99,7 @@ Available values for OPTIONS include:
   --has-openmp  whether GMT was built with OpenMP support
   --includedir  include directory
   --libs        library linking information
+  --plugindir   GMT's plugin directory
   --prefix      install prefix
   --version     library version
 EOF
@@ -158,6 +160,10 @@ for arg in "$@"; do
 
     --libs)
     echo $CONFIG_LIBS
+    ;;
+
+    --plugindir)
+    echo $CONFIG_PLUGINDIR
     ;;
 
     --prefix)
