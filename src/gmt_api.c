@@ -10109,6 +10109,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strdup (name);
 
+	memset (&header, 0, sizeof(struct GMT_GRID_HEADER));	/* To convinvce Coverity that header->index_function has been initialized */
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
@@ -11161,6 +11162,7 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	unsigned int row, col, pad[4], old_layout, new_layout;
 	uint64_t in_node, out_node;
 	float *tmp = NULL;
+	gmt_M_unused(mode);
 
 	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
 	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
@@ -11221,6 +11223,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
 	uint64_t band, row, col, in_node, out_node;
+	gmt_M_unused(mode);
 
 	old_layout = api_decode_layout (API, I->header->mem_layout, &family);
 	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
