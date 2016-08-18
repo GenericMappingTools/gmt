@@ -2542,7 +2542,8 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[prev]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
+		for (s = 0; s < info->T->n_segments; s++)
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
 		return 0;
 	}
 
@@ -2573,7 +2574,10 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 		}
 	}
-	if (info->local) return 0;	/* Done with local */
+	if (info->local) {		/* Done with local */
+		gmt_M_free (GMT, pair);
+		return 0;
+	}
 	/* 2. Find the weighted mode */
 	wmode = gmt_mode_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this mode */
@@ -2582,7 +2586,8 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 	return 0;
 }
 
@@ -2965,9 +2970,8 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
-GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: MEDIANW 2 1 Weighted median value of A for weights in B.  */
-{
 	uint64_t s, row, k = 0;
 	unsigned int prev;
 	double wmed, w;
@@ -2977,7 +2981,8 @@ GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[prev]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
+		for (s = 0; s < info->T->n_segments; s++)
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
 		return 0;
 	}
 
@@ -3002,11 +3007,15 @@ GMT_LOCAL int table_MEDIANW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmed;
 		}
 	}
-	if (info->local) return 0;	/* Done with local */
+	if (info->local) {		/* Done with local */
+		gmt_M_free (GMT, pair);
+		return 0;
+	}
 	wmed = (float)gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmed;
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmed;
 	return 0;
 }
 
@@ -3136,7 +3145,10 @@ GMT_LOCAL int table_MODEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmode;
 		}
 	}
-	if (info->local) return 0;	/* Done with local */
+	if (info->local) {		/* Done with local */
+		gmt_M_free (GMT, pair);
+		return 0;
+	}
 	wmode = (float)gmt_mode_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
