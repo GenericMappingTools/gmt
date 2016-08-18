@@ -168,7 +168,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	 * then unless that pattern file can be found we will try to prepend the path to the cpt
 	 * file and see if the pattern can be found that way.
 	 */
-	
+
 	int i = 0, j, pos, len, c = 0;
 	char *name = NULL, path[PATH_MAX] = {""};
 	if (!((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1]))) return NULL;	/* Not an image specification */
@@ -4864,9 +4864,9 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char **p = NULL, **file = NULL;
 	if ((p = gmtlib_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
-	
+
 	file = gmt_M_memory (GMT, NULL, n_alloc, char *);
-	
+
 	while (p[k]) {	/* A NULL marks the end for us */
 		if (matchwild (p[k], pattern)) {	/* Found a match */
 			file[n++] = strdup (p[k]);
@@ -4910,7 +4910,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 		p[k] = strdup (results.gl_pathv[k]);
 
 	globfree (&results);
-	
+
 	*list = p;
 	return (uint64_t)results.gl_pathc;
 }
@@ -5934,7 +5934,7 @@ double gmtlib_conv_distance (struct GMT_CTRL *GMT, double value, char in_unit, c
 			case 'n': scale[k] = METERS_IN_A_NAUTICAL_MILE; break;				/* nautical miles */
 			case 'u': scale[k] = METERS_IN_A_SURVEY_FOOT; break;				/* survey feet */
 			default:  break;								/* No units */
-		}	
+		}
 	}
 	return (value * scale[GMT_IN] / scale[GMT_OUT]);	/* Do the conversion */
 }
@@ -6169,7 +6169,7 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 #ifdef GMT_BACKWARDS_API
-	P->range = P->data;	
+	P->range = P->data;
 #endif
 
 	return (P);
@@ -6820,7 +6820,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
-	
+
 	for (is = 0; is < (int)P->n_colors; is++) {
 		if (is == ks) {	/* Must change scale and z_min for cpt above the hinge */
 			z_min = z_start = P->hinge;
@@ -6860,7 +6860,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			double_swap (P->data[i].hsv_low[k], P->data[j].hsv_high[k]);
 		}
 		if (i < j) Fill_swap (P->data[i].fill, P->data[j].fill);
-		
+
 	}
 	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrrays */
 		for (k = 0; k < 4; k++) {
@@ -6875,7 +6875,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	}
 	Fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
 }
-	
+
 /*! . */
 struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter) {
 	/* Resamples the current CPT based on new z-array.
@@ -6905,7 +6905,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		if (Pin->cpt_flags & GMT_CPT_TEMPORARY) Pin->cpt_flags -= GMT_CPT_TEMPORARY;
 		gmtlib_init_cpt (GMT, Pin);	/* Recalculate delta rgb's */
 	}
-	
+
 	i += gmt_M_check_condition (GMT, !Pin->is_continuous && continuous, "Warning: Making a continuous cpt from a discrete cpt may give unexpected results!\n");
 
 	if (nz_in < 0) {	/* Called from grd2cpt which wants equal area colors */
@@ -7343,9 +7343,9 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 
 	/* We leave BNF as we got them from the external API */
 #ifdef GMT_BACKWARDS_API
-	P->range = P->data;	
-	P->patch = P->bfn;	
-	P->cpt_flags = P->mode;	
+	P->range = P->data;
+	P->patch = P->bfn;
+	P->cpt_flags = P->mode;
 #endif
 }
 
@@ -8463,8 +8463,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	}
 	if (T->n_segments < n_alloc) T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 	dim[GMT_COL] = n_cols;
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		gmt_M_free (GMT, T);
 		return (NULL);
+	}
 	gmt_free_table (GMT, D->table[0]);	/* Since we will add our own below */
 	D->table[0] = T;
 	gmtlib_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
