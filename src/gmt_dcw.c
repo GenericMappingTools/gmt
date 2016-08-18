@@ -307,6 +307,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
 		gmt_free_segment (GMT, &P);
+		gmt_M_free (GMT, order);
 		return NULL;
 	}
 
