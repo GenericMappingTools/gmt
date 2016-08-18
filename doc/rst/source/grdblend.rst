@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [**z**] ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-n| ]
 [ **-r** ]
 
 |No-spaces|
@@ -127,6 +128,8 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. include:: explain_-n.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

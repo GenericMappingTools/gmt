@@ -171,6 +171,7 @@ struct GMT_COMMON {
 		bool bc_set;	/* true if +b was parsed */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
+		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o<col>|<colrange>,... */
 		bool active;

@@ -1561,6 +1561,7 @@ GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int pos = 0, j, k = 1;
 	char p[GMT_LEN256] = {""};
 
+	strncpy (GMT->common.n.string, item, GMT_LEN64-1);	/* Make copy of -n argument verbatim */
 	switch (item[0]) {
 		case '+':	/* Means no mode was specified so we get the default */
 			GMT->common.n.interpolant = BCR_BICUBIC; k = 0; break;
