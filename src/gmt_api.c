@@ -11201,6 +11201,7 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_NORMAL, "api_change_gridlayout: reordering function for case %s -> %s not yet written\n",
 		            G->header->mem_layout, code);
+		if (out == NULL) gmt_M_free (API->GMT, tmp);
 		return (GMT_NOTSET);
 	}
 
@@ -11235,8 +11236,10 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	   That sums up to a lot of combinations. We will add them on a by-need basis. */
 	if ((tmp = out1) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->n_bands * I->header->size, unsigned char)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
-	if (I->alpha && (alpha = out2) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL)
+	if (I->alpha && (alpha = out2) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL) {
+		if (out1 == NULL) gmt_M_free (API->GMT, tmp);
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
+	}
 
 	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
 		out_node = 0;
@@ -11250,6 +11253,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written\n",
 		            I->header->mem_layout, code);
+		if (out1 == NULL) gmt_M_free (API->GMT, tmp);
 		return (GMT_NOTSET);
 	}
 
