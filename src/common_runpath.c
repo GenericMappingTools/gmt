@@ -283,7 +283,7 @@ char *gmt_runtime_libdir (char *result) {
 #endif /* WIN32 */
 
 	/* unsupported, or not shared library */
-		
+
 	return NULL;
 }
 
@@ -382,7 +382,7 @@ int gmt_verify_sharedir_version (const char *dir) {
 	/* For Mirone and probably other future external program call one cannot impose
 	 * a certain sharedir version. */
 	return true;
-#endif
+#else
 
 #ifdef DEBUG_RUNPATH
 	fprintf (stderr, "gmt_verify_sharedir_version: got dir '%s'.\n", dir);
@@ -422,4 +422,5 @@ int gmt_verify_sharedir_version (const char *dir) {
 		}
 	}
 	return false;
+#endif /* NO_SHAREDIR_VERIFY */
 }
