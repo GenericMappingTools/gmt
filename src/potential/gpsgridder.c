@@ -111,7 +111,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->S.nu = 0.25;	/* Poisson's ratio */
+	C->S.nu = 0.5;	/* Poisson's ratio */
 	C->F.fudge = 1.0e-2;	/* Default fudge scale for r_min */
 	return (C);
 }
@@ -152,13 +152,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (Note 1/4 of the total number of data constraints is a good starting point.) \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cr to select only eigenvalues needed to yield a r.m.s misfit of ~<val> [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <val> is not given then we compute <val> from the data uncertainties (requires -W).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <val> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Fudging factor to avoid Green-function singularities.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Fd<del_radius> will add <del_radius> to all distances between nodes and points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     (For geographical specify <del_radius>  in km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (For geographical specify <del_radius> in km. A value of 8 km is optimal for California.)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Ff<factor> will add <r_min>*<factor> to all distances between nodes and points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       where <r_min> is the shortest inter-point distance found.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       [Default is -Ff0.01].\n");
@@ -172,7 +173,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  A gridfile may be given;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Give effective Poisson's ratio [0.25].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Give effective 2-D Poisson's ratio [0.5]. (Note: 1.0 is incompressible in a 2-D formulation)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects two extra input columns with data errors sigma_x, sigma_y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weights instead.\n");
