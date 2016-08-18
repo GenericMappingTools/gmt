@@ -2774,9 +2774,8 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	return 0;
 }
 
-GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: MADW 2 1 Weighted Median Absolute Deviation (L1 STD) of A for weights in B.  */
-{
 	uint64_t s, row, k = 0;
 	unsigned int prev;
 	double wmed, wmad, w;
@@ -2786,7 +2785,8 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[prev]->constant) {	/* Trivial case */
-		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
+		for (s = 0; s < info->T->n_segments; s++)
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = S[prev]->factor;
 		return 0;
 	}
 
@@ -2817,7 +2817,10 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
 		}
 	}
-	if (info->local) return 0;	/* Done with local */
+	if (info->local) {		/* Done with local */
+		gmt_M_free (GMT, pair);
+		return 0;
+	}
 	/* 2. Find the weighted median */
 	wmed = gmt_median_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this median */
@@ -2826,7 +2829,8 @@ GMT_LOCAL int table_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	wmad = gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
 	return 0;
 }
 
