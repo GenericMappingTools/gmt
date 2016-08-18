@@ -88,6 +88,7 @@ Optional Arguments
     Alternatively, use **-Cn** to select the *value* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
+    Note: 1/4 of the total number of data constraints is a good starting point.
 
 .. _-E:
 
@@ -141,7 +142,8 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *nu*
-    Specify Poisson's ratio to use for this elastic sheet [0.25].
+    Specify Poisson's ratio to use for this elastic sheet [0.5].
+    Note: 1.0 is incompressible in a 2-D formulation.
 
 .. _-T:
 
