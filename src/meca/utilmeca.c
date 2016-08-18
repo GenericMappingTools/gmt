@@ -581,17 +581,16 @@ void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, 
 
 /***************************************************************************************/
 double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
-	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
+	int d, b = 1, m, i, ii, n = 0, j1 = 1, j2 = 0, j3 = 0;
 	int big_iso = 0;
-	int djp, mjp, jp_flag;
 
 	double a[3], p[3], v[3], azi[3][2];
 	double vi, iso, f, fir, s2alphan, alphan;
 	double cfi, sfi, can, san, xz, xn, xe;
 	double cpd, spd, cpb, spb, cpm, spm;
 	double cad, sad, cab, sab, cam, sam;
-	double az = 0., azp = 0., takeoff, r;
-	double x[400], y[400], x2[400], y2[400], x3[400], y3[400];
+	double az = 0., azp = 0., takeoff, r, xc, yc;
+	double x1[400], y1[400], x2[400], y2[400], x3[400], y3[400];
 	double xp1[800], yp1[800], xp2[400], yp2[400];
 	double radius_size, si, co, ssize[1];
 
@@ -624,22 +623,16 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		return (radius_size*2.);
 	}
 
-	if (fabs (v[0]) >= fabs (v[2])) {
+	if (fabs (v[0]) >= fabs (v[2]))
 		d = 0;
-		m = 2;
-	}
-	else {
+	else
 		d = 2;
-		m = 0;
-	}
+	m = 2 - d;
 
 	if (plot_zerotrace) vi = 0.;
 
 	f = - v[1] / v[d];
 	iso = vi / v[d];
-	jp_flag = 0;
-	djp = -1;
-	mjp = -1;
 
 	/* Cliff Frohlich, Seismological Research letters,
  	 * Vol 7, Number 1, January-February, 1996
@@ -666,158 +659,85 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 
 	for (i = 0; i < 360; i++) {
 		fir = (double) i * D2R;
-		s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
-		if (s2alphan > 1.) {
+		s2alphan = (2 + 2 * iso) / (3 + (1 - 2 * f) * cos(2 * fir));
+		if (s2alphan > 1) {
 			big_iso++;
 /* below pieces added as patch to fix big_iso case plotting problems. Not well done, but works
    Jeremy Pesicek Nov. 2010.
 
    second case added Dec. 2010 */
 
-			if (d == 0 && m == 2) {
-				jp_flag = 1;
-				djp = 2;
-				mjp = 0;
-			}
-			if (d == 2 && m == 0) {
-				jp_flag = 2;
-				djp = 0;
-				mjp = 2;
-			}
-
-			d = djp;
-			m = mjp;
+   			d = m;
+   			m = 2 - d;
 
 			f = - v[1] / v[d];
 			iso = vi / v[d];
-			s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
+			s2alphan = (2 + 2 * iso) / (3 + (1 - 2 * f) * cos(2 * fir));
 			sincosd (p[d], &spd, &cpd);
 			sincosd (p[b], &spb, &cpb);
 			sincosd (p[m], &spm, &cpm);
 			sincosd (a[d], &sad, &cad);
 			sincosd (a[b], &sab, &cab);
 			sincosd (a[m], &sam, &cam);
-
-			alphan = asin(sqrt(s2alphan));
-			sincos (fir, &sfi, &cfi);
-			sincos (alphan, &san, &can);
-
-			xz = can * spd + san * sfi * spb + san * cfi * spm;
-			xn = can * cpd * cad + san * sfi * cpb * cab + san * cfi * cpm * cam;
-			xe = can * cpd * sad + san * sfi * cpb * sab + san * cfi * cpm * sam;
-
-			if (fabs(xn) < EPSIL && fabs(xe) < EPSIL) {
-				takeoff = 0.;
-				az = 0.;
-			}
-			else {
-				az = atan2(xe, xn);
-				if (az < 0.) az += M_PI * 2.;
-				takeoff = acos(xz / sqrt(xz * xz + xn * xn + xe * xe));
-			}
-			if (takeoff > M_PI_2) {
-				takeoff = M_PI - takeoff;
-				az += M_PI;
-				if (az > M_PI * 2.) az -= M_PI * 2.;
-			}
-			r = M_SQRT2 * sin(takeoff / 2.);
-			sincos (az, &si, &co);
-			if (i == 0) {
-				azi[i][0] = az;
-				x[i] = x0 + radius_size * r * si;
-				y[i] = y0 + radius_size * r * co;
-				azp = az;
-			}
-			else {
-				if (fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
-					azi[n][1] = azp;
-					azi[n++][0] = az;
-				}
-				if (fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
-					if (azp < az) azi[n][0] += M_PI * 2.;
-					else azi[n][0] -= M_PI * 2.;
-				}
-				switch (n) {
-					case 0 :
-						x[j] = x0 + radius_size * r * si;
-						y[j] = y0 + radius_size * r * co;
-						j++;
-						break;
-					case 1 :
-						x2[j2] = x0 + radius_size * r * si;
-						y2[j2] = y0 + radius_size * r * co;
-						j2++;
-						break;
-					case 2 :
-						x3[j3] = x0 + radius_size * r * si;
-						y3[j3] = y0 + radius_size * r * co;
-						j3++;
-						break;
-				}
-				azp = az;
-			}
 		}
+
 /* end patch to fix big_iso case plotting problems. Jeremy Pesicek, Nov., Dec. 2010 */
+
+		alphan = asin(sqrt(s2alphan));
+		sincos (fir, &sfi, &cfi);
+		sincos (alphan, &san, &can);
+
+		xz = can * spd + san * sfi * spb + san * cfi * spm;
+		xn = can * cpd * cad + san * sfi * cpb * cab + san * cfi * cpm * cam;
+		xe = can * cpd * sad + san * sfi * cpb * sab + san * cfi * cpm * sam;
+
+		if (fabs (xn) < EPSIL && fabs (xe) < EPSIL) {
+			takeoff = 0.;
+			az = 0.;
+		}
 		else {
-			alphan = asin(sqrt(s2alphan));
-			sincos (fir, &sfi, &cfi);
-			sincos (alphan, &san, &can);
+			az = atan2(xe, xn);
+			if (az < 0.) az += M_PI * 2.;
+			takeoff = acos(xz / sqrt(xz * xz + xn * xn + xe * xe));
+		}
+		if (takeoff > M_PI_2) {
+			takeoff = M_PI - takeoff;
+			az += M_PI;
+			if (az > M_PI * 2.) az -= M_PI * 2.;
+		}
+		r = M_SQRT2 * sin(takeoff / 2.);
+		sincos (az, &si, &co);
+		xc = x0 + radius_size * r * si;
+		yc = y0 + radius_size * r * co;
 
-			xz = can * spd + san * sfi * spb + san * cfi * spm;
-			xn = can * cpd * cad + san * sfi * cpb * cab + san * cfi * cpm * cam;
-			xe = can * cpd * sad + san * sfi * cpb * sab + san * cfi * cpm * sam;
-
-			if (fabs (xn) < EPSIL && fabs (xe) < EPSIL) {
-				takeoff = 0.;
-				az = 0.;
+		if (i == 0) {
+			azi[i][0] = az;
+			x1[i] = xc; y1[i] = yc;
+		}
+		else {
+			if (fabs (fabs (az - azp) - M_PI) < D2R * 10.) {
+				azi[n][1] = azp;
+				azi[++n][0] = az;
 			}
-			else {
-				az = atan2(xe, xn);
-				if (az < 0.) az += M_PI * 2.;
-				takeoff = acos(xz / sqrt(xz * xz + xn * xn + xe * xe));
+			if (fabs (fabs (az - azp) - M_PI * 2.) < D2R * 2.) {
+				if (azp < az)
+					azi[n][0] += M_PI * 2.;
+				else
+					azi[n][0] -= M_PI * 2.;
 			}
-			if (takeoff > M_PI_2) {
-				takeoff = M_PI - takeoff;
-				az += M_PI;
-				if (az > M_PI * 2.) az -= M_PI * 2.;
-			}
-			r = M_SQRT2 * sin(takeoff / 2.);
-			sincos (az, &si, &co);
-			if (i == 0) {
-				azi[i][0] = az;
-				x[i] = x0 + radius_size * r * si;
-				y[i] = y0 + radius_size * r * co;
-				azp = az;
-			}
-			else {
-				if (fabs (fabs (az - azp) - M_PI) < D2R * 10.) {
-					azi[n][1] = azp;
-					azi[++n][0] = az;
-				}
-				if (fabs (fabs (az -azp) - M_PI * 2.) < D2R * 2.) {
-					if (azp < az) azi[n][0] += M_PI * 2.;
-					else azi[n][0] -= M_PI * 2.;
-				}
-				switch (n) {
-					case 0 :
-						x[j] = x0 + radius_size * r * si;
-						y[j] = y0 + radius_size * r * co;
-						j++;
-						break;
-					case 1 :
-						x2[j2] = x0 + radius_size * r * si;
-						y2[j2] = y0 + radius_size * r * co;
-						j2++;
-						break;
-					case 2 :
-						x3[j3] = x0 + radius_size * r * si;
-						y3[j3] = y0 + radius_size * r * co;
-						j3++;
-						break;
-				}
-				azp = az;
+			switch (n) {
+				case 0 :
+					x1[j1] = xc; y1[j1++] = yc;
+					break;
+				case 1 :
+					x2[j2] = xc; y2[j2++] = yc;
+					break;
+				case 2 :
+					x3[j3] = xc; y3[j3++] = yc;
+					break;
 			}
 		}
+		azp = az;
 	}
 	azi[n][1] = az;
 
@@ -830,13 +750,13 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		gmt_setfill (GMT, F2, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 	}
-	else if (jp_flag == 1) {
+	else if (d == 2) {
 		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		gmt_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		F1 = E, F2 = C;
 	}
-	else if (jp_flag == 2) {
+	else if (d == 0) {
 		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		gmt_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
@@ -844,44 +764,57 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	}
 
 	gmt_setfill (GMT, F1, false);
+
 	switch (n) {
 		case 0 :
 			for (i = 0; i < 360; i++) {
-				xp1[i] = x[i]; yp1[i] = y[i];
+				xp1[i] = x1[i]; yp1[i] = y1[i];
 			}
 			PSL_plotpolygon (PSL, xp1, yp1, i);
 			break;
 		case 1 :
-			for (i = 0; i < j; i++) {
-				xp1[i] = x[i]; yp1[i] = y[i];
+			for (i = 0; i < j1; i++) {
+				xp1[i] = x1[i]; yp1[i] = y1[i];
 			}
-			if (azi[0][0] - azi[0][1] > M_PI) azi[0][0] -= M_PI * 2.;
-			else if (azi[0][1] - azi[0][0] > M_PI) azi[0][0] += M_PI * 2.;
-			if (azi[0][0] < azi[0][1]) for (az = azi[0][1] - D2R; az > azi[0][0]; az -= D2R) {
-				sincos (az, &si, &co);
-				xp1[i] = x0 + radius_size * si;
-				yp1[i++] = y0 + radius_size * co;
+			if (azi[0][0] - azi[0][1] > M_PI)
+				azi[0][0] -= M_PI * 2.;
+			else if (azi[0][1] - azi[0][0] > M_PI)
+				azi[0][0] += M_PI * 2.;
+			if (azi[0][0] < azi[0][1]) {
+				for (az = azi[0][1] - D2R; az > azi[0][0]; az -= D2R) {
+					sincos (az, &si, &co);
+					xp1[i] = x0 + radius_size * si;
+					yp1[i++] = y0 + radius_size * co;
+				}
 			}
-			else for (az = azi[0][1] + D2R; az < azi[0][0]; az += D2R) {
-				sincos (az, &si, &co);
-				xp1[i] = x0 + radius_size * si;
-				yp1[i++] = y0 + radius_size * co;
+			else {
+				for (az = azi[0][1] + D2R; az < azi[0][0]; az += D2R) {
+					sincos (az, &si, &co);
+					xp1[i] = x0 + radius_size * si;
+					yp1[i++] = y0 + radius_size * co;
+				}
 			}
 			PSL_plotpolygon (PSL, xp1, yp1, i);
-			for (i=0; i<j2; i++) {
+			for (i = 0; i < j2; i++) {
 				xp2[i] = x2[i]; yp2[i] = y2[i];
 			}
-			if (azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
-			else if (azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
-			if (azi[1][0] < azi[1][1]) for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
-				sincos (az, &si, &co);
-				xp2[i] = x0 + radius_size * si;
-				yp2[i++] = y0 + radius_size * co;
+			if (azi[1][0] - azi[1][1] > M_PI)
+				azi[1][0] -= M_PI * 2.;
+			else if (azi[1][1] - azi[1][0] > M_PI)
+				azi[1][0] += M_PI * 2.;
+			if (azi[1][0] < azi[1][1]) {
+				for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
+					sincos (az, &si, &co);
+					xp2[i] = x0 + radius_size * si;
+					yp2[i++] = y0 + radius_size * co;
+				}
 			}
-			else for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
-				sincos (az, &si, &co);
-				xp2[i] = x0 + radius_size * si;
-				yp2[i++] = y0 + radius_size * co;
+			else {
+				for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
+					sincos (az, &si, &co);
+					xp2[i] = x0 + radius_size * si;
+					yp2[i++] = y0 + radius_size * co;
+				}
 			}
 			PSL_plotpolygon (PSL, xp2, yp2, i);
 			break;
@@ -889,8 +822,8 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			for (i = 0; i < j3; i++) {
 				xp1[i] = x3[i]; yp1[i] = y3[i];
 			}
-			for (ii = 0; ii < j; ii++) {
-				xp1[i] = x[ii]; yp1[i++] = y[ii];
+			for (ii = 0; ii < j1; ii++) {
+				xp1[i] = x1[ii]; yp1[i++] = y1[ii];
 			}
 
 			if (azi[2][0] - azi[0][1] > M_PI)
