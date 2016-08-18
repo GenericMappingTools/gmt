@@ -5030,6 +5030,7 @@ void gmt_cat_to_record (struct GMT_CTRL *GMT, char *record, char *word, unsigned
 	 * If sep is 1|2 do both [0 means no separator].
 	 * if sep > 10 we init record then remove 10 from sep.
 	 */
+	gmt_M_unused(way);
 	if (sep >= 10) {	/* Initialize new record */
 		record[0] = '\0';
 		sep -= 10;
@@ -6844,8 +6845,13 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	if (n_segments) {
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
-			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_rows, n_columns, NULL, NULL)) == NULL)
+			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_rows, n_columns, NULL, NULL)) == NULL) {
+				while (seg > 0) {
+					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;
+				}
+				gmt_M_free (GMT, T->segment);
 				return (NULL);
+			}
 		}
 	}
 
@@ -7506,6 +7512,7 @@ void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_im
 struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
 	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	struct GMT_VECTOR *V = NULL;
+	gmt_M_unused(direction);
 
 	V = gmt_M_memory (GMT, NULL, 1U, struct GMT_VECTOR);
 	if (n_columns) V->data = gmt_M_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
