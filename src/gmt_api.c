@@ -11056,7 +11056,7 @@ GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n
 	else if ((S = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
 	if (gmt_alloc_datasegment (API->GMT, S, n_rows, n_columns, first))  {	/* Something went wrong */
-		if (first) gmt_M_free (S);
+		if (first) gmt_M_free (API->GMT, S);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}
 	if (header && strlen (header)) {	/* Gave a header string to (re)place in the segment */
