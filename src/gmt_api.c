@@ -3011,8 +3011,10 @@ GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *sourc
 	}
 	if (add_first_segheader) for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][0] = GMT->session.d_NaN;
 	dim[1] = row;	/* Allocate all vectors using current type setting in the defaults [GMT_DOUBLE] */
-	if ((V = GMT_Create_Data (GMT->parent, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+	if ((V = GMT_Create_Data (GMT->parent, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if (close_file) fclose (fp);
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
+	}
 	for (col = 0; col < V->n_columns; col++) {
 		api_put_val = api_select_put_function (GMT->parent, V->type[col]);
 		for (row = 0; row < V->n_rows; row++)
@@ -11049,12 +11051,14 @@ GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n
 	bool first = true;
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	if ((S = Sin))	/* Existing segment given */
+	if ((S = Sin) != NULL)	/* Existing segment given */
 		first = false;
 	else if ((S = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
-	if (gmt_alloc_datasegment (API->GMT, S, n_rows, n_columns, first)) /* Something went wrong */
+	if (gmt_alloc_datasegment (API->GMT, S, n_rows, n_columns, first))  {	/* Something went wrong */
+		if (first) gmt_M_free (S);
 		return_null (V_API, GMT_MEMORY_ERROR);
+	}
 	if (header && strlen (header)) {	/* Gave a header string to (re)place in the segment */
 		if (S->header) gmt_M_str_free (S->header);
 		S->header = strdup (header);
