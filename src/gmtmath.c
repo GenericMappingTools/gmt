@@ -3084,7 +3084,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		}
 	}
 	if (info->local) {		/* Done with local */
-		gmt_M_free (pair);
+		gmt_M_free (GMT, pair);
 		return 0;
 	}
 	wmed = (float)gmt_mode_weighted (GMT, pair, k);
