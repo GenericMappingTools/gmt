@@ -3526,7 +3526,10 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = p;
 		}
 	}
-	if (info->local) return 0;	/* Done with local */
+	if (info->local) {		/* Done with local */
+		gmt_M_free (GMT, pair);
+		return 0;
+	}
 	p = (float)gmt_quantile_weighted (GMT, pair, k, q);
 	gmt_M_free (GMT, pair);
 
