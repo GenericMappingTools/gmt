@@ -39,7 +39,9 @@
 #define MGD77_N_NUMBER_FIELDS	24		/* Original 24 numerical data columns in MGD77 */
 #define MGD77_N_STRING_FIELDS	3		/* Original 3 text data columns in MGD77 */
 #define MGD77_N_HEADER_ITEMS	72		/* Number of individual header items in the MGD77 header */
-#define MGD77_N_MAG_RF		18		/* Number of different Mag ref fields so far in MGD77 docs */
+#define MGD77_N_MAG_RF		20		/* Number of different Mag ref fields so far in MGD77 docs */
+/* When updating, also update MGD77_IGRF_LAST_ID = MGD77_N_MAR_RF - 2 below, and the list in mgd77magref.h */
+
 /* Specific to MGD77T: */
 #define MGD77T_HEADER_LENGTH	4096U		/* Length of MGD77 ASCII header records */
 #define MGD77T_N_NUMBER_FIELDS	27		/* Original 24+3 numerical data columns in MGD77T */
@@ -124,7 +126,8 @@
 #define MGD77_IGF_1967		3
 #define MGD77_IGF_1980		4
 
-#define MGD77_IGRF_LAST_ID	20	/* IGRF fields IDs in MGD77 are 3,4,11-MGD77_IGRF_LAST_ID.  Update when more fields are added */
+#define MGD77_IGRF_LAST_ID	18	/* IGRF fields IDs in MGD77 are 3,4,11-MGD77_IGRF_LAST_ID.  Update when more fields are added */
+/* When updating, also update MGD_N_MAG_RF = MGD77_IGRF_LAST_ID + 2 above, and the list in mgd77magref.h */
 
 #define TWT_PDR_WRAP	10.0						/* The 10 second PDR wrap-around we see in SIO cruises */
 #define TWT_PDR_WRAP_TRIGGER	0.5 * TWT_PDR_WRAP	/* Any jump in TWT that exceeds this triggers a wrap */

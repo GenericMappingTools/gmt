@@ -40,4 +40,10 @@
 		{"IGRF-95",		14,		1900,		2000},
 		{"IGRF-00",     15,     1900,       2005},
 		{"IGRF-05",     16,     1900,       2010},
+		{"IGRF-10",     17,     1900,       2015},
+		{"IGRF-15",     18,     1900,       2020},
 		{"Other",       88,     9999,       9999}
+/* When updating this list, also update in mgd77.h:
+   MGD77_IGRF_LAST_ID = highest number of field code (not counting 88)
+   MGD77_N_MAG_RF = total number of field codes = MGD77_IGRF_LAST_ID + 2
+*/
