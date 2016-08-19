@@ -2527,7 +2527,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	char *format = NULL, *t = NULL, *s = NULL, unit = 0;
 	double phase = 0.0, val = 0.0;
 
-	fprintf (stderr, "gmtinit_set_titem: in = %s, flag = %c, axis = %c, custom = %d\n", in, flag, axis, custom);
 	t = in;
 
 	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
@@ -2667,8 +2666,6 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 
 	char *str = "xyz";
 
-	fprintf (stderr, "gmtinit_decode_tinfo\n");
-
 	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
@@ -2734,8 +2731,6 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
 	int i, j, k, ignore, g = 0, o = 0, part = 0, error = 0;
-
-	fprintf (stderr, "gmtinit_parse4_B_option\n");
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -3099,8 +3094,6 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	unsigned int no;
 	int k, error = 0;
 	bool side[3] = {false, false, false};
-
-	fprintf (stderr, "gmtinit_parse5_B_option\n");
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 

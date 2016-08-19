@@ -6184,8 +6184,6 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
-	fprintf (stderr, "gmt_auto_frame_interval: axis = %d\n", axis);
-
 	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;
 
 	if (!(A->item[item].active && A->item[item].interval == 0.0) &&
@@ -6230,8 +6228,6 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
-
-	fprintf (stderr, "p = %g, d = %g, f = %g, T->type = %c, T->generated = %d\n", p, d, f, T->type, T->generated);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
