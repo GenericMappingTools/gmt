@@ -11178,7 +11178,7 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	old_layout &= 3;	new_layout &= 3;
 	/* Grids may be column vs row oriented and from top or from bottom */
 	gmt_M_memcpy (pad, G->header->pad, 4, unsigned int);	/* Remember the pad */
-	if ((tmp = out) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->size, float)) == NULL)
+	if (((tmp = out) == NULL) && (tmp = gmt_M_memory_aligned (API->GMT, NULL, G->header->size, float)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 
 	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
@@ -11203,10 +11203,10 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 				tmp[out_node] = G->data[col * G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
 	else {		/* Other cases to be added later ...*/
-		GMT_Report (API, GMT_MSG_NORMAL, "api_change_gridlayout: reordering function for case %s -> %s not yet written\n",
+		GMT_Report (API, GMT_MSG_NORMAL, "api_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
 		            G->header->mem_layout, code);
-		if (out == NULL) gmt_M_free (API->GMT, tmp);
-		return (GMT_NOTSET);
+		for (out_node = 0; out_node < G->header->size; out_node++)
+			tmp[out_node] = G->data[out_node];
 	}
 
 	if (out == 0) {	/* Means we must update the grid data */
@@ -11255,10 +11255,10 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 				}
 	}
 	else {		/* Other cases to be added later ...*/
-		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written\n",
+		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
 		            I->header->mem_layout, code);
-		if (out1 == NULL) gmt_M_free (API->GMT, tmp);
-		return (GMT_NOTSET);
+		for (out_node = 0; out_node < I->header->size; out_node++)
+			tmp[out_node] = I->data[out_node];
 	}
 
 	if (out1 == 0) {	/* Means we must update the Image data */
