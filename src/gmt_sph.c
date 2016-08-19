@@ -223,7 +223,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		ist = 1;
 		for (row = 0; row < h->n_rows; row++) {
 			for (col = 0; col < h->n_columns; col++) {
-				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)(h->n_rows - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
+				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)row; /* Use Fortran indexing since calling program will transpose to GMT order */
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 				if (ierror < 0) {
