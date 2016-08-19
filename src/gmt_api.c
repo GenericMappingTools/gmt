@@ -11247,8 +11247,8 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	   That sums up to a lot of combinations. We will add them on a by-need basis. */
 	if ((tmp = out1) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->n_bands * I->header->size, unsigned char)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
-	if (I->alpha && (alpha = out2) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL) {
-		if (out1 == NULL) gmt_M_free (API->GMT, tmp);
+	if (I->alpha && (alpha = out2) == NULL && (alpha = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL) {
+		if (out2 == NULL) gmt_M_free (API->GMT, alpha);
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 	}
 
