@@ -100,7 +100,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->T.unit = 'X';	/* Cartesian units unless override later */
-	
+
 	return (C);
 }
 
@@ -305,7 +305,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 
 	buffer = gmt_M_memory (GMT, NULL, b_alloc, char);	/* Initial buffer size for header */
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes to stdout] */
@@ -449,9 +449,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			ns++;	/* Increment running segment ID */
 		}
 	}
-	
+
 	/* Here we have gone through all input segment and separated open from closed */
-	
+
 	if (Ctrl->C.active) {	/* Finalize allocation for closed segments now that we know how many there were */
 		C->table[0]->segment = gmt_M_memory (GMT, T[CLOSED], n_closed, struct GMT_DATASEGMENT *);
 		C->n_segments = C->table[0]->n_segments = n_closed;
@@ -463,7 +463,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting possible */
 	}
-	
+
 	gmt_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one segment */
 	if (wrap_up) {	/* Write out results and exit */
 		D[GMT_OUT]->table[0]->segment = gmt_M_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize allocation */
@@ -592,9 +592,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		sprintf (msg, "Seg %d dist[0], next_dist[0], dist[1], next_dist[1] = %g, %g, %g, %g\n", (int)iseg, segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
 		GMT_Report (API, GMT_MSG_DEBUG, msg);
 	}
-	
+
 	/* Done determining distances from endpoints to nearest endpoints for all line segments */
-	
+
 	if (Ctrl->L.active) {	/* We can now write out the link information we found */
 		struct GMT_TEXTSET *LNK = NULL;
 		char name[GMT_BUFSIZ] = {""}, name0[GMT_BUFSIZ] = {""}, name1[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
@@ -860,11 +860,12 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_NOERROR) {
+		gmt_M_free (GMT, buffer);
 		Return (API->error);
 	}
 
 	/* Tell us some statistics of what we found, if -V */
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments read\n", ns + n_islands);
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new open segments\n", n_open);
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
@@ -872,6 +873,6 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
 
 	gmt_M_free (GMT, buffer);
-	
+
 	Return (GMT_NOERROR);
 }
