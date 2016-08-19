@@ -9422,8 +9422,14 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		strip = (strip_colon_opt == opt->option) ? strip_colon : false;	/* Just turn strip possibly true for the relevant option */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = GMT_NOTSET;	/* Not set yet */
-		if (k >= 0)	/* Got a key, so split out family and geometry flags */
-			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
+		if (k >= 0) {	/* Got a key, so split out family and geometry flags */
+			int sdir = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
+			if (sdir < 0) {	/* Could not determine direction */
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Key not understood so direction is undefined? Notify developers\n");
+				sdir = GMT_IN;
+			}
+			direction = (unsigned int) sdir;
+		}
 		mod_pos = api_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
 		if (api_found_marker (argument)) {	/* Found an explicit questionmark within the option, e.g., -G?, -R? or -<? */
 			if (opt->option == 'R' && !strcmp (opt->arg, "?")) {	/* -R? means append a grid so set those parameters here */
@@ -9489,11 +9495,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
 					/* Add check to make sure argument for input is an existing file! */
 					key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
-					if (direction < 0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "SHOULD NOT HAPPEN: PLEASE REPORT BACK THE CASE THAT LEAD TO THE PRINTING OF THIS MESSAGE\n");	
-					}
-					else
-						satisfy = special_text[direction];
+					satisfy = special_text[direction];
 				}
 				else	/* Nothing special about this option */
 					satisfy = special_text[2];
