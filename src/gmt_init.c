@@ -1104,9 +1104,9 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 	gmt_M_str_free (arg);
 
 	/* Sort so Trig/Fourier terms are last in the list */
-	
+
 	qsort (M->term, n_model, sizeof (struct GMT_MODEL_TERM), compare_terms);
-	
+
 	/* Make sure there are no duplicates */
 
 	for (k = 0; k < n_model; k++) {
@@ -2527,6 +2527,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	char *format = NULL, *t = NULL, *s = NULL, unit = 0;
 	double phase = 0.0, val = 0.0;
 
+	fprintf (stderr, "gmtinit_set_titem: in = %s, flag = %c, axis = %c, custom = %d\n", in, flag, axis, custom);
 	t = in;
 
 	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
@@ -2666,6 +2667,8 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 
 	char *str = "xyz";
 
+	fprintf (stderr, "gmtinit_decode_tinfo\n");
+
 	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
@@ -2731,6 +2734,8 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
 	int i, j, k, ignore, g = 0, o = 0, part = 0, error = 0;
+
+	fprintf (stderr, "gmtinit_parse4_B_option\n");
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -2855,9 +2860,9 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			for (k = (int)strlen (out3) - 1; k >= 0; k--) {
 				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
 					error += gmtinit_decode_tinfo (GMT, i, out3[k], &out3[k+1], &GMT->current.map.frame.axis[i]);
-					out3[k] = '\0';	/* Replace with terminator */
+					out3[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
-				else if (k == 0)	/* If no [a|f|g] then 'a' */
+				else if (k == 0)	/* If no [a|f|g] then it is implicitly 'a' */
 					error += gmtinit_decode_tinfo (GMT, i, 'a', out3, &GMT->current.map.frame.axis[i]);
 			}
 		}
@@ -3094,6 +3099,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	unsigned int no;
 	int k, error = 0;
 	bool side[3] = {false, false, false};
+
+	fprintf (stderr, "gmtinit_parse5_B_option\n");
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -4320,12 +4327,12 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HARDWIRE_GMTCONF 
+#ifdef HARDWIRE_GMTCONF
 GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 
 	/* GMT Time language file for US (english) mode [US] */
 
-	/* Month record */ 
+	/* Month record */
 	strcpy (GMT->current.language.month_name[0][0], "January"); strcpy (GMT->current.language.month_name[1][0], "Jan");
 	strcpy (GMT->current.language.month_name[2][0], "J");       strcpy (GMT->current.language.month_name[3][0], "JAN");
 	strcpy (GMT->current.language.month_name[0][1], "February");strcpy (GMT->current.language.month_name[1][1], "Feb");
@@ -4351,11 +4358,11 @@ GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.language.month_name[0][11],"December");strcpy (GMT->current.language.month_name[1][11],"Dec");
 	strcpy (GMT->current.language.month_name[2][11],"D");       strcpy (GMT->current.language.month_name[3][11],"DEC");
 
-	/* Week name record */ 
+	/* Week name record */
 	strcpy (GMT->current.language.week_name[0], "Week");        strcpy (GMT->current.language.week_name[1], "Wk");
 	strcpy (GMT->current.language.week_name[2], "W");
 
-	/* Weekday record */ 
+	/* Weekday record */
 	strcpy (GMT->current.language.day_name[0][0], "Sunday");   strcpy (GMT->current.language.day_name[1][0], "Sun");
 	strcpy (GMT->current.language.day_name[2][0], "S");
 	strcpy (GMT->current.language.day_name[0][1], "Monday");   strcpy (GMT->current.language.day_name[1][1], "Mon");
@@ -4407,7 +4414,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 
 	int i, nm = 0, nw = 0, nu = 0, nc = 0;
 
-#ifdef HARDWIRE_GMTCONF 
+#ifdef HARDWIRE_GMTCONF
 	if (!strcmp(GMT->current.setting.language, "us")) {
 		gmtinit_def_us_locale (GMT);
 		return 0;
@@ -4487,7 +4494,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HARDWIRE_GMTCONF 
+#ifdef HARDWIRE_GMTCONF
 GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 
 	/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
@@ -4500,7 +4507,7 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 	size_t n_alloc = 0;
 
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC); 
+	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 
 	/* Use strdup() because the non-hardwired version uses it too and somewhere there must be a free() */
 	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica");
@@ -4645,16 +4652,16 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 	/* MAP_LABEL_OFFSET */
 	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
-	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p'; 
+	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
 	/* MAP_LINE_STEP */
 	GMT->current.setting.map_line_step = 0.75 * pt;	/* 0.75p */
-	GMT->current.setting.given_unit[GMTCASE_MAP_LINE_STEP] = 'p'; 
+	GMT->current.setting.given_unit[GMTCASE_MAP_LINE_STEP] = 'p';
 	/* MAP_LOGO */
 	GMT->current.setting.map_logo = false;
 	/* MAP_LOGO_POS */
 	GMT->current.setting.map_logo_justify = PSL_BL;	/* BL */
 	GMT->current.setting.map_logo_pos[GMT_X] = GMT->current.setting.map_logo_pos[GMT_Y] = -54 * pt;	/* -54p */
-	GMT->current.setting.given_unit[GMTCASE_MAP_LOGO_POS] = 'p'; 
+	GMT->current.setting.given_unit[GMTCASE_MAP_LOGO_POS] = 'p';
 	/* MAP_ORIGIN_X, MAP_ORIGIN_Y */
 	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 1;	/* 1i */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ORIGIN_X] = 'i';
@@ -4664,7 +4671,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_polar_cap[1] = 90;
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
-	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p'; 
+	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
 	/* MAP_TICK_LENGTH_PRIMARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 5 * pt;	/* 5p */
@@ -4782,12 +4789,12 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* PROJ_DATUM (Not implemented yet) */
 	/* PROJ_GEODESIC */
 	GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
-	gmtlib_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */ 
+	gmtlib_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */
 	/* PROJ_LENGTH_UNIT */
 	GMT->current.setting.proj_length_unit = GMT_CM;
 	/* PROJ_MEAN_RADIUS */
 	GMT->current.setting.proj_mean_radius = GMT_RADIUS_AUTHALIC;
-	gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */ 
+	gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
 	/* PROJ_SCALE_FACTOR (default) */
 	GMT->current.setting.proj_scale_factor = -1.0;
 
@@ -4859,7 +4866,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-#ifndef HARDWIRE_GMTCONF 
+#ifndef HARDWIRE_GMTCONF
 	gmt_getsharepath (GMT, "postscriptlight", "PSL_standard_fonts", ".txt", fullname, R_OK);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
@@ -10363,7 +10370,7 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	if (GMT->common.h.colnames) Csave->common.h.colnames = strdup (GMT->common.h.colnames);
 
 	/* DIR NAMES */
-	
+
 	Csave->session.GSHHGDIR = (GMT->session.GSHHGDIR) ? strdup (GMT->session.GSHHGDIR) : NULL;
 	Csave->session.DCWDIR = (GMT->session.DCWDIR) ? strdup (GMT->session.DCWDIR) : NULL;
 	Csave->session.SHAREDIR = (GMT->session.SHAREDIR) ? strdup (GMT->session.SHAREDIR) : NULL;
@@ -10372,7 +10379,7 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	Csave->session.DATADIR = (GMT->session.DATADIR) ? strdup (GMT->session.DATADIR) : NULL;
 	Csave->session.TMPDIR = (GMT->session.TMPDIR) ? strdup (GMT->session.TMPDIR) : NULL;
 	Csave->session.CUSTOM_LIBS = (GMT->session.CUSTOM_LIBS) ? strdup (GMT->session.CUSTOM_LIBS) : NULL;
-	
+
 	/* Reset all the common.?.active settings to false */
 
 	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
@@ -10454,7 +10461,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
 	/* Try this to fix valgrind leaks */
-	
+
 	GMT->session.GSHHGDIR = (Ccopy->session.GSHHGDIR) ? strdup (Ccopy->session.GSHHGDIR) : NULL;
 	GMT->session.DCWDIR = (Ccopy->session.DCWDIR) ? strdup (Ccopy->session.DCWDIR) : NULL;
 	GMT->session.SHAREDIR = (Ccopy->session.SHAREDIR) ? strdup (Ccopy->session.SHAREDIR) : NULL;
@@ -10463,7 +10470,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->session.DATADIR = (Ccopy->session.DATADIR) ? strdup (Ccopy->session.DATADIR) : NULL;
 	GMT->session.TMPDIR = (Ccopy->session.TMPDIR) ? strdup (Ccopy->session.TMPDIR) : NULL;
 	GMT->session.CUSTOM_LIBS = (Ccopy->session.CUSTOM_LIBS) ? strdup (Ccopy->session.CUSTOM_LIBS) : NULL;
-	
+
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {
 		GMT->session.n_user_media = Ccopy->session.n_user_media;
@@ -10981,7 +10988,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'A':
 			p->factor = 1.67289326141;	/* To equal area of circle with same diameter */
-			p->size_x *= p->factor;	
+			p->size_x *= p->factor;
 		case 'a':
 			p->symbol = GMT_SYMBOL_STAR;
 			break;

@@ -39,7 +39,7 @@
  * Date:	1-JAN-2010
  * Version:	5
  */
- 
+
 /*!
  * \file gmt_map.c
  * \brief gmt_map.c contains code related to generic coordinate transformation.
@@ -1739,7 +1739,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 			/* For non-periodic maps we have to be careful to position the polygon so it does
 			 * not have longitude jumps at the current border.  This does not apply to pscoast
 			 * which has special handling and hence bypasses this test */
-			
+
 			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
 				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
 				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
@@ -3425,7 +3425,7 @@ GMT_LOCAL void map_set_utmzone (struct GMT_CTRL *GMT) {
 	int kx, ky;
 	double clon, clat;
 	char zone[4] = {""};
-	
+
 	clon = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (clon > 180.0) clon -= 360.0;
 	else if (clon < -180.0) clon += 360.0;
@@ -6184,6 +6184,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
+	fprintf (stderr, "gmt_auto_frame_interval: axis = %d\n", axis);
+
 	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;
 
 	if (!(A->item[item].active && A->item[item].interval == 0.0) &&
@@ -6228,6 +6230,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
+
+	fprintf (stderr, "p = %g, d = %g, f = %g, T->type = %c, T->generated = %d\n", p, d, f, T->type, T->generated);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -7272,7 +7276,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int n_columns, unsigned int n_rows, unsigned int dpi, unsigned int offset) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: IN: Inc [%.12g/%.12g] n_columns/n_rows [%u/%u] dpi = %u offset = %u\n",
 		inc[0], inc[1], n_columns, n_rows, dpi, offset);
-	
+
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		if (GMT->current.io.inc_code[GMT_X] || GMT->current.io.inc_code[GMT_Y]) {	/* Must convert from distance units to degrees */
 			gmt_M_memcpy (header->inc, inc, 2, double);	/* Set these temporarily as the grids incs */
@@ -7355,7 +7359,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_grd_project: In [%.12g/%.12g/%.12g/%.12g] and out [%.12g/%.12g/%.12g/%.12g]\n",
-		I->header->wesn[XLO], I->header->wesn[XHI], I->header->wesn[YLO], I->header->wesn[YHI], 
+		I->header->wesn[XLO], I->header->wesn[XHI], I->header->wesn[YLO], I->header->wesn[YHI],
 		O->header->wesn[XLO], O->header->wesn[XHI], O->header->wesn[YLO], O->header->wesn[YHI]);
 
 	/* Precalculate grid coordinates */
@@ -8647,6 +8651,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_LOWER);
 	gmt_auto_frame_interval (GMT, GMT_Z, GMT_ANNOT_LOWER);
 
+	fprintf (stderr, "double_auto[%d] = %d\n", i, double_auto[i]);
+
 	/* Now set the pairs of automatically set intervals to be the same in both x- and y-direction */
 	for (i = 0; i < 6; i++) {
 		if (double_auto[i]) GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval =
@@ -8812,7 +8818,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	uint64_t k, n;
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
-	
+
 	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, m+4, 2, NULL, NULL);	/* The output segment - allocate array space (+ 4 extra) */
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
 	gmt_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
