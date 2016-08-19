@@ -27,7 +27,7 @@
  *		and finally use it as a dataset argument to GDALCreateCopy. One could not
  *		do this from the begining because this method needs a Dataset and we didn't
  *		have any to start with. Only the pointer to 'data'.
- *		This all story needs bo checked for potential memory leaks. 
+ *		This all story needs bo checked for potential memory leaks.
  *
  * Author:	Joaquim Luis
  * Date:	26-April-2011
@@ -66,7 +66,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 	}
 	*/
-	
+
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 	if (I->header->ProjRefWKT != NULL) {
 		to_GDALW->P.ProjRefWKT = I->header->ProjRefWKT;
@@ -153,6 +153,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %s memory layout is not supported, for now only: T(op)C(ol)B(and) or TRP\n",
 		            I->header->mem_layout);
+		gmt_M_free (GMT, to_GDALW);
 		return GMT_NOTSET;
 	}
 
@@ -162,7 +163,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	if (free_data) gmt_M_free (GMT, data);
 	free (to_GDALW->driver);
 	free (to_GDALW->type);
-	if (free_data && to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha); 
+	if (free_data && to_GDALW->alpha) gmt_M_free (GMT, to_GDALW->alpha);
 	gmt_M_free (GMT, to_GDALW);
 
 	return GMT_NOERROR;
@@ -171,8 +172,8 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
-	char *pszFormat = "GTiff"; 
-	double adfGeoTransform[6] = {0,1,0,0,0,1}; 
+	char *pszFormat = "GTiff";
+	double adfGeoTransform[6] = {0,1,0,0,0,1};
 	char *pszSRS_WKT = NULL;
 	OGRSpatialReferenceH hSRS;
 	GDALDatasetH     hDstDS, hOutDS;
@@ -242,13 +243,13 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (prhs->C.active) {
 		nColors = prhs->C.n_colors;
 		ptr = prhs->C.cpt;
-		hColorTable = GDALCreateColorTable (GPI_RGB); 
+		hColorTable = GDALCreateColorTable (GPI_RGB);
 		for (i = 0; i < nColors; i++) {
-			sEntry.c1 = (short)(ptr[i] * 255); 
-			sEntry.c2 = (short)(ptr[i+nColors] * 255); 
-			sEntry.c3 = (short)(ptr[i+2*nColors] * 255); 
-			sEntry.c4 = (short)255; 
-			GDALSetColorEntry(hColorTable, i, &sEntry); 
+			sEntry.c1 = (short)(ptr[i] * 255);
+			sEntry.c2 = (short)(ptr[i+nColors] * 255);
+			sEntry.c3 = (short)(ptr[i+2*nColors] * 255);
+			sEntry.c4 = (short)255;
+			GDALSetColorEntry(hColorTable, i, &sEntry);
 		}
 	}
 
@@ -273,7 +274,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			projWKT = pszPrettyWkt;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n",
 					prhs->P.ProjRefPROJ4);
 		}
 
@@ -286,16 +287,16 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 	hDriver = GDALGetDriverByName("MEM");		/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
 	hDriverOut = GDALGetDriverByName(pszFormat);	/* The true output format driver */
-    
+
 	if (hDriverOut == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Output driver %s not recognized\n", pszFormat);
 		/* The following is s bit idiot. The loop should only be executed is verbose so requires */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n");
 		for (i = 0; i < GDALGetDriverCount(); i++) {
 			hDriver = GDALGetDriver(i);
-			if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL || 
+			if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL ||
 			    GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n", 
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n",
 				            GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
 		}
 		GDALDestroyDriverManager();
@@ -314,11 +315,11 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		gmt_M_free(GMT, outByte);
 		return (-1);
 	}
-	GDALSetGeoTransform(hDstDS, adfGeoTransform); 
+	GDALSetGeoTransform(hDstDS, adfGeoTransform);
 
 	/* Use compression with GeoTiff driver */
 	if (!strcasecmp(pszFormat,"GTiff")) {
-		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE"); 
+		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE");
 		/* tiles are less efficient in small grids (padding) and are not
 		 * supported everywhere, when n_cols < tile_width || n_rows < tile_height */
 		if (n_cols > 3 * GDAL_TILE_SIZE && n_rows > 3 * GDAL_TILE_SIZE)
@@ -336,7 +337,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		hSRS = OSRNewSpatialReference(NULL);
 		if (is_geog && !projWKT)	/* Only thing we know is that it is Geog */
 			OSRSetFromUserInput(hSRS, "+proj=latlong +datum=WGS84");
-		else if (projWKT)				/* Even if is_geog == true, use the WKT string */ 
+		else if (projWKT)				/* Even if is_geog == true, use the WKT string */
 			OSRSetFromUserInput(hSRS, projWKT);
 		else
 			OSRSetFromUserInput(hSRS, "LOCAL_CS[\"Unknown\"]");		/* Need a SRS for AREA_OR_POINT to be taken into account in GeoTiff */
@@ -350,11 +351,11 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		/* A problem with writing to the MEM driver is that it tests that we dont overflow
 		   but the issue is that the test is done on the MEM declared size, whilst we are
 		   actually using a larger array, and the dimensions passed to GDALRasterIO refer
-		   to it. The trick was to offset the initial position of the 'data' array in 
+		   to it. The trick was to offset the initial position of the 'data' array in
 		   gmt_gdal_write_grd and adapt the line stride here (last GDALRasterIO argument).
-		   Thanks to Even Roualt, see: 
+		   Thanks to Even Roualt, see:
 		   osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
-		hBand = GDALGetRasterBand(hDstDS, i+1); 
+		hBand = GDALGetRasterBand(hDstDS, i+1);
 		if (i == 1 && hColorTable != NULL) {
 			if (GDALSetRasterColorTable(hBand, hColorTable) == CE_Failure)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\tERROR creating Color Table");
@@ -399,7 +400,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 
+				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0,
 				                 prhs->nXSizeFull * n_byteOffset)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				break;
