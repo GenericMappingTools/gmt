@@ -2062,13 +2062,14 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	}
 
 	if (E.apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
-		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME,NCPOS_LAT,NCPOS_LON,NCPOS_TWT,NCPOS_MTF1,NCPOS_GOBS,NCPOS_EOT};
-		char *abbrev[N_E77_AUX_FIELDS] = {"time","lat","lon","twt","mtf1","gobs","eot"};
+		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME, NCPOS_LAT, NCPOS_LON, NCPOS_TWT, NCPOS_MTF1, NCPOS_GOBS, NCPOS_EOT};
+		char *abbrev[N_E77_AUX_FIELDS] = {"time", "lat", "lon", "twt", "mtf1", "gobs", "eot"};
 		/* First make sure the auxiliary data fields are set */
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
 			if (!E.needed[i]) continue;	/* Dont need this particular column */
 			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
 				col =  MGD77_Info_from_Abbrev (GMT, abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
+				if (col == MGD77_NOT_SET) col = 0; /* Just to stem a Coverity issue */
 				E.aux[i] = S->values[col];
 			}
 			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
@@ -3385,7 +3386,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		H->errors[ERR]++;
 	}
 	i = P->Gravity_Reference_System_Code - '0';
-	if ((P->Gravity_Reference_System_Code && !((i >= 1 && i <= 3) || i == 9)) OR_TRUE) {
+	if ((P->Gravity_Reference_System_Code && !((i >= 1 && i <= 3) || i == 8)) OR_TRUE) {
 		if (F->verbose_level & 2) {
 			if (i == 9)
 				fprintf (fp_err, "Y-E-%s-H14-05: Invalid Gravity Reference System Code: (%c) [ ]\n", F->NGDC_id, P->Gravity_Reference_System_Code);
