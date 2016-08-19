@@ -539,9 +539,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	bool custom_warn = false, warn[MGD77_N_WARN_TYPES], report_raw = false;
 	bool decimateData = true, forced = false, adjustData = false, flip_flags = false;
 
-	int error = 0, n_paths;
+	int error = 0, argno, n_paths;
 
-	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns;
+	unsigned int n_cruises = 0, n_grids = 0, n_out_columns;
 	unsigned int dtc_index = 0, pos = 0;
 
 	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
@@ -1118,6 +1118,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, n_paths, list);
+				gmt_M_free (GMT, GMT_cpy);
 				bailout (GMT_ERROR_ON_FOPEN);
 			}
 	 	}
