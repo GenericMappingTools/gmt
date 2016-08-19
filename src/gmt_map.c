@@ -8634,9 +8634,9 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		Return(GMT_MAP_NO_PROJECTION);
 
 	/* If intervals are not set specifically, round them to some "nice" values
-	 * Remember whether frame items in both directions were are automatically set */
+	 * Remember whether frame items in both directions were automatically set */
 	for (i = 0; i < 6; i++)
-		double_auto[i] = gmt_M_is_geographic (GMT, GMT_IN) && !GMT->current.map.frame.slash &&
+		double_auto[i] = gmt_M_is_geographic (GMT, GMT_IN) && GMT->current.map.frame.set_both &&
 		GMT->current.map.frame.axis[GMT_X].item[i].active && GMT->current.map.frame.axis[GMT_X].item[i].interval == 0.0 &&
 		GMT->current.map.frame.axis[GMT_Y].item[i].active && GMT->current.map.frame.axis[GMT_Y].item[i].interval == 0.0;
 
@@ -8646,8 +8646,6 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_LOWER);
 	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_LOWER);
 	gmt_auto_frame_interval (GMT, GMT_Z, GMT_ANNOT_LOWER);
-
-	fprintf (stderr, "double_auto[%d] = %d\n", i, double_auto[i]);
 
 	/* Now set the pairs of automatically set intervals to be the same in both x- and y-direction */
 	for (i = 0; i < 6; i++) {

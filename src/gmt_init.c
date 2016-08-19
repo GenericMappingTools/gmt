@@ -2439,7 +2439,6 @@ GMT_LOCAL int gmtinit_split_info_strings (struct GMT_CTRL *GMT, const char *in, 
 		if (in[i] == ':') mute = !mute;
 		if (in[i] == '/' && !mute) s_pos[n_slash++] = i;	/* Axis-separating slash, not a slash in a label */
 	}
-	if (n_slash) GMT->current.map.frame.slash = true;
 
 	if (n_slash == 3) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error splitting -B string %s\n", in);
@@ -2460,6 +2459,7 @@ GMT_LOCAL int gmtinit_split_info_strings (struct GMT_CTRL *GMT, const char *in, 
 	else {	/* Got x with implicit copy to y */
 		strcpy (x_info, in);
 		strcpy (y_info, in);
+		GMT->current.map.frame.set_both = true;
 	}
 	return (GMT_NOERROR);
 }
@@ -3136,7 +3136,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		k++;
 	}
-	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
+	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmtinit_handle5_plussign (GMT, text, "Llpu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +u to ASCII 1 to avoid interference with +modifiers */

@@ -479,7 +479,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
 	bool primary;			/* true if current axis is primary, false if secondary */
-	bool slash;			/* true if slashes were used in the -B argument */
+	bool set_both;			/* true if -B argument applies to both x and y axes */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
 	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
