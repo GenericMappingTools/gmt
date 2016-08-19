@@ -2510,7 +2510,7 @@ GMT_LOCAL int api_export_postscript (struct GMTAPI_CTRL *API, int object_ID, uns
 	return GMT_OK;
 }
 
-GMT_LOCAL struct GMT_MATRIX * api_read_matrix (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
 	/* We read the MATRIX from fp [or stdin].
 	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * Notes: mode is not used yet.  We only do ascii file for now - later need to deal with -b, if needed.
@@ -2587,8 +2587,10 @@ GMT_LOCAL struct GMT_MATRIX * api_read_matrix (struct GMT_CTRL *GMT, void *sourc
 	/* Possibly restore the missing first segment header */
 	if (add_first_segheader) for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][0] = GMT->session.d_NaN;
 	dim[1] = row;	/* Allocate all vectors using current type setting in the defaults [GMT_DOUBLE] */
-	if ((M = GMT_Create_Data (GMT->parent, GMT_IS_MATRIX, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+	if ((M = GMT_Create_Data (GMT->parent, GMT_IS_MATRIX, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if (close_file) fclose (fp);
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
+	}
 	api_put_val = api_select_put_function (GMT->parent, M->type);	/* Get correct put function given data type */
 	GMT_2D_to_index = api_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);	/* Get ij index function */
 	for (col = 0; col < M->n_columns; col++) {
@@ -2603,7 +2605,7 @@ GMT_LOCAL struct GMT_MATRIX * api_read_matrix (struct GMT_CTRL *GMT, void *sourc
 }
 
 /*! . */
-GMT_LOCAL struct GMT_MATRIX * api_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_MATRIX *api_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a GMT vector table.
 	 */
 
