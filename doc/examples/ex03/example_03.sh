@@ -111,7 +111,7 @@ echo "Coherency@+2@+" | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i \
 	-O -K >> $ps
 gmt psxy spectrum.xpower -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
 	-BWeSn+t"Ship and Satellite Gravity"+g240/255/240 \
-	-Gred -ST0.07i -O -R -J -Y4.2i -K -Ey/0.5p >> $ps
+	-Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
 gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> $ps
 echo "Input Power" | gmt pstext -R0/4/0/3.75 -Jx1i -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K >> $ps
 gmt pslegend -R -J -O -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold << EOF >> $ps
