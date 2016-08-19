@@ -1496,7 +1496,7 @@ static int MGD77_Write_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTR
 #define place_float(item,fmt) if (!gmt_M_is_dnan(MGD77Record->number[item])) { sprintf (buffer, fmt, MGD77Record->number[item]); strcat (line, buffer); }
 #define place_int(item,fmt) if (!gmt_M_is_dnan(MGD77Record->number[item])) { sprintf (buffer, fmt, (int)MGD77Record->number[item]); strcat (line, buffer); }
 #define place_text(item) if (MGD77Record->word[item][0]) { strcat (line, MGD77Record->word[item]); }
-	
+
 static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record) {
 	/* Will read a single tabular MGD77T record */
 	char buffer[BUFSIZ] = {""}, line[BUFSIZ] = {""}, *end = NULL;
@@ -2447,7 +2447,7 @@ static int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, str
 	gmt_M_unused(GMT); gmt_M_unused(file);
 
 	use = (F->original || F->format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
-	
+
 	P = H->mgd77[use];
 	fputs (MGD77T_HEADER, F->fp);					fputs ("\n", F->fp);
 	fputs (P->Survey_Identifier, F->fp);				fputs ("\t", F->fp);
@@ -2830,7 +2830,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 
 	start = stop = MGD77_NOT_SET;
 	len = (int)strlen (F->path);
-	for (start = len - 1; stop == MGD77_NOT_SET && start > 0; start--) 
+	for (start = len - 1; stop == MGD77_NOT_SET && start > 0; start--)
 		if (F->path[start] == '.') stop = start;
 	while (start >= 0 && F->path[start] != '/') start--;
 	start++;
@@ -3478,7 +3478,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	}
 
 	H->errors[TOTAL] = H->errors[WARN] + H->errors[ERR];	/* Sum of warnings and errors */
-	
+
 	return GMT_OK;
 }
 
@@ -3670,7 +3670,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 
 	for (i = match = id = 0; i < length; i++) if (isdigit ((int)item[i])) match++;
 	if (match == length && ((id = atoi (item)) >= 1 && id <= MGD77_N_HEADER_ITEMS)) {
-		F->Want_Header_Item[id] = true;
+		F->Want_Header_Item[--id] = true;
 		return 0;
 	}
 
@@ -3996,7 +3996,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	F->n_bit_tests = i;
 
 	F->no_checking = (F->n_constraints == 0 && F->n_exact == 0 && F->n_bit_tests == 0);	/* Easy street */
-	
+
 	return GMT_OK;
 }
 
@@ -5547,7 +5547,7 @@ void MGD77_Free_Table (struct GMT_CTRL *GMT, unsigned int n_items, char **item_n
 	if (!n_items) return;
 	for (i = 0; i < n_items; i++) gmt_M_str_free (item_names[i]);	/* free because they were allocated with strdup */
 	gmt_M_free (GMT, item_names);
-	
+
 }
 
 int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, unsigned int mode, struct MGD77_CORRTABLE ***CORR) {
@@ -5695,7 +5695,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	gmt_fclose (GMT, fp);
 
 	*CORR = C_table;
-	
+
 	return GMT_OK;
 }
 
