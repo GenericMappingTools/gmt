@@ -7283,7 +7283,10 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 							count[GMT_SEG] = 0;
 						}
 						gmt_prep_tmp_arrays (API->GMT, count[GMT_ROW], T_obj->n_columns);	/* Init or reallocate tmp read vectors */
-						for (col = 0; col < T_obj->n_columns; col++) API->GMT->hidden.mem_coord[col][count[GMT_ROW]] = ((double *)record)[col];
+						for (col = 0; col < T_obj->n_columns; col++) {
+							API->GMT->hidden.mem_coord[col][count[GMT_ROW]] = ((double *)record)[col];
+							if (API->GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (API->GMT->current.io.geo.range, &(API->GMT->hidden.mem_coord[col][count[GMT_ROW]]));
+						}
 						count[GMT_ROW]++;	/* Increment rows in this segment */
 						break;
 					case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
