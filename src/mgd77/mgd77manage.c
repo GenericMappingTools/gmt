@@ -501,12 +501,12 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 	
 	int i, k = 0, column, result, set, check, error = 0;
-	int width, GF_version = MGD77_NOT_SET, n_fields = 0;
+	int width, GF_version = MGD77_NOT_SET, n_fields = 0, n_paths = 0;
 	bool transform, verified, strings = false, got_grid, got_table;
 	bool two_cols = false, constant, ok_to_read = true, interpolate = false;
 	
 	unsigned int MTF_col = 1, pos, c_kind = 0, row, col;
-	uint64_t argno, n_expected_fields, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
+	uint64_t argno, n_expected_fields, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
 	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;

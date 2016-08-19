@@ -250,12 +250,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77info (void *V_API, int mode, void *args) {
-	int i, id, id_col, t_col, x_col, y_col, error = 0;
+	int i, id, id_col, t_col, x_col, y_col, error = 0, argno, n_paths;
 	
 	int64_t rata_die;
 	size_t length;
 	
-	uint64_t rec, argno, n_paths, counter[MGD77_MAX_COLS];
+	uint64_t rec, counter[MGD77_MAX_COLS];
 	unsigned int saved_range, quad_no, n_quad, use, k;
 	bool first = true, read_file, quad[4] = {false, false, false, false};
 	

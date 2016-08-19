@@ -539,9 +539,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	bool custom_warn = false, warn[MGD77_N_WARN_TYPES], report_raw = false;
 	bool decimateData = true, forced = false, adjustData = false, flip_flags = false;
 
-	int error = 0;
+	int error = 0, n_paths;
 
-	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
+	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns;
 	unsigned int dtc_index = 0, pos = 0;
 
 	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
@@ -806,8 +806,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					error = true;
 				}
 				bad_sections = true;
-				BadSection[n_bad_sections].col = col;
-				n_bad_sections++;
+				BadSection[n_bad_sections++].col = col;
 				if (n_bad_sections == MAX_BAD_SECTIONS) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
 					error = true;
@@ -1149,9 +1148,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* Scale and DC adjust if selected */
 		if (adjustData) {
-			for (i=0;i<MGD77_N_NUMBER_FIELDS;i++) {
+			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {
 				if (!gmt_M_is_dnan(adjustScale[i]) || !gmt_M_is_dnan(adjustDC[i])) {
-					for (k=0; k<nvalues;k++)
+					for (k = 0; k < nvalues; k++)
 						D[k].number[i] = D[k].number[i] * adjustScale[i] + adjustDC[i];
 					sprintf (text, GMT->current.setting.format_float_out, adjustScale[i]);
 					GMT_Report (API, GMT_MSG_NORMAL, "(%s) Scaled by %s and ", mgd77defs[i].abbrev,text);
@@ -1163,8 +1162,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* Set user-specified flagged observations to NaN before analysis */
 		if (bad_sections) {
-			for (k=0;k<n_bad_sections;k++) {	/* For each bad section */
-				for (i=BadSection[k].start-1;i<BadSection[k].stop;i++) {	/* Loop over the flagged records (adjust -1 for C index) */
+			for (k = 0; k < n_bad_sections; k++) {	/* For each bad section */
+				for (i = BadSection[k].start-1; i < BadSection[k].stop; i++) {	/* Loop over the flagged records (adjust -1 for C index) */
 					D[i].number[BadSection[k].col] = MGD77_NaN;	/* and set them to NaN */
 				}
 				if (i == nvalues) M.bit_pattern[0] -= (1 << BadSection[k].col); /* Turn off this field if all values have been flagged as bad */

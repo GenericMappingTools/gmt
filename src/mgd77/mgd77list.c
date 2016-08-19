@@ -718,9 +718,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
-	int sep_flag;
+	int sep_flag, n_paths;
 	
-	unsigned int select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
+	unsigned int select_option, n_out = 0, argno, n_cruises = 0, kx, n_items = 0;
 	unsigned int kk, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
 	
 	uint64_t rec, prevrec;

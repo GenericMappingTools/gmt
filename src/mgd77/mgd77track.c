@@ -561,8 +561,8 @@ EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GC
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77track (void *V_API, int mode, void *args) {
-	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_paths, argno, n_cruises = 0;
-	int this_julian = 0, last_julian, error = 0;
+	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_cruises = 0;
+	int this_julian = 0, last_julian, error = 0, n_paths, argno;
 	bool first, form, both = false;
 	unsigned int annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0}, dist_flag = 2;
 	
