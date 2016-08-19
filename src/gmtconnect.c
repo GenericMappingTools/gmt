@@ -850,6 +850,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 	}
