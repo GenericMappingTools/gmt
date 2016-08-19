@@ -9489,7 +9489,11 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
 					/* Add check to make sure argument for input is an existing file! */
 					key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
-					satisfy = special_text[direction];
+					if (direction < 0) {
+						GMT_Report (API, GMT_MSG_NORMAL, "SHOULD NOT HAPPEN: PLEASE REPORT BACK THE CASE THAT LEAD TO THE PRINTING OF THIS MESSAGE\n");	
+					}
+					else
+						satisfy = special_text[direction];
 				}
 				else	/* Nothing special about this option */
 					satisfy = special_text[2];
