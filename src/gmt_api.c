@@ -4164,8 +4164,8 @@ GMT_LOCAL int api_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAG
 	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
 	if (strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
 		fwrite (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp);
-	else
 #if 0
+	else
 	for (row = 0; row < I->header->n_rows; row++) {
 		for (col = 0; col < I->header->n_columns; col++) {
 			for (band = 0; band < I->header->n_bands; band++) {
