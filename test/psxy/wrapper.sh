@@ -23,4 +23,3 @@ EOF
 gmt psxy -R-80/120/-60/60 -JM6i -Glightred -P -Baf -K bad1.txt -A > $ps
 gmt psxy -R -J -Glightblue -O -K bad2.txt -A >> $ps
 gmt psxy -R -J -O -W0.25p bad1.txt bad2.txt -A >> $ps
-gv $ps &
