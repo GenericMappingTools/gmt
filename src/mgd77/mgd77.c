@@ -1787,8 +1787,10 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 		time_id = MGD77_NOT_SET;
 	}
 	else {
+		int col;
 		MGD77_nc_status (GMT, nc_def_dim (F->nc_id, "time", NC_UNLIMITED, &F->nc_recid));		/* Define unlimited time dimension */
-		MGD77_Info_from_Abbrev (GMT, "time", H, &set, &j);
+		col = MGD77_Info_from_Abbrev (GMT, "time", H, &set, &j);
+		if (col == MGD77_NOT_SET) col = 0; /* Just to stem a Coverity issue */
 		time_id = j;
 	}
 
