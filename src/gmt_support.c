@@ -13410,7 +13410,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via map coordinates: %g, %g\n", A->x, A->y);
 			break;
-		case GMT_REFPOINT_NOTSET:	/* Here to prevent a warning */
+		default:		/* Here to prevent a warning */
 			break;
 	}
 	if (n_errors)	/* Failure; free refpoint structure */
