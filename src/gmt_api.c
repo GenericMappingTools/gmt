@@ -11077,8 +11077,10 @@ GMT_LOCAL struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n
 	API->error = GMT_NOERROR;
 	if ((S = Sin) == NULL && (S = gmt_M_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
-	if (gmt_alloc_textsegment (API->GMT, S, n_rows)) /* Something went wrong */
+	if (gmt_alloc_textsegment (API->GMT, S, n_rows)) {	/* Something went wrong */
+		gmt_M_free (API->GMT, S);
 		return_null (V_API, GMT_MEMORY_ERROR);
+	}
 	if (header && strlen (header)) {	/* Gave a header string to (re)place in the segment */
 		if (S->header) gmt_M_str_free (S->header);
 		S->header = strdup (header);
