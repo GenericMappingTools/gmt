@@ -31,10 +31,8 @@
 **Alfred Wegener Institute, Germany**
 
 .. figure:: /_images/GMT5_Summit_2016.jpg
-   :height: 599 px
-   :width: 1013 px
+   :width: 1200 px
    :align: center
-   :scale: 50 %
 
    The five horsemen of the GMT apocalypse:
    Joaquim Luis, Walter H.F. Smith, Remko Scharroo, Florian Wobbe, and Paul Wessel
