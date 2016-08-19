@@ -22,7 +22,7 @@
 # source files
 set (SUPPL_LIB_SRCS spotter.h libspotter.c)
 set (SUPPL_PROGS_SRCS backtracker.c gmtpmodeler.c grdpmodeler.c grdrotater.c
-	grdspotter.c hotspotter.c originator.c rotconverter.c)
+	grdspotter.c hotspotter.c originator.c rotconverter.c rotsmoother.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.spotter
