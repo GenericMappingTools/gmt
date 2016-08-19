@@ -7473,11 +7473,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
 		S_obj->n_alloc += GMT_CHUNK;
-		if ((S_obj->method == GMT_IS_DUPLICATE || S_obj->method == GMT_IS_REFERENCE) && S_obj->actual_family == GMT_IS_MATRIX) {
+		if (M_obj && (S_obj->method == GMT_IS_DUPLICATE || S_obj->method == GMT_IS_REFERENCE) && S_obj->actual_family == GMT_IS_MATRIX) {
 			size_t size = S_obj->n_alloc * M_obj->n_columns;	/* Only one layer in this context */
 			if ((error = gmtlib_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 		}
-		else {	/* VIA_VECTOR */
+		else if (V_obj) {	/* VIA_VECTOR */
 			if ((error = api_alloc_vectors (API->GMT, V_obj, S_obj->n_alloc)) != GMT_OK) return (error);
 		}
 	}
@@ -9522,7 +9522,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	for (ku = 0; ku < n_keys; ku++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
 		if (api_is_required_IO (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {'?',0};
-			direction = api_key_to_family (API, key[ku], &family, &geometry);	/* Extract family and geometry */
+			if ((direction = api_key_to_family (API, key[ku], &family, &geometry)) == GMT_NOTSET) {	/* Extract family and geometry */
+				GMT_Report (API, GMT_MSG_NORMAL, "Failure to extract family, geometry, and direction!!!!\n");
+				continue;
+			}
 			/* We need to know how many implicit items for a given family we might have to add.  For instance,
 			 * one can usually give any number of data or text tables but only one grid file.  However, this is
 			 * not a fixed thing, hence we counted up n_per_family from the keys earlier so we have some limits */
