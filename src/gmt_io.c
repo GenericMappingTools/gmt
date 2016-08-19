@@ -6850,6 +6850,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;
 				}
 				gmt_M_free (GMT, T->segment);
+				gmt_M_free (GMT, T);
 				return (NULL);
 			}
 		}
