@@ -6443,6 +6443,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		if (!multiple_files_ok (family)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET. "
 			                                 "Use GMT_Read_Group to read groups of other data types\n");
+			if (input) free (input);
 			return_null (API, GMT_ONLY_ONE_ALLOWED);
 		}
 		if ((n_files = gmtlib_glob_list (API->GMT, infile, &filelist)) == 0) {
