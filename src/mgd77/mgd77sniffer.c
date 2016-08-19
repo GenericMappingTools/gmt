@@ -538,9 +538,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	bool bad_sections = false, custom_min_speed = false, do_regression = true, dist_to_coast = false;
 	bool custom_warn = false, warn[MGD77_N_WARN_TYPES], report_raw = false;
 	bool decimateData = true, forced = false, adjustData = false, flip_flags = false;
-	
+
 	int error = 0;
-	
+
 	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
 	unsigned int dtc_index = 0, pos = 0;
 
@@ -1596,7 +1596,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 								/* Check if regression slope matches common scales (0.1, 10, etc.)  */
-								for (j = 0; j < 4; j++) { 
+								for (j = 0; j < 4; j++) {
 									if (test_slope[j] >= (stats[MGD77_RLS_SLOPE]-range) && test_slope[j] <= (stats[MGD77_RLS_SLOPE]+range)) {
 										sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
 										if (!strcmp(display,"E77"))
@@ -3005,6 +3005,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
-
+	gmt_M_free (GMT, GMT_cpy);
 	bailout (GMT_NOERROR);
 }
