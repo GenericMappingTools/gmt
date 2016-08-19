@@ -288,7 +288,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
 
-	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) return NULL;
+	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
+		gmt_M_free (GMT, order);
+		return NULL;
+	}
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, 2, NULL, NULL);
