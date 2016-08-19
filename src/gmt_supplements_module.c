@@ -78,6 +78,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"hotspotter", "spotter", "Create CVA image from seamount locations", "<D{,GG}"},
 	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
+	{"rotsmoother", "spotter", "Get mean rotations and covarience matrices from set of finate rotations", "<D{,>D}"},
 	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">T}"},
 	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", ">D}"},
 	{"x2sys_datalist", "x2sys", "Extract content of track data files", ">D}"},
