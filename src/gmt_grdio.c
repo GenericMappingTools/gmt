@@ -2310,8 +2310,10 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
 			gmt_M_memcpy (inc_dup, inc, 2, double);
 		if (dim && dim[GMT_Z] > 1) n_layers = (unsigned int)dim[GMT_Z];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid/Image dimensions imply w/e/s/n = %g/%g/%g/%g, inc = %g/%g, %s registration, n_layers = %u\n",
-		            wesn_dup[XLO], wesn_dup[XHI], wesn_dup[YLO], wesn_dup[YHI], inc[GMT_X], inc[GMT_Y], regtype[registration], n_layers);
+		if (inc != NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid/Image dimensions imply w/e/s/n = %g/%g/%g/%g, inc = %g/%g, %s registration, n_layers = %u\n",
+			            wesn_dup[XLO], wesn_dup[XHI], wesn_dup[YLO], wesn_dup[YHI], inc[GMT_X], inc[GMT_Y], regtype[registration], n_layers);
+		}
 	}
 	/* Clobber header and reset */
 	gmt_grd_init (GMT, header, options, false);	/* This is for new grids only so update is always false */
