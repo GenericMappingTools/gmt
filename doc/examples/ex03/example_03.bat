@@ -44,11 +44,10 @@ gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+
 echo Coherency@+2@+ | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
 gmt psxy -Gred -ST0.07i -O -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity"+g240/255/240 spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> %ps%
 gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> %ps%
-echo Input Power | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
+echo Input Power | gmt pstext -R -Jx1i -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K -Wthicker -C0.1i >> %ps%
 echo S 0.1i T 0.07i black - 0.3i Ship > tmp
 echo S 0.1i c 0.07i black - 0.3i Satellite >> tmp
-gmt pslegend -R0/4/0/3.75 -Jx -O -DjBL+w1.2i+o0.25i -F+glightgray+pthicker \
-	--FONT_ANNOT_PRIMARY=14p,Helvetica-Bold tmp >> %ps%
+gmt pslegend -R0/4/0/3.75 -Jx -O -DjBL+w1.2i+o0.25i -F+glightgray+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold tmp >> %ps%
 REM
 del tmp
 del *.pg
