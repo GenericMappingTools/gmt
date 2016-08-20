@@ -51,6 +51,7 @@ const char *gmt_error_string[] = {
 	/* GMT_GRDIO_NO_VAR */			"Named variable does not exist in file",
 	/* GMT_GRDIO_BAD_DIM */			"Named variable is not 2-, 3-, 4- or 5-D",
 	/* GMT_GRDIO_NC_NO_PIPE */		"NetCDF-based I/O does not support piping",
+	/* GMT_GRDIO_NC_NOT_COARDS */	"NetCDF grid is not COARDS compliant",
 	/* GMT_GRDIO_NOT_RAS */			"Not a Sun raster file",
 	/* GMT_GRDIO_NOT_8BIT_RAS */		"Not a standard 8-bit Sun raster file",
 	/* GMT_GRDIO_NOT_SURFER */		"Not a valid Surfer 6|7 grid file",

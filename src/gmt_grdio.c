@@ -931,8 +931,8 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = gmt_is_nc_grid (GMT, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);
-		/* Continue only when file was a pipe or when nc_open didn't like the file. */
-		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED)
+		/* Continue only when file was not a pipe or when nc_open didn't like the file or when the grid was COARDS-compliant. */
+		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED && val != GMT_GRDIO_NC_NOT_COARDS)
 			return (val);
 		/* Then check for native binary GMT grid */
 		if ((choice = gmt_is_native_grid (GMT, header)) == GMT_NOERROR)
