@@ -2735,6 +2735,22 @@ discussed previously. For more detail, see GMT_Write_Data_ above. If
 successful the function returns 0; otherwise we return 1
 and set ``API->error`` to reflect to cause.
 
+
+
+.. _GMT_Set_Columns:
+
+  ::
+
+    void *GMT_Set_Columns (void *API, unsigned int n_columns, unsigned int mode);
+
+The ``n_columns`` is a number related to the number of output columns you plan to write, while
+``mode`` controls what that number means.  Here, ``mode`` = GMT_COL_FIX means it is the actual
+number of output columns,  ``mode`` = GMT_COL_ADD means it should be added to the known number
+of input columns to arrive at the number of final output columns, while ``mode`` = GMT_COL_SUB
+means this value should be subtracted from the number of input columns to find the number of
+output columns.
+
+
 Exporting a data record
 ~~~~~~~~~~~~~~~~~~~~~~~
 
