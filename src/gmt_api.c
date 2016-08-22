@@ -5904,6 +5904,31 @@ int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigne
 }
 #endif
 
+int GMT_Close_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, close it */
+	int object_ID, item;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	API = api_get_api_ptr (V_API);
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	if (API->object[item]->direction == GMT_IN) {
+		API->object[item]->data = API->object[item]->resource;	/* Switch from provider to consumer */
+		API->object[item]->resource = NULL;						/* No longer provider */
+	}
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
+}
+#endif
+
 void *GMT_Read_VirtualFile (void *V_API, const char *string) {
 	/* Given a VirtualFile name, retrieve the resulting object */
 	int object_ID;
@@ -5934,7 +5959,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
-	int item, object_ID, family = GMT_NOTSET, flag= (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
+	int item, object_ID, family = GMT_NOTSET, flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
 	unsigned int n_kinds = 0, k, counter[GMT_N_FAMILIES];
 	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);

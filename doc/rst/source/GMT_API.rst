@@ -536,6 +536,8 @@ the return codes of the modules for now.  We will call our program
    call the GMT module you wish to use via GMT_Read_VirtualFile_, which
    returns a data structure of requested type.
 
+#. Close the virtual files you have been using.
+
 #. We terminate the GMT session by calling GMT_Destroy_Session_.
 
 Example code
@@ -572,6 +574,9 @@ this program:
       GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args);
       /* Obtain the grid from the virtual file */
       G = GMT_Read_VirtualFile (API, output);
+      /* Close the virtual files */
+      GMT_Close_VirtualFile (API, input);
+      GMT_Close_VirtualFile (API, output);
       /* Write the grid to file */
       GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "junk.nc", G);
       /* Destroy the GMT session */
@@ -672,6 +677,8 @@ Next table gives a list of all the functions and their purpose.
 | GMT_Call_Module_         | Call any of the GMT modules                           |
 +--------------------------+-------------------------------------------------------+
 | GMT_Convert_Data_        | Convert between compatible data types                 |
++--------------------------+-------------------------------------------------------+
+| GMT_Close_VirtualFile_   | Close a virtual file                                  |
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Args_         | Convert linked list of options to text array          |
 +--------------------------+-------------------------------------------------------+
@@ -1543,10 +1550,26 @@ the output filename you obtained from GMT_Open_VirtualFile.  The syntax is
 
   ::
 
-    void *GMT_Read_VirtualFile (void *API, void *string);
+    void *GMT_Read_VirtualFile (void *API, char *string);
 
 The function requires the output filename via ``string`` and then returns
 the data object, similar to what GMT_Read_Data does.
+
+Close a virtual file
+^^^^^^^^^^^^^^^^^^^^
+
+Once you have completed using the virtual file you need to close it.
+This will reset its internal settings back to what it was before you
+used it as a virtual file.  The syntax is
+
+
+.. _GMT_Close_VirtualFile:
+
+  ::
+
+    int GMT_Close_VirtualFile (void *API, char *string);
+
+where ``string`` is the name of the virtual file.
 
 Import from a memory location, version 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
