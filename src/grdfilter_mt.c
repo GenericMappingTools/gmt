@@ -180,7 +180,7 @@ struct THREAD_STRUCT {
 	struct GRDFILTER_CTRL *Ctrl;
 	struct GMT_GRID *Gin;
 	struct GMT_GRID *Gout;
-	struct GMT_GRID *A, *L;
+	struct GMT_GRID *A;
 	struct FILTER_INFO F;
 };
 
@@ -640,7 +640,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	char *filter_name[GRDFILTER_N_FILTERS+2] = {"Boxcar", "Cosine Arch", "Gaussian", "Custom", "Operator", "Median", "Mode", "Lower", \
 		"Lower+", "Upper", "Upper-", "Spherical Median", "Spherical Mode"};
 
-	struct GMT_GRID *Gin = NULL, *Gout = NULL, *Fin = NULL, *A = NULL, *L = NULL;
+	struct GMT_GRID *Gin = NULL, *Gout = NULL, *Fin = NULL, *A = NULL;
 	struct FILTER_INFO F;
 	struct GRDFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -952,7 +952,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		threadArg[i].Gin        = Gin;
 		threadArg[i].Gout       = Gout;
 		threadArg[i].A          = A;
-		threadArg[i].L          = L;
    		threadArg[i].F          = F;
    		threadArg[i].weight     = weight;
    		threadArg[i].x_shift    = x_shift;
@@ -1013,20 +1012,15 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
-			int object_ID;			/* Status code from GMT API */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Gout)) == GMT_NOTSET) {
+			/* Create a virtual file for the low-pass filtered grid */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_NOERROR) {	/* Make filename with embedded object ID for grid Gout */
+			/* Create a virtual file to hold the resampled grid */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
 				Return (API->error);
-			}
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
-				Return (API->error);
-			}
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_NOERROR) {
-				Return (API->error);	/* Make filename with embedded object ID for result grid L */
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -1036,14 +1030,17 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}
-			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {	/* Load in the resampled grid */
+			if (GMT_Close_VirtualFile (API, in_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &Gout) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			gmt_M_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] - L->data[ij_out];
-			gmt_grd_init (GMT, L->header, options, true);	/* Update command history only */
+			if ((Gout = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
+				Return (API->error);
+			}
+			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
+			gmt_grd_init (GMT, Gout->header, options, true);	/* Update command history only */
 		}
 		else	/* Coregistered; no need to resample */
 			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
@@ -1067,17 +1064,14 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 	else
 #endif
-	if (Ctrl->F.highpass && L) {	/* Save the highpassed-filtered grid instead */
 
-		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "High-pass filtered data", L)) return (GMT->parent->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_NOERROR) {
-			Return (API->error);
-		}
+	/* If highpassed-filtered grid instead then set a comment */
+
+	if (Ctrl->F.highpass && GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "High-pass filtered data", Gout)) {
+		Return (GMT->parent->error);
 	}
-	else {
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
-			Return (API->error);
-		}
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
+		Return (API->error);
 	}
 
 	Return (GMT_NOERROR);
@@ -1122,7 +1116,6 @@ void threaded_function (struct THREAD_STRUCT *t) {
     struct GMT_GRID *Gin        = t->Gin;
     struct GMT_GRID *Gout       = t->Gout;
     struct GMT_GRID *A          = t->A;
-    struct GMT_GRID *L          = t->L;
     struct FILTER_INFO F        = t->F;
 
 

@@ -380,7 +380,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	unsigned int n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
-	int in_ID, out_ID = GMT_NOTSET, jin, iinstart, iinstop;
+	int jin, iinstart, iinstop;
 
 	uint64_t ij;
 	int16_t tempint;
@@ -393,7 +393,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[GMT_BUFSIZ] = {""}, cmd[GMT_BUFSIZ] = {""}, s_in_ID[GMT_STR16] = {""}, s_out_ID[GMT_LEN256] = {""};
+	char infile[GMT_BUFSIZ] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[GMT_LEN256] = {""};
 	char z_units[GMT_GRID_UNIT_LEN80] = {""};
 
 	FILE *fp = NULL;
@@ -740,30 +740,29 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
-	GMT_Report (API, GMT_MSG_DEBUG, "Register Mercator Grid container as grdproject input\n");
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Merc)) == GMT_NOTSET) {
+	GMT_Report (API, GMT_MSG_DEBUG, "Open Mercator Grid as grdproject virtual input\n");
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Merc, input) != GMT_NOERROR) {
 		Return (API->error);
-	}
-	if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_NOERROR) {
-		Return (API->error);	/* Make filename with embedded object ID */
 	}
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
 		GMT_Report (API, GMT_MSG_DEBUG, "Register memory Grid container as grdproject output\n");
-		if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, s_out_ID, out_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 	}
 	else	/* The output here is the final result */
-		strncpy (s_out_ID, Ctrl->G.file, GMT_LEN256-1);
-	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
+		strncpy (output, Ctrl->G.file, GMT_LEN256-1);
+	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, input, output);
 	GMT_Report (API, GMT_MSG_DEBUG, "Calling grdproject %s.\n", cmd);
 	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_NOERROR) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
+	/* Close the virtual file */
+	if (GMT_Close_VirtualFile (API, input) != GMT_NOERROR) {
+		Return (API->error);
+	}
+	/* Destroy the memory as well */
 	if (GMT_Destroy_Data (API, &Merc) != GMT_NOERROR) {
 		Return (API->error);
 	}
@@ -771,23 +770,28 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		/* Preparing source and destination for GMT_grdsample */
 		/* a. Register the Geographic grid returned by GMT_grdproject to be the source read by GMT_grdsample by passing a pointer */
 		struct GMT_GRID *Geo = NULL;
-		GMT_Report (API, GMT_MSG_DEBUG, "Retrieve Geo Grid container as grdproject output\n");
-		if ((Geo = GMT_Retrieve_Data (API, out_ID)) == NULL) {
+		GMT_Report (API, GMT_MSG_DEBUG, "Read Geo Grid container as grdproject virtual output\n");
+		if ((Geo = GMT_Read_VirtualFile (API, output)) == NULL) {
+			Return (API->error);
+		}
+		/* Close the virtual file */
+		if (GMT_Close_VirtualFile (API, output) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		strcpy (Geo->header->title, "Data from Altimetry");
 		strncpy (Geo->header->z_units, z_units, GMT_GRID_UNIT_LEN80-1);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
-		GMT_Report (API, GMT_MSG_DEBUG, "Register Geo Grid container as grdsample input\n");
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Geo)) == GMT_NOTSET) {
+		GMT_Report (API, GMT_MSG_DEBUG, "Open Geo Grid container as grdsample virtual input\n");
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Geo, input) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (GMT_Encode_ID (API, s_in_ID, in_ID) != GMT_NOERROR) {	/* Make filename with embedded object ID */
-			Return (API->error);
-		}
-		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
+		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, input, Ctrl->G.file);
 		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the grid or fail */
+			Return (API->error);
+		}
+		/* Close the virtual file */
+		if (GMT_Close_VirtualFile (API, input) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

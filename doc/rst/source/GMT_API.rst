@@ -529,12 +529,14 @@ the return codes of the modules for now.  We will call our program
    This steps returns a filename that you can use to tell a module where
    to read its input.
 
-#. Create a virtual file to hold the output using GMT_Create_VirtualFile_.
+#. Open a virtual file to hold the output using GMT_Open_VirtualFile_.
    This step also returns a filename for the module to send its input.
 
 #. Prepare required arguments (including the two virtual file names) and
    call the GMT module you wish to use via GMT_Read_VirtualFile_, which
    returns a data structure of requested type.
+
+#. Close the virtual files you have been using.
 
 #. We terminate the GMT session by calling GMT_Destroy_Session_.
 
@@ -563,15 +565,18 @@ this program:
       /* Read in our data table to memory */
       D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "table_5.11", NULL);
       /* Associate our data table with a virtual file */
-      GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, D, input);
+      GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, D, input);
       /* Create a virtual file to hold the resulting grid */
-      GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, output);
+      GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output);
       /* Prepare the module arguments */
       sprintf (args, "-R0/7/0/7 -I0.2 -D1 -St0.3 %s -G%s", input, output);
       /* Call the greenspline module */
       GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args);
       /* Obtain the grid from the virtual file */
       G = GMT_Read_VirtualFile (API, output);
+      /* Close the virtual files */
+      GMT_Close_VirtualFile (API, input);
+      GMT_Close_VirtualFile (API, output);
       /* Write the grid to file */
       GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "junk.nc", G);
       /* Destroy the GMT session */
@@ -673,13 +678,13 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Convert_Data_        | Convert between compatible data types                 |
 +--------------------------+-------------------------------------------------------+
+| GMT_Close_VirtualFile_   | Close a virtual file                                  |
++--------------------------+-------------------------------------------------------+
 | GMT_Create_Args_         | Convert linked list of options to text array          |
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Cmd_          | Convert linked list of options to command line        |
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Data_         | Create an empty data resource                         |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_VirtualFile_  | Create memory location to accept output from a module |
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Options_      | Convert command line options to linked list           |
 +--------------------------+-------------------------------------------------------+
@@ -731,8 +736,6 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Get_Coord_           | Create a coordinate array                             |
 +--------------------------+-------------------------------------------------------+
-| GMT_Get_Data_            | Import a registered data resources                    |
-+--------------------------+-------------------------------------------------------+
 | GMT_Get_Default_         | Obtain one of the API or GMT default settings         |
 +--------------------------+-------------------------------------------------------+
 | GMT_Get_ID_              | Obtain the ID of a given resource                     |
@@ -753,13 +756,11 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Message_             | Issue a message, optionally with time stamp           |
 +--------------------------+-------------------------------------------------------+
-| GMT_Open_VirtualFile_    | Select memory location to serve as input for a module |
+| GMT_Open_VirtualFile_    | Select memory location as input or output for module  |
 +--------------------------+-------------------------------------------------------+
 | GMT_Option_              | Explain one or more GMT common options                |
 +--------------------------+-------------------------------------------------------+
 | GMT_Parse_Common_        | Parse the GMT common options                          |
-+--------------------------+-------------------------------------------------------+
-| GMT_Put_Data_            | Export to a registered data resource given by ID      |
 +--------------------------+-------------------------------------------------------+
 | GMT_Put_Record_          | Export a data record                                  |
 +--------------------------+-------------------------------------------------------+
@@ -769,13 +770,11 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Read_Group_          | Import a group of data resources or files             |
 +--------------------------+-------------------------------------------------------+
-| GMT_Read_VirtualFile_    | Copy the result from a module into memory             |
+| GMT_Read_VirtualFile_    | Access the output from a module via memory            |
 +--------------------------+-------------------------------------------------------+
 | GMT_Register_IO_         | Register a resources for i/o                          |
 +--------------------------+-------------------------------------------------------+
 | GMT_Report_              | Issue a message contingent upon verbosity level       |
-+--------------------------+-------------------------------------------------------+
-| GMT_Retrieve_Data_       | Obtained link to data in memory via ID                |
 +--------------------------+-------------------------------------------------------+
 | GMT_Set_Default_         | Set one of the API or GMT default settings            |
 +--------------------------+-------------------------------------------------------+
@@ -895,9 +894,7 @@ pointer to the named resource. If ``direction`` is ``GMT_OUT`` and the
 ``ptr`` must be NULL. Note there are some limitations on when you may pass a file pointer
 as the method.  Many grid file formats cannot be read via a stream (e.g., netCDF files) so in
 those situations you cannot pass a file pointer [and GMT_Register_IO would have no way of knowing
-this].  After the GMT module has written the data you
-can use GMT_Retrieve_Data_ to assign a pointer to the memory location
-(variable) where the output was allocated. For grid (and image)
+this].  For grid (and image)
 resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array; otherwise, pass NULL
 (or an array with at least 4 items all set to 0) to obtain the
 entire grid (or image). The ``direction`` indicates input or output and
@@ -1314,11 +1311,11 @@ Import Data
 
 If your main program needs to read any of the six recognized data types
 (data tables, grids, CPTs, images, PostScript, or text tables) you will
-use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
-return entire data sets. In the case of data and text tables you may
+use the GMT_Read_Data_ function, which 
+returns entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
 function. As a general rule, your program development simplifies if you
-can read entire resources into memory with GMT_Get_Data_ or
+can read entire resources into memory with 
 GMT_Read_Data_.  However, if this leads to unacceptable memory usage
 or if the program logic is particularly simple, you may obtain one data
 record at the time via GMT_Get_Record_.
@@ -1376,10 +1373,10 @@ Import a data set
 
 If your program needs to import any of the six recognized data types
 (data table, grid, image, CPT, PostScript, or text table) you will use
-either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
+the GMT_Read_Data_ or GMT_Read_VirtualFile functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
-an open file handle, while the latter is only used with a registered
-resource via its unique ID. Because of the similarities of these six
+an open file handle, while the latter is only used to read from memory.
+Because of the similarities of these six
 import functions we use an generic form that covers all of them.
 
 Import from a file, stream, or handle
@@ -1414,10 +1411,7 @@ in three different situations:
 #. If you have a single source (filename, stream pointer, etc.) you can
    call GMT_Read_Data_ directly; there is no need to first register
    the source with GMT_Register_IO_ or gather the sources with
-   GMT_Init_IO_. However, if you did register a single source you can
-   still pass it via an encoded filename (see GMT_Encode_ID_) or you
-   can instead use GMT_Get_Data_ using the integer ID directly (see
-   next section).  Furthermore, for DATASETs and TEXTSETs you can also
+   GMT_Init_IO_. Furthermore, for DATASETs and TEXTSETs you can also
    specify a filename that contains UNIX wildcards (e.g., "all_*_[ab]?.txt")
    and these will all be read to produce a single multi-table DATASET or
    TEXTSET (for other datatypes, see GMT_Read_Group instead).
@@ -1508,108 +1502,63 @@ are read into separate tables that all form part of a single SET (this is what G
 but if GMT_Read_Group is used on the same arguments then an array of one-table sets will
 be returned instead.
 
-Let module read input from a memory location
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Let module read from or write to a memory location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you have read in or otherwise obtained a data object in memory and you
 now wish it to become the input to another module, you have to associate
-that object with a "VirtualFile".  This will assign a filename to the
+that object with a "Virtual File".  This will assign a filename to the
 memory location and you can then pass this filename to any module that
-needs to read that data.  The syntax is
+needs to read that data.  It is similar for writing, and you can pass
+NULL as the object to have GMT automatically allocate the resource.
+The syntax is
 
 .. _GMT_Open_VirtualFile:
 
   ::
 
     void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
-	                             void *data, char *string);
+	           unsigned int direction, void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``string``.  This string must be at least GMT_STR16 bytes (16).
 The other arguments have been discussed earlier.  Simply pass this filename in
-the calling sequence to the module you want to use for reading from this resource.
-
-Let module write output to a memory location
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Likewise, if you want the module to write its result to memory (rather than file),
-you have to associate that memory object with another VirtualFile.  At this point
-you have no memory variable yet so we need another function.  The syntax is
-
-.. _GMT_Create_VirtualFile:
-
-  ::
-
-    void *GMT_Create_VirtualFile (void *API, unsigned int family, unsigned int geometry,
-	                               char *string);
-
-The function returns the desired output filename via ``string``.
-This string must be at least GMT_STR16 bytes (16).  The other
-arguments have been discussed earlier.  Simply use this filename in
-the calling sequence to the module to set the output destination.
+the calling sequence to the module you want to use to indicate which file should
+be used for reading or writing.
 
 Access the data written to a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the module completes it will have written its output to the MemoryFile
-you initialized with GMT_Create_VirtualFile.  To get your hands on the actual
-data you need to read it into your program.  Actually, the data are already
-in memory but to access it you need to use GMT_Read_VirtualFile which takes
-the output filename you obtained from GMT_Create_VirtualFile.  The syntax is
+Once the module completes it will have written its output to the virtual file
+you initialized with GMT_Open_VirtualFile.  To get your hands on the actual
+data you need to "read" it into your program.  Actually, the data are already
+in memory but to access it you need to use GMT_Read_VirtualFile, which expects
+the output filename you obtained from GMT_Open_VirtualFile.  The syntax is
 
 .. _GMT_Read_VirtualFile:
 
   ::
 
-    void *GMT_Read_VirtualFile (void *API, void *string);
+    void *GMT_Read_VirtualFile (void *API, char *string);
 
 The function requires the output filename via ``string`` and then returns
 the data object, similar to what GMT_Read_Data does.
 
-Import from a memory location, version 2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Close a virtual file
+^^^^^^^^^^^^^^^^^^^^
 
-If you are importing via variables or prefer to first register the
-source, then you should use GMT_Get_Data_ instead. This function
-requires fewer arguments since you simply pass the unique ID number of
-the resource. The function is described as follows:
+Once you have completed using the virtual file you need to close it.
+This will reset its internal settings back to what it was before you
+used it as a virtual file.  The syntax is
 
-.. _GMT_Get_Data:
 
-  ::
-
-    void *GMT_Get_Data (void *API, int ID, unsigned int mode, void *ptr);
-
-The ``ID`` is the unique object ID you received when registering the
-resource, ``mode`` controls some aspects of the import (see
-GMT_Read_Data_ above), while ``ptr`` is NULL except when reading
-grids in two steps (i.e., first get a grid structure with a header, then
-read the data). Other arguments have been discussed earlier. Space will
-be allocated to hold the results, if needed, and a pointer to the object
-is returned. If there are errors we simply return NULL and report the error.
-
-Retrieve an allocated result
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Finally, if you need to access the result that a GMT module wrote to a
-memory location, then you must register an output destination with
-GMT_Register_IO_ first (passing ``ptr`` == NULL). The GMT module will
-then allocate space to hold the output and let the API know where this
-memory resides. You can then use GMT_Retrieve_Data_ to get a pointer
-to the container where the data set was stored. This function requires
-fewer arguments since you simply pass the unique ID number of the
-resource. The function is described as follows:
-
-.. _GMT_Retrieve_Data:
+.. _GMT_Close_VirtualFile:
 
   ::
 
-    void *GMT_Retrieve_Data (void *API, int ID);
+    int GMT_Close_VirtualFile (void *API, char *string);
 
-The ``ID`` is the unique object ID you received when registering the
-NULL resource earlier, Since this container has already been created, a
-pointer to the object is returned. If there are errors we simply return
-NULL and report the error.
+where ``string`` is the name of the virtual file.
 
 Importing a data record
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -2587,10 +2536,10 @@ Exporting Data
 
 If your program needs to write any of the six recognized data types
 (CPTs, data tables, text tables, grids, images, or PostScript) you can use the
-GMT_Put_Data_. In the case of data and text tables, you may also
+GMT_Write_Data_. In the case of data and text tables, you may also
 consider the GMT_Put_Record_ function. As a general rule, your
 program organization may simplify if you can write and export the entire
-resource with GMT_Put_Data_. However, if the program logic is simple
+resource with GMT_Write_Data_. However, if the program logic is simple
 or already involves using GMT_Get_Record_, it may be better to export
 one data record at the time via GMT_Put_Record_.
 
@@ -2620,9 +2569,8 @@ Exporting a data set
 ~~~~~~~~~~~~~~~~~~~~
 
 To have your program accept results from GMT modules and write them
-separately requires you to use the GMT_Write_Data_ or
-GMT_Put_Data_ functions. They are very similar to the
-GMT_Read_Data_ and GMT_Get_Data_ functions encountered earlier.
+separately requires you to use the GMT_Write_Data_ function. It is very similar to the
+GMT_Read_Data_ function encountered earlier.
 
 Exporting a data set to a file, stream, or handle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2716,26 +2664,12 @@ and the filename implies a change from NaN to another value then the grid is
 modified accordingly. If you continue to use that grid after writing please be
 aware that the changes you specified were applied to the grid.
 
-Exporting a data set to memory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Specifying number of output columns
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If writing to a memory destination you will want to first register that
-destination and then use the returned ID with ``GMT_Put_Data`` instead:
-
-.. _GMT_Put_Data:
-
-  ::
-
-    int GMT_Put_Data (void *API, int ID, unsigned int mode, void *data);
-
-where ``ID`` is the unique ID of the registered destination, ``mode`` is
-specific to each data type (and controls aspects of the output
-structuring), and ``data`` is a pointer to any of the four structures
-discussed previously. For more detail, see GMT_Write_Data_ above. If
-successful the function returns 0; otherwise we return 1
-and set ``API->error`` to reflect to cause.
-
-
+For record-based input/output you will need to specify the number of output
+columns, unless it equals the number of input columns.  This is done with
+the GMT_Set_Columns function:
 
 .. _GMT_Set_Columns:
 

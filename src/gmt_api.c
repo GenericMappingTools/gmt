@@ -40,32 +40,28 @@
  * GMT_Message		      : Report an message given a verbosity level
  * GMT_Report		      : Report an error given an error code
  *
- * There are 28 further public functions used for GMT i/o activities:
+ * There are 27 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment      : Allocate a single DATASET or TEXTSET segment
  * GMT_Begin_IO		      : Allow i/o to take place for rec-by-rec operations
  * GMT_Convert_Data       : Convert between different data sets, if possible
  * GMT_Create_Data	      : Return an empty container for a new data set
- * GMT_Create_VirtualFile : Create an output memory location for module output
  * GMT_Destroy_Data	      : Destroy a data set and its container
  * GMT_Duplicate_Data     : Make an exact duplicate of a dataset
  * GMT_Duplicate_String   : Allocates a copy of a string to be freed by API
  * GMT_Encode_ID	      : Encode a resource ID into a file name
  * GMT_End_IO		      : Disallow further rec-by-rec i/o
- * GMT_Get_Data		      : Load data into program memory from registered source
  * GMT_Get_ID		      : Get the registered object ID for a data set
  * GMT_Get_Record	      : Get the next single data record from the source(s)
  * GMT_Get_Row		      : Read one row from a grid
  * GMT_Init_IO		      : Initialize rec-by-rec i/o machinery before program use
- * GMT_Open_VirtualFile   : Open a memory location for reading by a module
- * GMT_Put_Data		      : Place data set from program memory to registered destination
+ * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
  * GMT_Put_Record	      : Send the next output record to its destination
  * GMT_Put_Row		      : Write one row to a grid
  * GMT_Read_Data	      : Load data into program memory from selected source
  * GMT_Read_Group	      : Read numerous files into an array of objects
  * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
  * GMT_Register_IO	      : Register a source (or destination) for i/o use
- * GMT_Retrieve_Data	  : Retrieve pointer to registered container with data
  * GMT_Set_Comment	      : Update a comment for a data set
  * GMT_Status_IO	      : Exmine current status of record-by-record i/o
  * GMT_Write_Data	      : Place data set from program memory to selected destination
@@ -338,6 +334,22 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 			GMT_exit (API->GMT, GMT_RUNTIME_ERROR); return NULL;
 			break;
 	}
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_get_item (struct GMTAPI_CTRL *API, unsigned int family, void *data) {
+	unsigned int i;
+	int item;
+
+	API->error = GMT_NOERROR;
+	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
+		if (!API->object[i]) continue;				/* Empty object */
+		if (!API->object[i]->data) continue;		/* Empty data */
+		if (API->object[i]->family != (enum GMT_enum_family)family) continue;		/* Not the required data type, but check for exceptions */
+		if (API->object[i]->data == data) item = i;	/* Found the requested data */
+	}
+	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such data found */
+	return (item);
 }
 
 /*! . */
@@ -1254,6 +1266,72 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 		return 0;
 	}
 	return ((n_slashes + 1) / 2);	/* Turns 1,3,5 into 1,2,3 */
+}
+
+/*! . */
+GMT_LOCAL void *gmtapi_retrieve_data (void *V_API, int object_ID) {
+	/* Function to return pointer to the container for a registered data set.
+	 * Typically used when we wish a module to "write" its results to a memory
+	 * location that we wish to access from the calling program.  The procedure
+	 * is to use GMT_Register_IO with GMT_REF|COPY|READONLY and GMT_OUT but use
+	 * NULL as the source/destination.  Data are "written" by GMT allocating a
+	 * output container and updating the objects->resource pointer to this container.
+	 * gmtapi_retrieve_data simply returns that pointer given the registered ID.
+	 */
+
+	int item;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+
+	/* Determine the item in the object list that matches this object_ID */
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
+		return_null (API, API->error);
+	}
+	/* Make sure the resource is present */
+	if (API->object[item]->resource == NULL) {
+		return_null (API, GMT_PTR_IS_NULL);
+	}
+	/* Make sure the data pointer has not been set */
+	if (API->object[item]->data) {
+		return_null (API, GMT_PTR_NOT_NULL);
+	}
+	/* Assign data from resource and wipe resource pointer */
+	API->object[item]->data = API->object[item]->resource;
+	API->object[item]->resource = NULL;
+
+#ifdef DEBUG
+	api_list_objects (API, "gmtapi_retrieve_data");
+#endif
+	return (API->object[item]->data);	/* Return pointer to the data container */
+}
+
+/*! . */
+GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
+	/* Initializes the i/o mechanism for either input or output (depends on direction).
+	 * api_begin_io must be called before any bulk data i/o is allowed.
+	 * direction:	Either GMT_IN or GMT_OUT.
+	 * Returns:	false if successfull, true if error.
+	 */
+
+	struct GMT_CTRL *GMT = NULL;
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	if (!API->registered[direction])
+		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
+	/* Passed basic sanity checks */
+	GMT = API->GMT;
+	API->io_mode[direction] = GMTAPI_BY_SET;
+	API->io_enabled[direction] = true;	/* OK to access resources */
+	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
+	GMT->current.io.read_mixed = false;
+	GMT->current.io.need_previous = (GMT->common.g.active || GMT->current.io.skip_duplicates);
+	GMT->current.io.segment_header[0] = GMT->current.io.record[0] = 0;
+	GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: %s resource access is now enabled [container]\n", GMT_direction[direction]);
+
+	return (GMT_OK);	/* No error encountered */
 }
 
 /* Mapping of internal [row][col] indices to a single 1-D index.
@@ -4726,6 +4804,55 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 }
 
 /*! . */
+GMT_LOCAL void *gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, void *data) {
+	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
+	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
+	 * ID is the registered resource from which to import.
+	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
+	 */
+	int item, family, flag = GMT_NOTSET;
+	bool was_enabled;
+	void *new_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+
+	/* Determine the item in the object list that matches this ID and direction */
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	if (object_ID == GMT_NOTSET) {	/* Must pick up the family from the shelf */
+		family = API->shelf;
+		API->shelf = GMT_NOTSET;
+		if (multiple_files_ok(family)) flag = (API->module_input) ? GMTAPI_MODULE_INPUT : GMTAPI_OPTION_INPUT;
+	}
+	else
+		family = GMT_NOTSET;
+	if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, flag)) == GMT_NOTSET) {
+		return_null (API, API->error);
+	}
+
+	was_enabled = API->io_enabled[GMT_IN];
+	if (!was_enabled && api_begin_io (API, GMT_IN) != GMT_OK) {	/* Enables data input if not already set and sets access mode */
+		return_null (API, API->error);
+	}
+	API->object[item]->selected = true;	/* Make sure it the requested data set is selected */
+
+	/* OK, try to do the importing */
+	if ((new_obj = api_import_data (API, API->object[item]->family, object_ID, mode, data)) == NULL) {
+		return_null (API, API->error);
+	}
+
+	if (!was_enabled && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables data input if we had to set it in this function */
+		return_null (API, API->error);
+	}
+#ifdef DEBUG
+	api_set_object (API, API->object[item]);
+	api_list_objects (API, "gmtapi_get_data");
+#endif
+	return (new_obj);		/* Return pointer to the data container */
+}
+
+/*! . */
 GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
 	/* Function that will export the single data object referred to by the object_ID as registered by GMT_Register_IO.
 	 */
@@ -4787,6 +4914,46 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	api_list_objects (API, "api_export_data-out");
 #endif
 	return (gmtapi_report_error (API, error));	/* Return status */
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_put_data (void *V_API, int object_ID, unsigned int mode, void *data) {
+	/* Function to write data directly from program memory as a set (not record-by-record).
+	 * We can combine the <register resource - export resource > sequence in
+	 * one combined function.  See GMT_Register_IO for details on arguments.
+	 * Here, *data is the pointer to the data object to save (CPT, dataset, textset, Grid)
+	 * ID is the registered destination.
+	 * While only one output destination is allowed, for DATA|TEXTSETS one can
+	 * have the tables and even segments be written to individual files (see the mode
+	 * description in the documentation for how to enable this feature.)
+	 * Return: false if all is well, true if there was an error (and set API->error).
+	 */
+	int item;
+	bool was_enabled;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	/* Determine the item in the object list that matches this ID and direction */
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);
+
+	was_enabled = API->io_enabled[GMT_OUT];
+	if (!was_enabled && api_begin_io (API, GMT_OUT) != GMT_OK) {	/* Enables data output if not already set and sets access mode */
+		return_error (API, API->error);
+	}
+	if (api_export_data (API, API->object[item]->family, object_ID, mode, data) != GMT_OK) return_error (API, API->error);
+
+	if (!was_enabled && GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables data output if we had to set it in this function */
+		return_error (API, API->error);
+	}
+#ifdef DEBUG
+	api_set_object (API, API->object[item]);
+	api_list_objects (API, "gmtapi_put_data");
+#endif
+	return (GMT_OK);	/* No error encountered */
 }
 
 /*! See if this file has already been registered and used.  If so, do not add it again */
@@ -4925,32 +5092,6 @@ GMT_LOCAL int api_init_export (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	}
 	if (n_reg == 0) return_value (API, GMT_OUTPUT_NOT_SET, GMT_NOTSET);	/* No output set */
 	return (object_ID);
-}
-
-/*! . */
-GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
-	/* Initializes the i/o mechanism for either input or output (depends on direction).
-	 * api_begin_io must be called before any bulk data i/o is allowed.
-	 * direction:	Either GMT_IN or GMT_OUT.
-	 * Returns:	false if successfull, true if error.
-	 */
-
-	struct GMT_CTRL *GMT = NULL;
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
-	if (!API->registered[direction])
-		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
-	/* Passed basic sanity checks */
-	GMT = API->GMT;
-	API->io_mode[direction] = GMTAPI_BY_SET;
-	API->io_enabled[direction] = true;	/* OK to access resources */
-	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
-	GMT->current.io.read_mixed = false;
-	GMT->current.io.need_previous = (GMT->common.g.active || GMT->current.io.skip_duplicates);
-	GMT->current.io.segment_header[0] = GMT->current.io.record[0] = 0;
-	GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: %s resource access is now enabled [container]\n", GMT_direction[direction]);
-
-	return (GMT_OK);	/* No error encountered */
 }
 
 /*! . */
@@ -5599,7 +5740,7 @@ int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
  * The lower-level GMT i/o machinery will handle complications such as 0 (stdin), 1, or
  * many data files so that the modules themselves simply read the next record with
  * GMT_Get_Record until EOF (as if there is only one input source).  Modules that need
- * to store all the data in memory for futher processing will call GMT_Get_Data instead,
+ * to store all the data in memory for futher processing will call gmtapi_get_data instead,
  * which will return a single entity (grid, dataset, cpt, etc).
  *
  * Destination registration is done in the same way, with the exception that for most
@@ -5607,7 +5748,7 @@ int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
  * can be specified.  However, data sets such as tables with segments can, via mode
  * options, be specified to be written to separate table files or even segment files.
  * The actual writing is done by lower-level functions so that the GMT modules are simply
- * calling GMT_Put_Data (all in one go).  For record-by-record output the modules will use
+ * calling gmtapi_put_data (all in one go).  For record-by-record output the modules will use
  * GMT_Put_Record.  This keeps data i/o in the modules uniform and simple across GMT.
  */
 
@@ -5808,77 +5949,108 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 #endif
 
  /*! . */
-int GMT_Create_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, char *string) {
-	/* Create a VirtualFile that a module may write its output of type family to. */
-	int object_ID;
-	struct GMTAPI_CTRL *API = NULL;
-	void *object = NULL;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	API = api_get_api_ptr (V_API);
-	/* GMT_Create_Data will return error code if there are issues with the values of family, or geometry */
-	/* Creating an empty object means it is intended to hold output [GMT_OUT] form a module */
-	if ((object = GMT_Create_Data (API, family, geometry, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
-		return (API->error);
-	/* Obtain the object's ID */
-	if ((object_ID = GMT_Get_ID (API, family, GMT_OUT, object)) == GMT_NOTSET)
-		return (API->error);
-	/* Format the unique VirtualFile name */
-	if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
-		return (API->error);
-	return (GMT_NOERROR);
-}
-
-#ifdef FORTRAN_API
-int GMT_Create_VirtualFile_ (unsigned int *family, unsigned int *geometry, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Create_VirtualFile (GMT_FORTRAN, *family, *geometry, string));
-}
-#endif
-
- /*! . */
-int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, void *data, char *string) {
-	/* Open up a VirtualFile for an existing resource that a module may read its input from. */
+int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *name) {
+	/* Associate a virtual file with a data object for either reading or writing.
+	 * Family and geometry specifies the nature of the data to be read or written.
+	 * Direction is either GMT_IN or GMT_OUT and determines if we read or write.
+	 * Reading: data must point to a data container we wish to read from via a module.
+	 * Writing: data is either an existing output data container that the user created
+	 *  beforehand or it is NULL and we create an expanding output resource.
+	 * name is the name given to the virtual file and is returned. */
 	int object_ID = GMT_NOTSET, item_s;
 	unsigned int item;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
+	if (direction == GMT_IN && data == NULL) return GMT_PTR_IS_NULL;
+	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);
 
-	/* See if this one is known to us already */
-	for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
-		if (!API->object[item]) continue;	/* Skip freed objects */
-		if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+	if (data) {	/* Data container provided, see if registered */
+		for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
+			if (!API->object[item]) continue;	/* Skip freed objects */
+			if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		}
+		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, data)) == GMT_NOTSET) {	/* Not found in list */
+			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
+		}
 	}
-
-	if (object_ID != GMT_NOTSET) {	/* Recycle the object */
-		if ((item_s = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
-			return_error (API, API->error);	/* Could not find that item in the array? */
-		/* Here we have the item and can recycle the address */
-		API->object[item_s]->status = 0;							/* Open for business */
-		API->object[item_s]->resource = API->object[item_s]->data;	/* Switch from consumer to provider */
-		API->object[item_s]->data = NULL;							/* No longer consumer */
-		API->object[item_s]->method = GMT_IS_REFERENCE;			/* Now a memory resource */
-		API->object[item_s]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
-			return (API->error);
+	if (direction == GMT_IN) {	/* Set things up for reading */
+		/* See if this one is known to us already */
+		if (object_ID == GMT_NOTSET) {	/* Register data as a new object for reading [GMT_IN] and reset its status to unread */
+			if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
+				return (API->error);
+		}
+		else {	/* Found the object earlier; recycle the address and ensure it is a readable object */
+			API->object[item_s]->status = 0;							/* Open for business */
+			API->object[item_s]->resource = API->object[item_s]->data;	/* Switch from consumer to provider */
+			API->object[item_s]->data = NULL;							/* No longer consumer */
+			API->object[item_s]->method = GMT_IS_REFERENCE;				/* Now a memory resource */
+			API->object[item_s]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
+		}
 	}
-	else {	/* Register a new object */
-		/* Register the object for reading [GMT_IN] and reset its status to unread */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
-			return (API->error);
-		/* Obtain the unique VirtualFile name */
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR)
-			return (API->error);
+	else {	/* Set things up for writing */
+		if (data) {	/* Was provided an object to use */
+			if (object_ID == GMT_NOTSET) {	/* Register a new object for writing [GMT_OUT] and reset its status to unread */
+				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_OUT, NULL, data)) == GMT_NOTSET)
+					return (API->error);
+			}
+			else {	/* Here we have the item and can recycle the address */
+				API->object[item_s]->status = 0;			/* Open for business */
+				if (API->object[item_s]->data == NULL) {	/* Switch from provider to consumer, if needed */
+					API->object[item_s]->data = API->object[item_s]->resource;
+					API->object[item_s]->resource = NULL;		/* No longer consumer */
+				}
+				API->object[item_s]->method = GMT_IS_REFERENCE;		/* Now a memory resource */
+				API->object[item_s]->direction = GMT_OUT;			/* Make sure it now is flagged for writing */
+			}
+		}
+		else {	/* New expanding output resource */
+			void *object = NULL;
+			/* GMT_Create_Data may return error code if there are issues with the values of family, or geometry */
+			/* Creating an empty object means it is intended to hold output [GMT_OUT] from a module */
+			if ((object = GMT_Create_Data (API, family, geometry, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
+				return (API->error);
+			/* Obtain the object's ID */
+			if ((object_ID = GMT_Get_ID (API, family, GMT_OUT, object)) == GMT_NOTSET)
+				return (API->error);
+		}
 	}
-	return (GMT_NOERROR);
+	/* Obtain the unique VirtualFile name */
+	if (GMT_Encode_ID (API, name, object_ID) != GMT_NOERROR)
+		return (API->error);
+	return GMT_NOERROR;
 }
 
 #ifdef FORTRAN_API
-int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, void *data, char *string, int len) {
+int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, void *data, char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, data, string));
+	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, *direction, data, string));
+}
+#endif
+
+int GMT_Close_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, close it */
+	int object_ID, item;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	API = api_get_api_ptr (V_API);
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	if (API->object[item]->direction == GMT_IN) {
+		API->object[item]->data = API->object[item]->resource;	/* Switch from provider to consumer */
+		API->object[item]->resource = NULL;						/* No longer provider */
+	}
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
 
@@ -5890,7 +6062,7 @@ void *GMT_Read_VirtualFile (void *V_API, const char *string) {
 	if (string == NULL) return_null (V_API, GMT_PTR_IS_NULL);
 	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
 		return_null (V_API, GMT_OBJECT_NOT_FOUND);
-	if ((object = GMT_Retrieve_Data (V_API, object_ID)) == NULL)
+	if ((object = gmtapi_retrieve_data (V_API, object_ID)) == NULL)
 		return_null (V_API, GMT_OBJECT_NOT_FOUND);
 	return object;
 }
@@ -5912,7 +6084,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
-	int item, object_ID, family = GMT_NOTSET, flag= (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
+	int item, object_ID, family = GMT_NOTSET, flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
 	unsigned int n_kinds = 0, k, counter[GMT_N_FAMILIES];
 	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -6208,7 +6380,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 					error = GMT_NOT_A_VALID_FAMILY;
 				if (error) return_error (API, error);	/* Failure to finalize */
 				API->object[item]->no_longer_owner = true;	/* Since we passed it via S_obj */
-				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for GMT_Retrieve_Data to work */
+				S_obj->data = NULL;	/* Since S_obj->resources points to it too, and needed for gmtapi_retrieve_data to work */
 			}
 			if (S_obj->close_file) {	/* Close any file that we opened earlier */
 				gmt_fclose (API->GMT, S_obj->fp);
@@ -6273,53 +6445,6 @@ int GMT_Status_IO_ (unsigned int *mode) {
 #endif
 
 /*! . */
-void *GMT_Retrieve_Data (void *V_API, int object_ID) {
-	/* Function to return pointer to the container for a registered data set.
-	 * Typically used when we wish a module to "write" its results to a memory
-	 * location that we wish to access from the calling program.  The procedure
-	 * is to use GMT_Register_IO with GMT_REF|COPY|READONLY and GMT_OUT but use
-	 * NULL as the source/destination.  Data are "written" by GMT allocating a
-	 * output container and updating the objects->resource pointer to this container.
-	 * GMT_Retrieve_Data simply returns that pointer given the registered ID.
-	 */
-
-	int item;
-	struct GMTAPI_CTRL *API = NULL;
-
-	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-
-	/* Determine the item in the object list that matches this object_ID */
-	API = api_get_api_ptr (V_API);
-	API->error = GMT_NOERROR;
-	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
-		return_null (API, API->error);
-	}
-	/* Make sure the resource is present */
-	if (API->object[item]->resource == NULL) {
-		return_null (API, GMT_PTR_IS_NULL);
-	}
-	/* Make sure the data pointer has not been set */
-	if (API->object[item]->data) {
-		return_null (API, GMT_PTR_NOT_NULL);
-	}
-	/* Assign data from resource and wipe resource pointer */
-	API->object[item]->data = API->object[item]->resource;
-	API->object[item]->resource = NULL;
-
-#ifdef DEBUG
-	api_list_objects (API, "GMT_Retrieve_Data");
-#endif
-	return (API->object[item]->data);	/* Return pointer to the data container */
-}
-
-#ifdef FORTRAN_API
-void *GMT_Retrieve_Data_ (int *object_ID) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Retrieve_Data (GMT_FORTRAN, *object_ID));
-}
-#endif
-
-/*! . */
 int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *resource) {
 	unsigned int i;
 	int item;
@@ -6348,62 +6473,6 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
-}
-#endif
-
-/*! . */
-void *GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data) {
-	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
-	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
-	 * ID is the registered resource from which to import.
-	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
-	 */
-	int item, family, flag = GMT_NOTSET;
-	bool was_enabled;
-	void *new_obj = NULL;
-	struct GMTAPI_CTRL *API = NULL;
-
-	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-
-	/* Determine the item in the object list that matches this ID and direction */
-	API = api_get_api_ptr (V_API);
-	API->error = GMT_NOERROR;
-	if (object_ID == GMT_NOTSET) {	/* Must pick up the family from the shelf */
-		family = API->shelf;
-		API->shelf = GMT_NOTSET;
-		if (multiple_files_ok(family)) flag = (API->module_input) ? GMTAPI_MODULE_INPUT : GMTAPI_OPTION_INPUT;
-	}
-	else
-		family = GMT_NOTSET;
-	if ((item = gmtapi_validate_id (API, family, object_ID, GMT_IN, flag)) == GMT_NOTSET) {
-		return_null (API, API->error);
-	}
-
-	was_enabled = API->io_enabled[GMT_IN];
-	if (!was_enabled && api_begin_io (API, GMT_IN) != GMT_OK) {	/* Enables data input if not already set and sets access mode */
-		return_null (API, API->error);
-	}
-	API->object[item]->selected = true;	/* Make sure it the requested data set is selected */
-
-	/* OK, try to do the importing */
-	if ((new_obj = api_import_data (API, API->object[item]->family, object_ID, mode, data)) == NULL) {
-		return_null (API, API->error);
-	}
-
-	if (!was_enabled && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables data input if we had to set it in this function */
-		return_null (API, API->error);
-	}
-#ifdef DEBUG
-	api_set_object (API, API->object[item]);
-	api_list_objects (API, "GMT_Get_Data");
-#endif
-	return (new_obj);		/* Return pointer to the data container */
-}
-
-#ifdef FORTRAN_API
-void *GMT_Get_Data_ (int *ID, int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Data (GMT_FORTRAN, *ID, *mode, data));
 }
 #endif
 
@@ -6451,7 +6520,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			if (input) free (input);
 			return_null (API, GMT_OBJECT_NOT_FOUND);
 		}
-		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
+		API->shelf = family;	/* Save which one it is so we know in gmtapi_get_data */
 		API->module_input = true;	/* Since we are passing NULL as file name we must loop over registered resources */
 		for (k = 0; k < n_files; k++) {
 			if ((in_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, NULL, filelist[k])) == GMT_NOTSET) {
@@ -6515,7 +6584,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!multiple_files_ok (family))
 			return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
-		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
+		API->shelf = family;	/* Save which one it is so we know in gmtapi_get_data */
 		API->module_input = true;	/* Since we are passing NULL as file name we must loop over registered resources */
 	}
 	if (just_get_data) {
@@ -6541,7 +6610,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		API->object[item]->selected = true;	/* Make sure the item we want is now selected */
 	}
-	if ((new_obj = GMT_Get_Data (API, in_ID, mode, data)) == NULL)
+	if ((new_obj = gmtapi_get_data (API, in_ID, mode, data)) == NULL)
 		return_null (API, API->error);
 	if (reset) API->object[item]->status = 0;	/* Reset  to unread */
 	gmt_M_str_free (input);	/* Done with this variable) */
@@ -6769,7 +6838,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 		if ((n_reg = gmtapi_count_objects (API, family, geometry, GMT_OUT, &out_ID)) != 1) return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
 	}
 	/* With out_ID in hand we can now put the data where it should go */
-	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
+	if (gmtapi_put_data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
 	gmt_M_str_free (output);	/* Done with this variable */
 
 #ifdef DEBUG
@@ -6782,53 +6851,6 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *output, void *data, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, output, data));
-}
-#endif
-
-/*! . */
-int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data) {
-	/* Function to write data directly from program memory as a set (not record-by-record).
-	 * We can combine the <register resource - export resource > sequence in
-	 * one combined function.  See GMT_Register_IO for details on arguments.
-	 * Here, *data is the pointer to the data object to save (CPT, dataset, textset, Grid)
-	 * ID is the registered destination.
-	 * While only one output destination is allowed, for DATA|TEXTSETS one can
-	 * have the tables and even segments be written to individual files (see the mode
-	 * description in the documentation for how to enable this feature.)
-	 * Return: false if all is well, true if there was an error (and set API->error).
-	 */
-	int item;
-	bool was_enabled;
-	struct GMTAPI_CTRL *API = NULL;
-
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	API = api_get_api_ptr (V_API);
-	API->error = GMT_NOERROR;
-
-	/* Determine the item in the object list that matches this ID and direction */
-	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);
-
-	was_enabled = API->io_enabled[GMT_OUT];
-	if (!was_enabled && api_begin_io (API, GMT_OUT) != GMT_OK) {	/* Enables data output if not already set and sets access mode */
-		return_error (API, API->error);
-	}
-	if (api_export_data (API, API->object[item]->family, object_ID, mode, data) != GMT_OK) return_error (API, API->error);
-
-	if (!was_enabled && GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables data output if we had to set it in this function */
-		return_error (API, API->error);
-	}
-#ifdef DEBUG
-	api_set_object (API, API->object[item]);
-	api_list_objects (API, "GMT_Put_Data");
-#endif
-	return (GMT_OK);	/* No error encountered */
-}
-
-#ifdef FORTRAN_API
-int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Put_Data (GMT_FORTRAN, *object_ID, *mode, data));
 }
 #endif
 
@@ -11313,3 +11335,40 @@ EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, 
 	}
 	return_error (API, error);
 }
+
+/* Backwards compatibility for old API functions no longer in favor */
+
+/*! . */
+void *GMT_Retrieve_Data (void *API, int object_ID) {
+	return gmtapi_retrieve_data (API, object_ID);
+}
+
+#ifdef FORTRAN_API
+void *GMT_Retrieve_Data_ (int *object_ID) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (gmtapi_retrieve_data (GMT_FORTRAN, *object_ID));
+}
+#endif
+
+void *GMT_Get_Data (void *API, int object_ID, unsigned int mode, void *data) {
+	return gmtapi_get_data (API, object_ID, mode, data);
+}
+
+#ifdef FORTRAN_API
+void *GMT_Get_Data_ (int *ID, int *mode, void *data) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (gmtapi_get_data (GMT_FORTRAN, *ID, *mode, data));
+}
+#endif
+
+int GMT_Put_Data (void *API, int object_ID, unsigned int mode, void *data) {
+	return gmtapi_put_data (API, object_ID, mode, data);
+}
+
+#ifdef FORTRAN_API
+int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (gmtapi_put_data (GMT_FORTRAN, *object_ID, *mode, data));
+}
+#endif
+

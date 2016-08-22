@@ -350,7 +350,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	 * call GMT_mapproject to convert this to geographic degrees.
 	 * get_R is true when this is done to obtain the -R setting.  */
 
-	int object_ID, proj_class;
+	int proj_class;
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
@@ -376,19 +376,12 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 	/* Set up machinery to call mapproject */
 
-	/* Register In as input source via ref (this just returns the ID associated with In sinc already registered by GMT_Create_Data) */
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, In)) == GMT_NOTSET) {
+	/* Register In as input virtual file and define an output virtual file */
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, in_string) == GMT_NOTSET)
 		return (GMT->parent->error);
-	}
-	if (GMT_Encode_ID (GMT->parent, in_string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, out_string) == GMT_NOTSET)
 		return (GMT->parent->error);
-	}
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
-		return (GMT->parent->error);
-	}
-	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
-		return (GMT->parent->error);	/* Make filename with embedded object ID */
-	}
+
 	was_R = GMT->common.R.active;	was_J = GMT->common.J.active;
 	GMT->common.R.active = GMT->common.J.active = false;	/* To allow new entries */
 
@@ -432,28 +425,30 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s",
 	         wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
-	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
+	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
-	}
 	GMT->common.R.active = was_R;	GMT->common.J.active = was_J;
-	if ((Out = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
+	if ((Out = GMT_Read_VirtualFile (GMT->parent, out_string)) == NULL)
 		return (GMT->parent->error);
-	}
+	/* Close the virtual files */
+	if (GMT_Close_VirtualFile (GMT->parent, in_string) != GMT_NOERROR)
+		return (GMT->parent->error);
+	if (GMT_Close_VirtualFile (GMT->parent, out_string) != GMT_NOERROR)
+		return (GMT->parent->error);
 	out_wesn[XLO] = Out->table[0]->segment[0]->data[GMT_X][0];
 	out_wesn[YLO] = Out->table[0]->segment[0]->data[GMT_Y][0];
 	out_wesn[XHI] = Out->table[0]->segment[0]->data[GMT_X][1];
 	out_wesn[YHI] = Out->table[0]->segment[0]->data[GMT_Y][1];
+	/* Free memory used for projection */
+	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK)
+		return (GMT->parent->error);
+	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_OK)
+		return (GMT->parent->error);
 
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
-	                       "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n",
-	                       GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
+		"Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n",
+		GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
-	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK) {
-		return (GMT->parent->error);
-	}
-	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_OK) {
-		return (GMT->parent->error);
-	}
 
 	return (GMT_NOERROR);
 }

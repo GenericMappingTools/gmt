@@ -3,7 +3,7 @@
 #	$Id$
 
 ps=imgmap.ps
-IMG=topo_15.1.img
+IMG=topo.15.1.img
 OK=`gmt gmtwhich -C $IMG`
 if [ $OK = N ]; then
 	echo "File $IMG not available for testing imgmap.sh"
