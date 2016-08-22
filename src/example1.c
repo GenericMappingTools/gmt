@@ -21,6 +21,9 @@ int main (int argc, char *argv[]) {
     GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args);
     /* Obtain the grid from the virtual file */
     G = GMT_Read_VirtualFile (API, output);
+    /* Close the virtual files */
+	GMT_Close_VirtualFile (API, input);
+	GMT_Close_VirtualFile (API, output);
     /* Write the grid to file */
     if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, "junk.nc", G)) return EXIT_FAILURE;
     /* Destroy the GMT session */

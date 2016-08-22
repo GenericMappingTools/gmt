@@ -26,6 +26,9 @@ int main (int argc, char *argv[]) {
     GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args);
     /* Obtain the data from the virtual file */
     V[GMT_OUT] = GMT_Read_VirtualFile (API, output);
+    /* Close the virtual files */
+	GMT_Close_VirtualFile (API, input);
+	GMT_Close_VirtualFile (API, output);
     /* Write the data to file */
     if (GMT_Write_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_PLP, 0, NULL, "vjunk.txt", V[GMT_OUT])) return EXIT_FAILURE;
 
@@ -41,6 +44,9 @@ int main (int argc, char *argv[]) {
     GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args);
     /* Obtain the data from the virtual file */
     M[GMT_OUT] = GMT_Read_VirtualFile (API, output);
+    /* Close the virtual files */
+	GMT_Close_VirtualFile (API, input);
+	GMT_Close_VirtualFile (API, output);
     /* Write the data to file */
     if (GMT_Write_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_PLP, 0, NULL, "mjunk.txt", M[GMT_OUT])) return EXIT_FAILURE;
     /* Destroy the GMT session */

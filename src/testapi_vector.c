@@ -25,12 +25,17 @@ int main (int argc, char *argv[]) {
     GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args);
     /* Obtain the data from the virtual file */
     V[GMT_OUT] = GMT_Read_VirtualFile (API, output);
+    /* Close the virtual files */
+	GMT_Close_VirtualFile (API, input);
+	GMT_Close_VirtualFile (API, output);
 	/* Associate our sampled table with a virtual file */
     GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_IN, V[GMT_OUT], input);
     /* Prepare the module arguments */
     sprintf (args, "-R3/9/50/54 -JM6i -P -Baf -W0.5p %s ->apivec.ps", input);
 	/* Call the psxy module */
     GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, args);
+	/* Close the virtual files */
+	GMT_Close_VirtualFile (API, input);
     /* Destroy the GMT session */
     if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
 };

@@ -340,7 +340,7 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 }
 
 /*! . */
-GMT_LOCAL int gmtapi_get_item (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, void *data) {
+GMT_LOCAL int gmtapi_get_item (struct GMTAPI_CTRL *API, unsigned int family, void *data) {
 	unsigned int i;
 	int item;
 
@@ -349,7 +349,6 @@ GMT_LOCAL int gmtapi_get_item (struct GMTAPI_CTRL *API, unsigned int family, uns
 		if (!API->object[i]) continue;				/* Empty object */
 		if (!API->object[i]->data) continue;		/* Empty data */
 		if (API->object[i]->family != (enum GMT_enum_family)family) continue;		/* Not the required data type, but check for exceptions */
-		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
 		if (API->object[i]->data == data) item = i;	/* Found the requested data */
 	}
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such data found */
@@ -5846,7 +5845,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			if (!API->object[item]) continue;	/* Skip freed objects */
 			if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
 		}
-		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, direction, data)) == GMT_NOTSET) {	/* Not found in list */
+		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, data)) == GMT_NOTSET) {	/* Not found in list */
 			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
 		}
 	}
