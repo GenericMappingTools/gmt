@@ -359,7 +359,7 @@ The API
 
 We have spend most of our time strengthening the API, in particular in support
 of the GMT/MATLAB toolbox.  A few new API functions have been added since the
-initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Create_VirtualFile,
+initial release, including GMT_Get_Pixel, GMT_Set_Index,
 GMT_Open_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
 see the API :doc:`GMT_API` for details.
 

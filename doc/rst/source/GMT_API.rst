@@ -529,7 +529,7 @@ the return codes of the modules for now.  We will call our program
    This steps returns a filename that you can use to tell a module where
    to read its input.
 
-#. Create a virtual file to hold the output using GMT_Create_VirtualFile_.
+#. Open a virtual file to hold the output using GMT_Open_VirtualFile_.
    This step also returns a filename for the module to send its input.
 
 #. Prepare required arguments (including the two virtual file names) and
@@ -563,9 +563,9 @@ this program:
       /* Read in our data table to memory */
       D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "table_5.11", NULL);
       /* Associate our data table with a virtual file */
-      GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, D, input);
+      GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, D, input);
       /* Create a virtual file to hold the resulting grid */
-      GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, output);
+      GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output);
       /* Prepare the module arguments */
       sprintf (args, "-R0/7/0/7 -I0.2 -D1 -St0.3 %s -G%s", input, output);
       /* Call the greenspline module */
@@ -679,8 +679,6 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Data_         | Create an empty data resource                         |
 +--------------------------+-------------------------------------------------------+
-| GMT_Create_VirtualFile_  | Create memory location to accept output from a module |
-+--------------------------+-------------------------------------------------------+
 | GMT_Create_Options_      | Convert command line options to linked list           |
 +--------------------------+-------------------------------------------------------+
 | GMT_Create_Session_      | Initialize a new GMT session                          |
@@ -753,7 +751,7 @@ Next table gives a list of all the functions and their purpose.
 +--------------------------+-------------------------------------------------------+
 | GMT_Message_             | Issue a message, optionally with time stamp           |
 +--------------------------+-------------------------------------------------------+
-| GMT_Open_VirtualFile_    | Select memory location to serve as input for a module |
+| GMT_Open_VirtualFile_    | Select memory location as input or output for module  |
 +--------------------------+-------------------------------------------------------+
 | GMT_Option_              | Explain one or more GMT common options                |
 +--------------------------+-------------------------------------------------------+
@@ -1508,54 +1506,38 @@ are read into separate tables that all form part of a single SET (this is what G
 but if GMT_Read_Group is used on the same arguments then an array of one-table sets will
 be returned instead.
 
-Let module read input from a memory location
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Let module read from or write to a memory location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you have read in or otherwise obtained a data object in memory and you
 now wish it to become the input to another module, you have to associate
-that object with a "VirtualFile".  This will assign a filename to the
+that object with a "Virtual File".  This will assign a filename to the
 memory location and you can then pass this filename to any module that
-needs to read that data.  The syntax is
+needs to read that data.  It is similar for writing, and you can pass
+NULL as the object to have GMT automatically allocate the resource.
+The syntax is
 
 .. _GMT_Open_VirtualFile:
 
   ::
 
     void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
-	                             void *data, char *string);
+	           unsigned int direction, void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``string``.  This string must be at least GMT_STR16 bytes (16).
 The other arguments have been discussed earlier.  Simply pass this filename in
-the calling sequence to the module you want to use for reading from this resource.
-
-Let module write output to a memory location
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Likewise, if you want the module to write its result to memory (rather than file),
-you have to associate that memory object with another VirtualFile.  At this point
-you have no memory variable yet so we need another function.  The syntax is
-
-.. _GMT_Create_VirtualFile:
-
-  ::
-
-    void *GMT_Create_VirtualFile (void *API, unsigned int family, unsigned int geometry,
-	                               char *string);
-
-The function returns the desired output filename via ``string``.
-This string must be at least GMT_STR16 bytes (16).  The other
-arguments have been discussed earlier.  Simply use this filename in
-the calling sequence to the module to set the output destination.
+the calling sequence to the module you want to use to indicate which file should
+be used for reading or writing.
 
 Access the data written to a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the module completes it will have written its output to the MemoryFile
-you initialized with GMT_Create_VirtualFile.  To get your hands on the actual
-data you need to read it into your program.  Actually, the data are already
-in memory but to access it you need to use GMT_Read_VirtualFile which takes
-the output filename you obtained from GMT_Create_VirtualFile.  The syntax is
+Once the module completes it will have written its output to the virtual file
+you initialized with GMT_Open_VirtualFile.  To get your hands on the actual
+data you need to "read" it into your program.  Actually, the data are already
+in memory but to access it you need to use GMT_Read_VirtualFile, which expects
+the output filename you obtained from GMT_Open_VirtualFile.  The syntax is
 
 .. _GMT_Read_VirtualFile:
 

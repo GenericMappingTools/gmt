@@ -1013,20 +1013,15 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
-			int object_ID;			/* Status code from GMT API */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Gout)) == GMT_NOTSET) {
+			/* Create a virtual file for the low-pass filtered grid */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_NOERROR) {	/* Make filename with embedded object ID for grid Gout */
+			/* Create a virtual file to hold the resampled grid */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
 				Return (API->error);
-			}
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
-				Return (API->error);
-			}
-			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_NOERROR) {
-				Return (API->error);	/* Make filename with embedded object ID for result grid L */
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -1036,7 +1031,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}
-			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {	/* Load in the resampled grid */
+			if ((L = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &Gout) != GMT_NOERROR) {

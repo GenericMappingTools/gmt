@@ -509,7 +509,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		char int_grd[GMT_LEN16] = {""}, args[GMT_LEN256] = {""};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
-		if (GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, int_grd))
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using default -A-45 -Nt1 */
 		sprintf (args, "%s -G%s -A-45 -Nt1", Ctrl->In.file[0], int_grd);
@@ -689,9 +689,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 			char in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""}, cmd[GMT_LEN64] = {""};
     		/* Associate the intensity grid with an open virtual file - in_string will then hold the name of this input "file" */
-    		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, Intens_orig, in_string);
+    		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Intens_orig, in_string);
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
-    		GMT_Create_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, out_string);
+    		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string);
 			/* Create the command to do the resampling via the grdsample module */
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, n_columns, n_rows);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR)	/* Do the resampling */

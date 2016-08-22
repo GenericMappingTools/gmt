@@ -16,9 +16,9 @@ int main (int argc, char *argv[]) {
     /* Read in our data table to memory */
     V[GMT_IN] = GMT_Read_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "belgium.txt", NULL);
     /* Associate our data table with a virtual file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, V[GMT_IN], input);
+    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_IN, V[GMT_IN], input);
     /* Create a virtual file to hold the sampled points */
-    GMT_Create_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, output);
+    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_OUT, NULL, output);
     /* Prepare the module arguments */
     sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
     /* Call the grdtrack module */
@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
     /* Obtain the data from the virtual file */
     V[GMT_OUT] = GMT_Read_VirtualFile (API, output);
 	/* Associate our sampled table with a virtual file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, V[GMT_OUT], input);
+    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_IN, V[GMT_OUT], input);
     /* Prepare the module arguments */
     sprintf (args, "-R3/9/50/54 -JM6i -P -Baf -W0.5p %s ->apivec.ps", input);
 	/* Call the psxy module */
