@@ -720,7 +720,7 @@ struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 
 /* This union is used to hold any type of array */
 union GMT_UNIVECTOR {
-	/* Universal vector or any data type can be held here */
+	/* Universal vector of any data type can be held here */
 	uint8_t  *uc1; /* Unsigned 1-byte int */
 	int8_t   *sc1; /* Signed 1-byte int */
 	uint16_t *ui2; /* Unsigned 2-byte int */
