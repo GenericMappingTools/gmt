@@ -536,7 +536,7 @@ the return codes of the modules for now.  We will call our program
    call the GMT module you wish to use via GMT_Read_VirtualFile_, which
    returns a data structure of requested type.
 
-#. Close the virtual files you have been using.
+#. Close the virtual files you have been using with GMT_Close_VirtualFile_.
 
 #. We terminate the GMT session by calling GMT_Destroy_Session_.
 
@@ -575,8 +575,8 @@ this program:
       /* Obtain the grid from the virtual file */
       G = GMT_Read_VirtualFile (API, output);
       /* Close the virtual files */
-      GMT_Close_VirtualFile (API, input);
-      GMT_Close_VirtualFile (API, output);
+      GMT_Close_VirtualFile (API, 0, input);
+      GMT_Close_VirtualFile (API, 0, output);
       /* Write the grid to file */
       GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "junk.nc", G);
       /* Destroy the GMT session */
