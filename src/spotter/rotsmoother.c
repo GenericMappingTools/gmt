@@ -311,8 +311,10 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				gmt_M_free (GMT, D);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_table_header (GMT)) {	/* Skip all table headers */
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				continue;
@@ -341,6 +343,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (n_read < n_alloc) D = gmt_M_memory (GMT, D, n_read, struct AGEROT);
 	
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
+		gmt_M_free (GMT, D);
 		Return (API->error);
 	}
 
@@ -369,9 +372,11 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
 	
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_NOERROR) {
+		gmt_M_free (GMT, D);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		gmt_M_free (GMT, D);
 		Return (API->error);
 	}
 
@@ -380,9 +385,11 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		static char *long_header = "lon\tlat\ttime\tangle\tk_hat\ta\tb\tc\td\te\tf\tg\tdf\tstd_t\tstd_w\taz\tS1\tS2\tS3";
 		char *header = (Ctrl->C.active) ? long_header : short_header;
 		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL))
+			gmt_M_free (GMT, D);
 			Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		gmt_M_free (GMT, D);
 		Return (API->error);
 	}
 
