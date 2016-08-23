@@ -226,8 +226,8 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 		"Obtain dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from ftp.soest.hawaii.edu://gmt5 and make DCW_ROOT variable point to the directory where you unarchived the files")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
-# These lines are temporarily here for the beta release - uncomment to include in the build
-# set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt5.c testgmtio.c testgrdio.c testio.c testapiconv.c example1.c testapi_matrix.c testapi_vector.c JL.c walter.c)
+# These lines are temporarily here for the beta release - comment to avoid in the build
+set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt5.c testgmtio.c testgrdio.c testio.c testapiconv.c example1.c testapi_matrix.c testapi_vector.c test_JL.c test_walter.c)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
