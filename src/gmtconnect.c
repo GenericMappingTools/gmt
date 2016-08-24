@@ -345,19 +345,23 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input assuming lines */
+		gmt_M_free (GMT, buffer);
 		Return (API->error);
 	}
 	/* Read in all the input segments into one virtual dataset */
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		gmt_M_free (GMT, buffer);
 		Return (API->error);
 	}
 	if (D[GMT_IN]->n_columns < 2) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D[GMT_IN]->n_columns);
+		gmt_M_free (GMT, buffer);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
 	if (D[GMT_IN]->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");
+		gmt_M_free (GMT, buffer);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -375,6 +379,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	dim_tscr[GMT_SEG] = 0;	/* Allocate no segments for now - we will do this as needed */
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, D[GMT_IN]->geometry, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
+		gmt_M_free (GMT, buffer);
 		Return (API->error);
 	}
 	n_seg_alloc[OPEN] = D[GMT_IN]->n_segments;	/* Cannot end up with more open segments than given on input so this is an upper limit  */
@@ -385,6 +390,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			Ctrl->C.file = strdup ("gmtconnect_closed.txt");
 		if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for closed segments\n");
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 		n_seg_alloc[CLOSED] = n_seg_alloc[OPEN];	/* Cannot end up with more closed segments than given on input so this is an upper limit  */
@@ -470,17 +476,20 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
 		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C; here we do C */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_NOERROR) {
+				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
 		}
 		/* Write open segments to the outfile (probably stdout) */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 or 2 files depending on q_mode */
 			Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
 			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
 		}
@@ -604,6 +613,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	/* Dimensions of single output table with single segment of ns rows */
 		if ((LNK = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 		/* Set up a format statement for the link output */
@@ -640,9 +650,11 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &LNK) != GMT_NOERROR) {
+			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
 	}
