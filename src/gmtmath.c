@@ -140,6 +140,7 @@ struct GMTMATH_INFO {
 	uint64_t n_col;	/* Number of columns */
 	double t_min, t_max, t_inc;
 	struct GMT_DATATABLE *T;	/* Table with all time information */
+	struct GMT_ORDER **Q;		/* For sorting columns */
 };
 
 struct GMTMATH_STACK {
@@ -4001,6 +4002,74 @@ GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	return 0;
 }
 
+GMT_LOCAL void free_sort_list (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info) {
+	/* Free any column sorting helper arrays */
+	uint64_t s;
+	if (info->Q == NULL) return;
+	for (s = 0; s < ((info->local) ? info->T->n_segments : 1); s++)
+		gmt_M_free (GMT, info->Q[s]);
+	gmt_M_free (GMT, info->Q);
+}
+
+GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: SORT 3 1 Sort stack based on column A in direction of B (-1 descending |+1 ascending).  */
+{
+	uint64_t s, seg, row, k = 0;
+	unsigned int scol;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	int dir;
+	struct GMT_DATATABLE *T_prev2 = S[prev2]->D->table[0];
+	struct GMT_ORDER *Z = NULL;
+
+	if (!S[prev1]->constant || S[prev1]->factor < 0.0 || (scol = lrint (S[prev1]->factor)) >= info->n_col) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error SORT: Column must be a constant column number (0 <= k < n_col)!\n");
+		return -1;
+	}
+	if (!S[last]->constant || !((dir = lrint (S[last]->factor)) == -1 || dir == +1)) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error SORT: Direction must be -1 (decreasing) or +1 (increasing)!\n");
+		return 0;
+	}
+
+	if (info->Q == NULL) {	/* First time we must determine the sorting key */
+		info->Q = gmt_M_memory (GMT, NULL, (info->local) ? info->T->n_segments : 1, struct GMT_ORDER *);
+		if (!info->local) Z = info->Q[0] = gmt_M_memory (GMT, NULL, info->T->n_records, struct GMT_ORDER);
+		for (s = k = 0; s < info->T->n_segments; s++) {
+			if (info->local) {	/* SOrt each segment independently */
+				Z = info->Q[s] = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, struct GMT_ORDER);
+				seg = s;
+				k = 0;	/* Reset for new segment */
+			}
+			else	/* Sort the whole enchilada */
+				seg = 0;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) {
+				Z[k].value = T_prev2->segment[s]->data[scol][row];
+				Z[k].order = k;
+			}
+			if (info->local) /* Sort per segment */
+				gmt_sort_order (GMT, info->Q[seg], k, dir);
+		}
+		if (!info->local)	/* Sort the whole enchilada */
+			gmt_sort_order (GMT, info->Q[0], k, dir);
+	}
+	
+	/* OK now we can deal with shuffling of rows based on how the selected column was sorted */
+	if (!info->local) gmt_prep_tmp_arrays (GMT, info->T->n_records, 1);	/* Init or reallocate tmp vectors */
+	for (s = k = 0; s < info->T->n_segments; s++) {
+		if (info->local) {	/* Do the shuffle on a segment-by-segment basis */
+			seg = s;
+			k = 0;	/* Reset for new segment */
+		}
+		else	/* Just do everything at once */
+			seg = 0;
+		Z = info->Q[seg];	/* POinter to this segment's (or all) order scheme */
+		if (info->local) gmt_prep_tmp_arrays (GMT, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors */
+		for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
+			GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
+		gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);
+	}
+	return 0;
+}
+
 GMT_LOCAL int table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SQR 1 1 A^2.  */
 {
@@ -4034,7 +4103,7 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double var;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant)	/* Trivial case: std is underfined */
+	if (S[last]->constant)	/* Trivial case: std is undefined */
 		var = GMT->session.d_NaN;
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;
@@ -5327,7 +5396,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
 			}
 		}
-
+		
+		free_sort_list (GMT, &info);	/* Frees helper array if SORT was called */
+		
 		nstack = new_stack;
 
 		for (kk = 1; kk <= produced_operands[op]; kk++) if (stack[nstack-kk]->D) stack[nstack-kk]->constant = false;	/* Now filled with table */
