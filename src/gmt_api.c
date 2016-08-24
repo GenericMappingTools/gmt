@@ -5960,7 +5960,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	 * Writing: data is either an existing output data container that the user created
 	 *  beforehand or it is NULL and we create an expanding output resource.
 	 * name is the name given to the virtual file and is returned. */
-	int object_ID = GMT_NOTSET, item_s;
+	int object_ID = GMT_NOTSET, item_s = 0;
 	unsigned int item;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -6085,6 +6085,8 @@ int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 	int object_ID = GMT_NOTSET, item;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMTAPI_CTRL *API = NULL;
+	gmt_M_unused (mode);
+
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);

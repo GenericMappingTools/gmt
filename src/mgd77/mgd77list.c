@@ -993,7 +993,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	}
 	if (!string_output) gmt_set_cols (GMT, GMT_OUT, n_out_columns);
 
-	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
+	for (argno = 0; argno < (unsigned int)n_paths; argno++) {		/* Process each ID */
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
