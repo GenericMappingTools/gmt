@@ -2244,8 +2244,11 @@ GMT_LOCAL int api_get_object_id_from_data_ptr (struct GMTAPI_CTRL *API, void *pt
 
 	for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
 		if (!API->object[item]) continue;	/* Skip freed objects */
-		data = api_return_address (ptr, API->object[item]->family);	/* Get void* pointer to resource */
-		if (API->object[item]->data == data && object_ID == GMT_NOTSET) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		data = api_return_address (ptr, API->object[item]->family);	/* Get void* pointer to resource of this family */
+		//if (API->object[item]->data == data && object_ID == GMT_NOTSET) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		/* Try to look for either data or resource pointers since Open_VirtualFile shuffles these two and Destroy needs to find them even if the
+		 * function level test will tell it not to free anything */
+		if (object_ID == GMT_NOTSET && (API->object[item]->data == data || API->object[item]->resource == data)) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
 	}
 	return (object_ID);	/* Return ID or GMT_NOTSET if not found */
 }
@@ -6075,6 +6078,35 @@ void *GMT_Read_VirtualFile_ (char *string, int len) {
 #endif
 
  /*! . */
+int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
+	/* Reset a virtual file back to its original configuration so that it can be
+	 * repurposed for reading or writing again. 
+	 */
+	int object_ID = GMT_NOTSET, item;
+	struct GMTAPI_DATA_OBJECT *S = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	API = api_get_api_ptr (V_API);
+	if ((object_ID = api_decode_id (name)) == GMT_NOTSET) return (GMT_OBJECT_NOT_FOUND);	/* Not a registered resource */
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	S = API->object[item];	/* Short-hand pointer */
+	S->rec = 0;	/* Start at first record */
+	S->delay = 0;	/* No Nan-fuckery yet */
+	S->status = GMT_IS_UNUSED;
+	S->selected = true;
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Init_VirtualFile_ (unsigned int mode, char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Init_VirtualFile (GMT_FORTRAN, mode, string));
+}
+#endif
+
+ /*! . */
 int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
 	/* Scan the registered module input|output resources to learn what their family is.
 	 * direction:	Either GMT_IN or GMT_OUT
@@ -6282,8 +6314,8 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	 * add leading NaN-record(s) if there were segment headers at the beginning of file. */
 	int error = 0, check, object_ID;
 	struct GMT_MATRIX *M = S->resource;
-	if (S->n_alloc != API->current_rec[GMT_OUT]) {	/* Must finalize matrix memory */
-		size_t size = S->n_alloc = API->current_rec[GMT_OUT];
+	if (S->alloc_mode != GMT_ALLOC_EXTERNALLY && S->n_alloc != S->rec) {	/* Must finalize matrix memory */
+		size_t size = S->n_alloc = S->rec;
 		size *= M->n_columns;
 		if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_OK)
 			return_error (API, error);
@@ -6317,8 +6349,8 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	 * add leading NaN-record(s) if there were segment headers at the beginning of file. */
 	int error = 0, check, object_ID;
 	struct GMT_VECTOR *V = S->resource;
-	if (S->n_alloc != API->current_rec[GMT_OUT]) {	/* Must finalize memory */
-		S->n_alloc = API->current_rec[GMT_OUT];
+	if (S->alloc_mode != GMT_ALLOC_EXTERNALLY && S->n_alloc != S->rec) {	/* Must finalize memory */
+		S->n_alloc = S->rec;
 		if ((error = api_alloc_vectors (API->GMT, V, S->n_alloc)) != GMT_OK)
 			return_error (API, error);
 	}
@@ -6328,12 +6360,14 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		return_error (API, API->error);	/* Failure to validate */
 	V->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
 	if (S->delay) {	/* Must place delayed NaN record(s) signifying segment header(s) */
-		GMT_putfunction api_put_val = api_select_put_function (API, V->type[0]);	/* Since vectors are all the same type */
+		GMT_putfunction api_put_val = api_select_put_function (API, V->type[0]);	/* Since vectors are probably all the same type */
 		uint64_t col;
 		while (S->delay) {	/* Place delayed NaN-record(s) as leading rows */
 			S->delay--;
-			for (col = 0; col < V->n_columns; col++)
+			for (col = 0; col < V->n_columns; col++) {
+				if (col && V->type[col] != V->type[col-1]) api_put_val = api_select_put_function (API, V->type[col]);	/* Update put function */
 				api_put_val (&(V->data[col]), S->delay, API->GMT->session.d_NaN);
+			}
 		}
 	}
 	*item = (unsigned int) check;
@@ -7067,7 +7101,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					V_obj = S_obj->resource;
 					n_use = api_n_cols_needed_for_gaps (GMT, S_obj->n_columns);
 					api_update_prev_rec (GMT, n_use);
-					api_get_val = api_select_get_function (API, V_obj->type[0]);	/* For 1st column and probably all of them */
+					api_get_val = api_select_get_function (API, V_obj->type[0]);	/* For 1st column and probably all of them - if not we reset below */
 					n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
 					for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
 						col_pos = api_pick_in_col_number (GMT, (unsigned int)col);
@@ -7388,14 +7422,15 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			/* At the first output record the output matrix has not been allocated.
 			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
-			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
+			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
-			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
+			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size;
 				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {
 					/* Cannot place the NaN records since we dont know the number of columns yet */
 					S_obj->delay++;
+					S_obj->rec++;					/* Since the NaN-record is an actual data record that encodes a segment break */
 					API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
 					break;
 				}
@@ -7413,9 +7448,10 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			api_put_val = api_select_put_function (API, M_obj->type);
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
 				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
-					ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+					ij = GMT_2D_to_index (S_obj->rec, col, M_obj->dim);
 					api_put_val (&(M_obj->data), ij, API->GMT->session.d_NaN);
 				}
+				S_obj->rec++;					/* Since the NaN-record is an actual data record that encodes a segment break */
 				API->current_rec[GMT_OUT]++;	/* Since the NaN-record becomes an actual data record that encodes a segment break */
 				M_obj->n_rows++;		/* Same */
 			}
@@ -7428,11 +7464,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 						error = GMT_NOTSET;
 					else {
 						for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
-							ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+							ij = GMT_2D_to_index (S_obj->rec, col, M_obj->dim);
 							value = api_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
 							api_put_val (&(M_obj->data), ij, value);
 						}
-						M_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
+						M_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] and S_obj->rec are incremented separately at end of function */
 					}
 				}
 			}
@@ -7440,13 +7476,14 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 
 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* List of column arrays */
 		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
-			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
+			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
-			if (S_obj->n_alloc == 0) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
+			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				col = (API->GMT->common.o.active) ? API->GMT->common.o.n_cols : API->GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {
 					/* Cannot place the NaN records since we dont know the number of columns yet */
 					S_obj->delay++;
+					S_obj->rec++;					/* Since the NaN-record is an actual data record that encodes a segment break */
 					API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
 					break;
 				}
@@ -7460,11 +7497,14 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			}
 			V_obj = S_obj->resource;
 
-			api_put_val = api_select_put_function(API, API->GMT->current.setting.export_type);	/* Since vectors are all the same type */
+			api_put_val = api_select_put_function (API, V_obj->type[0]);	/* For 1st column and probably all of them - if not we reset below */
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
-				for (col = 0; col < V_obj->n_columns; col++)	/* Place the output items */
-					api_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], API->GMT->session.d_NaN);
+				for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
+					if (col && V_obj->type[col] != V_obj->type[col-1]) api_put_val = api_select_put_function (API, V_obj->type[col]);
+					api_put_val (&(V_obj->data[col]), S_obj->rec, API->GMT->session.d_NaN);
+				}
 				API->current_rec[GMT_OUT]++;	/* Since the NaN-record is an actual data record that encodes a segment break */
+				S_obj->rec++;					/* Since the NaN-record is an actual data record that encodes a segment break */
 				V_obj->n_rows++;		/* Same */
 			}
 			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
@@ -7477,9 +7517,10 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					else {
 						for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
 							value = api_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
-							api_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], value);
+							if (col && V_obj->type[col] != V_obj->type[col-1]) api_put_val = api_select_put_function (API, V_obj->type[col]);
+							api_put_val (&(V_obj->data[col]), S_obj->rec, value);
 						}
-						V_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
+						V_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] and S_obj->rec are incremented separately at end of function */
 					}
 				}
 			}
@@ -7491,11 +7532,13 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			break;
 	}
 
-	if (!error && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT))		/* Only increment if we placed a data record on the output */
+	if (!error && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT))	{	/* Only increment if we placed a data record on the output */
 		API->current_rec[GMT_OUT]++;
+		S_obj->rec++;
+	}
 
-	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
-		S_obj->n_alloc += GMT_CHUNK;
+	if (S_obj->n_alloc && S_obj->rec == S_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
+		S_obj->n_alloc <<= 1;
 		if (M_obj && (S_obj->method == GMT_IS_DUPLICATE || S_obj->method == GMT_IS_REFERENCE) && S_obj->actual_family == GMT_IS_MATRIX) {
 			size_t size = S_obj->n_alloc * M_obj->n_columns;	/* Only one layer in this context */
 			if ((error = gmtlib_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
@@ -11334,6 +11377,96 @@ EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, 
 			break;
 	}
 	return_error (API, error);
+}
+
+/* Deal with assignments of custom vectors and matrices to GMT containers */
+
+int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
+	/* Hooks a users custom vector onto V's column array and sets the type */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
+	switch (type) {
+		case GMT_DOUBLE:	V->type[col] = GMT_DOUBLE;	V->data[col].f8  = vector;	break;
+		case GMT_FLOAT:		V->type[col] = GMT_FLOAT;	V->data[col].f4  = vector;	break;
+		case GMT_ULONG:		V->type[col] = GMT_ULONG;	V->data[col].ui8 = vector;	break;
+		case GMT_LONG:		V->type[col] = GMT_LONG;	V->data[col].si8 = vector;	break;
+		case GMT_UINT:		V->type[col] = GMT_UINT;	V->data[col].ui4 = vector;	break;
+		case GMT_INT:		V->type[col] = GMT_INT;		V->data[col].si4 = vector;	break;
+		case GMT_USHORT:	V->type[col] = GMT_USHORT;	V->data[col].ui2 = vector;	break;
+		case GMT_SHORT:		V->type[col] = GMT_SHORT;	V->data[col].si2 = vector;	break;
+		case GMT_UCHAR:		V->type[col] = GMT_UCHAR;	V->data[col].uc1 = vector;	break;
+		case GMT_CHAR:		V->type[col] = GMT_CHAR;	V->data[col].sc1 = vector;	break;
+		default:
+			return_error (API, GMT_NOT_A_VALID_TYPE);
+			break;
+	}
+	return GMT_NOERROR;
+}
+
+void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
+	/* Returns a pointer to the specified column array */
+	void *vector = NULL;
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+	if (col >= V->n_columns) return_null (API, GMT_DIM_TOO_LARGE);
+	switch (V->type[col]) {
+		case GMT_DOUBLE:	vector = V->data[col].f8;	break;
+		case GMT_FLOAT:		vector = V->data[col].f4;	break;
+		case GMT_ULONG:		vector = V->data[col].ui8;	break;
+		case GMT_LONG:		vector = V->data[col].si8;	break;
+		case GMT_UINT:		vector = V->data[col].ui4;	break;
+		case GMT_INT:		vector = V->data[col].si4;	break;
+		case GMT_USHORT:	vector = V->data[col].ui2;	break;
+		case GMT_SHORT:		vector = V->data[col].si2;	break;
+		case GMT_UCHAR:		vector = V->data[col].uc1;	break;
+		case GMT_CHAR:		vector = V->data[col].sc1;	break;
+		default:
+			return_null (API, GMT_NOT_A_VALID_TYPE);
+			break;
+	}
+	return vector;
+}
+
+int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
+	/* Hooks a users custom matrix onto M's data array and sets the type */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	switch (type) {
+		case GMT_DOUBLE:	M->type = GMT_DOUBLE;	M->data.f8  = matrix;	break;
+		case GMT_FLOAT:		M->type = GMT_FLOAT;	M->data.f4  = matrix;	break;
+		case GMT_ULONG:		M->type = GMT_ULONG;	M->data.ui8 = matrix;	break;
+		case GMT_LONG:		M->type = GMT_LONG;		M->data.si8 = matrix;	break;
+		case GMT_UINT:		M->type = GMT_UINT;		M->data.ui4 = matrix;	break;
+		case GMT_INT:		M->type = GMT_INT;		M->data.si4 = matrix;	break;
+		case GMT_USHORT:	M->type = GMT_USHORT;	M->data.ui2 = matrix;	break;
+		case GMT_SHORT:		M->type = GMT_SHORT;	M->data.si2 = matrix;	break;
+		case GMT_UCHAR:		M->type = GMT_UCHAR;	M->data.uc1 = matrix;	break;
+		case GMT_CHAR:		M->type = GMT_CHAR;		M->data.sc1 = matrix;	break;
+		default:
+			return_error (API, GMT_NOT_A_VALID_TYPE);
+			break;
+	}
+	return GMT_NOERROR;
+}
+
+void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
+	/* Returns a pointer to the matrix  */
+	void *matrix = NULL;
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+	switch (M->type) {
+		case GMT_DOUBLE:	matrix = M->data.f8;	break;
+		case GMT_FLOAT:		matrix = M->data.f4;	break;
+		case GMT_ULONG:		matrix = M->data.ui8;	break;
+		case GMT_LONG:		matrix = M->data.si8;	break;
+		case GMT_UINT:		matrix = M->data.ui4;	break;
+		case GMT_INT:		matrix = M->data.si4;	break;
+		case GMT_USHORT:	matrix = M->data.ui2;	break;
+		case GMT_SHORT:		matrix = M->data.si2;	break;
+		case GMT_UCHAR:		matrix = M->data.uc1;	break;
+		case GMT_CHAR:		matrix = M->data.sc1;	break;
+		default:
+			return_null (API, GMT_NOT_A_VALID_TYPE);
+			break;
+	}
+	return matrix;
 }
 
 /* Backwards compatibility for old API functions no longer in favor */
