@@ -4020,7 +4020,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T_prev2 = S[prev2]->D->table[0];
 	struct GMT_ORDER *Z = NULL;
 
-	if (!S[prev1]->constant || S[prev1]->factor < 0.0 || (scol = lrint (S[prev1]->factor)) >= info->n_col) {
+	if (!S[prev1]->constant || S[prev1]->factor < 0.0 || (scol = urint (S[prev1]->factor)) >= info->n_col) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error SORT: Column must be a constant column number (0 <= k < n_col)!\n");
 		return -1;
 	}
