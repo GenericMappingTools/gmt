@@ -1318,11 +1318,10 @@ GMT_LOCAL int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	if (gmt_assign_ptrs (GMT, last, S, &T, &T_prev) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (!S[last]->constant || S[last]->factor < 0.0) {
+	if (!S[last]->constant || S[last]->factor < 0.0 || (k = urint (S[last]->factor) >= info->n_col)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, argument to COL must be a constant column number (0 <= k < n_col)!\n");
 		return -1;
 	}
-	k = urint (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		T->segment[s]->data[col][row] = T_prev->segment[s]->data[k][row];
 	}
