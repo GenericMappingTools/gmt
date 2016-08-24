@@ -223,6 +223,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d", &lcmg, &lsmg);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
+	/* coverity[overflow_sink] */		/* For Coverity analysis. Do not remove this comment */
 	gpmg = calloc ((2U * (size_t)lsmg * (size_t)lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
@@ -231,6 +232,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				i_unused = fscanf (fp, "%lf", &gpmg[i + n]);
 		}
 
+	/* coverity[overflow_sink] */		/* For Coverity analysis. Do not remove this comment */
 	gsmg = calloc((2U * (size_t)lsmg * (size_t)lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
