@@ -340,13 +340,20 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 GMT_LOCAL int gmtapi_get_item (struct GMTAPI_CTRL *API, unsigned int family, void *data) {
 	unsigned int i;
 	int item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	API->error = GMT_NOERROR;
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;				/* Empty object */
-		if (!API->object[i]->data) continue;		/* Empty data */
-		if (API->object[i]->family != (enum GMT_enum_family)family) continue;		/* Not the required data type, but check for exceptions */
-		if (API->object[i]->data == data) item = i;	/* Found the requested data */
+		S_obj = API->object[i];
+		if (!S_obj->data) continue;		/* Empty data */
+		if (S_obj->family != (enum GMT_enum_family)family) {		/* Not the required data type; check for exceptions... */
+			if (family == GMT_IS_DATASET && (S_obj->family == GMT_IS_VECTOR || S_obj->family == GMT_IS_MATRIX))
+				S_obj->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */
+			else	/* We dont like your kind */
+				continue;
+		}
+		if (S_obj->data == data) item = i;	/* Found the requested data */
 	}
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such data found */
 	return (item);
@@ -5960,7 +5967,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	 * Writing: data is either an existing output data container that the user created
 	 *  beforehand or it is NULL and we create an expanding output resource.
 	 * name is the name given to the virtual file and is returned. */
-	int object_ID = GMT_NOTSET, item_s;
+	int object_ID = GMT_NOTSET, item_s = 0;
 	unsigned int item;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -6085,6 +6092,8 @@ int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 	int object_ID = GMT_NOTSET, item;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMTAPI_CTRL *API = NULL;
+	gmt_M_unused (mode);
+
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);

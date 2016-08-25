@@ -17,11 +17,11 @@
 void *dlopen (const char *module_name, int mode) {	/* Opens a dll file*/
 	UINT err_code;
 	HINSTANCE dll_handle;
+	gmt_M_unused (mode);
   
 	err_code = SetErrorMode (SEM_FAILCRITICALERRORS);
 	dll_handle = LoadLibrary (module_name);
-	if (!dll_handle) 
-	{
+	if (!dll_handle) {
 		dll_handle = LoadLibraryEx (module_name, NULL, 0);
 		if (!dll_handle)
 			return (void *)dll_handle;
@@ -90,6 +90,7 @@ void *dlopen_special(const char *name) {
 	GetModuleHandleEx (0, 0, &this_process);
 	this_process_again = GetModuleHandle (NULL);
 	return (this_process_again);*/
+	gmt_M_unused (name);
 	HINSTANCE this_dll_process;
 	this_dll_process = GetMyModuleHandle();
 	return (this_dll_process);

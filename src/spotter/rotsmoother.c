@@ -557,7 +557,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		out[9] = C[5];
 		out[10] = C[8];
 		out[11] = g;
-		out[12] = n_use-1;
+		out[12] = (double)n_use - 1;
 		out[13] = std_rot_age;	/* Add std_age and std_angle */
 		out[14] = std_rot_angle;
 		out[15] = azimuth;	/* Axes and orientation for surface 95% error ellipse */

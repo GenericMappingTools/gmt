@@ -804,7 +804,7 @@ struct GMT_OPTION {              /* Structure for a single GMT command option */
 };
 
 /*============================================================ */
-/* struct GMT_RESOURCE is for API Developers only ========= */
+/*  struct GMT_RESOURCE is for API Developers only   ========= */
 /*============================================================ */
 
 struct GMT_RESOURCE {	/* Information related to passing resources between GMT and external APIs */
@@ -812,10 +812,10 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
 	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */
 	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
-	int object_ID;			/* Object ID returned by GMT_Register_IO */
+	char name[GMT_STR16];		/* Virtual file name for resource */
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
-	void *object;			/* Pointer to the registered GMT object */
+	void *object;			/* Pointer to the actual GMT object */
 };
 
 #endif /* _GMT_RESOURCES_H */
