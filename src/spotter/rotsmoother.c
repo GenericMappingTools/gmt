@@ -367,10 +367,6 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_VERBOSE, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
 
-	/* Sort the entire dataset on increasing ages */
-	
-	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
-	
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_NOERROR) {
 		gmt_M_free (GMT, D);
 		Return (error);
@@ -380,6 +376,10 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	/* Sort the entire dataset on increasing ages */
+	
+	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
+	
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		static char *short_header = "lon\tlat\ttime\tangle";
 		static char *long_header = "lon\tlat\ttime\tangle\tk_hat\ta\tb\tc\td\te\tf\tg\tdf\tstd_t\tstd_w\taz\tS1\tS2\tS3";

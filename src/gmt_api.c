@@ -10996,7 +10996,7 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 #define GMT_TYPE_MODE	2
 #define GMT_FORMAT_MODE	2	/* Same as GMT_TYPE_MODE [not a typo] */
 
-EXTERN_MSC void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
+void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
 	/* Convert between valid pairs of objects,  If Out == NULL then we allocate an output object,
 	 * otherwise we assume we are given adequate space already.  This is most likely restricted to a GMT_MATRIX.
 	 * flag is an array with three unsigned integers controlling various aspects of the conversion:
@@ -11177,7 +11177,7 @@ GMT_LOCAL struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n
 	return S;
 }
 
-EXTERN_MSC void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
+void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
 	/* Deal with the two segment types or data and text.
 	 * The n_columns is only used for data segments.
 	 * header, if not NULL or blank, sets the segment header. */
@@ -11204,7 +11204,7 @@ void *GMT_Alloc_Segment_ (void *V_API, unsigned int *family, uint64_t *n_rows, u
 }
 #endif
 
-EXTERN_MSC int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
+int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
 	/* Specify how many output columns to use for record-by-record output */
 	int error = 0;
 	uint64_t n_in;
@@ -11361,7 +11361,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	return (GMT_NOERROR);
 }
 
-EXTERN_MSC int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out, void *alpha) {
+int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned int mode, void *obj, void *out, void *alpha) {
 	/* Reorder the memory layout of a grid or image given the new desired layout in code.
 	 * If out == NULL then we allocate space to hold the new grid|image and replace obj->data with this new array.
 	 *   For grids we preserve any padding in effect for the object but for out we have no padding.

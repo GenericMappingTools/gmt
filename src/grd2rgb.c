@@ -436,7 +436,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);
 			}
-			gmt_grd_init (GMT, Grid->header, options, false);
+			gmt_grd_init (GMT, Grid->header, options, true);
 
 			(void)gmt_set_outgrid (GMT, Ctrl->In.file, false, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
 				

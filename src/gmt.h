@@ -92,21 +92,21 @@ EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned in
 EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 /* These functions are being tested */
-EXTERN_MSC int GMT_Open_VirtualFile	(void *API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *string);
-EXTERN_MSC int GMT_Close_VirtualFile	(void *API, const char *string);
-EXTERN_MSC void * GMT_Read_VirtualFile	(void *API, const char *string);
+EXTERN_MSC int GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *string);
+EXTERN_MSC int GMT_Close_VirtualFile(void *API, const char *string);
+EXTERN_MSC void *GMT_Read_VirtualFile (void *API, const char *string);
 EXTERN_MSC int GMT_Init_VirtualFile	(void *API, unsigned int mode, const char *string);
-EXTERN_MSC void * GMT_Read_Group	(void *API, unsigned int family, unsigned int method, unsigned int geometry,
-						unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
-EXTERN_MSC void * GMT_Convert_Data	(void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
-EXTERN_MSC void * GMT_Alloc_Segment	(void *API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
-EXTERN_MSC int GMT_Set_Columns		(void *API, unsigned int n_columns, unsigned int mode);
-EXTERN_MSC int GMT_Destroy_Group	(void *API, void *object, unsigned int n_items);
-EXTERN_MSC int GMT_Change_Layout	(void *API, unsigned int family, char *code, unsigned int mode, void *obj, void *data, void *alpha);
-EXTERN_MSC void  *GMT_Get_Vector	(void *API, struct GMT_VECTOR *V, unsigned int col);
-EXTERN_MSC void * GMT_Get_Matrix	(void *API, struct GMT_MATRIX *M);
-EXTERN_MSC int GMT_Put_Vector		(void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector);
-EXTERN_MSC int GMT_Put_Matrix		(void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
+EXTERN_MSC void *GMT_Read_Group     (void *API, unsigned int family, unsigned int method, unsigned int geometry,
+                                     unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
+EXTERN_MSC void *GMT_Convert_Data   (void *API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]);
+EXTERN_MSC void *GMT_Alloc_Segment  (void *API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
+EXTERN_MSC int GMT_Set_Columns      (void *API, unsigned int n_columns, unsigned int mode);
+EXTERN_MSC int GMT_Destroy_Group    (void *API, void *object, unsigned int n_items);
+EXTERN_MSC int GMT_Change_Layout    (void *API, unsigned int family, char *code, unsigned int mode, void *obj, void *data, void *alpha);
+EXTERN_MSC void *GMT_Get_Vector     (void *API, struct GMT_VECTOR *V, unsigned int col);
+EXTERN_MSC void *GMT_Get_Matrix     (void *API, struct GMT_MATRIX *M);
+EXTERN_MSC int GMT_Put_Vector       (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector);
+EXTERN_MSC int GMT_Put_Matrix       (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
@@ -169,9 +169,9 @@ EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options	(void *API, const char *modul
 EXTERN_MSC int GMT_Expand_Option			(void *API, struct GMT_OPTION *current, const char *txt);
 
 /* THese are provided for backwards compatibility */
-EXTERN_MSC void * GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Put_Data         (void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void * GMT_Retrieve_Data (void *API, int object_ID);
+EXTERN_MSC void *GMT_Retrieve_Data  (void *API, int object_ID);
 
 #ifdef __cplusplus
 }
