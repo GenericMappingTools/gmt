@@ -61,10 +61,11 @@ struct GRDINFO_CTRL {
 		bool active;
 		unsigned int norm;
 	} L;
-	struct GRDINFO_T {	/* -T[s]<dz> */
+	struct GRDINFO_T {	/* -T[s]<dz>  -T[<dz>][+s][+a[<alpha>]] */
 		bool active;
-		bool mode;
+		unsigned int mode;
 		double inc;
+		double alpha;
 	} T;
 	struct GRDINFO_G {	/*  */
 		bool active;
@@ -78,7 +79,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-
+	C->T.alpha = 5.0;	/* 5 % alpha trim is default if selected */
 	return (C);
 }
 
@@ -91,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|r|b]] [-L[0|1|2]] [-M]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -112,8 +113,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Print global -Tzmin/zmax[/dz] (in rounded multiples of dz, if given).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[<alpha>] to trim grid range by excluding the two <alpha>/2 tails [5 %%].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note: +a is limited to a single grid.  Give <alpha> in percent.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to force a symmetrical range about zero.\n");
 	GMT_Option (API, "V,f,h,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -128,6 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
+char text[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -184,12 +188,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 				break;
 			case 'T':	/* CPT range */
 				Ctrl->T.active = true;
-				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
-					Ctrl->T.mode = true;
-					Ctrl->T.inc = atof (&opt->arg[1]);
+				if (opt->arg[0] == 's' && gmt_M_compat_check (GMT, 5)) {	/* Old-style format, cast in new syntax */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -Ts option is deprecated; please use -T[<dz>][+s][+a[<alpha>]] next time.\n");
+					sprintf (text, "%s+s", &opt->arg[1]);
 				}
 				else
-					Ctrl->T.inc = atof (opt->arg);
+					strncpy (text, opt->arg, GMT_LEN32-1);
+				if (gmt_validate_modifiers (GMT, text, opt->option, "as")) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -T: Syntax is -T[<dz>][+s][+a[<alpha>]] next time.\n");
+					n_errors++;
+				}
+				else {
+					char string[GMT_LEN32] = {""};
+					if (text[0] && text[0] != '+')
+						Ctrl->T.inc = atof (&opt->arg[1]);
+					if (gmt_get_modifier (text, 's', string))	/* Want symmetrical range about 0, i.e., -3500/3500[/500] */
+						Ctrl->T.mode |= 1;
+					if (gmt_get_modifier (text, 'a', string)) {	/* Want alpha-trimmed range before determining limits */
+						Ctrl->T.mode |= 2;
+						if (string[0]) Ctrl->T.alpha = atof (string);
+					}
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -199,7 +218,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: Must specify one or more input files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "Syntax error -T: Must specify a positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0, "Syntax error -T: The optional increment must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1, "Syntax error -T: The optional alpha-trim value can only work with a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0), "Syntax error -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I: Must specify a positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
@@ -227,7 +248,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double mean = 0.0, median = 0.0, sum2 = 0.0, stdev = 0.0, scale = 0.0, rms = 0.0, x, out[20];
 
-	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
+	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL;
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
@@ -307,12 +328,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		n_grds++;
 
-		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Need to read the data (all or subset) */
+		if (Ctrl->M.active || Ctrl->L.active || subset || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 				Return (API->error);
 			}
 		}
 
+		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, GMT_LEN256-1);
+		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max;
 			unsigned int col, row;
@@ -629,7 +652,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+		if ((Ctrl->T.mode & 2) == 0 && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -676,20 +699,44 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->T.active) {
-		if (Ctrl->T.mode) {	/* Get a symmetrical range */
-			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
-			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		if (Ctrl->T.mode & 2) {	/* Must do alpha trimming first */
+			float *tmp_grid = NULL;
+			if (gmt_M_file_is_memory (grdfile)) {	/* Must operate on a copy since sorting is required */
+				tmp_grid = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
+				gmt_M_memcpy (tmp_grid, G->data, G->header->size, float);
+			}
+			else
+				tmp_grid = G->data;
+			gmt_sort_array (GMT, tmp_grid, G->header->size, GMT_FLOAT);	/* Sort so we can find quantiles */
+			global_zmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, G->header->size);			/* "Left" quantile */
+			global_zmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, G->header->size);	/* "Right" quantile */
+			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to alpha trimming */
+				Return (API->error);
+			}
+			if (gmt_M_file_is_memory (grdfile))	/* Now free temp grid */
+				gmt_M_free (GMT, tmp_grid);
+		}
+		if (Ctrl->T.mode & 1) {	/* Get a symmetrical range */
+			if (Ctrl->T.inc > 0.0) {	/* Round limits first */
+				global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+				global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+			}
 			global_zmax = MAX (fabs (global_zmin), fabs (global_zmax));
 			global_zmin = -global_zmax;
 		}
-		else {
-			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
-			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+		else {	/* Just use reported min/max values (possibly alpha-trimmed above) */
+			if (Ctrl->T.inc > 0.0) {	/* Round limits first */
+				global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
+				global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
+			}
 		}
 		sprintf (record, "-T");
 		gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-		gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-		gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
+		gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
+		if (Ctrl->T.inc > 0.0) {
+			strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
+		}
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 	else if ((Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED)) {

@@ -2,7 +2,7 @@ REM		GMT EXAMPLE 28
 REM		$Id$
 REM
 REM Purpose:	Illustrates how to mix UTM data and UTM projection
-REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext
+REM GMT progs:	makecpt, grdgradient, grdimage, pscoast, pstext
 REM DOS calls:	del, echo
 REM
 

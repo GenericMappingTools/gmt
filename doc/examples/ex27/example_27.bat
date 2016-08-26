@@ -3,7 +3,7 @@ REM		GMT EXAMPLE 27
 REM		$Id$
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
-REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
+REM GMT progs:	makecpt, grdgradient, grdimage, pscoast
 REM GMT supplement: img2grd (to read Sandwell/Smith img files)
 REM DOS calls:	del, grep
 REM

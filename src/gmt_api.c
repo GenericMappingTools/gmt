@@ -6288,7 +6288,7 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 
 GMT_LOCAL int api_end_io_textset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *S, unsigned int *item) {
 	/* These are the steps we must take to finalize a GMT_TEXTSET that was written to
-	 * record-by-record vai GMT_Put_Record.  It needs to set number of records and set
+	 * record-by-record via GMT_Put_Record.  It needs to set number of records and set
 	 * the min/max per segments and table */
 	int check, object_ID;
 	int64_t *count = API->GMT->current.io.curr_pos[GMT_OUT];
@@ -6308,6 +6308,13 @@ GMT_LOCAL int api_end_io_textset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	D->n_segments = T->n_segments;
 	D->n_records = T->n_records = count[GMT_ROW];
 	D->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
+#ifdef GMT_BACKWARDS_API
+	{	/* Set record pointers to data pointers for backwardness */
+		uint64_t seg;
+		for (seg = 0; seg < T->n_segments; seg++) T->segment[seg]->record = T->segment[seg]->data;
+	}
+#endif
+
 	/* Register this resource */
 	if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, D)) == GMT_NOTSET)
 		return_error (API, API->error);	/* Failure to register */
