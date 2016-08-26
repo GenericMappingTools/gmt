@@ -6568,6 +6568,10 @@ bool gmt_map_outside (struct GMT_CTRL *GMT, double lon, double lat) {
 	/* Save current status in previous status and update current in/out status */
 	GMT->current.map.prev_x_status = GMT->current.map.this_x_status;
 	GMT->current.map.prev_y_status = GMT->current.map.this_y_status;
+	if (GMT->current.map.outside == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_map_outside: FATAL ERROR - the pointer to the projection function is NULL.\n");
+		return -1;
+	}
 	return ((*GMT->current.map.outside) (GMT, lon, lat));
 }
 
