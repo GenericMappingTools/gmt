@@ -79,7 +79,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->T.alpha = 5.0;	/* 5 % alpha trim is default if selected */
+	C->T.alpha = 2.0;	/* 2 % alpha trim is default if selected */
 	return (C);
 }
 
@@ -114,7 +114,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Print global -Tzmin/zmax[/dz] (in rounded multiples of dz, if given).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[<alpha>] to trim grid range by excluding the two <alpha>/2 tails [5 %%].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[<alpha>] to trim grid range by excluding the two <alpha>/2 tails [2 %%].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note: +a is limited to a single grid.  Give <alpha> in percent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to force a symmetrical range about zero.\n");
 	GMT_Option (API, "V,f,h,.");
@@ -201,7 +201,7 @@ char text[GMT_LEN32] = {""};
 				else {
 					char string[GMT_LEN32] = {""};
 					if (text[0] && text[0] != '+')
-						Ctrl->T.inc = atof (&opt->arg[1]);
+						Ctrl->T.inc = atof (text);
 					if (gmt_get_modifier (text, 's', string))	/* Want symmetrical range about 0, i.e., -3500/3500[/500] */
 						Ctrl->T.mode |= 1;
 					if (gmt_get_modifier (text, 'a', string)) {	/* Want alpha-trimmed range before determining limits */
