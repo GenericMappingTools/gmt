@@ -139,6 +139,7 @@ Supplementary modules
    supplements/spotter/hotspotter
    supplements/spotter/originator
    supplements/spotter/rotconverter
+   supplements/spotter/rotsmoother
    supplements/x2sys/x2sys_binlist
    supplements/x2sys/x2sys_cross
    supplements/x2sys/x2sys_datalist

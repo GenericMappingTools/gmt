@@ -231,11 +231,12 @@ We have added a new module to the GMT core called
 :doc:`pssolar`.
 This module plots various day-light terminators and other sunlight parameters.
 
-A new module has been added to the *spotter* supplement:
-:doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`.
+Two new modules have been added to the *spotter* supplement:
+The first is :doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`.
 Like :doc:`grdpmodeler<supplements/spotter/grdpmodeler>` it evaluates plate
 tectonic model predictions but at given point locations locations instead of
-on a grid.
+on a grid.  The second is :doc:`rotsmoother<supplements/spotter/rotsmoother>`
+which smooths estimated rotations using quaternions.
 
 Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`
 to the *potential* supplement.  This tool is a Green's function gridding module
@@ -287,7 +288,10 @@ as well. For specific enhancements, we have:
    that sets the origin used for the numbering of tables and segments.
 
 *  :doc:`gmtinfo` has a new option **-L** for finding the common bounds
-   across multiple files or segments.
+   across multiple files or segments.  Also, the **-T** option has been
+   modified (while still being backwards compatible) to allow *dz* to be
+   optional, with modifiers **+s** forcing a symmetric range and **+a**
+   offering *alpha*-trimming of the tails before estimating the range.
 
 *  :doc:`gmtmath` has gained new operators **VAR**, 
    **RMS**, **DENAN**, as well as the weighted statistical operators

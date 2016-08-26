@@ -117,7 +117,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the output times when a mean rotation and covariance matrix is desired.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+),\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the name of a file with a list of times (-T<tfile>).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The times indicate bin-boundaries and we output the agerage time.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The times indicate bin-boundaries and we output the average rotation time per bin.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expect weights in last column for a weighted mean rotation [no weights].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Report negative opening angles [positive].\n");

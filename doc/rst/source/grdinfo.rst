@@ -17,7 +17,7 @@ Synopsis
 [ |-I|\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**] ]
 [ |-L|\ [**0**\ \|\ **1**\ \|\ **2**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
-[ |-T|\ [**s**]\ *dz* ]
+[ |-T|\ [*dz*]\ [**+a**\ [*alpha*]] [**+s**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -98,11 +98,16 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**s**]\ *dz*
-    Determine min and max z-value, round off to multiples of *dz*, and
-    report as the text string **-T**\ *zmin/zmax/dz* for use by
-    **makecpt**. To get a symmetrical range about zero, using the max
-    absolute multiple of *dz*, use **-Ts**\ *dz* instead. 
+|-T|\ [*dz*]\ [**+a**\ [*alpha*]] [**+s**]
+    Determine min and max z-value.  If *dz* is provided then we first round these
+    values off to multiples of *dz*. To exclude the two tails of the distribution
+    when determining the min and max you can add **+a** to set the *alpha*
+    value (in percent): We then sort the grid, exclude the data in the
+    0.5*\ *alpha* and 100 - 0.5*\ *alpha* tails, and revise the min and max.
+    To force a symmetrical range about zero, using minus/plus the max
+    absolute value of the two extremes, append **+s**. We report the
+    result via the text string **-T**\ *zmin/zmax* or **-T**\ *zmin/zmax/dz*
+    (if *dz* was given) as expected by :doc:`makecpt`.
 
 .. _-V:
 

@@ -2,7 +2,7 @@ REM             GMT EXAMPLE 38
 REM             $Id$
 REM
 REM Purpose:    Illustrate histogram equalization on topography grids
-REM GMT progs:  psscale, pstext, makecpt, grdhisteq, grdimage, grdinfo, grdgradient
+REM GMT progs:  psscale, pstext, makecpt, grdhisteq, grdimage, grdgradient
 REM DOS calls:  del
 REM
 

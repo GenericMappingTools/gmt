@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate histogram equalization on topography grids
-# GMT modules:  psscale, pstext, makecpt, grdhisteq, grdimage, grdinfo, grdgradient
+# GMT modules:  psscale, pstext, makecpt, grdhisteq, grdimage, grdgradient
 # Unix progs:   rm
 #
 ps=example_38.ps

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdrotate** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+**grdrotater** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 |-G|\ *outgrdfile*
 [ |-D|\ *rotoutline* ]
 [ |-F|\ *polygonfile* ]
