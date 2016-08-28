@@ -175,7 +175,7 @@ struct GMT_GDALREAD_OUT_CTRL {
 	char	*ProjRefWKT;
 	const char	*DriverShortName;
 	const char	*DriverLongName;
-	const char	*ColorInterp;
+	const char	*color_interp;
 	int	*ColorMap;
 	int nIndexedColors; /* Number of colors in a paletted image */
 	int	RasterXsize;

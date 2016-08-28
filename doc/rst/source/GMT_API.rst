@@ -3351,7 +3351,7 @@ contains the image values.  The type of the array is determined by the value of 
       uint64_t                id;               /* The internal number of the data set */
       unsigned int            alloc_level;      /* Level of initial allocation */
       enum GMT_enum_alloc     alloc_mode;       /* Allocation info [0] */
-      const char             *ColorInterp;
+      const char             *color_interp;
       double                 *x, *y;            /* Vector of coordinates */
   };
 
