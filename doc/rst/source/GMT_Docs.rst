@@ -296,7 +296,9 @@ as well. For specific enhancements, we have:
 *  :doc:`gmtmath` has gained new operators **VAR**, 
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
-   **STDW**, and **VARW**.
+   **STDW**, and **VARW**.  Finally, we added a **SORT** operator that lets
+   you sort an entire table in ascending or descending order based on the
+   values in a selected column.
 
 *  :doc:`gmtspatial` has two new modifiers for the **-Q** option that allow
    output segments to be limited based on the segment length (or area for
