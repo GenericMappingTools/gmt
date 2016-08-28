@@ -882,8 +882,7 @@ Registration involves a direct or indirect call to
   ::
 
     int GMT_Register_IO (void *API, unsigned int family, unsigned int method,
-                         unsigned int geometry, unsigned int direction,
-                         double wesn[], void *ptr);
+    	unsigned int geometry, unsigned int direction, double wesn[], void *ptr);
 
 where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
 :ref:`method <tbl-methods>` specifies
@@ -942,57 +941,57 @@ it returns 0.
 
 .. _tbl-methods:
 
-+-------------------------------+-------+-------------------------------------------------------------+
-| method                        | value | how to read/write data                                      |
-+===============================+=======+=============================================================+
-| GMT_IS_FILE                   | 0     | Pointer to name of a file                                   |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_STREAM                 | 1     | Pointer to open stream (or process)                         |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_FDESC                  | 2     | Pointer to integer file descriptor                          |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_DUPLICATE              | 3     | Pointer to memory we may *duplicate* data from              |
-+-------------------------------+-------+-------------------------------------------------------------+
-| GMT_IS_REFERENCE              | 4     | Pointer to memory we may *reference* data from              |
-+-------------------------------+-------+-------------------------------------------------------------+
++------------------+------------------------------------------------+
+| method           | how to read/write data                         |
++==================+================================================+
+| GMT_IS_FILE      | Pointer to name of a file                      |
++------------------+------------------------------------------------+
+| GMT_IS_STREAM    | Pointer to open stream (or process)            |
++------------------+------------------------------------------------+
+| GMT_IS_FDESC     | Pointer to integer file descriptor             |
++------------------+------------------------------------------------+
+| GMT_IS_DUPLICATE | Pointer to memory we may *duplicate* data from |
++------------------+------------------------------------------------+
+| GMT_IS_REFERENCE | Pointer to memory we may *reference* data from |
++------------------+------------------------------------------------+
 
 
 .. _tbl-geometry:
 
-+------------------+------------------------------------------+
-| geometry         |  description                             |
-+==================+==========================================+
-| GMT_IS_NONE      | Not a geographic feature                 |
-+------------------+------------------------------------------+
-| GMT_IS_POINT     | Multi-dimensional point data             |
-+------------------+------------------------------------------+
-| GMT_IS_LINE      | Geographic or Cartesian line segments    |
-+------------------+------------------------------------------+
-| GMT_IS_POLYGON   | Geographic or Cartesian closed polygons  |
-+------------------+------------------------------------------+
-| GMT_IS_PLP       | Either points, lines, or polygons        |
-+------------------+------------------------------------------+
-| GMT_IS_SURFACE   | 2-D gridded surface                      |
-+------------------+------------------------------------------+
++----------------+-----------------------------------------+
+| geometry       |  description                            |
++================+=========================================+
+| GMT_IS_NONE    | Not a geographic feature                |
++----------------+-----------------------------------------+
+| GMT_IS_POINT   | Multi-dimensional point data            |
++----------------+-----------------------------------------+
+| GMT_IS_LINE    | Geographic or Cartesian line segments   |
++----------------+-----------------------------------------+
+| GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
++----------------+-----------------------------------------+
+| GMT_IS_PLP     | Either points, lines, or polygons       |
++----------------+-----------------------------------------+
+| GMT_IS_SURFACE | 2-D gridded surface                     |
++----------------+-----------------------------------------+
 
 
 .. _tbl-wesn:
 
-+---------+-------------------------------------------------+
-| index   |   description                                   |
-+=========+=================================================+
-| GMT_XLO |  x_min (west) boundary of grid subset           |
-+---------+-------------------------------------------------+
-| GMT_XHI |  x_max (east) boundary of grid subset           |
-+---------+-------------------------------------------------+
-| GMT_YLO |  y_min (south) boundary of grid subset          |
-+---------+-------------------------------------------------+
-| GMT_YHI |  y_max (north) boundary of grid subset          |
-+---------+-------------------------------------------------+
-| GMT_ZLO |  z_min (bottom) boundary of 3-D matrix subset   |
-+---------+-------------------------------------------------+
-| GMT_ZHI |  z_max (top) boundary of 3-D matrix subset      |
-+---------+-------------------------------------------------+
++---------+----------------------------------------------+
+| index   |  description                                 |
++=========+==============================================+
+| GMT_XLO | x_min (west) boundary of grid subset         |
++---------+----------------------------------------------+
+| GMT_XHI | x_max (east) boundary of grid subset         |
++---------+----------------------------------------------+
+| GMT_YLO | y_min (south) boundary of grid subset        |
++---------+----------------------------------------------+
+| GMT_YHI | y_max (north) boundary of grid subset        |
++---------+----------------------------------------------+
+| GMT_ZLO | z_min (bottom) boundary of 3-D matrix subset |
++---------+----------------------------------------------+
+| GMT_ZHI | z_max (top) boundary of 3-D matrix subset    |
++---------+----------------------------------------------+
 
 .. _sec-res_init:
 
@@ -1019,8 +1018,7 @@ options). The prototype for this function is
   ::
 
     int GMT_Init_IO (void *API, unsigned int family, unsigned int geometry,
-                     unsigned int direction, unsigned int mode,
-                     unsigned int n_args, void *args);
+    	unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
 
 where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
 :ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``direction`` is either
@@ -1102,8 +1100,8 @@ etc.), then you can obtain a "blank slate" by calling
   ::
 
     void *GMT_Create_Data (void *API, unsigned int family, unsigned int geometry,
-                           unsigned int mode, uint64_t par[], double *wesn,
-                           double *inc, unsigned int registration, int pad, void *data)
+         unsigned int mode, uint64_t par[], double *wesn, double *inc,
+         unsigned int registration, int pad, void *data)
 
 which returns a pointer to the allocated resource. Pass :ref:`family <tbl-family>` as
 one of ``GMT_IS_GRID``, ``GMT_IS_IMAGE``, ``GMT_IS_DATASET``, ``GMT_IS_POSTSCRIPT``,
@@ -1126,7 +1124,7 @@ and pass the ``par`` array as indicated below:
     (GMT_GRID_NODE_REG) registration.  The domain can be prescribed on one of two ways:
     (1) The ``par`` argument is NULL. Then ``wesn`` and ``inc`` can also be NULL but only if
     **-R** and **-I** have been set because they are inquired to get the necessary info. If they
-    were not set, than ``wesn`` and ``inc`` must in fact be transmitted.  If `wesn`` and ``inc``
+    were not set, than ``wesn`` and ``inc`` must in fact be transmitted.  If ``wesn`` and ``inc``
     are set (directly or indirectly) then ``par`` is ignored, even if not NULL.
     (2) The ``par`` argument is not NULL but both ``wesn`` and ``inc`` are NULL.
     Now, par[0] has the number of columns and par[1] has the number of rows in the grid.  Here,
@@ -1193,7 +1191,7 @@ error code via ``API->error``.
 Manually add segments
 ---------------------
 
-If you do now know the number of rows in segments or expect different segments to have different
+If you do not know the number of rows in segments or expect different segments to have different
 lengths then you should set the row dimension to zero in GMT_Create_Data and add the segments
 manually with  GMT_Alloc_Segment.
 ``GMT_Alloc_Segment`` allocates a new DATASET or TEXTSET segment for multi-segment table.
@@ -1202,8 +1200,8 @@ manually with  GMT_Alloc_Segment.
 
   ::
 
-    struct GMT_OPTION *GMT_Alloc_Segment (void *API, unsigned int family, uint64_t n_rows,
-                                          uint64_t n_columns, char *header, void *S);
+    struct GMT_OPTION *GMT_Alloc_Segment (void *API, unsigned int family,
+    	uint64_t n_rows, uint64_t n_columns, char *header, void *S);
 
 where ``header`` is the segment's header string and `family` selects which
 kind of resource is passed via ``S``, which in this case should either be ``GMT_IS_DATASET``
@@ -1228,7 +1226,7 @@ are addressed by
   ::
 
     void *GMT_Duplicate_Data (void *API, unsigned int family,
-                              unsigned int mode, void *data);
+    	unsigned int mode, void *data);
 
 which returns a pointer to the allocated resource. Specify which
 :ref:`family <tbl-family>` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
@@ -1259,7 +1257,7 @@ In this case you will use
   ::
 
     void *GMT_Convert_Data (void *API, void *In, unsigned int family_in,
-	                          void *Out, unsigned int family_out, unsigned int flag[]);
+		void *Out, unsigned int family_out, unsigned int flag[]);
 
 which returns a pointer to the converted resource. Specify which
 :ref:`family <tbl-family>` for both the old and new resource and set the
@@ -1298,7 +1296,7 @@ are performed by
   ::
 
     void *GMT_Get_ID (void *API, unsigned int family,
-                      unsigned int direction, void *data);
+    	unsigned int direction, void *data);
 
 which returns the ID number of the allocated resource. Specify which
 :ref:`family <tbl-family>` and select ``direction`` from ``GMT_IN`` or ``GMT_OUT``.
@@ -1348,7 +1346,7 @@ upcoming import. The prototype is
   ::
 
     int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction,
-                      unsigned int header);
+    	unsigned int header);
 
 where :ref:`family <tbl-family>` specifies the resource type to be read or written
 (only ``GMT_IS_DATASET`` and ``GMT_IS_TEXTSET`` are
@@ -1389,8 +1387,7 @@ To read an entire resource from a file, stream, or file handle, use
   ::
 
     void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
-                         unsigned int geometry, unsigned int mode, double wesn[],
-                         const char *input, void *ptr);
+    	unsigned int geometry, unsigned int mode, double wesn[], const char *input, void *ptr);
 
 * :ref:`API <GMT_Create_Session>`
 * :ref:`family <tbl-family>`
@@ -1474,8 +1471,8 @@ To read a group or resource from files, use
   ::
 
     void *GMT_Read_Group (void *API, unsigned int family, unsigned int method,
-                          unsigned int geometry, unsigned int mode, double wesn[],
-                          void *input, unsigned int *n_items, void *ptr);
+    	unsigned int geometry, unsigned int mode, double wesn[],
+    	void *input, unsigned int *n_items, void *ptr);
 
 * :ref:`API <GMT_Create_Session>`
 * :ref:`family <tbl-family>`
@@ -1518,7 +1515,7 @@ The syntax is
   ::
 
     void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
-	           unsigned int direction, void *data, char *string);
+		unsigned int direction, void *data, char *string);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``string``.  This string must be at least GMT_STR16 bytes (16).
@@ -1623,31 +1620,31 @@ say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 
 .. _tbl-iostatus:
 
-+-----------------------------+----------------------------------------------------------+
-| mode                        | description and return value                             |
-+=============================+==========================================================+
-|   GMT_IO_DATA_RECORD        | 1 if we read a data record                               |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_TABLE_HEADER       | 1 if we read a table header                              |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_SEGMENT_HEADER     | 1 if we read a segment header                            |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_ANY_HEADER         | 1 if we read either header record                        |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_MISMATCH           | 1 if we read incorrect number of columns                 |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_EOF                | 1 if we reached the end of the file (EOF)                |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_NAN                | 1 if we only read NaNs                                   |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_GAP                | 1 if this record implies a data gap                      |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_NEW_SEGMENT        | 1 if we enter a new segment                              |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_LINE_BREAK         | 1 if we encountered a segment header, EOF, NaNs or gap   |
-+-----------------------------+----------------------------------------------------------+
-|   GMT_IO_NEXT_FILE          | 1 if we finished one file but not the last               |
-+-----------------------------+----------------------------------------------------------+
++-----------------------+--------------------------------------------------------+
+| mode                  | description and return value                           |
++=======================+========================================================+
+| GMT_IO_DATA_RECORD    | 1 if we read a data record                             |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_TABLE_HEADER   | 1 if we read a table header                            |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_SEGMENT_HEADER | 1 if we read a segment header                          |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_ANY_HEADER     | 1 if we read either header record                      |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_MISMATCH       | 1 if we read incorrect number of columns               |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_EOF            | 1 if we reached the end of the file (EOF)              |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_NAN            | 1 if we only read NaNs                                 |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_GAP            | 1 if this record implies a data gap                    |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_NEW_SEGMENT    | 1 if we enter a new segment                            |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_LINE_BREAK     | 1 if we encountered a segment header, EOF, NaNs or gap |
++-----------------------+--------------------------------------------------------+
+| GMT_IO_NEXT_FILE      | 1 if we finished one file but not the last             |
++-----------------------+--------------------------------------------------------+
 
 
 Importing a grid row
@@ -1704,7 +1701,8 @@ can be obtained via arrays of coordinates for each dimension, obtained by
 
   ::
 
-    double *GMT_Get_Coord (void *API, unsigned int family, unsigned int dim, void *data);
+    double *GMT_Get_Coord (void *API, unsigned int family, unsigned int dim,
+    	void *data);
 
 where :ref:`family <tbl-family>` must be ``GMT_IS_GRID`` or ``GMT_IS_DATASET``, ``dim`` is either
 ``GMT_IS_X`` or ``GMT_IS_Y``, and ``data`` is the grid or image pointer.  This
@@ -1728,7 +1726,8 @@ position; again this function is used below in our example.
 
   ::
 
-    int64_t GMT_Get_Pixel (struct GMT_GRID_HEADER *header, int row, int col, int layer);
+    int64_t GMT_Get_Pixel (struct GMT_GRID_HEADER *header, int row,
+    	int col, int layer);
 
 where the ``header`` is the header of either a grid or image, and ``row``, ``col`` and
 ``layer`` (= 1 for grids) is the position in the grid or image.
@@ -1746,7 +1745,7 @@ grid and assign each node the product x \* y:
 
     int row, col, node;
     double *x_coord = NULL, *y_coord = NULL;
-    < ... create a grid G or read one ... >
+    /*... create a grid G or read one ... */
     x_coord = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
     y_coord = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
     for (row = 0; row < G->header->n_rows) {
@@ -1767,7 +1766,7 @@ column does not enter you can instead do a single loop:
   ::
 
     int node;
-    < ... create a grid G or read one ... >
+    /*... create a grid G or read one ... */
     for (node = 0; node < G->header->size) G->data[node] = -9999.0;
 
 Note we must use ``G->header->size`` (size of allocated array) and not
@@ -1791,7 +1790,7 @@ records and add 1 to all columns beyond the first two (x and y):
     struct GMT_DATATABLE *T = NULL;
     struct GMT_DATASEGMENT *S = NULL;
 
-    < ... create a dataset D or read one ... >
+    /* ... create a dataset D or read one ... */
     for (tbl = 0; tbl < D->n_tables; tbl++) {       /* For each table */
       T = D->table[tbl];       /* Convenient shorthand for current table */
       for (seg = 0; seg < T->n_segments; seg++) {   /* For all segments */
@@ -1817,7 +1816,7 @@ following code snippet will visit all text records and print them out:
     struct GMT_TEXTTABLE *T = NULL;
     struct GMT_TEXTSEGMENT *S = NULL;
 
-    < ... create a textset D or read one ... >
+    /* ... create a textset D or read one ... */
     for (tbl = 0; tbl < D->n_tables; tbl++) {   /* For each table */
       T = D->table[tbl];        /* Convenient shorthand for current table */
       for (seg = 0; seg < T->n_segments; seg++) {   /* For all segments */
@@ -1853,21 +1852,21 @@ lower or equal to the **-V**\ *level* will be printed.
 
 .. _tbl-verbosity:
 
-+-------------------------+--------------------------------------------------+
-| constant                | description                                      |
-+=========================+==================================================+
-| GMT_MSG_QUIET           | No messages whatsoever                           |
-+-------------------------+--------------------------------------------------+
-| GMT_MSG_NORMAL          | Default output, e.g., warnings and errors only   |
-+-------------------------+--------------------------------------------------+
-| GMT_MSG_COMPAT          | Compatibility warnings                           |
-+-------------------------+--------------------------------------------------+
-| GMT_MSG_VERBOSE         | Verbose level                                    |
-+-------------------------+--------------------------------------------------+
-| GMT_MSG_LONG_VERBOSE    | Longer verbose                                   |
-+-------------------------+--------------------------------------------------+
-| GMT_MSG_DEBUG           | Debug messages for developers mostly             |
-+-------------------------+--------------------------------------------------+
++----------------------+------------------------------------------------+
+| constant             | description                                    |
++======================+================================================+
+| GMT_MSG_QUIET        | No messages whatsoever                         |
++----------------------+------------------------------------------------+
+| GMT_MSG_NORMAL       | Default output, e.g., warnings and errors only |
++----------------------+------------------------------------------------+
+| GMT_MSG_COMPAT       | Compatibility warnings                         |
++----------------------+------------------------------------------------+
+| GMT_MSG_VERBOSE      | Verbose level                                  |
++----------------------+------------------------------------------------+
+| GMT_MSG_LONG_VERBOSE | Longer verbose                                 |
++----------------------+------------------------------------------------+
+| GMT_MSG_DEBUG        | Debug messages for developers mostly           |
++----------------------+------------------------------------------------+
 
 
 .. _GMT_Message:
@@ -1884,17 +1883,17 @@ Table :ref:`timemodes <tbl-timemodes>` for the various modes.
 
 .. _tbl-timemodes:
 
-+--------------------+-----------------------------------------+
-| constant           | description                             |
-+====================+=========================================+
-| GMT_TIME_NONE      | Display no time information             |
-+--------------------+-----------------------------------------+
-| GMT_TIME_CLOCK     | Display current local time              |
-+--------------------+-----------------------------------------+
-| GMT_TIME_ELAPSED   | Display elapsed time since last reset   |
-+--------------------+-----------------------------------------+
-| GMT_TIME_RESET     | Reset the elapsed time to 0             |
-+--------------------+-----------------------------------------+
++------------------+---------------------------------------+
+| constant         | description                           |
++==================+=======================================+
+| GMT_TIME_NONE    | Display no time information           |
++------------------+---------------------------------------+
+| GMT_TIME_CLOCK   | Display current local time            |
++------------------+---------------------------------------+
+| GMT_TIME_ELAPSED | Display elapsed time since last reset |
++------------------+---------------------------------------+
+| GMT_TIME_RESET   | Reset the elapsed time to 0           |
++------------------+---------------------------------------+
 
 .. _sec-parsopt:
 
@@ -2145,10 +2144,10 @@ sort it internally according to need. The option structure is defined below.
   ::
 
     struct GMT_OPTION {
-        char               option;  /* Single character of the option (e.g., 'G' for -G) */
-        char              *arg;     /* String pointer with arguments (NULL if not used) */
-        struct GMT_OPTION *next;    /* Pointer to next option (NULL for last option) */
-        struct GMT_OPTION *prev;    /* Pointer to previous option (NULL for first option) */
+        char               option;  /* Single option character (e.g., 'G' for -G) */
+        char              *arg;     /* String with arguments (NULL if not used) */
+        struct GMT_OPTION *next;    /* Next option pointer (NULL for last option) */
+        struct GMT_OPTION *prev;    /* Previous option (NULL for first option) */
     };
 
 Convert between text and linked structures
@@ -2275,7 +2274,7 @@ the doubly-linked ``list``. The prototype is
   ::
 
     struct GMT_OPTION *GMT_Append_Option (void *API, struct GMT_OPTION *option,
-                                          struct GMT_OPTION *list);
+    	struct GMT_OPTION *list);
 
 We return the list back, and if ``list`` is given as NULL we return
 ``option`` as the start of the new list. Any errors results in a NULL
@@ -2294,7 +2293,7 @@ an error we still set ``API->error`` accordingly. The prototype is
   ::
 
     struct GMT_OPTION *GMT_Find_Option (void *API, char option,
-                                        struct GMT_OPTION *list);
+    	struct GMT_OPTION *list);
 
 If you need to look for multiple occurrences of a certain option you
 will need to call GMT_Find_Option_ again, passing the option
@@ -2364,11 +2363,11 @@ as other languages (Python, Java, Julia, etc.) or tools (MATLAB, Octave,
 etc.) need to manipulate linked options in a special way.  For instance,
 a GMT call in the MATLAB or Octave application might look like
 
-::
+  ::
 
-  table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
-  grid  = gmt ('surface -R -I2m -Lu', table, high_limit_grid);
-  grid2 = gmt ('grdmath ? LOG10 ? MUL', grid, grid);
+    table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
+    grid  = gmt ('surface -R -I2m -Lu', table, high_limit_grid);
+    grid2 = gmt ('grdmath ? LOG10 ? MUL', grid, grid);
 
 Most of the time our implicit rules will take care of the ordering.  The
 rule says that all required input data items must be listed before any
@@ -2390,7 +2389,7 @@ The prototype is
   ::
 
     struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module,
-                    	 int n_in, struct GMT_OPTION **head, int *n_items);
+    	int n_in, struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
 pointed to by ``*head``, ``n_in`` contains the number of *input*
@@ -2411,7 +2410,7 @@ error number.  The GMT_RESOURCE structure is defined below:
        enum GMT_enum_std direction;     /* Either GMT_IN or GMT_OUT */
        struct GMT_OPTION *option;       /* Pointer to the corresponding module option */
        int object_ID;                   /* Object ID returned by GMT_Register_IO */
-       int pos;                         /* Corresponding index into external object in|out arrays */
+       int pos;                         /* Index into external object in|out arrays */
        int mode;                        /* 0 means primary i/o object, 1 means secondary */
        void *object;                    /* Pointer to the registered GMT object */
    };
@@ -2481,8 +2480,8 @@ information to the existing headers. This is achieved with
 
   ::
 
-    int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode
-                         void *arg, void *data)
+    int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode,
+    	void *arg, void *data)
 
 Again, :ref:`family <tbl-family>` selects which kind of resource is passed via ``data``.
 The ``mode`` determines what kind of comment is being considered, how it
@@ -2498,29 +2497,29 @@ you call GMT_Begin_IO_
 
 .. _tbl-comments:
 
-+---------------------------+------------------------------------------------------+
-| constant                  | description                                          |
-+===========================+======================================================+
-| GMT_COMMENT_IS_TEXT       | Comment is a text string                             |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_OPTION     | Comment is a linked list of GMT_OPTION structures    |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_COMMAND    | Comment is the command                               |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_REMARK     | Comment is the remark                                |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_TITLE      | Comment is the title                                 |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_X     | Comment is the x variable name (grids only)          |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Y     | Comment is the y variable name (grids only)          |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Z     | Comment is the z variable name (grids only)          |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_COLNAMES   | Comment is the column names header                   |
-+---------------------------+------------------------------------------------------+
-| GMT_COMMENT_IS_RESET      | Comment replaces existing information                |
-+---------------------------+------------------------------------------------------+
++-------------------------+---------------------------------------------------+
+| constant                | description                                       |
++=========================+===================================================+
+| GMT_COMMENT_IS_TEXT     | Comment is a text string                          |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_OPTION   | Comment is a linked list of GMT_OPTION structures |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_COMMAND  | Comment is the command                            |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_REMARK   | Comment is the remark                             |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_TITLE    | Comment is the title                              |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_NAME_X   | Comment is the x variable name (grids only)       |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_NAME_Y   | Comment is the y variable name (grids only)       |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_NAME_Z   | Comment is the z variable name (grids only)       |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_COLNAMES | Comment is the column names header                |
++-------------------------+---------------------------------------------------+
+| GMT_COMMENT_IS_RESET    | Comment replaces existing information             |
++-------------------------+---------------------------------------------------+
 
 
 The named modes (*command*, *remark*, *title*, *name_x,y,z* and
@@ -2582,8 +2581,8 @@ The prototype for writing to a file (via name, stream, or file handle) is
   ::
 
     int GMT_Write_Data (void *API, unsigned int family, unsigned int method,
-                        unsigned int geometry, unsigned int mode,
-                        double wesn[], void *output, void *data);
+    	unsigned int geometry, unsigned int mode,
+    	double wesn[], void *output, void *data);
 
 * :ref:`API <GMT_Create_Session>`
 * :ref:`family <tbl-family>`
@@ -2847,7 +2846,7 @@ your program needs to present the option usage you can call
   ::
 
     unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim,
-                                 const char *string);
+    	const char *string);
 
 Here, ``option`` is the unique character used for this particular
 program option (most GMT programs have standardized on using 'N' but
@@ -2881,7 +2880,7 @@ conveniently performed for you by
   ::
 
     void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
-                          unsigned int mode, void *F);
+    	unsigned int mode, void *F);
 
 Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
 dimension of the transform (1 or 2 only), ``mode`` passes various flags to the setup, such as whether
@@ -2924,7 +2923,8 @@ A lower-level 1-D FFT is also available via
 
   ::
 
-    int GMT_FFT_1D (void *API, float *data, uint64_t n, int direction, unsigned int mode);
+    int GMT_FFT_1D (void *API, float *data, uint64_t n, int direction,
+    	unsigned int mode);
 
 which takes as ``direction`` either ``GMT_FFT_FWD`` or ``GMT_FFT_INV``. The
 mode is used to specify if we pass a real (GMT_FFT_REAL) or complex
@@ -2947,8 +2947,8 @@ A lower-level 2-D FFT is also available via
 
   ::
 
-    int GMT_FFT_2D (void *API, float *data, unsigned int n_columns, unsigned int n_rows,
-		   int direction, unsigned int mode);
+    int GMT_FFT_2D (void *API, float *data, unsigned int n_columns,
+    	unsigned int n_rows, int direction, unsigned int mode);
 
 which takes as ``direction`` either ``GMT_FFT_FWD`` or ``GMT_FFT_INV``. The
 mode is used to specify if we pass a real (GMT_FFT_REAL) or complex
@@ -3055,7 +3055,7 @@ To inquire about the range of information in a grid, use
   ::
 
     int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
-                             char *title, char *remark, const char *file)
+    	char *title, char *remark, const char *file)
 
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
 as three consecutive pairs, ``inc`` returns the x and y increment, the ``title`` and ``remark``
@@ -3070,7 +3070,7 @@ To actually read the grid, we use
   ::
 
     int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[],
-                         double inc[], char *title, char *remark, const char *file)
+    	double inc[], char *title, char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
 ``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments,
@@ -3087,7 +3087,7 @@ Finally, to write a grid to file you can use
   ::
 
     int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[],
-                          double inc[], const char *title, const char *remark, const char *file)
+    	double inc[], const char *title, const char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,
@@ -3120,24 +3120,24 @@ structure per segment.
 
    struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
        /* Variables we document for the API: */
-       uint64_t               n_tables;     /* The total number of tables (files) contained */
-       uint64_t               n_columns;    /* The number of data columns */
-       uint64_t               n_segments;   /* The total number of segments across all tables */
-       uint64_t               n_records;    /* The total number of data records across all tables */
+       uint64_t               n_tables;     /* Total number of tables (files) contained */
+       uint64_t               n_columns;    /* Number of data columns */
+       uint64_t               n_segments;   /* Total number of segments across all tables */
+       uint64_t               n_records;    /* Total number of data records across all tables */
        double                *min;          /* Minimum coordinate for each column */
        double                *max;          /* Maximum coordinate for each column */
        struct GMT_DATATABLE **table;        /* Pointer to array of tables */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t               id;           /* The internal number of the data set */
        size_t                 n_alloc;      /* The current allocation length of tables */
-       uint64_t               dim[4];       /* Only used by GMT_Duplicate_Data to override dimensions */
+       uint64_t               dim[4];       /* Used by GMT_Duplicate_Data to override dimensions */
        unsigned int           geometry;     /* The geometry of this dataset */
        unsigned int           alloc_level;  /* The level it was allocated at */
-       enum GMT_enum_dest     io_mode;      /* -1 means write OGR format (requires proper -a),
-                                               0 means write everything to one destination [Default],
-                                               1 means use table->file[GMT_OUT] to write separate table,
-                                               2 means use segment->file[GMT_OUT] to write separate segments.
-                                               3 is same as 2 but with no filenames we create filenames from
+       enum GMT_enum_dest     io_mode;      /* -1: write OGR format (requires proper -a),
+                                               0: write everything to one destination [Default],
+                                               1: use table->file[GMT_OUT] to write separate table,
+                                               2: use segment->file[GMT_OUT] to write separate segments.
+                                               3: as 2 but with no filenames we create filenames from
                                                  tbl and seg numbers */
        enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
@@ -3162,7 +3162,8 @@ structure per segment.
        size_t       n_alloc;      /* The current allocation length of segments */
        double       dist;         /* Distance from a point to this feature */
        enum GMT_enum_write mode;  /* 0 = output table, 1 = output header only, 2 = skip table */
-       struct GMT_OGR *ogr;       /* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT)  */
+       struct GMT_OGR *ogr;       /* Pointer to struct with all things GMT/OGR
+								     (if MULTI-geometry and not MULTIPOINT)  */
        char        *file[2];      /* Name of file or source [0 = in, 1 = out] */
    };
 
@@ -3181,15 +3182,16 @@ structure per segment.
        char    *header;           /* Segment header (if applicable) */
        /* ---- Variables "hidden" from the API ---- */
        enum GMT_enum_write mode;  /* 0 = output segment, 1 = output header only, 2 = skip segment */
-       enum GMT_enum_pol pol_mode;/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
+       enum GMT_enum_pol pol_mode;/* GMT_IS_PERIMETER [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
        uint64_t id;               /* The internal number of the segment */
        size_t   n_alloc;          /* The current allocation length of each data column */
        unsigned int range;        /* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
-       int      pole;             /* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
+       int      pole;             /* Spherical polygons only: If it encloses the S (-1)
+									 or N (+1) pole, or none (0) */
        double   dist;             /* Distance from a point to this feature */
        double   lat_limit;        /* For polar caps: the latitude of the point closest to the pole */
        struct GMT_OGR_SEG *ogr;   /* NULL unless OGR/GMT metadata exist for this segment */
-       struct GMT_DATASEGMENT *next; /* NULL unless polygon and has holes and pointing to next hole */
+       struct GMT_DATASEGMENT *next; /* NULL unless polygon has holes and pointing to next hole */
        char    *file[2];          /* Name of file or source [0 = in, 1 = out] */
     };
 
@@ -3199,14 +3201,15 @@ structure per segment.
 
     struct GMT_OGR {  /* Struct with all things GMT/OGR for a table */
         /* The first parameters are usually set once per data set and do not change */
-        unsigned int  geometry;    /* @G: The geometry of this data set, if known [0 otherwise] */
-        unsigned int  n_aspatial;  /* @T: The number of aspatial fields */
-        char         *region;      /* @R: The region textstring [NULL if not set] */
+        unsigned int  geometry;    /* @G: Geometry of this data set, if known [0 otherwise] */
+        unsigned int  n_aspatial;  /* @T: Number of aspatial fields */
+        char         *region;      /* @R: Region textstring [NULL if not set] */
         char         *proj[4];     /* @J: The 1-4 projection strings [NULL if not set] */
-        unsigned int *type;        /* @T: The data types of the aspatial fields [NULL if not set]  */
-        char        **name;        /* @N The names of the aspatial fields [NULL if not set]  */
-        /* The following are for OGR data only. It is filled during parsing (current segment) but is then copied to the segment header so it can be accessed later */
-        enum GMT_enum_pol pol_mode;/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+        unsigned int *type;        /* @T: Data types of the aspatial fields [NULL if not set]  */
+        char        **name;        /* @N: Names of the aspatial fields [NULL if not set]  */
+        /* The following are for OGR data only. It is filled during parsing (current segment)
+		   but is then copied to the segment header so it can be accessed later */
+        enum GMT_enum_pol pol_mode;/* @P: GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
         char        **tvalue;      /* @D: The text values of the current aspatial fields */
         double       *dvalue;      /* @D: Same but converted to double (assumed possible) */
     };
@@ -3216,9 +3219,9 @@ structure per segment.
 .. code-block:: c
 
     struct GMT_OGR_SEG {           /* Struct with GMT/OGR aspatial data for a segment */
-        enum GMT_enum_pol pol_mode;/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
-        unsigned int   n_aspatial; /* @T: The number of aspatial fields */
-        char         **tvalue;     /* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
+        enum GMT_enum_pol pol_mode;/* @P: GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
+        unsigned int   n_aspatial; /* @T: Number of aspatial fields */
+        char         **tvalue;     /* @D: Values of current aspatial fields */
         double *dvalue;            /* @D: Same but converted to double (assumed possible) */
     };
 
@@ -3237,8 +3240,8 @@ contains the grid values.
        struct GMT_GRID_HEADER *header;      /* Pointer to full GMT header for the grid */
        float                  *data;        /* Pointer to the float grid */
        /* ---- Variables "hidden" from the API ---- */
-       unsigned int            id;          /* The internal number of the grid */
-       unsigned int            alloc_level; /* The level it was allocated at */
+       unsigned int            id;          /* Internal number of the grid */
+       unsigned int            alloc_level; /* Level it was allocated at */
        enum GMT_enum_alloc     alloc_mode;  /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        double                 *x, *y;       /* Vector of coordinates */
        void                   *extra;       /* Row-by-row machinery information [NULL] */
@@ -3253,7 +3256,7 @@ contains the grid values.
         * They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */
        uint32_t n_columns;                   /* Number of columns */
        uint32_t n_rows;                      /* Number of rows */
-       uint32_t registration;                /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
+       uint32_t registration;                /* GMT_GRID_NODE_REG (0) or GMT_GRID_PIXEL_REG (1) */
 
        /* == The types of the following 12 elements must not be changed.
         * == They are also copied verbatim to the native grid header. */
@@ -3275,8 +3278,9 @@ contains the grid values.
         * This section is flexible.  It is not copied to any grid header
         * or stored in any file. It is considered private */
        unsigned int type;               /* Grid format */
-       unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-       unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
+       unsigned int bits;               /* Bits per value (e.g., 32 for ints/floats; 8 for bytes) */
+       unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex
+										   grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
        unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
        size_t       nm;                 /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
        size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
@@ -3340,7 +3344,7 @@ contains the image values.  The type of the array is determined by the value of 
   struct GMT_IMAGE {
       enum GMT_enum_type      type;             /* Data type, e.g. GMT_FLOAT */
       int                    *colormap;         /* Array with color lookup values */
-      int                     n_indexed_colors; /* Number of colors in a paletted image */
+      int                     n_indexed_colors; /* Number of colors in a color-mapped image */
       struct GMT_GRID_HEADER *header;           /* Pointer to full GMT header for the image */
       unsigned char          *data;             /* Pointer to actual image */
       /* ---- Variables "hidden" from the API ---- */
