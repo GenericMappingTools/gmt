@@ -2702,7 +2702,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 		return (GMT_NOT_A_VALID_TYPE);
 	}
 
-	I->ColorInterp    = from_gdalread->ColorInterp;     /* Must find out how to release this mem */
+	I->color_interp    = from_gdalread->color_interp;     /* Must find out how to release this mem */
 	I->n_indexed_colors = from_gdalread->nIndexedColors;
 	gmt_M_str_free (I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
 	gmt_M_str_free (I->header->ProjRefWKT);

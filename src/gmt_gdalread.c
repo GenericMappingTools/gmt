@@ -291,7 +291,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
  *    ColorMap:
  *        A Mx4 int array with the colormap of first band, or NULL if it does not exists
  *
- *    ColorInterp:
+ *    color_interp:
  *
  *    Corners:
  *        Also a structure array with the Fields:
@@ -514,9 +514,9 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	hBand = GDALGetRasterBand(hDataset, 1);
 	if (raster_count > 0)
-		Ctrl->ColorInterp = GDALGetColorInterpretationName(GDALGetRasterColorInterpretation(hBand));
+		Ctrl->color_interp = GDALGetColorInterpretationName(GDALGetRasterColorInterpretation(hBand));
 	else
-		Ctrl->ColorInterp = NULL;
+		Ctrl->color_interp = NULL;
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the first band NoData Value */

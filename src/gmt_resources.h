@@ -679,7 +679,7 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	uint64_t id;                    /* The internal number of the data set */
 	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
-	const char *ColorInterp;
+	const char *color_interp;
 	double  *x, *y;                 /* Vector of coordinates */
 #ifdef GMT_BACKWARDS_API
 	int *ColorMap; 
