@@ -661,137 +661,137 @@ lieu* of simple integer constants. These are considered part of the API
 and are available for developers via the ``gmt_resources.h`` include file.
 
 The C/C++ API is deliberately kept small to make it easy to use.
-Next table gives a list of all the functions and their purpose.
 
 .. _tbl-API:
 
-+--------------------------+-------------------------------------------------------+
-| constant                 | description                                           |
-+==========================+=======================================================+
-| GMT_Alloc_Segment_       | Allocate data and text segments                       |
-+--------------------------+-------------------------------------------------------+
-| GMT_Append_Option_       | Append new option structure to linked list            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Begin_IO_            | Enable record-by-record i/o                           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Call_Module_         | Call any of the GMT modules                           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Convert_Data_        | Convert between compatible data types                 |
-+--------------------------+-------------------------------------------------------+
-| GMT_Close_VirtualFile_   | Close a virtual file                                  |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_Args_         | Convert linked list of options to text array          |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_Cmd_          | Convert linked list of options to command line        |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_Data_         | Create an empty data resource                         |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_Options_      | Convert command line options to linked list           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Create_Session_      | Initialize a new GMT session                          |
-+--------------------------+-------------------------------------------------------+
-| GMT_Delete_Option_       | Delete an option structure from the linked list       |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Args_        | Delete text array of arguments                        |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Cmd_         | Delete text command of arguments                      |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Data_        | Delete a data resource                                |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Group_       | Delete a group of data resources                      |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Options_     | Delete the linked list of option structures           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Destroy_Session_     | Terminate a GMT session                               |
-+--------------------------+-------------------------------------------------------+
-| GMT_Duplicate_Data_      | Make an identical copy of a data resources            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Encode_ID_           | Encode a resources ID as a special filename           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Encode_Options_      | Encode option arguments for external interfaces       |
-+--------------------------+-------------------------------------------------------+
-| GMT_Expand_Option_       | Expand option with explicit memory references         |
-+--------------------------+-------------------------------------------------------+
-| GMT_End_IO_              | Disable further record-by-record i/o                  |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_                 | Take the Fast Fourier Transform of data object        |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_1D_              | Take the Fast Fourier Transform of 1-D float data     |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_2D_              | Take the Fast Fourier Transform of 2-D float data     |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_Create_          | Initialize the FFT machinery                          |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_Destroy_         | Terminate the FFT machinery                           |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_Option_          | Explain the FFT options and modifiers                 |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
-+--------------------------+-------------------------------------------------------+
-| GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
-+--------------------------+-------------------------------------------------------+
-| GMT_Find_Option_         | Find an option in the linked list                     |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Common_          | Determine if a GMT common option was set              |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Coord_           | Create a coordinate array                             |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Default_         | Obtain one of the API or GMT default settings         |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_ID_              | Obtain the ID of a given resource                     |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Index_           | Convert row, col into a grid or image index           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Pixel_           | Get grid or image node                                |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Record_          | Import a single data record                           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Row_             | Import a single grid row                              |
-+--------------------------+-------------------------------------------------------+
-| GMT_Get_Values_          | Convert string into coordinates or dimensions         |
-+--------------------------+-------------------------------------------------------+
-| GMT_Init_IO_             | Initialize i/o given registered resources             |
-+--------------------------+-------------------------------------------------------+
-| GMT_Make_Option_         | Create an option structure                            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Message_             | Issue a message, optionally with time stamp           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Open_VirtualFile_    | Select memory location as input or output for module  |
-+--------------------------+-------------------------------------------------------+
-| GMT_Option_              | Explain one or more GMT common options                |
-+--------------------------+-------------------------------------------------------+
-| GMT_Parse_Common_        | Parse the GMT common options                          |
-+--------------------------+-------------------------------------------------------+
-| GMT_Put_Record_          | Export a data record                                  |
-+--------------------------+-------------------------------------------------------+
-| GMT_Put_Row_             | Export a grid row                                     |
-+--------------------------+-------------------------------------------------------+
-| GMT_Read_Data_           | Import a data resource or file                        |
-+--------------------------+-------------------------------------------------------+
-| GMT_Read_Group_          | Import a group of data resources or files             |
-+--------------------------+-------------------------------------------------------+
-| GMT_Read_VirtualFile_    | Access the output from a module via memory            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Register_IO_         | Register a resources for i/o                          |
-+--------------------------+-------------------------------------------------------+
-| GMT_Report_              | Issue a message contingent upon verbosity level       |
-+--------------------------+-------------------------------------------------------+
-| GMT_Set_Default_         | Set one of the API or GMT default settings            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Set_Comment_         | Assign a comment to a data resource                   |
-+--------------------------+-------------------------------------------------------+
-| GMT_Set_Columns_         | Specify how many output columns to use for rec-by-rec |
-+--------------------------+-------------------------------------------------------+
-| GMT_Set_Index_           | Convert row, col into a grid or image index           |
-+--------------------------+-------------------------------------------------------+
-| GMT_Status_IO_           | Check status of record-by-record i/o                  |
-+--------------------------+-------------------------------------------------------+
-| GMT_Update_Option_       | Modify an option structure                            |
-+--------------------------+-------------------------------------------------------+
-| GMT_Write_Data_          | Export a data resource                                |
-+--------------------------+-------------------------------------------------------+
+    +--------------------------+-------------------------------------------------------+
+    | constant                 | description                                           |
+    +==========================+=======================================================+
+    | GMT_Alloc_Segment_       | Allocate data and text segments                       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Append_Option_       | Append new option structure to linked list            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Begin_IO_            | Enable record-by-record i/o                           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Call_Module_         | Call any of the GMT modules                           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Convert_Data_        | Convert between compatible data types                 |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Close_VirtualFile_   | Close a virtual file                                  |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Create_Args_         | Convert linked list of options to text array          |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Create_Cmd_          | Convert linked list of options to command line        |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Create_Data_         | Create an empty data resource                         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Create_Options_      | Convert command line options to linked list           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Create_Session_      | Initialize a new GMT session                          |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Delete_Option_       | Delete an option structure from the linked list       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Args_        | Delete text array of arguments                        |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Cmd_         | Delete text command of arguments                      |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Data_        | Delete a data resource                                |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Group_       | Delete a group of data resources                      |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Options_     | Delete the linked list of option structures           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Destroy_Session_     | Terminate a GMT session                               |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Duplicate_Data_      | Make an identical copy of a data resources            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Encode_ID_           | Encode a resources ID as a special filename           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Encode_Options_      | Encode option arguments for external interfaces       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Expand_Option_       | Expand option with explicit memory references         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_End_IO_              | Disable further record-by-record i/o                  |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_                 | Take the Fast Fourier Transform of data object        |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_1D_              | Take the Fast Fourier Transform of 1-D float data     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_2D_              | Take the Fast Fourier Transform of 2-D float data     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Create_          | Initialize the FFT machinery                          |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Destroy_         | Terminate the FFT machinery                           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Option_          | Explain the FFT options and modifiers                 |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Find_Option_         | Find an option in the linked list                     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Common_          | Determine if a GMT common option was set              |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Coord_           | Create a coordinate array                             |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Default_         | Obtain one of the API or GMT default settings         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_ID_              | Obtain the ID of a given resource                     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Index_           | Convert row, col into a grid or image index           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Pixel_           | Get grid or image node                                |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Record_          | Import a single data record                           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Row_             | Import a single grid row                              |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Values_          | Convert string into coordinates or dimensions         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Init_IO_             | Initialize i/o given registered resources             |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Make_Option_         | Create an option structure                            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Message_             | Issue a message, optionally with time stamp           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Open_VirtualFile_    | Select memory location as input or output for module  |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Option_              | Explain one or more GMT common options                |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Parse_Common_        | Parse the GMT common options                          |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Put_Record_          | Export a data record                                  |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Put_Row_             | Export a grid row                                     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Read_Data_           | Import a data resource or file                        |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Read_Group_          | Import a group of data resources or files             |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Read_VirtualFile_    | Access the output from a module via memory            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Register_IO_         | Register a resources for i/o                          |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Report_              | Issue a message contingent upon verbosity level       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_Default_         | Set one of the API or GMT default settings            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_Comment_         | Assign a comment to a data resource                   |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_Columns_         | Specify how many output columns to use for rec-by-rec |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_Index_           | Convert row, col into a grid or image index           |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Status_IO_           | Check status of record-by-record i/o                  |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Update_Option_       | Modify an option structure                            |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Write_Data_          | Export a data resource                                |
+    +--------------------------+-------------------------------------------------------+
 
-
+    Summary of all the API functions and their purpose.
+	
 The GMT C Application Program Interface
 =======================================
 
@@ -1611,7 +1611,7 @@ Examining record status
 
 Programs that read record-by-record must be aware of what the current
 record represents. Given the presence of headers, data gaps, NaN-record,
-etc., the developer will want to check the status after reading the next
+etc., the developer may want to check the status after reading the current
 record. The internal i/o status mode can be interrogated with the function
 
 .. _GMT_Status_IO:
@@ -1629,32 +1629,33 @@ say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 
 .. _tbl-iostatus:
 
-+-----------------------+--------------------------------------------------------+
-| mode                  | description and return value                           |
-+=======================+========================================================+
-| GMT_IO_DATA_RECORD    | 1 if we read a data record                             |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_TABLE_HEADER   | 1 if we read a table header                            |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_SEGMENT_HEADER | 1 if we read a segment header                          |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_ANY_HEADER     | 1 if we read either header record                      |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_MISMATCH       | 1 if we read incorrect number of columns               |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_EOF            | 1 if we reached the end of the file (EOF)              |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_NAN            | 1 if we only read NaNs                                 |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_GAP            | 1 if this record implies a data gap                    |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_NEW_SEGMENT    | 1 if we enter a new segment                            |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_LINE_BREAK     | 1 if we encountered a segment header, EOF, NaNs or gap |
-+-----------------------+--------------------------------------------------------+
-| GMT_IO_NEXT_FILE      | 1 if we finished one file but not the last             |
-+-----------------------+--------------------------------------------------------+
+    +-----------------------+--------------------------------------------------------+
+    | mode                  | description and return value                           |
+    +=======================+========================================================+
+    | GMT_IO_DATA_RECORD    | 1 if we read a data record                             |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_TABLE_HEADER   | 1 if we read a table header                            |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_SEGMENT_HEADER | 1 if we read a segment header                          |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_ANY_HEADER     | 1 if we read either header record                      |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_MISMATCH       | 1 if we read incorrect number of columns               |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_EOF            | 1 if we reached the end of the file (EOF)              |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_NAN            | 1 if we only read NaNs                                 |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_GAP            | 1 if this record implies a data gap                    |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_NEW_SEGMENT    | 1 if we enter a new segment                            |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_LINE_BREAK     | 1 if we encountered a segment header, EOF, NaNs or gap |
+    +-----------------------+--------------------------------------------------------+
+    | GMT_IO_NEXT_FILE      | 1 if we finished one file but not the last             |
+    +-----------------------+--------------------------------------------------------+
 
+    The various modes used to test the status of the record-by-record machinery. 
 
 Importing a grid row
 ~~~~~~~~~~~~~~~~~~~~
@@ -1861,22 +1862,23 @@ lower or equal to the **-V**\ *level* will be printed.
 
 .. _tbl-verbosity:
 
-+----------------------+------------------------------------------------+
-| constant             | description                                    |
-+======================+================================================+
-| GMT_MSG_QUIET        | No messages whatsoever                         |
-+----------------------+------------------------------------------------+
-| GMT_MSG_NORMAL       | Default output, e.g., warnings and errors only |
-+----------------------+------------------------------------------------+
-| GMT_MSG_COMPAT       | Compatibility warnings                         |
-+----------------------+------------------------------------------------+
-| GMT_MSG_VERBOSE      | Verbose level                                  |
-+----------------------+------------------------------------------------+
-| GMT_MSG_LONG_VERBOSE | Longer verbose                                 |
-+----------------------+------------------------------------------------+
-| GMT_MSG_DEBUG        | Debug messages for developers mostly           |
-+----------------------+------------------------------------------------+
+    +----------------------+------------------------------------------------+
+    | constant             | description                                    |
+    +======================+================================================+
+    | GMT_MSG_QUIET        | No messages whatsoever                         |
+    +----------------------+------------------------------------------------+
+    | GMT_MSG_NORMAL       | Default output, e.g., warnings and errors only |
+    +----------------------+------------------------------------------------+
+    | GMT_MSG_COMPAT       | Compatibility warnings                         |
+    +----------------------+------------------------------------------------+
+    | GMT_MSG_VERBOSE      | Verbose level                                  |
+    +----------------------+------------------------------------------------+
+    | GMT_MSG_LONG_VERBOSE | Longer verbose                                 |
+    +----------------------+------------------------------------------------+
+    | GMT_MSG_DEBUG        | Debug messages for developers mostly           |
+    +----------------------+------------------------------------------------+
 
+    The different levels of verbosity that can be selected.
 
 .. _GMT_Message:
 
@@ -1892,17 +1894,19 @@ Table :ref:`timemodes <tbl-timemodes>` for the various modes.
 
 .. _tbl-timemodes:
 
-+------------------+---------------------------------------+
-| constant         | description                           |
-+==================+=======================================+
-| GMT_TIME_NONE    | Display no time information           |
-+------------------+---------------------------------------+
-| GMT_TIME_CLOCK   | Display current local time            |
-+------------------+---------------------------------------+
-| GMT_TIME_ELAPSED | Display elapsed time since last reset |
-+------------------+---------------------------------------+
-| GMT_TIME_RESET   | Reset the elapsed time to 0           |
-+------------------+---------------------------------------+
+    +------------------+---------------------------------------+
+    | constant         | description                           |
+    +==================+=======================================+
+    | GMT_TIME_NONE    | Display no time information           |
+    +------------------+---------------------------------------+
+    | GMT_TIME_CLOCK   | Display current local time            |
+    +------------------+---------------------------------------+
+    | GMT_TIME_ELAPSED | Display elapsed time since last reset |
+    +------------------+---------------------------------------+
+    | GMT_TIME_RESET   | Reset the elapsed time to 0           |
+    +------------------+---------------------------------------+
+
+    The different types of message modes.
 
 .. _sec-parsopt:
 
@@ -2506,30 +2510,31 @@ you call GMT_Begin_IO_
 
 .. _tbl-comments:
 
-+-------------------------+---------------------------------------------------+
-| constant                | description                                       |
-+=========================+===================================================+
-| GMT_COMMENT_IS_TEXT     | Comment is a text string                          |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_OPTION   | Comment is a linked list of GMT_OPTION structures |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_COMMAND  | Comment is the command                            |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_REMARK   | Comment is the remark                             |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_TITLE    | Comment is the title                              |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_NAME_X   | Comment is the x variable name (grids only)       |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Y   | Comment is the y variable name (grids only)       |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_NAME_Z   | Comment is the z variable name (grids only)       |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_COLNAMES | Comment is the column names header                |
-+-------------------------+---------------------------------------------------+
-| GMT_COMMENT_IS_RESET    | Comment replaces existing information             |
-+-------------------------+---------------------------------------------------+
+    +-------------------------+---------------------------------------------------+
+    | constant                | description                                       |
+    +=========================+===================================================+
+    | GMT_COMMENT_IS_TEXT     | Comment is a text string                          |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_OPTION   | Comment is a linked list of GMT_OPTION structures |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_COMMAND  | Comment is the command                            |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_REMARK   | Comment is the remark                             |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_TITLE    | Comment is the title                              |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_NAME_X   | Comment is the x variable name (grids only)       |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_NAME_Y   | Comment is the y variable name (grids only)       |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_NAME_Z   | Comment is the z variable name (grids only)       |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_COLNAMES | Comment is the column names header                |
+    +-------------------------+---------------------------------------------------+
+    | GMT_COMMENT_IS_RESET    | Comment replaces existing information             |
+    +-------------------------+---------------------------------------------------+
 
+    The modes for setting various comment types.
 
 The named modes (*command*, *remark*, *title*, *name_x,y,z* and
 *colnames* are used to distinguish regular text comments from specific
@@ -3628,29 +3633,31 @@ functions.
 
 .. _tbl-types:
 
-+--------------+------------------------------------------+
-| constant     | description                              |
-+==============+==========================================+
-| GMT_CHAR     | int8_t, 1-byte signed integer type       |
-+--------------+------------------------------------------+
-| GMT_UCHAR    | int8_t, 1-byte unsigned integer type     |
-+--------------+------------------------------------------+
-| GMT_SHORT    | int16_t, 2-byte signed integer type      |
-+--------------+------------------------------------------+
-| GMT_USHORT   | uint16_t, 2-byte unsigned integer type   |
-+--------------+------------------------------------------+
-| GMT_INT      | int32_t, 4-byte signed integer type      |
-+--------------+------------------------------------------+
-| GMT_UINT     | uint32_t, 4-byte unsigned integer type   |
-+--------------+------------------------------------------+
-| GMT_LONG     | int64_t, 8-byte signed integer type      |
-+--------------+------------------------------------------+
-| GMT_ULONG    | uint64_t, 8-byte unsigned integer type   |
-+--------------+------------------------------------------+
-| GMT_FLOAT    | 4-byte data float type                   |
-+--------------+------------------------------------------+
-| GMT_DOUBLE   | 8-byte data float type                   |
-+--------------+------------------------------------------+
+    +--------------+------------------------------------------+
+    | constant     | description                              |
+    +==============+==========================================+
+    | GMT_CHAR     | int8_t, 1-byte signed integer type       |
+    +--------------+------------------------------------------+
+    | GMT_UCHAR    | int8_t, 1-byte unsigned integer type     |
+    +--------------+------------------------------------------+
+    | GMT_SHORT    | int16_t, 2-byte signed integer type      |
+    +--------------+------------------------------------------+
+    | GMT_USHORT   | uint16_t, 2-byte unsigned integer type   |
+    +--------------+------------------------------------------+
+    | GMT_INT      | int32_t, 4-byte signed integer type      |
+    +--------------+------------------------------------------+
+    | GMT_UINT     | uint32_t, 4-byte unsigned integer type   |
+    +--------------+------------------------------------------+
+    | GMT_LONG     | int64_t, 8-byte signed integer type      |
+    +--------------+------------------------------------------+
+    | GMT_ULONG    | uint64_t, 8-byte unsigned integer type   |
+    +--------------+------------------------------------------+
+    | GMT_FLOAT    | 4-byte data float type                   |
+    +--------------+------------------------------------------+
+    | GMT_DOUBLE   | 8-byte data float type                   |
+    +--------------+------------------------------------------+
+
+    The known data types in the GMT API.
 
 
 .. [1]
