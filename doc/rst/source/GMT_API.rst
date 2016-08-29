@@ -815,7 +815,7 @@ To initiate the new session we use
   ::
 
     void *GMT_Create_Session (const char *tag, unsigned int pad, unsigned int mode,
-                              int (*print_func) (FILE *, const char *));
+    	int (*print_func) (FILE *, const char *));
 
 and you will typically call it thus:
 
@@ -922,76 +922,85 @@ it returns 0.
 
 .. _tbl-family:
 
-+-------------------+-----------------------------+
-| family            | source points to            |
-+===================+=============================+
-| GMT_IS_DATASET    | A [multi-segment] data file |
-+-------------------+-----------------------------+
-| GMT_IS_GRID       | A grid file                 |
-+-------------------+-----------------------------+
-| GMT_IS_IMAGE      | An image                    |
-+-------------------+-----------------------------+
-| GMT_IS_PALETTE    | A color pallete table [CPT] |
-+-------------------+-----------------------------+
-| GMT_IS_POSTSCRIPT | A GMT PostScript object     |
-+-------------------+-----------------------------+
-| GMT_IS_TEXTSET    | A [multi-segment] text file |
-+-------------------+-----------------------------+
+    +-------------------+-----------------------------+
+    | family            | source points to            |
+    +===================+=============================+
+    | GMT_IS_DATASET    | A [multi-segment] data file |
+    +-------------------+-----------------------------+
+    | GMT_IS_GRID       | A grid file                 |
+    +-------------------+-----------------------------+
+    | GMT_IS_IMAGE      | An image                    |
+    +-------------------+-----------------------------+
+    | GMT_IS_PALETTE    | A color palette table [CPT] |
+    +-------------------+-----------------------------+
+    | GMT_IS_POSTSCRIPT | A GMT PostScript object     |
+    +-------------------+-----------------------------+
+    | GMT_IS_TEXTSET    | A [multi-segment] text file |
+    +-------------------+-----------------------------+
+    | GMT_IS_MATRIX     | A custom user data matrix   |
+    +-------------------+-----------------------------+
+    | GMT_IS_VECTOR     | A custom user data vector   |
+    +-------------------+-----------------------------+
 
+    GMT constants used to specify a data family.
 
 .. _tbl-methods:
 
-+------------------+------------------------------------------------+
-| method           | how to read/write data                         |
-+==================+================================================+
-| GMT_IS_FILE      | Pointer to name of a file                      |
-+------------------+------------------------------------------------+
-| GMT_IS_STREAM    | Pointer to open stream (or process)            |
-+------------------+------------------------------------------------+
-| GMT_IS_FDESC     | Pointer to integer file descriptor             |
-+------------------+------------------------------------------------+
-| GMT_IS_DUPLICATE | Pointer to memory we may *duplicate* data from |
-+------------------+------------------------------------------------+
-| GMT_IS_REFERENCE | Pointer to memory we may *reference* data from |
-+------------------+------------------------------------------------+
+    +------------------+------------------------------------------------+
+    | method           | how to read/write data                         |
+    +==================+================================================+
+    | GMT_IS_FILE      | Pointer to name of a file                      |
+    +------------------+------------------------------------------------+
+    | GMT_IS_STREAM    | Pointer to open stream (or process)            |
+    +------------------+------------------------------------------------+
+    | GMT_IS_FDESC     | Pointer to integer file descriptor             |
+    +------------------+------------------------------------------------+
+    | GMT_IS_DUPLICATE | Pointer to memory we may *duplicate* data from |
+    +------------------+------------------------------------------------+
+    | GMT_IS_REFERENCE | Pointer to memory we may *reference* data from |
+    +------------------+------------------------------------------------+
 
+    GMT constants used to specify how data will be read or written.
 
 .. _tbl-geometry:
 
-+----------------+-----------------------------------------+
-| geometry       |  description                            |
-+================+=========================================+
-| GMT_IS_NONE    | Not a geographic feature                |
-+----------------+-----------------------------------------+
-| GMT_IS_POINT   | Multi-dimensional point data            |
-+----------------+-----------------------------------------+
-| GMT_IS_LINE    | Geographic or Cartesian line segments   |
-+----------------+-----------------------------------------+
-| GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
-+----------------+-----------------------------------------+
-| GMT_IS_PLP     | Either points, lines, or polygons       |
-+----------------+-----------------------------------------+
-| GMT_IS_SURFACE | 2-D gridded surface                     |
-+----------------+-----------------------------------------+
+    +----------------+-----------------------------------------+
+    | geometry       |  description                            |
+    +================+=========================================+
+    | GMT_IS_NONE    | Not a geographic feature                |
+    +----------------+-----------------------------------------+
+    | GMT_IS_POINT   | Multi-dimensional point data            |
+    +----------------+-----------------------------------------+
+    | GMT_IS_LINE    | Geographic or Cartesian line segments   |
+    +----------------+-----------------------------------------+
+    | GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
+    +----------------+-----------------------------------------+
+    | GMT_IS_PLP     | Either points, lines, or polygons       |
+    +----------------+-----------------------------------------+
+    | GMT_IS_SURFACE | 2-D gridded surface                     |
+    +----------------+-----------------------------------------+
 
+    GMT constants used to specify the geometry of the data object.
 
 .. _tbl-wesn:
 
-+---------+----------------------------------------------+
-| index   |  description                                 |
-+=========+==============================================+
-| GMT_XLO | x_min (west) boundary of grid subset         |
-+---------+----------------------------------------------+
-| GMT_XHI | x_max (east) boundary of grid subset         |
-+---------+----------------------------------------------+
-| GMT_YLO | y_min (south) boundary of grid subset        |
-+---------+----------------------------------------------+
-| GMT_YHI | y_max (north) boundary of grid subset        |
-+---------+----------------------------------------------+
-| GMT_ZLO | z_min (bottom) boundary of 3-D matrix subset |
-+---------+----------------------------------------------+
-| GMT_ZHI | z_max (top) boundary of 3-D matrix subset    |
-+---------+----------------------------------------------+
+    +---------+----------------------------------------------+
+    | index   |  description                                 |
+    +=========+==============================================+
+    | GMT_XLO | x_min (west) boundary of grid subset         |
+    +---------+----------------------------------------------+
+    | GMT_XHI | x_max (east) boundary of grid subset         |
+    +---------+----------------------------------------------+
+    | GMT_YLO | y_min (south) boundary of grid subset        |
+    +---------+----------------------------------------------+
+    | GMT_YHI | y_max (north) boundary of grid subset        |
+    +---------+----------------------------------------------+
+    | GMT_ZLO | z_min (bottom) boundary of 3-D matrix subset |
+    +---------+----------------------------------------------+
+    | GMT_ZHI | z_max (top) boundary of 3-D matrix subset    |
+    +---------+----------------------------------------------+
+
+    GMT constants used for domain array indexing.
 
 .. _sec-res_init:
 
