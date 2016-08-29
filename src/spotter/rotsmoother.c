@@ -384,9 +384,10 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		static char *short_header = "lon\tlat\ttime\tangle";
 		static char *long_header = "lon\tlat\ttime\tangle\tk_hat\ta\tb\tc\td\te\tf\tg\tdf\tstd_t\tstd_w\taz\tS1\tS2\tS3";
 		char *header = (Ctrl->C.active) ? long_header : short_header;
-		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL))
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL)) {
 			gmt_M_free (GMT, D);
 			Return (API->error);
+		}
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, D);
