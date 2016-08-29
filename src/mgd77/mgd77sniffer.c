@@ -886,30 +886,37 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: omit cruise ids for -Dl option.\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -b option requires -D.\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	else if (custom_warn && strcmp(display,"")) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Incompatible options -D and -W.\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dd option requires -G.\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	if (east < west || south > north) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Region set incorrectly\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	if (adjustData && n_cruises > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -A adjustments valid for only one cruise.\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dn option requires -Gnav\n");
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_PARSE_ERROR);
 	}
 	if (simulate && n_grids > 0) {
