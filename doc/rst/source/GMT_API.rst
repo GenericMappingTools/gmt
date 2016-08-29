@@ -147,8 +147,8 @@ For the purpose of this documentation a few definitions are needed:
 #. "\ GMT module" refers to the function in the GMT API library that
    is responsible for all the action taken by the corresponding
    standard GMT program. All such modules are given the same names as the
-   corresponding programs but carry the prefix ``GMT_``, e.g.,
-   ``GMT_blockmean``.
+   corresponding programs e.g., "blockmean", but are invoked via the
+   ``GMT_Call_Module`` function.
 
 #. "\ GMT application" refers to a new application written by any
    developer and may call one or more GMT functions to create a new
@@ -320,7 +320,7 @@ For the full definition, see :ref:`GMT_IMAGE <struct-image>`.
   struct GMT_IMAGE {     /* A GMT char image, header, and colormap in one container */
       enum GMT_enum_type      type;             /* Data type, e.g. GMT_FLOAT */
       int                    *colormap;         /* Array with color lookup values */
-      int                     n_indexed_colors; /* Number of colors in a paletted image */
+      int                     n_indexed_colors; /* Number of colors in a color-mapped image */
       struct GMT_GRID_HEADER *header;           /* Pointer to full GMT header for the image */
       unsigned char          *data;             /* Pointer to actual image */
   };
@@ -331,7 +331,7 @@ Color palette tables (CPT)
 The color palette table files, or just CPTs, contain colors and
 patterns used for plotting data such as surfaces (i.e., GMT grids) or
 symbols, lines and polygons (i.e., GMT tables). GMT programs will
-generally read in a colr palette table, make it the current palette, do
+generally read in a color palette table, make it the current palette, do
 the plotting, and destroy the table when done. The information is
 referred to via a pointer to ``struct GMT_PALETTE``. Thus, the arguments
 to GMT API functions that handle palettes expect this type of
