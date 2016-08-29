@@ -612,7 +612,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) {
+		gmt_M_free (GMT, GMT_cpy);
+		bailout (API->error);
+	}
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
 	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
@@ -1018,6 +1021,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
+		gmt_M_free (GMT, GMT_cpy);
 		bailout (GMT_NOERROR);
 	}
 
