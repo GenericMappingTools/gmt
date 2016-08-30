@@ -322,8 +322,7 @@ GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, stru
 int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
 	unsigned int tbl, pos;
-	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan;
-	int status = 0, object_ID;
+	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, drawn = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0;
 	size_t n_char = 0;
@@ -1333,15 +1332,15 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (D[FRONT]) {
 		/* Create option list, register D[FRONT] as input source */
 		D[FRONT]->table[0]->n_segments = n_fronts;	/* Set correct number of fronts */
-		if ((object_ID = GMT_Get_ID (API, GMT_IS_DATASET, GMT_IN, D[FRONT])) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, D[FRONT], string) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sf0.1i %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: FRONT: gmt psxy %s\n", buffer);
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
+			Return (API->error);
+		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		D[FRONT]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
@@ -1349,58 +1348,58 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (D[QLINE]) {
 		/* Create option list, register D[QLINE] as input source */
 		D[QLINE]->table[0]->n_segments = n_quoted_lines;	/* Set correct number of lines */
-		if ((object_ID = GMT_Get_ID (API, GMT_IS_DATASET, GMT_IN, D[QLINE])) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, D[QLINE], string) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sqn1 %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: QLINE: gmt psxy %s\n", buffer);
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
 			Return (API->error);
 		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
+			Return (API->error);
+		}
 		D[QLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (T[SYM]) {
 		/* Create option list, register T[SYM] as input source */
-		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, T[SYM])) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, T[SYM], string) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: SYM: gmt psxy %s\n", buffer);
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbols */
 			Return (API->error);
 		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	if (T[TXT]) {
 		/* Create option list, register T[TXT] as input source */
-		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, T[TXT])) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, T[TXT], string) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: TXT: gmt pstext %s\n", buffer);
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbol labels */
 			Return (API->error);
 		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	if (T[PAR]) {
 		/* Create option list, register T[PAR] as input source */
-		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, T[PAR])) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, T[PAR], string) != GMT_NOERROR) {
 			Return (API->error);
-		}
-		if (GMT_Encode_ID (API, string, object_ID) != GMT_NOERROR) {
-			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: PAR: gmt pstext %s\n", buffer);
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot paragraphs */
+			Return (API->error);
+		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
