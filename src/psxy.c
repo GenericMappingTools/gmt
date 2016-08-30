@@ -276,18 +276,15 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	/* Accept the textset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
-	int object_ID;
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
 	FILE *fp = NULL;
-	gmt_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up records */
-	if (D->n_records == 0)
-		return GMT_NOERROR;	/* No symbols to plot */
+	gmt_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
+	if (D->n_records == 0)	/* No symbols to plot */
+		return GMT_NOERROR;
 	
-	/* Here we have symbols.  Set up ID etc for the call to psxy */
-	if ((object_ID = GMT_Get_ID (GMT->parent, GMT_IS_TEXTSET, GMT_IN, D)) == GMT_NOTSET)	/* Get object ID */
-		return (GMT->parent->error);
-	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_NOERROR)	/* Make filename with embedded object ID */
+	/* Here we have symbols.  Open up virtual file for the call to psxy */
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
@@ -299,14 +296,17 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");	/* Make a rotated plain symbol of type picked up from input file */
+	/* Make a rotated plain symbol of type picked up from input file */
+	fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
 	fclose (fp);
-	len = strlen (tmp_file) - 4;	/* Position of the '.' */
+	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
 	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
 	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
+		return (GMT->parent->error);
+	if (GMT_Close_VirtualFile (GMT->parent, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
