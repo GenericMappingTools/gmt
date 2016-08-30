@@ -1339,6 +1339,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
 				size_t old_n_alloc = n_alloc;
+				/* coverity[tainted_data] */		/* For Coverity analysis. Do not remove this comment */
 				while (id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = gmt_M_memory (GMT, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 				gmt_M_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set content of new space to NULL */
