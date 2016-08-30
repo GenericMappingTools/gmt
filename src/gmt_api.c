@@ -3356,7 +3356,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					if ((status = api_bin_input_memory (GMT, M_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the segment we worked on and goto next */
 						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as the first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have that segment allocated */
-							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, D_obj->table[D_obj->n_tables]->segment[0]);	/* Reallocate to exact length */
+							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, D_obj->table[D_obj->n_tables]->segment[seg]);	/* Reallocate to exact length */
 							D_obj->table[D_obj->n_tables]->n_records += n_records;			/* Update record count for this table */
 							seg++;	/* Increment number of segments */
 							if (seg == s_alloc) {	/* Allocate more space for additional segments */
@@ -6184,6 +6184,7 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		GMT_2D_to_index = api_get_2d_to_index (API, M->shape, GMT_GRID_IS_REAL);
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
 			S->delay--;
+			M->n_rows++;	/* Since could not be incremented before M was created */
 			for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
 				ij = GMT_2D_to_index (S->delay, col, M->dim);
 				api_put_val (&(M->data), ij, API->GMT->session.d_NaN);
@@ -6220,6 +6221,7 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		uint64_t col;
 		while (S->delay) {	/* Place delayed NaN-record(s) as leading rows */
 			S->delay--;
+			V->n_rows++;	/* Since could not be incremented before V was created */
 			for (col = 0; col < V->n_columns; col++) {
 				if (col && V->type[col] != V->type[col-1]) api_put_val = api_select_put_function (API, V->type[col]);	/* Update put function */
 				api_put_val (&(V->data[col]), S->delay, API->GMT->session.d_NaN);
