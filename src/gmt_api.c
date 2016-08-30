@@ -3356,7 +3356,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					if ((status = api_bin_input_memory (GMT, M_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the segment we worked on and goto next */
 						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as the first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have that segment allocated */
-							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, D_obj->table[D_obj->n_tables]->segment[seg]);	/* Reallocate to exact length */
+							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, S);	/* Reallocate to exact length */
 							D_obj->table[D_obj->n_tables]->n_records += n_records;			/* Update record count for this table */
 							seg++;	/* Increment number of segments */
 							if (seg == s_alloc) {	/* Allocate more space for additional segments */
@@ -3420,8 +3420,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 								D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, D_obj->table[D_obj->n_tables]->segment, s_alloc, struct GMT_DATASEGMENT *);
 							}
 							/* Allocate next segment with initial size the remainder of the data */
-							D_obj->table[D_obj->n_tables]->segment[seg] = GMT_Alloc_Segment (API, GMT_IS_DATASET, V_obj->n_rows-n_records, n_columns, NULL, NULL);
-							S = D_obj->table[D_obj->n_tables]->segment[seg];	/* Shorthand for current segment */
+							S = D_obj->table[D_obj->n_tables]->segment[seg] = GMT_Alloc_Segment (API, GMT_IS_DATASET, V_obj->n_rows-n_records, n_columns, NULL, NULL);
 							n_records = 0;	/* This is number of recs in current segment */
 						}
 					}
