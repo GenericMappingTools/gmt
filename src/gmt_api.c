@@ -6370,6 +6370,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	 * name is the name given to the virtual file and is returned. */
 	int object_ID = GMT_NOTSET, item_s = 0;
 	unsigned int item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
@@ -6385,6 +6386,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, data)) == GMT_NOTSET) {	/* Not found in list */
 			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
 		}
+		S_obj = API->object[item_s];	/* Short-hand for later */
 	}
 	if (direction == GMT_IN) {	/* Set things up for reading */
 		/* See if this one is known to us already */
@@ -6393,11 +6395,11 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 				return (API->error);
 		}
 		else {	/* Found the object earlier; recycle the address and ensure it is a readable object */
-			API->object[item_s]->status = 0;							/* Open for business */
-			API->object[item_s]->resource = API->object[item_s]->data;	/* Switch from consumer to provider */
-			API->object[item_s]->data = NULL;							/* No longer consumer */
-			API->object[item_s]->method = GMT_IS_REFERENCE;				/* Now a memory resource */
-			API->object[item_s]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
+			S_obj->status = 0;					/* Open for business */
+			S_obj->resource = S_obj->data;		/* Switch from consumer to provider */
+			S_obj->data = NULL;					/* No longer consumer */
+			S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
+			S_obj->direction = GMT_IN;			/* Make sure it now is flagged for reading */
 		}
 	}
 	else {	/* Set things up for writing */
@@ -6407,13 +6409,13 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 					return (API->error);
 			}
 			else {	/* Here we have the item and can recycle the address */
-				API->object[item_s]->status = 0;			/* Open for business */
-				if (API->object[item_s]->data == NULL) {	/* Switch from provider to consumer, if needed */
-					API->object[item_s]->data = API->object[item_s]->resource;
-					API->object[item_s]->resource = NULL;		/* No longer consumer */
+				S_obj->status = 0;			/* Open for business */
+				if (S_obj->data == NULL) {	/* Switch from provider to consumer, if needed */
+					S_obj->data = S_obj->resource;
+					S_obj->resource = NULL;		/* No longer consumer */
 				}
-				API->object[item_s]->method = GMT_IS_REFERENCE;		/* Now a memory resource */
-				API->object[item_s]->direction = GMT_OUT;			/* Make sure it now is flagged for writing */
+				S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
+				S_obj->direction = GMT_OUT;			/* Make sure it now is flagged for writing */
 			}
 		}
 		else {	/* New expanding output resource */
@@ -6443,6 +6445,7 @@ int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigne
 int GMT_Close_VirtualFile (void *V_API, const char *string) {
 	/* Given a VirtualFile name, close it */
 	int object_ID, item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
@@ -6451,10 +6454,13 @@ int GMT_Close_VirtualFile (void *V_API, const char *string) {
 	API = api_get_api_ptr (V_API);
 	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
 		return_error (API, GMT_OBJECT_NOT_FOUND);
-	if (API->object[item]->direction == GMT_IN) {
-		API->object[item]->data = API->object[item]->resource;	/* Switch from provider to consumer */
-		API->object[item]->resource = NULL;						/* No longer provider */
+	S_obj = API->object[item];	/* Short-hand */
+	if (S_obj->direction == GMT_IN) {
+		S_obj->data = S_obj->resource;	/* Switch from provider to consumer */
+		S_obj->resource = NULL;			/* No longer provider */
 	}
+	if (S_obj->family != S_obj->actual_family)	/* Reset the un-masquerading that GMT_Open_VirtualFile did */
+		S_obj->family = S_obj->actual_family;
 	return GMT_NOERROR;
 }
 
