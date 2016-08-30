@@ -49,15 +49,18 @@
  * GMT_Destroy_Data	      : Destroy a data set and its container
  * GMT_Duplicate_Data     : Make an exact duplicate of a dataset
  * GMT_Duplicate_String   : Allocates a copy of a string to be freed by API
- * GMT_Encode_ID	      : Encode a resource ID into a file name
  * GMT_End_IO		      : Disallow further rec-by-rec i/o
- * GMT_Get_ID		      : Get the registered object ID for a data set
  * GMT_Get_Record	      : Get the next single data record from the source(s)
  * GMT_Get_Row		      : Read one row from a grid
+ * GMT_Get_Matrix	      : Get user matrix from GMT_MATRIX array
+ * GMT_Get_Vector	      : Get user vector from GMT_VECTOR column
  * GMT_Init_IO		      : Initialize rec-by-rec i/o machinery before program use
+ * GMT_Init_VirtualFile   : Reset a virtual file for reuse
  * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
  * GMT_Put_Record	      : Send the next output record to its destination
  * GMT_Put_Row		      : Write one row to a grid
+ * GMT_Put_Matrix	      : Hook user matrix to GMT_MATRIX array
+ * GMT_Put_Vector	      : Hook user vector to GMT_VECTOR column
  * GMT_Read_Data	      : Load data into program memory from selected source
  * GMT_Read_Group	      : Read numerous files into an array of objects
  * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
@@ -3353,7 +3356,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					if ((status = api_bin_input_memory (GMT, M_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the segment we worked on and goto next */
 						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as the first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have that segment allocated */
-							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, D_obj->table[D_obj->n_tables]->segment[0]);	/* Reallocate to exact length */
+							S = GMT_Alloc_Segment (API, GMT_IS_DATASET, n_records, n_columns, NULL, S);	/* Reallocate to exact length */
 							D_obj->table[D_obj->n_tables]->n_records += n_records;			/* Update record count for this table */
 							seg++;	/* Increment number of segments */
 							if (seg == s_alloc) {	/* Allocate more space for additional segments */
@@ -3417,8 +3420,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 								D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, D_obj->table[D_obj->n_tables]->segment, s_alloc, struct GMT_DATASEGMENT *);
 							}
 							/* Allocate next segment with initial size the remainder of the data */
-							D_obj->table[D_obj->n_tables]->segment[seg] = GMT_Alloc_Segment (API, GMT_IS_DATASET, V_obj->n_rows-n_records, n_columns, NULL, NULL);
-							S = D_obj->table[D_obj->n_tables]->segment[seg];	/* Shorthand for current segment */
+							S = D_obj->table[D_obj->n_tables]->segment[seg] = GMT_Alloc_Segment (API, GMT_IS_DATASET, V_obj->n_rows-n_records, n_columns, NULL, NULL);
 							n_records = 0;	/* This is number of recs in current segment */
 						}
 					}
@@ -5701,7 +5703,7 @@ int GMT_Destroy_Session_ () {
 #endif
 
 /*! . */
-int GMT_Encode_ID (void *V_API, char *filename, int object_ID) {
+GMT_LOCAL int gmtapi_encode_id (void *V_API, char *filename, int object_ID) {
 	/* Creates a filename with the embedded GMTAPI Object ID.  Space must exist.
 	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
 
@@ -5713,13 +5715,6 @@ int GMT_Encode_ID (void *V_API, char *filename, int object_ID) {
 	sprintf (filename, "@GMTAPI@-%06d", object_ID);	/* Place the object ID in the special GMT API format */
 	return_error (V_API, GMT_OK);	/* No error encountered */
 }
-
-#ifdef FORTRAN_API
-int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
-}
-#endif
 
 /* Data registration: The main reason for data registration is the following:
  * Unlike GMT 4, GMT 5 may be used as modules by another calling program.  In
@@ -5958,162 +5953,6 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 }
 #endif
 
- /*! . */
-int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *name) {
-	/* Associate a virtual file with a data object for either reading or writing.
-	 * Family and geometry specifies the nature of the data to be read or written.
-	 * Direction is either GMT_IN or GMT_OUT and determines if we read or write.
-	 * Reading: data must point to a data container we wish to read from via a module.
-	 * Writing: data is either an existing output data container that the user created
-	 *  beforehand or it is NULL and we create an expanding output resource.
-	 * name is the name given to the virtual file and is returned. */
-	int object_ID = GMT_NOTSET, item_s = 0;
-	unsigned int item;
-	struct GMTAPI_CTRL *API = NULL;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
-	if (direction == GMT_IN && data == NULL) return GMT_PTR_IS_NULL;
-	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	API = api_get_api_ptr (V_API);
-
-	if (data) {	/* Data container provided, see if registered */
-		for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
-			if (!API->object[item]) continue;	/* Skip freed objects */
-			if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
-		}
-		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, data)) == GMT_NOTSET) {	/* Not found in list */
-			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
-		}
-	}
-	if (direction == GMT_IN) {	/* Set things up for reading */
-		/* See if this one is known to us already */
-		if (object_ID == GMT_NOTSET) {	/* Register data as a new object for reading [GMT_IN] and reset its status to unread */
-			if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
-				return (API->error);
-		}
-		else {	/* Found the object earlier; recycle the address and ensure it is a readable object */
-			API->object[item_s]->status = 0;							/* Open for business */
-			API->object[item_s]->resource = API->object[item_s]->data;	/* Switch from consumer to provider */
-			API->object[item_s]->data = NULL;							/* No longer consumer */
-			API->object[item_s]->method = GMT_IS_REFERENCE;				/* Now a memory resource */
-			API->object[item_s]->direction = GMT_IN;					/* Make sure it now is flagged for reading */
-		}
-	}
-	else {	/* Set things up for writing */
-		if (data) {	/* Was provided an object to use */
-			if (object_ID == GMT_NOTSET) {	/* Register a new object for writing [GMT_OUT] and reset its status to unread */
-				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_OUT, NULL, data)) == GMT_NOTSET)
-					return (API->error);
-			}
-			else {	/* Here we have the item and can recycle the address */
-				API->object[item_s]->status = 0;			/* Open for business */
-				if (API->object[item_s]->data == NULL) {	/* Switch from provider to consumer, if needed */
-					API->object[item_s]->data = API->object[item_s]->resource;
-					API->object[item_s]->resource = NULL;		/* No longer consumer */
-				}
-				API->object[item_s]->method = GMT_IS_REFERENCE;		/* Now a memory resource */
-				API->object[item_s]->direction = GMT_OUT;			/* Make sure it now is flagged for writing */
-			}
-		}
-		else {	/* New expanding output resource */
-			void *object = NULL;
-			/* GMT_Create_Data may return error code if there are issues with the values of family, or geometry */
-			/* Creating an empty object means it is intended to hold output [GMT_OUT] from a module */
-			if ((object = GMT_Create_Data (API, family, geometry, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
-				return (API->error);
-			/* Obtain the object's ID */
-			if ((object_ID = GMT_Get_ID (API, family, GMT_OUT, object)) == GMT_NOTSET)
-				return (API->error);
-		}
-	}
-	/* Obtain the unique VirtualFile name */
-	if (GMT_Encode_ID (API, name, object_ID) != GMT_NOERROR)
-		return (API->error);
-	return GMT_NOERROR;
-}
-
-#ifdef FORTRAN_API
-int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, void *data, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, *direction, data, string));
-}
-#endif
-
-int GMT_Close_VirtualFile (void *V_API, const char *string) {
-	/* Given a VirtualFile name, close it */
-	int object_ID, item;
-	struct GMTAPI_CTRL *API = NULL;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
-		return_error (V_API, GMT_OBJECT_NOT_FOUND);
-	API = api_get_api_ptr (V_API);
-	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
-		return_error (API, GMT_OBJECT_NOT_FOUND);
-	if (API->object[item]->direction == GMT_IN) {
-		API->object[item]->data = API->object[item]->resource;	/* Switch from provider to consumer */
-		API->object[item]->resource = NULL;						/* No longer provider */
-	}
-	return GMT_NOERROR;
-}
-
-#ifdef FORTRAN_API
-int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
-}
-#endif
-
-void *GMT_Read_VirtualFile (void *V_API, const char *string) {
-	/* Given a VirtualFile name, retrieve the resulting object */
-	int object_ID;
-	void *object = NULL;
-	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-	if (string == NULL) return_null (V_API, GMT_PTR_IS_NULL);
-	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
-		return_null (V_API, GMT_OBJECT_NOT_FOUND);
-	if ((object = gmtapi_retrieve_data (V_API, object_ID)) == NULL)
-		return_null (V_API, GMT_OBJECT_NOT_FOUND);
-	return object;
-}
-
-#ifdef FORTRAN_API
-void *GMT_Read_VirtualFile_ (char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Read_VirtualFile (GMT_FORTRAN, string));
-}
-#endif
-
- /*! . */
-int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
-	/* Reset a virtual file back to its original configuration so that it can be
-	 * repurposed for reading or writing again. 
-	 */
-	int object_ID = GMT_NOTSET, item;
-	struct GMTAPI_DATA_OBJECT *S = NULL;
-	struct GMTAPI_CTRL *API = NULL;
-	gmt_M_unused (mode);
-
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	API = api_get_api_ptr (V_API);
-	if ((object_ID = api_decode_id (name)) == GMT_NOTSET) return (GMT_OBJECT_NOT_FOUND);	/* Not a registered resource */
-	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
-		return_error (API, GMT_OBJECT_NOT_FOUND);
-	S = API->object[item];	/* Short-hand pointer */
-	S->rec = 0;	/* Start at first record */
-	S->delay = 0;	/* No Nan-fuckery yet */
-	S->status = GMT_IS_UNUSED;
-	S->selected = true;
-	return GMT_NOERROR;
-}
-
-#ifdef FORTRAN_API
-int GMT_Init_VirtualFile_ (unsigned int mode, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Init_VirtualFile (GMT_FORTRAN, mode, string));
-}
-#endif
 
  /*! . */
 int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
@@ -6344,6 +6183,7 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		GMT_2D_to_index = api_get_2d_to_index (API, M->shape, GMT_GRID_IS_REAL);
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
 			S->delay--;
+			M->n_rows++;	/* Since could not be incremented before M was created */
 			for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
 				ij = GMT_2D_to_index (S->delay, col, M->dim);
 				api_put_val (&(M->data), ij, API->GMT->session.d_NaN);
@@ -6380,6 +6220,7 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		uint64_t col;
 		while (S->delay) {	/* Place delayed NaN-record(s) as leading rows */
 			S->delay--;
+			V->n_rows++;	/* Since could not be incremented before V was created */
 			for (col = 0; col < V->n_columns; col++) {
 				if (col && V->type[col] != V->type[col-1]) api_put_val = api_select_put_function (API, V->type[col]);	/* Update put function */
 				api_put_val (&(V->data[col]), S->delay, API->GMT->session.d_NaN);
@@ -6495,7 +6336,7 @@ int GMT_Status_IO_ (unsigned int *mode) {
 #endif
 
 /*! . */
-int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *resource) {
+GMT_LOCAL int gmtapi_get_id (void *V_API, unsigned int family, unsigned int direction, void *resource) {
 	unsigned int i;
 	int item;
 	struct GMTAPI_CTRL *API = NULL;
@@ -6519,10 +6360,166 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 	return (API->object[item]->ID);
 }
 
+ /*! . */
+int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *name) {
+	/* Associate a virtual file with a data object for either reading or writing.
+	 * Family and geometry specifies the nature of the data to be read or written.
+	 * Direction is either GMT_IN or GMT_OUT and determines if we read or write.
+	 * Reading: data must point to a data container we wish to read from via a module.
+	 * Writing: data is either an existing output data container that the user created
+	 *  beforehand or it is NULL and we create an expanding output resource.
+	 * name is the name given to the virtual file and is returned. */
+	int object_ID = GMT_NOTSET, item_s = 0;
+	unsigned int item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
+	if (direction == GMT_IN && data == NULL) return GMT_PTR_IS_NULL;
+	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	API = api_get_api_ptr (V_API);
+
+	if (data) {	/* Data container provided, see if registered */
+		for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
+			if (!API->object[item]) continue;	/* Skip freed objects */
+			if (API->object[item]->data == data) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		}
+		if (object_ID != GMT_NOTSET && (item_s = gmtapi_get_item (API, family, data)) == GMT_NOTSET) {	/* Not found in list */
+			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
+		}
+		S_obj = API->object[item_s];	/* Short-hand for later */
+	}
+	if (direction == GMT_IN) {	/* Set things up for reading */
+		/* See if this one is known to us already */
+		if (object_ID == GMT_NOTSET) {	/* Register data as a new object for reading [GMT_IN] and reset its status to unread */
+			if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_IN, NULL, data)) == GMT_NOTSET)
+				return (API->error);
+		}
+		else {	/* Found the object earlier; recycle the address and ensure it is a readable object */
+			S_obj->status = 0;					/* Open for business */
+			S_obj->resource = S_obj->data;		/* Switch from consumer to provider */
+			S_obj->data = NULL;					/* No longer consumer */
+			S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
+			S_obj->direction = GMT_IN;			/* Make sure it now is flagged for reading */
+		}
+	}
+	else {	/* Set things up for writing */
+		if (data) {	/* Was provided an object to use */
+			if (object_ID == GMT_NOTSET) {	/* Register a new object for writing [GMT_OUT] and reset its status to unread */
+				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE|GMT_IO_RESET, geometry, GMT_OUT, NULL, data)) == GMT_NOTSET)
+					return (API->error);
+			}
+			else {	/* Here we have the item and can recycle the address */
+				S_obj->status = 0;			/* Open for business */
+				if (S_obj->data == NULL) {	/* Switch from provider to consumer, if needed */
+					S_obj->data = S_obj->resource;
+					S_obj->resource = NULL;		/* No longer consumer */
+				}
+				S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
+				S_obj->direction = GMT_OUT;			/* Make sure it now is flagged for writing */
+			}
+		}
+		else {	/* New expanding output resource */
+			void *object = NULL;
+			/* GMT_Create_Data may return error code if there are issues with the values of family, or geometry */
+			/* Creating an empty object means it is intended to hold output [GMT_OUT] from a module */
+			if ((object = GMT_Create_Data (API, family, geometry, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
+				return (API->error);
+			/* Obtain the object's ID */
+			if ((object_ID = gmtapi_get_id (API, family, GMT_OUT, object)) == GMT_NOTSET)
+				return (API->error);
+		}
+	}
+	/* Obtain the unique VirtualFile name */
+	if (gmtapi_encode_id (API, name, object_ID) != GMT_NOERROR)
+		return (API->error);
+	return GMT_NOERROR;
+}
+
 #ifdef FORTRAN_API
-int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
+int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, void *data, char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
+	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, *direction, data, string));
+}
+#endif
+
+int GMT_Close_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, close it */
+	int object_ID, item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	API = api_get_api_ptr (V_API);
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	S_obj = API->object[item];	/* Short-hand */
+	if (S_obj->direction == GMT_IN) {
+		S_obj->data = S_obj->resource;	/* Switch from provider to consumer */
+		S_obj->resource = NULL;			/* No longer provider */
+	}
+	if (S_obj->family != S_obj->actual_family)	/* Reset the un-masquerading that GMT_Open_VirtualFile did */
+		S_obj->family = S_obj->actual_family;
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
+}
+#endif
+
+void *GMT_Read_VirtualFile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, retrieve the resulting object */
+	int object_ID;
+	void *object = NULL;
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_null (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = api_decode_id (string)) == GMT_NOTSET)
+		return_null (V_API, GMT_OBJECT_NOT_FOUND);
+	if ((object = gmtapi_retrieve_data (V_API, object_ID)) == NULL)
+		return_null (V_API, GMT_OBJECT_NOT_FOUND);
+	return object;
+}
+
+#ifdef FORTRAN_API
+void *GMT_Read_VirtualFile_ (char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Read_VirtualFile (GMT_FORTRAN, string));
+}
+#endif
+
+ /*! . */
+int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
+	/* Reset a virtual file back to its original configuration so that it can be
+	 * repurposed for reading or writing again. 
+	 */
+	int object_ID = GMT_NOTSET, item;
+	struct GMTAPI_DATA_OBJECT *S = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	gmt_M_unused (mode);
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	API = api_get_api_ptr (V_API);
+	if ((object_ID = api_decode_id (name)) == GMT_NOTSET) return (GMT_OBJECT_NOT_FOUND);	/* Not a registered resource */
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	S = API->object[item];	/* Short-hand pointer */
+	S->rec = 0;	/* Start at first record */
+	S->delay = 0;	/* No Nan-fuckery yet */
+	S->status = GMT_IS_UNUSED;
+	S->selected = true;
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Init_VirtualFile_ (unsigned int mode, char *string, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Init_VirtualFile (GMT_FORTRAN, mode, string));
 }
 #endif
 
@@ -11521,3 +11518,24 @@ int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
 }
 #endif
 
+int GMT_Encode_ID (void *API, char *filename, int object_ID) {
+	return (gmtapi_encode_id (API, filename, object_ID));
+}
+
+#ifdef FORTRAN_API
+int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
+}
+#endif
+
+int GMT_Get_ID (void *API, unsigned int family, unsigned int direction, void *resource) {
+	return (gmtapi_get_id (API, family, direction, resource));
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
+}
+#endif
