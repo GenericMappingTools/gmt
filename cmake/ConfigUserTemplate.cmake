@@ -207,6 +207,7 @@
 # that link against the full gmt libs (not just the API; for building codes
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
+#set (DO_API_TESTS ON)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
