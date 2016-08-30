@@ -29,7 +29,6 @@
 int main () {
 
 	int status = 0;				/* Status code from GMT API */
-	int ID;					/* Object ID for plot resource */
 	char cmd[BUFSIZ] = {""};		/* Command string */
 	char string[GMT_STR16] = {""};		/* Encoded ID */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
@@ -38,10 +37,8 @@ int main () {
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("PSLTEST", GMT_NOTSET, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
-	/* 2. Create a PS container to be the destination allocated and written to by pscoast */
-	if ((PS = GMT_Create_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
-	if ((ID = GMT_Get_ID (API, GMT_IS_POSTSCRIPT, GMT_OUT, PS)) == GMT_NOTSET) exit (EXIT_FAILURE);
-	if (GMT_Encode_ID (API, string, ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
+	/* 2. Create a virtual file to be the destination allocated and written to by pscoast */
+	if (GMT_Open_VirtualFile (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, GMT_OUT, NULL, string) != GMT_NOERROR) exit (EXIT_FAILURE);
 	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);			/* Create command for pscoast */
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -59,8 +56,10 @@ int main () {
 		exit (EXIT_FAILURE);
 	}
 
-	/* 5. Get the plot object into our hands */
-	if ((PS = GMT_Retrieve_Data (API, ID)) == NULL) exit (EXIT_FAILURE);
+	/* 5a. Get the plot object into our hands */
+	if ((PS = GMT_Read_VirtualFile (API, string)) == NULL) exit (EXIT_FAILURE);
+	/* 5b. Close the virtual file */
+	if ((PS = GMT_Close_VirtualFile (API, string)) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 6. Write the plot to file */
 	if (GMT_Write_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);

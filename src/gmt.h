@@ -84,11 +84,9 @@ EXTERN_MSC int GMT_Write_Data       (void *API, unsigned int family, unsigned in
                                      unsigned int mode, double wesn[], const char *output, void *data);
 EXTERN_MSC int GMT_Destroy_Data     (void *API, void *object);
 EXTERN_MSC int GMT_Put_Record       (void *API, unsigned int mode, void *record);
-EXTERN_MSC int GMT_Encode_ID        (void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_Row          (void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row          (void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Set_Comment      (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
-EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 /* These functions are being tested */
@@ -168,10 +166,12 @@ EXTERN_MSC int GMT_F77_writegrd_	(float *array, unsigned int dim[], double wesn[
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options	(void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
 EXTERN_MSC int GMT_Expand_Option			(void *API, struct GMT_OPTION *current, const char *txt);
 
-/* THese are provided for backwards compatibility */
+/* These functions are provided for backwards compatibility but are considered obsolete as of 5.3 */
 EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Put_Data         (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void *GMT_Retrieve_Data  (void *API, int object_ID);
+EXTERN_MSC int GMT_Encode_ID        (void *API, char *string, int object_ID);
+EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 
 #ifdef __cplusplus
 }
