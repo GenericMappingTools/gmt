@@ -7621,7 +7621,7 @@ void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_
 }
 
 
-/*  m input matrix
+/*!  m input matrix
 	n_rows number of rows of \a m
 	n_columns number of columns of \a m
 
@@ -7629,15 +7629,32 @@ void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_
    Modified from http://programmers.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
 */
 
-/*! . */
-void gmtlib_union_transpose (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const uint64_t n_rows, const uint64_t n_columns, unsigned int type)
-{	/* In-place transpose of rectangular matrix m */
+void gmtlib_union_transpose(struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const uint64_t n_rows, const uint64_t n_columns, unsigned int type) {
+	/* In-place transpose of rectangular matrix m */
 	union GMT_UNIVECTOR tmp;
-	gmtlib_alloc_univector (GMT, &(tmp), type, 1);
+	int error = GMT_OK;
+
+	switch (type) {
+		case GMT_UCHAR:  tmp.uc1 = gmt_M_memory(GMT, NULL, 1, uint8_t);   if (tmp.uc1 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_CHAR:   tmp.sc1 = gmt_M_memory(GMT, NULL, 1, int8_t);    if (tmp.sc1 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_USHORT: tmp.ui2 = gmt_M_memory(GMT, NULL, 1, uint16_t);  if (tmp.ui2 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_SHORT:  tmp.si2 = gmt_M_memory(GMT, NULL, 1, int16_t);   if (tmp.si2 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_UINT:   tmp.ui4 = gmt_M_memory(GMT, NULL, 1, uint32_t);  if (tmp.ui4 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_INT:    tmp.si4 = gmt_M_memory(GMT, NULL, 1, int32_t);   if (tmp.si4 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_ULONG:  tmp.ui8 = gmt_M_memory(GMT, NULL, 1, uint64_t);  if (tmp.ui8 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_LONG:   tmp.si8 = gmt_M_memory(GMT, NULL, 1, int64_t);   if (tmp.si8 == NULL) error = GMT_MEMORY_ERROR; break;
+		case GMT_FLOAT:   tmp.f4 = gmt_M_memory(GMT, NULL, 1, float);     if (tmp.f4 == NULL)  error = GMT_MEMORY_ERROR; break;
+		case GMT_DOUBLE:  tmp.f8 = gmt_M_memory(GMT, NULL, 1, double);    if (tmp.f8 == NULL)  error = GMT_MEMORY_ERROR; break;
+		default:          tmp.f8 = NULL;	/* To shut up the compiler about the "potentially uninitialized local variable 'tmp' used" */
+	}
+	if (error) {
+		GMT_Report(GMT, GMT_MSG_NORMAL, "gmtlib_union_transpose: Failure to allocate memory.\n");
+		return;
+	}
 
 	for (uint64_t start = 0; start <= n_columns * n_rows - 1; ++start) {
 		uint64_t next = start, i = 0;
-    	do {
+		do {
 			++i; next = (next % n_rows) * n_columns + next / n_rows;
 		} while (next > start);
 		if (next >= start && i != 1) {
@@ -7673,7 +7690,7 @@ void gmtlib_union_transpose (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const
 		}
 	}
 	gmtio_free_univector (GMT, &(tmp), type);
-	
+
 }
 
 /*! . */
