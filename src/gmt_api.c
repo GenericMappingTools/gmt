@@ -6193,6 +6193,7 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	if (M->shape == GMT_IS_COL_FORMAT) {	/* Oh no, must do a transpose in place */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_end_io_matrix: Must transpose union matrix to GMT_IS_COL_FORMAT arrangement\n");
 		gmtlib_union_transpose (API->GMT, &(M->data), M->n_rows, M->n_columns, M->type);
+		M->dim = M->n_rows;	/* Since now it is in FORTRAN column format */
 	}
 	/* Register this resource */
 	if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, M)) == GMT_NOTSET)
