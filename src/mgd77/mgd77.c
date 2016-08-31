@@ -3209,12 +3209,12 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) < 14000 || i > 15500)) OR_TRUE) {
+	if ((P->Bathymetry_Assumed_Sound_Velocity[0] && ((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) < 14000 || i > 15500)) OR_TRUE) {
 		kind = (wrong_filler (P->Bathymetry_Assumed_Sound_Velocity, 5)) ? ERR : WARN;
-		if (i > 1400 && i < 1550) {
+		if (i > 1400 && i < 1550) {	/* Probably screwed up with factor of 10 */
 			if (F->verbose_level & 2) fprintf (fp_err, "?-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [%d0]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
 		}
-		else if (i == 8000 OR_TRUE) {
+		else if (i == 8000 OR_TRUE) {	/* Gave it in fathoms*10/sec */
 			if (F->verbose_level & 2) fprintf (fp_err, "?-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [14630]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		}
 		else if (kind == ERR OR_TRUE) {
