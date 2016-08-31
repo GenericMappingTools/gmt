@@ -451,58 +451,6 @@ GMT_LOCAL int api_print_func (FILE *fp, const char *message) {
 	return 0;
 }
 
-
-/*  m input matrix
-	n_rows number of rows of \a m
-	n_columns number of columns of \a m
-
-   Performs in-place transposition of matrix m.
-   Modified from http://programmers.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
-*/
-#if 0
-GMT_LOCAL void gmtapi_union_transpose (union GMT_UNIVECTOR *m, const uint64_t n_rows, const uint64_t n_columns, unsigned int type)
-{	/* In-place transpose of rectangular matrix m */
-	for (uint64_t start = 0; start <= n_columns * n_rows - 1; ++start) {
-		uint64_t next = start, i = 0;
-    	do {
-			++i; next = (next % n_rows) * n_columns + next / n_rows;
-		} while (next > start);
-		if (next >= start && i != 1) {
-			union GMT_UNIVECTOR tmp;
-			switch (type) {
-				case GMT_DOUBLE:	tmp.f8  =  m->f8[start];	break;
-				case GMT_FLOAT:		tmp.f4  =  m->f4[start];	break;
-				case GMT_ULONG:		tmp.ui8 = m->ui8[start];	break;
-				case GMT_LONG:		tmp.si8 = m->si8[start];	break;
-				case GMT_UINT:		tmp.ui4 = m->ui4[start];	break;
-				case GMT_INT:		tmp.si4 = m->si4[start];	break;
-				case GMT_USHORT:	tmp.ui2 = m->ui2[start];	break;
-				case GMT_SHORT:		tmp.si2 = m->si2[start];	break;
-				case GMT_UCHAR:		tmp.uc1 = m->uc1[start];	break;
-				case GMT_CHAR:		tmp.sc1 = m->sc1[start];	break;
-			}
-			next = start;
-			do {
-				i = (next % n_rows) * n_columns + next / n_rows;
-				switch (type) {
-					case GMT_DOUBLE:	m->f8[next]  = (i == start) ? tmp.f8  :  m->f8[i];	break;
-					case GMT_FLOAT:		m->f4[next]  = (i == start) ? tmp.f4  :  m->f4[i];	break;
-					case GMT_ULONG:		m->ui8[next] = (i == start) ? tmp.ui8 : m->ui8[i];	break;
-					case GMT_LONG:		m->si8[next] = (i == start) ? tmp.si8 : m->si8[i];	break;
-					case GMT_UINT:		m->ui4[next] = (i == start) ? tmp.ui4 : m->ui4[i];	break;
-					case GMT_INT:		m->si4[next] = (i == start) ? tmp.si4 : m->si4[i];	break;
-					case GMT_USHORT:	m->ui2[next] = (i == start) ? tmp.ui2 : m->ui2[i];	break;
-					case GMT_SHORT:		m->si2[next] = (i == start) ? tmp.si2 : m->si2[i];	break;
-					case GMT_UCHAR:		m->uc1[next] = (i == start) ? tmp.uc1 : m->uc1[i];	break;
-					case GMT_CHAR:		m->sc1[next] = (i == start) ? tmp.sc1 : m->sc1[i];	break;
-				}
-				next = i;
-			} while (next > start);
-		}
-	}
-}
-#endif
-
 /*! . */
 GMT_LOCAL unsigned int api_gmtry (unsigned int geometry) {
 	/* Return index to text representation in GMT_geometry[] for debug messages */
@@ -6244,7 +6192,7 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	}
 	if (M->shape == GMT_IS_COL_FORMAT) {	/* Oh no, must do a transpose in place */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_end_io_matrix: Must transpose union matrix to GMT_IS_COL_FORMAT arrangement\n");
-		//gmtapi_union_transpose (&(M->data), M->n_rows, M->n_columns, M->type);
+		gmtlib_union_transpose (API->GMT, &(M->data), M->n_rows, M->n_columns, M->type);
 	}
 	/* Register this resource */
 	if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, M)) == GMT_NOTSET)
