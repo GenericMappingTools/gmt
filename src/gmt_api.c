@@ -451,6 +451,36 @@ GMT_LOCAL int api_print_func (FILE *fp, const char *message) {
 	return 0;
 }
 
+
+/*  m input matrix
+	n_rows number of rows of \a m
+	n_columns number of columns of \a m
+
+   Performs in-place transposition of matrix m.
+   Modified from http://programmers.stackexchange.com/questions/271713/transpose-a-matrix-without-a-buffering-one
+*/
+
+GMT_LOCAL void gmtapi_union_transpose (union GMT_UNIVECTOR m[], const uint64_t n_rows, const uint64_t n_columns)
+{	/* In-place transpose of rectangular matrix m */
+	for (uint64_t start = 0; start <= n_columns * n_rows - 1; ++start) {
+		uint64_t next = start, i = 0;
+    	do {
+			++i;
+			next = (next % n_rows) * n_columns + next / n_rows;
+		} while (next > start);
+
+		if (next >= start && i != 1) {
+			const union GMT_UNIVECTOR tmp = m[start];
+			next = start;
+			do {
+				i = (next % n_rows) * n_columns + next / n_rows;
+				m[next] = (i == start) ? tmp : m[i];
+				next = i;
+			} while (next > start);
+		}
+	}
+}
+
 /*! . */
 GMT_LOCAL unsigned int api_gmtry (unsigned int geometry) {
 	/* Return index to text representation in GMT_geometry[] for debug messages */
@@ -6180,7 +6210,7 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		GMT_putfunction api_put_val = api_select_put_function (API, M->type);
 		p_func_uint64_t GMT_2D_to_index = NULL;
 		uint64_t col, ij;
-		GMT_2D_to_index = api_get_2d_to_index (API, M->shape, GMT_GRID_IS_REAL);
+		GMT_2D_to_index = api_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Can only do row-format until end of this function */
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
 			S->delay--;
 			M->n_rows++;	/* Since could not be incremented before M was created */
@@ -6189,6 +6219,10 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 				api_put_val (&(M->data), ij, API->GMT->session.d_NaN);
 			}
 		}
+	}
+	if (M->shape == GMT_IS_COL_FORMAT) {	/* Oh no, must do a transpose in place */
+		GMT_Report (API, GMT_MSG_DEBUG, "api_end_io_matrix: Must transpose union matrix to GMT_IS_COL_FORMAT arrangement\n");
+		gmtapi_union_transpose (M->data, M->n_rows, M->n_columns);
 	}
 	/* Register this resource */
 	if ((object_ID = GMT_Register_IO (API, GMT_IS_MATRIX, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, M)) == GMT_NOTSET)
@@ -7450,14 +7484,14 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				size = S_obj->n_alloc = GMT_CHUNK;
 				M_obj = gmtlib_create_matrix (API->GMT, 1U, GMT_OUT);
 				M_obj->type = API->GMT->current.setting.export_type;	/* Use selected data type for export */
-				M_obj->dim = M_obj->n_columns = col;
+				M_obj->dim = M_obj->n_columns = col;	/* If COL_FORMAT the dim will change in end_io_matrix after transpose */
 				size *= M_obj->n_columns;	/* Size in bytes of the initial matrix allocation */
 				if ((error = gmtlib_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (gmtapi_report_error (API, error));
 				M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
 				S_obj->resource = M_obj;	/* Save so we can get it next time */
 			}
 			M_obj = S_obj->resource;
-			GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			GMT_2D_to_index = api_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Since we cannot do col_format without knowing dimension - see end_io_matrix */
 			api_put_val = api_select_put_function (API, M_obj->type);
 			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
 				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
