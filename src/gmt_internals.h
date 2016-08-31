@@ -168,6 +168,7 @@ EXTERN_MSC void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 EXTERN_MSC void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P);
 EXTERN_MSC unsigned int gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
 EXTERN_MSC unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);
+EXTERN_MSC void gmtlib_union_transpose (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const uint64_t n_rows, const uint64_t n_columns, unsigned int type);
 EXTERN_MSC void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image);
 EXTERN_MSC struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);
 EXTERN_MSC int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val);
