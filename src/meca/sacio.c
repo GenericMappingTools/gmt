@@ -706,13 +706,11 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 
 	if (sizeof(float) != SAC_DATA_SIZEOF || sizeof(int) != SAC_DATA_SIZEOF) {
 		fprintf(stderr, "Mismatch in size of basic data type!\n");
-		free(buffer);
 		return -1;
 	}
 
 	if (fwrite(&hd, SAC_HEADER_NUMBERS_SIZE, 1, strm) != 1) {
 		fprintf(stderr, "Error in writing SAC data for writing %s\n", name);
-		free(buffer);
 		return -1;
 	}
 
@@ -725,6 +723,7 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 
 	if (fwrite(buffer, SAC_HEADER_STRINGS_SIZE, 1, strm) != 1) {
 		fprintf(stderr, "Error in writing SAC data for writing %s\n", name);
+		free(buffer);
 		return -1;
 	}
 	free(buffer);
