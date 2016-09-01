@@ -48,6 +48,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"psmeca", "meca", "Plot focal mechanisms on maps", "<T{,>X}"},
 	{"pspolar", "meca", "Plot polarities on the inferior focal half-sphere on maps", "<T{,>X}"},
 	{"psvelo", "meca", "Plot velocity vectors, crosses, and wedges on maps", "<T{,>X}"},
+	{"pssac", "meca", "Plot seismograms in SAC format on maps", "<DI,CCi,T-i,>XO,RG-"},
 	{"mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
 	{"mgd77info", "mgd77", "Extract information about MGD77 files", ">T}"},
 	{"mgd77list", "mgd77", "Extract data from MGD77 files", ">?}"},
