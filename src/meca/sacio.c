@@ -152,6 +152,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	sz = (size_t) hd->npts * SAC_DATA_SIZEOF;
 	if (hd->iftype == IXY) sz *= 2;
 
+	/* coverity[tainted_data] */	/* For a Coverity issue. Do not delete */
 	if ((ar = (float *)malloc(sz)) == NULL) {
 		fprintf(stderr, "Error in allocating memory for reading %s\n", name);
 		fclose(strm);
