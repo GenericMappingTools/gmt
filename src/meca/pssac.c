@@ -544,7 +544,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 }
 
 int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that implements the pssac task */
-	bool old_is_world;
+	bool old_is_world, free_plot_pen = false;
 	int error = GMT_NOERROR;
 
 	struct GMT_PEN current_pen;
@@ -815,6 +815,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			npts = hd.npts;
 			plot_pen = gmt_M_memory (GMT, NULL, npts, unsigned int);
 			plot_pen[0] = PSL_MOVE;
+			free_plot_pen = true;
 		}
 
 		/* plot trace */
@@ -852,7 +853,8 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		}
 		gmt_M_free(GMT, x);
 		gmt_M_free(GMT, y);
-		gmt_M_free(GMT, plot_pen);
+		if (free_plot_pen) gmt_M_free(GMT, plot_pen);
+		free_plot_pen = false;
 	}
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
