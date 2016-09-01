@@ -253,11 +253,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'E':
 				Ctrl->E.active = true;
-				strcpy(Ctrl->E.keys, &opt->arg[0]);
+				strncpy(Ctrl->E.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				strcpy(Ctrl->F.keys, &opt->arg[0]);
+				strncpy(Ctrl->F.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
 			case 'G':      /* phase painting */
 				switch (opt->arg[0]) {
@@ -513,6 +513,10 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 				if (gmt_M_rec_is_eof(GMT))  /* Reached end of file */
 					break;
 			}
+			if (line == NULL) {
+				GMT_Report (GMT, GMT_MSG_NORMAL, "line == NULL where code does not account for it. Unknown consequence.\n")
+				break;
+			}
 
 			nr = sscanf (line, "%s %lf %lf %s", file, &x, &y, pen);
 			if (nr < 1) {
@@ -668,6 +672,8 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		else if (Ctrl->m.active) dt = hd.delta/Ctrl->m.sec_per_measure;
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: -m option is needed in geographic plots.\n");
+			gmt_M_free(GMT, x);		gmt_M_free(GMT, y);
+			gmt_M_free(GMT, data);
 			Return(EXIT_FAILURE);
 		}
 		for (i = 0; i < hd.npts; i++) {
@@ -856,6 +862,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		if (free_plot_pen) gmt_M_free(GMT, plot_pen);
 		free_plot_pen = false;
 	}
+	gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		/* They might not have been released above due to 'continues' */
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 

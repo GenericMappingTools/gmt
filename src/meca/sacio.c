@@ -195,14 +195,17 @@ int read_sac_xy(const char *name, SACHEAD *hd, float *xdata, float *ydata) {
 	npts = (size_t)hd->npts;
 	if ((xdata = (float *)malloc(npts*SAC_DATA_SIZEOF)) == NULL) {
 		fprintf(stderr, "Error in allocating memory for %s\n", name);
+		free(data);
 		return -1;
 	}
 	if ((ydata = (float *)malloc(npts*SAC_DATA_SIZEOF)) == NULL) {
 		fprintf(stderr, "Error in allocating memory for %s\n", name);
+		free(data);
+		free(xdata);
 		return -1;
 	}
 
-	memcpy(xdata, data     , npts*SAC_DATA_SIZEOF);
+	memcpy(xdata, data,      npts*SAC_DATA_SIZEOF);
 	memcpy(ydata, data+npts, npts*SAC_DATA_SIZEOF);
 
 	free(data);
@@ -359,10 +362,13 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	hd->b   = t1;
 	hd->e   = t1 + nn * hd->delta;
 
-	if (nt1>npts || nt2 <0) return ar;    /* return zero filled array */
+	if (nt1 > npts || nt2 < 0) {
+		fclose(strm);
+		return ar;    /* return zero filled array */
+	}
 	/* maybe warnings are needed! */
 
-	if (nt1<0) {
+	if (nt1 < 0) {
 		fpt = ar - nt1;
 		nt1 = 0;
 	}
@@ -493,9 +499,18 @@ int issac(const char *name) {
 		return -1;
 	}
 
-	if (fseek(strm, SAC_VERSION_LOCATION * SAC_DATA_SIZEOF, SEEK_SET)) return FALSE;
-	if (fread(&nvhdr, sizeof(int), 1, strm) != 1) return FALSE;
-	if (check_sac_nvhdr(nvhdr) == -1) return FALSE;
+	if (fseek(strm, SAC_VERSION_LOCATION * SAC_DATA_SIZEOF, SEEK_SET)) {
+		fclose(strm);
+		return FALSE;
+	}
+	if (fread(&nvhdr, sizeof(int), 1, strm) != 1) {
+		fclose(strm);
+		return FALSE;
+	}
+	fclose(strm);
+	
+	if (check_sac_nvhdr(nvhdr) == -1)
+		return FALSE;
 	else
 		return TRUE;
 }
@@ -687,16 +702,19 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 
 	if (sizeof(float) != SAC_DATA_SIZEOF || sizeof(int) != SAC_DATA_SIZEOF) {
 		fprintf(stderr, "Mismatch in size of basic data type!\n");
+		free(buffer);
 		return -1;
 	}
 
 	if (fwrite(&hd, SAC_HEADER_NUMBERS_SIZE, 1, strm) != 1) {
 		fprintf(stderr, "Error in writing SAC data for writing %s\n", name);
+		free(buffer);
 		return -1;
 	}
 
 	if ((buffer = (char *)malloc(SAC_HEADER_STRINGS_SIZE)) == NULL) {
 		fprintf(stderr, "Error in allocating memory %s\n", name);
+		free(buffer);
 		return -1;
 	}
 	map_chdr_out((char *)(&hd)+SAC_HEADER_NUMBERS_SIZE, buffer);
