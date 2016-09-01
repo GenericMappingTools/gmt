@@ -1335,7 +1335,6 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 			fclose (ftrack);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		if (id > 1e9) id = (uint32_t)1e9;		/* To please (and shut up) Coverity CID = 39225 */
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
 				size_t old_n_alloc = n_alloc;
