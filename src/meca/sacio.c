@@ -272,6 +272,7 @@ int write_sac(const char *name, SACHEAD hd, const float *ar) {
  *      0   :   succeed
  *
  */
+/* coverity[pass_by_value] */	/* For a Coverity issue. Do not delete */
 int write_sac_xy(const char *name, SACHEAD hd, const float *xdata, const float *ydata) {
 	float *ar;
 	int npts;

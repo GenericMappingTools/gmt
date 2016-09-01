@@ -514,7 +514,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 					break;
 			}
 			if (line == NULL) {
-				GMT_Report (GMT, GMT_MSG_NORMAL, "line == NULL where code does not account for it. Unknown consequence.\n")
+				GMT_Report (GMT, GMT_MSG_NORMAL, "line == NULL where code does not account for it. Unknown consequence.\n");
 				break;
 			}
 
