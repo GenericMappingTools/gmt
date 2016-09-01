@@ -191,6 +191,7 @@ int read_sac_xy(const char *name, SACHEAD *hd, float *xdata, float *ydata) {
 	float *data;
 	size_t npts;
 
+	/* coverity[tainted_data] */	/* For a Coverity issue. Do not delete */
 	if ((data = read_sac(name, hd)) == NULL)  return -1;
 
 	npts = (size_t)hd->npts;
@@ -228,6 +229,7 @@ int read_sac_xy(const char *name, SACHEAD *hd, float *xdata, float *ydata) {
  *      0   :   succeed
  *
  */
+/* coverity[pass_by_value] */	/* For a Coverity issue. Do not delete */
 int write_sac(const char *name, SACHEAD hd, const float *ar) {
 	FILE    *strm;
 	size_t  sz;
