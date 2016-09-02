@@ -9,3 +9,4 @@ MECA
    supplements/meca/psmeca
    supplements/meca/pspolar
    supplements/meca/psvelo
+   supplements/meca/pssac
