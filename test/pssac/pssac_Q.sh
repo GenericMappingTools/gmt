@@ -3,7 +3,7 @@
 #
 # Description:
 
-PS=pssac_v.ps
+PS=pssac_Q.ps
 
 gmt pssac -JX10c/5c -R9/20/-2/2 -Bx2 -By1 -BWSen -K -P \
     -Fr -Gp+gblack -Gn+gblue "${src:-.}"/seis.sac -V > $PS
