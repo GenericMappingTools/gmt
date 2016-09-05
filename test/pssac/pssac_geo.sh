@@ -2,6 +2,8 @@
 #	$Id$
 #
 # Description:
+which -s saclst
+if [ $? -eq 1 ]; then exit; fi
 
 J=M12c
 R=-120/-40/30/70

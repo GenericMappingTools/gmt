@@ -322,6 +322,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				if (gmt_M_is_linear(GMT) && (Ctrl->M.norm || Ctrl->M.scaleALL))
 					Ctrl->M.size *= fabs((GMT->common.R.wesn[YHI]-GMT->common.R.wesn[YLO])/GMT->current.proj.pars[1]);
 				break;
+			case 'Q':
+				Ctrl->Q.active = true;
+				break;
+			case 'S':
+				Ctrl->S.active = true;
+				Ctrl->S.sec_per_measure = atof(opt->arg);
+				break;
 			case 'T':
 				pos = 0;
 				Ctrl->T.active = true;
@@ -351,13 +358,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					n_errors++;
 				}
-				break;
-			case 'v':
-				Ctrl->Q.active = true;
-				break;
-			case 'm':
-				Ctrl->S.active = true;
-				Ctrl->S.sec_per_measure = atof(opt->arg);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -614,9 +614,13 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	for (n = 0; n < n_files; n++) {  /* Loop over all SAC files */
 		if (gmt_getdatapath (GMT, L[n].file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", L[n].file);
+			gmt_M_str_free (L[n].file);
+			gmt_M_str_free (Ctrl->In.file[n]);
 			continue;
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Plotting SAC file %d: %s\n", n, path);
+		gmt_M_str_free (L[n].file);
+		//gmt_M_str_free (Ctrl->In.file[n]);
 		
 		/* -T: determine the reference time for all times in pssac */
 		tref = 0.0;
@@ -671,7 +675,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			x[i] = i * dt;
 			y[i] = data[i];
 		}
-		gmt_M_free (GMT, data);
+		free (data);
 
 		/* -F: data preprocess */
 		for (i = 0; Ctrl->F.keys[i] != '\0'; i++) {
@@ -854,6 +858,8 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		free_plot_pen = false;
 	}
 	gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		/* They might not have been released above due to 'continues' */
+	gmt_M_free (GMT, L);
+	gmt_M_free (GMT, Ctrl->In.file);
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 
