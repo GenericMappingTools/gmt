@@ -2,7 +2,7 @@
 #	$Id$
 #
 # Description:
-which -s saclst
+which saclst > /dev/null
 if [ $? -eq 1 ]; then exit; fi
 
 J=M12c
