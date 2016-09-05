@@ -7260,12 +7260,12 @@ This package contains the programs
 :doc:`pscoupe <supplements/meca/pscoupe>`,
 :doc:`psmeca <supplements/meca/psmeca>`,
 :doc:`pspolar <supplements/meca/pspolar>`,
-:doc:`pspolar <supplements/meca/psvelo>`, and
-:doc:`psvelo <supplements/meca/pssac>` which are used by seismologists
+:doc:`psvelo <supplements/meca/psvelo>`, and
+:doc:`pssac <supplements/meca/pssac>` which are used by seismologists
 and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
 more. The package was developed by Kurt Feigl and Genevieve
-Patau but is now maintained by the GMT team.
+Patau with contributions from Dongdong Tian but is now maintained by the GMT team.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
