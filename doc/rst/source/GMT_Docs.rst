@@ -78,7 +78,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI; College Park, MD; Faro, Portugal; Darmstadt and
-Bremerhaven, Germany; July 2016
+Bremerhaven, Germany; September 2016
 
 
 A Reminder
@@ -237,6 +237,9 @@ Like :doc:`grdpmodeler<supplements/spotter/grdpmodeler>` it evaluates plate
 tectonic model predictions but at given point locations locations instead of
 on a grid.  The second is :doc:`rotsmoother<supplements/spotter/rotsmoother>`
 which smooths estimated rotations using quaternions.
+
+Also, the *meca* supplement has gained a new tool :doc:`pssac <supplements/meca/pssac>`
+for the plotting of seismograms in SAC format.
 
 Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`
 to the *potential* supplement.  This tool is a Green's function gridding module
