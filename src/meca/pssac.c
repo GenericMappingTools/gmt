@@ -136,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssac <saclist>|<sacfiles> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<t0>/<t1>]] [-D<dx>[/<dy>]] [-Ea|b|k|d|n[<n>]|u[<n>]] [-F[i][q][r]]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] [-K] [-M<size>/<alpha>] [-O] [-P] [-Q]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<sec_per_measure>] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] [%s] [%s] \n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<sec_per_measure>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] [%s] [%s] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W<pen>] [%s] [%s] [%s] \n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
 
@@ -187,10 +187,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> > 0, yscale=size*r^alpha, r is the distance range in km.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot traces vertically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Time scaling while plotting on geographic plots.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <sec_per_measure> is in second per inch.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the time scale in seconds per <unit> while plotting on geographic plots. Use PROJ_LENGTH_UNIT if <unit> is ommited.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Time alignment. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -3(o), -2(a), 0-9(t0-t9).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<reduce_vel> reduce velocity in km/s.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +s<shift> shift all traces by <shift> seconds.\n");
 	GMT_Option (API, "U,V");
@@ -332,7 +331,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'S':
 				Ctrl->S.active = true;
-				Ctrl->S.sec_per_measure = atof(opt->arg);
+				Ctrl->S.sec_per_measure = gmt_M_to_inch (GMT, opt->arg);
 				break;
 			case 'T':
 				pos = 0;
@@ -374,6 +373,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.sec_per_measure), "Syntax error -S option: <sec_per_measure> must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Syntax error -T option: <reduce_vel> must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Syntax error -T option: <tmark> should be choosed from -5, -4, -3, -2, 0-9\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -493,7 +495,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 	struct SAC_LIST *L = NULL;
 
 	/* Got a bunch of SAC files or one file in SAC format */
-	if (n_files > 1 || (n_files==1 && issac(files[0]))) {
+	if (n_files > 1 || (n_files == 1 && issac(files[0]))) {
 		L = gmt_M_memory (GMT, NULL, n_files, struct SAC_LIST) ;
 		for (n = 0; n < n_files; n++) {
 			L[n].file = strdup (files[n]);
@@ -559,7 +561,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	unsigned int n_files, *plot_pen = NULL;
 	int error = GMT_NOERROR, n, i, npts;
 	double yscale = 1.0, y0 = 0.0, x0, tref, dt, *x = NULL, *y = NULL, *xp = NULL, *yp = NULL;
-	float *data = NULL;
+	float tmark_value, *data = NULL;
 	struct SAC_LIST *L = NULL;
 	SACHEAD hd;
 	struct GMT_PEN current_pen;
@@ -632,10 +634,18 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 				continue;
 			}
 			/* +t */
-			if (Ctrl->T.align) tref += *((float *)&hd + TMARK + Ctrl->T.tmark);
+			if (Ctrl->T.align) {
+				tmark_value = *((float *)&hd + TMARK + Ctrl->T.tmark);
+				if (floatAlmostEqualZero(tmark_value, SAC_FLOAT_UNDEF)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: tmark %d not defined in SAC header, skipped.\n", L[n].file, Ctrl->T.tmark);
+					continue;
+				}
+				tref += (double)tmark_value;
+			}
+
 			/* +r */
 			if (Ctrl->T.reduce) {
-				if (hd.dist == SAC_FLOAT_UNDEF) {
+				if (floatAlmostEqualZero(hd.dist, SAC_FLOAT_UNDEF)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: dist not defined in SAC header, skipped.\n", L[n].file);
 					continue;
 				}
@@ -700,7 +710,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 
 		/* -M: determine yscale for multiple traces */
 		if (Ctrl->M.active) {
-			if (Ctrl->M.norm || (Ctrl->M.scaleALL && n==0))
+			if (Ctrl->M.norm || (Ctrl->M.scaleALL && n == 0))
 				yscale = Ctrl->M.size / (hd.depmax - hd.depmin);
 			else if (Ctrl->M.dist_scaling)
 				yscale = Ctrl->M.size * pow(fabs(hd.dist), Ctrl->M.alpha);
@@ -722,7 +732,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		}
 
 		/* Default to plot trace at station locations on geographic maps */
-		if (!gmt_M_is_linear(GMT) && L[n].position==false) {
+		if (!gmt_M_is_linear(GMT) && L[n].position == false) {
 			L[n].position = true;
 			gmt_geo_to_xy (GMT, hd.stlo, hd.stla, &L[n].x, &L[n].y);
 			GMT_Report (API, GMT_MSG_VERBOSE, "=> %s: Geographic location: (%g, %g)\n", L[n].file, hd.stlo, hd.stla);
@@ -742,28 +752,28 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			if (Ctrl->E.active) {
 				switch (Ctrl->E.keys[0]) {
 					case 'a':
-						if (hd.az == SAC_FLOAT_UNDEF) {
+						if (floatAlmostEqualZero(hd.az, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: az not defined in SAC header, skipped.\n", L[n].file);
 							continue;
 						}
 						y0 = hd.az;
 						break;
 					case 'b':
-						if (hd.baz == SAC_FLOAT_UNDEF) {
+						if (floatAlmostEqualZero(hd.baz, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: baz not defined in SAC header, skipped.\n", L[n].file);
 							continue;
 						}
 						y0 = hd.baz;
 						break;
 					case 'd':
-						if (hd.gcarc == SAC_FLOAT_UNDEF) {
+						if (floatAlmostEqualZero(hd.gcarc, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: gcarc not defined in SAC header, skipped.\n", L[n].file);
 							continue;
 						}
 						y0 = hd.gcarc;
 						break;
 					case 'k':
-						if (hd.dist == SAC_FLOAT_UNDEF) {
+						if (floatAlmostEqualZero(hd.dist, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: dist not defined in SAC header, skipped.\n", L[n].file);
 							continue;
 						}
@@ -776,7 +786,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 					case 'u':  /* user0 to user9 */
 						if (Ctrl->E.keys[1] != '\0') user = atoi(&Ctrl->E.keys[1]);
 						y0 = *((float *) &hd + USERN + user);
-						if (y0 == SAC_FLOAT_UNDEF) {
+						if (floatAlmostEqualZero(y0, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: user%d not defined in SAC header, skipped.\n", user, L[n].file);
 							continue;
 						}
