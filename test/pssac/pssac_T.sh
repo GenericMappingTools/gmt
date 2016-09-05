@@ -4,7 +4,7 @@
 # Description:
 
 PS=pssac_T.ps
-SACFILEs="${src:-.}/ntkl.z ${src:-.}/onkl.z"
+SACFILEs="ntkl.z onkl.z"
 
 gmt set PS_MEDIA 21cx32c
 gmt pssac $SACFILEs -JX15c/4c -R200/1600/22/27 -Bx100 -By1 -BWSen -Ed -M1.5c -K -P -G+t700/900 > $PS

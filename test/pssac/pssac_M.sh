@@ -8,7 +8,7 @@ J=X15c/4c
 Bx=x250
 By=y1
 PS=pssac_M.ps
-SACFILEs="${src:-.}/ntkl.z ${src:-.}/onkl.z"
+SACFILEs="ntkl.z onkl.z"
 
 # -Msize
 gmt pssac $SACFILEs -J$J -R$R -B$Bx -B$By -BWSen -Ed -M1.5c -K -P > $PS
