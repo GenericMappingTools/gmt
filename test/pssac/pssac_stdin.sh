@@ -1,7 +1,7 @@
 #!bin/bash
 #	$Id$
 #
-# Description: 
+# Description:
 
 R=195/1600/14/42
 J=X15c/6c
@@ -9,7 +9,7 @@ Bx=x250
 By=y5
 PS=pssac_stdin.ps
 
-gmt pssac *.z -J$J -R$R -B$Bx -B$By -BWSen -Ed -M0.8i -K -P > $PS
+gmt pssac "${src:-.}"/*.z -J$J -R$R -B$Bx -B$By -BWSen -Ed -M0.8i -K -P > $PS
 gmt pssac input.dat -J$J -R$R -B$Bx -B$By -BWsen -Ed -M0.8i -K -O -Y7c >> $PS
 gmt pssac -J$J -R$R -B$Bx -B$By -BWsen -Ed -M0.8i -K -O -Y7c >> $PS << EOF
 # This is a comment, it will be skipped
