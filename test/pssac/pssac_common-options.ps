@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
-%%BoundingBox: 0 0 595 907
-%%HiResBoundingBox: 0 0 595.276 907.087             
-%%Title: GMT v5.3.0_r17068M [64-bit] Document from pssac
+%%BoundingBox: 0 0 612 792
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0 [64-bit] Document from pssac
 %%Creator: GMT5
-%%For: pwessel
+%%For: seisman
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Sep  4 17:31:19 2016
+%%CreationDate: Tue Sep  6 12:12:32 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,7 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [595.276 907.087] /ImagingBBox null >> setpagedevice } if
+PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
 %%Page: 1 1
@@ -655,15 +655,15 @@ PSLevel 1 gt { << /PageSize [595.276 907.087] /ImagingBBox null >> setpagedevice
 V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 9921 def
-/PSL_page_ysize 15118 def
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pssac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -P for portrait mode' -K -P ./seis.sac
+%@GMT: pssac seis.sac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -P for portrait mode' -K -P
 %@PROJ: xy 9.00000000 20.00000000 -2.00000000 2.00000000 9.000 20.000 -2.000 2.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
@@ -1487,10 +1487,10 @@ def
 0 A
 FQ
 O0
-472 4724 TM
+472 3780 TM
 
 % PostScript produced by:
-%@GMT: pssac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -X and -Y' -Y10c -Xa1c -K -O ./seis.sac
+%@GMT: pssac seis.sac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -X and -Y' -Y8c -Xa1c -K -O
 %@PROJ: xy 9.00000000 20.00000000 -2.00000000 2.00000000 9.000 20.000 -2.000 2.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -2315,13 +2315,13 @@ def
 0 A
 FQ
 O0
-0 4724 TM
+0 3780 TM
 
 % PostScript produced by:
-%@GMT: pssac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -U and -t' -Y10c -K -O -t50 ./seis.sac
+%@GMT: pssac seis.sac -JX15c/5c -R9/20/-2/2 -Bx2 -By1 '-B+tOption -t' -Y8c -K -O -t100
 %@PROJ: xy 9.00000000 20.00000000 -2.00000000 2.00000000 9.000 20.000 -2.000 2.000 +xy
 %%BeginObject PSL_Layer_3
-0.5 /Normal PSL_transp
+0 /Normal PSL_transp
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -3138,7 +3138,7 @@ def
 /PSL_H_y PSL_L_y PSL_LH add 233 add def
 3543 2362 PSL_H_y add M
 400 F0
-(Option -U and -t) bc Z
+(Option -t) bc Z
 %%EndObject
 1 /Normal PSL_transp
 0 A
