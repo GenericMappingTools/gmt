@@ -5096,7 +5096,10 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
-					if (!stack[last]->constant) gmt_M_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
+					if (!stack[last]->constant) {	/* Must copy over the grid - and allocate if not yet done */
+						if (recall[k]->stored.G == NULL) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, stack[last]->G);
+						gmt_M_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
+					}
 				}
 				else {	/* Need new named storage place */
 					k = n_stored;
@@ -5146,7 +5149,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 				gmt_M_str_free (recall[k]->label);
 				gmt_M_free (GMT, recall[k]);
-				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
+				while (n_stored && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;
 			}
 
