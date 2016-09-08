@@ -35,7 +35,7 @@ endif (NOT DEFINED CPACK_PACKAGE_INSTALL_DIRECTORY)
 set (CPACK_PACKAGE_DESCRIPTION_FILE
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpack_package_description.txt")
 
-if (GMT_BUNDLE_ACCEPT_BUTTON)
+if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 	# A license with an accept button will only be displayed if
 	# GMT_BUNDLE_ACCEPT_BUTTON is set.
 	set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED")
@@ -166,6 +166,14 @@ if (WIN32 AND NOT CYGWIN)
 		# Install vcomp120.dll
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
+
+	# Install the gmtmex
+	if (BITAGE EQUAL 64)
+		install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+	else ()
+		install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+	endif ()
+	install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 
 	# Fix bundle:
 	install (CODE "
