@@ -13,18 +13,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-
-**psvelo** *<saclist>\ |\ <sacfiles>* |-J|\ *parameters*
+**pssac** [ *saclist*\ \|\ *SACfiles* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]
-[ |-D|\ *dx*\ [\ **/**\ *dy*] ]
-[ |-E|\ **a**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*<n>*]\|\ **u**\ [*<n>*] ]
-[ |-F|\ [*i*][*q*][*r*] ]
+[ |-D|\ *dx*\ [/*dy*] ]
+[ |-E|\ **a**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*n*]\|\ **u**\ [*n*] ]
+[ |-F|\ [**i**][**q**][**r**] ]
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
 [ |-K| ]
-[ |-M|\ *size*\ [*u*][**/**\ *alpha*] ]
-[ |-O| ] [ |-P| ]
+[ |-M|\ *size*\ [*u*][/*alpha*] ]
+[ |-O| ]
+[ |-P| ]
+[ |-Q| ]
+[ |-S|\ *sec_per_inch*\ [*unit*] ]
 [ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -33,34 +35,36 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
-[ **-m**\ *sec_per_inch* ]
 [ |SYN_OPT-t| ]
-[ **-v** ]
 
 |No-spaces|
 
 Description
 -----------
 
-**pssac** reads data values from *sac files* [or standard input] and
-generates PostScript ...
+**pssac** reads *SACfiles* in SAC format or reads filenames and controlling parameters
+from *saclist* [or standar input] and generates PostScript that will plot seismograms on a map.
+The PostScript code is written to standard output.
 
 Required Arguments
 ------------------
 
-	*sacfiles* are the name of SAC files to plot on maps. Only evenly spaced SAC data is supported. *saclist* is
-	an ASCII file (or stdin) which contains the name of SAC files to plot and controlling parameters. Each record
-	has 1, 3 or 4 items:  *filename*, [*X* *Y*], [*pen*].
-           
-        *filename* is the name of SAC file to plot.
+*SACfiles*
+    SAC files to plot on a map. Only evenly spaced SAC data is supported.
 
-        *X* and *Y* are the location of the trace on the plot.
-        On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if **-T** option is used,
-        the default *Y* will be adjusted if **-E** option is used.
-        On geographic plots, the default *X* and *Y* are determinted by stlo and stla from SAC header.
-        The *X* and *Y* given here will override the position determined by command line options.
+*saclist*
+    One ASCII data table file holding a number of data columns. If *saclist* is not given then we read from standard input.
+    Parameters are expected to be in the following columns:
 
-        *pen*, is given, it will override the pen from **-W** option for current SAC file only.
+        *filename* [*X* *Y* [*pen*]]
+
+    *filename* is the name of SAC file to plot.
+    *X* and *Y* are the position of seismograms to plot on a map.
+    On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if **-T** option is used,
+    the default *Y* is determined by **-E** option.
+    On geographic plots, the default *X* and *Y* are station longitude and latitude specified in SAC header.
+    The *X* and *Y* given here will override the position determined by command line options.
+    *pen*, if given, will override the pen from **-W** option for current SAC file only.
 
 .. _-J:
 
@@ -72,7 +76,6 @@ Required Arguments
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-
 Optional Arguments
 ------------------
 
@@ -83,55 +86,60 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [*t0/t1*]
-    Cut data in timewindow between *t0* and *t1*. These are relative to a reference time specified by **-T**.
-    If **-T** option is not specified, use reference time in SAC header instead.
+    Read and plot seismograms in timewindow between *t0* and *t1* only.
+    *t0* and *t1* are relative to a reference time specified by **-T**.
+    If **-T** option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.
     If only **-C** is used, *t0/t1* is determined as *xmin/xmax* from **-R** option.
 
 .. _-D:
 
 **-D**\ *dx*\ [\ **/**\ *dy*]
-    Offset seismogram locations by the given mount *dx/dy* [Default is no offset].
+    Offset seismogram positions by the given mount *dx/dy* [Default is no offset].
     If *dy* is not given it is set equal to *dx*.
 
 .. _-E:
 
+**-Ea**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*n*]\|\ **u**\ [*n*]
+    Choose profile type (the type of Y axis).
 
-**-Ea**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*\<n\>*]\|\ **u**\ [*\<n\>*]
+        **a**: azimuth profile.
 
-    Determine profile type (the type of Y axis).
+        **b**: back-azimuth profile.
 
-        *a*: azimuth profile
-        *b*: back-azimuth profile
-        *k*: epicentral distance (in km) profile
-        *d*: epicentral distance (in degree) profile
-        *n*: traces are numbered from *<n>* to *<n>+N* in y-axis, default value of *<n>* is 0
-        *u*: Y location is determined from SAC header user\ *<n>*, default using user0.
+        **k**: epicentral distance (in km) profile.
+
+        **d**: epicentral distance (in degree) profile.
+
+        **n**: trace number profile. The *Y* position of first trace is numbered as *n* [Default *n* is 0].
+
+        **u**: user defined profile. The *Y* positions are determined by SAC header variable user\ *n*, default using user0.
 
 .. _-F:
 
-**-F**\ [*i*][*q*][*r*]
-
+**-F**\ [**i**][**q**][**r**]
     Data preprocess before plotting.
 
-        *i*: integral
-        *q*: square
-        *r*: remove mean value
+        **i**: integral
 
-    *i|q|r* can repeat mutiple times. **-Frii** will convert accerate to displacement.
-    The order of *i|q|r* controls the order of the data processing.
+        **q**: square
+
+        **r**: remove mean value
+
+    **i|q|r** can repeat mutiple times. For example, **-Frii** will convert acceleration to displacement.
+    The order of **i|q|r** controls the order of the data processing.
 
 .. _-G:
 
 **-G**\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*]
-
     Paint positive or negative portion of traces.
     If only **-G** is used, default to fill the positive portion black.
 
-        **p**\|\ **n** controls the painting of postive portion or negative portion. Repeat **-G** option to specify fills for positive and negative portions, respectively.
+        **p**\|\ **n** controls the painting of postive **p**\ ortion or **n**\ egative portion.
+        Repeat **-G** option to specify fills for positive and negative portions, respectively.
 
         **+g**\ *fill*: color to fill
 
-        **+t**\ *t0/t1*: paint traces between t0 and t1 only. The reference time of t0 and t1 is determined by **-T** option.
+        **+t**\ *t0/t1*: paint traces between t0 and t1 only. The reference time of *t0* and *t1* is determined by **-T** option.
 
         **+z**\ *zero*: define zero line. From *zero* to top is positive portion, from *zero* to bottom is negative portion.
 
@@ -144,12 +152,16 @@ Optional Arguments
 **-M**\ *size*\ [*u*][*/alpha*]
     Vertical scaling.
 
-        *size*\ [*u*]: each trace will scaled to *size*\ [*u*]. The default unit is PROJ_LENGTH_UNIT. The scale factor is defined as ``yscale = size*(north-south)/(depmax-depmin)/map_height``
+        *size*\ [*u*]: scale all traces *size*\ [*u*] on a map. The default unit is PROJ_LENGTH_UNIT.
+        The scaling factor is defined as ``yscale = size*(north-south)/(depmax-depmin)/map_height``.
+
         *size*/*alpha*:
 
-            *alpha* < 0, use the same scale factor for all trace. The scale factor scale the first trace to *size*\ [*u*]
-            *alpha* = 0, yscale = size, no unit is allowed.
-            *alpha* > 0, yscale = size*r^alpha, r is the distance range in km.
+            *alpha* < 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to *size*\ [*u*].
+
+            *alpha* = 0, multiply all traces by *size*. No unit is allowed.
+
+            *alpha* > 0, multiply all traces by ``size*r^alpha``, r is the distance range in km.
 
 .. _-O:
 
@@ -159,14 +171,27 @@ Optional Arguments
 
 .. include:: ../../explain_-P.rst_
 
+.. _-Q:
+
+**-Q**
+     Plot traces vertically.
+
+.. _-S:
+
+**-S**\ *sec_per_measure*\ [*unit*]
+    Specify the time scale in *sec_per_measure* seconds per *unit* while plotting on geographic plots.
+    Use PROJ_LENGTH_UNIT if *unit* is ommited.
+
 .. _-T:
 
 **-T**\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*]
     Time alignment and shift.
 
-        **+t**\ *tmark*: align all trace along time mark. <tmark> are -5(b), -3(o), -2(a), 0-9(t0-t9).
+        **+t**\ *tmark*: align all trace along time mark. *tmark* are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).
+
         **+r**\ *reduce_vel*: reduce velocity in km/s.
-        **+s**\ *shift*: shift all traces by <shift> seconds
+
+        **+s**\ *shift*: shift all traces by *shift* seconds.
 
 .. _-U:
 
@@ -180,13 +205,55 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
-    Set pen attributes for all lines and the outline of symbols
-    [Defaults: width = default, color = black, style = solid]. This
-    setting applies to **-C**, **-L**, **-T**, **-p**, **-t**, and
-    **-z**, unless overruled by options to those arguments.
+    Set pen attributes for all traces unless overruled by *pen* specified in *saclist*.
+    [Defaults: width = default, color = black, style = solid].
 
-**-m**\ *sec_per_inch*
-    Time scaling while plotting on maps.
+.. _-X:
 
-**-v**
-     Plot traces vertically.
+.. include:: ../../explain_-XY.rst_
+.. include:: ../../explain_-c.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-h.rst_
+.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_help.rst_
+
+
+Examples
+--------
+
+To plot a single seismogram seis.SAC (generated by SAC command ``funcgen seismogram``)
+and paint positive portion black and negative portion red::
+
+    gmt pssac seis.SAC -JX10c/5c -R9/20/-2/2 -Baf -Fr -Gp+gblack -Gn+gred > single.ps
+
+To plot several seismograms (generated by SAC command ``datagen sub tele *.z``) on a distance profile::
+
+    gmt pssac *.z -R200/1600/12/45 -JX15c/5c -Bx200+l'T(s)' -By5+lDegree -BWSen \
+        -Ed -M1.5c -W0.5p,red > distance_profile.ps
+
+To plot seismograms (generated by SAC command ``datagen sub tele *.z``) on a geographic map::
+
+    gmt pssac *.z -JM15c -R-120/-40/35/65 -Baf -M1i -S1500c -K > map.ps
+    saclst stlo stla f *.z | gmt psxy -J -R -St0.4c -Gblack -i1,2 -O >> map.ps
+
+See Also
+--------
+
+:doc:`psmeca`,
+:doc:`pspolar`,
+:doc:`pscoupe`,
+:doc:`psvelo`,
+:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
+
+References
+----------
+
+Refer to `SAC User Manual <http://ds.iris.edu/files/sac-manual/>`_ for more details
+on SAC format and SAC header variables.
+
+Authors
+-------
+
+Dongdong Tian, School of Earth and Space Sciences,
+University of Science and Technology of China, Hefei, Anhui, China
