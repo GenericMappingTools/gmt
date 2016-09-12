@@ -35,34 +35,36 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
-[ **-m**\ *sec_per_inch* ]
 [ |SYN_OPT-t| ]
-[ **-v** ]
 
 |No-spaces|
 
 Description
 -----------
 
-**pssac** reads data values from *sac files* [or standard input] and
-generates PostScript ...
+**pssac** reads *SACfiles* in SAC format or reads filenames and controlling parameters
+from *saclist* [or standar input] and generates PostScript that will plot seismograms on a map.
+The PostScript code is written to standard output.
 
 Required Arguments
 ------------------
 
-	*sacfiles* are the name of SAC files to plot on maps. Only evenly spaced SAC data is supported. *saclist* is
-	an ASCII file (or stdin) which contains the name of SAC files to plot and controlling parameters. Each record
-	has 1, 3 or 4 items:  *filename*, [*X* *Y*], [*pen*].
-           
-        *filename* is the name of SAC file to plot.
+*SACfiles*
+    SAC files to plot on a map. Only evenly spaced SAC data is supported.
 
-        *X* and *Y* are the location of the trace on the plot.
-        On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if **-T** option is used,
-        the default *Y* will be adjusted if **-E** option is used.
-        On geographic plots, the default *X* and *Y* are determinted by stlo and stla from SAC header.
-        The *X* and *Y* given here will override the position determined by command line options.
+*saclist*
+    One ASCII data table file holding a number of data columns. If *saclist* is not given then we read from standard input.
+    Parameters are expected to be in the following columns:
 
-        *pen*, is given, it will override the pen from **-W** option for current SAC file only.
+        *filename* [*X* *Y* [*pen*]]
+
+    *filename* is the name of SAC file to plot.
+    *X* and *Y* are the position of seismograms to plot on a map.
+    On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if **-T** option is used,
+    the default *Y* is determined by **-E** option.
+    On geographic plots, the default *X* and *Y* are station longitude and latitude specified in SAC header.
+    The *X* and *Y* given here will override the position determined by command line options.
+    *pen*, if given, will override the pen from **-W** option for current SAC file only.
 
 .. _-J:
 
