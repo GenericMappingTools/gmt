@@ -8853,7 +8853,7 @@ GMT_LOCAL int api_fft_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int di
 }
 
 GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
-	static char file[GMT_LEN256];
+	static char file[GMT_LEN256] = {""};
 	uint64_t i, j;
 	size_t len;
 
