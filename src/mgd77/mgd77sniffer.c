@@ -158,7 +158,7 @@ GMT_LOCAL void regress_ls (double *x, double *y, unsigned int n, double *stats, 
 	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
 
 	sum_x = sum_y = sum_x2 = sum_y2 = sum_xy = y_discrepancy = 0.0;
-	mean_x = mean_y = S_xx = S_xy = S_yy = ss = 0.0;
+	S_xx = S_xy = S_yy = ss = 0.0;
 	for (i = 0; i < n; i++) {
 		sum_x += x[i];
 		sum_y += y[i];
