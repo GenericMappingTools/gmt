@@ -7948,8 +7948,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_TICK_PEN:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_CHANGE ("MAP_TICK_PEN");
-				error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
-				error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
+				error  = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+				error += gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 			}
 			else	/* Not recognized so give error message */
 				error = gmtinit_badvalreport (GMT, keyword);
