@@ -10886,11 +10886,11 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+			if (((len = (int)strlen (txt_a)) > 0) && txt_a[len-1] == 'u') {
 				p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
 				txt_a[len-1] = '\0';	/* Chop off the 'u' */
 			}
-			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') {
+			if (((len = (int)strlen (txt_b)) > 0) && txt_b[len-1] == 'u') {
 				p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
 				txt_b[len-1] = '\0';	/* Chop off the 'u' */
 			}
