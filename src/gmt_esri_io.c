@@ -377,7 +377,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			gmt_fgets (GMT, record, GMT_BUFSIZ, fp);	/* Just get first line */
 			gmt_fclose (GMT, fp);
 
-			if (!strncmp (record, "BYTEORDER", 4) ) {
+			if (!strncmp (record, "BYTEORDER", 9) ) {
 				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianness flag here */
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 			}
