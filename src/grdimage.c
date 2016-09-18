@@ -145,10 +145,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
 	if (API->mode)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
-#ifdef HAVE_GDAL
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
-#endif
+
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	if (API->mode)	/* External interface */
@@ -1105,12 +1102,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
-	}
 
-	/* Here we are done producing PostScript or raster image and can free things we used */
+		/* Here we are done producing PostScript or raster image and can free things we used */
 	
-	/* Free bitimage arrays. gmt_M_free will not complain if they have not been used (NULL) */
-	if (!Ctrl->A.active) {
+		/* Free bitimage arrays. gmt_M_free will not complain if they have not been used (NULL) */
 		gmt_M_free (GMT, bitimage_8);
 		gmt_M_free (GMT, bitimage_24);
 	}

@@ -3032,14 +3032,13 @@ GMT_LOCAL int api_export_vector (struct GMTAPI_CTRL *API, int object_ID, unsigne
 	return GMT_OK;
 }
 
-GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+GMT_LOCAL struct GMT_VECTOR *api_read_vector (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
 	/* We read the VECTOR from fp [or stdin].
 	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
 	 */
 
 	bool close_file = false, first = true, add_first_segheader = false;
-	int error = 0;
 	uint64_t row = 0, col, dim[3] = {0, 0, GMT->current.setting.export_type};
 	char V_file[GMT_BUFSIZ] = {""};
 	char line[GMT_BUFSIZ] = {""};
@@ -3085,7 +3084,7 @@ GMT_LOCAL struct GMT_VECTOR * api_read_vector (struct GMT_CTRL *GMT, void *sourc
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Vector from %s\n", V_file);
 
-	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Just skip headers */
 		if (line[0] == '>') {
 			if (first) {	/* Have not allocated yet so just skip that row for now */
@@ -8853,7 +8852,7 @@ GMT_LOCAL int api_fft_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int di
 }
 
 GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
-	static char file[GMT_LEN256];
+	static char file[GMT_LEN256] = {""};
 	uint64_t i, j;
 	size_t len;
 

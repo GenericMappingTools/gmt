@@ -125,7 +125,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* TOTALROWBYTES */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDGAPBYTES  */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
-	while (strncmp (record, "NODATA", 4) )		/* Keep reading till find this keyword */
+	while (strncmp (record, "NODATA", 6) )		/* Keep reading till find this keyword */
 		gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
@@ -377,7 +377,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			gmt_fgets (GMT, record, GMT_BUFSIZ, fp);	/* Just get first line */
 			gmt_fclose (GMT, fp);
 
-			if (!strncmp (record, "BYTEORDER", 4) ) {
+			if (!strncmp (record, "BYTEORDER", 9) ) {
 				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianness flag here */
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 			}
