@@ -167,7 +167,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	}
 	fclose(strm);
 
-	if (lswap == TRUE) byte_swap((char*)ar, sz);
+	if (lswap == true) byte_swap((char*)ar, sz);
 
 	return ar;
 }
@@ -291,7 +291,7 @@ int write_sac_xy(const char *name, SACHEAD hd, const float *xdata, const float *
 
 	/* needed for XY data */
 	hd.iftype = IXY;
-	hd.leven = FALSE;
+	hd.leven = false;
 
 	error = write_sac(name, hd, ar);
 
@@ -396,7 +396,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	}
 	fclose(strm);
 
-	if (lswap == TRUE) byte_swap((char*)ar, (size_t)nn*SAC_DATA_SIZEOF);
+	if (lswap == true) byte_swap((char*)ar, (size_t)nn*SAC_DATA_SIZEOF);
 
 	return ar;
 }
@@ -420,7 +420,7 @@ SACHEAD new_sac_head(float dt, int ns, float b0) {
 	hd.e        =   b0+(ns-1)*dt;
 	hd.iztype   =   IO;
 	hd.iftype   =   ITIME;
-	hd.leven    =   TRUE;
+	hd.leven    =   true;
 	hd.nvhdr    =   SAC_HEADER_MAJOR_VERSION;
 	return hd;
 }
@@ -490,8 +490,8 @@ int sac_head_index(const char *name) {
  *      const char *name    :   sac filename
  *  Return:
  *      -1 : fail
- *      TRUE  : is a SAC file
- *      FALSE  : not a SAC file
+ *      true  : is a SAC file
+ *      false  : not a SAC file
  *
  */
 int issac(const char *name) {
@@ -505,18 +505,18 @@ int issac(const char *name) {
 
 	if (fseek(strm, SAC_VERSION_LOCATION * SAC_DATA_SIZEOF, SEEK_SET)) {
 		fclose(strm);
-		return FALSE;
+		return false;
 	}
 	if (fread(&nvhdr, sizeof(int), 1, strm) != 1) {
 		fclose(strm);
-		return FALSE;
+		return false;
 	}
 	fclose(strm);
 	
 	if (check_sac_nvhdr(nvhdr) == -1)
-		return FALSE;
+		return false;
 	else
-		return TRUE;
+		return true;
 }
 
 /******************************************************************************
@@ -561,18 +561,18 @@ static void byte_swap(char *pt, size_t n) {
  *      const int nvhdr : nvhdr from header
  *
  *  Return:
- *      FALSE   no byte order swap is needed
- *      TRUE    byte order swap is needed
+ *      false   no byte order swap is needed
+ *      true    byte order swap is needed
  *      -1      not in sac format ( nvhdr != SAC_HEADER_MAJOR_VERSION )
  *
  */
 static int check_sac_nvhdr(const int nvhdr) {
-	int lswap = FALSE;
+	int lswap = false;
 
 	if (nvhdr != SAC_HEADER_MAJOR_VERSION) {
 		byte_swap((char*) &nvhdr, SAC_DATA_SIZEOF);
 		if (nvhdr == SAC_HEADER_MAJOR_VERSION)
-			lswap = TRUE;
+			lswap = true;
 		else
 			lswap = -1;
 	}
@@ -643,7 +643,7 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 		fprintf(stderr, "Warning: %s not in sac format.\n", name);
 		return -1;
 	}
-	else if (lswap == TRUE) {
+	else if (lswap == true) {
 		byte_swap((char *)hd, SAC_HEADER_NUMBERS_SIZE);
 	}
 
