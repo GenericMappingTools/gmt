@@ -175,7 +175,7 @@ typedef struct sac_head {
 	int   unused15;         /*    reserved for future use                     */
 	int   unused16;         /*    reserved for future use                     */
 	int   unused17;         /*    reserved for future use                     */
-	int   leven;            /* RA TRUE if data is evenly spaced               */
+	int   leven;            /* RA true if data is evenly spaced               */
 	int   lpspol;           /*    station polarity flag (left hand rule)      */
 	int   lovrok;           /*    overwrite permission                        */
 	int   lcalda;           /*    true if to calculate distance, azimuth      */
@@ -314,10 +314,10 @@ typedef struct sac_head {
 #define IOS    103      /* undocumented              */
 
 /* True/false definitions */
-#undef FALSE
-#define FALSE   0
-#undef TRUE
-#define TRUE    1
+#undef false
+#define false   0
+#undef true
+#define true    1
 
 #define SAC_FLOAT_UNDEF (-12345.0)
 #define SAC_INT_UNDEF   (-12345)
