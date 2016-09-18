@@ -1038,10 +1038,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
 	for (row = 0; row < nRows; row++) {
-		read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+		int ios;
+		ios = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 		for (col = 0; col < nCols; col++) {
 			for (band = 0; band < nBands; band++) {
-				I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
+				I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];	/* This is Band interleaved. The best for MEX. */
 			}
 		}
 	}
@@ -1053,7 +1054,8 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	I->type = GMT_CHAR;
 	I->header->n_columns = (uint32_t)dim[GMT_X];	I->header->n_rows = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
 	I->header->registration = GMT_GRID_PIXEL_REG;
-	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
+	gmt_M_memcpy (I->header->mem_layout, "TCBa", 4, char);  /* Signal that data is Band interleaved */
+	gmt_M_grd_setpad (API->GMT, I->header, nopad);          /* Copy the no pad to the header */
 	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 
@@ -1217,7 +1219,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
-		struct GMT_TEXTSET *T = NULL; 
+		struct GMT_TEXTSET *T = NULL;
 		if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			gmt_M_free (GMT, line);
 			Return (GMT_RUNTIME_ERROR);
@@ -1226,7 +1228,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->In.n_files = (unsigned int)T->n_records;
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
-			ps_names[k] = T->table[0]->segment[0]->data[k]; 
+			ps_names[k] = T->table[0]->segment[0]->data[k];
 
 #if 0
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
@@ -1373,7 +1375,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */ 
+				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				Return (GMT_RUNTIME_ERROR);
@@ -1989,6 +1991,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			uint64_t row, col, band, nCols, nRows, nBands, nXY;
 			FILE *fp_raw = NULL;
 			unsigned char *tmp;
+			int ios;
 			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open image file %s\n", out_file);
 				Return (GMT_ERROR_ON_FOPEN);
@@ -2012,7 +2015,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
 			tmp   = gmt_M_memory(GMT, NULL, nCols * nBands, char);
 			for (row = 0; row < nRows; row++) {
-				fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
+				ios = fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
 				for (col = 0; col < nCols; col++) {
 					for (band = 0; band < nBands; band++) {
 						I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];

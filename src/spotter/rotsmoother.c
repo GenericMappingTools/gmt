@@ -95,7 +95,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C->T.value);
-	gmt_M_free (GMT, C);	
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 
 GMT_LOCAL int compare_ages (const void *point_1v, const void *point_2v) {
 	struct AGEROT *point_1, *point_2;
-	
+
 	point_1 = (struct AGEROT *)point_1v;
 	point_2 = (struct AGEROT *)point_2v;
 	if (point_1->wxyasn[K_AGE] < point_2->wxyasn[K_AGE]) return (-1);
@@ -293,7 +293,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (!Ctrl->A.active) n_in++;	/* Got time */
 	if (Ctrl->W.active) n_in++;		/* Got weights */
 	if (Ctrl->C.active) n_cols = 19;	/* Want everything */
-	
+
 	/* Specify input and output expected columns */
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 		Return (error);
@@ -308,7 +308,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	t_col = (Ctrl->A.active) ? GMT_Z : 3;	/* If no time we use angle as proxy for time */
 	w_col = t_col + 1;
 	D = (struct AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct AGEROT);
-	
+
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
@@ -326,7 +326,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
-		
+
 		/* Convert to geocentric, load parameters  */
 		D[n_read].wxyasn[K_LON]    = in[GMT_X];
 		D[n_read].wxyasn[K_LAT]    = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);
@@ -339,9 +339,9 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			D = gmt_M_memory (GMT, D, n_alloc, struct AGEROT);
 		}
 	} while (true);
-	
+
 	if (n_read < n_alloc) D = gmt_M_memory (GMT, D, n_read, struct AGEROT);
-	
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		gmt_M_free (GMT, D);
 		Return (API->error);
@@ -380,6 +380,10 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	/* Sort the entire dataset on increasing ages */
+
+	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
+
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		static char *short_header = "lon\tlat\ttime\tangle";
 		static char *long_header = "lon\tlat\ttime\tangle\tk_hat\ta\tb\tc\td\te\tf\tg\tdf\tstd_t\tstd_w\taz\tS1\tS2\tS3";
@@ -396,7 +400,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* The local z unit vector */
 	n_minimum = (Ctrl->C.active) ? 2 : 1;	/* Need at least two rotations to compute covariance, at least one to report the mean */
-	
+
 	for (t = 1; t < Ctrl->T.n_times; t++) {	/* For each desired output time interval */
 		t_lo = Ctrl->T.value[t-1];	t_hi = Ctrl->T.value[t];	/* The current interval */
 		for (rot = first, stop = false; !stop && rot < n_read; rot++)	/* Determine index of first rotation inside this age window */
@@ -408,9 +412,9 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		n_use = last - first;	/* Number of rotations in the interval */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
-		
+
 		/* Now extimate the average rotation */
-		
+
 		gmt_M_memset (xyz_mean_pole, 3, double);	/* Reset sum of mean components and weight sums */
 		gmt_M_memset (xyz_mean_quat, 4, double);	/* Reset sum of mean components and weight sums */
 		sum_rot_angle = sum_rot_angle2 = sum_rot_age = sum_rot_age2 = sum_weights = 0.0;
@@ -426,13 +430,13 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			sum_rot_age += z;
 			sum_rot_age2 += (z * D[rot].wxyasn[K_AGE]);
 		}
-		
+
 		/* Get [weighted] mean age */
 		mean_rot_age = sum_rot_age / sum_weights;
-		std_rot_age = sqrt ((sum_weights * sum_rot_age2 - sum_rot_age * sum_rot_age) / (sum_weights * sum_weights * ((n_use - 1.0) / n_use)));		
+		std_rot_age = sqrt ((sum_weights * sum_rot_age2 - sum_rot_age * sum_rot_age) / (sum_weights * sum_weights * ((n_use - 1.0) / n_use)));
 		/* Get [weighted] mean angle */
 		mean_rot_angle = sum_rot_angle / sum_weights;
-		std_rot_angle = sqrt ((sum_weights * sum_rot_angle2 - sum_rot_angle * sum_rot_angle) / (sum_weights * sum_weights * ((n_use - 1.0) / n_use)));		
+		std_rot_angle = sqrt ((sum_weights * sum_rot_angle2 - sum_rot_angle * sum_rot_angle) / (sum_weights * sum_weights * ((n_use - 1.0) / n_use)));
 
 		/* Get Euclidian [weighted] mean pseudo-vector location */
 		for (k = 0; k < 3; k++) xyz_mean_pole[k] /= sum_weights;	/* Components of [weighted] mean pseudovector */
@@ -446,14 +450,14 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		mean_rot_angle = 2.0 * d_acos (xyz_mean_quat[0]) * R2D;		/* Rotation (in degrees) represented by mean quaternion */
 		norm = d_sqrt (1.0 - xyz_mean_quat[0] * xyz_mean_quat[0]);	/* This is sin (angle/2) */
 		for (k = 1; k < 4; k++) xyz_mean_quat[k] /= norm;		/* Unit vector of mean quaternion */
-		gmt_cart_to_geo (GMT, &lat_mean_pole, &lon_mean_pole, &xyz_mean_quat[1], TRUE);	/* Convert it to lon/lat pole */
+		gmt_cart_to_geo (GMT, &lat_mean_pole, &lon_mean_pole, &xyz_mean_quat[1], true);	/* Convert it to lon/lat pole */
 		mangle = (double *) gmt_M_memory (GMT, NULL, n_use, double);	/* For median angle calculation we need to make an array */
 		/* Now compute the median of the opening angle */
 		for (rot = first, p = 0; rot < last; rot++, p++)	/* For each angle of rotation in this rotation interval... */
 			mangle[p] = D[rot].wxyasn[K_ANGLE];		/* Place angles in temp array for computing median angle */
 		gmt_median (GMT, mangle, n_use, min_rot_angle, max_rot_angle, 0.5 * (min_rot_angle + max_rot_angle), &med_angle);
 		gmt_M_free (GMT, mangle);
-				
+
 		if ((Ctrl->N.active && mean_rot_angle > 0.0) || (Ctrl->N.active && lat_mean_pole < 0.0) || (!Ctrl->N.active && lat_mean_pole > 0.0)) {
 			/* Depending on -S, -N, -W. flip pole to right hemisphere or sign of angle */
 			lat_mean_pole = -lat_mean_pole;
@@ -468,12 +472,12 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Mean opening angle %8.4f vs median opening angle %8.4f\n", mean_rot_angle, med_angle);	/* Report mean and median angle for testing */
 		n_total_use += n_use;
 		n_out++;
-		
+
 		if (!Ctrl->C.active) {	/* No covariance requested, print this rotation and continue */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			continue;
 		}
-		
+
 		/* Now get the covariance matrix */
 
 		/* Here we also want to get the covariance matrix.  To do so we want to parameterize all
@@ -493,7 +497,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			gmt_make_rot_matrix2 (GMT, E, this_rot_angle, Ri);		/* Compute this individual rotation matrix R_i */
 			spotter_matrix_mult (GMT, R, Ri, DR);				/* The incremental rotation DR_i = R^T * R_i */
 			spotter_matrix_to_pole (GMT, DR, &this_lon, &this_lat, &this_rot_angle);	/* Get (lon, lat, angle) of the incremental rotation */
-			gmt_geo_to_cart (GMT, this_lat, this_lon, this_h, TRUE);	/* Make unit vector this_h for incremental rotation pole */
+			gmt_geo_to_cart (GMT, this_lat, this_lon, this_h, true);	/* Make unit vector this_h for incremental rotation pole */
 			rot_angle_in_radians = this_rot_angle * D2R;		/* Scale to get pseudo-vector with length in radians */
 			for (k = 0; k < 3; k++) {	/* For each x,y,z component of pseudo-vector this_h */
 				H[k][p] = this_h[k] * rot_angle_in_radians;	/* Final pseudo-vector for the rotation increment */
@@ -513,7 +517,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		for (k = 0; k < 3; k++) gmt_M_free (GMT, H[k]);		/* Release temporary memory */
 
 		/* We also want to get a 95% ellipse projected onto a tangent plane to the surface of Earth at the pole */
-		
+
 		gmt_M_memcpy (Ccopy, C, 9, double);	/* Duplicate since it will get trodden on */
 		if (gmt_jacobi (GMT, Ccopy, matrix_dim, matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Eigenvalue routine gmt_jacobi failed to converge in 50 sweeps.\n");
@@ -523,7 +527,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		 * lengths of the major and minor axes as they appear when projected onto the local plane tangent
 		 * to the surface at the mean pole.  Note that EigenVector[0], EigenVector[1], EigenVector[2] are
 		 * the components of the 1st eigenvector. */
-		
+
 		gmt_cross3v (GMT, z_unit_vector, xyz_mean_pole, x_in_plane);	/* Local x-axis in plane normal to mean pole */
 		gmt_cross3v (GMT, xyz_mean_pole, x_in_plane, y_in_plane);	/* Local y-axis in plane normal to mean pole */
 		x_comp = gmt_dot3v (GMT, EigenVector, x_in_plane);		/* x-component of major axis in tangent plane */
@@ -534,7 +538,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		EigenValue[0] = sqrt (EigenValue[0]/khat) * EQ_RAD * SQRT_CHI2;
 		EigenValue[1] = sqrt (EigenValue[1]/khat) * EQ_RAD * SQRT_CHI2;
 		EigenValue[2] = sqrt (EigenValue[2]/khat) * EQ_RAD * SQRT_CHI2;
-			
+
 		/* Report the results.  It is conventional to define the covariance matrix as follows:
 		 *
 		 *                        [ a b d ]
@@ -547,7 +551,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		 * tables; typically g is 1e-5 ,which we adopt here.  The output is thus written in the order k, a-g,
 		 * followed by d.f., the degrees of freedom.
 		 */
-		
+
 		for (k = 0; k < 9; k++) C[k] /= g;	/* Take out the common factor */
 		 /* Place khat a b c d e f g df */
 		out[4] = khat;
@@ -576,9 +580,9 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No smoothed poles created - is filterwidth too small?\n");
 		if (n_total_use != n_read) GMT_Report (API, GMT_MSG_NORMAL, "Read %ld poles, used %7ld\n", n_read, n_total_use);
 	}
-	
+
 	/* Free up memory used for the array */
-	
+
 	gmt_M_free (GMT, D);
 
 	Return (GMT_NOERROR);
