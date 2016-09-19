@@ -927,8 +927,10 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 			}
 		}
 	}
-	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have the setpagedevice line\n");
+	else {
+		if ((pch = strstr(PS->data, " translate")) == NULL)		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
+			GMT_Report(API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have the setpagedevice line\n");
+	}
 
 	gmt_M_free (API->GMT, PS);
 
