@@ -541,7 +541,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files [Allow for file "=" under API calls] */
-				if (!(GMT->parent->mode && !strcmp (opt->arg, "="))) {	/* Can check if file is sane */
+				if (!(GMT->parent->mode && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
 					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				}
 				Ctrl->In.n_files++;
@@ -819,11 +819,11 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double *w, double *h) {
+GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128], t[32] = {""}, *pch, c;
 	int       fd[2] = { 0, 0 }, r, c_begin = 0;
-	size_t	n;
+	size_t    n;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
 	FILE     *fp = NULL;
@@ -891,6 +891,10 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
 	else
 		xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
+
+	/* Add a margin if user requested it (otherwise margin = 0) */
+	*w += 2 * margin;       *h += 2 * margin;
+	xt += margin;           yt += margin;
 
 	sprintf (buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
 	if ((pch = strstr (PS->data, "BoundingBox")) != NULL) {		/* Find where is the BB */
@@ -1032,7 +1036,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
 
-	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 1, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create Image structure\n");
 		return GMT_RUNTIME_ERROR;
 	}
@@ -1261,9 +1265,13 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
-	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
+	if (API->mode && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
 		int    error = 0;
-		double w = 0.0, h = 0.0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
+		double margin = 0, w = 0.0, h = 0.0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
+
+		if (ps_names[0][1])		/* See if we have a margin request (in points only for now) */
+			margin = atof(&ps_names[0][1]);
+			/* margin = gmt_M_to_points (GMT, &ps_names[0][1]);*/	/* Don't know why, this screwes most of times */
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			error++;
@@ -1278,7 +1286,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, ps_names);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
+		if (pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 
 		if (Ctrl->T.active) {			/* Than write the converted file into a file instead of storing it into a Image struct */
