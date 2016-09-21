@@ -8465,7 +8465,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2A;
 			else if (!strncmp (lower_value, "conformal", 9U)) /* Conformal latitude */
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2C;
-			else if (!strncmp (lower_value, "geocentric", 9U)) /* Geocentric latitude */
+			else if (!strncmp (lower_value, "geocentric", 10U)) /* Geocentric latitude */
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2O;
 			else if (!strncmp (lower_value, "meridional", 10U)) /* Meridional latitude */
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2M;
@@ -11909,9 +11909,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 	/* On error, give syntax message */
 
-	if (error) gmt_syntax (GMT, option);
-	if (error)
+	if (error) {
+		gmt_syntax (GMT, option);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Offending option %s\n", item);
+	}
 
 	return (error);
 }
