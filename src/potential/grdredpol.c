@@ -1223,7 +1223,9 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 
-	/* ... */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) /* Get header only */
+		Return (API->error);
+
 	if (Ctrl->F.compute_n) {
 		aniso = Gin->header->inc[GMT_X] / Gin->header->inc[GMT_Y] * cos(Gin->header->wesn[YHI]*D2R);
 		Ctrl->F.ncoef_col = (int) ((double)Ctrl->F.ncoef_row / aniso);
@@ -1233,10 +1235,6 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	m21 = (Ctrl->F.ncoef_row+1) / 2;	n21 = (Ctrl->F.ncoef_col+1) / 2;
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
-
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
-		Return (API->error);
-	}
 
 	if (!GMT->common.R.active) 
 		gmt_M_memcpy (wesn_new, Gin->header->wesn, 4, double);
@@ -1336,7 +1334,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
-		Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	                             Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		double wesn[4], inc[2];
@@ -1344,8 +1342,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		inc[GMT_X] = inc[GMT_Y] = 1;
 		
-		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-			GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
+		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc,
+		                              GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
 		strcpy (Gfilt->header->y_units, "radians");
@@ -1360,10 +1358,10 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			slonm = (sloni + slonf) / 2;
 			slatm = (slati + slatf) / 2;
 			if (Ctrl->F.compute_n) {
-				aniso = Gin->header->inc[GMT_X] / Gin->header->inc[GMT_X] * cos(slatm*D2R);
+				aniso = Gin->header->inc[GMT_X] / Gin->header->inc[GMT_Y] * cos(slatm*D2R);
 				Ctrl->F.ncoef_col = (int) ((double)Ctrl->F.ncoef_row / aniso);
 				if (Ctrl->F.ncoef_col %2 != 1) Ctrl->F.ncoef_row += 1;
-				psi  = TWO_PI / Ctrl->F.ncoef_row;
+				psi = TWO_PI / Ctrl->F.ncoef_row;
 				n21 = (Ctrl->F.ncoef_row+1) / 2;
 			}
 			/* Compute dec and dip at the central point of the moving window */
