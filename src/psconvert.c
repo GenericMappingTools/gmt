@@ -369,9 +369,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
-	if ( ghostbuster(GMT->parent, C) != GMT_NOERROR ) { /* Try first to find the gspath from registry */
+	if (ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
 		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
-	}
 #else
 	C->G.file = strdup ("gs");
 #endif
@@ -882,7 +881,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
 	c = PS->data[500];
-	PS->data[500] = '\0';				/* Temporary cut the string to not search the whole file */
+	PS->data[500] = '\0';			/* Temporary cut the string to not search the whole file */
 	pch = strstr(PS->data, "Landscape");
 	if (pch != NULL) landscape = true;
 	PS->data[500] = c;				/* Restore the deleted character */
@@ -898,18 +897,16 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	sprintf (buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
 	if ((pch = strstr (PS->data, "BoundingBox")) != NULL) {		/* Find where is the BB */
-		for (n = 0; n < strlen(buf); n++)			/* and update it */
+		for (n = 0; n < strlen(buf); n++)                       /* and update it */
 			pch[n] = buf[n];
-		while (pch[n] != '\n') {				/* Make sure that there are only spaces till next new line */
-			pch[n] = ' ';	n++;
-		}
+		while (pch[n] != '\n') pch[n++] = ' ';                  /* Make sure that there are only spaces till EOL */
 	}
 	else
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have a %%BoundingBox\n");
 
 	sprintf (buf, "HiResBoundingBox: 0 0 %.4f %.4f", *w, *h);
 	if ((pch = strstr(PS->data, "HiResBoundingBox")) != NULL) {	/* Find where is the HiResBB */
-		for (n = 0; n < strlen(buf); n++)			/* and update it */
+		for (n = 0; n < strlen(buf); n++)                       /* and update it */
 			pch[n] = buf[n];
 	}
 	else
@@ -917,22 +914,22 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	/* Find where is the setpagedevice line */
 	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
-		while (pch[c_begin] != '\n') c_begin--;
+		while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* It receeded one too much */
 		/* So now we know where the line starts. Put a 'translate' command in its place. */
-		if (x0 != 0 || y0 != 0) {
-			if (r == 0)
-				sprintf(buf, "%.3f %.3f translate", xt, yt);
-			else
-				sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
-			c_begin++;								/* It had receeded one position too much */
-			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
-			while (pch[c_begin] != '\n') {			/* Make sure that there are only spaces till next new line */
-				pch[c_begin] = ' ';	c_begin++;
-			}
-		}
+		(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt, yt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
+		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
+		while (pch[c_begin] != '\n')  pch[c_begin++] = ' ';     /* Make sure that there are only spaces till EOL */
 	}
 	else {
-		if ((pch = strstr(PS->data, " translate")) == NULL)		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
+		if ((pch = strstr(PS->data, " translate")) != NULL) {		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
+			double old_xt, old_yt;
+			while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* Goto line start but it receeded one too much */
+			sscanf (&pch[c_begin], "%lf %lf", &old_xt, &old_yt);
+			(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt + old_xt, yt + old_xt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt + old_xt, yt + old_xt);
+			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
+			while (pch[c_begin] != '\n') pch[c_begin++] = ' ';
+		}
+		else
 			GMT_Report(API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have the setpagedevice line\n");
 	}
 
@@ -973,15 +970,13 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 		if (_pipe(fd, 145227600, O_BINARY) == -1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-			return GMT_RUNTIME_ERROR;
-		}
 #else
 		if (pipe (fd) == -1) {
+#endif
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 			return GMT_RUNTIME_ERROR;
 		}
-#endif
+	
 		if (dup2 (fd[1], fileno (stdout)) < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
 			return GMT_RUNTIME_ERROR;
@@ -998,12 +993,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 	if ((fp = popen (cmd, "w")) != NULL) {
-		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes) {
+		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
-		}
-		if (fflush (fp) == EOF) {
+		if (fflush (fp) == EOF)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
-		}
 		if (pclose (fp) == -1)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
 	}
@@ -1012,6 +1005,8 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		gmt_M_free (API->GMT, PS);
 		return GMT_RUNTIME_ERROR;
 	}
+
+	/* And now restore the original BB & HiResBB so that the PS data can be reused if wanted */
 	gmt_M_free (API->GMT, PS);
 
 	/* ----------- IF WE WROTE A FILE THAN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
@@ -1235,25 +1230,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
 			ps_names[k] = T->table[0]->segment[0]->data[k];
-
-#if 0
-		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
-			gmt_M_free (GMT, line);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		ps_names = gmt_M_memory (GMT, NULL, n_alloc, char *);
-		while (file_line_reader (GMT, &line, &line_size, fpl, NULL, NULL) != EOF) {
-			if (!*line || *line == '#') /* Empty line or comment */
-				continue;
-			ps_names[Ctrl->In.n_files++] = strdup (line);
-			if (Ctrl->In.n_files > n_alloc) {
-				n_alloc <<= 1;
-				ps_names = gmt_M_memory (GMT, ps_names, n_alloc, char *);
-			}
-		}
-		fclose (fpl);
-#endif
 	}
 	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);
@@ -1267,11 +1243,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
 	if (API->mode && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
 		int    error = 0;
-		double margin = 0, w = 0.0, h = 0.0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
+		double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 
-		if (ps_names[0][1])		/* See if we have a margin request (in points only for now) */
-			margin = atof(&ps_names[0][1]);
-			/* margin = gmt_M_to_points (GMT, &ps_names[0][1]);*/	/* Don't know why, this screwes most of times */
+		if (ps_names[0][1])		/* See if we have a margin request */
+			margin = gmt_M_to_points (GMT, &ps_names[0][1]);
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			error++;
@@ -2318,7 +2293,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
+	if ((ptr = strstr(data,"\\gsdll")) == NULL ) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GS_DLL value is screwed.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
