@@ -8586,7 +8586,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.export_type = GMT_FLOAT;
 			else if (!strncmp (lower_value, "long", 4U))
 				GMT->current.setting.export_type = GMT_LONG;
-			else if (!strncmp (lower_value, "ulong", 10U))
+			else if (!strncmp (lower_value, "ulong", 5U))
 				GMT->current.setting.export_type = GMT_ULONG;
 			else if (!strncmp (lower_value, "int", 3U))
 				GMT->current.setting.export_type = GMT_INT;
