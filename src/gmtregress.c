@@ -165,8 +165,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r : LMS robust measure (median of squared residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     w : RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output.  Append r to reverse mode and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records.  Cannot be used with -T [output all records].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output. Append r to reverse mode and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records. Cannot be used with -T [output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T<n> is given instead we reset <min> and <max> to the extreme x-values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment and recalculate <inc> to give <n> output values per segment.\n");
@@ -306,14 +306,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 				break;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.active, "Syntax error -S: Cannot simultaneously specify -T.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "Syntax error -S: Cannot simultaneously specify -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_XY && Ctrl->W.n_weights == 1, "Syntax error -Eo: Needs errors in both x,y or neither.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_RMA && Ctrl->W.n_weights == 1, "Syntax error -Er: Needs errors in both x,y or neither.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Y] > 0, "Syntax error -Ex: Cannot specify errors in y.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_X && Ctrl->W.col[GMT_Z] > 0, "Syntax error -Ex: Cannot specify x-y correlations\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_X] > 0, "Syntax error -Ey: Cannot specify errors in x.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_Y && Ctrl->W.col[GMT_Z] > 0, "Syntax error -Ey: Cannot specify x-y correlations\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->E.mode == GMTREGRESS_Y || Ctrl->E.mode == GMTREGRESS_X) && Ctrl->W.n_weights == 2, "Syntax error -Ex|y: Cannot specify errors in both x and y.\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->E.mode == GMTREGRESS_Y || Ctrl->E.mode == GMTREGRESS_X) && Ctrl->W.n_weights == 2,
+	                                   "Syntax error -Ex|y: Cannot specify errors in both x and y.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value < 0.0 || Ctrl->C.value >= 1.0, "Syntax error -C: Level must be in 0-100%% range.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->A.active, "Syntax error -A: Cannot simultaneously specify -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->F.active, "Syntax error -A: Cannot simultaneously specify -F.\n");
@@ -321,7 +322,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -T.\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
+	                                   "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
