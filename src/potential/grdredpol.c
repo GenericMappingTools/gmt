@@ -1223,7 +1223,9 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 
-	/* ... */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) /* Get header only */
+		Return (API->error);
+
 	if (Ctrl->F.compute_n) {
 		aniso = Gin->header->inc[GMT_X] / Gin->header->inc[GMT_Y] * cos(Gin->header->wesn[YHI]*D2R);
 		Ctrl->F.ncoef_col = (int) ((double)Ctrl->F.ncoef_row / aniso);
@@ -1233,10 +1235,6 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	m21 = (Ctrl->F.ncoef_row+1) / 2;	n21 = (Ctrl->F.ncoef_col+1) / 2;
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
-
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
-		Return (API->error);
-	}
 
 	if (!GMT->common.R.active) 
 		gmt_M_memcpy (wesn_new, Gin->header->wesn, 4, double);
