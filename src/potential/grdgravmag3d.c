@@ -1352,13 +1352,12 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
 	}
 
-	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
+	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called and so no need to "join" */
 		for (i = 0; i < GMT->common.x.n_threads; i++)
 			g_thread_join(threads[i]);
-	}
 
-	if (GMT->common.x.n_threads > 1)
 		gmt_M_free (GMT, threads);
+	}
 #endif
 
 	gmt_M_free (GMT, threadArg);
