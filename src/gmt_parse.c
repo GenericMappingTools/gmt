@@ -729,6 +729,8 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	char buffer[BUFSIZ] = {""};
 	size_t in = 0, out = 0;
 	bool quote = false;
+	const size_t s_length = strlen(arg); 
+
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We passed NULL as the option */
 	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		/* We passed NULL as the argument */
@@ -738,7 +740,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 		if (opt->arg[in] == '\"') quote = !quote;
 		if (opt->arg[in] == '?' && !quote) {	/* Found an unquoted questionmark */
 			strcat (&buffer[out], arg);	/* Insert the given arg instead */
-			out += strlen (arg);	/* Adjust next output location */
+			out += s_length;		/* Adjust next output location */
 		}
 		else	/* Regular text, copy one-by-one */
 			buffer[out++] = opt->arg[in];
@@ -809,6 +811,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	char list[2] = {0, 0}, critical_opt_order[] = GMT_CRITICAL_OPT_ORDER;
 	unsigned int i, n_errors;
 	struct GMTAPI_CTRL *API = NULL;
+	const unsigned int s_length = (unsigned int)strlen(critical_opt_order); 
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
@@ -823,7 +826,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	n_errors = parse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 	
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
-	for (i = 0; i < strlen (critical_opt_order); i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
+	for (i = 0; i < s_length; i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
 		if (strchr (given_options, critical_opt_order[i]) == NULL) continue;	/* Not a selected option */
 		list[0] = critical_opt_order[i];	/* Just look for this particular option in the linked opt list */
 		for (opt = options; opt; opt = opt->next) {

@@ -1261,10 +1261,12 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 	/* Examine greenspline's -R option to learn the dimensionality of the domain (1, 2, or 3) */
 	unsigned int n_slashes = 0;
 	size_t k;
+	const size_t s_length = strlen(text); 
 
 	/* First catch the simple -R? which means a grid is passed by the API, hence dimension is 2 */
 	if (text[0] == '?' && text[1] == '\0') return 2;	/* A marker means a grid only, so done */
-	for (k = 0; k < strlen (text); k++) if (text[k] == '/') n_slashes++;			/* Count slashes just in case */
+	for (k = 0; k < s_length; k++)
+		if (text[k] == '/') n_slashes++;			/* Count slashes just in case */
 	if ((text[0] == 'g' || text[0] == 'd') && (text[1] == '\0' || text[1] == '/')) {	/* Got -Rg or -Rd, possibly with trailing /zmin/zmax */
 		if (text[1] == '\0') return 2;	/* Got -Rg or -Rd and no more */
 		if (n_slashes == 2) return 3;	/* Got -Rg/zmin/zmax or -Rd/zmin/zmax */
@@ -5249,11 +5251,12 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 	if (!(pch = strchr (*str, ','))) {	/* No comma so presumably a regular CPT name, but check for single color entry */
 		bool gray = true;
 		size_t k;
+		const size_t s_length = strlen(*str); 
 		 /* Since "gray" is both a master CPT and a shade we must let the CPT take precedence */
 		if (!strcmp (*str, "gray"))
 			return (0);
 		/* Because gmtlib_is_color cannot uniquely determine what a single number is, check for that separately first. */
-		for (k = 0; gray && k < strlen (*str); k++)
+		for (k = 0; gray && k < s_length; k++)
 			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
 		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
 			sprintf (tmp_file, "%s.cpt", *str);	/* Try this as a filename */
@@ -6566,12 +6569,12 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		if (!multiple_files_ok (family)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET. "
 			                                 "Use GMT_Read_Group to read groups of other data types\n");
-			if (input) free (input);
+			free (input);
 			return_null (API, GMT_ONLY_ONE_ALLOWED);
 		}
 		if ((n_files = gmtlib_glob_list (API->GMT, infile, &filelist)) == 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Expansion of \"%s\" gave no results\n", infile);
-			if (input) free (input);
+			free (input);
 			return_null (API, GMT_OBJECT_NOT_FOUND);
 		}
 		API->shelf = family;	/* Save which one it is so we know in api_get_data */

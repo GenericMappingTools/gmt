@@ -158,6 +158,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
+			const size_t s_length = strlen(opt->arg); 
 
 			case '<':	/* Skip input files */
 				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
@@ -167,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 			case 'F':	/* Select outputs for data */
 				Ctrl->F.active = true;
-				for (k = 0; k < strlen (opt->arg); k++) {
+				for (k = 0; k < s_length; k++) {
 					switch (opt->arg[k]) {
 						case 'f': Ctrl->F.mode |= 1;	break;
 						case 'm': Ctrl->F.mode |= 2;	break;

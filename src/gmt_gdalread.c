@@ -117,7 +117,7 @@ GMT_LOCAL int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double 
 /* -------------------------------------------------------------------- */
 /*      Setup transformation to lat/long.                               */
 /* -------------------------------------------------------------------- */
-	if (pszProjection != NULL && strlen(pszProjection) > 0) {
+	if (pszProjection != NULL && pszProjection[0] != '\0') {
 
 		hProj = OSRNewSpatialReference(pszProjection);
 		if (hProj != NULL) hLatLong = OSRCloneGeogCS(hProj);

@@ -1522,6 +1522,7 @@ GMT_LOCAL bool gmtio_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GM
 	unsigned int i, j, order, n_y, n_m, n_d, n_j, n_w, error = 0;
 	int k, last, n_delim;
 	bool watch = false;
+	const size_t s_length = strlen(text); 
 
 	gmt_M_memset (S, 1, struct GMT_DATE_IO);
 	for (i = 0; i < 4; i++) S->item_order[i] = S->item_pos[i] = -1;	/* Meaning not encountered yet */
@@ -1533,7 +1534,7 @@ GMT_LOCAL bool gmtio_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GM
 		S->compact = true;
 		i++;
 	}
-	for (order = 0; i < strlen (text); i++) {
+	for (order = 0; i < s_length; i++) {
 		switch (text[i]) {
 			case 'y':	/* Year */
 				if (S->item_pos[0] < 0)		/* First time we encounter a y */
