@@ -9458,8 +9458,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	else if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
 		/* Found the -F option, check if any strings are requested */
 		type = 'D';	/* Default is dataset output unless any of the below were requested */
-		if (strstr (opt->arg, "all") || strstr (opt->arg, "mgd77") || strstr (opt->arg, "id") || strstr (opt->arg, "ngdcid")
-		    || strstr (opt->arg, "sln") || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
+		if (strstr (opt->arg, "all") || strstr (opt->arg, "mgd77") || strstr (opt->arg, "id") || strstr (opt->arg, "sln")
+		    || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
 			type = 'T';
 	}
 	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
