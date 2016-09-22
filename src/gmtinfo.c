@@ -461,7 +461,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->L.active) {
 					for (col = 0; col < ncol; col++) {	/* Report innermost min/max for each column */
 						if (xyzmin[col] > xyzminL[col]) xyzminL[col] = xyzmin[col];
-						if (xyzmax[col] < xyzmax[col])  xyzmaxL[col] = xyzmax[col];
+						if (xyzmax[col] < xyzmaxL[col]) xyzmaxL[col] = xyzmax[col];
 					}
 				}
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting n_columns/n_rows */
