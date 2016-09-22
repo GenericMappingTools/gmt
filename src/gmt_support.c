@@ -9058,6 +9058,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	int i, j, ndec = 0;
 	bool general = false;
 	char text[GMT_BUFSIZ];
+	const int s_length = (int)strlen(unit); 
 
 	if (!strcmp (GMT->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
@@ -9081,7 +9082,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 		if (!strchr (unit, '%'))	/* No percent signs */
 			strncpy (text, unit, 80U);
 		else {
-			for (i = j = 0; i < (int)strlen (unit); i++) {
+			for (i = j = 0; i < s_length; i++) {
 				text[j++] = unit[i];
 				if (unit[i] == '%') text[j++] = unit[i];
 			}
@@ -11107,6 +11108,7 @@ int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 	 */
 	int i, j;
 	size_t k;
+	const size_t s_length = strlen(key); 
 
 	if (isdigit ((int)key[0])) {	/* Apparently got one of the 1-11 codes */
 		i = atoi(key);
@@ -11116,7 +11118,7 @@ int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 
 	i = def % 4;
 	j = def / 4;
-	for (k = 0; k < strlen (key); k++) {
+	for (k = 0; k < s_length; k++) {
 		switch (key[k]) {
 			case 'b': case 'B':	/* Bottom baseline */
 				j = 0;

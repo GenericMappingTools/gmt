@@ -44,10 +44,10 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double i_offset;	/* 0.5 if we are to bin using the center the bins on multiples of width, else 0.0 */
 	double o_offset;	/* 0.0 if we are to report center the bins on multiples of width, else 0.5 */
 	double i_width;		/* 1/width, to avoid divisions later */
-	int min, max;		/* The raw min,max bin numbers (min can be negative) */
-	unsigned int n_bins;	/* Number of bins required */
 	double *count;		/* The histogram counts (double to accomodate weighted data), to be reset before each spatial block */
+	int min, max;		/* The raw min,max bin numbers (min can be negative) */
 	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
+	unsigned int n_bins;/* Number of bins required */
 };
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

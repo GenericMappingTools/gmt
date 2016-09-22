@@ -130,14 +130,14 @@ static inline void scale_and_offset_f (float *data, size_t length, float scale, 
 #ifndef __APPLE__
 	size_t n;
 #endif
-	if (scale == 1.0) /* offset only */
+	if (scale == 1) /* offset only */
 #ifdef __APPLE__ /* Accelerate framework */
 		vDSP_vsadd (data, 1, &offset, data, 1, length);
 #else
 		for (n = 0; n < length; ++n)
 			data[n] += offset;
 #endif
-	else if (offset == 0.0) /* scale only */
+	else if (offset == 0) /* scale only */
 #ifdef __APPLE__ /* Accelerate framework */
 		vDSP_vsmul (data, 1, &scale, data, 1, length);
 #else
