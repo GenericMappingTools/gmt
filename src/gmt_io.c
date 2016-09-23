@@ -2213,7 +2213,7 @@ GMT_LOCAL int gmtio_scanf_dim (struct GMT_CTRL *GMT, char *s, double *val) {
 		*val = 0.0;
 	else {	/* Probably a dimension with optional unit.  First check if there are modifiers to ignore here */
 		char *p = NULL;
-		if ((p = strchr (s, '+'))) { /* Found trailing +mod args */
+		if ((p = strchr (s, '+')) && !isdigit (p[1])) { /* Found trailing +mod args [and not values like 123.33E+01c] */
 			*p = 0;	/* Chop off modifier */
 			*val = gmt_M_to_inch (GMT, s);	/* Get dimension */
 			*p = '+';	/* Restore modifier */
