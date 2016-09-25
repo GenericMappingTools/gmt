@@ -193,7 +193,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	char track[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	char track_file[GMT_BUFSIZ] = {""}, index_file[GMT_BUFSIZ] = {""}, old_track_file[GMT_BUFSIZ] = {""}, old_index_file[GMT_BUFSIZ] = {""};
-	char track_path[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
+	char track_path[] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
 
 	int error = 0, k;
 	bool found_it, skip;
@@ -354,8 +354,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, track_file, track_path);
 	x2sys_path (GMT, index_file, index_path);
 
-	sprintf (old_track_file, "%s_old", track_file);
-	sprintf (old_index_file, "%s_old", index_file);
+	snprintf (old_track_file, (size_t)GMT_BUFSIZ, "%s_old", track_file);
+	snprintf (old_index_file, (size_t)GMT_BUFSIZ, "%s_old", index_file);
 	x2sys_path (GMT, old_track_file, old_track_path);
 	x2sys_path (GMT, old_index_file, old_index_path);
 
