@@ -794,7 +794,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Wrong choice of profile type (d|k|a|b|n) \n");
-						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);
+						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
 						Return(EXIT_FAILURE);
 						break;
 				}
