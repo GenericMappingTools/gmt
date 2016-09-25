@@ -207,6 +207,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	}
 	
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
+	(void)(c_unused++); /* silence -Wunused-but-set-variable and PVS warning of double assignement */
 	sscanf (line, "%d", &lum1);
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	(void)c_unused; /* silence -Wunused-but-set-variable */

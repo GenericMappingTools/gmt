@@ -623,7 +623,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Collecting %ld SAC files to plot.\n", n_files);
 
-	for (n = 0; n < n_files; n++) {  /* Loop over all SAC files */
+	for (n = 0; n < (int)n_files; n++) {  /* Loop over all SAC files */
  		GMT_Report (API, GMT_MSG_VERBOSE, "Plotting SAC file %d: %s\n", n, L[n].file);
 		
 		/* -T: determine the reference time for all times in pssac */
@@ -665,7 +665,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			}
 		}
 		else {
-			if ((data = read_sac_pdw (L[n].file, &hd, 10, tref+Ctrl->C.t0, tref+Ctrl->C.t1)) == NULL) {
+			if ((data = read_sac_pdw (L[n].file, &hd, 10, (float)(tref+Ctrl->C.t0), (float)(tref+Ctrl->C.t1) )) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: unable to read, skipped.\n", L[n].file);
 				continue;
 			}
@@ -787,14 +787,14 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 					case 'u':  /* user0 to user9 */
 						if (Ctrl->E.keys[1] != '\0') user = atoi(&Ctrl->E.keys[1]);
 						y0 = *((float *) &hd + USERN + user);
-						if (floatAlmostEqualZero(y0, SAC_FLOAT_UNDEF)) {
+						if (floatAlmostEqualZero((float)y0, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "=> %s: Warning: user%d not defined in SAC header, skipped.\n", user, L[n].file);
 							continue;
 						}
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Wrong choice of profile type (d|k|a|b|n) \n");
-						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);
+						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
 						Return(EXIT_FAILURE);
 						break;
 				}

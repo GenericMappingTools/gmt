@@ -5175,13 +5175,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
 	double s;
 	unsigned int k;
-	const size_t s_length = strlen(options); 
+	size_t s_length; 
 
 	if (!options) return;
 	if (GMT->common.synopsis.extended) return;	/* Only want to list module-specific options, i.e gave + instead of - */
 	u = GMT->session.unit_name[GMT->current.setting.proj_length_unit][0];
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];	/* Convert from internal inch to users unit */
 
+	s_length = strlen(options); 
 	for (k = 0; k < s_length; k++) {
 
 		switch (options[k]) {

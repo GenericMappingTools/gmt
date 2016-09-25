@@ -728,14 +728,15 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	char buffer[BUFSIZ] = {""};
 	size_t in = 0, out = 0;
+	size_t s_length; 
 	bool quote = false;
-	const size_t s_length = strlen(arg); 
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We passed NULL as the option */
 	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		/* We passed NULL as the argument */
 	if ((strlen (arg) + strlen (opt->arg)) > BUFSIZ) return_error (V_API, GMT_DIM_TOO_LARGE);		/* Don't have room */
 
+	s_length = strlen(arg); 
 	while (opt->arg[in]) {
 		if (opt->arg[in] == '\"') quote = !quote;
 		if (opt->arg[in] == '?' && !quote) {	/* Found an unquoted questionmark */
