@@ -679,7 +679,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		else if (Ctrl->S.active) dt = hd.delta/Ctrl->S.sec_per_measure;
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: -S option is needed in geographic plots.\n");
-			gmt_M_free(GMT, x);		gmt_M_free(GMT, y);
+			gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
 			gmt_M_free(GMT, data);
 			Return(EXIT_FAILURE);
 		}
