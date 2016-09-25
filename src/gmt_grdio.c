@@ -2658,12 +2658,14 @@ void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsign
 }
 
 #ifdef HAVE_GDAL
-GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread)
-{
+GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
-	for (i = 0; i < from_gdalread->RasterCount; ++i )
-		if (from_gdalread->band_field_names[i].DataType) gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
-	if (from_gdalread->band_field_names) gmt_M_free (GMT, from_gdalread->band_field_names);
+	if (from_gdalread->band_field_names) {
+		for (i = 0; i < from_gdalread->RasterCount; i++ )
+			if (from_gdalread->band_field_names[i].DataType)
+				gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+		gmt_M_free (GMT, from_gdalread->band_field_names);
+	}
 	if (from_gdalread->ColorMap) gmt_M_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 }
 
@@ -2744,8 +2746,9 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int i;
-	bool expand;
+	int    i;
+	bool   expand;
+	char   strR[GMT_LEN128];
 	struct GRD_PAD P;
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
@@ -2760,9 +2763,8 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active) {
-		char strR[GMT_LEN128];
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-							  GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		/*to_gdalread->R.active = true;*/	/* Wait untill we really know how to use it */
 	}
