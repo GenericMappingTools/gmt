@@ -1881,6 +1881,7 @@ int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned in
 	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
 	return (-1);
 	gmt_M_unused(GMT);
+	return 0;
 }
 
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***filelist, bool *cmdline) {
