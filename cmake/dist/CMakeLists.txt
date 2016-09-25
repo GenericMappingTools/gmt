@@ -167,7 +167,7 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-	if (WIN32 AND FALSE) 
+	if (WIN32 AND TRUE) 
 		# Install the gmtmex on Windows. Need to make this work via variables in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
 			install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
@@ -175,7 +175,7 @@ if (WIN32 AND NOT CYGWIN)
 			install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		endif ()
 		install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-	endif (WIN32)
+	endif (WIN32 AND TRUE)
 
 	# Fix bundle:
 	install (CODE "
