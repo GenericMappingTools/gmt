@@ -9058,7 +9058,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	int i, j, ndec = 0;
 	bool general = false;
 	char text[GMT_BUFSIZ];
-	const int s_length = (int)strlen(unit); 
+	size_t s_length; 
 
 	if (!strcmp (GMT->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
@@ -9082,6 +9082,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 		if (!strchr (unit, '%'))	/* No percent signs */
 			strncpy (text, unit, 80U);
 		else {
+			s_length = strlen(unit); 
 			for (i = j = 0; i < s_length; i++) {
 				text[j++] = unit[i];
 				if (unit[i] == '%') text[j++] = unit[i];
