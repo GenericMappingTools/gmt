@@ -172,6 +172,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	return ar;
 }
 
+#if 0		/* These functions do not seam to be used anywhere */
 /*
  *  read_sac_xy
  *
@@ -298,6 +299,7 @@ int write_sac_xy(const char *name, SACHEAD hd, const float *xdata, const float *
 	free(ar);
 	return error;
 }
+#endif
 
 /*
  *  read_sac_pdw
@@ -626,6 +628,9 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 	char   *buffer;
 	int     lswap;
 
+#ifdef _MSC_VER
+#pragma warning(disable:4127)
+#endif
 	if (sizeof(float) != SAC_DATA_SIZEOF || sizeof(int) != SAC_DATA_SIZEOF) {
 		fprintf(stderr, "Mismatch in size of basic data type!\n");
 		return -1;
@@ -704,6 +709,9 @@ static void map_chdr_out(char *memar, char *buff) {
 static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 	char *buffer;
 
+#ifdef _MSC_VER
+#pragma warning(disable:4127)
+#endif
 	if (sizeof(float) != SAC_DATA_SIZEOF || sizeof(int) != SAC_DATA_SIZEOF) {
 		fprintf(stderr, "Mismatch in size of basic data type!\n");
 		return -1;
