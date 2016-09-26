@@ -7748,7 +7748,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				else
 					*donut = (GMT->common.R.wesn[YLO] > 0.0 && GMT->current.map.is_world);
 				np = GMT->current.map.n_lon_nodes + 1;
-				if (GMT->common.R.wesn[YLO] > 0.0)	/* Need inside circle segment */
+				if ((GMT->current.proj.got_elevations && GMT->common.R.wesn[YHI] < 90.0) || (!GMT->current.proj.got_elevations && GMT->common.R.wesn[YLO] > 0.0))	/* Need inside circle segment */
 					np *= 2;
 				else if (!GMT->current.map.is_world)	/* Need to include origin */
 					np++;
@@ -7854,16 +7854,20 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 					if (GMT->current.proj.got_elevations) {
 						for (i = j = 0; i <= GMT->current.map.n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + i * da, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
-						for (i = GMT->current.map.n_lon_nodes + 1; GMT->common.R.wesn[YHI] < 90.0 && i > 0; i--, j++)	/* Draw inner clippath */
-							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
+						if (GMT->common.R.wesn[YHI] < 90.0) {	/* Must do the inner path as well */
+							for (i = GMT->current.map.n_lon_nodes + 1; i > 0; i--, j++)	/* Draw inner clippath */
+								gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
+						}
 						if (doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0) && !GMT->current.map.is_world)	/* Add origin */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
 					}
 					else {
 						for (i = j = 0; i <= GMT->current.map.n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + i * da, GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
-						for (i = GMT->current.map.n_lon_nodes + 1; GMT->common.R.wesn[YLO] > 0.0 && i > 0; i--, j++)	/* Draw inner clippath */
-							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
+						if (GMT->common.R.wesn[YLO] > 0.0) {	/* Must do the inner path as well */
+							for (i = GMT->current.map.n_lon_nodes + 1; i > 0; i--, j++)	/* Draw inner clippath */
+								gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
+						}
 						if (gmt_M_is_zero (GMT->common.R.wesn[YLO]) && !GMT->current.map.is_world)	/* Add origin */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
 					}

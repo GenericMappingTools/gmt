@@ -167,7 +167,6 @@ if (WIN32 AND NOT CYGWIN)
 		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (OMP_DLL_LOC)
 
-<<<<<<< .working
 	# Install the gmtmex
 	if (BITAGE EQUAL 64)
 		install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/trunk/src/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
