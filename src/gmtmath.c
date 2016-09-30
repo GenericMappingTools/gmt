@@ -1390,13 +1390,13 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (S[prev]->constant) {		/* Must create the missing (constant) column */
 			a = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
-			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) a[row] = S[prev]->factor;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) a[row] = S[prev]->factor;
 			b = T->segment[s]->data[col];
 		}
 		else if (S[last]->constant) {	/* Must create the missing (constant) column */
 			a = T_prev->segment[s]->data[col];
 			b = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
-			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) b[row] = S[last]->factor;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) b[row] = S[last]->factor;
 		}
 		else {
 			a = T_prev->segment[s]->data[col];
@@ -5177,7 +5177,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("AEINQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
+		if (strchr ("AEILNQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
 			if (decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
