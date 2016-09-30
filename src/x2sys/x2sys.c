@@ -806,20 +806,20 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	char path[GMT_BUFSIZ] = {""}, *tvals[MGD77_N_STRING_FIELDS];
 	double **z = NULL, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
-	struct MGD77_CONTROL M;
+	struct MGD77_CONTROL MC;
 	gmt_M_unused(G);
 
-	MGD77_Init (GMT, &M);	/* Initialize MGD77 Machinery */
+	MGD77_Init (GMT, &MC);	/* Initialize MGD77 Machinery */
 
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (GMT, path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
-		if (MGD77_Open_File (GMT, path, &M, 0)) return (GMT_GRDIO_OPEN_FAILED);
+		if (MGD77_Open_File (GMT, path, &MC, 0)) return (GMT_GRDIO_OPEN_FAILED);
 	}
-	else if (MGD77_Open_File (GMT, fname, &M, 0))
+	else if (MGD77_Open_File (GMT, fname, &MC, 0))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-	strcpy (s->path, M.path);
+	strcpy (s->path, MC.path);
 
-	if (MGD77_Read_Header_Record (GMT, fname, &M, &H)) {
+	if (MGD77_Read_Header_Record (GMT, fname, &MC, &H)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", fname);
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -828,12 +828,12 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	z = gmt_M_memory (GMT, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	for (i = 0; i < s->n_out_columns; i++) {
-		col[i] = MGD77_Get_Column (GMT, s->info[s->out_order[i]].name, &M);
+		col[i] = MGD77_Get_Column (GMT, s->info[s->out_order[i]].name, &MC);
 	}
 
 	p->year = 0;
 	j = 0;
-	while (!MGD77_Read_Data_Record (GMT, &M, &H, dvals, tvals)) {		/* While able to read a data record */
+	while (!MGD77_Read_Data_Record (GMT, &MC, &H, dvals, tvals)) {		/* While able to read a data record */
 		gmt_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
 		if (p->year == 0 && !gmt_M_is_dnan (dvals[0])) p->year = get_first_year (GMT, dvals[0]);
@@ -843,9 +843,9 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 			for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, z[i], n_alloc, double);
 		}
 	}
-	MGD77_Close_File (GMT, &M);
-	MGD77_Free_Header_Record (GMT, &M, &H);	/* Free up header structure */
-	MGD77_end (GMT, &M);
+	MGD77_Close_File (GMT, &MC);
+	MGD77_Free_Header_Record (GMT, &MC, &H);	/* Free up header structure */
+	MGD77_end (GMT, &MC);
 
 	strncpy (p->name, fname, 31U);
 	p->n_rows = j;
@@ -866,40 +866,40 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	char path[GMT_BUFSIZ] = {""};
 	double **z = NULL;
 	struct MGD77_DATASET *S = NULL;
-	struct MGD77_CONTROL M;
+	struct MGD77_CONTROL MC;
 	gmt_M_unused(G);
 
-	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
-	M.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
-	MGD77_Select_Format (GMT, M.format);	/* Only allow the specified MGD77 input format */
+	MGD77_Init (GMT, &MC);			/* Initialize MGD77 Machinery */
+	MC.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
+	MGD77_Select_Format (GMT, MC.format);	/* Only allow the specified MGD77 input format */
 
 	for (i = 0; i < s->n_out_columns; i++)
-		M.desired_column[i] = strdup(s->info[s->out_order[i]].name);	/* Set all the required fields */
-	M.n_out_columns = s->n_out_columns;
+		MC.desired_column[i] = strdup(s->info[s->out_order[i]].name);	/* Set all the required fields */
+	MC.n_out_columns = s->n_out_columns;
 
 	S = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (GMT, path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
-		if (MGD77_Open_File (GMT, path, &M, 0)) return (GMT_GRDIO_OPEN_FAILED);
+		if (MGD77_Open_File (GMT, path, &MC, 0)) return (GMT_GRDIO_OPEN_FAILED);
 	}
-	else if (MGD77_Open_File (GMT, fname, &M, 0))
+	else if (MGD77_Open_File (GMT, fname, &MC, 0))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-	strcpy (s->path, M.path);
+	strcpy (s->path, MC.path);
 
-	if (MGD77_Read_Header_Record (GMT, fname, &M, &S->H)) {	/* Returns info on all columns */
+	if (MGD77_Read_Header_Record (GMT, fname, &MC, &S->H)) {	/* Returns info on all columns */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_mgd77ncfile: Error reading header sequence for cruise %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	if (MGD77_Read_Data (GMT, fname, &M, S)) {	/* Only gets the specified columns and barfs otherwise */
+	if (MGD77_Read_Data (GMT, fname, &MC, S)) {	/* Only gets the specified columns and barfs otherwise */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_mgd77ncfile: Error reading data set for cruise %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
-	MGD77_Close_File (GMT, &M);
+	MGD77_Close_File (GMT, &MC);
 
-	z = gmt_M_memory (GMT, NULL, M.n_out_columns, double *);
-	for (i = 0; i < M.n_out_columns; i++) z[i] = S->values[i];
+	z = gmt_M_memory (GMT, NULL, MC.n_out_columns, double *);
+	for (i = 0; i < MC.n_out_columns; i++) z[i] = S->values[i];
 
 	strncpy (p->name, fname, 31U);
 	p->n_rows = S->H.n_records;
@@ -907,9 +907,9 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	p->n_segments = 0;
 	p->year = S->H.meta.Departure[0];
 	for (i = 0; i < MGD77_N_SETS; i++) gmt_M_free (GMT, S->flags[i]);
-	MGD77_Free_Header_Record (GMT, &M, &(S->H));	/* Free up header structure */
+	MGD77_Free_Header_Record (GMT, &MC, &(S->H));	/* Free up header structure */
 	gmt_M_free (GMT, S);
-	MGD77_end (GMT, &M);
+	MGD77_end (GMT, &MC);
 
 	*data = z;
 	*n_rec = p->n_rows;
@@ -1877,11 +1877,11 @@ void x2sys_free_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_COE_PAIR *P, uint6
 int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned int n) {
 	/* Return track id # for this leg or -1 if not found */
 	unsigned int i = 0;
-	if (!list) return (-1);	/* Null pointer passed */
-	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
-	return (-1);
 	gmt_M_unused(GMT);
-	return 0;
+	if (!list) return (-1);	/* Null pointer passed */
+	for (i = 0; i < n; i++)
+		if (!strcmp (name, list[i])) return (i);
+	return (-1);
 }
 
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***filelist, bool *cmdline) {
