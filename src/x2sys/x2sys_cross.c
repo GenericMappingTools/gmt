@@ -818,20 +818,20 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					}
 
 					if (first_crossover) {
-						char info[GMT_BUFSIZ] = {""}, start[2][GMT_LEN64], stop[2][GMT_LEN64];
+						char info[GMT_BUFSIZ] = {""}, l_start[2][GMT_LEN64], stop[2][GMT_LEN64];
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && gmt_M_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */
-								gmt_ascii_format_col (GMT, start[k], time[k][j], GMT_OUT, 2);
+								gmt_ascii_format_col (GMT, l_start[k], time[k][j], GMT_OUT, 2);
 								for (j = n_rec[k]-1; j > 0 && gmt_M_is_dnan (time[k][j]); j--);	/* Find last non-NaN time */
 								gmt_ascii_format_col (GMT, stop[k], time[k][j], GMT_OUT, 3);
 							}
 							else {
-								strcpy (start[k], "NaN");
+								strcpy (l_start[k], "NaN");
 								strcpy (stop[k], "NaN");
 							}
 						}
-						sprintf (info, "%s/%s/%g %s/%s/%g", start[0], stop[0], dist[0][n_rec[0]-1], start[1], stop[1], dist[1][n_rec[1]-1]);
+						sprintf (info, "%s/%s/%g %s/%s/%g", l_start[0], stop[0], dist[0][n_rec[0]-1], l_start[1], stop[1], dist[1][n_rec[1]-1]);
 						sprintf (line, x2sys_header, trk_name[A], data_set[0].year, trk_name[B], data_set[1].year, info);
 						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
 						first_crossover = false;

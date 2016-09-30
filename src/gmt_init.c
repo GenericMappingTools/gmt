@@ -8368,12 +8368,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else if (*lower_value == 'c') /* classic */
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
 			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* chunk size: lat,lon */
-						&GMT->current.setting.io_nc4_chunksize[0],
-						&GMT->current.setting.io_nc4_chunksize[1])) > 0) {
+			         &GMT->current.setting.io_nc4_chunksize[0], &GMT->current.setting.io_nc4_chunksize[1])) > 0) {
 				if (i == 1) /* use chunk size of lat for long as well */
 					GMT->current.setting.io_nc4_chunksize[1] = GMT->current.setting.io_nc4_chunksize[0];
 				if (GMT->current.setting.io_nc4_chunksize[0] <= k_netcdf_io_chunked_auto ||
-						GMT->current.setting.io_nc4_chunksize[1] <= k_netcdf_io_chunked_auto)
+				    GMT->current.setting.io_nc4_chunksize[1] <= k_netcdf_io_chunked_auto)
 					/* chunk size too small */
 					error = true;
 			}
