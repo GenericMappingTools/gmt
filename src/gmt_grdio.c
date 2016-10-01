@@ -1451,12 +1451,14 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 		 last character of the input string is the same AND that character
 		 is non-alpha-numeric, use the first character as a separator. This
 		 is to allow "/" as part of the fields.
-		 If a field is blank or has an equals sign, skip it.
+		 If a field is blank [or has an equals sign - backwards compatibility], skip it.
 		 This routine is usually called if -D<input> was given by user,
 		 and after gmt_grd_init() has been called. */
 
 	char *ptr, *stringp = input, sep[] = "/";
+	bool copy;
 	unsigned int entry = 0;
+	size_t len = 0;
 	double d;
 
 	if (input[0] != input[strlen(input)-1]) {}
@@ -1471,34 +1473,36 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 
 	while ((ptr = strsep (&stringp, sep)) != NULL) { /* using strsep because of possible empty fields */
 		if (*ptr != '\0' || strcmp (ptr, "=") == 0 || strcmp (ptr, " ") == 0) { /* entry is not blank or "=" or " " */
+			len = strlen (ptr);
+			copy = (len > 1 || ptr[0] != '-');	/* Copy unless a "-" was given */
 			switch (entry) {
 				case 0:
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
-					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
+					if (len >= GMT_GRID_UNIT_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: X unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
-					strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80-1);
+					if (copy) strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80-1);
 					break;
 				case 1:
 					gmt_M_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
-					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
+					if (len >= GMT_GRID_UNIT_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: Y unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
-					strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80-1);
+					if (copy) strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80-1);
 					break;
 				case 2:
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
-					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
+					if (len >= GMT_GRID_UNIT_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: Z unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
-					strncpy (h->z_units, ptr, GMT_GRID_UNIT_LEN80-1);
+					if (copy) strncpy (h->z_units, ptr, GMT_GRID_UNIT_LEN80-1);
 					break;
 				case 3:
 				 	d = strtod (ptr, NULL);
-					if (d != 0.0) h->z_scale_factor = d;	/* Don'twant scale factor to become zero */
+					if (d != 0.0) h->z_scale_factor = d;	/* Don't want scale factor to become zero */
 					break;
 				case 4:
 					h->z_add_offset = strtod (ptr, NULL);
@@ -1507,18 +1511,20 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 					h->nan_value = strtof (ptr, NULL);
 					break;
 				case 6:
-					if (strlen(ptr) >= GMT_GRID_TITLE_LEN80)
+					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
+					if (len >= GMT_GRID_TITLE_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: Title string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_TITLE_LEN80);
-					strncpy (h->title, ptr, GMT_GRID_TITLE_LEN80-1);
+					if (copy) strncpy (h->title, ptr, GMT_GRID_TITLE_LEN80-1);
 					break;
 				case 7:
-					if (strlen(ptr) >= GMT_GRID_REMARK_LEN160)
+					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
+					if (len >= GMT_GRID_REMARK_LEN160)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: Remark string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_REMARK_LEN160);
-					strncpy (h->remark, ptr, GMT_GRID_REMARK_LEN160-1);
+					if (copy) strncpy (h->remark, ptr, GMT_GRID_REMARK_LEN160-1);
 					break;
 				default:
 					break;
