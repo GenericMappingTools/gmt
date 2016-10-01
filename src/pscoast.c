@@ -679,7 +679,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border = 0.0, east_border = 0.0, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
-	double left, right, anti_x = 0.0, anti_y = 0.0, x_0 = 0.0, y_0 = 0.0, x_c, y_c, dist;
+	double left, right, x_0 = 0.0, y_0 = 0.0, x_c, y_c, dist, sample_step[2] = {0.0, 0.001};
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
@@ -865,7 +865,6 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
 		anti_lat = -GMT->current.proj.pole;
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
-		gmt_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\n"
@@ -973,6 +972,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			 * the 0.8 factor is arbitrary of course [PW] */
 			
 			donut_hell = (dist > 0.8 * GMT->current.proj.r || gmt_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
+			if (donut_hell) 
+				GMT_Report (API, GMT_MSG_DEBUG, "Donut-hell is true for bin %d\n", bin);
 		}
 
 		for (direction = start_direction; paint_polygons && direction <= stop_direction; direction += 2) {
@@ -983,7 +984,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			/* Get clipped polygons in x,y inches that can be plotted */
 
-			np_new = gmt_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
+			np_new = gmt_prep_shore_polygons (GMT, &p, np, donut_hell, sample_step[donut_hell], bin_trouble);
 
 			if (clipping) {
 				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
@@ -1010,8 +1011,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			else {	/* Simply paints all polygons as is */
 				for (k = 0; k < np_new; k++) {
 					if (p[k].n == 0 || p[k].level < level_to_be_painted[lp]) continue;
-					if (donut_hell && gmt_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
+					if (donut_hell && gmt_non_zero_winding (GMT, x_0, y_0, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
+						GMT_Report (API, GMT_MSG_DEBUG, "Doing donut filling for bin %d\n", bin);
 						gmt_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
