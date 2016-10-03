@@ -310,6 +310,10 @@ as well. For specific enhancements, we have:
 *  :doc:`grd2cpt` existing **-F** option now takes a new modifier **+c**
    for writing a discrete palette using the categorical format.
 
+*  :doc:`grdedit` can now reset text items in the header via **-D** by
+   specifying '-'.  Also, new **-C** option can be used to reset the
+   command history in the header.
+
 *  :doc:`grdfft` has a new modifier to the **-E** that allows for more
    control of the power normalization for radial spectra.
 
