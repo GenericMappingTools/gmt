@@ -6111,9 +6111,9 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 		if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
 		gmtlib_assign_segment (API->GMT, T->segment[count[GMT_SEG]], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into segment */
 		if (T->segment[count[GMT_SEG]]->header == NULL && API->GMT->current.io.record[0]) T->segment[count[GMT_SEG]]->header = strdup (API->GMT->current.io.record);
+		count[GMT_SEG]++;	/* Set final number of segments */
+		T->n_segments++;
 	}
-	count[GMT_SEG]++;	/* Set final number of segments */
-	T->n_segments++;
 	/* Realloc final number of segments */
 	if (count[GMT_SEG] < (int64_t)T->n_alloc) T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 	D->n_segments = T->n_segments;
@@ -6144,11 +6144,11 @@ GMT_LOCAL int api_end_io_textset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	if (count[GMT_SEG] >= 0) {	/* Last segment */
 		T->segment[count[GMT_SEG]]->data = gmt_M_memory (API->GMT, T->segment[count[GMT_SEG]]->data, count[GMT_ROW], char *);
 		T->segment[count[GMT_SEG]]->n_rows = count[GMT_ROW];
+		count[GMT_SEG]++;	/* Final number of segments */
+		T->n_segments++;
 	}
-	count[GMT_SEG]++;	/* Final number of segments */
-	T->n_segments++;
 	/* Realloc final number of segments */
-	T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_TEXTSEGMENT *);
+	if (count[GMT_SEG] < (int64_t)T->n_alloc) T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_TEXTSEGMENT *);
 	D->n_segments = T->n_segments;
 	D->n_records = T->n_records = count[GMT_ROW];
 	D->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
