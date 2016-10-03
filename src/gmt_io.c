@@ -3114,7 +3114,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Sometimes a @P or @H record instead */
 					/* May also have a second comment record with just @P or @ H so check for this case */
 					if ((c = fgetc (fp)) == '#') {	/* Possibly, this record starts with a comment character # */
-						line[0] = c;	/* Since we ate the # already we place it here manually */
+						line[0] = (char)c;	/* Since we ate the # already we place it here manually */
 						p = gmt_fgets (GMT, &line[1], GMT_BUFSIZ-1, fp);	/* Start at position 1 since # placed already and required for gmtio_ogr_parser to work */
 						gmtio_ogr_parser (GMT, line);	/* Parse a possible GMT/OGR record (just returns if no OGR data there) */
 						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Add the hole designation to the polygon option */
