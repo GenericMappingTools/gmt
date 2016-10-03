@@ -49,6 +49,9 @@ struct GRDEDIT_CTRL {
 	struct A {	/* -A */
 		bool active;
 	} A;
+	struct C {	/* -C */
+		bool active;
+	} C;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		bool active;
 		char *information;
@@ -96,7 +99,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdedit <grid> [-A] [-C] [%s]\n", GMT_GRDEDIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -105,6 +108,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is file to be modified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Remove the command history from the header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
@@ -155,6 +159,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 
 			case 'A':	/* Adjust increments */
 				Ctrl->A.active = true;
+				break;
+			case 'C':	/* Clear history */
+				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Give grid information */
 				Ctrl->D.active = true;
@@ -305,6 +312,10 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->C.active) {	/* Wipe history */
+		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
+	}
+	
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Shifting longitudes in file %s by %g degrees\n", out_file, shift_amount);

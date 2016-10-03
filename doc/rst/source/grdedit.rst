@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdedit** *grid* [ |-A| ]
+**grdedit** *grid* [ |-A| ] [ |-C| ]
 [ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
 [ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
 [ |-G|\ *outgrid* ]
@@ -58,6 +58,11 @@ Optional Arguments
     (i.e., created prior to GMT 3.1) often had excessive slop in
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
+
+.. _-C:
+
+**-C**
+    Clear the command history from the grid header.
 
 .. _-D:
 
