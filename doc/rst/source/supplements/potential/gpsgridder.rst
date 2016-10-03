@@ -40,7 +40,11 @@ Description
 -----------
 
 **gpsgridder** grids 2-D vector data such as GPS velocities by using a coupled
-model based on 2-D elasticity.
+model based on 2-D elasticity.  The degree of coupling can be tuned by adjusting
+the effecting Poisson's ratio. The solution field can be tuned to extremes such
+as incompressible (1), typical elastic (0.5) or even an unphysical value of -1
+that basically removes the elastic coupling of vector interpolation.  Smoothing
+is offered via the optional elimination of small eigenvalues.
 
 Required Arguments
 ------------------
@@ -142,8 +146,9 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *nu*
-    Specify Poisson's ratio to use for this elastic sheet [0.5].
-    Note: 1.0 is incompressible in a 2-D formulation.
+    Specify Poisson's ratio to use for this 2-D elastic sheet [0.5].
+    Note: 1.0 is incompressible in a 2-D formulation while -1
+    removes all coupling between the two directions.
 
 .. _-T:
 
@@ -201,6 +206,8 @@ References
 Haines, A. J. et al., 2015, *Enhanced Surface Imaging of Crustal Deformation*, SpringerBriefs in Earth Sciences,
 doi:10.1007/978-3-319-21578-5_2.
 
+Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
+*Geophys. Res. Lett.*, in press.
 
 See Also
 --------

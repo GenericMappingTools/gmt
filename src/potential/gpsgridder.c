@@ -17,12 +17,13 @@
  *--------------------------------------------------------------------*/
 /*
  * Authors:	Paul Wessel & David Sandwell
- * Date:	1-MAR-2016
+ * Date:	1-OCT-2016
  * Version:	5 API
  *
  * Brief synopsis: gpsgridder grids GPS vector strain data u(x,y) & v(x,y) using
  * Green's functions derived from a thin elastic sheet [e.g., Haines et al., 2015].
- * See Sandwell et al. [2016] for details.
+ * See Sandwell and Wessel, 2016, "Interpolation of 2-D Vector Data Using Constraints
+ *   from Elasticity", Geophys. Res. Lett., in press., for details.
  */
 
 #define THIS_MODULE_NAME	"gpsgridder"
@@ -310,6 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.nu < -1.0 || Ctrl->S.nu > 1.0, "Syntax error -S: Poisson\'s ratio must be in the -1 <= nu <= +1 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
