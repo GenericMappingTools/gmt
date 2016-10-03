@@ -9381,7 +9381,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
+	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false, strip_colon = false, strip = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -9513,7 +9513,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0) {	/* Got a key, so split out family and geometry flags */
-			int sdir = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
+			sdir = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 			if (sdir < 0) {	/* Could not determine direction */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Key not understood so direction is undefined? Notify developers\n");
 				sdir = GMT_IN;
@@ -9619,10 +9619,11 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	for (ku = 0; ku < n_keys; ku++) {	/* Each set of keys specifies if the item is required via the 3rd key letter */
 		if (api_is_required_IO (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {'?',0};
-			if ((direction = api_key_to_family (API, key[ku], &family, &geometry)) == GMT_NOTSET) {	/* Extract family and geometry */
+			if ((sdir = api_key_to_family (API, key[ku], &family, &geometry)) == GMT_NOTSET) {	/* Extract family and geometry */
 				GMT_Report (API, GMT_MSG_NORMAL, "Failure to extract family, geometry, and direction!!!!\n");
 				continue;
 			}
+			direction = (unsigned int) sdir;
 			/* We need to know how many implicit items for a given family we might have to add.  For instance,
 			 * one can usually give any number of data or text tables but only one grid file.  However, this is
 			 * not a fixed thing, hence we counted up n_per_family from the keys earlier so we have some limits */

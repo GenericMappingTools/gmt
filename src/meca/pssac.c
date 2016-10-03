@@ -744,12 +744,12 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			y0 = L[n].y;
 		}
 		else {
+			unsigned int user = 0; /* default using user0 */
 			/* determine X0 */
 			if (!Ctrl->C.active) x0 = hd.b - tref;
 			else                 x0 = Ctrl->C.t0;
 
 			/* determin Y0 */
-			unsigned int user = 0; /* default using user0 */
 			if (Ctrl->E.active) {
 				switch (Ctrl->E.keys[0]) {
 					case 'a':

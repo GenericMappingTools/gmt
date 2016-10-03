@@ -701,7 +701,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.active) {
 		if (Ctrl->T.mode & 2) {	/* Must do alpha trimming first */
 			float *tmp_grid = NULL;
-			if (gmt_M_file_is_memory (grdfile)) {	/* Must operate on a copy since sorting is required */
+			char *file_ptr = grdfile;	/* To avoid a warning */
+			if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
 				tmp_grid = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
 				gmt_M_memcpy (tmp_grid, G->data, G->header->size, float);
 			}
@@ -713,7 +714,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to alpha trimming */
 				Return (API->error);
 			}
-			if (gmt_M_file_is_memory (grdfile))	/* Now free temp grid */
+			if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
 				gmt_M_free (GMT, tmp_grid);
 		}
 		if (Ctrl->T.mode & 1) {	/* Get a symmetrical range */

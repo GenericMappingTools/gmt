@@ -747,7 +747,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	
 	In.format = MGD77_FORMAT_CDF;	/* Only file type allowed as input */
 	
-	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
+	for (argno = 0; argno < (uint64_t)n_paths; argno++) {		/* Process each ID */
 	
 		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_READ_MODE)) continue;
 				

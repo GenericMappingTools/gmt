@@ -9083,7 +9083,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 			strncpy (text, unit, 80U);
 		else {
 			s_length = strlen(unit); 
-			for (i = j = 0; i < s_length; i++) {
+			for (i = j = 0; i < (int)s_length; i++) {
 				text[j++] = unit[i];
 				if (unit[i] == '%') text[j++] = unit[i];
 			}

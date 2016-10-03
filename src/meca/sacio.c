@@ -48,8 +48,10 @@ static void    byte_swap       (char *pt, size_t n);
 static int     check_sac_nvhdr (const int nvhdr);
 static void    map_chdr_in     (char *memar, char *buff);
 static int     read_head_in    (const char *name, SACHEAD *hd, FILE *strm);
+#if 0		/* These functions do not seem to be used anywhere */
 static void    map_chdr_out    (char *memar, char *buff);
 static int     write_head_out  (const char *name, SACHEAD hd, FILE *strm);
+#endif
 
 /* a SAC structure containing all null values */
 static SACHEAD sac_null = {
@@ -172,7 +174,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	return ar;
 }
 
-#if 0		/* These functions do not seam to be used anywhere */
+#if 0		/* These functions do not seem to be used anywhere */
 /*
  *  read_sac_xy
  *
@@ -668,32 +670,7 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 	return lswap;
 }
 
-/*
- *   map_chdr_out:
- *      map strings from memory to buffer
- */
-static void map_chdr_out(char *memar, char *buff) {
-	char    *ptr1, *ptr2;
-	int     i;
-
-	ptr1 = memar;
-	ptr2 = buff;
-
-	memcpy(ptr2, ptr1, 8);
-	ptr1 += 9;
-	ptr2 += 8;
-
-	memcpy(ptr2, ptr1, 16);
-	ptr1 += 18;
-	ptr2 += 16;
-
-	for (i = 0; i < 21; i++) {
-		memcpy(ptr2, ptr1, 8);
-		ptr1 += 9;
-		ptr2 += 8;
-	}
-}
-
+#if 0		/* These functions do not seem to be used anywhere */
 /*
  *  write_head_out
  *
@@ -738,3 +715,30 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 
 	return 0;
 }
+/*
+ *   map_chdr_out:
+ *      map strings from memory to buffer
+ */
+static void map_chdr_out(char *memar, char *buff) {
+	char    *ptr1, *ptr2;
+	int     i;
+
+	ptr1 = memar;
+	ptr2 = buff;
+
+	memcpy(ptr2, ptr1, 8);
+	ptr1 += 9;
+	ptr2 += 8;
+
+	memcpy(ptr2, ptr1, 16);
+	ptr1 += 18;
+	ptr2 += 16;
+
+	for (i = 0; i < 21; i++) {
+		memcpy(ptr2, ptr1, 8);
+		ptr1 += 9;
+		ptr2 += 8;
+	}
+}
+
+#endif

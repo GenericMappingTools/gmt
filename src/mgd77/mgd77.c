@@ -1948,7 +1948,7 @@ static int MGD77_Write_File_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 
 static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S) {
 	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
-	int nc_id;
+	int nc_id, s_col;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	unsigned int i, k, col;
 	uint64_t rec, rec_in;
@@ -2070,8 +2070,9 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
 			if (!E.needed[i]) continue;	/* Dont need this particular column */
 			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
-				col =  MGD77_Info_from_Abbrev (GMT, abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
-				if (col == MGD77_NOT_SET) col = 0; /* Just to stem a Coverity issue */
+				s_col = MGD77_Info_from_Abbrev (GMT, abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
+				if (s_col == MGD77_NOT_SET) s_col = 0; /* Just to stem a Coverity issue */
+				col = (unsigned int)s_col;
 				E.aux[i] = S->values[col];
 			}
 			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
