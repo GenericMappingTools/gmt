@@ -687,8 +687,14 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {
-		map_fwd = &gmt_geo_to_xy_noshift;
-		map_inv = &gmt_xy_to_geo_noshift;
+		if (Ctrl->F.active) {
+			map_fwd = &gmt_geo_to_xy_noshiftscale;
+			map_inv = &gmt_xy_to_geo_noshiftscale;
+		}
+		else {
+			map_fwd = &gmt_geo_to_xy_noshift;
+			map_inv = &gmt_xy_to_geo_noshift;
+		}
 	}
 	else {
 		map_fwd = &gmt_geo_to_xy;
