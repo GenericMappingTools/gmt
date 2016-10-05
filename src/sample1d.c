@@ -42,36 +42,36 @@
 #define INT_2D_GEO	2	/* Spherical 2-D path interpolation */
 
 struct SAMPLE1D_CTRL {
-	struct Out {	/* -> */
+	struct SAMP1D_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[f|m|p|r|R|l][+l] */
+	struct SAMP1D_A {	/* -A[f|m|p|r|R|l][+l] */
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct F {	/* -Fl|a|c[1|2] */
+	struct SAMP1D_F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
 	} F;
-	struct I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
+	struct SAMP1D_I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 		bool active;
 		unsigned int mode;
 		int smode;
 		double inc;
 		char unit;
 	} I;
-	struct N {	/* -N<knotfile> */
+	struct SAMP1D_N {	/* -N<knotfile> */
 		bool active;
 		char *file;
 	} N;
-	struct S {	/* -S<xstart>[/<xstop>] */
+	struct SAMP1D_S {	/* -S<xstart>[/<xstop>] */
 		bool active;
 		unsigned int mode;
 		double start, stop;
 	} S;
-	struct T {	/* -T<time_col> */
+	struct SAMP1D_T {	/* -T<time_col> */
 		bool active;
 		unsigned int col;
 	} T;
@@ -102,7 +102,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
+	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -329,6 +329,10 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (Din->n_columns < 2) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
+	}
+	if (Ctrl->T.active && Ctrl->T.col >= Din->n_columns) {	/*  */
+		GMT_Report (API, GMT_MSG_NORMAL, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if (Ctrl->N.active) {	/* read file with abscissae */
