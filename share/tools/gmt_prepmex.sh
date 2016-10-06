@@ -48,13 +48,13 @@ grp=`id -gn`
 sudo chown -R ${USER}:${grp} $MEXGM5TDIR
 # Copy the share files
 cd $BUNDLEDIR/Contents/Resources
-scp -r share $MEXSHADIR
+cp -r share $MEXSHADIR
 # Copy the include files
 cd $BUNDLEDIR/Contents/Resources/include
-scp -r gmt $MEXINCDIR
+cp -r gmt $MEXINCDIR
 # Copy the bin files
 cd $BUNDLEDIR/Contents/Resources/bin
-scp -r * $MEXBINDIR
+cp -r * $MEXBINDIR
 # Now copy the lib files
 printf "gmt_prepmex.sh: Copy and rename libraries\n" >&2
 cd $BUNDLEDIR/Contents/Resources/lib
