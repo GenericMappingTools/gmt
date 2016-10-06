@@ -229,7 +229,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 if (DO_API_TESTS)
 	# These lines are temporarily here for the beta release - comment to avoid in the build
 	set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt5.c testgmtio.c testgrdio.c testio.c testapiconv.c example1.c testapi_matrix.c testapi_vector.c test_JL.c test_walter.c)
-endif (TEST_API)
+endif (DO_API_TESTS)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
