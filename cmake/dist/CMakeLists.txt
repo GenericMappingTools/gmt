@@ -73,7 +73,7 @@ if (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 
 	# Append to COPYING.COMBINED or create new combined license file
 	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/COPYING.COMBINED "${_license_combined}")
-endif (GMT_BUNDLE_ACCEPT_BUTTON)
+endif (GMT_BUNDLE_ACCEPT_BUTTON AND FALSE)
 
 # Install components:
 set (CPACK_COMPONENTS_ALL Runtime Documentation DCW GSHHG)
