@@ -371,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
-				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p")))
+				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += old_L_parse (API, opt->arg, Ctrl);
 				else {
 					Ctrl->L.file = gmt_get_filename (opt->arg);
