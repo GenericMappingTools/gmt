@@ -27,12 +27,13 @@ read answer
 if [ "X$answer" = "Xn" ]; then
 	exit 0
 fi
+here=`pwd`
 # First get a reliable absolute path to the bundle's top directory
 pushd `dirname $0` > /dev/null
 BUNDLEDIR=`pwd | sed -e sB/Contents/Resources/share/toolsBBg`
 popd > /dev/null
 # Set path to the new gmt installation
-MEXGM5TDIR=/opt/gmt
+MEXGM5TDIR=/tmp/$$/gmt
 # Set path to additional subdirectories
 MEXLIBDIR=$MEXGM5TDIR/lib
 MEXINCDIR=$MEXGM5TDIR/include
@@ -40,21 +41,18 @@ MEXSHADIR=$MEXGM5TDIR/share
 MEXBINDIR=$MEXGM5TDIR/bin
 MEXSUPDIR=$MEXLIBDIR/gmt/plugins
 # Create install directory [remove first if exist]
-sudo rm -rf $MEXGM5TDIR
-printf "gmt_prepmex.sh: Create /opt/gmt and copy files\n" >&2
-sudo mkdir -p $MEXBINDIR $MEXSUPDIR $MEXINCDIR
-# Find user's group and use that to set ownership
-grp=`id -gn`
-sudo chown -R ${USER}:${grp} $MEXGM5TDIR
+rm -rf $MEXGM5TDIR
+printf "gmt_prepmex.sh: Create $MEXGM5TDIR and copy files\n" >&2
+mkdir -p $MEXBINDIR $MEXSUPDIR $MEXINCDIR
 # Copy the share files
 cd $BUNDLEDIR/Contents/Resources
-scp -r share $MEXSHADIR
+cp -r share $MEXSHADIR
 # Copy the include files
 cd $BUNDLEDIR/Contents/Resources/include
-scp -r gmt $MEXINCDIR
+cp -r gmt $MEXINCDIR
 # Copy the bin files
 cd $BUNDLEDIR/Contents/Resources/bin
-scp -r * $MEXBINDIR
+cp -r * $MEXBINDIR
 # Now copy the lib files
 printf "gmt_prepmex.sh: Copy and rename libraries\n" >&2
 cd $BUNDLEDIR/Contents/Resources/lib
@@ -78,15 +76,16 @@ while read lib; do
 		new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
 		if [ $k -eq 1 ]; then # Do the id change
 			was=`echo $lib | awk -F/ '{print substr($1,4)}'`
-			install_name_tool -id $MEXLIBDIR/$new $lib
+			install_name_tool -id /opt/gmt/lib/$new $lib
 		else
-			install_name_tool -change $old $MEXLIBDIR/$new $lib
+			install_name_tool -change $old /opt/gmt/lib/$new $lib
 		fi
 		let k=k+1
 	done < /tmp/t.lis
 done < /tmp/l.lis
 # Set links to the new libs
 ln -s libXgmt.dylib libgmt.dylib
+ln -s libXpostscriptlight.dylib libpostscriptlight.dylib
 ln -s libXgmt.5.dylib libXgmt.dylib
 ln -s libXpostscriptlight.5.dylib libXpostscriptlight.dylib
 # If argument gs is given then we also do the same to the GS library.
@@ -101,10 +100,10 @@ if [ "$1" == "gs" ]; then
 		FROM=/opt/local/lib
 		cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib 
 		cp $FROM/libfreetype.6.dylib libXfreetype.6.dylib
-		sudo install_name_tool -id $MEXLIBDIR/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
-		sudo install_name_tool -id $MEXLIBDIR/libXfreetype.6.dylib libXfreetype.6.dylib
-		sudo install_name_tool -change $FROM/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.dylib libXgs.${GSV}.dylib 
-		sudo install_name_tool -change $FROM/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.${GSV}.dylib 
+		sudo install_name_tool -id /opt/gmt/lib/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
+		sudo install_name_tool -id /opt/gmt/lib/libXfreetype.6.dylib libXfreetype.6.dylib
+		sudo install_name_tool -change $FROM/libtiff.5.dylib /opt/gmt/lib/libXtiff.5.dylib libXgs.${GSV}.dylib 
+		sudo install_name_tool -change $FROM/libfreetype.6.dylib /opt/gmt/lib/libXfreetype.6.dylib libXgs.${GSV}.dylib 
 	elif [ -d /usr/local/lib ]; then		# Brew
 		FROM=/usr/local/lib
 		echo "Sorry, no libgs.dylib under HomeBrew yet"
@@ -117,7 +116,7 @@ otool -L supplements.so | grep executable_path | awk '{print $1}' > /tmp/t.lis
 let k=1
 while read old; do
 	new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
-	install_name_tool -change $old $MEXLIBDIR/$new supplements.so
+	install_name_tool -change $old /opt/gmt/lib/$new supplements.so
 	let k=k+1
 done < /tmp/t.lis
 
@@ -127,11 +126,15 @@ otool -L gmt | grep executable_path | awk '{print $1}' > /tmp/t.lis
 let k=1
 while read old; do
 	new=`echo $old | awk -F/ '{printf "libX%s\n", substr($NF,4)}'`
-	install_name_tool -change $old $MEXLIBDIR/$new gmt
+	install_name_tool -change $old /opt/gmt/lib/$new gmt
 	let k=k+1
 done < /tmp/t.lis
-
-version=`gmt-config --version`
+chmod -R ugo+r $MEXGM5TDIR
+printf "gmt_prepmex.sh: Install /opt/gmt\n" >&2
+sudo cp -fpR $MEXGM5TDIR /opt
+rm -rf /tmp/$$
+cd $here
+version=`/opt/gmt/bin/gmt-config --version`
 # Report
 cat << EOF >&2
 gmt_prepmex.sh: Made updated GMT $version installation in /opt/gmt
