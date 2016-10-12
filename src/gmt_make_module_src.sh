@@ -327,14 +327,16 @@ if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 	
 #ifndef BUILD_SHARED_LIBS
-/* Lookup module id by name, return function pointer */
+/* Lookup static module id by name, return function pointer */
 void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
+	size_t len = strlen (candidate);
 	gmt_M_unused(API);
 
+	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
 	/* Match actual_name against g_module[module_id].name */
 	while (g_${L_TAG}_module[module_id].name != NULL &&
-	       strcmp (candidate, g_${L_TAG}_module[module_id].name))
+	       strcmp (&candidate[4], g_${L_TAG}_module[module_id].name))
 		++module_id;
 
 	/* Return Module function or NULL */

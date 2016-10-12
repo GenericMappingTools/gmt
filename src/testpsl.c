@@ -59,7 +59,7 @@ int main () {
 	/* 5a. Get the plot object into our hands */
 	if ((PS = GMT_Read_VirtualFile (API, string)) == NULL) exit (EXIT_FAILURE);
 	/* 5b. Close the virtual file */
-	if ((PS = GMT_Close_VirtualFile (API, string)) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 6. Write the plot to file */
 	if (GMT_Write_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
