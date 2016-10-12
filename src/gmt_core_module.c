@@ -115,8 +115,8 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pssolar", "core", "Plot day-light terminators and other sunlight parameters", ">X},>DI,>DM"},
 	{"pstext", "core", "Plot or typeset text on maps", "<T{,>X}"},
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}"},
-	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2"},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2"},
+	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2"},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}"},
@@ -200,8 +200,8 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"pssolar", "core", "Plot day-light terminators and other sunlight parameters", ">X},>DI,>DM", &GMT_pssolar},
 	{"pstext", "core", "Plot or typeset text on maps", "<T{,>X}", &GMT_pstext},
 	{"pswiggle", "core", "Plot z = f(x,y) anomalies along tracks", "<D{,>X}", &GMT_pswiggle},
-	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxy},
 	{"psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxyz},
+	{"psxy", "core", "Plot lines, polygons, and symbols on maps", "<D{,CC(,T-<,>X},S?(=2", &GMT_psxy},
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}", &GMT_sph2grd},
@@ -266,14 +266,16 @@ const char *gmt_core_module_info (void *API, char *candidate) {
 }
 	
 #ifndef BUILD_SHARED_LIBS
-/* Lookup module id by name, return function pointer */
+/* Lookup static module id by name, return function pointer */
 void *gmt_core_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
+	size_t len = strlen (candidate);
 	gmt_M_unused(API);
 
+	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
 	/* Match actual_name against g_module[module_id].name */
 	while (g_core_module[module_id].name != NULL &&
-	       strcmp (candidate, g_core_module[module_id].name))
+	       strcmp (&candidate[4], g_core_module[module_id].name))
 		++module_id;
 
 	/* Return Module function or NULL */
