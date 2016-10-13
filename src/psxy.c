@@ -1129,8 +1129,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
 				}
-				if ((Ctrl->W.pen.cptmode & 2) == 0)	/* Turn off CPT fill */
+				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+				else if (Ctrl->G.active)
+					current_fill = Ctrl->G.fill;
 			}
 
 			if (geovector) {	/* Vectors do it separately */
