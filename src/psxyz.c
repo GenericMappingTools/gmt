@@ -1046,8 +1046,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
 				}
-				if ((Ctrl->W.pen.cptmode & 2) == 0)	/* Turn off CPT fill */
+				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+				else if (Ctrl->G.active)
+					current_fill = Ctrl->G.fill;
 			}
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
