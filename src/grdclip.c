@@ -254,6 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		n_errors++;
 	}
 	
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option is mandatory\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.mode, "Syntax error -S option: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
 
