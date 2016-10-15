@@ -69,7 +69,7 @@ Required
 
 .. _-J:
 
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: [Not mandatory when -D]. 
 .. include:: explain_-J.rst_
 
 .. _-R:
