@@ -303,6 +303,9 @@ as well. For specific enhancements, we have:
    you sort an entire table in ascending or descending order based on the
    values in a selected column.
 
+*  :doc:`gmtselect` has a new option **-G** for selecting based on a mask grid.
+   Points falling in bins whose grid nodes are non-zero are selected (or not if **-Ig**)
+
 *  :doc:`gmtspatial` has two new modifiers for the **-Q** option that allow
    output segments to be limited based on the segment length (or area for
    polygons) as well as sorting the output in ascending or descending order.
