@@ -23,7 +23,7 @@
  * Version:	5 API
  *
  * Brief synopsis: gmtselect is a general-purpose spatial filter.  Data pass
- * or fail basedon one or more conditions.  Six conditions may be set:
+ * or fail basedon one or more conditions.  Seven conditions may be set:
  *
  *	1. Only data inside a rectangular area may pass
  *	2. Only data within a certain distance from given points may pass
@@ -31,6 +31,7 @@
  *	4. Only data within given polygons may pass
  *	5. Only data within the coastline may pass
  *	6. Only data with z-values within specified range may pass
+ *  7. Only data with (x,y) locations inside a mask grid may pass
  *
  * Distances are calculated in the users units using Euclidian geometry
  * unless a map projection and region (-R -J) are used.  Then, distances
