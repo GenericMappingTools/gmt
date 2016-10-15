@@ -1941,9 +1941,9 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	 * GMT_Read_Data are used.  This section is strictly related to GMT_Get_Record. */
 
 	int *fd = NULL;	/* !!! This MUST be int* due to nature of UNIX system function */
-	unsigned int method, kind;
+	unsigned int method, kind, first = 0;
 	static const char *dir[2] = {"from", "to"};
-	static const char *operation[2] = {"Reading", "Writing"};
+	static const char *operation[3] = {"Reading", "Writing", "Appending"};
 	char *mode = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -1953,28 +1953,37 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	S_obj = API->object[API->current_item[direction]];	/* For shorthand purposes only */
 	GMT_Report (API, GMT_MSG_DEBUG, "api_next_io_source: Selected object %d\n", S_obj->ID);
 	mode = (direction == GMT_IN) ? GMT->current.io.r_mode : GMT->current.io.w_mode;	/* Set reading or writing mode */
+	if (direction == GMT_IN) {	/* Set reading mode */
+		mode = GMT->current.io.r_mode;
+		GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segment of input is set to -1 until first segment header have been dealt with */
+	}
+	else	/* Set writing mode (but could be changed to append if GMT_IS_FILE and filename starts with >) */
+		mode = GMT->current.io.w_mode;
 	S_obj->close_file = false;	/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown if ascii input, i.e., GMT_MAX_COLUMNS */
 	S_obj->n_expected_fields = (GMT->common.b.ncol[direction]) ? GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
 	gmt_M_memset (GMT->current.io.curr_pos[direction], 4U, int64_t);	/* Reset file, seg, point, header counters */
-	if (direction == GMT_IN) GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segent of input is set to -1 until first segment header have been dealt with */
 
 	method = api_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as DATASET */
 	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:	/* Filename given; we must open the file here */
-			if (S_obj->family == GMT_IS_GRID) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids not allowed here */
-			if ((S_obj->fp = gmt_fopen (GMT, S_obj->filename, mode)) == NULL) {	/* Trouble opening file */
-				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for %s\n", S_obj->filename, GMT_direction[direction]);
+			if (S_obj->family == GMT_IS_GRID || S_obj->family == GMT_IS_IMAGE) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids or images not allowed here */
+			if (direction == GMT_OUT && S_obj->filename && S_obj->filename[0] == '>') {
+				mode = GMT->current.io.a_mode;	/* Must append to an existing file (we have already checked the file exists) */
+				first = 1;
+			}
+			if ((S_obj->fp = gmt_fopen (GMT, &(S_obj->filename[first]), mode)) == NULL) {	/* Trouble opening file */
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for %s\n", &(S_obj->filename[first]), GMT_direction[direction]);
 				return (GMT_ERROR_ON_FOPEN);
 			}
 			S_obj->close_file = true;	/* We do want to close files we are opening, but later */
-			strncpy (GMT->current.io.filename[direction], S_obj->filename, GMT_BUFSIZ-1);
+			strncpy (GMT->current.io.filename[direction], &(S_obj->filename[first]), GMT_BUFSIZ-1);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s file %s\n",
-				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
+				operation[direction+first], GMT_family[S_obj->family], dir[direction], &(S_obj->filename[first]));
 			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
 				GMT_Report (API, GMT_MSG_NORMAL, "%s %d bytes of header %s binary file %s\n",
-					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], S_obj->filename);
+					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], &(S_obj->filename[first]));
 			}
 			break;
 
