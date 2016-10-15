@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdmask** *pathfiles* |-G|\ *mask_grd_file*]
+**grdmask** *pathfiles* |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
