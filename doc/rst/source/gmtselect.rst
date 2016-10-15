@@ -14,11 +14,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtselect** [ *table* ]
-[ |-A|\ *min\_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
+[ |-A|\ *min_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
 [ |-C|\ *pointfile*\ **+d**\ *dist*\ [*unit*] ]
 [ |-D|\ *resolution*\ [**+**] ]
 [ |-E|\ [**fn**] ]
-[ |-F|\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
+[ |-F|\ *polygonfile* ]
+[ |-G|\ *gridmask* ]
+[ |-I|\ [**cfglrsz**] ]
 [ |-J|\ *parameters* ]
 [ |-L|\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
@@ -110,6 +112,11 @@ Optional Arguments
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
 
+.. _-G:
+
+**-G**\ *gridmask*
+    Pass all locations that are inside the non-zero grid cells of the grid *gridmask*
+
 .. _-I:
 
 **-I**\ [**cflrsz**]
@@ -118,6 +125,8 @@ Optional Arguments
     **c** select records NOT inside any point's circle of influence.
 
     **f** select records NOT inside any of the polygons.
+
+    **g** will pass records inside the cells with z equal zero of the grid mask in -G.
 
     **l** select records NOT within the specified distance of any line.
 

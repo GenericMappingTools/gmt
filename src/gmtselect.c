@@ -50,7 +50,7 @@
 
 #define GMT_PROG_OPTIONS "-:>JRVabdfghios" GMT_OPT("HMm")
 
-#define GMTSELECT_N_TESTS	6				/* Number of specific tests available */
+#define GMTSELECT_N_TESTS	7				/* Number of specific tests available */
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
 #define F_ITEM	0
@@ -69,27 +69,27 @@ struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
 
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
+	struct GMTSELECT_A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
+	struct GMTSELECT_C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
 		bool active;
 		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
-	struct D {	/* -D<resolution> */
+	struct GMTSELECT_D {	/* -D<resolution> */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-	struct E {	/* -E<operators> , <op> = combination or f,n */
+	struct GMTSELECT_E {	/* -E<operators> , <op> = combination or f,n */
 		bool active;
 		unsigned int inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
-	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
+	struct GMTSELECT_L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
 		bool active;
 		unsigned int end_mode;	/* Controls what happens beyond segment endpoints */
 		int mode;	/* Form of distance calculation (can be negative) */
@@ -97,26 +97,30 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with lines */
 	} L;
-	struct F {	/* -F<polygon> */
+	struct GMTSELECT_F {	/* -F<polygon> */
 		bool active;
 		char *file;	/* Name of file with polygons */
 	} F;
-	struct I {	/* -Icflrsz */
+	struct GMTSELECT_G {	/* -G<grid_mask> */
+		bool active;
+		char *file;
+	} G;
+	struct GMTSELECT_I {	/* -Icflrszg */
 		bool active;
 		bool pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
-	struct N {	/* -N<maskvalues> */
+	struct GMTSELECT_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
-	struct Z {	/* -Z<min>/<max>[+c<col>] */
+	struct GMTSELECT_Z {	/* -Z<min>/<max>[+c<col>] */
 		bool active;
 		unsigned int n_tests;	/* How many of these tests did we get */
 		unsigned int max_col;	/* The largest column we encountered */
 		struct GMTSELECT_ZLIMIT *limit;
 	} Z;
-	struct dbg {	/* -+step */
+	struct GMTSELECT_dbg {	/* -+step */
 		bool active;
 		double step;
 	} dbg;
@@ -130,11 +134,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
-	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
+	C->A.info.high = GSHHS_MAX_LEVEL;		/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
-	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
-	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;	/* Default is to pass if we are inside */
-	gmt_M_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
+	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;         /* Default is that points on a boundary are inside */
+	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;    /* Default is to pass if we are inside */
+	gmt_M_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);            /* Default for "wet" areas = false (outside) */
 	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
 	C->Z.max_col = 1;						/* Minimum number of columns to expect is 1 unless "x,y" data are implied [2] */
 	
@@ -215,9 +219,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
+	             GMT_DIST_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] "
+	             "[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	             GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT,
+				 GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -228,7 +235,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
@@ -240,10 +247,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Pass locations that are inside the non-zero nodes of the grid <gridmask>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c will pass locations beyond the minimum distance to the points in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f will pass locations outside the polygons in -F.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g will pass locations outside the grid mask in -G.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l will pass locations beyond the minimum distance to the lines in -L.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r will pass locations outside the region given in -R [and -J].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s will pass locations that otherwise would be skipped in -N.\n");
@@ -252,7 +261,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s].\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, Append +p to exclude points projecting beyond a line's endpoints.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
@@ -402,6 +411,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
+			case 'G':	/* In-grid selection */
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
 			case 'I':	/* Invert these tests */
 				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
@@ -412,8 +427,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 						case 'f': Ctrl->I.pass[3] = false; break;
 						case 's': Ctrl->I.pass[4] = false; break;
 						case 'z': Ctrl->I.pass[5] = false; break;
+						case 'g': Ctrl->I.pass[6] = false; break;
 						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrszg\n");
 							n_errors++;
 							break;
 					}
@@ -511,16 +527,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK),
+	                                   "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK),
+	                                   "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK),
+	                                   "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit),
+	                                   "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5],
+	                                   "Syntax error: -Iz can only be used with one -Z range\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -549,6 +570,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
 	struct GMT_SHORE c;
 	struct GMT_DATASET *Cin = NULL, *Lin = NULL, *Fin = NULL;
+	struct GMT_GRID *G = NULL;
 	struct GMTSELECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -711,6 +733,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 		}
 	}
+
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL) {
@@ -730,6 +753,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 					pol->segment[seg]->data[GMT_Y][row] = yy;
 				}
 			}
+		}
+	}
+
+	if (Ctrl->G.active) {	/* Grid mask */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, NULL)) == NULL) {
+			Return (API->error);
 		}
 	}
 	
@@ -831,6 +860,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			inside = gmt_near_lines (GMT, xx, yy, line, Ctrl->L.end_mode, NULL, NULL, NULL);
 			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
 		}
+
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
 			if (do_project)	/* Projected lon/lat; temporary reset input type for gmt_inonout to do Cartesian mode */
 				gmt_set_cartesian (GMT, GMT_IN);
@@ -842,6 +872,14 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (do_project)	/* Reset input type for gmt_inonout to do Cartesian mode */
 				gmt_set_geographic (GMT, GMT_IN);
 			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
+		}
+
+		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
+			unsigned int row, col;
+			inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
+			if (inside)
+				inside = (G->data[gmt_M_ij (G->header, row, col)] != 0);
+			if (inside != Ctrl->I.pass[6]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
