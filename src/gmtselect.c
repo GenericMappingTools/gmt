@@ -878,7 +878,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			unsigned int row, col;
 			inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
 			if (inside)
-				inside = (G->data[gmt_M_ij (G->header, row, col)] != 0);
+				inside = (G->data[gmt_M_ijp (G->header, row, col)] != 0);
 			if (inside != Ctrl->I.pass[6]) { output_header = need_header; continue;}
 		}
 
