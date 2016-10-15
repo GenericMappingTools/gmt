@@ -61,7 +61,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D{,AD(=,TD(,>D}"},
 	{"gmtread", "core", "Read GMT objects into external API", "-T-,<?{,>?}"},
 	{"gmtregress", "core", "Linear regression of 1-D data sets", "<D{,>D}"},
-	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D}"},
+	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D},GG("},
 	{"gmtset", "core", "Change individual GMT default parameters", ""},
 	{"gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}"},
 	{"gmtspatial", "core", "Geospatial operations on lines and polygons", "<D{,DD(=f,ND(=,TD(,>D},>TD,>TI,>TN+r"},
