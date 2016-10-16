@@ -51,12 +51,22 @@
 
 #define GMT_PROG_OPTIONS "-:>JRVabdfghios" GMT_OPT("HMm")
 
-#define GMTSELECT_N_TESTS	7				/* Number of specific tests available */
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
 #define F_ITEM	0
 #define N_ITEM	1
 
+enum GMTSELECT {	/* Indices for the various tests */
+	GMT_SELECT_R = 0,
+	GMT_SELECT_C,
+	GMT_SELECT_L,
+	GMT_SELECT_F,
+	GMT_SELECT_N,
+	GMT_SELECT_Z,
+	GMT_SELECT_G,
+	GMT_SELECT_N_TESTS	/* Number of specific tests available */
+};
+	
 struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
 	double x, y, d;
 };
@@ -108,7 +118,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} G;
 	struct GMTSELECT_I {	/* -Icflrszg */
 		bool active;
-		bool pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
+		bool pass[GMT_SELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct GMTSELECT_N {	/* -N<maskvalues> */
 		bool active;
@@ -138,7 +148,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.info.high = GSHHS_MAX_LEVEL;		/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;         /* Default is that points on a boundary are inside */
-	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;    /* Default is to pass if we are inside */
+	for (i = 0; i < GMT_SELECT_N_TESTS; i++) C->I.pass[i] = true;    /* Default is to pass if we are inside */
 	gmt_M_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);            /* Default for "wet" areas = false (outside) */
 	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
 	C->Z.max_col = 1;						/* Minimum number of columns to expect is 1 unless "x,y" data are implied [2] */
@@ -248,7 +258,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Pass locations that are inside the non-zero nodes of the grid <gridmask>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Pass locations that are inside the non-zero, non-NaN nodes of the grid <gridmask>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c will pass locations beyond the minimum distance to the points in -C.\n");
@@ -422,13 +432,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
-						case 'r': Ctrl->I.pass[0] = false; break;
-						case 'c': Ctrl->I.pass[1] = false; break;
-						case 'l': Ctrl->I.pass[2] = false; break;
-						case 'f': Ctrl->I.pass[3] = false; break;
-						case 's': Ctrl->I.pass[4] = false; break;
-						case 'z': Ctrl->I.pass[5] = false; break;
-						case 'g': Ctrl->I.pass[6] = false; break;
+						case 'r': Ctrl->I.pass[GMT_SELECT_R] = false; break;
+						case 'c': Ctrl->I.pass[GMT_SELECT_C] = false; break;
+						case 'l': Ctrl->I.pass[GMT_SELECT_L] = false; break;
+						case 'f': Ctrl->I.pass[GMT_SELECT_F] = false; break;
+						case 's': Ctrl->I.pass[GMT_SELECT_N] = false; break;
+						case 'z': Ctrl->I.pass[GMT_SELECT_Z] = false; break;
+						case 'g': Ctrl->I.pass[GMT_SELECT_G] = false; break;
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrszg\n");
 							n_errors++;
@@ -541,7 +551,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit),
 	                                   "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5],
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[GMT_SELECT_Z],
 	                                   "Syntax error: -Iz can only be used with one -Z range\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -834,7 +844,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 					inside = doubleAlmostEqualZero (in[col], Ctrl->Z.limit[k].min);
 				else
 					inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 
-				if (inside != Ctrl->I.pass[5]) keep = false;
+				if (inside != Ctrl->I.pass[GMT_SELECT_Z]) keep = false;
 			}
 			if (!keep) { output_header = need_header; continue;}
 		}
@@ -842,7 +852,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		lon = in[GMT_X];	/* Use copy since we may have to wrap 360 */
 		if (GMT->common.R.active) {	/* Apply region test */
 			inside = !gmt_map_outside (GMT, lon, in[GMT_Y]);
-			if (inside != Ctrl->I.pass[0]) { output_header = need_header; continue;}
+			if (inside != Ctrl->I.pass[GMT_SELECT_R]) { output_header = need_header; continue;}
 		}
 
 		if (do_project)	/* First project the input point */
@@ -854,12 +864,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->C.active) {	/* Check for distance to points */
 			inside = gmt_near_a_point (GMT, xx, yy, point, Ctrl->C.dist); 
-			if (inside != Ctrl->I.pass[1]) { output_header = need_header; continue;}
+			if (inside != Ctrl->I.pass[GMT_SELECT_C]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->L.active) {	/* Check for distance to lines */
 			inside = gmt_near_lines (GMT, xx, yy, line, Ctrl->L.end_mode, NULL, NULL, NULL);
-			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
+			if (inside != Ctrl->I.pass[GMT_SELECT_L]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
@@ -872,15 +882,17 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 			if (do_project)	/* Reset input type for gmt_inonout to do Cartesian mode */
 				gmt_set_geographic (GMT, GMT_IN);
-			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
+			if (inside != Ctrl->I.pass[GMT_SELECT_F]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
 			unsigned int row, col;
 			inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
-			if (inside)
-				inside = (G->data[gmt_M_ijp (G->header, row, col)] != 0);
-			if (inside != Ctrl->I.pass[6]) { output_header = need_header; continue;}
+			if (inside) {	/* Inside -R so check the node value */
+				uint64_t node = gmt_M_ijp (G->header, row, col);
+				inside = !(gmt_M_is_fnan (G->data[node]) || G->data[node] == 0);
+			}
+			if (inside != Ctrl->I.pass[GMT_SELECT_G]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
@@ -949,7 +961,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				}
 			}
 			inside = Ctrl->N.mask[this_point_level];
-			if (inside != Ctrl->I.pass[4]) { output_header = need_header; continue;}
+			if (inside != Ctrl->I.pass[GMT_SELECT_N]) { output_header = need_header; continue;}
 		}
 
 		/* Here, we have passed all active test and the point is to be output */
