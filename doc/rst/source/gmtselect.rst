@@ -112,7 +112,8 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *gridmask*
-    Pass all locations that are inside the non-zero grid cells of the grid *gridmask*
+    Pass all locations that are inside the valid data area of the grid *gridmask*.
+	Nodes that are outside are either NaN or zero.
 
 .. _-I:
 
@@ -297,6 +298,13 @@ origin.txt for a certain projection, try
 
     gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c \
     --PROJ_LENGTH_UNIT=cm > subset2
+
+To return all points in quakes.txt that are inside the grid topo.nc
+where the values are nonzero, try
+
+   ::
+
+    gmt select quakes.txt -Gtopo.nc > subset2
 
 .. include:: explain_gshhs.rst_
 
