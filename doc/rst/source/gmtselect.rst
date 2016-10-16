@@ -41,17 +41,14 @@ Synopsis
 Description
 -----------
 
-**gmtselect** is a filter that reads (longitude, latitude) positions
-from the first 2 columns of *infiles* [or standard input] and uses a
-combination of 1-6 criteria to pass or reject the records. Records can
-be selected based on whether or not they are 1) inside a rectangular
-region (**-R** [and **-J**]), 2) within *dist* km of any point in
-*pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one
-of the polygons in the *polygonfile*, 5) inside geographical features
-(based on coastlines), or 6) has z-values within a given range. The
-sense of the tests can be reversed for each of these 6 criteria by using
-the **-I** option. See option **-:** on how to read (latitude,longitude)
-files. 
+**gmtselect** is a filter that reads (longitude, latitude) positions from the first 2 columns of *infiles*
+[or standard input] and uses a combination of 1-7 criteria to pass or reject the records. Records can be
+selected based on whether or not they are 1) inside a rectangular region (**-R** [and **-J**]), 2) within
+*dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
+polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
+within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
+be reversed for each of these 6 criteria by using the **-I** option. See option **-:** on how to read
+(latitude,longitude) files. 
 
 Required Arguments
 ------------------
