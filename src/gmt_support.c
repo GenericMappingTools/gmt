@@ -3316,24 +3316,21 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	if ((ms->refpoint = gmt_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
 
 	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->origin[GMT_Y]), txt_sy);
-	if (k == 5)	/* Must also decode longitude of scale */
-		error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_sx, GMT_IS_LON, &ms->origin[GMT_X]), txt_sx);
-	else		/* Default to central meridian */
-		ms->origin[GMT_X] = GMT->current.proj.central_meridian;
 	if (fabs (ms->origin[GMT_Y]) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Latitude where scale should apply is out of range\n", option);
 		error++;
 	}
-	if (fabs (ms->origin[GMT_X]) > 360.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale longitude is out of range\n", option);
-		error++;
+	if (k == 5)	{/* Must also decode longitude of scale */
+		error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_sx, GMT_IS_LON, &ms->origin[GMT_X]), txt_sx);
+		if (fabs (ms->origin[GMT_X]) > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale longitude is out of range\n", option);
+			error++;
+		}
 	}
+	else		/* Default to central meridian [this will be the result if we assign NaN here] */
+		ms->origin[GMT_X] = GMT->session.d_NaN;
 	if (ms->length <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Length must be positive\n", option);
-		error++;
-	}
-	if (fabs (ms->origin[GMT_Y]) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Defining latitude is out of range\n", option);
 		error++;
 	}
 
