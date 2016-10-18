@@ -38,11 +38,11 @@ int main (int argc, char *argv[]) {
 	struct GMT_PALETTE **C = NULL;
 	struct GMT_POSTSCRIPT **P = NULL;
 	unsigned int flag[3] = {0, 0, 0};
-
+	gmt_M_unused(argc);
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	/* 0. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* Test reading several grid headers */
 	
