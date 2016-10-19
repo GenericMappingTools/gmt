@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**
+**-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -108,7 +108,7 @@ Optional Arguments
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**
     to alternate the direction of cross-profiles, or **v** to enforce
-    either a "west-to-east" or "south-to_north" view. Append suitable units
+    either a "west-to-east" or "south-to-north" view. Append suitable units
     to *length*; it sets the unit used for *ds* [and *spacing*] (See
     UNITS below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
