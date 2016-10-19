@@ -253,19 +253,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 		py = y;
 	}
 
-	if (D->active) {	/* Place label, so set font */
-		fmode = gmt_setfont (GMT, &D->font);
-		if (D->just) {	/* Want labels beneath the bar, not above */
-			label_justify = (flip_to_y) ? PSL_MR: PSL_TC;
-			if (D->mode) label_justify = (flip_to_y) ? PSL_TC : PSL_MR;
-			if (D->mode) label_angle = (flip_to_y) ? -90.0 : 90.0;
-		}
-		else {	/* Want labels above the bar */
-			label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
-			if (D->mode) label_justify = (flip_to_y) ? PSL_BC : PSL_ML;
-			if (D->mode) label_angle = (flip_to_y) ? -90.0 : 90.0;
-		}
-	}
+	/* First lay down the bars or curve */
 	for (ibox = 0; ibox < F->n_boxes; ibox++) {
 		if (stairs || F->boxh[ibox]) {
 			x[0] = F->wesn[XLO] + ibox * F->box_width;
@@ -320,7 +308,54 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 				gmt_setfill (GMT, fill, draw_outline);
 				PSL_plotpolygon (PSL, px, py, 4);
 			}
-			if (D->active) {	/* Place label */
+		}
+	}
+	if (stairs) PSL_plotpoint (PSL, px[1], py[1], PSL_DRAW + PSL_STROKE);
+
+	/* If -D then place labels */
+	if (D->active) {	/* Place label, so set font */
+		fmode = gmt_setfont (GMT, &D->font);
+		if (D->just) {	/* Want labels beneath the bar, not above */
+			label_justify = (flip_to_y) ? PSL_MR: PSL_TC;
+			if (D->mode) label_justify = (flip_to_y) ? PSL_TC : PSL_MR;
+			if (D->mode) label_angle = (flip_to_y) ? -90.0 : 90.0;
+		}
+		else {	/* Want labels above the bar */
+			label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
+			if (D->mode) label_justify = (flip_to_y) ? PSL_BC : PSL_ML;
+			if (D->mode) label_angle = (flip_to_y) ? -90.0 : 90.0;
+		}
+		for (ibox = 0; ibox < F->n_boxes; ibox++) {
+			if (stairs || F->boxh[ibox]) {
+				x[0] = F->wesn[XLO] + ibox * F->box_width;
+				if (F->center_box) x[0] -= (0.5 * F->box_width);
+				x[1] = x[0] + F->box_width;
+				if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
+				if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
+				xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
+				x[2] = x[1];
+				x[3] = x[0];
+				y[0] = y[1] = F->wesn[YLO];
+				if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
+					y[2] = d_log1p (GMT, (double)F->boxh[ibox]);
+				else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
+					y[2] = d_log101p (GMT, (double)F->boxh[ibox]);
+				else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
+					y[2] = (100.0 * F->boxh[ibox]) / F->n_counted;
+				else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
+					y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->n_counted );
+				else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
+					y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->n_counted );
+				else
+					y[2] = (double)F->boxh[ibox];
+				y[3] = y[2];
+
+				for (i = 0; i < 4; i++) {
+					gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
+					px[i] = xx;	py[i] = yy;
+				}
+
+				/* Place label */
 				if (flip_to_y) {
 					plot_y = 0.5 * (py[0] + py[1]);
 					plot_x = (D->just) ? px[0] - D->offset : px[2] + D->offset;
@@ -335,7 +370,6 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 		}
 	}
 
-	if (stairs) PSL_plotpoint (PSL, px[1], py[1], PSL_DRAW + PSL_STROKE);
 	if (F->cumulative) return (area);
 	return (area * F->box_width);
 }
