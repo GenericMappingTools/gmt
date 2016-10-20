@@ -317,7 +317,7 @@ as well. For specific enhancements, we have:
    specifying '-'.  Also, new **-C** option can be used to reset the
    command history in the header.
 
-*  :doc:`grdfft` has a new modifier to the **-E** that allows for more
+*  :doc:`grdfft` has a new modifier to the **-E** option that allows for more
    control of the power normalization for radial spectra.
 
 *  :doc:`grdmath` also has the new operators **VAR**, 
@@ -375,8 +375,8 @@ The API
 
 We have spend most of our time strengthening the API, in particular in support
 of the GMT/MATLAB toolbox.  A few new API functions have been added since the
-initial release, including GMT_Get_Pixel, GMT_Set_Index,
-GMT_Open_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
+initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Open_VirtualFile,
+GMT_Close_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
 see the API :doc:`GMT_API` for details.
 
 
