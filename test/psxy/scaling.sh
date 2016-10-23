@@ -21,10 +21,10 @@ echo 0 2 100 | gmt psxy -R -J -O -K -Sci -i0,1,2s0.01 -Gblack >> $ps
 # UL
 # BUG: Convert the value of 150 to 1 cm via z = (150 - 50) * 0.01 = 150 * 0.01 - 0.5
 # The 150 is converted to inch (prematurely) then scaled and offset and may even go negative
-# Next line fakes the answer to build a test ps:
-echo 0 0 1 | gmt psxy -R -J  -Baf -O -K -Scc -Gblack -X-6c -Y8c >> $ps
+# Next line faked the answer to build a test ps:
+# echo 0 0 1 | gmt psxy -R -J  -Baf -O -K -Scc -Gblack -X-6c -Y8c >> $ps
 # Next line is the offending line:
-#echo 0 0 150 | gmt psxy -R -J  -Baf -O -K -Scc -i0,1,2s0.01o-0.5 -Gblack -X-6c -Y8c >> $ps
+echo 0 0 150 | gmt psxy -R -J  -Baf -O -K -Scc -i0,1,2s0.01o-0.5 -Gblack -X-6c -Y8c >> $ps
 # Convert the value of 150 to 1 inch via z = (150 - 50) * 0.01 = 150 * 0.01 - 0.5
 echo 0 2 150 | gmt psxy -R -J -O -K -Sci -i0,1,2s0.01o-0.5 -Gblack >> $ps
 # UR
