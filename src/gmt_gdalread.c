@@ -417,7 +417,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 							" This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quiting with error\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quitting with error\n");
 			return(-1);
 		}
 
@@ -431,7 +431,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		    || anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quiting with error\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quitting with error\n");
 			return(-1);
 		}
 		Ctrl->RasterXsize = nXSize = anSrcWin[2];

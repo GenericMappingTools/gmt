@@ -56,7 +56,7 @@ Required Arguments
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exlusive with **-G**.
+    option is mutually exclusive with **-G**.
 
 .. _-G:
 
