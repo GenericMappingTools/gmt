@@ -170,11 +170,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i: integral\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   q: square\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: remove mean value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i|q|r can repeat mutiple times. -Frii will convert accerate to displacement.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i|q|r can repeat multiple times. -Frii will convert accerate to displacement.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The order of i|q|r controls the order of the data processing.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint postive or negative portion of traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint positive or negative portion of traces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only -G is used, default to fill the positive portion black.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [p|n] controls the painting of postive portion or negative portion. Repeat -G option to specify fills for pos/neg portion, respectively.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [p|n] controls the painting of positive portion or negative portion. Repeat -G option to specify fills for pos/neg portion, respectively.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +g<fill>: color to fill\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +t<t0>/<t1>: paint traces between t0 and t1 only. The reference time of t0 and t1 is determined by -T option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +z<zero>: define zero line. From <zero> to top is positive portion, from <zero> to bottom is negative portion.\n");
@@ -188,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> > 0, multiply all traces by size*r^alpha, r is the distance range in km.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot traces vertically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the time scale in seconds per <unit> while plotting on geographic plots. Use PROJ_LENGTH_UNIT if <unit> is ommited.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the time scale in seconds per <unit> while plotting on geographic plots. Use PROJ_LENGTH_UNIT if <unit> is omitted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Time alignment. \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<reduce_vel> reduce velocity in km/s.\n");

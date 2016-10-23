@@ -478,7 +478,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {
 		gmt_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
 		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Point give by -D is outside map; no plotting occours.");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Point given by -D is outside map; no plotting occurs.");
 			Return (GMT_NOERROR);
 		};
 	}

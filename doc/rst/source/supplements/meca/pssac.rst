@@ -125,7 +125,7 @@ Optional Arguments
 
         **r**: remove mean value
 
-    **i|q|r** can repeat mutiple times. For example, **-Frii** will convert acceleration to displacement.
+    **i|q|r** can repeat multiple times. For example, **-Frii** will convert acceleration to displacement.
     The order of **i|q|r** controls the order of the data processing.
 
 .. _-G:
@@ -134,7 +134,7 @@ Optional Arguments
     Paint positive or negative portion of traces.
     If only **-G** is used, default to fill the positive portion black.
 
-        **p**\|\ **n** controls the painting of postive **p**\ ortion or **n**\ egative portion.
+        **p**\|\ **n** controls the painting of positive **p**\ ortion or **n**\ egative portion.
         Repeat **-G** option to specify fills for positive and negative portions, respectively.
 
         **+g**\ *fill*: color to fill
@@ -180,7 +180,7 @@ Optional Arguments
 
 **-S**\ *sec_per_measure*\ [*unit*]
     Specify the time scale in *sec_per_measure* seconds per *unit* while plotting on geographic plots.
-    Use PROJ_LENGTH_UNIT if *unit* is ommited.
+    Use PROJ_LENGTH_UNIT if *unit* is omitted.
 
 .. _-T:
 

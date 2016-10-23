@@ -950,7 +950,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				n_skipped++;
 			}
 		}
-		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %u triangles whose verticies are all outside the domain.\n", n_skipped);
+		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %u triangles whose vertices are all outside the domain.\n", n_skipped);
 	}
 	
 	if (Ctrl->C.cpt) {	/* We already read the CPT */
