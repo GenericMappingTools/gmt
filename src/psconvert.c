@@ -1863,22 +1863,25 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			gmt_str_toupper (tag);
 
-			if (transparency) {
+			if (transparency) {	/* Get here when PDF is _NOT_ the final output format but an intermediate format */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be converted to PDF before creating %s\n", tag);
 				/* Temporarily change output device to PDF to get the PDF tmp file */
 				Ctrl->T.device = GS_DEV_PDF;
-				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to PDF...\n");
-			}
-			else
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to %s...\n", tag);
-
-			if (!Ctrl->F.active || return_image) {
-				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				/* After conversion, we convert the tmp PDF file to desired format via a 2nd gs call */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to intermediate PDF...\n");
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				strcat (out_file, "_intermediate");
 			}
-			else
-				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
+			else {	/* Output is the final result */
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to %s...\n", tag);
+
+				if (!Ctrl->F.active || return_image) {
+					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				}
+				else
+					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
+			}
 			strcat (out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (was Ctrl->A.resize = true;) */
@@ -1925,7 +1928,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					            ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
-			if (transparency) {	/* Now convert PDF to desired format */
+			if (transparency) {	/* Now convert temporary PDF to desired format */
 				char pdf_file[GMT_BUFSIZ] = {""};
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert PDF with transparency to %s...\n", tag);
 				Ctrl->T.device = dest_device;	/* Reset output device type */
