@@ -409,6 +409,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	
 	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
@@ -629,6 +630,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
 	signed_levels = Ctrl->E.levels;
+	if (Pin->mode & GMT_CPT_TEMPORARY && signed_levels != Pin->n_colors) Pin->mode -= GMT_CPT_TEMPORARY;	/* Here we want to interpolate, not stretch */
 	Pout = gmt_sample_cpt (GMT, Pin, z, -signed_levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
 
 	/* Determine mode flags for output */

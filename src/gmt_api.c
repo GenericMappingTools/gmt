@@ -2366,6 +2366,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_palette (struct GMTAPI_CTRL *API, int 
 			snprintf (tmp_cptfile, GMT_LEN64, "api_colors2cpt_%d.cpt", (int)getpid());
 			if (!strcmp (tmp_cptfile, S_obj->filename))	/* This file was created when we gave "name" as red,blue,... instead */
 			 	flag = GMT_CPT_TEMPORARY;	/* So we can take action later when we learn if user wanted a discrete or continuous CPT */
+			/* Note: if a CPT is flagged with GMT_CPT_TEMPORARY we remove that flag in grd2cpt where the assumption of stretching is not valid */
 			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->filename, S_obj->method, mode|flag)) == NULL)
 				return_null (API, GMT_CPT_READ_ERROR);
 			if (flag == GMT_CPT_TEMPORARY) {	/* Remove the temporary file */
