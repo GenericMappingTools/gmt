@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
-[ |-C|\ *cpt* ] [ |-D|\ [**i**\ \|\ **o**] ]
+[ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
 [ |-G|\ *zlo*\ /\ *zhi* ] [ |-I| ]
@@ -97,7 +97,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**i**\ \|\ **o**]
+**-D**\ [**i**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
