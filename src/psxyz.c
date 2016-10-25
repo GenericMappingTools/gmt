@@ -690,7 +690,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		bool periodic = false;
+		bool periodic = false, delayed_unit_scaling[2] = {false, false};
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
@@ -720,6 +720,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			else
 				GMT->current.io.col_type[GMT_IN][ex2] = GMT->current.io.col_type[GMT_IN][ex3] = GMT_IS_GEODIMENSION;
 		}
+		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
+			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
+			delayed_unit_scaling[GMT_X] = (S.u_set && S.u != GMT_INCH);
+		}
+		if (S.read_size && GMT->current.io.col[GMT_IN][ex2].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
+			GMT->current.io.col_type[GMT_IN][ex2] = GMT_IS_FLOAT;
+			delayed_unit_scaling[GMT_Y] = (S.u_set && S.u != GMT_INCH);
+		}
+		
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -821,7 +830,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 			if (S.read_size) {	/* Update sizes from input */
 				S.size_x = in[ex1] * S.factor;
+				if (delayed_unit_scaling[GMT_X]) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
 				S.size_y = in[ex2];
+				if (delayed_unit_scaling[GMT_Y]) S.size_y *= GMT->session.u2u[S.u][GMT_INCH];
 			}
 			data[n].dim[0] = S.size_x;
 			data[n].dim[1] = S.size_y;
