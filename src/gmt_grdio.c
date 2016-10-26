@@ -551,9 +551,10 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
 	unsigned int row;
 	uint64_t ij_new, ij_old;
-	for (row = G->header->n_rows; row > 0; row--) {
-		ij_new = gmt_M_ijp (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
-		ij_old = gmt_M_ijp (h_old, row-1, 0);	/* Index of start of this row's first column in old padded grid */
+	//for (row = G->header->n_rows-1; row >= 0; row--) {
+	for (row = 0; row < G->header->n_rows; row++) {
+		ij_new = gmt_M_ijp (G->header, row, 0);     /* Index of start of this row's first column in new padded grid  */
+		ij_old = gmt_M_ijp (h_old, row, 0);         /* Index of start of this row's first column in old padded grid */
 		gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
 	}
 	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
