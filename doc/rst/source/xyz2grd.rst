@@ -16,7 +16,7 @@ Synopsis
 **xyz2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **R**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
+[ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
 [ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
@@ -70,15 +70,15 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **R**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
+**-A**\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
     ignored if **-Z** is given. Append **f** or **s** to simply keep the
     first or last data point that was assigned to each node. Append
     **l** or **u** or **d** to find the lowest (minimum) or upper (maximum) value
     or the difference between the maximum and miminum value
-    at each node, respectively. Append **m** or **r** or **R** to compute mean or
-    RMS value or RMS about the mean value at each node, respectively. Append **n** to simply count
+    at each node, respectively. Append **m** or **r** or **S** to compute mean or
+    RMS value or standard deviation at each node, respectively. Append **n** to simply count
     the number of data points that were assigned to each node (this only
     requires two input columns *x* and *y* as *z* is not consulted). Append
     **z** to sum multiple values that belong to the same node.

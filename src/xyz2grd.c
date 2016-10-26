@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: xyz2grd [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[d|f|l|m|n|r|R|s|u|z]]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[d|f|l|m|n|r|S|s|u|z]]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Am: Compute mean of multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -An: Count number of multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ar: Compute RMS of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -AR: Compute RMS-about-mean of multiple entries per node.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -AS: Compute standard deviation of multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -As: Keep last value if multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Az: Sum multiple entries at the same node.\n");
@@ -190,8 +190,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
-				else if (!strchr ("dflmnrRsuz", opt->arg[0])) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Select -Ad, -Af, -Al, -Am, -An, -Ar, -AR, -As, -Au, or -Az\n");
+				else if (!strchr ("dflmnrSsuz", opt->arg[0])) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Select -Ad, -Af, -Al, -Am, -An, -Ar, -AS, -As, -Au, or -Az\n");
 					n_errors++;
 				}
 				else {
@@ -318,8 +318,8 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL;
-	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
+	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
 	char c, Amode;
@@ -542,8 +542,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
-	/* For Amode = d or R we need a second grid */
-	if (Amode == 'd' || Amode == 'R') data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
+	/* For Amode = 'd' or 'S' we need a second grid, and also require a minumum of 2 points per grid */
+	if (Amode == 'd' || Amode == 'S') {
+		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
+		n_min = 2;
+	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
@@ -634,56 +637,55 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			row = srow;
 			if (row == Grid->header->n_rows) row--, n_confused++;
 			ij = gmt_M_ij0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
-			if (Amode == 'f') {	/* Want the first value to matter only */
-				if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 's') {	/* Want the last value to matter only */
-				Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
-				flag[ij] = 1;
-			}
-			else if (Amode == 'l') {	/* Keep lowest value */
-				if (flag[ij]) {	/* Already assigned the first value */
-					if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-				}
-				else {	/* First time, just assign the current value */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 'u') {	/* Keep highest value */
-				if (flag[ij]) {	/* Already assigned the first value */
-					if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-				}
-				else {	/* First time, just assign the current value */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 'd') {	/* Keep highest and lowest value */
-				if (flag[ij]) {	/* Already assigned the first value */
-					if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-					if (in[zcol] < (double)data[ij]) data[ij] = (float)in[zcol];
-				}
-				else {	/* First time, just assign the current value */
-					Grid->data[ij] = data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 'r') { 	/* Add up squares in case we must rms */
-				Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
-				flag[ij]++;
-			}
-			else if (Amode == 'R') { 	/* Add up squares and means in case we must do rms-about-mean */
-				Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
-				data[ij] += (float)in[zcol];
-				flag[ij]++;
-			}
-			else { 	/* Add up in case we must sum or mean */
-				Grid->data[ij] += (float)in[zcol];
-				flag[ij]++;
+			switch (Amode) {
+				case 'f':	/* Want the first value to matter only */
+					if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
+						Grid->data[ij] = (float)in[zcol];
+						flag[ij] = n_read;
+					}
+					break;
+				case 's':	/* Want the last value to matter only */
+					Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
+					flag[ij] = n_read;
+					break;
+				case 'l':	/* Keep lowest value */
+					if (flag[ij]) {	/* Already assigned the first value */
+						if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+					}
+					else {	/* First time, just assign the current value */
+						Grid->data[ij] = (float)in[zcol];
+					}
+					flag[ij]++;
+					break;
+				case 'u':	/* Keep highest value */
+					if (flag[ij]) {	/* Already assigned the first value */
+						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+					}
+					else {	/* First time, just assign the current value */
+						Grid->data[ij] = (float)in[zcol];
+					}
+					flag[ij]++;
+					break;
+				case 'd':	/* Keep highest and lowest value */
+					if (flag[ij]) {	/* Already assigned the first value */
+						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+						if (in[zcol] < (double)data[ij]) data[ij] = (float)in[zcol];
+					}
+					else {	/* First time, just assign the current value */
+						Grid->data[ij] = data[ij] = (float)in[zcol];
+					}
+					flag[ij]++;
+					break;
+				case 'S': 	/* Add up squares and means to compute standard deviation */
+					data[ij] += (float)in[zcol];
+				case 'r': 	/* Add up squares in case we must rms */
+					Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
+					flag[ij]++;
+					break;
+				default:	/* Add up in case we must sum or mean */
+					Grid->data[ij] += (float)in[zcol];
+					flag[ij]++;
+					break;
 			}
 			n_used++;
 		}
@@ -706,7 +708,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	else {	/* xyz data could have resulted in duplicates */
 		if (gmt_M_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			uint64_t ij_west, ij_east;
-			bool first_bad = true;
 
 			for (row = 0; row < Grid->header->n_rows; row++) {	/* For each row, look at west and east bin */
 				ij_west = gmt_M_ij0 (Grid->header, row, 0);
@@ -715,32 +716,37 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				if (flag[ij_west] && !flag[ij_east]) {		/* Nothing in east bin, just copy from west */
 					Grid->data[ij_east] = Grid->data[ij_west];
 					flag[ij_east] = flag[ij_west];
+					if (n_min == 2) data[ij_east] = data[ij_west];
 				}
 				else if (flag[ij_east] && !flag[ij_west]) {	/* Nothing in west bin, just copy from east */
 					Grid->data[ij_west] = Grid->data[ij_east];
 					flag[ij_west] = flag[ij_east];
+					if (n_min == 2) data[ij_west] = data[ij_east];
 				}
 				else {	/* Both have some stuff, consolidate combined value into the west bin, then replicate to the east */
-					if (Amode == 'f' || Amode == 's') {	/* Trouble since we did not store when we added these points */
-						if (first_bad) {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -Af|s with replicated longitude bins may give inaccurate values");
-							first_bad = false;
-						}
-					}
-					else if (Amode == 'l') {
-						if (Grid->data[ij_east] < Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
-					}
-					else if (Amode == 'u') {
-						if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
-					}
-					else if (Amode == 'd') {
-						if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
-						if (data[ij_east] < data[ij_west]) data[ij_west] = data[ij_east];
-					}
-					else { 	/* Add up incase we must sum, rms or mean */
-						Grid->data[ij_west] += Grid->data[ij_east];
-						flag[ij_west] += flag[ij_east];
-						if (Amode == 'R') data[ij_west] += data[ij_east];
+					switch (Amode) {
+						case 'f':	/* Keep the first */
+							if (flag[ij_east] < flag[ij_west]) Grid->data[ij_west] = Grid->data[ij_east], flag[ij_west] = flag[ij_east];
+							break;
+						case 's':	/* Keep the last */
+							if (flag[ij_east] > flag[ij_west]) Grid->data[ij_west] = Grid->data[ij_east], flag[ij_west] = flag[ij_east];
+							break;
+						case 'l':	/* Keep the lowest */
+							if (Grid->data[ij_east] < Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
+						case 'd':	/* Keep the lowest in 'data' */
+							if (data[ij_east] < data[ij_west]) data[ij_west] = data[ij_east];
+						case 'u':	/* Keep the highest */
+							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
+						case 'S':	/* Sum up the sums in 'data' */
+							data[ij_west] += data[ij_east];
+						default:	/* Add up incase we must sum, rms, mean, or standard deviation */
+							Grid->data[ij_west] += Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
 					}
 					/* Replicate: */
 					Grid->data[ij_east] = Grid->data[ij_west];
@@ -750,15 +756,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 
 		for (ij = 0; ij < Grid->header->nm; ij++) {	/* Check if all nodes got one value only */
-			if (flag[ij] == 1) {	/* This catches nodes with one value or the -Al|u single values */
-				if (Amode == 'n') Grid->data[ij] = 1.0f;
-				n_filled++;
-			}
-			else if (flag[ij] == 0) {
+			if (flag[ij] < n_min) {	/* Cells are not filled enough */
 				n_empty++;
 				Grid->data[ij] = no_data_f;
 			}
-			else {	/* More than 1 value went to this node */
+			else {	/* Enough values went to this node */
 				if (Amode == 'n')
 					Grid->data[ij] = (float)flag[ij];
 				else if (Amode == 'm')
@@ -767,13 +769,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					Grid->data[ij] = (float)sqrt (Grid->data[ij] / (float)flag[ij]);
 				else if (Amode == 'd')
 					Grid->data[ij] -= data[ij];
-				else if (Amode == 'R') {
-					data[ij] = data[ij] / (float)flag[ij];
-					Grid->data[ij] = (float)sqrt (Grid->data[ij] / (float)flag[ij] - data[ij] * data[ij]);
+				else if (Amode == 'S') {
+					Grid->data[ij] = (float)sqrt ((Grid->data[ij] - data[ij] * data[ij] / (float)flag[ij]) / (float)(flag[ij] - 1));
+
 				}
-				/* implicit else means return the sum of the values */
+				/* Implicit else means return the currently stored value */
 				n_filled++;
-				n_stuffed++;
 			}
 		}
 		gmt_M_free (GMT, flag);
@@ -785,8 +786,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
-			if (n_bad) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);
-			if (n_stuffed && Amode != 'n') GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
 			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}
 	}
