@@ -16,7 +16,7 @@ Synopsis
 **xyz2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
+[ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **R**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
 [ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
@@ -40,7 +40,7 @@ with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
 mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
-of formats, see **-Z** below.) 
+of formats, see **-Z** below.)
 
 Required Arguments
 ------------------
@@ -49,7 +49,7 @@ Required Arguments
 
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE
-    FORMAT below.) 
+    FORMAT below.)
 
 .. _-I:
 
@@ -70,14 +70,15 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
+**-A**\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **R**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
     ignored if **-Z** is given. Append **f** or **s** to simply keep the
     first or last data point that was assigned to each node. Append
-    **l** or **u** to find the lowest (minimum) or upper (maximum) value
-    at each node, respectively. Append **m** or **r** to compute mean or
-    RMS value at each node, respectively. Append **n** to simply count
+    **l** or **u** or **d** to find the lowest (minimum) or upper (maximum) value
+    or the difference between the maximum and miminum value
+    at each node, respectively. Append **m** or **r** or **R** to compute mean or
+    RMS value or RMS about the mean value at each node, respectively. Append **n** to simply count
     the number of data points that were assigned to each node (this only
     requires two input columns *x* and *y* as *z* is not consulted). Append
     **z** to sum multiple values that belong to the same node.
@@ -91,7 +92,7 @@ Optional Arguments
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
-    (or stdout if not supplied). 
+    (or stdout if not supplied).
 
 .. _-V:
 
@@ -147,10 +148,10 @@ Optional Arguments
     Note that **-Z** only applies to 1-column input. The difference
     between **A** and **a** is that the latter can decode both
     *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats while the former
-    is strictly for regular floating point values. 
+    is strictly for regular floating point values.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
-    to xyz input files; see **-Z** for z tables. 
+    to xyz input files; see **-Z** for z tables.
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
