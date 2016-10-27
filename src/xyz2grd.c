@@ -24,7 +24,7 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  */
- 
+
 #define THIS_MODULE_NAME	"xyz2grd"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert data table to a grid file"
@@ -71,9 +71,9 @@ struct XYZ2GRD_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZ2GRD_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
@@ -82,11 +82,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->D.information);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->S.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->D.information);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -147,7 +147,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "bi3,di");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_Option (API, "f,h,i,r,s,:,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -302,7 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
-	if (GMT_Find_Option (API, 'J', options) != NULL) { 
+	if (GMT_Find_Option (API, 'J', options) != NULL) {
 #ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
 		options = GMT_Append_Option(API, opt, options);
@@ -316,8 +316,8 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL;
-	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
+	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
 	char c, Amode;
@@ -328,7 +328,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	void * (*save_i) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;
 	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *);
-	
+
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
@@ -356,11 +356,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the xyz2grd main code ----------------------------*/
 
 	n_req = (Ctrl->Z.active) ? 1 : ((Ctrl->A.mode == 'n') ? 2 : 3);	/* Required input columns */
-	
+
 	if (Ctrl->S.active) {	/* Just swap data and bail */
 		int out_ID;
 		unsigned w_mode = GMT_ADD_DEFAULT;
-		
+
 		save_i = GMT->current.io.input;			/* Save previous i/0 parameters */
 		save_o = GMT->current.io.output;
 		previous_bin_i = GMT->common.b.active[GMT_IN];
@@ -437,12 +437,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		double value;
 		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
-		
+
 		if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		
+
 		if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRID_NODE_REG;
@@ -527,9 +527,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
-	
+
 	no_data_f = (GMT->common.d.active[GMT_IN]) ? (float)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
-	
+
 	/* Set up and allocate output grid [note: zero padding specificied since no BCs required] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
@@ -537,7 +537,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	/* See if we have a projection info to add */
 	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 		Grid->header->ProjRefPROJ4 = gmt_export2proj4(GMT);
-	
+
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
 	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT) {
@@ -603,7 +603,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		n_read++;
-	
+
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
@@ -629,46 +629,48 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			row = srow;
 			if (row == Grid->header->n_rows) row--, n_confused++;
 			ij = gmt_M_ij0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
-			if (Amode == 'f') {	/* Want the first value to matter only */
-				if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 's') {	/* Want the last value to matter only */
-				Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
-				flag[ij] = 1;
-			}
-			else if (Amode == 'l') {	/* Keep lowest value */
-				if (flag[ij]) {	/* Already assigned the first value */
-					if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-				}
-				else {	/* First time, just assign the current value */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 'u') {	/* Keep highest value */
-				if (flag[ij]) {	/* Already assigned the first value */
-					if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-				}
-				else {	/* First time, just assign the current value */
-					Grid->data[ij] = (float)in[zcol];
-					flag[ij] = 1;
-				}
-			}
-			else if (Amode == 'r') { 	/* Add up squares in case we must rms */
-				Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
-				flag[ij]++;
-			}
-			else { 	/* Add up in case we must sum or mean */
-				Grid->data[ij] += (float)in[zcol];
-				flag[ij]++;
+			switch (Amode) {
+				case 'f':	/* Want the first value to matter only */
+					if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
+						Grid->data[ij] = (float)in[zcol];
+						flag[ij] = n_read;
+					}
+					break;
+				case 's':	/* Want the last value to matter only */
+					Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
+					flag[ij] = n_read;
+					break;
+				case 'l':	/* Keep lowest value */
+					if (flag[ij]) {	/* Already assigned the first value */
+						if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+					}
+					else {	/* First time, just assign the current value */
+						Grid->data[ij] = (float)in[zcol];
+					}
+					flag[ij]++;
+					break;
+				case 'u':	/* Keep highest value */
+					if (flag[ij]) {	/* Already assigned the first value */
+						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+					}
+					else {	/* First time, just assign the current value */
+						Grid->data[ij] = (float)in[zcol];
+					}
+					flag[ij]++;
+					break;
+				case 'r': 	/* Add up squares in case we must rms */
+					Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
+					flag[ij]++;
+					break;
+				default:	/* Add up in case we must sum or mean */
+					Grid->data[ij] += (float)in[zcol];
+					flag[ij]++;
+					break;
 			}
 			n_used++;
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
@@ -686,12 +688,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	else {	/* xyz data could have resulted in duplicates */
 		if (gmt_M_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			uint64_t ij_west, ij_east;
-			bool first_bad = true;
 
 			for (row = 0; row < Grid->header->n_rows; row++) {	/* For each row, look at west and east bin */
 				ij_west = gmt_M_ij0 (Grid->header, row, 0);
 				ij_east = gmt_M_ij0 (Grid->header, row, Grid->header->n_columns - 1);
-				
+
 				if (flag[ij_west] && !flag[ij_east]) {		/* Nothing in east bin, just copy from west */
 					Grid->data[ij_east] = Grid->data[ij_west];
 					flag[ij_east] = flag[ij_west];
@@ -701,21 +702,25 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					flag[ij_west] = flag[ij_east];
 				}
 				else {	/* Both have some stuff, consolidate combined value into the west bin, then replicate to the east */
-					if (Amode == 'f' || Amode == 's') {	/* Trouble since we did not store when we added these points */
-						if (first_bad) {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Using -Af|s with replicated longitude bins may give inaccurate values");
-							first_bad = false;
-						}
-					}
-					else if (Amode == 'l') {
-						if (Grid->data[ij_east] < Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
-					}
-					else if (Amode == 'u') {
-						if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
-					}
-					else { 	/* Add up incase we must sum, rms or mean */
-						Grid->data[ij_west] += Grid->data[ij_east];
-						flag[ij_west] += flag[ij_east];
+					switch (Amode) {
+						case 'f':	/* Keep the first */
+							if (flag[ij_east] < flag[ij_west]) Grid->data[ij_west] = Grid->data[ij_east], flag[ij_west] = flag[ij_east];
+							break;
+						case 's':	/* Keep the last */
+							if (flag[ij_east] > flag[ij_west]) Grid->data[ij_west] = Grid->data[ij_east], flag[ij_west] = flag[ij_east];
+							break;
+						case 'l':	/* Keep the lowest */
+							if (Grid->data[ij_east] < Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
+						case 'u':	/* Keep the highest */
+							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
+						default:	/* Add up incase we must sum, rms, mean, or standard deviation */
+							Grid->data[ij_west] += Grid->data[ij_east];
+							flag[ij_west] += flag[ij_east];
+							break;
 					}
 					/* Replicate: */
 					Grid->data[ij_east] = Grid->data[ij_west];
@@ -725,36 +730,30 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 
 		for (ij = 0; ij < Grid->header->nm; ij++) {	/* Check if all nodes got one value only */
-			if (flag[ij] == 1) {	/* This catches nodes with one value or the -Al|u single values */
-				if (Amode == 'n') Grid->data[ij] = 1.0f;
-				n_filled++;
-			}
-			else if (flag[ij] == 0) {
+			if (flag[ij] < n_min) {	/* Cells are not filled enough */
 				n_empty++;
 				Grid->data[ij] = no_data_f;
 			}
-			else {	/* More than 1 value went to this node */
+			else {	/* Enough values went to this node */
 				if (Amode == 'n')
 					Grid->data[ij] = (float)flag[ij];
 				else if (Amode == 'm')
 					Grid->data[ij] /= (float)flag[ij];
 				else if (Amode == 'r')
 					Grid->data[ij] = (float)sqrt (Grid->data[ij] / (float)flag[ij]);
-				/* implicit else means return the sum of the values */
+				}
+				/* Implicit else means return the currently stored value */
 				n_filled++;
-				n_stuffed++;
 			}
 		}
 		gmt_M_free (GMT, flag);
-		
+
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
-			if (n_bad) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);
-			if (n_stuffed && Amode != 'n') GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
 			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}
 	}
