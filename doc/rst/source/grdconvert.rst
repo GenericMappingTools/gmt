@@ -268,12 +268,6 @@ To convert etopo2.nc to etopo2.i2 that can be used by **grdraster**, try
 
     gmt grdconvert etopo2.nc etopo2.i2=bs -N -V
 
-To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
-
-   ::
-
-    gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
-
 See Also
 --------
 

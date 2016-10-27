@@ -749,6 +749,12 @@ where we store and recall the normalized radial arguments in radians:
 
     gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
+To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
+
+   ::
+
+    gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+
 References
 ----------
 
