@@ -741,7 +741,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					Grid->data[ij] /= (float)flag[ij];
 				else if (Amode == 'r')
 					Grid->data[ij] = (float)sqrt (Grid->data[ij] / (float)flag[ij]);
-				}
 				/* Implicit else means return the currently stored value */
 				n_filled++;
 			}
