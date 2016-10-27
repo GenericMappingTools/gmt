@@ -641,12 +641,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				case 'f':	/* Want the first value to matter only */
 					if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
 						Grid->data[ij] = (float)in[zcol];
-						flag[ij] = n_read;
+						flag[ij] = (unsigned int)n_read;
 					}
 					break;
 				case 's':	/* Want the last value to matter only */
 					Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
-					flag[ij] = n_read;
+					flag[ij] = (unsigned int)n_read;
 					break;
 				case 'l':	/* Keep lowest value */
 					if (flag[ij]) {	/* Already assigned the first value */
