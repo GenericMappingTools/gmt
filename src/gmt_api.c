@@ -8683,7 +8683,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 }
 
 /*! . */
-GMT_LOCAL struct GMT_FFT_WAVENUMBER * api_fft_init_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, unsigned int mode, void *v_info) {
+GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, unsigned int mode, void *v_info) {
 	/* Initialize grid dimensions for FFT machinery and set up wavenumbers */
 	unsigned int k, factors[32];
 	uint64_t node;
@@ -8786,7 +8786,6 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER * api_fft_init_2d (struct GMTAPI_CTRL *API, 
 			G->data = f;						/* Attach the new, larger aligned memory */
 			G->header->complex_mode = GMT_GRID_IS_COMPLEX_REAL;	/* Flag as complex grid with real components only */
 			G->header->size = new_size;				/* Update the size of complex grid */
-			gmtlib_grd_real_interleave (GMT, G->header, G->data);	/* Do the multiplexing RRRR.. to R_R_R_... */
 		}
 		if (!(G->header->mx == F->n_columns && G->header->my == F->n_rows)) {	/* Must re-pad, possibly re-allocate the grid */
 			gmt_grd_pad_on (GMT, G, GMT->current.io.pad);
@@ -8997,9 +8996,6 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 			else {		/* Retain real and imag components as is */
 				Out->data[o_ij] = re;	Out->data[o_ij+offset] = im;
 			}
-#if 0
-			fprintf (stderr, "Re/Im = %g/%g  [%d,%d] -> [%d/%d]\n", re, im, row_in, col_in, row_out, col_out);
-#endif
 		}
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
