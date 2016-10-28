@@ -308,7 +308,7 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		options = GMT_Append_Option(API, opt, options);
 #else
 		GMT_Report(API, GMT_MSG_NORMAL,
-		           "Warning: -J option to set grid's referencing system is only availabe when GMT was build with GDAL\n");
+		           "Warning: -J option to set grid's referencing system is only available when GMT was build with GDAL\n");
 #endif
 	}
 }
