@@ -7210,14 +7210,14 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 		D->table[0]->n_headers  = Din->table[0]->n_headers;
 		if (D->table[0]->n_headers) D->table[0]->header = gmt_M_memory (GMT, NULL, D->table[0]->n_headers, char *);
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
-			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
+			for (tbl = len = 0; tbl < Din->n_tables; tbl++) if (Din->table[tbl]->header) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], len);
 			if (Din->n_tables > 1) gmt_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
 				if (tbl < (Din->n_tables - 1)) gmt_chop (Din->table[tbl]->header[hdr]);
 				strcat (D->table[0]->header[hdr], "\t");
-				strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
+				if (Din->table[tbl]->header) strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
 			}
 		}
 
