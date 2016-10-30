@@ -8464,8 +8464,9 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 		info->taper_width = 100.0;		/* Taper over entire margin strip by default */
 
 	switch (args[0]) {
+		case '\0': info->suggest = GMT_FFT_N_SUGGEST;  break;	/* Pick dimensions for the "best" solution */
 		case 'a': info->suggest = GMT_FFT_ACCURATE;  break;	/* Pick dimensions for most accurate solution */
-		case 'f': case '\0': info->info_mode = GMT_FFT_FORCE; break;	/* Default is force actual grid dimensions */
+		case 'f': info->info_mode = GMT_FFT_FORCE; break;	/* Default is force actual grid dimensions */
 		case 'm': info->suggest = GMT_FFT_STORAGE;  break;	/* Pick dimensions for minimum storage */
 		case 'q': info->verbose = true; break;	/* No longer a mode.  Backwards compatibility; see +v instead */
 		case 'r': info->suggest = GMT_FFT_FAST;  break;	/* Pick dimensions for most rapid solution */
@@ -8734,18 +8735,22 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 		if (F->info_mode == GMT_FFT_FORCE) {
 			F->n_columns = G->header->n_columns;
 			F->n_rows = G->header->n_rows;
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected FFT dimensions == Grid dimensions.\n");
 		}
-		else {
+		else {	/* Determine best FFT dimensions */
 			unsigned int pick;
-			char *mode[GMT_FFT_N_SUGGEST+1] = {"fastest", "most accurate", "least storage", "overall best"};
+			char *mode[GMT_FFT_N_SUGGEST] = {"fastest", "most accurate", "least storage"};
 			gmtlib_suggest_fft_dim (GMT, G->header->n_columns, G->header->n_rows, fft_sug, (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) || F->verbose));
-			if (F->suggest == GMT_FFT_N_SUGGEST)	/* Must choose smallest of accurate and fast */
+			if (F->suggest == GMT_FFT_N_SUGGEST) {	/* Must choose smallest of accurate and fast */
 				pick = (fft_sug[GMT_FFT_ACCURATE].totalbytes < fft_sug[GMT_FFT_FAST].totalbytes) ? GMT_FFT_ACCURATE : GMT_FFT_FAST;
-			else	/* Pick the one we selected up front */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected FFT dimensions for the overall best solution (%s).\n", mode[pick]);
+			}
+			else {	/* Pick the one we selected up front */
 				pick = F->suggest;
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected FFT dimensions for the %s solution.\n", mode[pick]);
+			}
 			F->n_columns = fft_sug[pick].n_columns;
 			F->n_rows    = fft_sug[pick].n_rows;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected FFT dimensions for the %s solution.\n", mode[pick]);
 		}
 	}
 
