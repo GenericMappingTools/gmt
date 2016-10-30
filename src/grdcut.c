@@ -528,7 +528,8 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	if (gmt_M_file_is_memory (Ctrl->In.file)) {	/* Cannot manipulate the same grid in two different ways so make a duplicate */
+	if (gmt_M_file_is_memory (Ctrl->In.file) && gmt_M_file_is_memory (Ctrl->G.file)) {
+		/* Cannot manipulate the same grid in two different ways so make a duplicate of the input */
 		struct GMT_GRID *G_dup = NULL;
 		if ((G_dup = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA | GMT_DUPLICATE_RESET, G)) == NULL)
 			Return (API->error);
