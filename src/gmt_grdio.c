@@ -579,8 +579,9 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 			for (row = 0; row < G->header->n_rows; row++) {
 				ij_new = gmt_M_ijp(G->header, row, 0);
 				ij_old = gmt_M_ijp(h_old, row, 0);
-				for (col = G->header->n_columns + ij_new - 1, k = 0; col >= ij_new;col++, k++)
-					data[col] = data[ij_old - k];
+				k = G->header->pad[XLO] - h_old->pad[XLO];
+				for (col = ij_new + G->header->n_columns - 1, k = 0; col >= ij_new; col--, k++)
+					data[col] = data[ij_old + G->header->n_columns - 1 - k];
 			}
 		}
 	}
