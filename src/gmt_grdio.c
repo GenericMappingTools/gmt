@@ -2242,8 +2242,25 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	if (G->header->pocket) Gnew->header->pocket = strdup (G->header->pocket);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
-		Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
-		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, float);
+		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
+			/* Pads differ and we requested resetting the pad */
+			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
+			gmt_set_grddim (GMT, Gnew->header);	/* Update size dimensions given the change of pad */
+			if (mode & GMT_DUPLICATE_DATA) {	/* Per row since grid sizes will not the same */
+				uint64_t node_in, node_out;
+				unsigned int row;
+				Gnew->data = gmt_M_memory_aligned (GMT, NULL, Gnew->header->size, float);
+				gmt_M_row_loop (GMT, G, row) {
+					node_in  = gmt_M_ijp (G->header, row, 0);
+					node_out = gmt_M_ijp (Gnew->header, row, 0);
+					gmt_M_memcpy (&Gnew->data[node_out], &G->data[node_in], G->header->nx, float);
+				}
+			}
+		}
+		else {	/* Can do fast copy */
+			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
+			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, float);
+		}
 	}
 	return (Gnew);
 }

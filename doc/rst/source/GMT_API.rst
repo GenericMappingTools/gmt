@@ -1325,7 +1325,10 @@ are addressed by
 which returns a pointer to the allocated resource. Specify which
 :ref:`family <tbl-family>` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
 ``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above
-(also see ``mode`` discussion above). For :ref:`GMT_DATASET <struct-dataset>` and :ref:`GMT_TEXTSET <struct-textset>` you can
+(also see ``mode`` discussion above). For :ref:`GMT_GRID <struct-grid>`
+you may add ``GMT_DUPLICATE_RESET`` which will ensure the duplicate grid
+will have normal padding (useful when the original has non-standard padding).
+For :ref:`GMT_DATASET <struct-dataset>` and :ref:`GMT_TEXTSET <struct-textset>` you can
 add modifiers ``GMT_ALLOC_VERTICAL`` or ``GMT_ALLOC_HORIZONTAL`` to the ``mode`` if you
 wish to put all the data into a single long table or to paste all tables
 side-by-side, respectively (thus getting one wide table instead).
