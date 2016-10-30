@@ -88,6 +88,7 @@ struct GMT_FFT_INFO {
 	unsigned int n_rows;		/* Desired hard FFT n_rows dimensionl or 0 if free to adjust */
 	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
 	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting n_columns/n_rows or inquire */
+	unsigned int suggest;		/* Index into dimension suggestions [0 = pick best] */
 	int trend_mode;			/* One of the GMT_FFT_TREND for handling detrending */
 	double taper_width;		/* Amount of tapering in percent */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to wavenumber structure */

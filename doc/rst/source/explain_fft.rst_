@@ -1,8 +1,14 @@
-**-N**\ [**f**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+v**][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+**-N**\ [**a**\ \|\ **f**\ \|\ **m**\ \|\ **r**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+v**][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
     Choose or inquire about suitable grid dimensions for FFT and set
     optional parameters. Control the FFT dimension:
     
+    	**-Na** lets the FFT select dimensions yielding the most accurate result. 
+
         **-Nf** will force the FFT to use the actual dimensions of the data. 
+
+    	**-Nm** lets the FFT select dimensions using the least work memory. 
+
+    	**-Nr** lets the FFT select dimensions yielding the most rapid calculation. 
 
         **-Ns** will present a list of optional dimensions, then exit. 
 

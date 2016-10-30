@@ -8337,7 +8337,10 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	else
 		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.\n", option, data_type[d1], dim_ref[d1], dim);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t   Setting the FFT %s:\n", dim_ref[d1]);
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Na will select %s promising the most accurage results.\n", dim_ref[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the %s of the %s.\n", dim_ref[d1], data_type[d1]);
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nm will select %s using the least work storage.\n", dim_ref[d1]);
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nr will select %s promising the most rapid calculation.\n", dim_ref[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Ns will list Singleton's [1967] recommended %s, then exit.\n", dim_ref[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -N%s will do FFT on array size %s (Must be >= %s size).\n", dim_name[d1], dim_name[d1], data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.\n", dim_ref[d1], data_type[d1], dim_ref[d1]);
@@ -8415,6 +8418,7 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 	info->taper_mode = GMT_FFT_EXTEND_NOT_SET;		/* Not set yet */
 	info->trend_mode = GMT_FFT_REMOVE_NOT_SET;		/* Not set yet */
 	info->info_mode = GMT_FFT_UNSPECIFIED;			/* Not set yet */
+	info->suggest = GMT_FFT_N_SUGGEST;				/* Not yet set */
 
 	if ((c = strchr (args, '+'))) {	/* Handle modifiers */
 		while ((gmt_strtok (c, "+", &pos, p))) {
@@ -8460,8 +8464,11 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 		info->taper_width = 100.0;		/* Taper over entire margin strip by default */
 
 	switch (args[0]) {
+		case 'a': info->suggest = GMT_FFT_ACCURATE;  break;	/* Pick dimensions for most accurate solution */
 		case 'f': case '\0': info->info_mode = GMT_FFT_FORCE; break;	/* Default is force actual grid dimensions */
+		case 'm': info->suggest = GMT_FFT_STORAGE;  break;	/* Pick dimensions for minimum storage */
 		case 'q': info->verbose = true; break;	/* No longer a mode.  Backwards compatibility; see +v instead */
+		case 'r': info->suggest = GMT_FFT_FAST;  break;	/* Pick dimensions for most rapid solution */
 		case 's': info->info_mode = GMT_FFT_LIST;  break;
 		default:
 			if (dim == 2U) {	/* 2-D */
@@ -8711,6 +8718,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	if (!F->set || F->info_mode == GMT_FFT_UNSPECIFIED) {	/* User is accepting the default values of extend via edge-point symmetry over 100% of margin */
 		F->info_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;
 		F->taper_width = 100.0;
+		if (!F->set) F->suggest = GMT_FFT_N_SUGGEST;
 		F->set = true;
 	}
 
@@ -8728,18 +8736,16 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 			F->n_rows = G->header->n_rows;
 		}
 		else {
+			unsigned int pick;
+			char *mode[GMT_FFT_N_SUGGEST+1] = {"fastest", "most accurate", "least storage", "overall best"};
 			gmtlib_suggest_fft_dim (GMT, G->header->n_columns, G->header->n_rows, fft_sug, (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) || F->verbose));
-			if (fft_sug[GMT_FFT_ACCURATE].totalbytes < fft_sug[GMT_FFT_FAST].totalbytes) {
-				/* The most accurate solution needs same or less storage
-				 * as the fastest solution; use the most accurate's dimensions */
-				F->n_columns = fft_sug[GMT_FFT_ACCURATE].n_columns;
-				F->n_rows = fft_sug[GMT_FFT_ACCURATE].n_rows;
-			}
-			else {
-				/* Use the sizes of the fastest solution  */
-				F->n_columns = fft_sug[GMT_FFT_FAST].n_columns;
-				F->n_rows = fft_sug[GMT_FFT_FAST].n_rows;
-			}
+			if (F->suggest == GMT_FFT_N_SUGGEST)	/* Must choose smallest of accurate and fast */
+				pick = (fft_sug[GMT_FFT_ACCURATE].totalbytes < fft_sug[GMT_FFT_FAST].totalbytes) ? GMT_FFT_ACCURATE : GMT_FFT_FAST;
+			else	/* Pick the one we selected up front */
+				pick = F->suggest;
+			F->n_columns = fft_sug[pick].n_columns;
+			F->n_rows    = fft_sug[pick].n_rows;
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Selected FFT dimensions for the %s solution.\n", mode[pick]);
 		}
 	}
 
