@@ -255,26 +255,26 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
-	fft_sug[0].n_columns = nx_best_t;
-	fft_sug[0].n_rows = ny_best_t;
-	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
-	fft_sug[0].totalbytes = t_space;
-	fft_sug[0].run_time = best_time;
-	fft_sug[0].rms_rel_err = t_err;
+	fft_sug[GMT_FFT_FAST].n_columns = nx_best_t;
+	fft_sug[GMT_FFT_FAST].n_rows = ny_best_t;
+	fft_sug[GMT_FFT_FAST].worksize = (t_space/8) - (nx_best_t * ny_best_t);
+	fft_sug[GMT_FFT_FAST].totalbytes = t_space;
+	fft_sug[GMT_FFT_FAST].run_time = best_time;
+	fft_sug[GMT_FFT_FAST].rms_rel_err = t_err;
 	/* Most accurate solution */
-	fft_sug[1].n_columns = nx_best_e;
-	fft_sug[1].n_rows = ny_best_e;
-	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
-	fft_sug[1].totalbytes = e_space;
-	fft_sug[1].run_time = e_time;
-	fft_sug[1].rms_rel_err = best_err;
+	fft_sug[GMT_FFT_ACCURATE].n_columns = nx_best_e;
+	fft_sug[GMT_FFT_ACCURATE].n_rows = ny_best_e;
+	fft_sug[GMT_FFT_ACCURATE].worksize = (e_space/8) - (nx_best_e * ny_best_e);
+	fft_sug[GMT_FFT_ACCURATE].totalbytes = e_space;
+	fft_sug[GMT_FFT_ACCURATE].run_time = e_time;
+	fft_sug[GMT_FFT_ACCURATE].rms_rel_err = best_err;
 	/* Least storage solution */
-	fft_sug[2].n_columns = nx_best_s;
-	fft_sug[2].n_rows = ny_best_s;
-	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
-	fft_sug[2].totalbytes = best_space;
-	fft_sug[2].run_time = s_time;
-	fft_sug[2].rms_rel_err = s_err;
+	fft_sug[GMT_FFT_STORAGE].n_columns = nx_best_s;
+	fft_sug[GMT_FFT_STORAGE].n_rows = ny_best_s;
+	fft_sug[GMT_FFT_STORAGE].worksize = (best_space/8) - (nx_best_s * ny_best_s);
+	fft_sug[GMT_FFT_STORAGE].totalbytes = best_space;
+	fft_sug[GMT_FFT_STORAGE].run_time = s_time;
+	fft_sug[GMT_FFT_STORAGE].rms_rel_err = s_err;
 
 	return;
 }
