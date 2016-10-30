@@ -565,7 +565,7 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 			gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
 		}
 	}
-	else {                                              /* Only a lft-right shuffling*/
+	else {                                              /* Only a left-right shuffling */
 		/* Now, here we also must look if shuffling is right->left or left->right */
 		if (G->header->pad[XLO] < h_old->pad[XLO]) {    /* A right->left shuffle */
 			for (row = 0; row < G->header->n_rows; row++) {
@@ -579,9 +579,8 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 			for (row = 0; row < G->header->n_rows; row++) {
 				ij_new = gmt_M_ijp(G->header, row, 0);
 				ij_old = gmt_M_ijp(h_old, row, 0);
-				k = G->header->pad[XLO] - h_old->pad[XLO];
-				for (col = ij_new + G->header->n_columns - 1, k = 0; col >= ij_new; col--, k++)
-					data[col] = data[ij_old + G->header->n_columns - 1 - k];
+				for (col = ij_new + G->header->n_columns - 1, k = ij_old + G->header->n_columns - 1; col >= ij_new; col--, k--)
+					data[col] = data[k];
 			}
 		}
 	}
