@@ -55,11 +55,17 @@ enum GMT_FFT_KCHOICE {
 	};
 	
 enum GMT_FFT_DIMSET {
-	GMT_FFT_EXTEND = 0,
+	GMT_FFT_UNSPECIFIED = 0,
+	GMT_FFT_EXTEND,
 	GMT_FFT_FORCE,
 	GMT_FFT_SET,
-	GMT_FFT_LIST,
-	GMT_FFT_QUERY};
+	GMT_FFT_LIST};
+
+enum GMT_FFT_SUGGEST {	/* Indices for struct GMT_FFT_SUGGESTION arrays */
+	GMT_FFT_FAST = 0,
+	GMT_FFT_ACCURATE,
+	GMT_FFT_STORAGE,
+	GMT_FFT_N_SUGGEST};
 
 /*! Holds parameters needed to calculate kx, ky, kr */
 struct GMT_FFT_WAVENUMBER {
@@ -76,6 +82,7 @@ struct GMT_FFT_INFO {
 	bool save[2];			/* save[GMT_IN] means save the input grid just before calling the FFT */
 					/* save[GMT_OUT] means save the complex output grid just after calling the FFT */
 	bool polar;			/* true if we are to save the complex output grid in polar form */
+	bool verbose;			/* true if we are to report FFT suggestions */
 	char suffix[GMT_LEN64];		/* Suffix used to form output names if save[GMT_IN] is true [tapered] */
 	unsigned int n_columns;		/* Desired hard FFT n_columns dimensionl or 0 if free to adjust */
 	unsigned int n_rows;		/* Desired hard FFT n_rows dimensionl or 0 if free to adjust */

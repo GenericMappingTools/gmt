@@ -1,10 +1,8 @@
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+**-N**\ [**f**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+v**][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
     Choose or inquire about suitable grid dimensions for FFT and set
     optional parameters. Control the FFT dimension:
     
         **-Nf** will force the FFT to use the actual dimensions of the data. 
-
-        **-Nq** will inQuire about more suitable dimensions, report those, then continue. 
 
         **-Ns** will present a list of optional dimensions, then exit. 
 
@@ -35,6 +33,9 @@
         Change this percentage via **+t**\ *width*. When **+n** is in effect,
         the tapering is applied instead to the data margins as no extension is
         available [0%].
+
+	Control messages being reported:
+        **+v** will report suitable dimensions during processing. 
 
     Control writing of temporary results:
     For detailed investigation you can write the intermediate grid being passed

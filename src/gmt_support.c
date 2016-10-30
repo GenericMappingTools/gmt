@@ -13048,17 +13048,17 @@ int gmt_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 			retval = 1;
 	}
 	else if (mode == 2) {
-		struct GMT_FFT_SUGGESTION fft_sug[3];
+		struct GMT_FFT_SUGGESTION fft_sug[GMT_FFT_N_SUGGEST];
 		gmtlib_suggest_fft_dim (GMT, in_dim[GMT_X], in_dim[GMT_Y], fft_sug, false);
-		if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
+		if (fft_sug[GMT_FFT_ACCURATE].totalbytes < fft_sug[GMT_FFT_FAST].totalbytes) {
 			/* The most accurate solution needs same or less storage
 			 * as the fastest solution; use the most accurate's dimensions */
-			out_dim[GMT_X] = fft_sug[1].n_columns;
-			out_dim[GMT_Y] = fft_sug[1].n_rows;
+			out_dim[GMT_X] = fft_sug[GMT_FFT_ACCURATE].n_columns;
+			out_dim[GMT_Y] = fft_sug[GMT_FFT_ACCURATE].n_rows;
 		}
 		else {	/* Use the sizes of the fastest solution  */
-			out_dim[GMT_X] = fft_sug[0].n_columns;
-			out_dim[GMT_Y] = fft_sug[0].n_rows;
+			out_dim[GMT_X] = fft_sug[GMT_FFT_FAST].n_columns;
+			out_dim[GMT_Y] = fft_sug[GMT_FFT_FAST].n_rows;
 		}
 	}
 	else {
