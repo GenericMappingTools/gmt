@@ -2242,8 +2242,25 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	if (G->header->pocket) Gnew->header->pocket = strdup (G->header->pocket);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
-		Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
-		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, float);
+		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
+			/* Pads differ and we requested resetting the pad */
+			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
+			gmt_set_grddim (GMT, Gnew->header);	/* Update size dimensions given the change of pad */
+			if (mode & GMT_DUPLICATE_DATA) {	/* Per row since grid sizes will not the same */
+				uint64_t node_in, node_out;
+				unsigned int row;
+				Gnew->data = gmt_M_memory_aligned (GMT, NULL, Gnew->header->size, float);
+				gmt_M_row_loop (GMT, G, row) {
+					node_in  = gmt_M_ijp (G->header, row, 0);
+					node_out = gmt_M_ijp (Gnew->header, row, 0);
+					gmt_M_memcpy (&Gnew->data[node_out], &G->data[node_in], G->header->nx, float);
+				}
+			}
+		}
+		else {	/* Can do fast copy */
+			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
+			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, float);
+		}
 	}
 	return (Gnew);
 }
@@ -2645,13 +2662,18 @@ bool gmtlib_check_url_name (char *fname) {
 
 unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
 	unsigned int tmp_pad[4] = {0, 0, 0, 0}, delta[4] = {0, 0, 0, 0}, k = 0;
-	/* When using subset with memory grids we must temporarily change the pad to match the region wesn */
-	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] = h->pad[XLO] + urint ((new_wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
-	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] = h->pad[XHI] + urint ((h->wesn[XHI] - new_wesn[XHI]) * h->r_inc[GMT_X]);
-	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] = h->pad[YLO] + urint ((new_wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]);
-	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] = h->pad[YHI] + urint ((h->wesn[YHI] - new_wesn[YHI]) * h->r_inc[GMT_Y]);
-	if (k) {	/* Yes, pad will change since region is different */
-		for (k = 0; k < 4; k++) delta[k] = tmp_pad[k] - h->pad[k];	/* Columns with data being passed */
+	/* When using subset with memory grids we cannot actually cut the grid but instead
+	 * must temporarily change the pad to match the desired inner region wesn.  This means
+	 * the pads will change and can be quite large. */
+	
+	gmt_M_memcpy (tmp_pad, h->pad, 4, unsigned int);	/* Initialize new pad to the original pad */
+	/* First determine which (and how many, k) of the 4 new boundaries are inside the original region and update the padding: */
+	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] += urint ((new_wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
+	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] += urint ((h->wesn[XHI] - new_wesn[XHI]) * h->r_inc[GMT_X]);
+	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] += urint ((new_wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]);
+	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] += urint ((h->wesn[YHI] - new_wesn[YHI]) * h->r_inc[GMT_Y]);
+	if (k) {	/* Yes, pad will change since region is different for k of the 4 sides */
+		for (k = 0; k < 4; k++) delta[k] = tmp_pad[k] - h->pad[k];	/* Columns with data being passed as padding */
 		gmt_M_memcpy (orig_pad, h->pad, 4, unsigned int);	/* Place the original grid pad in the provided array */
 		gmt_M_memcpy (orig_wesn, h->wesn, 4, double);		/* Place the original grid wesn in the provided array */
 		gmt_M_memcpy (h->pad, tmp_pad, 4, unsigned int);	/* Place the new pad in the grid header */
@@ -2659,8 +2681,8 @@ unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: %d pad sides changed. Now %u/%u/%u/%u\n",
 		            k, h->pad[XLO], h->pad[XHI], h->pad[YLO], h->pad[YHI]);
-		for (k = 0; k < 4; k++) {
-			if (delta[k] >= 2) h->BC[k] = GMT_BC_IS_DATA;
+		for (k = 0; k < 4; k++) {	/* If pad now contains data then change the BC to reflect this */
+			if (delta[k] >= orig_pad[k]) h->BC[k] = GMT_BC_IS_DATA;
 		}
 	}
 	else

@@ -510,6 +510,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
 	
+	if (Ctrl->N.active && gmt_M_file_is_memory (Ctrl->In.file)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to extend an external memory grid.  -N ignored\n");
+		Ctrl->N.active = false;
+	}
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
@@ -523,6 +527,12 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
+	}
+	if (gmt_M_file_is_memory (Ctrl->In.file)) {	/* Cannot manipulate the same grid in two different ways so make a duplicate */
+		struct GMT_GRID *G_dup = NULL;
+		if ((G_dup = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA | GMT_DUPLICATE_RESET, G)) == NULL)
+			Return (API->error);
+		G = G_dup;	/* Since G was not allocated here anyway - it came from the outside and will be deleted there */
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
 		unsigned int xlo, xhi, ylo, yhi, row, col;
