@@ -143,6 +143,15 @@ Optional Arguments
 
 .. include:: explain_grd_coord.rst_
 
+Save storage space
+------------------
+
+Since most uses of grdmask revolves around creating mask grids that hold just a few integer
+values (and perhaps NaN), we choose to write them to disk as byte grids by appending the
+suffix **=nb** to the desired grid filename.  Some situations may store integers that exceed
+the range available in a byte and for those we specify a short integer grid with **=ns**.
+For larger integers you may consider **=ni**, otherwise use the default float grid format.
+
 Examples
 --------
 
@@ -164,13 +173,13 @@ in plates.gmt, based on the attribute POL_ID, do
 
    ::
 
-    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID -V
+    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc=ns -aZ=POL_ID -V
 
 Same exercise, but instead compute running polygon IDs starting at 100, do
 
    ::
 
-    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
+    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc=ns -V
 
 See Also
 --------
