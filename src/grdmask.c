@@ -370,14 +370,14 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special check for N and S pole */
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
 						if (doubleAlmostEqual (S->data[GMT_Y][k], 90.0)) {	/* N pole */
 							if (radius == 0.0) {	/* Only set the N pole row */
 								gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */
 									Grid->data[ij] = mask_val[GMT_INSIDE];
 								continue;
 							}
-							for (row = 0; row < Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= radius; row++) {
+							for (row = 0; row < (int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= radius; row++) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
@@ -390,7 +390,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij] = mask_val[GMT_INSIDE];
 								continue;
 							}
-							for (row = Grid->header->n_rows - 1; row >= 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row])) <= radius; row--) {
+							for (row = (int)(Grid->header->n_rows - 1); row >= 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row])) <= radius; row--) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
@@ -398,7 +398,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 							continue;
 						}
 					}
-					
+
 					/* OK, not a pole and this point is within bounds, but may be exactly on the border */
 
 					col_0 = (unsigned int)gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
