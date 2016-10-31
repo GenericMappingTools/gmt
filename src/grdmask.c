@@ -243,7 +243,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	
 	char text_item[GMT_LEN64] = {""};
 
-	float mask_val[3];
+	float mask_val[3], value;
 	
 	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
@@ -369,7 +369,37 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					xtmp = S->data[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
 					if (gmt_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
-					/* OK, this point is within bounds, but may be exactly on the border */
+					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special check for N and S pole */
+						if (doubleAlmostEqual (S->data[GMT_Y][k], 90.0)) {	/* N pole */
+							if (radius == 0.0) {	/* Only set the N pole row */
+								gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */
+									Grid->data[ij] = mask_val[GMT_INSIDE];
+								continue;
+							}
+							for (row = 0; row < Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= radius; row++) {
+								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
+								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
+									Grid->data[ij] = value;
+							}
+							continue;
+						}
+						else if (doubleAlmostEqual (S->data[GMT_Y][k], -90.0)) {	/* S pole */
+							if (radius == 0.0) {	/* Only set the S pole row */
+								gmt_M_col_loop (GMT, Grid, Grid->header->n_rows - 1, col, ij)	/* Set this entire S row */
+									Grid->data[ij] = mask_val[GMT_INSIDE];
+								continue;
+							}
+							for (row = Grid->header->n_rows - 1; row >= 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row])) <= radius; row--) {
+								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
+								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
+									Grid->data[ij] = value;
+							}
+							continue;
+						}
+					}
+					
+					/* OK, not a pole and this point is within bounds, but may be exactly on the border */
 
 					col_0 = (unsigned int)gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
@@ -382,7 +412,6 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						ij = gmt_M_ijp (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
 					}
-					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
