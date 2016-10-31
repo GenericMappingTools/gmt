@@ -562,7 +562,7 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 			gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
 		}
 	}
-	else {	/* Must do it from bottom to top per node */
+	else {	/* Must do it from bottom to top on a per node basis */
 		for (row = G->header->n_rows; row > 0; row--) {
 			ij_new = gmt_M_ijp (G->header, row-1, G->header->n_columns-1); /* Index of this row's last column in new padded grid  */
 			ij_old = gmt_M_ijp (h_old, row-1, G->header->n_columns-1);     /* Index of this row's last column in old padded grid */
@@ -572,47 +572,6 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 	}
 	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
 }
-
-#if 0
-GMT_LOCAL void grdio_pad_grd_on_sub_old (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data) {
-	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
-	size_t ij_new, ij_old, row, col, k;
-	if (G->header->pad[YLO] > h_old->pad[YLO]) {        /* OK to copy rows from bottom to top */
-		for (row = G->header->n_rows; row > 0; row--) {
-			ij_new = gmt_M_ijp (G->header, row-1, 0);   /* Index of start of this row's first column in new padded grid  */
-			ij_old = gmt_M_ijp (h_old, row-1, 0);       /* Index of start of this row's first column in old padded grid */
-			gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
-		}
-	}
-	else if (G->header->pad[YLO] < h_old->pad[YLO]) {	/* Must do it from top to bottom */
-		for (row = 0; row < G->header->n_rows; row++) {
-			ij_new = gmt_M_ijp (G->header, row, 0);     /* Index of start of this row's first column in new padded grid  */
-			ij_old = gmt_M_ijp (h_old, row, 0);         /* Index of start of this row's first column in old padded grid */
-			gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
-		}
-	}
-	else {                                              /* Only a left-right shuffling */
-		/* Now, here we also must look if shuffling is right->left or left->right */
-		if (G->header->pad[XLO] < h_old->pad[XLO]) {    /* A right->left shuffle */
-			for (row = 0; row < G->header->n_rows; row++) {
-				ij_new = gmt_M_ijp(G->header, row, 0);
-				ij_old = gmt_M_ijp(h_old, row, 0);
-				for (col = ij_new, k = 0; col < G->header->n_columns + ij_new; col++, k++)
-					data[col] = data[ij_old + k];
-			}
-		}
-		else {		/* Shuffle left->right */
-			for (row = 0; row < G->header->n_rows; row++) {
-				ij_new = gmt_M_ijp(G->header, row, 0);
-				ij_old = gmt_M_ijp(h_old, row, 0);
-				for (col = ij_new + G->header->n_columns - 1, k = ij_old + G->header->n_columns - 1; col >= ij_new; col--, k--)
-					data[col] = data[k];
-			}
-		}
-	}
-	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
-}
-#endif
 
 GMT_LOCAL void grdio_pad_grd_zero_sub (struct GMT_GRID *G, float *data) {
 	unsigned int row, col, nx1;
