@@ -157,6 +157,8 @@ Optional Arguments
     file. Versions since 1995 have had *maxlon* = 360.0, while some
     earlier files had *maxlon* = 390.0. [Default is 360.0].
 
+.. include:: ../../explain_-n.rst_
+
 .. include:: ../../explain_help.rst_
 
 Geographic Examples
