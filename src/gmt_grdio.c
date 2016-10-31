@@ -550,6 +550,32 @@ GMT_LOCAL void grdio_pad_grd_off_sub (struct GMT_GRID *G, float *data) {
 
 GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data) {
 	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
+	uint64_t ij_new, ij_old, row, col, start_last_new_row, end_last_old_row;
+	
+	/* See if the index of start of last new row exceeds index of last node in old grid */
+	start_last_new_row = (G->header->pad[YHI] + G->header->n_rows - 1) * (G->header->pad[XLO] + G->header->n_columns + G->header->pad[XHI]) + G->header->pad[XLO];
+	end_last_old_row = (h_old->pad[YHI] + h_old->n_rows - 1) * (h_old->pad[XLO] + h_old->n_columns + h_old->pad[XHI]) + h_old->pad[XLO] + h_old->n_columns - 1;
+	if (start_last_new_row > end_last_old_row) {        /* May copy whole rows from bottom to top */
+		for (row = G->header->n_rows; row > 0; row--) {
+			ij_new = gmt_M_ijp (G->header, row-1, 0);   /* Index of this row's first column in new padded grid  */
+			ij_old = gmt_M_ijp (h_old, row-1, 0);       /* Index of this row's first column in old padded grid */
+			gmt_M_memcpy (&(data[ij_new]), &(data[ij_old]), G->header->n_columns, float);
+		}
+	}
+	else {	/* Must do it from bottom to top per node */
+		for (row = G->header->n_rows; row > 0; row--) {
+			ij_new = gmt_M_ijp (G->header, row-1, G->header->n_columns-1); /* Index of this row's last column in new padded grid  */
+			ij_old = gmt_M_ijp (h_old, row-1, G->header->n_columns-1);     /* Index of this row's last column in old padded grid */
+			for (col = 0; col < G->header->n_columns; col++)
+				data[ij_new--] = data[ij_old--];
+		}
+	}
+	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
+}
+
+#if 0
+GMT_LOCAL void grdio_pad_grd_on_sub_old (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data) {
+	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
 	size_t ij_new, ij_old, row, col, k;
 	if (G->header->pad[YLO] > h_old->pad[YLO]) {        /* OK to copy rows from bottom to top */
 		for (row = G->header->n_rows; row > 0; row--) {
@@ -586,6 +612,7 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 	}
 	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
 }
+#endif
 
 GMT_LOCAL void grdio_pad_grd_zero_sub (struct GMT_GRID *G, float *data) {
 	unsigned int row, col, nx1;
