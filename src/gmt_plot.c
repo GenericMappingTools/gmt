@@ -5644,8 +5644,10 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	plon = gmt_M_memory (GMT, NULL, n_new, double);
 	plat = gmt_M_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
-	gmt_M_memcpy (plon, x_perim, perim_n, double);
-	gmt_M_memcpy (plat, y_perim, perim_n, double);
+	if (perim_n) {
+		gmt_M_memcpy (plon, x_perim, perim_n, double);
+		gmt_M_memcpy (plat, y_perim, perim_n, double);
+	}
 	/* Now walk from k0 to the end of polygon, wrapping around if needed */
 	m = perim_n;	/* Index of next output point */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add perimeter data from k0->n [%d->%d], then 0->k0 [%d]\n", k0, n, k0);
@@ -5659,14 +5661,18 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	}
 	/* Then add the opposite path to the pole, swithing the longitude to stop_lon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add path from %g/%g to %g/%g [%d points]\n", stop_lon, yc, stop_lon, pole_lat, perim_n);
-	for (k = perim_n-1; k > 0; k--, m++) {
-		plon[m] = stop_lon;
-		plat[m] = y_perim[k];
+	if (perim_n) {
+		for (k = perim_n-1; k > 0; k--, m++) {
+			plon[m] = stop_lon;
+			plat[m] = y_perim[k];
+		}
 	}
 	/* Finally add the duplicate pole at the end of polygon so it is closed */
 	plon[m] = stop_lon;
 	plat[m++] = pole_lat;
-	gmt_M_free (GMT, x_perim);	gmt_M_free (GMT, y_perim);	/* No longer needed */
+	if (perim_n) {
+		gmt_M_free (GMT, x_perim);	gmt_M_free (GMT, y_perim);	/* No longer needed */
+	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "New path has %d points, we allocated %d points\n", m, n_new);
 #if 0
 	fp = fopen ("shit.txt", "w");
