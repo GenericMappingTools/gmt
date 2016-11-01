@@ -3,13 +3,12 @@
  * Testing a specific case where we wish to pass and receive a GMT_VECTOR or GMT_MATRIX
  * to/from a module that expect to read/write GMT_DATASETs.
  */
-int main (int argc, char *argv[]) {
+int main () {
     void *API = NULL;                 /* The API control structure */
     struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output dataset as matrix */
     char input[GMT_STR16] = {""};     			/* String to hold virtual input filename */
     char output[GMT_STR16] = {""};    			/* String to hold virtual output filename */
     char args[128] = {""};            			/* String to hold module command arguments */
-
     /* Initialize the GMT session */
     API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
     M[GMT_IN] = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "belgium.txt", NULL);

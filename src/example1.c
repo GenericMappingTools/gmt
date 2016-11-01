@@ -1,5 +1,5 @@
 #include "gmt.h"
-int main (int argc, char *argv[]) {
+int main () {
     void *API;                        /* The API control structure */
     struct GMT_DATASET *D = NULL;     /* Structure to hold input dataset */
     struct GMT_GRID *G = NULL;        /* Structure to hold output grid */
