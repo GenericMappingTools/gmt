@@ -200,7 +200,7 @@ enum GMT_enum_duplicate {
 	GMT_DUPLICATE_NONE = 0,		/* Duplicate data set structure but no allocate&copy of data records|grid|image */
 	GMT_DUPLICATE_ALLOC,		/* Duplicate data set structure and allocate space for data records|grid|image, but no copy */
 	GMT_DUPLICATE_DATA,		/* Duplicate data set structure, allocate space for data records|grid|image, and copy */
-	GMT_DUPLICATE_RESET = 4};	/* During duplicate, reset copy to normal system pad if original is different */
+	GMT_DUPLICATE_RESET = 4};	/* During duplicate, reset copy to normal system grid pad if original is different */
 
 /* Various directions and modes to call the FFT */
 enum GMT_enum_FFT {
@@ -222,7 +222,7 @@ enum GMT_enum_verbose {GMT_MSG_QUIET = 0,  /* No messages whatsoever */
 	GMT_MSG_TICTOC,                        /* To print a tic-toc elapsed time message */
 	GMT_MSG_COMPAT,                        /* Compatibility warnings */
 	GMT_MSG_VERBOSE,                       /* Verbose level */
-	GMT_MSG_LONG_VERBOSE,                  /* Longer verbose */
+	GMT_MSG_LONG_VERBOSE,                  /* Longer verbose, -Vl in some programs */
 	GMT_MSG_DEBUG};                        /* Debug messages for developers mostly */
 
 /*============================================================ */

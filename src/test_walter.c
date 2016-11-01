@@ -21,7 +21,7 @@ int main (int argc, char **argv) {
 	struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
 	char grid[GMT_STR16] = {""}, input[GMT_STR16] = {""}, output[GMT_STR16] = {""};
 	char args[256] = {""};
-	
+	(void)(argc);	
     /* Initialize a normal GMT session with 2 rows/cols for grid BC padding */
     if ((API = GMT_Create_Session (argv[0], 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
     /* Read in the grid to be used with grdtrack */

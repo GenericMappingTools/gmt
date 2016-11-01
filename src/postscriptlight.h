@@ -198,11 +198,11 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 /* Verbosity levels */
 
 enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
-	PSL_MSG_FATAL,		/* Fatal errors */
+	PSL_MSG_NORMAL,		/* Default output, e.g., warnings and errors only */
 	PSL_MSG_TICTOC,		/* To print a tic-toc elapsed time message */
 	PSL_MSG_COMPAT,		/* Compatibility warnings */
-	PSL_MSG_NORMAL,		/* Warnings level -V */
-	PSL_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */
+	PSL_MSG_VERBOSE,	/* Warnings level -V */
+	PSL_MSG_LONG_VERBOSE,	/* Longer verbose, -Vl in some programs */
 	PSL_MSG_DEBUG};		/* Debug messages for developers mostly */
 
 /* Color spaces */
