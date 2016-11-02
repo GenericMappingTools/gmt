@@ -569,11 +569,23 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 		ij_old = gmt_M_ijp (h_old, h_old->n_rows-1, h_old->n_columns-1);     /* Index of this row's last column in old padded grid */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub: last ij_new = %d, last ij_old = %d\n", (int)ij_new, (int)ij_old);
 		
-		for (row = G->header->n_rows; row > 0; row--) {
-			ij_new = gmt_M_ijp (G->header, row-1, G->header->n_columns-1); /* Index of this row's last column in new padded grid  */
-			ij_old = gmt_M_ijp (h_old, row-1, h_old->n_columns-1);     /* Index of this row's last column in old padded grid */
-			for (col = 0; col < G->header->n_columns; col++)
-				data[ij_new--] = data[ij_old--];
+		if (ij_new > ij_old) {	/* Can go back to front */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub: Must loop from end to front\n");
+			for (row = G->header->n_rows; row > 0; row--) {
+				ij_new = gmt_M_ijp (G->header, row-1, G->header->n_columns-1); /* Index of this row's last column in new padded grid  */
+				ij_old = gmt_M_ijp (h_old, row-1, h_old->n_columns-1);     /* Index of this row's last column in old padded grid */
+				for (col = 0; col < G->header->n_columns; col++)
+					data[ij_new--] = data[ij_old--];
+			}
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub: Must loop from front to end\n");
+			for (row = 0; row < G->header->n_rows; row++) {
+				ij_new = gmt_M_ijp (G->header, row, 0); /* Index of this row's last column in new padded grid  */
+				ij_old = gmt_M_ijp (h_old, row, 0);     /* Index of this row's last column in old padded grid */
+				for (col = 0; col < G->header->n_columns; col++)
+					data[ij_new++] = data[ij_old++];
+			}
 		}
 	}
 	grdio_grd_wipe_pad (GMT, G);	/* Set pad areas to 0 */
