@@ -142,10 +142,12 @@ enum gmt_enum_units {GMT_IS_METER = 0,
 /* Return 0 for Flat Earth, 1 for Great-circles, 2 for geodesics, and 3 for loxodromes */
 #define gmt_M_sph_mode(C) (gmt_M_is_flatearth (C) ? GMT_FLATEARTH : (gmt_M_is_spherical (C) ? GMT_GREATCIRCLE : (C->current.map.loxodrome ? GMT_LOXODROME : GMT_GEODESIC)))
 
-//#define gmt_M_360_range(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))	/* PW: Reconsider this later perhaps but for now too tight */
+//#define gmt_M_360_range(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))	/* PW: Reconsider this later perhaps but for now too tight [see issue #954] */
 #define gmt_M_180_range(s,n) (doubleAlmostEqual (fabs((n) - (s)), 180.0))
 #define gmt_M_360_range(w,e) (gmt_M_is_zero (fabs ((e) - (w)) - 360.0))
 #define gmt_M_is_pole(y) (doubleAlmostEqual (fabs(y), 90.0))
+#define gmt_M_is_Npole(y) (gmt_M_is_zero(y-90.0))
+#define gmt_M_is_Spole(y) (gmt_M_is_zero(y+90.0))
 #define gmt_M_is_zero(x) (fabs (x) < GMT_CONV8_LIMIT)
 
 #ifndef D2R

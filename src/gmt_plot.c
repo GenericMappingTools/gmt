@@ -1151,9 +1151,9 @@ GMT_LOCAL void plot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		return;
 	}
 
-	if (!GMT->current.proj.north_pole && s <= -90.0) /* Cannot have southern boundary */
+	if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s)) /* Cannot have southern boundary */
 		GMT->current.map.frame.side[S_SIDE] = 0;
-	if (GMT->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
+	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n)) /* Cannot have northern boundary */
 		GMT->current.map.frame.side[N_SIDE] = 0;
 	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w))
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
@@ -1215,9 +1215,9 @@ GMT_LOCAL void plot_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 	/* Here draw fancy map boundary */
 
-	if (!GMT->current.proj.north_pole && s <= -90.0) /* Cannot have southern boundary */
+	if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s)) /* Cannot have southern boundary */
 		GMT->current.map.frame.side[S_SIDE] = 0;
-	if (GMT->current.proj.north_pole && n >= 90.0) /* Cannot have northern boundary */
+	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n)) /* Cannot have northern boundary */
 		GMT->current.map.frame.side[N_SIDE] = 0;
 
 	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
@@ -1266,9 +1266,9 @@ GMT_LOCAL void plot_ellipse_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 		return;
 	}
 	plot_wesn_map_boundary (GMT, PSL, w, e, s, n);	/* Draw outline first, then turn off non-existant sides */
-	if (GMT->common.R.wesn[YLO] <= -90.0) /* Cannot have southern boundary */
+	if (gmt_M_is_Spole (GMT->common.R.wesn[YLO])) /* Cannot have southern boundary */
 		GMT->current.map.frame.side[S_SIDE] = 0;
-	if (GMT->common.R.wesn[YHI] >= 90.0) /* Cannot have northern boundary */
+	if (gmt_M_is_Npole (GMT->common.R.wesn[YHI])) /* Cannot have northern boundary */
 		GMT->current.map.frame.side[N_SIDE] = 0;
 }
 
