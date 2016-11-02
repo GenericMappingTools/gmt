@@ -76,6 +76,7 @@ struct GRAVFFT_CTRL {
 	struct GRVF_F {	/* -F[f[+]|g|e|n|v] */
 		bool active;
 		bool slab;
+		bool bouger;
 		unsigned int mode;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
@@ -160,18 +161,18 @@ static double	scale_out = 1.0;
 static double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
-                float *raised, uint64_t n, double rho);
+                          float *raised, uint64_t n, double rho);
 GMT_LOCAL void do_isostasy(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
 GMT_LOCAL void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
 GMT_LOCAL void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
 GMT_LOCAL void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
-                        struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+                                  struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
 GMT_LOCAL void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
-                          struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+                                    struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
 GMT_LOCAL void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
-                          double *z_top_or_bot, double delta_pt);
+                                    double *z_top_or_bot, double delta_pt);
 GMT_LOCAL int do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl,
-                  struct GMT_FFT_WAVENUMBER *K);
+                            struct GMT_FFT_WAVENUMBER *K);
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
@@ -259,9 +260,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->F.mode = GRAVFFT_GEOID;      break;
-					case 'v': Ctrl->F.mode = GRAVFFT_VGG; 	     break;
+					case 'v': Ctrl->F.mode = GRAVFFT_VGG;        break;
 					case 'e': Ctrl->F.mode = GRAVFFT_DEFL_EAST;  break;
 					case 'n': Ctrl->F.mode = GRAVFFT_DEFL_NORTH; break;
+					case 'b':
+						Ctrl->F.mode   = GRAVFFT_FAA;
+						Ctrl->F.slab   = true;
+						Ctrl->F.bouger = true;
+						break;
 					default:  Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
 					 	if (opt->arg[1] == '+') Ctrl->F.slab = true;
 						break;
@@ -374,9 +380,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 	if (Ctrl->C.active) {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Error: -T not set\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_top && !Ctrl->Z.zm,
-									"Error: -Z not set, must give moho compensation depth\n");
+		                                   "Error: -Z not set, must give moho compensation depth\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_below && !(Ctrl->Z.zm && Ctrl->Z.zl),
-									"Error: -Z not set, must give moho and swell compensation depths\n");
+		                                   "Error: -Z not set, must give moho and swell compensation depths\n");
 	}
 	else {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
@@ -387,7 +393,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.moho && !Ctrl->Z.zm,
 					"Error: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += gmt_M_check_condition (GMT, !(Ctrl->D.active || Ctrl->T.active || Ctrl->S.active ||
-							Ctrl->I.active), "Error: must set density contrast\n");
+		                                   Ctrl->I.active), "Error: must set density contrast\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->In.file[1],
 					"Error: for admittance|coherence need a gravity or geoid grid\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->misc.from_below && Ctrl->misc.from_top,
@@ -775,8 +781,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				slab_gravity = (float) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST *
 				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
 				GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
-				for (m = 0; m < Grid[0]->header->size; m++)
-					Grid[0]->data[m] += slab_gravity;
+				if (Ctrl->F.bouger)		/* The complete bouger contribution */
+					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] = slab_gravity - Grid[0]->data[m];
+				else
+					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] += slab_gravity;
 			}
 			break;
 		case GRAVFFT_GEOID:
