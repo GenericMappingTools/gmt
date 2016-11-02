@@ -6692,6 +6692,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK) {
 			return (GMT->parent->error);
 		}
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
+			if (gmt_M_is_Npole (GMT->current.io.grd_info.grd.wesn[YHI])) GMT->current.io.grd_info.grd.wesn[YHI] = 90.0;
+			if (gmt_M_is_Spole (GMT->current.io.grd_info.grd.wesn[YLO])) GMT->current.io.grd_info.grd.wesn[YLO] = 90.0;
+		}
 		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
 			if (fabs (GMT->current.io.grd_info.grd.wesn[XLO]) > 360.0 || fabs (GMT->current.io.grd_info.grd.wesn[XHI]) > 360.0 \
 			  || fabs (GMT->current.io.grd_info.grd.wesn[YLO]) > 90.0 || fabs (GMT->current.io.grd_info.grd.wesn[YHI]) > 90.0) {	/* Yes we probably did, but cannot be sure */
