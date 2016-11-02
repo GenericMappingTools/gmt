@@ -25,9 +25,9 @@ if (DO_TESTS)
 		grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
 		grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject ogr
-		project psbasemap pscoast pscontour pshistogram psimage pslegend postscriptlight
+		project psbasemap pscoast pscontour pshistogram psimage pslegend psmask postscriptlight
 		psrose pssac psscale pssolar pstext psxy psxyz sample1d segy spectrum1d sph sph2grd splitxyz
-		surface time trend2d triangulate img meca mgd77 potential spotter x2sys)
+		surface time trend1d trend2d triangulate img meca mgd77 potential spotter x2sys)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)

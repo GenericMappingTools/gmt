@@ -19,4 +19,3 @@ gmt psxy -R -J -O -K -W1p,blue model.txt >> $ps
 gmt trend1d data3.txt -N2 -Fxm > model.txt
 gmt psxy -R-50/50/0/6 -J -Baf data3.txt -Sc0.1c -Gblack -O -K -Y3.25i >> $ps
 gmt psxy -R -J -O -W1p,blue model.txt >> $ps
-gv $ps &
