@@ -760,6 +760,32 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 				grd[ij] = 1;
 			}
 			else {	/* Set coordinate of this node */
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
+					if (gmt_M_is_Npole (in[GMT_Y])) {	/* N pole */
+						if (Ctrl->S.radius == 0.0) {	/* Only set the N pole row */
+							gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */
+								grd[ij] = 1;
+							continue;
+						}
+						for (row = 0; row < Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= Ctrl->S.radius; row++) {
+							gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
+								grd[ij] = 1;
+						}
+						continue;
+					}
+					else if (gmt_M_is_Spole (in[GMT_Y])) {	/* S pole */
+						if (Ctrl->S.radius == 0.0) {	/* Only set the S pole row */
+							gmt_M_col_loop (GMT, Grid, Grid->header->n_rows - 1, col, ij)	/* Set this entire S row */
+								grd[ij] = 1;
+							continue;
+						}
+						for (row = Grid->header->n_rows; row > 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row-1])) <= Ctrl->S.radius; row--) {
+							gmt_M_col_loop (GMT, Grid, row-1, col, ij)	/* Set this entire row */
+								grd[ij] = 1;
+						}
+						continue;
+					}
+				}
 
 				x0 = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 				y0 = gmt_M_grd_row_to_y (GMT, row, Grid->header);
