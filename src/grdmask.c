@@ -371,7 +371,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
 					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
-						if (doubleAlmostEqual (S->data[GMT_Y][k], 90.0)) {	/* N pole */
+						if (gmt_M_is_Npole (S->data[GMT_Y][k])) {	/* N pole */
 							if (radius == 0.0) {	/* Only set the N pole row */
 								gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */
 									Grid->data[ij] = mask_val[GMT_INSIDE];
@@ -384,7 +384,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 							}
 							continue;
 						}
-						else if (doubleAlmostEqual (S->data[GMT_Y][k], -90.0)) {	/* S pole */
+						else if (gmt_M_is_Spole (S->data[GMT_Y][k])) {	/* S pole */
 							if (radius == 0.0) {	/* Only set the S pole row */
 								gmt_M_col_loop (GMT, Grid, Grid->header->n_rows - 1, col, ij)	/* Set this entire S row */
 									Grid->data[ij] = mask_val[GMT_INSIDE];
