@@ -6702,6 +6702,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (!inv_project) {	/* Got grid with degrees */
 			gmt_M_memcpy (GMT->common.R.wesn, GMT->current.io.grd_info.grd.wesn, 4, double);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG,
+			            "-R<grdfile> converted to -R%.16g/%.16g/%.16g/%.16g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 #if 0
 			/* Next bit removed because of issue #592. Should not change the boundaries of the grid */
 			if (GMT->current.io.grd_info.grd.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->current.io.grd_info.grd.inc[GMT_X], 360.0)) {

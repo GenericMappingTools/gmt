@@ -3,7 +3,7 @@
  * Testing a specific case where we wish to pass and receive a GMT_VECTOR or GMT_MATRIX
  * to/from a module that expect to read/write GMT_DATASETs.
  */
-int main (int argc, char *argv[]) {
+int main () {
     void *API = NULL;                 /* The API control structure */
     struct GMT_VECTOR *V[2] = {NULL, NULL};     /* Structure to hold input/output dataset as vectors */
     struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output dataset as matrix */
