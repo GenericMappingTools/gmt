@@ -156,6 +156,7 @@ enum GMT_swap_direction {
 #define GMT_GRID_LAYOUT		"TRS"	/* Standard GMT scanline single-item grid */
 #define GMT_IMAGE_LAYOUT	"TRBa"	/* Standard GMT scanline band-interleaved image */
 
+#define GMT_CPT_CONTINUOUS	8	/* Final CPT should be continuous */
 #define GMT_CPT_TEMPORARY	16	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
 
 /*! Codes for grdtrack */

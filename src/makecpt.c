@@ -293,8 +293,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
-	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
+	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && !strchr (Ctrl->C.file, ',')) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
 		Ctrl->Z.active = false;
 	}
 
@@ -351,6 +351,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
 
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
@@ -384,6 +385,22 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		i = 0;
 		while ((gmt_strtok (Ctrl->T.list, ",", &pos, p)))
 			z[i++] = atof (p);
+		if (Pin->mode & GMT_CPT_TEMPORARY) {	/* Got -Zcolor,color,... and -Tz,z,z */
+			int k;
+			extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
+			if (nz != (Pin->n_colors + 1)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Mistmatch between number of entries in color list and z list\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
+			for (i = k = 0; i < Pout->n_colors; i++) {
+				Pout->data[i].z_low = z[k];
+				Pout->data[i].z_high = z[++k];
+			}
+			gmtlib_init_cpt (GMT, Pin);	/* Recalculate delta rgb's */
+			if (Ctrl->I.active)	/* Also flip the colors */
+				gmt_invert_cpt (GMT, Pout);
+		}
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {

@@ -2367,7 +2367,6 @@ GMT_LOCAL struct GMT_PALETTE * api_import_palette (struct GMTAPI_CTRL *API, int 
 			snprintf (tmp_cptfile, GMT_LEN64, "api_colors2cpt_%d.cpt", (int)getpid());
 			if (!strcmp (tmp_cptfile, S_obj->filename))	/* This file was created when we gave "name" as red,blue,... instead */
 			 	flag = GMT_CPT_TEMPORARY;	/* So we can take action later when we learn if user wanted a discrete or continuous CPT */
-			/* Note: if a CPT is flagged with GMT_CPT_TEMPORARY we remove that flag in grd2cpt where the assumption of stretching is not valid */
 			if ((P_obj = gmtlib_read_cpt (GMT, S_obj->filename, S_obj->method, mode|flag)) == NULL)
 				return_null (API, GMT_CPT_READ_ERROR);
 			if (flag == GMT_CPT_TEMPORARY) {	/* Remove the temporary file */
@@ -5248,7 +5247,7 @@ GMT_LOCAL struct GMTAPI_DATA_OBJECT * api_make_dataobject (struct GMTAPI_CTRL *A
 }
 
 /*! . */
-GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
+GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int *mode) {
 	/* Take comma-separated color entries given in lieu of a file and build a linear, discrete CPT.
 	 * This may be converted to a continuous CPT if -Z is used by makecpt/grd2cpt.
 	 * We check if a color is valid then write the given entries verbatim to the temp file.
@@ -5285,13 +5284,37 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 		return (GMT_NOTSET);
 	}
 
-	while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
-		if (gmt_getrgb (API->GMT, color, rgb)) {
+	if ((*mode) & GMT_CPT_CONTINUOUS) {	/* Make a continuous cpt from the colors */
+		char last_color[GMT_LEN256] = {""};
+		gmt_strtok (*str, ",", &pos, last_color);	/* Get 1st color entry */
+		if (gmt_getrgb (API->GMT, last_color, rgb)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
 			return (GMT_NOTSET);
 		}
-		fprintf (fp, "%d\t%s\t%d\t%s\n", z, color, z+1, color);
-		z++;	/* Increment z-slice values */
+		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
+			if (gmt_getrgb (API->GMT, color, rgb)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
+				return (GMT_NOTSET);
+			}
+			fprintf (fp, "%d\t%s\t%d\t%s\n", z, last_color, z+1, color);
+			strncpy (last_color, color, GMT_LEN256-1);
+			z++;	/* Increment z-slice values */
+		}
+		*mode -= GMT_CPT_CONTINUOUS;	/* Served its purpose */
+		if (z == 0) {	/* Needed at least two colors to specify a ramp */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot make a continuous color ramp from a single color: %s\n", *str);
+			return (GMT_NOTSET);
+		}
+	}
+	else {
+		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
+			if (gmt_getrgb (API->GMT, color, rgb)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
+				return (GMT_NOTSET);
+			}
+			fprintf (fp, "%d\t%s\t%d\t%s\n", z, color, z+1, color);
+			z++;	/* Increment z-slice values */
+		}
 	}
 	fclose (fp);
 
@@ -6621,7 +6644,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
-			if ((c_err = api_colors2cpt (API, &file)) < 0) { /* Maybe converted colors to new CPT */
+			if ((c_err = api_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				gmt_M_str_free (file);
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */

@@ -405,6 +405,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
 
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
@@ -628,8 +629,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	z = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
 	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
 	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
-
-	if (Pin->mode & GMT_CPT_TEMPORARY && Ctrl->E.levels != Pin->n_colors) Pin->mode -= GMT_CPT_TEMPORARY;	/* Here we want to interpolate, not stretch, so remove this flag */
 
 	signed_levels = Ctrl->E.levels;
 	Pout = gmt_sample_cpt (GMT, Pin, z, -signed_levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
