@@ -6880,7 +6880,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	 * New cpt may be continuous and/or reversed.
 	 * We write the new CPT to stdout. */
 
-	unsigned int i = 0, j, k, upper, lower, nz;
+	unsigned int i = 0, j, k, upper, lower, nz, discrete = !Pin->is_continuous;
 	uint64_t dim_nz[1];
 	bool even = false;	/* even is true when nz is passed as negative */
 	bool set_z_only = false;
@@ -6890,6 +6890,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
+
+	if (Pin->mode & GMT_CPT_TEMPORARY && (unsigned int)abs (nz_in) != (Pin->n_colors + discrete)) Pin->mode -= GMT_CPT_TEMPORARY;	/* Here we want to interpolate, not stretch, so remove this flag */
 
 	set_z_only = (Pin->mode & GMT_CPT_TEMPORARY);	/* No interpolation needed, just set the new z-values */
 	if (continuous && set_z_only) {	/* Must switch from discrete to continuous cpt */
