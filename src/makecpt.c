@@ -388,12 +388,12 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		if (Pin->mode & GMT_CPT_TEMPORARY) {	/* Got -Zcolor,color,... and -Tz,z,z */
 			int k;
 			extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
-			if (nz != (Pin->n_colors + 1)) {
+			if (nz != (int)(Pin->n_colors + 1)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Mistmatch between number of entries in color list and z list\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-			for (i = k = 0; i < Pout->n_colors; i++) {
+			for (i = k = 0; i < (int)Pout->n_colors; i++) {
 				Pout->data[i].z_low = z[k];
 				Pout->data[i].z_high = z[++k];
 			}
@@ -440,7 +440,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just copy what was in the CPT */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high, Ctrl->Z.active);	/* Stretch to given range or use natural range if 0/0 */
+		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);	/* Stretch to given range or use natural range if 0/0 */
 		if (Ctrl->I.active)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
 	}
