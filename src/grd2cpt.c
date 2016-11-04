@@ -504,7 +504,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max, Ctrl->Z.active);
+		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
 		if (Ctrl->I.active)
 			gmt_invert_cpt (GMT, Pout);
 		cpt_flags = 0;
