@@ -60,23 +60,21 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
     |_______________________________________________________________|
     _____________________________________________________________________
     |                                                                   |
-    |  Ifac decrit le corps (ATTN : Integer*2) :                        |
-    |   - Il y a Nff facettes qui sont decrites dans le sens des        |
-    |          aiguilles d'une montre si on regarde le corps de         |
-    |          l'exterieur. Mxsomf = Max de sommets / face              |
-    |   - Le premier nombre indique le nombre de factettes. Suivent     |
-    |       alors des groupes de nombres dont le premier de chaque      |
-    |       groupe est le nombre de sommets de la facette, suivi par    |
-    |       les indices (pointeurs) des sommets (rang dans Xx,Yy,Zz)    |
-    |       correspondant a la facette.                                 |
+    |  Ifac descibes the body (ATTN : Integer*2) :                      |
+    |   - There are Nff facets that are decribed clockwise when seen    |
+    |          from outside. Mxsomf = Max corners / facet               |
+    |   - First number indicates the number of facets. Than follow      |
+    |      groups of numbers, the first of each group is the number     |
+    |      of vertices of the facet, followed by the indices (pointers) |
+    |      vertices (stored in Xx, Yy, Zz) corresponding to the facet.  |
     |                                                                   |
-    |  Par exemple pour un cube                _________________        |
-    |  (Nff=6; 4 sommets /face)              /|         X (Nord)        |
+    |  For example for a cube                  _________________        |
+    |  (Nff=6; 4 corners /face)              /|         X (North)       |
     |  [Ifac] = { 6,  4, 1,2,3,4,           / |                         |
     |                 4, 2,6,7,3,          /  |     1 ________ 2        |
     |                 4, 4,3,7,8,         /   |      /       /|         |
     |                 4, 5,1,4,8,      Y /    |     /       / |         |
-    |                 4, 1,5,6,2,      (Est)  |  4 /_______/3 |         |
+    |                 4, 1,5,6,2,      (East) |  4 /_______/3 |         |
     |                 4, 5,8,7,6 }            |    |       |  |         |
     |                                         |    |       | / 6        |
     |                                       Z |    |       |/           |
@@ -84,7 +82,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
     |                                             8         7           |
     |___________________________________________________________________|
     |                                                                   |
-    |  X,Y ET Z sont les tableaux des coordonness des pts de mesure     |
+    |  X,Y & Z are the coordinate arrays of the measure points          |
     |___________________________________________________________________| */
 
 	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
@@ -110,7 +108,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 
 /* ---------------------------------------------------------------------- */
 GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
-			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
+                       double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi according to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
 	double xi, xj, xk, yi, yj, yk, zi, zj, zk, v, x, y, z;

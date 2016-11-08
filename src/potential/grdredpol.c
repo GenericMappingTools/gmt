@@ -1369,7 +1369,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			if (!Ctrl->C.const_f) {
 				Ctrl->C.dec = out_igrf[5] * D2R;
 				Ctrl->C.dip = out_igrf[6] * D2R;
-				/* Calculo dos cosenos directores */
+				/* Compute the direction cosines */
 				alfa = -cos(Ctrl->C.dip) * cos(Ctrl->C.dec);
 				beta =  cos(Ctrl->C.dip) * sin(Ctrl->C.dec);
 				gama = -sin(Ctrl->C.dip);
