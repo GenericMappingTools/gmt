@@ -306,7 +306,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	if (Ctrl->F.format == Ctrl->T.format) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: The two formats chosen are the same\n");
 	
 	if (Ctrl->T.format == MGD77_FORMAT_TBL && !(strcmp (GMT->current.setting.format_float_out, "%lg") & strcmp (GMT->current.setting.format_float_out, "%g"))) {
-		strcpy (GMT->current.setting.format_float_out, "%.10g");	/* To avoid loosing precision upon rereading this file */
+		strcpy (GMT->current.setting.format_float_out, "%.10g");	/* To avoid losing precision upon rereading this file */
 	}
 	
 	if (Ctrl->T.format == MGD77_FORMAT_CDF && Ctrl->D.active) MGD77_select_high_resolution (GMT);

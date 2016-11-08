@@ -2068,7 +2068,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		char *abbrev[N_E77_AUX_FIELDS] = {"time", "lat", "lon", "twt", "mtf1", "gobs", "eot"};
 		/* First make sure the auxiliary data fields are set */
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
-			if (!E.needed[i]) continue;	/* Dont need this particular column */
+			if (!E.needed[i]) continue;	/* Don't need this particular column */
 			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
 				s_col = MGD77_Info_from_Abbrev (GMT, abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
 				if (s_col == MGD77_NOT_SET) s_col = 0; /* Just to stem a Coverity issue */
@@ -2098,7 +2098,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 					has_prev_twt = true;
 					prev_twt = E.aux[E77_AUX_FIELD_TWT][rec];
 				}
-				E.aux[E77_AUX_FIELD_TWT][rec] += twt_pdrwrap_corr;	/* aux could be either auxilliary or pointer to output column */
+				E.aux[E77_AUX_FIELD_TWT][rec] += twt_pdrwrap_corr;	/* aux could be either auxiliary or pointer to output column */
 			}
 		}
 
@@ -2136,7 +2136,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 			}
 		}
 
-		for (i = 0; i < N_E77_AUX_FIELDS; i++) {	/* Free auxilliary columns not part of the output */
+		for (i = 0; i < N_E77_AUX_FIELDS; i++) {	/* Free auxiliary columns not part of the output */
 			if (E.needed[i] == 2) gmt_M_free (GMT, E.aux[i]);
 		}
 	}
@@ -3868,7 +3868,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	 * Third [set] are list of columns whose bitflag must be either be 1 (+) or 0 (-).
 	 * The presence of the : also turns the automatic use of ALL flags off.
 	 * option is a bitflag integer that controls how to handle constraints and exact matches.
-	 * If option == 0 then we wont bitch about repeated columns.
+	 * If option == 0 then we won't bitch about repeated columns.
 	 */
 
 	char p[GMT_BUFSIZ] = {""}, cstring[GMT_BUFSIZ] = {""}, bstring[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
@@ -5472,7 +5472,7 @@ double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *GMT, double time, double l
 
 unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, char ***item_names, unsigned int mode) {
 	/* This function scans the correction table to determine which named columns
-	 * are needed for corrections as well as which auxilliary variables (e.g.,
+	 * are needed for corrections as well as which auxiliary variables (e.g.,
 	 * time, dist, heading) are needed.
 	 * Returns number of entries in the list, or 0.
 	 */
@@ -5683,8 +5683,8 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 					c->origin = 0.0;
 				}
 				if ((c->id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
-					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxilliaries */
-					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
+					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxiliaries */
+					if (c->id == MGD77_NOT_SET) { /* Not an auxiliary column either */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
 						GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 					}

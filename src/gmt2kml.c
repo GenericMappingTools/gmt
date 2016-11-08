@@ -692,7 +692,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Dd = NULL;
 	struct GMT_TEXTSET *Dt = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -864,7 +864,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		}
 		n_tables = Dt->n_tables;
 	}
-	if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line */
+	if (GMT->common.R.active && first) {	/* Issue Region tag as given on command line */
 		place_region_tag (API, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 		first = false;
 	}

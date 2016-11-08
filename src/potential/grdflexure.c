@@ -891,7 +891,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	else	/* With a single load -> flexure operation we can just recycle the input grid for the output */
 		Out = Load[0]->Grid;
 
-	/* Here, Load[] contains all the input load grids and their laod times, ready to go as H(kx,ky) */
+	/* Here, Load[] contains all the input load grids and their load times, ready to go as H(kx,ky) */
 
 	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
 		uint64_t dim[3] = {1, 1, Ctrl->T.n_eval_times};

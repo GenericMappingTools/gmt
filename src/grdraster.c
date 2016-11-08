@@ -798,7 +798,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Check if given argument is an integer ID.  If so, assign iselect, else set it to UINT_MAX */
 
 	tselect = strdup (Ctrl->In.file);
-	gmt_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
+	gmt_str_toupper (tselect);	/* Make it upper case - which won't affect integers */
 	for (j = i = 0; tselect[j] && i == 0; j++) if (!isdigit ((int)tselect[j])) i = 1;
 	if (i == 0)
 		iselect = atoi (tselect);

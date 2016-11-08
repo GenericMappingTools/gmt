@@ -264,7 +264,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					Ctrl->F.filter = opt->arg[0];
 					Ctrl->F.width = atof (&opt->arg[1]);
 					if (gmt_get_modifier (opt->arg, 'h', txt_a)) Ctrl->F.highpass = true;
-					switch (Ctrl->F.filter) {	/* Get some futher info from some filters */
+					switch (Ctrl->F.filter) {	/* Get some further info from some filters */
 						case 'P':
 						case 'p':
 							c = opt->arg[strlen(opt->arg-1)];

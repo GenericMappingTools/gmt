@@ -101,7 +101,7 @@ GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
 	   to the light source and to the viewer, respectively. 
-	   For the time beeing I'm using V = [azim elev] = [0 90] so the following
+	   For the time being I'm using V = [azim elev] = [0 90] so the following
 
 	   V[0] =  sind(V[0])*cosd(V[1]);
 	   V[1] = -cosd(V[0])*cosd(V[1]);

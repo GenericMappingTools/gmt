@@ -65,7 +65,7 @@
  * PSL_plotsymbol	: Plots a geometric symbol and [optionally] fills it
  * PSL_plottext		: Plots textstring
  * PSL_plottextbox	: Draw a filled box around a textstring
- * PSL_plottextline	: Place labels along paths (straigt or curved), set clip path, draw line
+ * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
  * PSL_loadimage	: Read image file of supported type
  * PSL_command		: Writes a given PostScript statement to the plot file
  * PSL_comment		: Writes a comment statement to the plot file
@@ -1114,7 +1114,7 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	if (PSL->init.encoding == NULL) return (PSL_NO_ERROR);		/* Already have StandardEncoding by default */
 	if (PSL->internal.font[font_no].encoded) return (PSL_NO_ERROR);	/* Already reencoded or should not be reencoded ever */
 
-	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
+	/* Re-encode fonts with Standard+ or ISOLatin1[+] encodings */
 	PSL_command (PSL, "PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 	(PSL->internal.comments) ? PSL_command (PSL, "\t%% Set this font\n") : PSL_command (PSL, "\n");
 	PSL->internal.font[font_no].encoded = true;
@@ -1927,7 +1927,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 		if (heads & (i+1)) tangle[i] += off[i];	/* Change arc angle by headlength or half-circle arc */
 	}
 	side[PSL_BEGIN] = -side[PSL_BEGIN];	/* Because of it was initially implemented */
-	/* rshift kicks in when we want a half-arrow head.  In that case we dont want it to be
+	/* rshift kicks in when we want a half-arrow head.  In that case we don't want it to be
 	 * exactly half since the vector line will then stick out 1/2 line thickness.  So we adjust
 	 * for this half-thickness by adding/subtracting from the radius accordingly, using r2,
 	 * but only if the two heads agree. */
@@ -2071,7 +2071,7 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 
 #define FIN_SLANT_COS	0.707106781187	/* I.e., 45 degrees slant */
 #define FIN_LENGTH_SCALE	0.66666667	/* 2/3 the length of the vector */
-#define FIN_HEIGTH_SCALE	0.5	/* 1/2 the width of the vector */
+#define FIN_HEIGHT_SCALE	0.5	/* 1/2 the width of the vector */
 
 static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Will make sure that arrow has a finite width in PS coordinates.
@@ -2195,13 +2195,13 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 			case PSL_VEC_TAIL:
 				xx[0] = xp + tailwidth + off[PSL_BEGIN]; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
-					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth + off[PSL_BEGIN]; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
-					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth + off[PSL_BEGIN]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 				}
 				xx[n] = xp + tailwidth - FIN_LENGTH_SCALE * headlength + off[PSL_BEGIN]; yy[n++] = -yshift[PSL_BEGIN];
 				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
-					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth - FIN_LENGTH_SCALE * headlength + off[PSL_BEGIN]; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
-					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth - FIN_LENGTH_SCALE * headlength + off[PSL_BEGIN]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
@@ -2306,13 +2306,13 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 			case PSL_VEC_TAIL:
 				xx[0] = xp - tailwidth - off[PSL_BEGIN]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_BEGIN]; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
-					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_BEGIN]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 				}
 				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = -yshift[PSL_END];
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
-					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
@@ -3595,7 +3595,7 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
 #endif
 			break;
-		case PSL_MARC:		/* An arc with optional arrows. size[0] = radius, size[1..2] = azimuth range of arc, size[3] = shape, size[4] = arrows (0 = none, 1 = backward, 2 = foreward, 3 = both) */
+		case PSL_MARC:		/* An arc with optional arrows. size[0] = radius, size[1..2] = azimuth range of arc, size[3] = shape, size[4] = arrows (0 = none, 1 = backward, 2 = forward, 3 = both) */
 			psl_matharc (PSL, x, y, size);
 			break;
 		case PSL_ELLIPSE:	/* An ellipse. size[0] = angle of major axis, size[1..2] = length of major and minor axis */
@@ -5267,7 +5267,7 @@ int PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fontsize
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
-	/* If paragraph is NULL then PSL_plotparagraphbox has been called so we dont need to write the paragraph info to the PS file */
+	/* If paragraph is NULL then PSL_plotparagraphbox has been called so we don't need to write the paragraph info to the PS file */
 	if (paragraph && (error = psl_paragraphprocess (PSL, y, fontsize, paragraph)) != PSL_NO_ERROR) return (error);
 
 	PSL_command (PSL, "V ");

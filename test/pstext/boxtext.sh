@@ -15,7 +15,7 @@ gmt psxy -R -J -O -K -Sri -Gred << EOF >> $ps
 3	2	6	4
 EOF
 gmt psclip -R -J -C -O -K >> $ps
-# Plot alignment lines to hightlight misalignment
+# Plot alignment lines to highlight misalignment
 gmt psxy -R0/6/0/9 -Jx1i -O -Y-5i -W0.5p,blue << EOF >> $ps
 >
 2.115 0

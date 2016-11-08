@@ -18,7 +18,7 @@ gmt grd2xyz sombrero.nc -R-15/15/-15/15 > sombrero_xyz.dat
 gmt triangulate sombrero_xyz.dat > sombrero_tri.dat
 
 # Now add a fourth column to the xyz files with the magnetization
-# which will be constant but have oposite signals for the two halves.
+# which will be constant but have opposite signals for the two halves.
 gmt grd2xyz mag.nc -o2 > m.dat 
 paste sombrero_xyz.dat m.dat > sombrero_xyzm.dat
 

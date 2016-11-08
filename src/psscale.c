@@ -757,7 +757,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
 			/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
-				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accomodate the label */
+				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accommodate the label */
 				u_off = 0.5 * MAX (0.0, 1.3*strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
 				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
 			}
@@ -1159,7 +1159,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
-			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since gmt_end_module will restore it for us */
+			/* Copy x-axis annotation and scale info to y-axis.  We don't need to undo this since gmt_end_module will restore it for us */
 			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
 			gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 			double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
@@ -1296,9 +1296,9 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/

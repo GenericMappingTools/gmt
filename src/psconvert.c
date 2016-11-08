@@ -914,7 +914,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	/* Find where is the setpagedevice line */
 	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
-		while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* It receeded one too much */
+		while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* It receded one too much */
 		/* So now we know where the line starts. Put a 'translate' command in its place. */
 		(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt, yt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
 		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
@@ -923,7 +923,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	else {
 		if ((pch = strstr(PS->data, " translate")) != NULL) {		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
 			double old_xt, old_yt;
-			while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* Goto line start but it receeded one too much */
+			while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* Goto line start but it receded one too much */
 			sscanf (&pch[c_begin], "%lf %lf", &old_xt, &old_yt);
 			(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt + old_xt, yt + old_xt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt + old_xt, yt + old_xt);
 			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
@@ -1508,7 +1508,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (!got_BB && strstr (line, "%%BoundingBox:")) {
 				sscanf (&line[14], "%s %s %s %s",c1,c2,c3,c4);
 				if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
-					if (!got_HRBB) {	/* Only assign values if we havent seen the high-res version yet */
+					if (!got_HRBB) {	/* Only assign values if we haven't seen the high-res version yet */
 						x0 = atoi (c1);		y0 = atoi (c2);
 						x1 = atoi (c3);		y1 = atoi (c4);
 					}

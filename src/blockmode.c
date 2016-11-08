@@ -44,7 +44,7 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double i_offset;	/* 0.5 if we are to bin using the center the bins on multiples of width, else 0.0 */
 	double o_offset;	/* 0.0 if we are to report center the bins on multiples of width, else 0.5 */
 	double i_width;		/* 1/width, to avoid divisions later */
-	double *count;		/* The histogram counts (double to accomodate weighted data), to be reset before each spatial block */
+	double *count;		/* The histogram counts (double to accommodate weighted data), to be reset before each spatial block */
 	int min, max;		/* The raw min,max bin numbers (min can be negative) */
 	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
 	unsigned int n_bins;/* Number of bins required */
@@ -250,7 +250,7 @@ GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n,
 		B->count[bin] += d[i].a[BLK_W];		/* Add up counts or weights */
 		if (B->count[bin] > mode_count) {	/* New max count value; make a note */
 			mode_count = B->count[bin];	/* Highest count so far... */
-			mode_bin = bin;			/* ...occuring for this bin */
+			mode_bin = bin;			/* ...occurring for this bin */
 			n_modes = 1;			/* Only one of these so far */
 		}
 		else if (doubleAlmostEqual (B->count[bin], mode_count)) n_modes++;	/* Bin has same peak as previous best mode; increase mode count */

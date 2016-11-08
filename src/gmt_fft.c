@@ -26,7 +26,7 @@
  *
  * Major overhaul, Florian Wobbe, 2012-07-09:
  *  Added free Kiss FFT (kissfft) to GMT code base.
- *  Superceeded Norman Brenner's ancient Cooley-Tukey FFT implementation
+ *  Superseded Norman Brenner's ancient Cooley-Tukey FFT implementation
  *    Kiss FFT. Brenner still available as a legacy/compativility choice.
  *  Support for Paul Swarztrauber's ancient FFTPACK and for Sun Performance
  *    Library (perflib) have been removed too because they are not maintained

@@ -109,7 +109,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 		return (0);	/* Match failed */
 	}
 	
-	return (1); /* Match succeded */
+	return (1); /* Match succeeded */
 
 #elif defined HAVE_POSIX_ERE
 
@@ -134,7 +134,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 	status = regexec(&re, subject, 0U, NULL, 0);
 	regfree(&re);     /* Release memory used for the compiled pattern */
 	if ( status == 0 )
-		return (1); /* Match succeded */
+		return (1); /* Match succeeded */
 	else if ( status != REG_NOMATCH ) {
 		/* this is when errors have been encountered */
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);

@@ -480,7 +480,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 		/* Now get the covariance matrix */
 
-		/* Here we also want to get the covariance matrix.  To do so we want to parameterize all
+		/* Here we also want to get the covariance matrix.  To do so we want to parametrize all
 		 * the n_use rotations as a small incremental rotation DR_i followed by the mean rotation
 		 * R, i.e., R_i = R * DR_i.  We must therefore first solve for the incremental rotation
 		 * DR_i (a 3x3 matrix) which becomes R^T * R_i and then convert it to a pseudo-vector h

@@ -300,7 +300,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode, save_range;
 	uint64_t col, ncol = 0, n = 0;
 
-	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
+	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""};
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
@@ -332,8 +332,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
-	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
-	delimeter[1] = '\0';
+	delimiter[0] = (Ctrl->C.active) ? '\t' : '/';
+	delimiter[1] = '\0';
 	off = (GMT->common.r.active) ? 0.5 : 0.0;
 
 	brackets = !Ctrl->C.active;
@@ -390,7 +390,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			if (gmt_M_rec_is_segment_header (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
 			if (gmt_M_rec_is_eof (GMT)) {	/* We are done after this since we hit EOF */
 				done = true;
-				GMT->current.io.seg_no++;	/* Must manually increment since we are not reading any futher */
+				GMT->current.io.seg_no++;	/* Must manually increment since we are not reading any further */
 			}
 			if (n == 0) continue;			/* This segment, table, or data set had no data records, skip */
 			
@@ -440,7 +440,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 						if (south < -90.0) {
 							south = -90.0;
 							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90. Reset to -90.\n");
@@ -561,7 +561,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						if (brackets) strcat (record, "<");
 						gmt_ascii_format_col (GMT, buffer, low, GMT_OUT, col);
 						strcat (record, buffer);
-						strcat (record, delimeter);
+						strcat (record, delimiter);
 						gmt_ascii_format_col (GMT, buffer, high, GMT_OUT, col);
 						strcat (record, buffer);
 						if (brackets) strcat (record, ">");

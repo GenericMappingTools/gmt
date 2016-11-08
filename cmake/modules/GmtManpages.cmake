@@ -29,7 +29,7 @@
 if(NOT DEFINED _GMT_MANPAGES_CMAKE_)
 	set(_GMT_MANPAGES_CMAKE_ "DEFINED")
 
-	# usefull macros
+	# useful macros
 	include (GmtHelperMacros)
 
 	# Find groff front-end

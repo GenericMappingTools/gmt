@@ -366,7 +366,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		n_in_tbl = 0;
-		D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Inital (and max) allocation of segments */
+		D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Initial (and max) allocation of segments */
 		for (seg_in = seg_out = 0; seg_in < D[GMT_IN]->table[tbl]->n_segments; seg_in++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg_in];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */

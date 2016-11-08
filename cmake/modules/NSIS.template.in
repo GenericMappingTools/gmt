@@ -389,7 +389,7 @@ FunctionEnd
 
 ; ReplaceEnvVar - Adds the given value to the given environment var
 ;         Input - head of the stack: value to add ($1)
-;                 2nd on stack: environement variable ($0)
+;                 2nd on stack: environment variable ($0)
 
 Function ReplaceEnvVar
 
@@ -423,7 +423,7 @@ Function ReplaceEnvVar
 FunctionEnd
 
 ; RemoveEnvVar - Adds the given value to the given environment var
-;        Input - head of the stack: environement variable to remove ($0)
+;        Input - head of the stack: environment variable to remove ($0)
 
 Function un.RemoveEnvVar
 
@@ -454,7 +454,7 @@ Function un.RemoveEnvVar
 FunctionEnd
 
 ; AddToEnvVar - Adds the given value to the given environment var
-;        Input - head of the stack $0 environement variable $1=value to add
+;        Input - head of the stack $0 environment variable $1=value to add
 ;        Note - Win9x systems requires reboot
 
 Function AddToEnvVar

@@ -111,7 +111,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 /* ---------------------------------------------------------------------- */
 GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
-	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
+	/* Rotates coordinates by teta and phi according to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
 	double xi, xj, xk, yi, yj, yk, zi, zj, zk, v, x, y, z;
 	double r, r2, r_3d, Sxy, Szx, Syz;

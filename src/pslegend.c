@@ -356,7 +356,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct PSLEGEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_OPTION *r_ptr = NULL, *j_ptr = NULL;
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
@@ -736,7 +736,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (d_line_half_width > 0.0) PSL_plotsegment (PSL, Ctrl->D.refpoint->x + d_line_hor_offset, row_base_y, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X] - d_line_hor_offset, row_base_y);
 						d_line_after_gap = (txt_c[0] == '+' || txt_c[0] == '=') ? 0.0 : quarter_line_spacing;
 						row_base_y -= d_line_after_gap;
-						d_line_after_gap -= d_line_half_width;	/* Shrink the gap fill-height after a D line by half the line width so we dont overwrite the line */
+						d_line_after_gap -= d_line_half_width;	/* Shrink the gap fill-height after a D line by half the line width so we don't overwrite the line */
 						column_number = 0;	/* Reset to new row */
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;

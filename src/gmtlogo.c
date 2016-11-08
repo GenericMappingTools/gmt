@@ -169,8 +169,8 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	struct GMT_FONT F;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 

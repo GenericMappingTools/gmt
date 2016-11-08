@@ -296,7 +296,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		     wesn[YHI] > (Gin->header->wesn[YHI] + Gin->header->inc[GMT_Y]) ||
 		     wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) ||
 		     wesn[XHI] > (Gin->header->wesn[XHI] + Gin->header->inc[GMT_X])) && GMT->current.io.grd_info.active) {
-			/* If the limits were specified via -R<grid> adjust those limits to maximum allowd by resampling grid */
+			/* If the limits were specified via -R<grid> adjust those limits to maximum allowed by resampling grid */
 			adjust_R (API, Ctrl, Gin, wesn);
 		}
 		else {

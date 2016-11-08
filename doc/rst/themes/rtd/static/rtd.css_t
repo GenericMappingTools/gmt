@@ -196,7 +196,7 @@ div.related ul li.right {
 
 div.related ul li.right a.search {
     padding: 2px;
-    background-color: transparent; /* for Seach: */
+    background-color: transparent; /* for Search: */
 }
 
 /* "Breadcrumb" links in nav bar */

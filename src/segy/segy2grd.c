@@ -295,7 +295,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	SEGYREEL binhead;
 
 	struct SEGY2GRD_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	
@@ -525,7 +525,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 						jj = (unsigned int)gmt_M_grd_y_to_row (GMT, yval, Grid->header);
 						if (jj == Grid->header->n_rows) jj--, n_confused++;
 						ij = gmt_M_ij0 (Grid->header, jj, ii);
-						Grid->data[ij] += data[isamp];	/* Add up incase we must average */
+						Grid->data[ij] += data[isamp];	/* Add up in case we must average */
 						flag[ij]++;
 						n_used++;
 					}

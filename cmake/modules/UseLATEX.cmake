@@ -35,7 +35,7 @@
 #       the BIBFILES option, and any .cls, .bst, and .clo files found in
 #       the current source directory.  Images found in the IMAGE_DIRS
 #       directories or listed by IMAGES are also copied to the output
-#       directory and coverted to an appropriate format if necessary.  Any
+#       directory and converted to an appropriate format if necessary.  Any
 #       tex files also listed with the CONFIGURE option are also processed
 #       with the CMake CONFIGURE_FILE command (with the @ONLY flag).  Any
 #       file listed in CONFIGURE but not the target tex file or listed with
@@ -318,7 +318,7 @@ MACRO(LATEX_MAKEGLOSSARIES)
         language
         ${xdylanguage_line}
         )
-      # What crazy person makes a LaTeX index generater that uses different
+      # What crazy person makes a LaTeX index generator that uses different
       # identifiers for language than babel (or at least does not support
       # the old ones)?
       IF (${language} STREQUAL "frenchb")
@@ -846,7 +846,7 @@ MACRO(PARSE_ADD_LATEX_ARGUMENTS command)
   ENDIF (LATEX_DEFAULT_ARGS)
 
   IF (LATEX_DEFAULT_ARGS)
-    LATEX_USAGE(${command} "Invalid or depricated arguments: ${LATEX_DEFAULT_ARGS}")
+    LATEX_USAGE(${command} "Invalid or deprecated arguments: ${LATEX_DEFAULT_ARGS}")
   ENDIF (LATEX_DEFAULT_ARGS)
 
   # Backward compatibility between 1.6.0 and 1.6.1.

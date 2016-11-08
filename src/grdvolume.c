@@ -555,7 +555,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (float)take_out;		/* Take out the zero value */
-			if (Work->data[ij] == 0.0) Work->data[ij] = (float)small;	/* But we dont want exactly zero, just + or - */
+			if (Work->data[ij] == 0.0) Work->data[ij] = (float)small;	/* But we don't want exactly zero, just + or - */
 		}
 		if (Ctrl->L.active) this_base -= take_out;
 

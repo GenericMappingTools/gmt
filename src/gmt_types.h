@@ -125,7 +125,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	int prev_y_status;
 	int corner;			/* Tells us which corner 1-4 or -1 if not a corner */
 	bool coastline;			/* true if we are currently plotting the coastline data in pscoast */
-	bool on_border_is_outside;		/* true if a point exactly on the map border shoud be considered outside the map */
+	bool on_border_is_outside;		/* true if a point exactly on the map border should be considered outside the map */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
 	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
@@ -166,11 +166,11 @@ struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
 	int year;		/* signed; negative and 0 allowed  */
 	unsigned int month;	/* Always between 1 and 12  */
 	unsigned int day_m;	/* Day of month; always in 1 - 31  */
-	unsigned int day_y;	/* Day of year; 1 thru 366  */
-	unsigned int day_w;	/* Day of week; 0 (Sun) thru 6 (Sat)  */
+	unsigned int day_y;	/* Day of year; 1 through 366  */
+	unsigned int day_w;	/* Day of week; 0 (Sun) through 6 (Sat)  */
 	int iso_y;		/* ISO year; not necessarily == year */
 	unsigned int iso_w;	/* ISO week of iso_y; must be in 1 -- 53  */
-	unsigned int iso_d;	/* ISO day of iso_w; uses 1 (Mon) thru 7 (Sun)  */
+	unsigned int iso_d;	/* ISO day of iso_w; uses 1 (Mon) through 7 (Sun)  */
 	unsigned int hour;	/* 00 through 23  */
 	unsigned int min;	/* 00 through 59  */
 	double sec;		/* 00 through 59.xxxx; leap not yet handled  */
@@ -321,7 +321,7 @@ struct GMT_SESSION {
 };
 
 struct GMT_CTRL {
-	/* Master structure for a GMT invokation.  All internal settings for GMT is accessed here */
+	/* Master structure for a GMT invocation.  All internal settings for GMT is accessed here */
 	struct GMT_SESSION session;	/* Structure with all values that do not change throughout a session */
 	struct GMT_INIT init;		/* Structure with all values that do not change in a GMT_func call */
 	struct GMT_COMMON common;	/* Structure with all the common GMT command settings (-R -J ..) */

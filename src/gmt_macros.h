@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_macros.h contains definitions of macros used throught GMT.
+ * gmt_macros.h contains definitions of macros used through GMT.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
@@ -25,7 +25,7 @@
 
 /*!
  * \file gmt_macros.h
- * \brief Definitions of macros used throught GMT.
+ * \brief Definitions of macros used through GMT.
  */
 
 #ifndef _GMT_MACROS_H

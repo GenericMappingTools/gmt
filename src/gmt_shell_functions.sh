@@ -3,7 +3,7 @@
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
-# in your script. Placing it in .bashrc makes the functions avaiable
+# in your script. Placing it in .bashrc makes the functions available
 # on the command line as well.  See documentation for usage.
 #
 #----GMT SHELL FUNCTIONS--------------------

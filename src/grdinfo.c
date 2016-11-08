@@ -665,7 +665,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
@@ -745,7 +745,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");

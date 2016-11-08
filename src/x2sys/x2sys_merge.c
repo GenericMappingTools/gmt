@@ -237,7 +237,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
-	/* Jump comment lines in both files and osition the file poiter into the first data line */
+	/* Jump comment lines in both files and osition the file pointer into the first data line */
 	k = i = 0;
 	while (fgets (line, GMT_BUFSIZ, fp_merge) && line[0] == '#') k++;	/* Jump the comment lines in the to-merge file */
 	rewind (fp_merge);

@@ -13,7 +13,7 @@ The notes below are mostly for historical references
 1.4 UPDATE [3-AUG-2010]
 
 Modularized as part of new GMT5-style design.
-Make any old mgg .gmt involvement subject to GMT_COMPATIBILTY setting
+Make any old mgg .gmt involvement subject to GMT_COMPATIBILITY setting
 
 1.3 UPDATE [24-JULY-2009]
 

@@ -306,7 +306,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
-				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
+				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we don't do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
 				ij_gmt = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[ij_gmt];

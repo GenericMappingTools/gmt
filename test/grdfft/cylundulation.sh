@@ -9,7 +9,7 @@ ps=cylundulation.ps
 # 2) Propagating in -60 degrees direction: I = 18, A = 4, phi = 0.5 radian
 # 3) Random noise with mean = 2 and std = 1
 # Note: Commands creating surf.nc are commented out since they include adding noise and we
-# dont want the noise to change each time, giving PS failures.
+# don't want the noise to change each time, giving PS failures.
 #gmt grdmath -R0/127/0/127 -I1 X 18 COSD MUL Y 18 SIND MUL ADD 128 DIV 3 MUL 2 MUL PI MUL 1 ADD COS 6 MUL = A.nc
 #gmt grdmath -R0/127/0/127 -I1 X -60 COSD MUL Y -60 SIND MUL ADD 128 DIV 18 MUL 2 MUL PI MUL 0.5 ADD COS 4 MUL = B.nc
 #gmt grdmath -R0/127/0/127 -I1 2 1 NRAND = C.nc

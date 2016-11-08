@@ -236,7 +236,7 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy.
 	   Same as gmt_bcr_get_z but no check for Nan or outside, so calling program
-	   must make sure we dont go outside array or pass nans.
+	   must make sure we don't go outside array or pass nans.
 	*/
 
 	unsigned int i, j;

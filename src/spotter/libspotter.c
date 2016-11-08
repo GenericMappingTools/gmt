@@ -480,7 +480,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			if (strstr (comment, "cross-over") || strstr (comment, "cross over") || strstr (comment, "crossover")) continue;	/* Skip GPlates cross-over rotations */
 			if (A_id == p1 && B_id == p2 && !V2) {	/* Exactly what we wanted */
 				e[i].lon = lon;	e[i].lat = lat;	e[i].omega = rot;	e[i].t_start = t;
-				V1 = true;	/* So we dont later find inverse rotations */
+				V1 = true;	/* So we don't later find inverse rotations */
 			}
 			else if (A_id == p2 && B_id == p1 && !V1) {	/* Got the inverse rotation, so change angle sign */
 				e[i].lon = lon;	e[i].lat = lat;	e[i].omega = -rot;	e[i].t_start = t;

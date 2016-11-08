@@ -28,7 +28,7 @@
  *
  * NOTE: We do not support grids that have more rows or columns that can fit
  * in a 32-bit integer, hence all linear dimensions (row, col, etc.) are addressed
- * with 32-bit ints.  However, 1-D array indeces (e.g., ij = row*n_columns + col) are
+ * with 32-bit ints.  However, 1-D array indices (e.g., ij = row*n_columns + col) are
  * addressed with 64-bit integers.
  *
  * Public functions (41 [+2]):
@@ -152,7 +152,7 @@ GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 			gmt_grd_mux_demux (GMT, header, grid, GMT_GRID_IS_SERIAL);
 		}
 	}
-	/* header->arrangment might now have been changed accordingly */
+	/* header->arrangement might now have been changed accordingly */
 	return GMT_OK;
 }
 
@@ -881,7 +881,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	 * 3. In case of netCDF grids, the optional ?<varname> is stripped off as well.
 	 *    The info is stored in header->varname.
 	 * 4. If a file is open for reading, we set header->name to the full path of the file
-	 *    by seaching in current dir and the various GMT_*DIR paths.
+	 *    by searching in current dir and the various GMT_*DIR paths.
 	 */
 
 	size_t i = 0, j;
@@ -2647,7 +2647,7 @@ void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigne
 }
 
 bool gmtlib_check_url_name (char *fname) {
-	/* File names starting as below should not be tested for existance or reading permissions as they
+	/* File names starting as below should not be tested for existence or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns true. All cases are read via GDAL support or other. */
 	if ( !strncmp(fname,"http:",5)        ||
@@ -2826,7 +2826,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
 		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;
-		/*to_gdalread->R.active = true;*/	/* Wait untill we really know how to use it */
+		/*to_gdalread->R.active = true;*/	/* Wait until we really know how to use it */
 	}
 
 	if (I->header->pocket) {				/* See if we have a band request */

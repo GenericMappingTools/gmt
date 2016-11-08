@@ -1222,7 +1222,7 @@ struct srf_header6 {	/* Surfer 6 file header structure */
    and 5 ints followed by doubles. The problem was that after the ints the doubles were not
    read correctly. It looked like everything was displaced by 4 bytes.
    I than found the note about the GMT 64-bit Modification and tried the same trick.
-   While that worked with gcc compiled code, it crashed whith the VC6 compiler.
+   While that worked with gcc compiled code, it crashed with the VC6 compiler.
    Since of the first 3 variables, only the first is important to find out which Surfer
    grid format we are dealing with, I removed them from the header definition (and jump
    12 bytes before reading the header). As a result the header has now one 4 byte char +
@@ -1248,7 +1248,7 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	double z_max;		/* Maximum z value */
 	double rotation;	/* not currently used */
 	double no_value;	/* If GS were cleverer this would be NaN */
-	char id3[4];		/* Tag ID idicating a data section (DATA) */
+	char id3[4];		/* Tag ID indicating a data section (DATA) */
 	int len_d;		/* Length in bytes of the DATA section */
 };
 

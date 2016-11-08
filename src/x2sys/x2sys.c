@@ -1733,7 +1733,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			else
 				id[k] = s_id;
 		}
-		/* Sanity check - make sure we dont already have this pair */
+		/* Sanity check - make sure we don't already have this pair */
 		for (p = 0, skip = false; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, 

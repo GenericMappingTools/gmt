@@ -57,7 +57,7 @@
  * PSL_plotsymbol	: Plots a geometric symbol and [optionally] fills it
  * PSL_plottext		: Plots textstring
  * PSL_plottextbox	: Draw a filled box around a textstring
- * PSL_plottextline	: Place labels along paths (straigt or curved), set clip path, draw line
+ * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
  * PSL_loadimage	: Read image file of supported type
  * PSL_command		: Writes a given PostScript statement to the plot file
  * PSL_comment		: Writes a comment statement to the plot file

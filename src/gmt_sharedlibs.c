@@ -44,7 +44,7 @@ void *dlsym (void *handle, const char *name) {
 }
 
 char *dlerror (void) {
-	/* Reports last error occured */
+	/* Reports last error occurred */
 	int len, error_code;
 	static char errstr[GMT_LEN128];
         

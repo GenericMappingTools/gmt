@@ -64,7 +64,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	 * lend, points to the "first" vertex in the Voronoi polygon around a particular node.
 	 * lptr: given a vertex, returns the next vertex in the Voronoi polygon.
 	 *
-	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
+	 * NOTE: All indices returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
 	uint64_t kk;
@@ -165,7 +165,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		
-		/* Adjust Fortran to GMT indeces */
+		/* Adjust Fortran to GMT indices */
 		n_alloc = 6 * (n - 2);
 		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;
 		for (kk = 0; kk < n_alloc; kk++) T->V.lptr[kk]--;
@@ -176,7 +176,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		gmt_M_free (GMT, lptr);
 	}
 	
-	/* Adjust Fortran to GMT indeces */
+	/* Adjust Fortran to GMT indices */
 	for (kk = 0; kk < TRI_NROW*T->D.n; kk++) T->D.tri[kk]--;
 	
 	gmt_M_free (GMT, list);

@@ -16,7 +16,7 @@
  *
  * Author:	Paul Wessel
  * Date:	19-AUG-2004
- * Version:	1.0 Based alot on the old gmttrack.c
+ * Version:	1.0 Based a lot on the old gmttrack.c
  *
  *
  */
@@ -583,7 +583,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	struct MGD77TRACK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/

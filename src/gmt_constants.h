@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_constants.h contains definitions of constants used throught GMT.
+ * gmt_constants.h contains definitions of constants used through GMT.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
@@ -25,7 +25,7 @@
 
 /*!
  * \file gmt_constants.h
- * \brief Definitions of constants used throught GMT.
+ * \brief Definitions of constants used through GMT.
  */
 
 #ifndef _GMT_CONSTANTS_H
@@ -193,7 +193,7 @@ enum GMT_enum_model {
 	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER
 	};
 
-/*! Various array indeces of fonts and pens */
+/*! Various array indices of fonts and pens */
 enum GMT_enum_index {
 	GMT_PRIMARY = 0, GMT_SECONDARY = 1
 	};

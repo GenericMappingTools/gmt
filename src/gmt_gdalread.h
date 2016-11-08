@@ -29,7 +29,7 @@
 #include <cpl_string.h>
 #include <cpl_conv.h>
 
-/*! Structure to control which options are transmited to gmt_gdalwrite */
+/*! Structure to control which options are transmitted to gmt_gdalwrite */
 struct GMT_GDALWRITE_CTRL {
 	char   *driver;            /* The GDAL diver name */
 	char   *type;              /* Data type */
@@ -61,7 +61,7 @@ struct GMT_GDALWRITE_CTRL {
 	} P;
 };
 
-/*! Structure to control which options are transmited to gmt_gdalread */
+/*! Structure to control which options are transmitted to gmt_gdalread */
 struct GMT_GDALREAD_IN_CTRL {
 	struct GD_B {	/* Band selection */
 		int active;
@@ -136,7 +136,7 @@ struct GDAL_BAND_FNAMES {
 	double  ScaleOffset[2];
 };
 
-/*! Structure with the output data transmited by gmt_gdalread */
+/*! Structure with the output data transmitted by gmt_gdalread */
 struct GMT_GDALREAD_OUT_CTRL {
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */

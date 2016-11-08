@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-# Paste overlaping pixel registered grids along X & Y
+# Paste overlapping pixel registered grids along X & Y
 
 ps=paste_pixreg_overlap.ps
 

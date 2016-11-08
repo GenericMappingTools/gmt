@@ -38,7 +38,7 @@
  *
  *  gmtlib_getuserpath     Get pathname of file in "user directories" (GMT->session.TMPDIR, CWD, HOME, GMT->session.USERDIR)
  *  gmt_getdatapath     Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
- *  gmt_getsharepath    Get pathname of file in "share directries" (CWD, GMT->session.USERDIR, GMT->session.SHAREDIR tree)
+ *  gmt_getsharepath    Get pathname of file in "share directories" (CWD, GMT->session.USERDIR, GMT->session.SHAREDIR tree)
  *  gmt_fopen:          Open a file using gmt_getdatapath
  *  gmt_fclose:         Close a file
  *  gmtlib_io_init:        Init GMT_IO structure
@@ -752,7 +752,7 @@ GMT_LOCAL bool gmtio_get_binary_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t 
 	uint64_t i;
 
 	if (n > GMT_MAX_COLUMNS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of data columns (%d) exceeds limit (GMT_MAX_COLUMNS = %d)\n", n, GMT_MAX_COLUMNS);
 		return (true);	/* Done with this file */
 	}
 	for (i = 0; i < n; i++) {
@@ -3365,7 +3365,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 /*! . */
 GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 {	/* netCDF tables contain information about the number of records, so we can use a
-	 * faster startegy: When file is opened, determine number of rows and columns and
+	 * faster strategy: When file is opened, determine number of rows and columns and
 	 * preallocate all the column vectors.  Then, when we ask for the first data record
 	 * we read the entire data set.  We then simply return the values corresponding to
 	 * the current row.  Note some variables may be 2-D and we then consider them as a
@@ -4508,7 +4508,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if ((c = gmtlib_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
-	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
+	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[GMT_BUFSIZ];
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}
@@ -4644,7 +4644,7 @@ bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
 	uint64_t c, n_nan;
 
 	if (n_cols > GMT_MAX_COLUMNS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n_cols, GMT_MAX_COLUMNS);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMNS = %d)\n", n_cols, GMT_MAX_COLUMNS);
 		return (true);	/* Skip record since we cannot access that many columns */
 	}
 	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
@@ -4680,9 +4680,9 @@ void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text) {
 	char date[GMT_LEN16] = {""}, tclock[GMT_LEN16] = {""};
 
 	gmt_format_calendar (GMT, date, tclock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, dt);
-	if (date[0] == '\0')	/* No date wanted hence dont use T */
+	if (date[0] == '\0')	/* No date wanted hence don't use T */
 		sprintf (text, "%s", tclock);
-	else if (tclock[0] == '\0')	/* No clock wanted hence dont use T */
+	else if (tclock[0] == '\0')	/* No clock wanted hence don't use T */
 		sprintf (text, "%s", date);
 	else	/* ISO format */
 		sprintf (text, "%sT%s", date, tclock);
@@ -5080,7 +5080,7 @@ void gmt_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 void gmtlib_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned int dir) {
 	uint64_t k;
 	char c = ' ';
-	if (dir == GMT_IN) {	/* Use fread since we dont know if input is a stream or a file */
+	if (dir == GMT_IN) {	/* Use fread since we don't know if input is a stream or a file */
 		size_t nr = 0;
 		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) nr += gmt_M_fread (&c, sizeof (char), 1U, fp);
 	}
@@ -5973,7 +5973,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			break;
 
 		case  GMT_IS_UNKNOWN:
-			/* True if we dont know but must try both geographic or float formats  */
+			/* True if we don't know but must try both geographic or float formats  */
 			type = gmtio_scanf_geo (s, val);
 			if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
@@ -6124,7 +6124,7 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 			n_row_alloc = GMT_CHUNK;
 			row = 0;
 			if (!no_segments) {
-				in = gmtio_ascii_textinput (GMT, fp, &ncol, &status);	/* Don't read if we didnt read a segment header up front */
+				in = gmtio_ascii_textinput (GMT, fp, &ncol, &status);	/* Don't read if we didn't read a segment header up front */
 				n_read++;
 			}
 			no_segments = false;	/* This has now served its purpose */
@@ -6460,7 +6460,7 @@ bool gmt_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *patter
 	if (!out_string) return (true);	/* If NULL is passed as out_string then we just return true if we find the option */
 	out_string[0] = '\0';	/* Reset string to empty before we try to set it below */
 	k = (size_t)t - (size_t)in_string; /* Position of pattern in in_string */
-	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (false);	/* Option not first or preceeded by whitespace */
+	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (false);	/* Option not first or preceded by whitespace */
 	t += 2;	/* Position of the argument */
 	if (t[0] == '\"')	/* Double quoted argument, must scan from next character until terminal quote */
 		sscanf (++t, "%[^\"]", out_string);

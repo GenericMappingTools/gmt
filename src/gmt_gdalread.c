@@ -326,7 +326,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	int     i, j;
 	int     status, bSuccess;	/* success or failure */
 	int     nBand, raster_count;
-	int     bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
+	int     bGotMin, bGotMax;	/* To know if driver transmitted Min/Max */
 	bool    got_noDataValue = false, pixel_reg = false;
 	double  adfGeoTransform[6];	/* bounds on the dataset */
 	double  tmpdble;		/* temporary value */
@@ -457,7 +457,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 
 		hBand = GDALGetRasterBand(hDataset, nBand+1);
 
-		if (!got_R) {		/* Not sure about what will realy happen in this case */
+		if (!got_R) {		/* Not sure about what will really happen in this case */
 			Ctrl->band_field_names[nBand].XSize = GDALGetRasterBandXSize(hBand);
 			Ctrl->band_field_names[nBand].YSize = GDALGetRasterBandYSize(hBand);
 		}
@@ -673,7 +673,7 @@ int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
+	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
@@ -843,7 +843,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		return (-1);
 	}
 
-	/* Some formats (tipically DEMs) have their origin at Bottom Left corner.
+	/* Some formats (typically DEMs) have their origin at Bottom Left corner.
 	   For those we have to flip the data matrix to be in accord with matlab (Top Left) */
 
 	hDriver = GDALGetDatasetDriver(hDataset);
@@ -1036,7 +1036,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (jump) {
 			nXSize = nBufXSize;
 			nYSize = nBufYSize;
-			i_x_nXYSize = i*(nXSize + pad_w + pad_e)*(nYSize + pad_s + pad_n);		/* We don't need to recompute this everytime */
+			i_x_nXYSize = i*(nXSize + pad_w + pad_e)*(nYSize + pad_s + pad_n);		/* We don't need to recompute this every time */
 		}
 		else
 			i_x_nXYSize = i * (nBufXSize + pad_w + pad_e) * (nBufYSize + pad_s + pad_n);

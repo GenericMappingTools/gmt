@@ -835,7 +835,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		
 		GMT_Report (API, GMT_MSG_VERBOSE, "Start z-slice CVA calculations\n");
 		for (len = strlen (Ctrl->G.file); len > 0 && Ctrl->G.file[len] != '.'; len--);
-		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimeter */
+		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimiter */
 			strncpy (format, Ctrl->G.file, len);	/* Should keep the prefix from a file called prefix.ext */
 			strcat (format, "_%%d");		/* Make filenames like prefix_#.ext */
 			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */

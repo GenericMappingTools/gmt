@@ -26,7 +26,7 @@ function w = flexdisc (x, h, r, rhol, rhom, rhoi, rhow, te)
 % w = flexdisc (x, h, r, rhol, rhom, rhoi, rhow, te)
 %
 %     x		- where to evaluate flexure (all x >= 0) (km)
-%     h		- heigth of disc (m)
+%     h		- height of disc (m)
 %     r		- radius of disc (km)
 %     rhol	- density of load
 %     rhom	- density of mantle
@@ -40,7 +40,7 @@ te = 1000.0 * te;
 yi = flex3dk (te, rhom - rhol);		% Get inside flex wavenumber
 yo = flex3dk (te, rhom - rhoi);		% Get outside flex wavenumber
 airy = (rhol - rhow) / (rhom - rhol);	% Get density balance
-in = find (x <= r);			% Get indeces to points inside/outside
+in = find (x <= r);			% Get indices to points inside/outside
 out = find (x > r);
 xm = 1000.0 * x;			% Convert to meters
 x(in) = xm(in) * yi;			% Scale to flexural wavelengths here instead of later

@@ -296,7 +296,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			if (B_replace) {                    /* Only -B is given and we want to use the history */
 				if (B_replace == 2) continue;   /* Already done this */
 				if (!GMT->init.history[B_id]) Return;
-				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
+				opt2 = opt;                     /* Since we don't want to change the opt loop avove */
 				B_next = opt->next;             /* Pointer to option following the -B option */
 				gmt_M_str_free (opt2->arg);/* Free previous pointer to arg */
 				if (gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p))	/* Get the first argument */

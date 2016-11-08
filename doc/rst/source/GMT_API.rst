@@ -1357,7 +1357,7 @@ In this case you will use
     void *GMT_Convert_Data (void *API, void *In, unsigned int family_in,
 		void *Out, unsigned int family_out, unsigned int flag[]);
 
-which returns a pointer to the converted resource. Specify the neeeded
+which returns a pointer to the converted resource. Specify the needed
 :ref:`family <tbl-family>` for both the input and output resources and set the
 (up to) three flags passed via the ``flag`` array.  The first ``flag[0]``
 determines how table headers and segment headers should be handled.

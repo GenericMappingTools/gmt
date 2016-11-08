@@ -68,7 +68,7 @@ function split_file4coes(fname, n_int)
 		[mimi, ind(k)] = min(difa);		% Find indices of where to split the main file
 	end
 
-	% Now write the N_INT splitted files
+	% Now write the N_INT split files
 	for (k = 1:numel(lim)-1)
 		fout = sprintf('cruzados_%d.txt', k);
 		if (~isempty(PATO))				% Prepend path

@@ -48,11 +48,11 @@
  * place the final memory there.  We assume that for most purposes we will
  * need GMT_INITIAL_MEM_COL_ALLOC columns [2] and allocate GMT_INITIAL_MEM_ROW_ALLOC
  * [2097152U] rows for each column.  This is 32 Mb for double precision data.
- * These arrays are expected to hardly ever beeing reallocated as that would
- * only happen for very long segments, a rare occurance. For most typical data
+ * These arrays are expected to hardly ever being reallocated as that would
+ * only happen for very long segments, a rare occurrence. For most typical data
  * we may have lots of smaller segments but rarely do any segment exceed the
  * 1048576U length initialized above.  Thus, reallocs are generally avoided.
- * Note: (1) All columns share a signle n_alloc counter and the code belows will
+ * Note: (1) All columns share a single n_alloc counter and the code belows will
  *           check whenever arrays need to be extended.
  *	 (2) We chose to maintain a small set of column vectors rather than a single
  *	     item since GMT tends to use columns vectors and thus the book-keeping is
@@ -287,7 +287,7 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 		old = entry->size;
 		if (entry->ptr != ptr) {	/* Must delete and add back since the address changed */
 			char *name = entry->name; /* remember pointer of name */
-			entry->name = NULL; /* prevent pointer from beeing freed in gmt_treedelete */
+			entry->name = NULL; /* prevent pointer from being freed in gmt_treedelete */
 			entry = gmt_treedelete (entry, entry->ptr);
 			entry = gmt_treeinsert (entry, ptr);
 			entry->name = name; /* put name back */
@@ -607,7 +607,7 @@ void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_all
 	 * module is the name of the module requesting the memory (main program or library function).
 	 * Note: This memory, used for all kinds of things, is not requested to be aligned (align = false),
 	 */
-	size_t in_n_alloc = (n_alloc) ? *n_alloc : 0U;	/* If NULL it means init, i.e. 0, and we dont pass n_alloc back out */
+	size_t in_n_alloc = (n_alloc) ? *n_alloc : 0U;	/* If NULL it means init, i.e. 0, and we don't pass n_alloc back out */
 	if (in_n_alloc == 0 || !ptr) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
 		in_n_alloc = (n == 0) ? GMT->session.min_meminc : n;
 		ptr = NULL;	/* Initialize a new pointer to NULL before calling gmt_M_memory with it */

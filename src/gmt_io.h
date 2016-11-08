@@ -78,7 +78,7 @@ enum GMT_enum_ogr {
 	GMT_IS_MULTILINESTRING,
 	GMT_IS_MULTIPOLYGON};
 
-/*! Codes for aspatial assocation with segment header options: */
+/*! Codes for aspatial association with segment header options: */
 enum GMT_enum_segopt {
 	/*! -D */	GMT_IS_D = -1,
 	/*! -G */	GMT_IS_G = -2,

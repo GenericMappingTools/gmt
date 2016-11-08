@@ -132,7 +132,7 @@ struct GMTMATH_INFO {
 	bool irregular;	/* true if t_inc varies */
 	bool roots_found;	/* true if roots have been solved for */
 	bool local;		/* Per segment operation (true) or global operation (false) */
-	bool notime;		/* No time-array avaible for operators who depend on that */
+	bool notime;		/* No time-array available for operators who depend on that */
 	unsigned int n_roots;	/* Number of roots found */
 	unsigned int fit_mode;	/* Used for {LSQ|SVD}FIT */
 	unsigned int w_mode;	/* Used for weighted fit */
@@ -393,7 +393,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		D = GMT_Duplicate_Data (GMT->parent, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, S->D);	/* Same table length as S->D, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		S->D->dim[GMT_COL] = k;	/* Reset the original columns */
 		if (D->table[0]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
-		load_column (D, 0, info->T, COL_T);	/* Place the time-column in first ouput column */
+		load_column (D, 0, info->T, COL_T);	/* Place the time-column in first output column */
 		for (seg = k = 0; seg < info->T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
 				D->table[0]->segment[seg]->data[1][row] = T->segment[seg]->data[rhs][row];

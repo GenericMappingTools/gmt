@@ -522,7 +522,7 @@ GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v, void *
 	dist_1 = (point_1->x - x0) * (point_1->x - x0) + (point_1->y - y0) * (point_1->y - y0);
 	/* Try to speed things up by first checking if point_2 x-distance from x0 alone exceeds point_1's radial distance */
 	dist_2 = (point_2->x - x0) * (point_2->x - x0);	/* Just dx^2 */
-	if (dist_1 < dist_2) return (-1);	/* Dont need to consider the y-distance */
+	if (dist_1 < dist_2) return (-1);	/* Don't need to consider the y-distance */
 	/* Did not exceed, so now we must finalize the dist_2 calculation by including the y-separation */
 	dist_2 += (point_2->y - y0) * (point_2->y - y0);
 	if (dist_1 < dist_2) return (-1);

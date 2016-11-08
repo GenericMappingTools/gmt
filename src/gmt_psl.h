@@ -40,7 +40,7 @@
  * parsed by the default machinery and stored in the corresponding
  * GMT->setting.ps_* parameters, e.g., PS_PAGE_COLOR is parsed and stored
  * as GMT->setting.ps_page_color.  All of these are used as arguments to
- * PSL_beginsession, PSL_set_defaults, and PSL_beginplot which sets teh
+ * PSL_beginsession, PSL_set_defaults, and PSL_beginplot which sets the
  * internal PSL variables.
  * A few of these parameters can also be modified via the GMT command
  * line options: -P -U -X -Y -c.  These options simply change the values as

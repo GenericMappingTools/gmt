@@ -694,7 +694,7 @@ GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, s
 }
 
 GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
-	/* This adds additional aux colums that are required by the correction table and not already requested by other means (e.g. -F) */
+	/* This adds additional aux columns that are required by the correction table and not already requested by other means (e.g. -F) */
 	int i, j, k, this_aux, n;
 	
 	for (i = k = 0, n = n_aux; i < n_items; i++) {
@@ -824,7 +824,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
 	if (M.adjust_time) Ctrl->D.stop  = MGD77_time2utime (GMT, &M, Ctrl->D.stop);
-	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxilliary columns */
+	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxiliary columns */
 		char path[GMT_BUFSIZ] = {""};
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
@@ -841,11 +841,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active) select_option |= MGD77_SET_ALLEXACT;	/* Sets all columns listed as "must be present" */
 	MGD77_Select_Columns (GMT, Ctrl->F.flags, &M, select_option);	/* This is the list of columns the user ultimately wants output */
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
-	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidently access dvalue[z_col] further down in the loop */
-	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidently access dvalue[m_col] further down in the loop */
+	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidentally access dvalue[z_col] further down in the loop */
+	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidentally access dvalue[m_col] further down in the loop */
 	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
 	if (Ctrl->L.active) {
-		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
+		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxiliary columns are needed by -L */
 		for (kk = 0; kk < n_items; kk++) gmt_M_free (GMT, item_names[kk]);
 		if (n_items) gmt_M_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
@@ -1035,7 +1035,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 		MGD77_Close_File (GMT, &M);
 		
-		/* The 1*, 2*, 3* below is just there to ensure we dont end up with multiple cases all == MGD77_NOT_SET */
+		/* The 1*, 2*, 3* below is just there to ensure we don't end up with multiple cases all == MGD77_NOT_SET */
 		time_column = ((i = MGD77_Get_Column (GMT, "time", &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 1 * MGD77_NOT_SET;
 		lon_column  = ((i = MGD77_Get_Column (GMT, "lon",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 2 * MGD77_NOT_SET;
 		lat_column  = ((i = MGD77_Get_Column (GMT, "lat",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 3 * MGD77_NOT_SET;
@@ -1049,7 +1049,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 				pos++, kx++;
 			}
-			if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
+			if (kk >= n_cols_to_process) continue;	/* Don't worry about helper columns that won't be printed */
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
 			if (c == MGD77_M77_SET && id == time_column)	{	/* Special time formatting */
@@ -1115,7 +1115,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
-		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 dont have time until after reading */
+		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 don't have time until after reading */
 			bool faked = false;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
 				faked = MGD77_fake_times (GMT, &M, &(D->H), dvalue[x_col], dvalue[y_col], dvalue[t_col], D->H.n_records);
@@ -1171,7 +1171,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				lonlat_not_NaN = !( gmt_M_is_dnan (dvalue[x_col][rec]) || gmt_M_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
 					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = gmt_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], true);
-					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous azimuth but none is avaiable yet */
+					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous azimuth but none is available yet */
 						aux_dvalue[MGD77_AUX_CC] = GMT->session.d_NaN;
 						prev_az = (auxlist[MGD77_AUX_AZ].requested) ? aux_dvalue[MGD77_AUX_AZ] : gmt_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], true);
 					}

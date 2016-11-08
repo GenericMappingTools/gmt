@@ -314,7 +314,7 @@ void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal
 	int64_t prior_days, tempdate;
 	int corexn, tempyear;
 
-	/* Day of the week in 0 thru 6:  */
+	/* Day of the week in 0 through 6:  */
 
 	gcal->day_w = calclock_cal_imod (date, 7);
 

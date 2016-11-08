@@ -387,10 +387,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_NOERROR) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_NOERROR) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
@@ -717,7 +717,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
 							break;
-						default:	/* Add up incase we must sum, rms, mean, or standard deviation */
+						default:	/* Add up in case we must sum, rms, mean, or standard deviation */
 							Grid->data[ij_west] += Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
 							break;

@@ -75,10 +75,10 @@ typedef struct sac_head {
 	float depmax;           /*    maximum value of dependent variable         */
 	float scale;            /*    amplitude scale factor (not used)           */
 	float odelta;           /*    Observed increment                          */
-	float b;                /* RD begining value of the independent variable  */
+	float b;                /* RD beginning value of the independent variable  */
 	float e;                /* RD ending value of the independent variable    */
-	float o;                /*    event origin time(seconds wrt referece time)*/
-	float a;                /*    1st arrival time (seconds wrt referece time)*/
+	float o;                /*    event origin time(seconds wrt reference time)*/
+	float a;                /*    1st arrival time (seconds wrt reference time)*/
 	float internal1;        /*    internal use                                */
 	float t0;               /*    user-defined time pick                      */
 	float t1;               /*    user-defined time pick                      */
@@ -199,7 +199,7 @@ typedef struct sac_head {
 	char  kuser0[9];        /*    User defined variable storage area          */
 	char  kuser1[9];        /*    User defined variable storage area          */
 	char  kuser2[9];        /*    User defined variable storage area          */
-	char  kcmpnm[9];        /*  F channel name, three charaters               */
+	char  kcmpnm[9];        /*  F channel name, three characters               */
 	char  knetwk[9];        /*    name of seismic network                     */
 	char  kdatrd[9];        /*    date data was read onto computer            */
 	char  kinst[9];         /*    generic name of recording instrument        */

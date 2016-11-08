@@ -18,7 +18,7 @@
 /*
  * Spherical gridding in tension.  We read input data and want to create
  * a grid using various interpolants on a sphere.  This program relies
- * on two Fortan F77 libraries by Renka:
+ * on two Fortran F77 libraries by Renka:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *     and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *     Software, 23 (3), 416-434.
