@@ -15,14 +15,14 @@ The font files are available as TTF (TrueType) and OTF (OpenType) fonts. The TTF
 and the OTF 
 "LinuxLibertine O" and "Linux Biolinum O". 
 
-So that both types can be installed and used parallely.
+So that both types can be installed and used parallelly.
 Most often TTF is the better supported format though OTF has advances in printing. Decide yourself what is better for your purpose. OpenType-features are equally available in both fonts. Note that OpenOffice doesn't support OTFs, yet.
 
 4. THE LINUX BIOLINUM FONT FACE
 Please note: The Biolinum is a very early version. While you use Libertine-Fonts without any warranty anyway, take special care with this young font face.
 
 5. HINTING
-The TrueType-hinting is a complex technique and our editor FontForge doesn't support full possibilities (but it becomes alot better version by version)... 
+The TrueType-hinting is a complex technique and our editor FontForge doesn't support full possibilities (but it becomes a lot better version by version)... 
 Since version 2.7 also the normal TTFs are hinted. If you don't like this, send me a mail. You may also try the OpenTypes (which contain PS-Hintings which are quite good supported by FontForge).
 
 6. DOWNLOAD AND CONTACT

@@ -1508,7 +1508,7 @@ GMT_LOCAL void support_contlabel_fixpath (struct GMT_CTRL *GMT, double **xin, do
 
 	if (G->n_label == 0) return;	/* No labels, no need to insert points */
 
-	/* Sort lables based on distance along contour if more than 1 */
+	/* Sort labels based on distance along contour if more than 1 */
 	if (G->n_label > 1) qsort (G->L, G->n_label, sizeof (struct GMT_LABEL *), support_sort_label_struct);
 
 	np = *n + G->n_label;	/* Length of extended path that includes inserted label coordinates */
@@ -2065,7 +2065,7 @@ GMT_LOCAL bool support_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, c
 	char format[GMT_LEN256] = {""};
 	struct GMT_CONTOUR_LINE *S = NULL;
 
-	if (G->isolate) {	/* Must determine if the proposed label is withing radius distance of any other label already accepted */
+	if (G->isolate) {	/* Must determine if the proposed label is within radius distance of any other label already accepted */
 		for (seg = 0; seg < G->n_segments; seg++) {	/* Previously processed labels */
 			S = G->segment[seg];	/* Pointer to current segment */
 			for (k = 0; k < S->n_labels; k++) if (hypot (L->x - S->L[k].x, L->y - S->L[k].y) < G->label_isolation) return (false);
@@ -2185,7 +2185,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 		value_dist = gmt_M_memory (GMT, NULL, nn, double);	/* May be km ,degrees or whatever */
 		radii = gmt_M_memory (GMT, NULL, nn, double);	/* Radius of curvature, in inches */
 
-		/* We will calculate the radii of curvature at all points.  By default we dont care and
+		/* We will calculate the radii of curvature at all points.  By default we don't care and
 		 * will place labels at whatever distance we end up with.  However, if the user has asked
 		 * for a minimum limit on the radius of curvature [Default 0] we do not want to place labels
 		 * at those sections where the curvature is large.  Since labels are placed according to
@@ -2687,7 +2687,7 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 		 * 3) lon lies between lon1 and lon2 and crosses the segment
 		 * 4) none of the above
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
-		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
+		 * point if case (2) occurs: this avoids counting a crossing twice for consecutive segments.
 		 */
 		if (gmt_same_longitude (plon, P->data[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->data[GMT_Y][i])) return (1);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
@@ -3457,7 +3457,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 			error++;
 		}
 		if (k == 3) ms->a_int[0] = ms->a_int[1], ms->f_int[0] = ms->f_int[1], ms->g_int[0] = ms->g_int[1];
-		text[plus-1] = '\0';	/* Break string so sscanf wont get confused later */
+		text[plus-1] = '\0';	/* Break string so sscanf won't get confused later */
 	}
 	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
 		for (k = colon; text[k] && text[k] != ':'; k++);	/* Look for terminating colon */
@@ -3482,7 +3482,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Labels must be given in format :w,e,s,n:\n", option);
 			error++;
 		}
-		text[colon-1] = '\0';	/* Break string so sscanf wont get confused later */
+		text[colon-1] = '\0';	/* Break string so sscanf won't get confused later */
 	}
 
 	/* -?[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
@@ -3820,7 +3820,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
 					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
 					got_BB[bb] = true;
-					if (bb == 0) got_BB[1] = true;	/* If we find Highres BB then we dont need to look for lowres BB */
+					if (bb == 0) got_BB[1] = true;	/* If we find Highres BB then we don't need to look for lowres BB */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
 						name, (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
 				}
@@ -5423,7 +5423,7 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 	while ((p = strstr (text, "@;"))) {	/* Found a @; sequence */
 		i = (unsigned int)(p - text) + 2;	/* Position of first character after @; */
 		for (j = last; j < i; j++, k++) buffer[k] = text[j];	/* Copy everything from last stop up to the color specification */
-		text[i-1] = 'X';	/* Wipe the ; so that @; wont be found a 2nd time */
+		text[i-1] = 'X';	/* Wipe the ; so that @; won't be found a 2nd time */
 		if (text[i] != ';') {	/* Color info now follows */
 			n = i;
 			n_slash = 0;
@@ -8634,7 +8634,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			error++;
 			return (error);
 		}
-		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input colums */
+		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input columns */
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
@@ -9305,7 +9305,7 @@ unsigned int gmt_inonout (struct GMT_CTRL *GMT, double x, double y, const struct
  * based on the work by Dave Watson.  You may also link with the triangle.o
  * module from Jonathan Shewchuk, Berkeley U. by passing the compiler
  * directive -DTRIANGLE_D. The latter is much faster and also has options
- * for Voronoi construction (which Watson's funciton does not have).
+ * for Voronoi construction (which Watson's function does not have).
  */
 
 /*! . */
@@ -11221,7 +11221,7 @@ unsigned int gmt_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted,
 
 /*! . */
 void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
-	/* Opens up GMT->init.custom_symbols.lis and dislays the list of custom symbols */
+	/* Opens up GMT->init.custom_symbols.lis and displays the list of custom symbols */
 
 	FILE *fp = NULL;
 	char list[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""};
@@ -12551,7 +12551,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the same as the input and is not allowed.  However, if we use
 	 *    -Fcf or -Ff then we ignore segment headers WITHIN each file, except for the first header
 	 *   in each file.  In other words, all points in a file will be considered continuous.
-	 *   Finally, using -Fca or -Fa then all points in all fiels are considered continous and
+	 *   Finally, using -Fca or -Fa then all points in all fields are considered continuous and
 	 *   only the first segment header in the first file is considered.
 	 * 2) -Fn: Network.  For each group of points we connect each point with every other point.
 	 *   The modifiers a,f,s control what the "group" is.  With s, we construct a separate
@@ -12860,7 +12860,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	double r;
 	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
-	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
 	gmt_alloc_datasegment (GMT, Sx, 2*S->n_rows, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 
 	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */
@@ -13324,7 +13324,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
 	}
 	else {	/* Must worry about leading + signs in the numbers that might confuse us w.r.t. modifiers */
-		/* E.g., -Dg123.3/+19+jTL we dont want to trip up on +19 as modifier! */
+		/* E.g., -Dg123.3/+19+jTL we don't want to trip up on +19 as modifier! */
 		n = support_find_mod_syntax_start (arg, k);
 		if (arg[n]) { /* Separated via +modifiers (or nothing follows) */
 			int n2;

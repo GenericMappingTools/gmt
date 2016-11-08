@@ -127,7 +127,7 @@ If $home contains spaces places the the above within double quotes.
 You will have to manually add the path to the GMT directory since
 it is not considered an official release.
 
-After makeing these edits you must logout and back in again.
+After making these edits you must logout and back in again.
 The next time you run gmtswitch you may do the switching.
 EOF
   exit

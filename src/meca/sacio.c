@@ -16,7 +16,7 @@
  *  Revisions:                                                                 *
  *      2014-03-19  Dongdong Tian   Modified from Prof. Lupei Zhu's code       *
  *      2014-08-02  Dongdong Tian   Better function naming and coding style    *
- *      2014-08-13  Dongdong Tian   Add new funtions:                          *
+ *      2014-08-13  Dongdong Tian   Add new functions:                          *
  *                                  - read_sac_xy                              *
  *                                  - write_sac_xy                             *
  *                                  - sac_head_index                           *

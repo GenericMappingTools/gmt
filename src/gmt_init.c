@@ -1199,7 +1199,7 @@ GMT_LOCAL int gmtinit_count_xy_terms (char *txt, int64_t *xstart, int64_t *xstop
 GMT_LOCAL int gmtinit_parse_model2d (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT_MODEL *M) {
 	/* Parse -N[p|P|f|F|c|C|s|S|x|X|y|Y][x|y]<list-of-terms>[,...][+l<lengths>][+o<origins>][+r] for trend2d, grdtrend.
 	 * p means polynomial.
-	 * c means cosine.  You may optionaly add x|y to only add basis for that dimension [both]
+	 * c means cosine.  You may optionally add x|y to only add basis for that dimension [both]
 	 * s means sine.  Optionally append x|y [both]
 	 * f means both cosine and sine (Fourier series).    Optionally append x|y [both]
 	 * list-of-terms is either a single order (e.g., 2) or a range (e.g., 0-3)
@@ -1475,7 +1475,7 @@ GMT_LOCAL int gmtinit_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
 			break;
 	}
 	for (way = 0; !error && way < 2; way++) if (ok[way]) {
-		if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_UNKNOWN && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_UNKNOWN)	/* Dont know what x/y is yet */
+		if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_UNKNOWN && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_UNKNOWN)	/* Don't know what x/y is yet */
 			GMT->current.setting.io_lonlat_toggle[way] = true;
 		else if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_FLOAT && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_FLOAT)	/* Cartesian x/y vs y/x cannot be identified */
 			GMT->current.setting.io_lonlat_toggle[way] = true;
@@ -1797,7 +1797,7 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
 		}
-		if (in[i] == 's') {	/* Since s can mean both "draw south axis" and "seconds", check futher */
+		if (in[i] == 's') {	/* Since s can mean both "draw south axis" and "seconds", check further */
 			if (side[S_SIDE]) go = false;	/* If S was set already then s probably means seconds */
 			else if (i && in[i-1] == ',') go = true;	/* Special case of ,s to indicate south, e.g. -B30,s */
 			else if (i && (in[i-1] == '.' || isdigit ((int)in[i-1]))) go = false;	/* Probably seconds, e.g. -B30s */
@@ -2821,7 +2821,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 
 		if (GMT->current.map.frame.axis[i].prefix[0]) {	/* Deal with space/no space before prefix */
 			char workspace[GMT_LEN64] = {""};
-			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Dont want a space */
+			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Don't want a space */
 				strncpy (workspace, &GMT->current.map.frame.axis[i].prefix[1], GMT_LEN64-1);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
@@ -2831,7 +2831,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		if (GMT->current.map.frame.axis[i].unit[0]) {	/* Deal with space/no space before unit */
 			char workspace[GMT_LEN64] = {""};
-			if (GMT->current.map.frame.axis[i].unit[0] == '-') /* Dont want a space */
+			if (GMT->current.map.frame.axis[i].unit[0] == '-') /* Don't want a space */
 				strncpy (workspace, &GMT->current.map.frame.axis[i].unit[1], GMT_LEN64-1);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
@@ -3988,7 +3988,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
-		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying orgin and pole */
+		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying origin and pole */
 			GMT->current.proj.N_hemi = (GMT->common.J.string[1] == 'C') ? true : false;	/* Upper case -JoC allows S pole views */
 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
@@ -4488,7 +4488,7 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 	   To add additional fonts, create a similar file called PSL_custom_fonts.txt
 	   in GMT/share/postscriptlight and add your extra font information there.
 	   The fontheight below is the height of A for unit fontsize.
-	   Encoded = 0 if we may reencode this font as needed.
+	   Encoded = 0 if we may re-encode this font as needed.
 	*/
 	unsigned int i = 0;
 	size_t n_alloc = 0;
@@ -7011,7 +7011,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the standard default.  However, if we use
 	 *    -Fcf or -Ff then we ignore segment headers WITHIN each file, except for the first header
 	 *   in each file.  In other words, all points in a file will be considered continuous.
-	 *   Finally, using -Fca or -Fa then all points in all fields are considered continous and
+	 *   Finally, using -Fca or -Fa then all points in all fields are considered continuous and
 	 *   only the first segment header in the first file is considered.  So only a|f|r is allowed.
 	 * 2) -Fn: Network.  For each group of points we connect each point with every other point.
 	 *   The modifiers a,f,s control what the "group" is.  With s, we construct a separate
@@ -10595,7 +10595,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 				}
 				break;
-			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halfs at active heads */
+			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halves at active heads */
 			case 'm':	/* Vector head at midpoint of segment */
 				switch (p[1]) {
 					case '\0':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
@@ -10661,7 +10661,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				break;
 			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
-			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halfs at active heads */
+			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halves at active heads */
 			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 't':	/* Get endpoint trim(s) */
 				switch (p[1]) {
@@ -10726,7 +10726,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	p->factor = 1.0;
 
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
-	   However, if size is not given then that is requred too so col_off++ */
+	   However, if size is not given then that is required too so col_off++ */
 
 	if (!strncmp (text, "E-", 2U) || !strncmp (text, "J-", 2U)) {
 		/* Special degenerate geographic ellipse and rectangle symbols, remove the - to avoid parsing issues */

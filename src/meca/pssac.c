@@ -376,7 +376,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.sec_per_measure), "Syntax error -S option: <sec_per_measure> must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Syntax error -T option: <reduce_vel> must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Syntax error -T option: <tmark> should be choosed from -5, -4, -3, -2, 0-9\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Syntax error -T option: <tmark> should be chosen from -5, -4, -3, -2, 0-9\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -567,9 +567,9 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	SACHEAD hd;
 	struct GMT_PEN current_pen;
 	struct PSSAC_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -749,7 +749,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			if (!Ctrl->C.active) x0 = hd.b - tref;
 			else                 x0 = Ctrl->C.t0;
 
-			/* determin Y0 */
+			/* determine Y0 */
 			if (Ctrl->E.active) {
 				switch (Ctrl->E.keys[0]) {
 					case 'a':

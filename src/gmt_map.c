@@ -481,7 +481,7 @@ GMT_LOCAL void map_lat_swap_init (struct GMT_CTRL *GMT) {
 	/* PW notes: Projections only convert latitudes if GMT->current.proj.GMT_convert_latitudes is true.
 	 *       This is set by gmt_map_setup if the ellipsoid is not a sphere.  Calling map_lat_swap_init by itself
 	 *	 does not affect the mapping machinery.  Since various situations call for the use
-	 *	 of auxilliary latitudes we initialize map_lat_swap_init in gmt_begin.  This means
+	 *	 of auxiliary latitudes we initialize map_lat_swap_init in gmt_begin.  This means
 	 *	 programs can use functions like gmt_lat_swap whenever needed.
 	 */
 
@@ -3069,7 +3069,7 @@ GMT_LOCAL void map_pole_rotate_forward (struct GMT_CTRL *GMT, double lon, double
 }
 
 #if 0
-/* Not curently used in GMT */
+/* Not currently used in GMT */
 GMT_LOCAL void map_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, double *lat, double tlon, double tlat) {
 	/* Given the pole position in GMT->current.proj, geographical coordinates
 	 * are computed from oblique coordinates assuming a spherical earth.
@@ -4760,7 +4760,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 	gmtlib_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
 	gmt_M_free (GMT, lon);
 
-	/* Then check if one or both poles are inside map; then the above wont be correct */
+	/* Then check if one or both poles are inside map; then the above won't be correct */
 
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
@@ -4772,7 +4772,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 	if (test_pole[1] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
 
 	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
-	n += 0.1;	if (n > 90.0) n = 90.0;		/* But dont go crazy beyond the pole */
+	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
 	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
 	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
 }
@@ -5973,7 +5973,7 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 			exit (GMT_PROJECTION_ERROR);
 			break;
 	}
-	if (type > 0) return;	/* Contour-related assignemnts end here */
+	if (type > 0) return;	/* Contour-related assignments end here */
 
 	/* Mapping only */
 	if (mode == GMT_CARTESIAN_DIST || mode == GMT_CARTESIAN_DIST2)	{	/* Cartesian data */
@@ -6000,7 +6000,7 @@ void GMT_set_geocentric (struct GMT_CTRL *GMT, bool notify)
 }
 #endif
 
-/* GMT_dateline_clip simply clips a polygon agains the dateline and results in two polygons in L */
+/* GMT_dateline_clip simply clips a polygon against the dateline and results in two polygons in L */
 
 /*! . */
 void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat) {
@@ -6128,7 +6128,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
 	L = gmt_M_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
-	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
@@ -7367,7 +7367,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	 * In addition, these settings (via -n) control interpolation:
 	 * antialias:	true if we need to do the antialiasing STEP 1 (below)
 	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
-	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
+	 * threshold:	minimum weight to be used. If weight < threshold interpolation yields NaN.
 	 * We initialize the O->data array to NaN.
 	 *
 	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
@@ -7550,7 +7550,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	 * In addition, these settings (via -n) control interpolation:
 	 * antialias:	true if we need to do the antialiasing STEP 1 (below)
 	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
-	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
+	 * threshold:	minimum weight to be used. If weight < threshold interpolation yields NaN.
 	 *
 	 * We initialize the O->data array to the NaN color.
 	 *
@@ -7719,7 +7719,7 @@ double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 		return (angle);
 	}
 	else if (GMT->current.proj.projection == GMT_POLAR) {	/* r/theta */
-		return (azim);	/* Place holder - not correct yet but dont want to go into the below if r/theta */
+		return (azim);	/* Place holder - not correct yet but don't want to go into the below if r/theta */
 	}
 
 	/* Find second point c spherical degrees away in the azim direction */
@@ -8106,7 +8106,7 @@ void gmtlib_init_ellipsoid (struct GMT_CTRL *GMT) {
 	GMT->current.proj.DIST_M_PR_DEG = GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.DIST_KM_PR_DEG = GMT->current.proj.KM_PR_DEG;
 
-	/* Compute coefficients needed for auxilliary latitude conversions */
+	/* Compute coefficients needed for auxiliary latitude conversions */
 	map_lat_swap_init (GMT);
 }
 

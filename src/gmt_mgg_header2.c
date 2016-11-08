@@ -129,13 +129,13 @@ GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *m
 	mgg->minValue    = irint(gmt->z_min * mgg->precision);
 	mgg->maxValue    = irint(gmt->z_max * mgg->precision);
 
-	/* Data fits in two byte boundry */
+	/* Data fits in two byte boundary */
 	if ((-SHRT_MAX <= mgg->minValue) && (mgg->maxValue <= SHRT_MAX)) {
 		mgg->numType = sizeof (short);
 		mgg->nanValue = (short)SHRT_MIN;
 	}
 #ifdef MGG_BYTE_SIZE
-	/* Data fits in one byte boundry */
+	/* Data fits in one byte boundary */
 	if ((gmt->z_min >= 0) && (gmt->z_max <= 127)) {
 		mgg->numType   = sizeof (char);
 		mgg->nanValue  = (char)255;

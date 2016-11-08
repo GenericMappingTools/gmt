@@ -101,9 +101,9 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 	GMT_WV		= 3,
 	GPS_TREND	= 1,	/* Remove/Restore linear trend */
 	GPS_NORM	= 2,	/* Normalize residual data to 0-1 range */
-	GPS_FUNC_Q	= 0,	/* Next 3 are indicies into G[] */
-	GPS_FUNC_P	= 1,	/* Next 3 are indicies into G[] */
-	GPS_FUNC_W	= 2,	/* Next 3 are indicies into G[] */
+	GPS_FUNC_Q	= 0,	/* Next 3 are indices into G[] */
+	GPS_FUNC_P	= 1,	/* Next 3 are indices into G[] */
+	GPS_FUNC_W	= 2,	/* Next 3 are indices into G[] */
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */

@@ -30,7 +30,7 @@ set (_build_type)
 
 if (APPLE AND DEBUG_BUILD)
 
-	# usefull macros
+	# useful macros
 	include (GmtHelperMacros)
 
 	# Check for dsymutil only on Mac

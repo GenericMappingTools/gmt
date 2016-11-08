@@ -361,9 +361,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
 	struct GMT_DATATABLE *P = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -588,7 +588,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->current.map.frame.paint) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
-		GMT->current.map.frame.paint = false;	/* Turn off so gmt_plotinit wont fill */
+		GMT->current.map.frame.paint = false;	/* Turn off so gmt_plotinit won't fill */
 		do_fill = true;
 	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);

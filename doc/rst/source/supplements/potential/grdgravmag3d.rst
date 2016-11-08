@@ -42,7 +42,7 @@ Required Arguments
 ------------------
 
 *grdfile_top* [*grdfile_bot*]
-   Grid file whose gravity efect is going to be computed. If two grids are
+   Grid file whose gravity effect is going to be computed. If two grids are
    provided then the gravity/magnetic effect of the volume between them is computed. 
 
 .. _-C:

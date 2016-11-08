@@ -320,9 +320,9 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
 	struct GRDVECTOR_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;	/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -415,7 +415,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	Geographic = (gmt_M_is_geographic (GMT, GMT_IN));
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 
-	if (Geographic) {	/* Now that we know this we make sure -T is diabled if given */
+	if (Geographic) {	/* Now that we know this we make sure -T is disabled if given */
 		if (Ctrl->T.active) {	/* This is a mistake */
 			Ctrl->T.active = false;
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T does not apply to geographic grids - ignored\n");

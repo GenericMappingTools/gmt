@@ -665,9 +665,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	struct GRDVIEW_BIN *binij = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GRDVIEW_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;	/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -1376,7 +1376,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			   just in case and if so set small to 1.0e-7.
 			4) Given zgrd is float, there is a difference between zgrd[node] -= (float)cval and zgrd[node] -= cval,
 			   since cval is double precision.  We had the cast during the contouring but here under -Qs we had some
-			   comparisions without the cast, the result being both sides got promoted to double prior to the test and
+			   comparisons without the cast, the result being both sides got promoted to double prior to the test and
 			   we can get a different result.
 			5) In the case of no contour we paint the entire tile.  However, in the case of discontinuous CPTs we
 			   based the color on the lower-left node value (since it should not matter which corner we pick).  But it
@@ -1431,7 +1431,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 				for (k = 0; k < 4; k++) Z_vert[k] = Z->data[ij+ij_inc[k]];	/* First a straight copy */
 
-				if (get_contours && binij[bin].first_cont) {	/* Contours go thru here */
+				if (get_contours && binij[bin].first_cont) {	/* Contours go through here */
 
 					/* Determine if this bin will give us saddle trouble */
 

@@ -42,14 +42,14 @@
 #include "gmt_internals.h"
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job) {
-	int err;	/* Implicity by gmt_M_err_trap */
+	int err;	/* Implicitly by gmt_M_err_trap */
 	int nm[2];
 	double dummy[2];
 	char text[GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160];
 	size_t limit = 2147483647U;	/* 2^31 - 1 is the max length of a 1-D array in netCDF */
 	nc_type z_type;
 
-	/* Dimension ids, varibale ids, etc. */
+	/* Dimension ids, variable ids, etc. */
 	int side_dim, xysize_dim, x_range_id, y_range_id, z_range_id, inc_id, nm_id, z_id, dims[1];
 
 	/* Define and get dimensions and variables */

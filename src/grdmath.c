@@ -100,7 +100,7 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 	} A;
 	struct D {	/* -D<resolution> */
 		bool active;
-		bool force;	/* if true, select next highest level if current set is not avaialble */
+		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct I {	/* -Idx[/dy] */

@@ -443,7 +443,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				segment[id].group = tbl;	/* Remember which input table this segment came from */
 				segment[id].pos = seg;		/* Remember which input segment in this table it came from */
 				segment[id].n = np;		/* Number of points in this segment */
-				/* Record start and end coordinates for this segment and initialze buddy structure to having no nearest neighbor segment yet */
+				/* Record start and end coordinates for this segment and initialize buddy structure to having no nearest neighbor segment yet */
 				segment[id].x_end[END_A] = S->data[GMT_X][0];
 				segment[id].y_end[END_A] = S->data[GMT_Y][0];
 				segment[id].x_end[END_B] = S->data[GMT_X][np-1];
@@ -687,7 +687,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				b_alloc <<= 1;
 				buffer = gmt_M_memory (GMT, buffer, b_alloc, char);
 			}
-			strcat (buffer, text);	/* Append this connnection */
+			strcat (buffer, text);	/* Append this connection */
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = closed = true;
 			if (id2 == id || n_steps_pass_1 > ns) {	/* Not good... [NOT SURE WHAT THIS MEANS BUT SEEMS LIKE A CRAZY SAFETY VALVE AND SHOULD NEVER HAPPEN] */

@@ -4,7 +4,7 @@
 #	To add additional fonts, create a similar file called PSL_custom_fonts.txt
 #	in GMT/share/postscriptlight and add your extra font information there.
 #	The fontheight below is the height of A for unit fontsize.
-#	Encoded = 0 if we may reencode this font as needed.
+#	Encoded = 0 if we may re-encode this font as needed.
 #
 #Fontname			Fontheight	Encoded
 Helvetica			0.700		0

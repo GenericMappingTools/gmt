@@ -1804,7 +1804,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			n_ok = Grid->header->nm;
 			Z.nz = 1;	/* So that output logic will work for 1-D */
 		}
-		else {	/* Just a temporary internal grid created and destroyed withing greenspline */
+		else {	/* Just a temporary internal grid created and destroyed within greenspline */
 			if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 			delete_grid = true;
 			Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];

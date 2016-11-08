@@ -117,7 +117,7 @@ struct X2SYS_INFO {
 	unsigned int *out_order;	/* Array with input column number as function of output column */
 	bool *use_column;		/* Array of T/F for which columns to use */
 	unsigned int geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
-	unsigned int dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
+	unsigned int dist_flag;		/* How distances are calculated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	/* read_file is a pointer to function that reads this file */
 	int (*read_file) (struct GMT_CTRL *, char *, double ***, struct X2SYS_INFO *, struct X2SYS_FILE_INFO *, struct GMT_IO *, uint64_t *);
 	unsigned int file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */

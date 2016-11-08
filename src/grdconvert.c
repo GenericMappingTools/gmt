@@ -194,7 +194,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
-		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n",
+		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
 		            fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
 		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n')
 			GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");

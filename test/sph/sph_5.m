@@ -1,7 +1,7 @@
 function [ps, path] = sph_5(out_path)
 % OUT_PATH -> Path to where the PS file will be written
 % PS       -> Full name of the created postscript file (built from OUT_PATH)
-% PATH     -> Path to where this file lives (usefull for gmtest.m)
+% PATH     -> Path to where this file lives (useful for gmtest.m)
 %
 %	Test sphdistance's -En and -Ez modes
 %	$Id$

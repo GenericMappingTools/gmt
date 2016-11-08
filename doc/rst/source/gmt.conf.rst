@@ -811,7 +811,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _MAP_TICK_LENGTH:
 
 **MAP_TICK_LENGTH**
-    Sets both **MAP_TICK_LENGTH_PRIMARY** and **MAP_TICK_LENGH_SECONDARY** to the value specified.
+    Sets both **MAP_TICK_LENGTH_PRIMARY** and **MAP_TICK_LENGTH_SECONDARY** to the value specified.
     This setting is not included in the **gmt.conf** file.
 
 .. _MAP_TICK_LENGTH_PRIMARY:

@@ -765,9 +765,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_TEXTSET *Decorate = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	void *record = NULL;	/* Opaque pointer to either a text (buffer) or double (in) record */
@@ -897,7 +897,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
-		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
+		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we don't do it here in psxy */
 		if (S.G.delay) gmt_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {

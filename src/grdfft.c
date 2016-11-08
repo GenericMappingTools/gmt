@@ -38,7 +38,7 @@
 #define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 
 #ifdef DEBUG
-/* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
+/* For debugging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
 static bool show_n = false;
 #endif
 

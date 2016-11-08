@@ -8,7 +8,7 @@
 #	to install new fonts on your particular system.
 #
 #	The fontheight below is the height of A for unit fontsize.
-#	Encoded = 0 if we may reencode this font as needed.
+#	Encoded = 0 if we may re-encode this font as needed.
 #
 #Fontname			Fontheight	Encoded
 Ryumin-Light-EUC-H		0.700		1

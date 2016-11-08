@@ -1779,7 +1779,7 @@ For further details the user should read the entire help section at the header o
 ``gmtswitch.bat``.
 
 The ``gmtswitch.bat`` solution, however, has the drawback that the batch file must be located
-elsewhere and in a directory that is on the user's PATH, otherwise it wont be located after
+elsewhere and in a directory that is on the user's PATH, otherwise it won't be located after
 first use unless the other GMT bin directory has a similar batch file. A better solution is to install the
 `Windows console enhancement <http://sourceforge.net/projects/console>`_
 that includes multiple tabs and configure the different tabs to start the different GMT versions.
@@ -5487,7 +5487,7 @@ where *driver* is the same as explained above and *dataType* is a 2 or 3
 chars code from: u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes
 signed\|unsigned. If not provided the default type is float32. Both
 driver names and data types are case insensitive. Note, that you have to
-specify *nan* for integer types unless you whish that all NaN data values
+specify *nan* for integer types unless you wish that all NaN data values
 are replaced by zero.
 
 The NaN data value

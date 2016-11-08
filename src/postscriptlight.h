@@ -243,7 +243,7 @@ struct PSL_CTRL {
 		FILE *err;			/* Error stream (NULL means stderr)		*/
 		char *encoding;			/* The encoding name. e.g. ISO-8859-1		*/
 		char *session;			/* The session name (NULL)			*/
-		int runmode;			/* Nonzero if we are being called from a multi-module enviroment (0 for commandline)	*/
+		int runmode;			/* Nonzero if we are being called from a multi-module environment (0 for commandline)	*/
 		int unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
 		int copies;			/* Number of copies for this plot		*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/
@@ -274,7 +274,7 @@ struct PSL_CTRL {
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with postscriptlight subdirectory */
 		char *USERDIR;			/* Pointer to path of directory with user definitions */
-		char *buffer;			/* Pointer to buffer where PS will be "writen" when memory == 1 */
+		char *buffer;			/* Pointer to buffer where PS will be "written" when memory == 1 */
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
 		double offset[2];		/* Origin offset [1/1]				*/
@@ -313,8 +313,8 @@ struct PSL_CTRL {
 		struct PSL_FONT {
 			double height;		/* Height of A for unit fontsize */
 			char *name;		/* Name of this font */
-			int encoded;		/* true if we never should reencode this font (e.g. symbols) */
-						/* This is also changed to true after we do reencode a font */
+			int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
+						/* This is also changed to true after we do re-encode a font */
 		} *font;	/* Pointer to array of font structures 		*/
 		struct PSL_PATTERN {
 			int nx, ny;	/* Dimension of pattern image */

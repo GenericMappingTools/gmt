@@ -25,7 +25,7 @@
  *		common formats such as JPEG or PNG.
  *		The trick is to create an intermediary MEM diver, write the data to it
  *		and finally use it as a dataset argument to GDALCreateCopy. One could not
- *		do this from the begining because this method needs a Dataset and we didn't
+ *		do this from the beginning because this method needs a Dataset and we didn't
  *		have any to start with. Only the pointer to 'data'.
  *		This all story needs bo checked for potential memory leaks.
  *
@@ -204,7 +204,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	data = prhs->data;
 
 	/* Find out in which data type was given the input array */
-	/* The two first cases bellow are messy. Decision should be made by a mem layout code stored in prhs */
+	/* The two first cases below are messy. Decision should be made by a mem layout code stored in prhs */
 	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
 		typeCLASS = GDT_Byte;
 		n_byteOffset = 1;
@@ -348,7 +348,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	}
 
 	for (i = 0; i < n_bands; i++) {
-		/* A problem with writing to the MEM driver is that it tests that we dont overflow
+		/* A problem with writing to the MEM driver is that it tests that we don't overflow
 		   but the issue is that the test is done on the MEM declared size, whilst we are
 		   actually using a larger array, and the dimensions passed to GDALRasterIO refer
 		   to it. The trick was to offset the initial position of the 'data' array in
@@ -367,7 +367,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if (!strcmp(prhs->type, "byte")) {
-					/* This case arrives here from a separate path. It started in grdimage and an originaly
+					/* This case arrives here from a separate path. It started in grdimage and an originally
 					   data was in uchar but padded and possibly 3D (RGB) */
 					tmpByte = (unsigned char *)data;
 					for (nn = 0; nn < (uint64_t)n_cols*n_rows; nn++)

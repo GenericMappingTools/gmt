@@ -2447,7 +2447,7 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 			PSL_setfill (PSL, GMT->PSL->init.page_rgb, true);
 			PSL_plotpolygon (PSL, xp, yp, 8);	/* Outline of 4-pointed star */
 			tx[0] = mr->refpoint->x, ty[0] = mr->refpoint->y;
-			/* Fill positive halfs of the 4-pointed blades */
+			/* Fill positive halves of the 4-pointed blades */
 			PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, true);
 			tx[1] = xp[0], ty[1] = yp[0], tx[2] = xp[7], ty[2] = yp[7];
 			PSL_plotpolygon (PSL, tx, ty, 3);	/* East */
@@ -2594,7 +2594,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		unsigned int want_col, col, pos;
 		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
 		   we must scan the GMT->io.current.record for the col'th item and strcpy that into text.  The reason n -> col is
-		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt> was used or if this is psxyz, no? */
+		   tricky is while we may know this is the 3rd extra variable, we don't know if -C<cpt> was used or if this is psxyz, no? */
 		want_col = start + n;
 		for (col = pos = 0; col <= want_col; col++) (void)gmt_strtok (GMT->current.io.record, GMT_TOKEN_SEPARATORS, &pos, text);
 	}
@@ -2650,7 +2650,7 @@ GMT_LOCAL void plot_encodefont (struct PSL_CTRL *PSL, int font_no, double size, 
 
 	if (PSL->internal.comments) PSL_command (PSL, "%% Set font encoding and size for this custom symbol %s item %d\n", name, id);
 	PSL_command (PSL, "/PSL_symbol_%s_setfont_%d {", name, id);
-	if (encode) {	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
+	if (encode) {	/* Re-encode fonts with Standard+ or ISOLatin1[+] encodings */
 		PSL_command (PSL, " PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 		PSL->internal.font[font_no].encoded = true;
 	}
@@ -3737,7 +3737,7 @@ GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double
 GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S) {
 	/* Draws a great-circle vector with our without heads, etc. There are some complications to consider:
 	 * When there are no heads it is simple.  If +n is on we may shrink the line thickness.
-	 * With heads tehre are these cases:
+	 * With heads there are these cases:
 	 * Head length is longer than 90% of the vector length.  We then skip the head and return 1
 	 * +n<norm> is in effect.  We shrink vector pen and head length.  Still, the shrunk head
 	 * may be longer than 90% of the vector length.  We then shrink head (not pen) further and return 2
@@ -4174,7 +4174,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 
 	if (n < 2) return;
 
-	plot_NaN_pen_up (x, y, pen, n);	/* Ensure we dont have NaNs in the coordinates */
+	plot_NaN_pen_up (x, y, pen, n);	/* Ensure we don't have NaNs in the coordinates */
 
 	i = 0;
 	while (i < (n-1) && pen[i+1] == PSL_MOVE) i++;	/* Skip repeating pen == PSL_MOVE in beginning */
@@ -4264,7 +4264,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		yn = n;
 	}
 	nx = gmtlib_linear_array (GMT, w, e, dval, GMT->current.map.frame.axis[GMT_X].phase, &x);
-	if (idup && !gmt_M_360_range(x[0],x[nx-1])) idup = 0;	/* Probably due to phase we dont need to remove any duplicate */
+	if (idup && !gmt_M_360_range(x[0],x[nx-1])) idup = 0;	/* Probably due to phase we don't need to remove any duplicate */
 	for (i = 0; i < nx - idup; i++)  {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, x[i], ys, yn);
 		plot_map_lonline (GMT, PSL, x[i], ys, yn);
@@ -4656,12 +4656,12 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 			if (ms->do_label) {
 				/* We estimate the width of the label similarly; if no label given then we use the name_widths from above rather than strlen */
 				l_width = bar_tick_len + (ms->label[0] ? strlen (ms->label) : name_width[unit]) * GMT_LET_WIDTH * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
-				/* When label is placed to left|rigth it sticks up by l_shift and we must ensure dim[YHI] is at least that large */
+				/* When label is placed to left|right it sticks up by l_shift and we must ensure dim[YHI] is at least that large */
 				l_height = GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Approximate height of label */
 				l_shift  = l_height - scale_height;	/* Adjust for the shift in y-coordinate */
 			}
-			if (ms->alignment == 'l' && l_width > dim[XLO]) dim[XLO] = l_width;	/* Extend rectangle on the left to accomodate the label */
-			else if (ms->alignment == 'r' && l_width > dim[XHI]) dim[XHI] = l_width;	/* Extend rectangle on the right to accomodate the label */
+			if (ms->alignment == 'l' && l_width > dim[XLO]) dim[XLO] = l_width;	/* Extend rectangle on the left to accommodate the label */
+			else if (ms->alignment == 'r' && l_width > dim[XHI]) dim[XHI] = l_width;	/* Extend rectangle on the right to accommodate the label */
 			/* Estimate approximate distance from anchor point down to base of annotations */
 			dim[YLO] = dist_to_annot + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 			dim[YHI] = 0.0;	/* Normally nothing above the scale bar */
@@ -5542,7 +5542,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	PSL_endlayer (GMT->PSL);
-	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opague, if required */
+	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 

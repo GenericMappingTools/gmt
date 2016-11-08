@@ -199,7 +199,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity effect is to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic effect of the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   volume between them is computed\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body density in SI.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes file with locations where anomaly is going to be computed.\n");
@@ -1071,7 +1071,7 @@ GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_C
 		body_desc->ind = gmt_M_memory (GMT, NULL, body_desc->n_v[0], unsigned int);
 	if (*body_verts == NULL) *body_verts = gmt_M_memory (GMT, NULL, 2, struct BODY_VERTS);
 
-	body_desc->ind[0] = 0;	body_desc->ind[1] = 1;	/* NOT USED REALY AREN'T THEY? */
+	body_desc->ind[0] = 0;	body_desc->ind[1] = 1;	/* NOT USED REALLY AREN'T THEY? */
 
 	return(0);
 }
@@ -1207,7 +1207,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	d_func[2] = bhatta;
 
 	indf = (Ctrl->H.pirtt) ? 1 + Ctrl->H.bhatta : 0;
-	rho_or_mag = (Ctrl->C.active) ? Ctrl->C.rho : Ctrl->H.m_int;	/* What are we computing? (But it may be overriden below) */
+	rho_or_mag = (Ctrl->C.active) ? Ctrl->C.rho : Ctrl->H.m_int;	/* What are we computing? (But it may be overridden below) */
 
 	/* For Bhattacharya, select which component */
 	pm = (Ctrl->H.f_tot) ? 0 : ((Ctrl->H.x_comp) ? 1 : ((Ctrl->H.y_comp) ? 2 : ((Ctrl->H.z_comp) ? 3 : ((Ctrl->H.h_comp) ? 4 : 0)) ));

@@ -1,7 +1,7 @@
 function measure(out_path::ASCIIString="")
 # OUT_PATH -> Path to where the PS file will be written. If not in input must be set via the "outPath" global var
 # PS       -> Full name of the created postscript file (built from OUT_PATH)
-# PATH     -> Path to where this file lives (usefull for gmtest.m)
+# PATH     -> Path to where this file lives (useful for gmtest.m)
 #
 #	$Id$
 

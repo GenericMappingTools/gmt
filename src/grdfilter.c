@@ -140,7 +140,7 @@ enum Grdfilter_mode {
 #define GRDFILTER_X_DIST	5
 #define GRDFILTER_Y_DIST	6
 
-#define GRDFILTER_FILTERS	"bcgfhompLlUu"	/* These dont have to be in any order */
+#define GRDFILTER_FILTERS	"bcgfhompLlUu"	/* These don't have to be in any order */
 #define GRDFILTER_MODES		"012345p"
 
 /* Distance modes: */
@@ -285,7 +285,7 @@ GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, stru
 		B->icount[bin]++;			/* Add up counts */
 		if (B->icount[bin] > mode_count) {	/* New max count value; make a note */
 			mode_count = B->icount[bin];	/* Highest count so far... */
-			mode_bin = bin;			/* ...occuring for this bin */
+			mode_bin = bin;			/* ...occurring for this bin */
 			n_modes = 1;			/* Only one of these so far */
 		}
 		else if (B->icount[bin] == mode_count) n_modes++;	/* Bin has same peak as previous best mode; increase mode count */
@@ -335,7 +335,7 @@ GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVA
 		B->fcount[bin] += data[i].weight;	/* Add up weights */
 		if (B->fcount[bin] > mode_count) {	/* New max weight value; make a note */
 			mode_count = B->fcount[bin];	/* Highest count so far... */
-			mode_bin = bin;			/* ...occuring for this bin */
+			mode_bin = bin;			/* ...occurring for this bin */
 			n_modes = 1;			/* Only one of these so far */
 		}
 		else if (doubleAlmostEqual (B->fcount[bin], mode_count)) n_modes++;	/* Bin has same peak as previous best mode; increase mode count */
@@ -1336,7 +1336,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 	struct FILTER_INFO F        = t->F;
 	struct GRDFILTER_BIN_MODE_INFO *B = t->B;
 
-	/* We need a local copy of these becuase they are modified in this function */
+	/* We need a local copy of these because they are modified in this function */
 	visit = gmt_M_memory (GMT, NULL, Gin->header->n_columns, char);
 	if (!weight)
 		weight = gmt_M_memory(GMT, NULL, F.n_columns*F.n_rows, double);	/* Allocate space for convolution grid */

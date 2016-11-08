@@ -438,21 +438,21 @@ GMT_LOCAL void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, d
 		switch (GMT->current.proj.z_project.face[i]) {
 			case 0:	/* yz plane positive side */
 				sign = 1.0;
-				/* Purposefully fall throught after flipping the sign */
+				/* Purposefully fall through after flipping the sign */
 			case 1:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_X, x + sign * x_size);
 				PSL_plotbox (PSL, y - y_size, z - z_size, y + y_size, z + z_size);
 				break;
 			case 2:	/* xz plane positive side */
 				sign = 1.0;
-				/* Purposefully fall throught after flipping the sign */
+				/* Purposefully fall through after flipping the sign */
 			case 3:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Y, y + sign * y_size);
 				PSL_plotbox (PSL, x - x_size, z - z_size, x + x_size, z + z_size);
 				break;
 			case 4:	/* xy plane positive side */
 				sign = 1.0;
-				/* Purposefully fall throught after flipping the sign */
+				/* Purposefully fall through after flipping the sign */
 			case 5:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Z, z + sign * z_size);
 				PSL_plotbox (PSL, x - x_size, y - y_size, x + x_size, y + y_size);
@@ -519,9 +519,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXYZ_DATA *data = NULL;
 	struct PSXYZ_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/

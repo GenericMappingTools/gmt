@@ -12,7 +12,7 @@
  *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *		
  *  This include file contains initializations for the MGD77 system.
- *  MUST BE INCUDED AFTER mgd77.h IN mgd77.c
+ *  MUST BE INCLUDED AFTER mgd77.h IN mgd77.c
  *
  *  Version:	1.1
  *  Revised:	1-JAN-2006

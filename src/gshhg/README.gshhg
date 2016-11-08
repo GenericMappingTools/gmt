@@ -319,10 +319,10 @@ tolerances used were:
 
 File		Content			Tolerance
 -------------------------------------------------
-gshhs_h.b	High resolution		0.2 km
-gshhs_i.b	Interm. resolution	1.0 km
-gshhs_l.b	Low resolution		5.0 km
-gshhs_c.b	Crude resolution	25  km
+gshhs_h.b	High resolution			0.2 km
+gshhs_i.b	Intermediate resolution	1.0 km
+gshhs_l.b	Low resolution			5.0 km
+gshhs_c.b	Crude resolution		25  km
 
 However, should you need to decimate the full data set using a
 different tolerance you can use the program gshhg_dp to do so:

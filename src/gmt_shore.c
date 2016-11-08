@@ -114,7 +114,7 @@ GMT_LOCAL int shore_get_position (int side, short int x, short int y) {
 GMT_LOCAL int shore_get_next_entry (struct GMT_SHORE *c, int dir, int side, int id) {
 	/* Finds the next entry point on the given side that is further away
 	 * in the <dir> direction than previous point.  It then removes the info
-	 * regarding the new entry from the GSHHS_SIDE structure so it wont be
+	 * regarding the new entry from the GSHHS_SIDE structure so it won't be
 	 * used twice. Because we have added the 4 corners with pos = 65535 we
 	 * know that if there are no segments on a side the procedure will find
 	 * the corner as the last item, always. This is for CCW; when dir = -1
@@ -198,7 +198,7 @@ GMT_LOCAL void shore_path_shift2 (double *lon, unsigned int n, double west, doub
 }
 
 GMT_LOCAL void shore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir) {
-	/* Initializes the GSHHS_SIDE stuctures for each side, then adds corners and all entering segments */
+	/* Initializes the GSHHS_SIDE structures for each side, then adds corners and all entering segments */
 	int s, i, n[4];
 
 	/* Set corner coordinates */
@@ -230,7 +230,7 @@ GMT_LOCAL void shore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c, i
 		n[i]++;
 	}
 
-	/* We then sort the array of GSHHS_SIDE stucts on their distance from the start of the side */
+	/* We then sort the array of GSHHS_SIDE structs on their distance from the start of the side */
 	for (i = 0; i < 4; i++)	{	/* sort on position */
 		if (dir == 1)
 			qsort (c->side[i], (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), shore_asc_sort);
@@ -787,7 +787,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		if (c->two_Antarcticas) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
 			if (seg_info_ANT[i]) level = ANT_LEVEL_ICE;	/* Replace the 1 with 5 so Ant polygons now have levels 5 (ice) or 6 (ground) */
 			if (level == ANT_LEVEL_ICE || level == ANT_LEVEL_GROUND) {	/* Need more specific checking */
-				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Dont want anything to do with Antarctica */
+				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Don't want anything to do with Antarctica */
 				else if (level == ANT_LEVEL_GROUND && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
 				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
 				level = 1;	/* Reset either shelf-ice or grounding line polygon level to land */

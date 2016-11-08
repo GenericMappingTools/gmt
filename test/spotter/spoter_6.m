@@ -1,7 +1,7 @@
 function [pass, d_path] = spotter_6(out_path)
 % OUT_PATH -> Path to where eventually error files will be written
 % PASS     -> Logical variable with the error status (PASS == true means the test passed)
-% PATH     -> Path to where this file lives (usefull for gmtest.m)
+% PATH     -> Path to where this file lives (useful for gmtest.m)
 %
 %	$Id$
 

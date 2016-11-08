@@ -584,7 +584,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		for (row = 0; row < dim[GMT_ROW]; row++) S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 	}
 	else {	/* Got a dataset with output locations */
-		geometry = GMT_IS_PLP;	/* We dont really know */
+		geometry = GMT_IS_PLP;	/* We don't really know */
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);

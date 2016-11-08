@@ -18,7 +18,7 @@
 /*
  * gmt_resources.h contains the definitions for the six GMT resources
  * GMT_DATASET, GMT_GRID, GMT_IMAGE, GMT_PALETTE, GMT_POSTSCRIPT, GMT_TEXTSET
- * as well as the two auxilliary resources GMT_MATRIX and GMT_VECTOR,
+ * as well as the two auxiliary resources GMT_MATRIX and GMT_VECTOR,
  * as well as all named enums.
  *
  * Author:	Paul Wessel
@@ -97,7 +97,7 @@ enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is a data table */
 	GMT_IS_GRID,		/* Entity is a grid */
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
-	GMT_IS_PALETTE,		/* Entity is a color pallete table */
+	GMT_IS_PALETTE,		/* Entity is a color palette table */
 	GMT_IS_POSTSCRIPT,	/* Entity is a PostScript content struct */
 	GMT_IS_TEXTSET,		/* Entity is a text table */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
@@ -194,7 +194,7 @@ enum GMT_enum_alloc {
 	GMT_ALLOC_INTERNALLY = 1,	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
 	GMT_ALLOC_VERTICAL = 4,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
-	GMT_ALLOC_HORIZONTAL = 8};	/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_HORIZONTAL = 8};	/* Allocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
 
 enum GMT_enum_duplicate {
 	GMT_DUPLICATE_NONE = 0,		/* Duplicate data set structure but no allocate&copy of data records|grid|image */
@@ -631,7 +631,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	/* Variables we document for the API: */
 	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
 	unsigned int n_colors;		/* Number of colors in CPT lookup table */
-	unsigned int mode;		/* Flags controling use of BFN colors */
+	unsigned int mode;		/* Flags controlling use of BFN colors */
 	struct GMT_LUT *data;		/* CPT lookup table read by gmtlib_read_cpt */
 	struct GMT_BFN bfn[3];		/* Structures with back/fore/nan colors */
 	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */

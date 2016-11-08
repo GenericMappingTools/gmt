@@ -314,7 +314,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	
 	/* We first want to obtain the mean distance from one segment to all others.  We do this by computing the
 	 * nearest distance from each point along our segment S to the other segments and compute the average of
-	 * all those distances.  Then we reverse teh search and continue to accumulate averages */
+	 * all those distances.  Then we reverse the search and continue to accumulate averages */
 	
 	/* Process each point along the trace in S and find sum of nearest distances for each segment in table */
 	for (row = 0; row < S->n_rows; row++) {
@@ -429,7 +429,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			D->table[tbl]->segment[seg]->mode = 0;			/* Remove this temporary flag */
 			
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
-			if (S->n_rows == Sp->n_rows) {	/* Exacly the same number of data points; check for identical duplicate (possibly reversed) */
+			if (S->n_rows == Sp->n_rows) {	/* Exactly the same number of data points; check for identical duplicate (possibly reversed) */
 				for (row = 0, d1 = d2 = 0.0; row < S->n_rows; row++) {	/* Compare each point along the trace in S and Sp and S and Sp-reversed */
 					d1 += gmt_distance (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], Sp->data[GMT_X][row], Sp->data[GMT_Y][row]);
 					d2 += gmt_distance (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], Sp->data[GMT_X][S->n_rows-row-1], Sp->data[GMT_Y][S->n_rows-row-1]);
@@ -1281,7 +1281,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
-			qmode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
+			qmode = Ctrl->Q.mode;	/* Don't know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
 			GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write headers */
 		}
 		else {
