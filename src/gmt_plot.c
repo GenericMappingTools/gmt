@@ -74,6 +74,8 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LON) || ((axis) == GMT_Y && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LAT))
+
 /* Functions declared elsewhere but needed here once */
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
 EXTERN_MSC bool gmt_genper_reset (struct GMT_CTRL *GMT, bool reset);
@@ -4056,7 +4058,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 		is_interval = (T->type == 'i' || T->type == 'I');	/* Interval or tick mark annotation? */
 		nx = gmtlib_coordinate_array (GMT, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
-		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !gmt_M_axis_is_geo (GMT, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
+		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !gmt_M_axis_is_geo_strict (GMT, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
 		nx1 = (nx > 0 && is_interval) ? nx - 1 : nx;
 		/* First plot all the tick marks */
@@ -4135,7 +4137,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	/* Finally do axis label */
 
-	if (A->label[0] && annotate && !gmt_M_axis_is_geo (GMT, axis)) {
+	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_command (PSL, "/PSL_LH ");
