@@ -3231,9 +3231,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (GMT->current.proj.projection == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (no = 0; no < 2; no++) {
 			if (GMT->current.io.col_type[GMT_IN][no] & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
-				GMT->current.map.frame.axis[no].unit[0] = '-';
-				GMT->current.map.frame.axis[no].unit[1] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
-				GMT->current.map.frame.axis[no].unit[2] = '\0';
+				GMT->current.map.frame.axis[no].unit[0] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
+				GMT->current.map.frame.axis[no].unit[1] = '\0';
 			}
 		}
 	}
