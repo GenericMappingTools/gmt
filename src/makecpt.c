@@ -212,12 +212,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Sets format for color reporting */
-				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
-					Ctrl->F.cat = true;
-					if (txt_a[0] == '\0') break;
-				}
 				Ctrl->F.active = true;
-				switch (txt_a[0]) {
+				if (gmt_get_modifier (opt->arg, 'c', txt_a)) Ctrl->F.cat = true;
+				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
