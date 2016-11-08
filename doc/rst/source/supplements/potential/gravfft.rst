@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
-[ |-T|\ *te/rl/rm/rw*\ [**+m**] ]
+[ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*\ [*zl*] ]
@@ -138,7 +138,7 @@ Optional Arguments
 
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
-    whose average was set by **-Z**\ *zm* and model parameters by **-T**
+    whose average depth was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the "gravimetric Moho". **-Q**
     implicitly sets **-N+h**
 
@@ -153,10 +153,11 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *te/rl/rm/rw*\ [**+m**]
+**-T**\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
-    an elastic plate of thickness *te*. Also append densities for load, mantle, and
-    water in SI units. Give average mantle depth via **-Z**. If the elastic thickness
+    an elastic plate of thickness *te*. Also append densities for load, mantle,
+    water and infill in SI units. If *ri* is not provided it defaults to *rl*.
+    Give average mantle depth via **-Z**. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
@@ -170,9 +171,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *zm*\ [*zl*]
-    Moho [and swell] average compensation depths. For the "load from
-    top" model you only have to provide *zm*, but for the "loading from
-    below" don't forget *zl*.
+    Moho [and swell] average compensation depths (in meters positive dows -- the depth). For the "load from
+    top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
 
 .. _-V:
 
@@ -330,7 +330,9 @@ Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+
 Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447-455.
+
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
 `http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_

@@ -1147,6 +1147,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psconvert main code ----------------------------*/
 
+	if (!Ctrl->L.active && Ctrl->In.n_files == 0) {	/* No files given, bail */
+		GMT_Report (API, GMT_MSG_NORMAL, "No PostScript files specified - exiting.\n");
+		Return (GMT_NOERROR);
+	}
+
 	/* Test if GhostScript can be executed (version query) */
 	sprintf(cmd, "%s --version", Ctrl->G.file);
 	if ((fp = popen(cmd, "r")) != NULL) {
