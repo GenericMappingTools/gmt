@@ -1358,7 +1358,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				}
 				if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
 					for (row_f = 0, row_l = Sout->n_rows - 1; row_f < Sout->n_rows/2; row_f++, row_l--) {
-						for (col = 0; col < Sout->n_columns; col++) double_swap (Sout->data[col][row_f], Sout->data[col][row_l]);
+						for (col = 0; col < Sout->n_columns; col++) gmt_M_double_swap (Sout->data[col][row_f], Sout->data[col][row_l]);
 					}
 					handedness = Ctrl->E.mode;
 				}

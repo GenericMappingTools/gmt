@@ -532,7 +532,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 					for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
 						for (col = 0; col < D[GMT_OUT]->table[tbl]->segment[seg]->n_columns; col++)
-							double_swap (D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row2]);
+							gmt_M_double_swap (D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row1], D[GMT_OUT]->table[tbl]->segment[seg]->data[col][row2]);
 					}
 				}
 			}

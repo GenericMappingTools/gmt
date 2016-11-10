@@ -875,11 +875,11 @@ GMT_LOCAL unsigned int map_wesn_crossing (struct GMT_CTRL *GMT, double lon0, dou
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
 
 	if (hypot (x0 - xx[1], y0 - yy[1]) < hypot (x0 - xx[0], y0 - yy[0])) {
-		double_swap (clon[0], clon[1]);
-		double_swap (clat[0], clat[1]);
-		double_swap (xx[0], xx[1]);
-		double_swap (yy[0], yy[1]);
-		uint_swap (sides[0], sides[1]);
+		gmt_M_double_swap (clon[0], clon[1]);
+		gmt_M_double_swap (clat[0], clat[1]);
+		gmt_M_double_swap (xx[0], xx[1]);
+		gmt_M_double_swap (yy[0], yy[1]);
+		gmt_M_uint_swap (sides[0], sides[1]);
 	}
 
 	return (2);
@@ -1034,11 +1034,11 @@ GMT_LOCAL unsigned int map_rect_crossing (struct GMT_CTRL *GMT, double lon0, dou
 	/* Sort the two intermediate points into the right order based on projected distances from the first point */
 
 	if (hypot (x0 - xx[1], y0 - yy[1]) < hypot (x0 - xx[0], y0 - yy[0])) {
-		double_swap (clon[0], clon[1]);
-		double_swap (clat[0], clat[1]);
-		double_swap (xx[0], xx[1]);
-		double_swap (yy[0], yy[1]);
-		uint_swap (sides[0], sides[1]);
+		gmt_M_double_swap (clon[0], clon[1]);
+		gmt_M_double_swap (clat[0], clat[1]);
+		gmt_M_double_swap (xx[0], xx[1]);
+		gmt_M_double_swap (yy[0], yy[1]);
+		gmt_M_uint_swap (sides[0], sides[1]);
 	}
 
 	return (2);
@@ -1191,8 +1191,8 @@ GMT_LOCAL int map_ellipse_crossing (struct GMT_CTRL *GMT, double lon1, double la
 		if ((jump = map_jump_x (GMT, x2, y2, x1, y1))) {
 			(*GMT->current.map.get_crossings) (GMT, xx, yy, x2, y2, x1, y1);
 			if (jump == 1) {	/* Add right border point first */
-				double_swap (xx[0], xx[1]);
-				double_swap (yy[0], yy[1]);
+				gmt_M_double_swap (xx[0], xx[1]);
+				gmt_M_double_swap (yy[0], yy[1]);
 			}
 			gmt_xy_to_geo (GMT, &clon[0], &clat[0], xx[0], yy[0]);
 			gmt_xy_to_geo (GMT, &clon[1], &clat[1], xx[1], yy[1]);
@@ -1491,7 +1491,7 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		n = m;	/* Current size of polygon */
 		m = 0;	/* Start with nuthin' */
 
-		uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		gmt_M_uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (n) {
 			/* Must ensure we copy the very first point if it is inside the clip rectangle */
 			if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
@@ -1727,7 +1727,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		n_cross = 0;	/* No crossings so far */
 
 		curved = !((side%2) ? GMT->current.map.meridian_straight : GMT->current.map.parallel_straight);	/* Is this border straight or curved when projected */
-		uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		gmt_M_uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
 			m = n;
 			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
@@ -1991,8 +1991,8 @@ GMT_LOCAL bool map_cartesian_overlap (struct GMT_CTRL *GMT, double lon0, double 
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
 	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
 
-	if (x0 > x1) double_swap (x0, x1);
-	if (y0 > y1) double_swap (y0, y1);
+	if (x0 > x1) gmt_M_double_swap (x0, x1);
+	if (y0 > y1) gmt_M_double_swap (y0, y1);
 
 	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV8_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV8_LIMIT) return (false);
 	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV8_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV8_LIMIT) return (false);
@@ -2007,8 +2007,8 @@ GMT_LOCAL bool map_rect_overlap (struct GMT_CTRL *GMT, double lon0, double lat0,
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
 	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
 
-	if (x0 > x1) double_swap (x0, x1);
-	if (y0 > y1) double_swap (y0, y1);
+	if (x0 > x1) gmt_M_double_swap (x0, x1);
+	if (y0 > y1) gmt_M_double_swap (y0, y1);
 
 	if (x1 - GMT->current.proj.rect[XLO] < -GMT_CONV8_LIMIT || x0 - GMT->current.proj.rect[XHI] > GMT_CONV8_LIMIT) return (false);
 	if (y1 - GMT->current.proj.rect[YLO] < -GMT_CONV8_LIMIT || y0 - GMT->current.proj.rect[YHI] > GMT_CONV8_LIMIT) return (false);
@@ -2026,8 +2026,8 @@ GMT_LOCAL bool map_rect_overlap (struct GMT_CTRL *GMT, double lon0, double lat0,
 /*! . */
 GMT_LOCAL bool map_wesn_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1) {
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular lon/lat boundaries */
-	if (lon0 > lon1) double_swap (lon0, lon1);
-	if (lat0 > lat1) double_swap (lat0, lat1);
+	if (lon0 > lon1) gmt_M_double_swap (lon0, lon1);
+	if (lat0 > lat1) gmt_M_double_swap (lat0, lat1);
 	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
 		lon0 += 360.0;
 		lon1 += 360.0;
@@ -2277,8 +2277,8 @@ GMT_LOCAL double map_az_backaz_cartesian (struct GMT_CTRL *GMT, double lonE, dou
 	double az, dx, dy;
 
 	if (baz) {	/* exchange point one and two */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	dx = lonE - lonS;
 	dy = latE - latS;
@@ -2297,8 +2297,8 @@ GMT_LOCAL double map_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE
 	double az, dx, dy, xE, yE, xS, yS;
 
 	if (baz) {	/* exchange point one and two */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	gmt_geo_to_xy (GMT, lonE, latE, &xE, &yE);
 	gmt_geo_to_xy (GMT, lonS, latS, &xS, &yS);
@@ -2319,8 +2319,8 @@ GMT_LOCAL double map_az_backaz_flatearth (struct GMT_CTRL *GMT, double lonE, dou
 	double az, dx, dy, dlon;
 
 	if (baz) {	/* exchange point one and two */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	gmt_M_set_delta_lon (lonS, lonE, dlon);
 	dx = dlon * cosd (0.5 * (latE + latS));
@@ -2341,8 +2341,8 @@ GMT_LOCAL double map_az_backaz_sphere (struct GMT_CTRL *GMT, double lonE, double
 	gmt_M_unused(GMT);
 
 	if (baz) {	/* exchange point one and two */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	sincosd (latS, &sin_yS, &cos_yS);
 	sincosd (latE, &sin_yE, &cos_yE);
@@ -3298,8 +3298,8 @@ GMT_LOCAL void map_get_crossings_tm (struct GMT_CTRL *GMT, double *xc, double *y
 	xa = x0;	xb = x1;
 	ya = y0;	yb = y1;
 	if (ya > yb) {	/* Make A the minimum y point */
-		double_swap (xa, xb);
-		double_swap (ya, yb);
+		gmt_M_double_swap (xa, xb);
+		gmt_M_double_swap (ya, yb);
 	}
 
 	yb -= GMT->current.map.height;
@@ -4851,8 +4851,8 @@ GMT_LOCAL void map_get_crossings_x (struct GMT_CTRL *GMT, double *xc, double *yc
 	xa = x0;	xb = x1;
 	ya = y0;	yb = y1;
 	if (xa > xb) {	/* Make A the minimum x point */
-		double_swap (xa, xb);
-		double_swap (ya, yb);
+		gmt_M_double_swap (xa, xb);
+		gmt_M_double_swap (ya, yb);
 	}
 
 	xb -= 2.0 * gmtlib_half_map_width (GMT, yb);
@@ -5227,8 +5227,8 @@ GMT_LOCAL double map_rudoe_dist_meter (struct GMT_CTRL *GMT, double lonS, double
 	 */
 
 	if (latS < 0.0) {	/* Station in southern hemisphere, swap */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	el = GMT->current.proj.ECC2 / GMT->current.proj.one_m_ECC2;
 	e1 = 1.0 + el;
@@ -5310,8 +5310,8 @@ GMT_LOCAL double map_az_backaz_loxodrome (struct GMT_CTRL *GMT, double lonE, dou
 	double az, d_lon;
 
 	if (baz) {	/* exchange point one and two */
-		double_swap (lonS, lonE);
-		double_swap (latS, latE);
+		gmt_M_double_swap (lonS, lonE);
+		gmt_M_double_swap (latS, latE);
 	}
 	gmt_M_set_delta_lon (lonE, lonS, d_lon);
 	if (doubleAlmostEqualZero (latS, latE))	/* Along parallel */
@@ -6885,8 +6885,8 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 			if (add_crossings) {	/* Find and insert the crossings */
 				map_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
 				if (way[k] == 1) {	/* Add right border point first */
-					double_swap (xc[0], xc[1]);
-					double_swap (yc[0], yc[1]);
+					gmt_M_double_swap (xc[0], xc[1]);
+					gmt_M_double_swap (yc[0], yc[1]);
 				}
 				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
 				x[j] = xc[1];	y[j++] = yc[1];	/* Start of another */

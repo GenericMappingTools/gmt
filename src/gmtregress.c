@@ -950,7 +950,7 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 		par[GMTREGRESS_ICEPT] = -par[GMTREGRESS_ICEPT] / par[GMTREGRESS_SLOPE];
 		par[GMTREGRESS_SLOPE] = 1.0 / par[GMTREGRESS_SLOPE];
 		par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
-		double_swap (par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN]);
+		gmt_M_double_swap (par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN]);
 		par[GMTREGRESS_SIGIC] = par[GMTREGRESS_SIGIC] / par[GMTREGRESS_SLOPE];
 	}
 	if (mode == 0) {	/* Normal mode is to compute normalized residuals (aka z-scores) */

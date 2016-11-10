@@ -245,9 +245,9 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 			e_time = gmt_get_modeltime (B, &e_unit, &e_scale);
 			i_time = gmt_get_modeltime (C, &i_unit, &i_scale);
 			if (e_time > s_time) {	/* Enforce that old time is larger */
-				double_swap (s_time,  e_time);
-				double_swap (s_scale, e_scale);
-				char_swap   (s_unit,  e_unit);
+				gmt_M_double_swap (s_time,  e_time);
+				gmt_M_double_swap (s_scale, e_scale);
+				gmt_M_char_swap (s_unit,  e_unit);
 			}
 			if (*log) {	/* Equidistant spacing in log10(time).  Here we got number of output points directly, compute log10 (increment) */
 				n_eval_times = urint (i_time);

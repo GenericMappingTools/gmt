@@ -1766,7 +1766,7 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	par[2] = 1.0/sqrt (0.5 * (A + C - r));
 	par[0] = (gmt_M_is_zero (B)) ? ((A > C) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (A - C - r)/B, 1.0) * R2D;
 	if (par[2] > par[1]) {	/* Switch so that par[1] is the major axis */
-		double_swap (par[1], par[2]);
+		gmt_M_double_swap (par[1], par[2]);
 		par[0] += 90.0;
 		if (par[0] >= 180.0) par[0] -= 180.0;
 	}
@@ -1786,7 +1786,7 @@ void spotter_project_ellipsoid_new (struct GMT_CTRL *GMT, double X[3][3], double
 	par[2] = sqrt (0.5 * (a + c - r));
 	par[0] = (gmt_M_is_zero (b)) ? ((a > c) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (a - c - r)/b, 1.0) * R2D;
 	if (par[2] > par[1]) {	/* Switch so that par[1] is the major axis */
-		double_swap (par[1], par[2]);
+		gmt_M_double_swap (par[1], par[2]);
 		par[0] += 90.0;
 		if (par[0] >= 180.0) par[0] -= 180.0;
 	}

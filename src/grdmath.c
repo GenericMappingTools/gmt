@@ -1674,10 +1674,10 @@ GMT_LOCAL void grd_EXCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	for (node = 0; node < info->size; node++) {
 		if (stack[prev]->constant) stack[prev]->G->data[node] = (float)stack[prev]->factor;
 		if (stack[last]->constant) stack[last]->G->data[node] = (float)stack[last]->factor;
-		float_swap (stack[last]->G->data[node], stack[prev]->G->data[node]);
+		gmt_M_float_swap (stack[last]->G->data[node], stack[prev]->G->data[node]);
 	}
-	double_swap (stack[last]->factor, stack[prev]->factor);
-	bool_swap (stack[last]->constant, stack[prev]->constant);
+	gmt_M_double_swap (stack[last]->factor, stack[prev]->factor);
+	gmt_M_bool_swap (stack[last]->constant, stack[prev]->constant);
 }
 
 GMT_LOCAL void grd_EXP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1871,7 +1871,7 @@ GMT_LOCAL void grd_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	mx_half = info->G->header->mx / 2;
 	mx1 = info->G->header->mx - 1;
 	for (node = row = 0; row < info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
-		for (col_l = 0, col_r = mx1; col_l < mx_half; col_l++, col_r--) float_swap (stack[last]->G->data[node+col_l], stack[last]->G->data[node+col_r]);
+		for (col_l = 0, col_r = mx1; col_l < mx_half; col_l++, col_r--) gmt_M_float_swap (stack[last]->G->data[node+col_l], stack[last]->G->data[node+col_r]);
 	}
 }
 
@@ -1893,7 +1893,7 @@ GMT_LOCAL void grd_FLIPUD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	my1 = info->G->header->my - 1;
 	mx = info->G->header->mx;
 	for (col = 0; col < mx; col++) {	/* Do this to all cols */
-		for (row_t = 0, row_b = my1; row_t < my_half; row_t++, row_b--) float_swap (stack[last]->G->data[(uint64_t)row_t*(uint64_t)mx+(uint64_t)col], stack[last]->G->data[(uint64_t)row_b*(uint64_t)mx+(uint64_t)col]);
+		for (row_t = 0, row_b = my1; row_t < my_half; row_t++, row_b--) gmt_M_float_swap (stack[last]->G->data[(uint64_t)row_t*(uint64_t)mx+(uint64_t)col], stack[last]->G->data[(uint64_t)row_b*(uint64_t)mx+(uint64_t)col]);
 	}
 }
 

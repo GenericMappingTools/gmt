@@ -1206,7 +1206,7 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 						int new_family = 0, old_family = 0;
 						(void)api_key_to_family (API, s[k], &new_family, &geometry);
 						(void)api_key_to_family (API, s[this_k], &old_family, &geometry);
-						if (new_family != old_family) int_swap (n_to_add[new_family], n_to_add[old_family]);	/* Must swap our counts */
+						if (new_family != old_family) gmt_M_int_swap (n_to_add[new_family], n_to_add[old_family]);	/* Must swap our counts */
 					}
 					s[this_k][K_FAMILY] = s[k][K_FAMILY];	/* Required input/output now implies this data type */
 					s[this_k][K_OPT]    = s[k][K_OPT];	/* Required input/output now implies this option */

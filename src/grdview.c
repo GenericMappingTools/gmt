@@ -775,7 +775,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	xval = gmt_grd_coord (GMT, Topo->header, GMT_X);
 	yval = gmt_grd_coord (GMT, Topo->header, GMT_Y);
 
-	if (!GMT->current.proj.xyz_pos[2]) double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
+	if (!GMT->current.proj.xyz_pos[2]) gmt_M_double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
 	gmt_grd_set_ij_inc (GMT, Z->header->mx, ij_inc);	/* Offsets for ij (with pad) indices */
 	nw = gmt_M_ijp (Topo->header, 0, 0);

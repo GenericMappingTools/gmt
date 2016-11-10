@@ -485,7 +485,7 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 	}
 	
 	if (Ctrl->T.active && in[n_expected-2] < in[n_expected-1])
-		double_swap (in[n_expected-2], in[n_expected-1]);	/* Ensure start time is always larger */
+		gmt_M_double_swap (in[n_expected-2], in[n_expected-1]);	/* Ensure start time is always larger */
 	return 0;	/* OK */	
 }
 

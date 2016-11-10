@@ -393,7 +393,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
 
-		/* if (GMT->common.R.oblique) double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
+		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
 		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);

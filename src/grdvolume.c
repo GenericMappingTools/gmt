@@ -533,7 +533,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
-		if (Ctrl->Z.scale < 0.0) double_swap (Work->header->z_min, Work->header->z_max);
+		if (Ctrl->Z.scale < 0.0) gmt_M_double_swap (Work->header->z_min, Work->header->z_max);
 		/* Since gmt_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
 		Ctrl->Z.offset *= Ctrl->Z.scale;
 		gmt_scale_and_offset_f (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);

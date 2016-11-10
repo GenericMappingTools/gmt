@@ -386,8 +386,8 @@ GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 	if (reverse) {	/* Must reverse order of contour */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Change orientation of closed polygon\n");
 		for (i = 0, j = n-1; i < n/2; i++, j--) {
-			double_swap (x[i], x[j]);
-			double_swap (y[i], y[j]);
+			gmt_M_double_swap (x[i], x[j]);
+			gmt_M_double_swap (y[i], y[j]);
 		}
 	}
 }

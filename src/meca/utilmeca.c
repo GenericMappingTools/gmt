@@ -1170,8 +1170,8 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	meca_trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps1 < 0.0) {
-		double_swap (x1, x2);
-		double_swap (y1, y2);
+		gmt_M_double_swap (x1, x2);
+		gmt_M_double_swap (y1, y2);
 	}
 
 	if (hypot (x1-x2,y1-y2) <= 1.5 * h_length) {
@@ -1196,8 +1196,8 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	meca_trace_arrow (GMT, slon, slat, -dx, -dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps1 < 0.0) {
-		double_swap (x1, x2);
-		double_swap (y1, y2);
+		gmt_M_double_swap (x1, x2);
+		gmt_M_double_swap (y1, y2);
 	}
 
 	if (hypot (x1-x2,y1-y2) <= 1.5 * h_length) {
@@ -1223,8 +1223,8 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	meca_trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {
-		double_swap (x1, x2);
-		double_swap (y1, y2);
+		gmt_M_double_swap (x1, x2);
+		gmt_M_double_swap (y1, y2);
 	}
 
 	/* arrow should go toward slat, slon */
@@ -1249,8 +1249,8 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	meca_trace_arrow (GMT, slon, slat, -dx, -dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {
-		double_swap (x1, x2);
-		double_swap (y1, y2);
+		gmt_M_double_swap (x1, x2);
+		gmt_M_double_swap (y1, y2);
 	}
 
 	/* arrow should go toward slat, slon */

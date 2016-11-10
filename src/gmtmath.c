@@ -1830,8 +1830,8 @@ GMT_LOCAL int table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	prev = last - 1;
 	D = S[last]->D;
 	S[last]->D = S[prev]->D;	S[prev]->D = D;
-	bool_swap (S[last]->constant, S[prev]->constant);
-	double_swap (S[last]->factor, S[prev]->factor);
+	gmt_M_bool_swap (S[last]->constant, S[prev]->constant);
+	gmt_M_double_swap (S[last]->factor, S[prev]->factor);
 	return 0;
 }
 
@@ -1908,7 +1908,7 @@ GMT_LOCAL int table_FLIPUD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	gmt_M_unused(GMT);
 	/* Reverse the order of points in a column */
 	if (S[last]->constant) return 0;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0, k = info->T->segment[s]->n_rows-1; row < info->T->segment[s]->n_rows/2; row++, k--) double_swap (T->segment[s]->data[col][row], T->segment[s]->data[col][k]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0, k = info->T->segment[s]->n_rows-1; row < info->T->segment[s]->n_rows/2; row++, k--) gmt_M_double_swap (T->segment[s]->data[col][row], T->segment[s]->data[col][k]);
 	return 0;
 }
 
@@ -5064,7 +5064,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
 		off = 0.5 * (info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->data[COL_T][0]);
 		scale = 2.0 / (info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->data[COL_T][0]);
-		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->data[COL_T][row], info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time series */
+		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) gmt_M_double_swap (info.T->segment[seg]->data[COL_T][row], info.T->segment[seg]->data[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time series */
 		for (row = 0; row < info.T->segment[seg]->n_rows; row++) {
 			info.T->segment[seg]->data[COL_TN][row] = (info.T->segment[seg]->data[COL_T][row] - off) * scale;
 			info.T->segment[seg]->data[COL_TJ][row] = (unsigned int)((Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row);
