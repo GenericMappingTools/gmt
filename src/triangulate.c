@@ -508,7 +508,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					edge[ij2].begin = link[ij2];	edge[ij2].end = link[ij3];
 					edge[ij3].begin = link[ij1];	edge[ij3].end = link[ij3];
 				}
-				for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) int_swap (edge[i].begin, edge[i].end);
+				for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) gmt_M_int_swap (edge[i].begin, edge[i].end);
 
 				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 				for (i = 1, j = 0; i < n_edge; i++) {

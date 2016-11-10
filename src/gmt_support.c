@@ -1922,9 +1922,9 @@ GMT_LOCAL uint64_t support_smooth_contour (struct GMT_CTRL *GMT, double **x_in, 
 		j = i + 1;
 		while (j < n_out && !flag[j]) j++;
 		x0 = x_tmp[i];	x1 = x_tmp[j];
-		if (x0 > x1) double_swap (x0, x1);
+		if (x0 > x1) gmt_M_double_swap (x0, x1);
 		y0 = y_tmp[i];	y1 = y_tmp[j];
-		if (y0 > y1) double_swap (y0, y1);
+		if (y0 > y1) gmt_M_double_swap (y0, y1);
 		for (k = i + 1; k < j; k++) {
 			if (x_tmp[k] < x0)
 				x_tmp[k] = x0 + 1.0e-10;
@@ -2051,8 +2051,8 @@ GMT_LOCAL void support_orient_contour (struct GMT_GRID *G, double *x, double *y,
 
 	if (reverse) {	/* Must reverse order of contour */
 		for (i = 0, j = n-1; i < n/2; i++, j--) {
-			double_swap (x[i], x[j]);
-			double_swap (y[i], y[j]);
+			gmt_M_double_swap (x[i], x[j]);
+			gmt_M_double_swap (y[i], y[j]);
 		}
 	}
 }
@@ -3574,9 +3574,9 @@ GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, ui
 	if (geo) {	/* More complicated, and may change both the start/stop indices and the array longitudes */
 		int k;
 		double dx = xa[*xa_stop] - xa[*xa_start];
-		if (dx > 180.0) {xa[*xa_start] += 360.0; uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
+		if (dx > 180.0) {xa[*xa_start] += 360.0; gmt_M_uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
 		dx = xb[*xb_stop] - xb[*xb_start];
-		if (dx > 180.0) {xb[*xb_start] += 360.0; uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
+		if (dx > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
 		/* Here we have fixed a 360 jump and reassign what is start and stop. We must now look for overlaps
 		 * by considering the segments may be off by -360, 0, or +360 degrees in longitude */
 
@@ -3624,10 +3624,10 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection == GMT_POLAR && GMT->current.proj.got_azimuths) int_swap (left, right);	/* Because with azimuths we get confused... */
+	if (GMT->current.proj.projection == GMT_POLAR && GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
 	if (GMT->current.proj.projection == GMT_POLAR && GMT->current.proj.got_elevations) {
-		int_swap (top, bottom);	/* Because with elevations we get confused... */
-		int_swap (left, right);
+		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
+		gmt_M_int_swap (left, right);
 		low = 2 - low;
 	}
 	if (side%2) {	/* W and E border */
@@ -6842,8 +6842,8 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Reverse the order of the colors, leaving the z arrangement intact */
 	for (i = 0, j = P->n_colors-1; i < P->n_colors; i++, j--) {
 		for (k = 0; k < 4; k++) {
-			double_swap (P->data[i].rgb_low[k], P->data[j].rgb_high[k]);
-			double_swap (P->data[i].hsv_low[k], P->data[j].hsv_high[k]);
+			gmt_M_double_swap (P->data[i].rgb_low[k], P->data[j].rgb_high[k]);
+			gmt_M_double_swap (P->data[i].hsv_low[k], P->data[j].hsv_high[k]);
 		}
 		if (i < j) Fill_swap (P->data[i].fill, P->data[j].fill);
 
@@ -6856,8 +6856,8 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	}
 	/* Swap the B&F settings */
 	for (k = 0; k < 4; k++) {
-		double_swap (P->bfn[GMT_BGD].rgb[k], P->bfn[GMT_FGD].rgb[k]);
-		double_swap (P->bfn[GMT_BGD].hsv[k], P->bfn[GMT_FGD].hsv[k]);
+		gmt_M_double_swap (P->bfn[GMT_BGD].rgb[k], P->bfn[GMT_FGD].rgb[k]);
+		gmt_M_double_swap (P->bfn[GMT_BGD].hsv[k], P->bfn[GMT_FGD].hsv[k]);
 	}
 	Fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
 }
@@ -7687,7 +7687,7 @@ void gmtlib_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_col
 		t = A[i];
 		do {
 			next = (i * n_rows) % size;
-			float_swap (A[next], t);
+			gmt_M_float_swap (A[next], t);
 			support_set_bit (mark, i, bits);
 			i = next;
 		}
@@ -8534,7 +8534,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				}
 				/* Got here if data are OK */
 
-				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) gmt_M_double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
@@ -8663,7 +8663,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 				}
 				/* Got here if data are OK */
 
-				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) gmt_M_double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */

@@ -920,7 +920,7 @@ GMT_LOCAL void plot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL
 	else {
 		az1 = d_atan2d (y1 - GMT->current.proj.c_y0, x1 - GMT->current.proj.c_x0);
 		az2 = d_atan2d (y2 - GMT->current.proj.c_y0, x2 - GMT->current.proj.c_x0);
-		if (!GMT->current.proj.north_pole) double_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
+		if (!GMT->current.proj.north_pole) gmt_M_double_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
 		while (az1 < 0.0) az1 += 360.0;	/* Wind az1 to be in the 0-360 range */
 		while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
 		da0 = R2D * escl * width /radius;
@@ -3038,8 +3038,8 @@ GMT_LOCAL void plot_reverse_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMEN
 	/* Reverse the direction of this polygon, i.e, swap points n-1-k and k */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Make polygon to clockwise\n");
 	for (k = 0; k < S->n_rows/2; k++) {
-		double_swap (S->data[GMT_X][k], S->data[GMT_X][n1-k]);
-		double_swap (S->data[GMT_Y][k], S->data[GMT_Y][n1-k]);
+		gmt_M_double_swap (S->data[GMT_X][k], S->data[GMT_X][n1-k]);
+		gmt_M_double_swap (S->data[GMT_Y][k], S->data[GMT_Y][n1-k]);
 	}
 }
 
@@ -3327,7 +3327,7 @@ GMT_LOCAL void plot_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0,
 			gmtlib_get_point_from_r_az (GMT, C->lon[0], C->lat[0], C->r, azimuth+180.0, &C->lon[1], &C->lat[1]);
 			if (C->longway) C->lon[1] += 180.0, C->lat[1] = -C->lat[1];	/* Undo adjustment */
 			gmt_geo_to_cart (GMT, C->lat[1], C->lon[1], C->A, true);	/* Get A */
-			double_swap (C->lon[0], C->lon[1]);	double_swap (C->lat[0], C->lat[1]);	/* Now A is first and B is second */
+			gmt_M_double_swap (C->lon[0], C->lon[1]);	gmt_M_double_swap (C->lat[0], C->lat[1]);	/* Now A is first and B is second */
 			break;
 		case 3: /* Was given coordinates of B instead of azimuth and length; can never be longway */
 			C->lon[0] = lon0;	C->lat[0] = lat0;
@@ -4316,7 +4316,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
 
-	if (GMT->current.proj.got_azimuths) uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
 
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);	/* Must clip to ensure things are inside */
@@ -4330,7 +4330,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	plot_map_annotate (GMT, PSL, w, e, s, n);
 
-	if (GMT->current.proj.got_azimuths) uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo swap */
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo swap */
 
 	plot_map_boundary (GMT, PSL, w, e, s, n);
 	if (clip_on) gmt_map_clip_off (GMT);

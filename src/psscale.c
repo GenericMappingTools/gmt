@@ -1162,9 +1162,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Copy x-axis annotation and scale info to y-axis.  We don't need to undo this since gmt_end_module will restore it for us */
 			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
 			gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
-			double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
-			double_swap (GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
-			uint_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
+			gmt_M_double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
+			gmt_M_double_swap (GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
+			gmt_M_uint_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
@@ -1432,8 +1432,8 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	else {
 		dim[GMT_Y] = fabs (Ctrl->D.dim[GMT_X]);	dim[GMT_X] = Ctrl->D.dim[GMT_Y];
 		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
-		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
-		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
+		gmt_M_double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
+		gmt_M_double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
 	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar reference x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);

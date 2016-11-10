@@ -41,7 +41,7 @@ GMT_LOCAL void vector_switchrows (double *a, double *b, unsigned int n1, unsigne
 	memcpy(a+n*n1, a+n*n2, sizeof(double)*n);
 	memcpy(a+n*n2, oa, sizeof(double)*n);
 
-	double_swap (b[n1], b[n2]);
+	gmt_M_double_swap (b[n1], b[n2]);
 
 	gmt_M_str_free (oa);
 }

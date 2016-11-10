@@ -794,7 +794,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 
 	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT])		/* Write lat/lon instead of lon/lat */
-		double_swap (ptr[GMT_X], ptr[GMT_Y]);
+		gmt_M_double_swap (ptr[GMT_X], ptr[GMT_Y]);
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
 	for (i = 0, k = 0; i < n_out; i++) {
 		col_pos = (GMT->common.o.active) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
@@ -3204,7 +3204,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		            col_no, *n, GMT->current.io.rec_no);
 
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2)
-		double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON)		/* Must account for periodicity in 360 as per current rule*/
 		gmtio_adjust_periodic_x (GMT);
@@ -3986,7 +3986,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] && GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
-		double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmtio_adjust_periodic_x (GMT);	/* Must account for periodicity in 360 */
 	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON) gmtio_adjust_periodic_y (GMT);	/* Must account for periodicity in 360 as per current rule*/
@@ -7746,7 +7746,7 @@ int gmt_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &GMT->current.io.curr_rec[k]);	/* Be tolerant of errors */
 		k++;
 	}
-	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && k >= 2) double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && k >= 2) gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON)		/* Must account for periodicity in 360 */
 		gmtio_adjust_periodic_x (GMT);
 	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule*/

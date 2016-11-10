@@ -932,7 +932,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		G->header->z_min = (G->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		G->header->z_max = (G->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
-		if (Ctrl->Z.scale < 0.0) double_swap (G->header->z_min, G->header->z_max);
+		if (Ctrl->Z.scale < 0.0) gmt_M_double_swap (G->header->z_min, G->header->z_max);
 		/* Since gmt_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
 		Ctrl->Z.offset *= Ctrl->Z.scale;
 		gmt_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, -Ctrl->Z.offset);

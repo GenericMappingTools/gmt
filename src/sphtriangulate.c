@@ -163,7 +163,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 		}
 		for (kk = 0; kk < n_arcs; ++kk)
 			if (arc[kk].begin > arc[kk].end)
-				uint64_swap (arc[kk].begin, arc[kk].end);
+				gmt_M_uint64_swap (arc[kk].begin, arc[kk].end);
 
 		/* Sort and eliminate duplicate arcs */
 		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);
@@ -326,7 +326,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	if (get_arcs) {	/* Process arcs */
 		for (k = 0; k < n_arcs; ++k)
 			if (arc[k].begin > arc[k].end)
-			uint64_swap (arc[k].begin, arc[k].end);
+			gmt_M_uint64_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
 		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);

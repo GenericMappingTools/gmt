@@ -863,8 +863,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active) {
 		if (S.read_size) GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_DIMENSION;	/* Must read symbol size from data record */
 		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
-			uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
-			uint_swap (error_type[GMT_X], error_type[GMT_Y]);
+			gmt_M_uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
+			gmt_M_uint_swap (error_type[GMT_X], error_type[GMT_Y]);
 		}
 		if (xy_errors[GMT_X]) n_cols_start += error_cols[error_type[GMT_X]], error_x = true;
 		if (xy_errors[GMT_Y]) n_cols_start += error_cols[error_type[GMT_Y]], error_y = true;

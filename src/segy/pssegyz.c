@@ -509,8 +509,8 @@ GMT_LOCAL void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, flo
 	for (ix = 0; ix < NPTS-1; ix++)
 		for (iy = ix + 1; iy < NPTS; iy++)
 			if (yp[ix] > yp[iy]) {
-				double_swap (yp[iy], yp[ix]);
-				double_swap (xp[iy], xp[ix]);
+				gmt_M_double_swap (yp[iy], yp[ix]);
+				gmt_M_double_swap (xp[iy], xp[ix]);
 			}
 
 

@@ -198,7 +198,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	adj = gmt_M_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
 	adj->d = gmt_M_memory (GMT, NULL, n_alloc, double);
 	adj->c = gmt_M_memory (GMT, NULL, n_alloc, double);
-	for (k = 0; k < 2; k++) uint_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
+	for (k = 0; k < 2; k++) gmt_M_uint_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
 	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
@@ -214,7 +214,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	adj->c = gmt_M_memory (GMT, adj->c, n, double);
 	adj->n = n;
 	*A = adj;
-	for (k = 0; k < 2; k++) uint_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
+	for (k = 0; k < 2; k++) gmt_M_uint_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
 	return (true);
 }
 
