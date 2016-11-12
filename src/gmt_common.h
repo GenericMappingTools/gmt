@@ -150,14 +150,15 @@ struct GMT_COMMON {
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, uint64_t);	/* Pointers to functions that compute those distances */
 	} g;
-	struct h {	/* -h[i|o][<nrecs>][+d][+c][+r<remark>][+t<title>] */
+	struct h {	/* -h[i|o][<nrecs>][+d][+c][+m[<text>]][+r<remark>][+t<title>] */
 		bool active;
 		bool add_colnames;
 		unsigned int mode;
 		unsigned int n_recs;
 		char *title;
 		char *remark;
-		char *colnames;	/* Not set by -h but maintained here */
+		char *colnames;         /* Not set by -h but maintained here */
+		char *multi_segment;    /* To hold a multi-segment string */
 	} h;
 	struct i {	/* -i<col>|<colrange>,... */
 		bool active, orig;

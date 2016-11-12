@@ -109,16 +109,17 @@ enum GMT_enum_family {
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
-	GMT_COMMENT_IS_TEXT	= 0,	/* Comment is a text string */
-	GMT_COMMENT_IS_OPTION	= 1U,	/* Comment is a linked list of GMT_OPTION structures */
-	GMT_COMMENT_IS_COMMAND	= 2U,	/* Comment replaces header->command */
-	GMT_COMMENT_IS_REMARK	= 4U,	/* Comment replaces header->remark */
-	GMT_COMMENT_IS_TITLE	= 8U,	/* Comment replaces header->title */
-	GMT_COMMENT_IS_NAME_X	= 16U,	/* Comment replaces header->x_units [grids only] */
-	GMT_COMMENT_IS_NAME_Y	= 32U,	/* Comment replaces header->y_units [grids only] */
-	GMT_COMMENT_IS_NAME_Z	= 64U,	/* Comment replaces header->z_units [grids only] */
-	GMT_COMMENT_IS_COLNAMES	= 128U,	/* Comment replaces header->colnames [tables only] */
-	GMT_COMMENT_IS_RESET	= 256U};	/* Wipe existing header first [append] */
+	GMT_COMMENT_IS_TEXT	= 0,        /* Comment is a text string */
+	GMT_COMMENT_IS_OPTION	= 1U,   /* Comment is a linked list of GMT_OPTION structures */
+	GMT_COMMENT_IS_COMMAND	= 2U,   /* Comment replaces header->command */
+	GMT_COMMENT_IS_REMARK	= 4U,   /* Comment replaces header->remark */
+	GMT_COMMENT_IS_TITLE	= 8U,   /* Comment replaces header->title */
+	GMT_COMMENT_IS_NAME_X	= 16U,  /* Comment replaces header->x_units [grids only] */
+	GMT_COMMENT_IS_NAME_Y	= 32U,  /* Comment replaces header->y_units [grids only] */
+	GMT_COMMENT_IS_NAME_Z	= 64U,  /* Comment replaces header->z_units [grids only] */
+	GMT_COMMENT_IS_COLNAMES	= 128U, /* Comment replaces header->colnames [tables only] */
+	GMT_COMMENT_IS_RESET	= 256U, /* Wipe existing header first [append] */
+	GMT_COMMENT_IS_MULTISEG = 512U};/* Comment is in fact a multisegment record */
 
 enum GMT_enum_apierr {
 	GMT_NOTSET  = -1,	/* When something is not set */

@@ -289,6 +289,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		col = GMT_OUT;
 	else			/* Apply to both input and output columns */
 		k = 0;
+
 	if (item[k]) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Can only set the number of input header records; %s ignored\n", &item[k]);
@@ -323,6 +324,10 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 					break;
 				case 'c':	/* Add column names record */
 					GMT->common.h.add_colnames = true;
+					break;
+				case 'm':	/* Add a multi-segment record plus some eventual text */
+					gmt_M_str_free (GMT->common.h.multi_segment);
+					GMT->common.h.multi_segment = strdup (&p[1]);
 					break;
 				case 'r':	/* Add specific text remark */
 					gmt_M_str_free (GMT->common.h.remark);

@@ -3772,7 +3772,7 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");
 	else {
-		fputc ('#', fp);	/* Make sure we have # at start */
+		if (txt[0] != '>') fputc ('#', fp);	/* Make sure we have # at start ... if not multi-segment */
 		while (strchr ("#\t ", *txt)) txt++;	/* Skip header record indicator and leading whitespace */
 		fprintf (fp, " %s", txt);
 		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
@@ -6493,6 +6493,12 @@ void gmtlib_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 	if (GMT->common.h.title) {	/* Optional title(s) provided; could be several lines separated by \n */
 		gmtio_write_multilines (GMT, fp, GMT->common.h.title, "Title");
 	}
+
+	if (GMT->common.h.multi_segment) {	/* A multi-segment record */
+		gmtlib_write_tableheader (GMT, fp, gmtapi_create_header_item (GMT->parent, GMT_COMMENT_IS_MULTISEG, GMT->common.h.multi_segment));
+		return;
+	}
+
 	/* Always write command line */
 	gmtlib_write_tableheader (GMT, fp, gmtapi_create_header_item (GMT->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, GMT->current.options));
 	if (GMT->common.h.remark) {	/* Optional remark(s) provided; could be several lines separated by \n */

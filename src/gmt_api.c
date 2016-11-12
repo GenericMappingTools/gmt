@@ -1779,7 +1779,8 @@ GMT_LOCAL void api_update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, 
 	static char buffer[GMT_BUFSIZ];
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	gmt_M_memset (buffer, GMT_BUFSIZ, char);	/* Start with a clean slate */
-	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strncat (buffer, string, length-1);	/* Use old text if we are not resetting */
+	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0])
+		strncat (buffer, string, length-1);	/* Use old text if we are not resetting */
 	lim = length - strlen (buffer) - 1;	/* Remaining characters that we can use */
 	if (mode & GMT_COMMENT_IS_OPTION) {	/* Must start with module name since it is not part of the option args */
 		strncat (buffer, API->GMT->init.module_name, lim);
@@ -5602,7 +5603,8 @@ char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, voi
 			strcat (buffer, API->GMT->init.module_name);
 		strcat (buffer, " ");
 	}
-	if (mode & GMT_COMMENT_IS_REMARK) strcat (buffer, " Remark : ");
+    if (mode & GMT_COMMENT_IS_REMARK) strcat (buffer, " Remark : ");
+	if (mode & GMT_COMMENT_IS_MULTISEG) strcat (buffer, "> ");
 	lim = GMT_BUFSIZ - strlen (buffer) - 1;	/* Max characters left */
 	strncat (buffer, txt, lim);
 	if (mode & GMT_COMMENT_IS_OPTION) gmt_M_free (API->GMT, txt);
