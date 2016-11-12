@@ -7287,17 +7287,17 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 
 	cpt_z_low = (P->has_range) ? P->minmax[0] : P->data[0].z_low;
 	cpt_z_high = (P->has_range) ? P->minmax[1] : P->data[last].z_high;
-	if (z_low > P->data[last].z_high || z_high < P->data[0].z_low) {
+	if ((!gmt_M_is_dnan (z_low) && z_low > P->data[last].z_high) || (!gmt_M_is_dnan (z_high) && z_high < P->data[0].z_low)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt error: z_low/z_high [%g/%g] outside range of this CPT [%g/%g]!\n",
 			z_low, z_high, cpt_z_low, cpt_z_high);
 			return NULL;
 	}
-	if (z_low < P->data[0].z_low) {
+	if (!gmt_M_is_dnan (z_low) && z_low < P->data[0].z_low) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_low = %g less than lowest z (%g_), reset to %g\n",
 			z_low, P->data[0].z_low, P->data[0].z_low);
 		z_low = P->data[first].z_low;
 	}
-	if (z_high > P->data[last].z_high) {
+	if (!gmt_M_is_dnan (z_high) && z_high > P->data[last].z_high) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_high = %g larger than highest z (%g_), reset to %g\n",
 			z_high, P->data[last].z_high, P->data[last].z_high);
 		z_high = P->data[last].z_high;
