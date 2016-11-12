@@ -3332,7 +3332,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			}
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->ogr) gmtio_build_segheader_from_ogr (GMT, GMT_OUT, table->segment[seg]);	/* We have access to OGR metadata */
+			if (!GMT->common.a.output && table->segment[seg]->ogr) gmtio_build_segheader_from_ogr (GMT, GMT_OUT, table->segment[seg]);	/* We have access to OGR metadata */
 			if (table->segment[seg]->header)
 				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ-1);
 			else
