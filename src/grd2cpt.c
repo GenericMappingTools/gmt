@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the sense of the color table as well as back- and foreground color.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Limit the range of the data.  Node values outside this range are set to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses actual min,max of data].\n");
@@ -411,7 +411,12 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+	if (Ctrl->G.active) {	/* Attempt truncation */
+		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+		if (Ptrunc == NULL)
+			Return (EXIT_FAILURE);
+		Pin = Ptrunc;
+	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 

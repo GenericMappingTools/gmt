@@ -6818,23 +6818,37 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	}
 }
 
+/*! . */
+GMT_LOCAL int support_lutsort (const void *p1, const void *p2) {
+	/* Sorts color LUT into ASCENDING order!  */
+	if (((struct GMT_LUT *)p1)->z_low < ((struct GMT_LUT *)p2)->z_low) return (-1);
+	if (((struct GMT_LUT *)p1)->z_low > ((struct GMT_LUT *)p2)->z_low) return(+1);
+	return (0);	/* Should never happen */
+}
+
+/*! . */
 void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
 	/* Scale all z-related variables in the CPT by scale */
 	unsigned int i;
+	bool flip = (scale < 0.0);	/* More work to do if a negative scale is given */
 	gmt_M_unused(GMT);
 	for (i = 0; i < P->n_colors; i++) {
 		P->data[i].z_low  *= scale;
 		P->data[i].z_high *= scale;
-		P->data[i].i_dz   /= scale;
+		P->data[i].i_dz   /= fabs (scale);
+		if (flip) gmt_M_double_swap (P->data[i].z_low, P->data[i].z_high);
 	}
 	if (P->has_hinge) P->hinge *= scale;
-	if (P->has_range) {
+	if (P->has_range) {	/* Update the range min/max */
 		P->minmax[0] *= scale;
 		P->minmax[1] *= scale;
+		if (flip) gmt_M_double_swap (P->minmax[0], P->minmax[1]);
 	}
+	if (flip)	/* Must also reverse the order of slices */
+		qsort (P->data, P->n_colors, sizeof (struct GMT_LUT), support_lutsort);
 }
 
-#define Fill_swap(x, y) {struct GMT_FILL *F_tmp; F_tmp = x, x = y, y = F_tmp;}
+#define gmt_M_fill_swap(x, y) {struct GMT_FILL *F_tmp; F_tmp = x, x = y, y = F_tmp;}
 /*! . */
 void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	unsigned int i, j, k;
@@ -6845,7 +6859,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			gmt_M_double_swap (P->data[i].rgb_low[k], P->data[j].rgb_high[k]);
 			gmt_M_double_swap (P->data[i].hsv_low[k], P->data[j].hsv_high[k]);
 		}
-		if (i < j) Fill_swap (P->data[i].fill, P->data[j].fill);
+		if (i < j) gmt_M_fill_swap (P->data[i].fill, P->data[j].fill);
 
 	}
 	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrrays */
@@ -6859,7 +6873,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 		gmt_M_double_swap (P->bfn[GMT_BGD].rgb[k], P->bfn[GMT_FGD].rgb[k]);
 		gmt_M_double_swap (P->bfn[GMT_BGD].hsv[k], P->bfn[GMT_FGD].hsv[k]);
 	}
-	Fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
+	gmt_M_fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
 }
 
 /*! . */
@@ -7267,9 +7281,27 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
 
 	unsigned int k, j, first = 0, last = P->n_colors - 1;
+	double cpt_z_low, cpt_z_high;
 
 	if (gmt_M_is_dnan (z_low) && gmt_M_is_dnan (z_high)) return (P);	/* No change */
 
+	cpt_z_low = (P->has_range) ? P->minmax[0] : P->data[0].z_low;
+	cpt_z_high = (P->has_range) ? P->minmax[1] : P->data[last].z_high;
+	if ((!gmt_M_is_dnan (z_low) && z_low > P->data[last].z_high) || (!gmt_M_is_dnan (z_high) && z_high < P->data[0].z_low)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt error: z_low/z_high [%g/%g] outside range of this CPT [%g/%g]!\n",
+			z_low, z_high, cpt_z_low, cpt_z_high);
+			return NULL;
+	}
+	if (!gmt_M_is_dnan (z_low) && z_low < P->data[0].z_low) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_low = %g less than lowest z (%g_), reset to %g\n",
+			z_low, P->data[0].z_low, P->data[0].z_low);
+		z_low = P->data[first].z_low;
+	}
+	if (!gmt_M_is_dnan (z_high) && z_high > P->data[last].z_high) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_high = %g larger than highest z (%g_), reset to %g\n",
+			z_high, P->data[last].z_high, P->data[last].z_high);
+		z_high = P->data[last].z_high;
+	}
 	if (!gmt_M_is_dnan (z_low)) {	/* Find first slice fully or partially within range */
 		while (first < P->n_colors && P->data[first].z_high <= z_low) first++;
 		if (z_low > P->data[first].z_low)	/* Must truncate this slice */

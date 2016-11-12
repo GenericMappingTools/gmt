@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set to other to NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
@@ -354,7 +354,12 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
-	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+	if (Ctrl->G.active) {	/* Attempt truncation */
+		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+		if (Ptrunc == NULL)
+			Return (API->error);
+		Pin = Ptrunc;
+	}
 
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
