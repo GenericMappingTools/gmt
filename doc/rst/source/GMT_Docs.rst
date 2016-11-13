@@ -4373,6 +4373,29 @@ while :doc:`grd2cpt` can derive the range from one or more grids.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range.
 
+Manipulating CPTs
+~~~~~~~~~~~~~~~~~
+
+There are many ways to turn a master CPT into a custom CPT that works for your
+particular data range.  The tools :doc:`makecpt` and :doc:`grd2cpt` allow
+several types of transformations to take place.
+
+    #. You can reverse the *z*-direction of the CPT using option **-Iz*.
+       This is useful when your data use a different convention for
+       positive and negative (e.g., perhaps using positive depths instead of
+       negative relief).
+    #. You can invert the order of the colors in the CPT using option **-Ic**.
+       This is different from the previous option in that only the colors
+       are rearranged (it is also possible to issue **-Icz** to achieve both effects.)
+    #. You can select just a subset of a master CPT with **-G**, in effect creating
+       a modified master CPT that can be scaled further.
+    #. Finally, you can scale and translate the (modified) master CPT range to
+       your actual data range or a sub-range thereof.
+
+The order of these transformations is important.  For instance, if **-Iz** is given
+then all other *z*-values need to be referred to the new sign convention. For most
+applications only the last transformation is needed.
+
 The Drawing of Vectors
 ----------------------
 
