@@ -72,8 +72,9 @@ struct MAKECPT_CTRL {
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct I {	/* -I */
+	struct I {	/* -I[z][c] */
 		bool active;
+		unsigned int mode;
 	} I;
 	struct M {	/* -M */
 		bool active;
@@ -123,7 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-L] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table> | -T<z1,z2,...zn>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-L] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table> | -T<z1,z2,...zn>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -142,7 +143,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of CPT in one or two ways:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ic Reverse sense of color table as well as back- and foreground color [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Iz Reverse sign of z-values in the color table (takes affect before -G, T are consulted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
@@ -232,6 +235,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Invert table */
 				Ctrl->I.active = true;
+				if ((Ctrl->I.mode = gmt_parse_inv_cpt (GMT, opt->arg)) == UINT_MAX)
+					n_errors++;
 				break;
 			case 'M':	/* Use GMT defaults for BNF colors */
 				Ctrl->M.active = true;
@@ -353,6 +358,9 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
+		gmt_scale_cpt (GMT, Pin, -1.0);
+	
 	GMT_Report (API, GMT_MSG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
@@ -400,7 +408,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 				Pout->data[i].z_high = z[++k];
 			}
 			gmtlib_init_cpt (GMT, Pin);	/* Recalculate delta rgb's */
-			if (Ctrl->I.active)	/* Also flip the colors */
+			if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
 				gmt_invert_cpt (GMT, Pout);
 		}
 	}
@@ -443,7 +451,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	else {	/* Just copy what was in the CPT */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
 		gmt_stretch_cpt (GMT, Pout, Ctrl->T.low, Ctrl->T.high);	/* Stretch to given range or use natural range if 0/0 */
-		if (Ctrl->I.active)	/* Also flip the colors */
+		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
 	}
 
@@ -453,7 +461,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 		/* Now we can resample the CPT and write out the result */
 
-		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
+		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.mode & GMT_CPT_C_REVERSE, Ctrl->Q.mode, Ctrl->W.active);
 	}
 
 	gmt_M_free (GMT, z);	/* It may also have been allocated inside gmtlib_log_array() */

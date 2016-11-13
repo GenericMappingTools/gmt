@@ -158,6 +158,8 @@ enum GMT_swap_direction {
 
 #define GMT_CPT_CONTINUOUS	8	/* Final CPT should be continuous */
 #define GMT_CPT_TEMPORARY	16	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
+#define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
+#define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

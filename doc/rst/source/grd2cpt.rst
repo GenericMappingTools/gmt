@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
-[ |-G|\ *zlo*\ /\ *zhi* ] [ |-I| ]
+[ |-G|\ *zlo*\ /\ *zhi* ] [ |-I|\ [**c**][**z**] ]
 [ |-L|\ *minlimit/maxlimit* ]
 [ |-M| ] [ |-N| ]
 [ |-Q|\ [**i**\ \|\ **o**] ]
@@ -130,11 +130,14 @@ Optional Arguments
 
 .. _-I:
 
-**-I**
-    Reverses the sense of color progression in the master CPT. Also
+**-I**\ [**c**][**z**]
+    Append **c** [Default] to reverse the sense of color progression in the master CPT. Also
     exchanges the foreground and background colors, including those
     specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
     :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+    Append **z** to reverse the sign of z-values in the color table.  Note that
+    this change of *z*-direction happens before **-G** and **-T** values are used
+    so the latter much be compatible with the changed *z*-range.
 
 .. _-L:
 
