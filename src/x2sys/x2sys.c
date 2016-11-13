@@ -969,7 +969,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 }
 
 int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned int *nf) {
-	unsigned int n = 0;
+	unsigned int n = 0, first;
 	size_t n_alloc = GMT_CHUNK;
 	char **p = NULL, line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""};
 	FILE *fp = NULL;
@@ -985,7 +985,8 @@ int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned in
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
-		p[n] = strdup (name);
+		first = (strncmp (name, "./", 2U)) ? 0 : 2;	/* Skip leading ./ for local directory */
+		p[n] = strdup (&name[first]);
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
@@ -1887,7 +1888,7 @@ int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned in
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***filelist, bool *cmdline) {
 	/* Return list of track names given on command line or via =list mechanism.
 	 * The names do not have the track extension. */
-	unsigned int i, A;
+	unsigned int i, A, first;
 	size_t n_alloc, add_chunk;
 	char **file = NULL, *p = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL;
@@ -1911,8 +1912,8 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 		*cmdline = true;
 		for (opt = options, A = 0; opt; opt = opt->next) {
 			if (opt->option != GMT_OPT_INFILE) continue;	/* Skip options */
-
-			file[A++] = strdup (opt->arg);
+			first = (strncmp (opt->arg, "./", 2U)) ? 0 : 2;	/* Skip leading ./ for local directory */
+			file[A++] = strdup (&(opt->arg[first]));
 			if (A == n_alloc) {
 				add_chunk <<= 1;
 				n_alloc += add_chunk;
