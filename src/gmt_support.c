@@ -6785,6 +6785,28 @@ void gmt_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 }
 
 /*! . */
+unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
+	unsigned int mode = 0;
+	/* Sets the mode for the -I option in makecpt and grd2cpt */
+	if (!arg || arg[0] == 0)	/* Default is -Ic */
+		mode |= GMT_CPT_C_REVERSE;
+	else {	/* Got argument(s).  Only combinations c, z, cz, or zc allowed */
+		size_t k;
+		for (k = 0; k < strlen (arg); k++) {
+			switch (arg[k]) {
+				case 'c':	mode |= GMT_CPT_C_REVERSE;	break;	/* Invert c-range */
+				case 'z':	mode |= GMT_CPT_Z_REVERSE;	break;	/* Invert z-range */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_parse_inv_cpt: Unrecognized mode %c passed!\n", arg[k]);
+					return UINT_MAX;
+					break;
+			}
+		}
+	}
+	return (mode);
+}
+
+/*! . */
 void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead. */
@@ -6826,6 +6848,17 @@ GMT_LOCAL int support_lutsort (const void *p1, const void *p2) {
 	return (0);	/* Should never happen */
 }
 
+GMT_LOCAL void gmt_M_LUT_swap (struct GMT_LUT *slice) {
+	/* Exchanges the low and high color values for one slice */
+	unsigned int k;
+	for (k = 0; k < 4; k++) {
+		gmt_M_double_swap (slice->rgb_low[k], slice->rgb_high[k]);
+		gmt_M_double_swap (slice->hsv_low[k], slice->hsv_high[k]);
+		slice->rgb_diff[k] = -slice->rgb_diff[k];
+		slice->hsv_diff[k] = -slice->hsv_diff[k];
+	}
+}
+
 /*! . */
 void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
 	/* Scale all z-related variables in the CPT by scale */
@@ -6836,7 +6869,10 @@ void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale) {
 		P->data[i].z_low  *= scale;
 		P->data[i].z_high *= scale;
 		P->data[i].i_dz   /= fabs (scale);
-		if (flip) gmt_M_double_swap (P->data[i].z_low, P->data[i].z_high);
+		if (flip) {
+			gmt_M_double_swap (P->data[i].z_low, P->data[i].z_high);
+			gmt_M_LUT_swap (&(P->data[i]));
+		}
 	}
 	if (P->has_hinge) P->hinge *= scale;
 	if (P->has_range) {	/* Update the range min/max */
@@ -7281,27 +7317,33 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
 
 	unsigned int k, j, first = 0, last = P->n_colors - 1;
-	double cpt_z_low, cpt_z_high;
 
 	if (gmt_M_is_dnan (z_low) && gmt_M_is_dnan (z_high)) return (P);	/* No change */
 
-	cpt_z_low = (P->has_range) ? P->minmax[0] : P->data[0].z_low;
-	cpt_z_high = (P->has_range) ? P->minmax[1] : P->data[last].z_high;
+	/* If this CPT has a natural range then its z-values are either 0 to 1 or -1 to +1.  We must first
+	 * expand it to its natural z-range before we can truncate since z_low/z_high are in user units */
+	
+	if (P->has_range) {
+		gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Stretch to its natural range first */
+		P->has_range = 0;
+	}
+
 	if ((!gmt_M_is_dnan (z_low) && z_low > P->data[last].z_high) || (!gmt_M_is_dnan (z_high) && z_high < P->data[0].z_low)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt error: z_low/z_high [%g/%g] outside range of this CPT [%g/%g]!\n",
-			z_low, z_high, cpt_z_low, cpt_z_high);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt error: z_low/z_high [%g/%g] is completely outside range of this CPT [%g/%g]!\n",
+			z_low, z_high, P->data[0].z_low, P->data[last].z_high);
 			return NULL;
 	}
 	if (!gmt_M_is_dnan (z_low) && z_low < P->data[0].z_low) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_low = %g less than lowest z (%g_), reset to %g\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt error: z_low = %g less than lowest z (%g)\n",
 			z_low, P->data[0].z_low, P->data[0].z_low);
-		z_low = P->data[first].z_low;
+		return NULL;
 	}
 	if (!gmt_M_is_dnan (z_high) && z_high > P->data[last].z_high) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_truncate_cpt: z_high = %g larger than highest z (%g_), reset to %g\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_truncate_cpt: z_high = %g larger than highest z (%g)\n",
 			z_high, P->data[last].z_high, P->data[last].z_high);
-		z_high = P->data[last].z_high;
+		return NULL;
 	}
+	/* OK, here we can sanely do things */
 	if (!gmt_M_is_dnan (z_low)) {	/* Find first slice fully or partially within range */
 		while (first < P->n_colors && P->data[first].z_high <= z_low) first++;
 		if (z_low > P->data[first].z_low)	/* Must truncate this slice */
