@@ -126,7 +126,7 @@ Optional Arguments
     Truncate the incoming CPT so that the lowest and highest z-levels
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
-    before any resampling.
+    before any resampling. See also :ref:`manipulating_CPTs`
 
 .. _-I:
 
@@ -137,7 +137,7 @@ Optional Arguments
     :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-T** values are used
-    so the latter much be compatible with the changed *z*-range.
+    so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
 
