@@ -4396,6 +4396,13 @@ The order of these transformations is important.  For instance, if **-Iz** is gi
 then all other *z*-values need to be referred to the new sign convention. For most
 applications only the last transformation is needed.
 
+.. figure:: /_images/GMT_CPTscale.*
+   :width: 500 px
+   :align: center
+
+   Examples of two user CPTs created from the same master.  One (left) extracted a
+   subset of the master before scaling while the other (right) used the entire range.
+
 The Drawing of Vectors
 ----------------------
 
