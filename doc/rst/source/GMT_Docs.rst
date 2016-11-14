@@ -4373,6 +4373,8 @@ while :doc:`grd2cpt` can derive the range from one or more grids.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range.
 
+.. _manipulating_CPTs:
+
 Manipulating CPTs
 ~~~~~~~~~~~~~~~~~
 
