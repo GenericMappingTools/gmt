@@ -4382,7 +4382,7 @@ There are many ways to turn a master CPT into a custom CPT that works for your
 particular data range.  The tools :doc:`makecpt` and :doc:`grd2cpt` allow
 several types of transformations to take place.
 
-    #. You can reverse the *z*-direction of the CPT using option **-Iz*.
+    #. You can reverse the *z*-direction of the CPT using option **-Iz**.
        This is useful when your data use a different convention for
        positive and negative (e.g., perhaps using positive depths instead of
        negative relief).
@@ -4402,7 +4402,7 @@ applications only the last transformation is needed.
    :width: 500 px
    :align: center
 
-   Examples of two user CPTs created from the same master.  One (left) extracted a
+   Examples of two user CPTs for the range -0.5 to 3 created from the same master.  One (left) extracted a
    subset of the master before scaling while the other (right) used the entire range.
 
 The Drawing of Vectors
