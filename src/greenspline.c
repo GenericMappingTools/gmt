@@ -1387,7 +1387,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
-	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_i, weight_j;
+	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_col, weight_row;
 	double *A = NULL, r_min, r_max, err_sum = 0.0;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
@@ -1955,7 +1955,20 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	do_normalization (API, X, obs, n, normalize, dimension, norm);
 
-	/* Set up linear system Ax = z */
+	/* Set up linear system Ax = z. To clarify, the matrix A will be
+	 * of size nm by nm, where nm = n + m. Again, n is the number of
+	 * value constraints and m is the number of gradient constraints.
+	 * for most problems m will be 0.
+	 * The loops below takes advantage of the fact that A will be symmetrical
+	 * (except for terms involving gradients where A_ij = -A_ji).  So we
+	 * start the loop over columns as col = row and deal with A)ij and A_ji
+	 * at the same time since we can evaluate the same costly G() function
+	 * [or dGdr () function)]  once.  Because of this we need to obtain the
+	 * weight for two different rows and we do that by calling the two weights
+	 * weight_row and weight_col, meaning it refers to observation weight
+	 * number col and row.  In the end, each row in A plus the row in obs
+	 * are scaled by weight_row.
+	 */
 
 	mem = ((double)nm * (double)nm * (double)sizeof (double)) / 1024.0;	/* In kb */
 	unit = 0;
@@ -1965,48 +1978,51 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
-	weight_i = weight_j = 1.0;
-	for (j = 0; j < nm; j++) {	/* For each value or slope constraint */
+	weight_col = weight_row = 1.0;
+	for (row = 0; row < nm; row++) {	/* For each value or slope constraint */
 		if (Ctrl->W.active) {
 			if (Ctrl->W.mode == 0) {	/* Got sigma */
-				err_sum += X[j][dimension] * X[j][dimension];
-				weight_j = 1.0 / X[j][dimension];
+				err_sum += X[row][dimension] * X[row][dimension];
+				weight_row = 1.0 / X[row][dimension];
 			}
 			else {	/* Got weight */
-				err_sum += pow (X[j][dimension], -2.0);
-				weight_j = X[j][dimension];
+				err_sum += pow (X[row][dimension], -2.0);
+				weight_row = X[row][dimension];
 			}
-			weight_j = (Ctrl->W.mode == 0) ? 1.0 / X[j][dimension] : X[j][dimension];
-			obs[j] *= weight_j;
+			weight_row = (Ctrl->W.mode == 0) ? 1.0 / X[row][dimension] : X[row][dimension];
+			obs[row] *= weight_row;
 		}
-		for (i = j; i < nm; i++) {
-			if (Ctrl->W.active) weight_i = (Ctrl->W.mode == 0) ? 1.0 / X[i][dimension] : X[i][dimension];
-			ij = j * nm + i;
-			ji = i * nm + j;
-			r = get_radius (GMT, X[i], X[j], dimension);
-			if (j < n) {	/* Value constraint */
+		for (col = row; col < nm; col++) {
+			if (Ctrl->W.active) weight_col = (Ctrl->W.mode == 0) ? 1.0 / X[col][dimension] : X[col][dimension];
+			ij = row * nm + col;
+			ji = col * nm + row;
+			r = get_radius (GMT, X[col], X[row], dimension);
+			if (row < n) {	/* Value constraint */
 				A[ij] = G (GMT, r, par, Lz);
-				if (ij == ji) continue;	/* Do the diagonal terms only once */
-				if (i < n) {
-					A[ji] = weight_i * A[ij];
+				if (ij == ji) {	/* Do the diagonal terms only once */
+					A[ij] *= weight_row;
+					continue;
+				}
+				if (col < n) {
+					A[ji] = weight_col * A[ij];
 				}
 				else {
 					/* Get D, the directional cosine between the two points */
 					/* Then get C = gmt_dot3v (GMT, D, dataD); */
 					/* A[ji] = dGdr (r, par, Lg) * C; */
-					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
+					C = get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
 					grad = dGdr (GMT, r, par, Lg);
-					A[ji] = weight_i * grad * C;
+					A[ji] = weight_col * grad * C;
 				}
-				A[ij] *= weight_j;
+				A[ij] *= weight_row;
 			}
-			else if (i > n) {	/* Remaining gradient constraints */
-				if (ij == ji) continue;	/* Diagonal gradient terms are zero */
-				C = get_dircosine (GMT, D[j-n], X[i], X[j], dimension, true);
+			else if (col > n) {	/* Remaining gradient constraints */
+				if (ij == ji) continue;	/* Diagonal gradient term from a point to itself is zero */
+				C = get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 				grad = dGdr (GMT, r, par, Lg);
-				A[ij] = weight_j * grad * C;
-				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
-				A[ji] = weight_i * grad * C;
+				A[ij] = weight_row * grad * C;
+				C = get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
+				A[ji] = weight_col * grad * C;
 			}
 		}
 	}

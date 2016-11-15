@@ -747,23 +747,19 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system Ax = b\n");
 
 	weight_u = weight_v = 1.0;
-	for (j = 0; j < n_uv; j++) {	/* For each data constraint pair (u,v): j refers to a row */
+	for (row = 0; row < n_uv; row++) {	/* For each data constraint pair (u,v)_row */
 		if (Ctrl->W.active) {	/* Apply any weights */
-			weight_u = X[j][GMT_WU];
-			weight_v = X[j][GMT_WV];
-			u[j] *= weight_u;
-			v[j] *= weight_v;
+			weight_u = X[row][GMT_WU];
+			weight_v = X[row][GMT_WV];
+			u[row] *= weight_u;
+			v[row] *= weight_v;
 		}
-		for (i = 0; i < n_uv; i++) {	/* i refers to a column */
-			if (Ctrl->W.active) {
-				weight_u = X[i][GMT_WU];
-				weight_v = X[i][GMT_WV];
-			}
-			Gu_ij  = j * n_params + i;		/* Index for Gu term */
-			Guv_ij = Gu_ij + n_uv;		/* Index for Guv term */
-			Gvu_ij = (j+n_uv) * n_params + i;	/* Index for Gvu term */
-			Gv_ij  = Gvu_ij + n_uv;		/* Index for Gv term */
-			get_gps_dxdy (GMT, X[i], X[j], &dx, &dy, geo);
+		for (col = 0; col < n_uv; col++) {	/* For each data constraint pair (u,v)_col  */
+			Gu_ij  = row * n_params + col;			/* Index for Gu term */
+			Guv_ij = Gu_ij + n_uv;					/* Index for Guv term */
+			Gvu_ij = (row+n_uv) * n_params + col;	/* Index for Gvu term */
+			Gv_ij  = Gvu_ij + n_uv;					/* Index for Gv term */
+			get_gps_dxdy (GMT, X[col], X[row], &dx, &dy, geo);
 			evaluate_greensfunctions (dx, dy, par, G);
 			A[Gu_ij]  = weight_u * G[GPS_FUNC_Q];
 			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
