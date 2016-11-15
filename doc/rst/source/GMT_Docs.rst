@@ -4402,7 +4402,7 @@ applications only the last transformation is needed.
    :width: 500 px
    :align: center
 
-   Examples of two user CPTs created from the same master.  One (left) extracted a
+   Examples of two user CPTs for the range -0.5 to 3 created from the same master.  One (left) extracted a
    subset of the master before scaling while the other (right) used the entire range.
 
 The Drawing of Vectors
