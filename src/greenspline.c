@@ -1527,7 +1527,16 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
-		if (Ctrl->W.active) X[n][k] = in[w_col];
+		if (Ctrl->W.active) {	/* Planning a weighted solution */
+			if (Ctrl->W.mode == 0) {	/* Got sigma, must convert to weight */
+				err_sum += in[w_col] * in[w_col];	/* Sum up variance first */
+				X[n][dimension] = 1.0 / in[w_col];
+			}
+			else {	/* Got weight */
+				err_sum += pow (in[w_col], -2.0);	/* Sum up variance */
+				X[n][dimension] = in[w_col];
+			}
+		}
 		/* Check for duplicates */
 		skip = false;
 		for (i = 0; !skip && i < n; i++) {
@@ -1981,23 +1990,15 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	weight_col = weight_row = 1.0;
 	for (row = 0; row < nm; row++) {	/* For each value or slope constraint */
 		if (Ctrl->W.active) {
-			if (Ctrl->W.mode == 0) {	/* Got sigma */
-				err_sum += X[row][dimension] * X[row][dimension];
-				weight_row = 1.0 / X[row][dimension];
-			}
-			else {	/* Got weight */
-				err_sum += pow (X[row][dimension], -2.0);
-				weight_row = X[row][dimension];
-			}
-			weight_row = (Ctrl->W.mode == 0) ? 1.0 / X[row][dimension] : X[row][dimension];
+			weight_row = X[row][dimension];
 			obs[row] *= weight_row;
 		}
 		for (col = row; col < nm; col++) {
-			if (Ctrl->W.active) weight_col = (Ctrl->W.mode == 0) ? 1.0 / X[col][dimension] : X[col][dimension];
+			if (Ctrl->W.active) weight_col = X[col][dimension];
 			ij = row * nm + col;
 			ji = col * nm + row;
 			r = get_radius (GMT, X[col], X[row], dimension);
-			if (row < n) {	/* Value constraint */
+			if (row < n) {	/* Value constraint (so entire row uses G) */
 				A[ij] = G (GMT, r, par, Lz);
 				if (ij == ji) {	/* Do the diagonal terms only once */
 					A[ij] *= weight_row;
@@ -2016,7 +2017,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				A[ij] *= weight_row;
 			}
-			else if (col > n) {	/* Remaining gradient constraints */
+			else if (col > n) {	/* Remaining gradient constraints (entire row uses dGdr) */
 				if (ij == ji) continue;	/* Diagonal gradient term from a point to itself is zero */
 				C = get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 				grad = dGdr (GMT, r, par, Lg);
@@ -2026,6 +2027,20 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 	}
+#if 0 /* Dump the A | b matrices */
+	fprintf (stderr, "Weight | Matrix row | obs\n");
+	for (row = 0; row < nm; row++) {
+		if (Ctrl->W.active)
+			fprintf (stderr, "%12.6f\t|\t", X[row][dimension]);
+		else
+			fprintf (stderr, "%12.6f\t|\t", 1.0);
+		ij = row * nm;
+		fprintf (stderr, "%12.6f", A[ij++]);
+		for (col = 1; col < nm; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
+		fprintf (stderr, "\t|\t%12.6f\n", obs[row]);
+	}
+#endif
+
 	if (Ctrl->W.active) {
 		err_sum = sqrt (err_sum / nm);	/* Mean data variance */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);

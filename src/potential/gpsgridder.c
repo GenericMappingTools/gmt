@@ -523,7 +523,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gpsgridder main code ----------------------------*/
 
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gpsgridder IS NOT A WORKING MODULE YET!\n");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gpsgridder is considered experimental - use at your own rist!\n");
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -621,7 +621,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				X[n_uv][GMT_WV] = 1.0 / X[n_uv][GMT_WV];
 			}
 			else	/* Must unscramble sigmas */
-				err_sum += pow (X[n_uv][GMT_WU], -1.0) + pow (X[n_uv][GMT_WV], -2.0);
+				err_sum += pow (X[n_uv][GMT_WU], -2.0) + pow (X[n_uv][GMT_WV], -2.0);
 		}
 		n_uv++;			/* Added a new data constraint */
 		if (n_uv == n_alloc) {	/* Get more memory */
@@ -767,6 +767,19 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			A[Gvu_ij] = weight_v * G[GPS_FUNC_W];
 		}
 	}
+#if 0 /* Dump the A | b matrices */
+	fprintf (stderr, "Weight | Matrix row | obs\n");
+	for (row = 0; row < n_params; row++) {
+		if (Ctrl->W.active)
+			fprintf (stderr, "%12.6f\t|\t", (row < n_uv) ? X[row][GMT_WU] : X[row-n_uv][GMT_WV]);
+		else
+			fprintf (stderr, "%12.6f\t|\t", 1.0);
+		ij = row * n_params;
+		fprintf (stderr, "%12.6f", A[ij++]);
+		for (col = 1; col < n_params; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
+		fprintf (stderr, "\t|\t%12.6f\n", (row < n_uv) ? u[row] : v[row-n_uv]);
+	}
+#endif
 
 	gmt_M_memcpy (&u[n_uv], v, n_uv, double);	/* Place v array at end of u array */
 	obs = u;				/* Use obs to refer to this combined u,v array */
@@ -825,7 +838,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (Ctrl->C.mode == 2)
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			else
-				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values s(i) saved to %s\n", Ctrl->C.file);
 			gmt_M_free (GMT, eig);
 
 			if (Ctrl->C.value < 0.0) {	/* We are done */
