@@ -998,7 +998,7 @@ fonts can be found in the :doc:`gmt` man page.
     Applies when geodesics are approximated by great circle distances on
     an equivalent sphere or when surface areas are computed. Select from
     mean (R_1), authalic (R_2), volumetric (R_3), meridional, or
-    quadratic [authalic]. See also PROJ_MEAN_RADIUS.
+    quadratic [authalic].
 
 .. _PROJ_SCALE_FACTOR:
 
