@@ -320,31 +320,33 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 
 	/* Place the coefficients into the C and S arrays and apply filtering, if selected */
 
-	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
-		T = D->table[tbl]->segment[seg];	/* Short-hand notation for current segment */
-		for (drow = 0; drow < T->n_rows; drow++) {
-			L = irint (T->data[0][drow]);
-			if (L > L_max) continue;	/* Skip stuff beyond the high cut-off filter */
-			if (L < L_min) continue;	/* Skip stuff beyond the low cut-off filter */
-			M = irint (T->data[1][drow]);
-			C[L][M]  = T->data[2][drow];
-			S[L][M]  = T->data[3][drow];
-			if (!Ctrl->F.active) continue;	/* No filtering selected */
-			if (Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* Note: L_min/L_max have already taken care of the low-cut and high-cut */
-				if (L < Ctrl->F.lp)	/* Taper the low order components */
-					filter = 0.5 * (1.0 + cos (M_PI * (Ctrl->F.lp - L) / (Ctrl->F.lp - Ctrl->F.lc)));
-				else if (L > Ctrl->F.hp)	/* Taper the high order components */
-					filter = 0.5 * (1.0 + cos (M_PI * (L - Ctrl->F.hp) / (Ctrl->F.hc - Ctrl->F.hp)));
-				else	/* We are inside the band where filter == 1.0 */
-					continue;	/* No need to scale by 1 */
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			T = D->table[tbl]->segment[seg];	/* Short-hand notation for current segment */
+			for (drow = 0; drow < T->n_rows; drow++) {
+				L = irint (T->data[0][drow]);
+				if (L > L_max) continue;	/* Skip stuff beyond the high cut-off filter */
+				if (L < L_min) continue;	/* Skip stuff beyond the low cut-off filter */
+				M = irint (T->data[1][drow]);
+				C[L][M]  = T->data[2][drow];
+				S[L][M]  = T->data[3][drow];
+				if (!Ctrl->F.active) continue;	/* No filtering selected */
+				if (Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* Note: L_min/L_max have already taken care of the low-cut and high-cut */
+					if (L < Ctrl->F.lp)	/* Taper the low order components */
+						filter = 0.5 * (1.0 + cos (M_PI * (Ctrl->F.lp - L) / (Ctrl->F.lp - Ctrl->F.lc)));
+					else if (L > Ctrl->F.hp)	/* Taper the high order components */
+						filter = 0.5 * (1.0 + cos (M_PI * (L - Ctrl->F.hp) / (Ctrl->F.hc - Ctrl->F.hp)));
+					else	/* We are inside the band where filter == 1.0 */
+						continue;	/* No need to scale by 1 */
+				}
+				else {	/* Gaussian filter(s) */
+					lo = (Ctrl->F.lc > 0.0) ? exp (-M_LN2 * pow (L / Ctrl->F.lc, 2.0)) : 0.0;	/* Low-pass part */
+					hi = (Ctrl->F.hp < DBL_MAX)  ? exp (-M_LN2 * pow (L / Ctrl->F.hp, 2.0)) : 1.0;	/* Hi-pass given by its complementary low-pass */
+					filter = hi - lo;	/* Combined filter */
+				}
+				C[L][M] *= filter;
+				S[L][M] *= filter;
 			}
-			else {	/* Gaussian filter(s) */
-				lo = (Ctrl->F.lc > 0.0) ? exp (-M_LN2 * pow (L / Ctrl->F.lc, 2.0)) : 0.0;	/* Low-pass part */
-				hi = (Ctrl->F.hp < DBL_MAX)  ? exp (-M_LN2 * pow (L / Ctrl->F.hp, 2.0)) : 1.0;	/* Hi-pass given by its complementary low-pass */
-				filter = hi - lo;	/* Combined filter */
-			}
-			C[L][M] *= filter;
-			S[L][M] *= filter;
 		}
 	}
 
