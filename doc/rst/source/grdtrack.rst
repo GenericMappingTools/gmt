@@ -16,7 +16,7 @@ Synopsis
 **grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**+v**] ] [|-D|\ *dfile* ]
-[ |-E|\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**] ]
+[ |-E|\ *line* ]
 [ |-N| ] 
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
