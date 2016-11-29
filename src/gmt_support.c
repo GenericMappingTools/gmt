@@ -8011,6 +8011,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 			case '7':
 			case '8':
 			case '9':
+			case '-':	/* Assume it can be a negative contour */
 				break;
 
 			default:
