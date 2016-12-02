@@ -72,7 +72,7 @@ Optional Arguments
 
 **-A**\ [*out/in*]
     Build a mask grid, append outside/inside values [1/NaN].
-    Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
+    Here, height is ignored and **-L**, **-N** and **-Z** are disallowed.
 
 .. _-C:
 
@@ -89,8 +89,10 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
-    major, minor, height (m) for each seamount.
+    Elliptical data format. We expect the input records to contain
+    *lon, lat, azimuth, major, minor, height* (with  the latter in m)
+    for each seamount.  [Default is Circular data format, expecting
+    *lon, lat, radius, height*\ ].
 
 .. _-F:
 
@@ -111,7 +113,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [*cut*]
-    List area, volume, and mean height for each seamount; NO grid is created.
+    List area, volume, and mean height for each seamount; No grid is created.
     Optionally, append the noise-floor cutoff level below which we ignore area and volume [0].
 
 .. _-M:

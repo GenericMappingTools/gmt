@@ -41,7 +41,7 @@ Description
 
 **gpsgridder** grids 2-D vector data such as GPS velocities by using a coupled
 model based on 2-D elasticity.  The degree of coupling can be tuned by adjusting
-the effecting Poisson's ratio. The solution field can be tuned to extremes such
+the effective Poisson's ratio. The solution field can be tuned to extremes such
 as incompressible (1), typical elastic (0.5) or even an unphysical value of -1
 that basically removes the elastic coupling of vector interpolation.  Smoothing
 is offered via the optional elimination of small eigenvalues.
@@ -51,7 +51,7 @@ Required Arguments
 
 *table*
     table with GPS strain rates at discrete locations.  We expect the input
-    format *x y u v* [ *du dv* ] (see **-W** to specify data uncertainties
+    format to be *x y u v* [ *du dv* ] (see **-W** to specify data uncertainties
     or weights).  If *lon lat* is given you must supply **-fg** and we will
     use a flat Earth approximation in the calculation of distances.
 
@@ -84,15 +84,16 @@ Optional Arguments
     eigenvalue ratios to the specified file for further analysis.
     Finally, if a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cv** to use the
+    output is produced.  Specify **-Cv**\ *value* to use the
     largest eigenvalues needed to explain *value* % of the data variance.
-    Specify **-Cr** to use the largest eigenvalues needed to leave approximately *value*
+    Specify **-Cr**\ *value* to use the largest eigenvalues needed to leave approximately *value*
     as the model misfit.  If *value* is not given then **-W** is required and we
-    compute *value* as the rms of the data uncertainties. 
-    Alternatively, use **-Cn** to select the *value* largest eigenvalues.
+    compute *value* as the rms of the given data uncertainties. 
+    Alternatively, use **-Cn**\ *value* to select the *value* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
-    Note: 1/4 of the total number of data constraints is a good starting point.
+    Note: 1/4 of the total number of data constraints is a good starting point
+    for further experiments.
 
 .. _-E:
 
@@ -102,17 +103,17 @@ Optional Arguments
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
     write the data table, augmented by two extra columns after each of the
-    *u* and *v* columns holding the spline estimate and the misfit.
+    *u* and *v* columns holding the spline estimates and misfits.
 
 .. _-F:
 
 |-F|\ [**d**\ \|\ **f**]\ *fudge*\
     The Green's functions are proportional to terms like 1/r^2 and log(r)
-    and thus blow up for r == 0.  To prevent that we offer two schemes:
+    and thus blow up for r == 0.  To prevent that we offer two fudging schemes:
     **-Fd**\ *del_radius* lets you add a constant offset to all radii
     and must be specified in the user units.  Alternatively, use
     **-Ff**\ *factor* which will compute *del_radius* from the product
-    of the shortest inter-point distance and $factor* [0.01].
+    of the shortest inter-point distance and *factor* [0.01].
 
 .. _-I:
 
@@ -121,12 +122,9 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Do *not* remove a linear (1-D) or planer (2-D) trend when **-D**
-    selects mode 0-3 [For those Cartesian cases a least-squares line or
-    plane is modeled and removed, then restored after fitting a spline
-    to the residuals]. However, in mixed cases with both data values and
-    gradients, or for spherical surface data, only the mean data value
-    is removed (and later and restored).
+    Leave trend alone.  Do *not* remove a planer (2-D) trend from the
+    data before fitting the spline.  [Default removes least squares plane,
+    fits normalized residuals, and restores plane].
 
 .. _-N:
 
@@ -160,10 +158,10 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**w**]
-   Data one-sigma uncertainties for *u* and *v* are provided in the last two columns.
+   One-sigma data uncertainties for *u* and *v* are provided in the last two columns.
    We then compute weights that are inversely proportional to the uncertainties.
    Append **w** if weights are given instead of uncertainties.  This results in
-   a weighted least squares fit.  Note that this only has an effect if **-C** is used.
+   a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
    [Default uses no weights or uncertainties].
 
 .. _-V:
@@ -207,7 +205,8 @@ Haines, A. J. et al., 2015, *Enhanced Surface Imaging of Crustal Deformation*, S
 doi:10.1007/978-3-319-21578-5_2.
 
 Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
-*Geophys. Res. Lett.*, in press.
+*Geophys. Res. Lett., 43*, 10,703-10,709, 
+`http://dx.doi.org/10.1002/2016GL070340 <http://dx.doi.org/10.1002/2016GL070340>`_
 
 See Also
 --------

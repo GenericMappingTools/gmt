@@ -123,6 +123,7 @@ Supplementary modules
    supplements/misc/dimfilter
    supplements/potential/gmtflexure
    supplements/potential/gmtgravmag3d
+   supplements/potential/gpsgridder
    supplements/potential/gravfft
    supplements/potential/grdflexure
    supplements/potential/grdgravmag3d
