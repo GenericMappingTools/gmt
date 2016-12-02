@@ -1739,7 +1739,6 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 			/* For non-periodic maps we have to be careful to position the polygon so it does
 			 * not have longitude jumps at the current border.  This does not apply to pscoast
 			 * which has special handling and hence bypasses this test */
-
 			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
 				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
 				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
