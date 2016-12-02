@@ -317,6 +317,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					if (mode != 0 && mode != Ctrl->C.dist_mode) n_modes++;
 				}
 				if (c && Ctrl->C.mode) *c = '+';	/* Undo truncation */
+				if (gmt_M_is_geographic (API->GMT, GMT_IN) && n_units && Ctrl->C.unit != 'e' && !strchr (opt->arg, 'e'))
+					n_units = 0;	/* Weird case where user did -fg but did not specify units on all three items and got default e unintentionally */
 				if (n_units) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
 					n_errors++;
