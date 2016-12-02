@@ -1395,7 +1395,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 #endif
 
-/*! Parse the -U option.  Full syntax: -U[<just>/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int i, just, n = 0, n_slashes, error = 0;
 	char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};

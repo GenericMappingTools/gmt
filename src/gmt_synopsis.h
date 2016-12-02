@@ -98,7 +98,7 @@
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
 #define GMT_R3_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r]"
-#define GMT_U_OPT	"-U[<just>/<dx>/<dy>/][c|<label>]"
+#define GMT_U_OPT	"-U[[<just>]/<dx>/<dy>/][c|<label>]"
 #define GMT_V_OPT	"-V[<level>]"
 #define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
 #define GMT_Y_OPT	"-Y[a|c|r]<yshift>[<unit>]"
