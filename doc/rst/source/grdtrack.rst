@@ -172,9 +172,9 @@ Optional Arguments
     negative values [**a**]. The *modifiers* control the output;
     choose one or more among these choices: **+a** : Append stacked
     values to all cross-profiles. **+d** : Append stack deviations to
-    all cross-profiles. **+d** : Append data residuals (data - stack) to
+    all cross-profiles. **+r** : Append data residuals (data - stack) to
     all cross-profiles. **+s**\ [*file*] : Save stacked profile to
-    *file* [grdtrack\_stacked_profile.txt]. **+c**\ *fact* : Compute
+    *file* [grdtrack_stacked_profile.txt]. **+c**\ *fact* : Compute
     envelope on stacked profile as +/- *fact* \*\ *deviation* [2].
     Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
     scale (**m** and **p**), or half-range (upper-lower)/2. (2) The

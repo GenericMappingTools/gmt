@@ -6444,7 +6444,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			gmt_message (GMT, "\t   <colinfo> is <colno>|<colrange>u, where column numbers start at 0\n");
 			gmt_message (GMT, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
 			gmt_message (GMT, "\t   t: relative time, T: absolute time, f: floating point,\n");
-			gmt_message (GMT, "\t   x: longitude, y: latitude, g: geographic coordinate.\n");
+			gmt_message (GMT, "\t   x: longitude, y: latitude, g: short for 0x,1y.\n");
 			break;
 
 		case 'g':
