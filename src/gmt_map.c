@@ -1685,12 +1685,24 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 	inside[GMT_BOTTOM] = inside[GMT_LEFT] = gmt_inside_lower_boundary;	outside[GMT_BOTTOM] = outside[GMT_LEFT] = gmt_outside_lower_boundary;
 	border[GMT_BOTTOM] = GMT->common.R.wesn[YLO]; border[GMT_LEFT] = GMT->common.R.wesn[XLO];	border[GMT_RIGHT] = GMT->common.R.wesn[XHI];	border[GMT_TOP] = GMT->common.R.wesn[YHI];
 
-	/* Make data longitudes have no jumps [This is mostly for pscoast] */
-	for (i = 0; i < n; i++) {
-		if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
-			lon[i] += 360.0;
-		else if (lon[i] > border[GMT_RIGHT] && (lon[i] - 360.0) >= border[GMT_LEFT])
-			lon[i] -= 360.0;
+/* This is new approach to get rid of those crossing lines for filled polygons,
+ * i.e., issue # 949.  Also see comments further down.
+ * P. Wessel, Dec 1 2016 */
+	if (GMT->current.map.coastline) {	/* Make data longitudes have no jumps [This is for pscoast] */
+		for (i = 0; i < n; i++) {
+			if (lon[i] < border[GMT_LEFT] && (lon[i] + 360.0) <= border[GMT_RIGHT])
+				lon[i] += 360.0;
+			else if (lon[i] > border[GMT_RIGHT] && (lon[i] - 360.0) >= border[GMT_LEFT])
+				lon[i] -= 360.0;
+		}
+	}
+	else {	/* Dont let points be > 180 from center longitude */
+		double mid_lon = 0.5 * (border[GMT_LEFT] + border[GMT_RIGHT]), diff;
+		for (i = 0; i < n; i++) {
+			diff = lon[i] - mid_lon;
+			if (diff > 180.0) lon[i] -= 360.0;
+			else if (diff < -180.0) lon[i] += 360.0;
+		}
 	}
 	if (!GMT->current.map.coastline) {	/* Not do if pscoast since it has its own oddness */
 		double xmin, xmax;
@@ -1735,15 +1747,25 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 			gmt_M_memcpy (ytmp[out], ytmp[in], m, double);
 			continue;
 		}
+#if 0	
+/* This caused lots of issues with various map types so replaced by the check about
+ * that uses the mid-longitude as center and does a +/- 180 test from that.
+ * P. Wessel, Dec 1 2016 */
 		if (!GMT->current.map.coastline && side % 2) {	/* Either left or right border */
 			/* For non-periodic maps we have to be careful to position the polygon so it does
 			 * not have longitude jumps at the current border.  This does not apply to pscoast
-			 * which has special handling and hence bypasses this test */
-			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
-				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
-				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
+			 * which has special handling and hence bypasses this test.
+			 * Note that we may be using the map longitude range if this exceeds 180
+			 * as it is tricky to make those plots with large but < 360 longitudes. */
+			//double map_lon_range = MAX (180.0, border[GMT_RIGHT] - border[GMT_LEFT]);
+			double map_lon_range = 1800.0, diff;
+			for (i = 0; i < n; i++) {	/* If points is > map_lon_range degrees from border, flip side */
+				diff = xtmp[in][i] - border[side];
+				if (diff > map_lon_range) xtmp[in][i] -= 360.0;
+				else if (diff < -map_lon_range) xtmp[in][i] += 360.0;
 			}
 		}
+#endif
 		if (n) {
 			/* Must ensure we copy the very first point if it is inside the clip rectangle */
 			if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
