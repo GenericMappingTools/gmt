@@ -7,7 +7,7 @@
 # the long-way polygon entering into the mix.
 
 ps=clipping8.ps
-generate=1	# When 1 this fake-generates the correct solution to give PS to check against
+generate=0	# When 1 this fake-generates the correct solution to give PS to check against
 cat << EOF > badpol.txt
 90	-10
 130	-10
