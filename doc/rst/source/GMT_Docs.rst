@@ -4535,7 +4535,7 @@ GMT strings using the Standard+ encoding:
 
 | ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
-| ``Stresses are @~s@~@+*@+@-xx@- MPa`` = :math:`\sigma^{*}_{xx}` MPa
+| ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
 | ``M@!\305anoa stra@se`` = Manoa straße
 | ``A@\#cceleration@\# (ms@+-2@+)`` = ACCELERATION
@@ -4793,7 +4793,8 @@ there is one required and two optional modifiers:
 
    Plain and fancy directional map roses. (left) Bare-bones plain rose showing arrow towards north
    and a cross indicating the cardinal directions, specified by **-Tdg**\ 0/0\ **+w**\ 1i. (middle) Fancy rose
-   obtained by adding **+f**.  (right) Fancy directional rose at level 3 with labels by adding **+f**\ 3\ **+l**.
+   obtained by adding **+f** and **+l**\ ,,,N to get the north label.  (right) Fancy directional rose
+   at level 3 with labels by adding **+f**\ 3\ **+l**.
 
 .. _Placing-mag-map-roses:
 

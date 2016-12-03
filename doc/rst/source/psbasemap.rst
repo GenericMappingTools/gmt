@@ -527,7 +527,7 @@ thus the spherical form is used. To get a 18-cm-wide world map centered on the D
 
     gmt psbasemap -Rg -JV180/18c -Bafg -B+t"Van der Grinten" > grinten.ps
 
-CUSTOM lABELS OR INTERVALS
+Custom Labels or Intervals
 --------------------------
 
 The **-B** option sets up a regular annotation interval and the

@@ -10782,9 +10782,9 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 /*! . */
 int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *ms) {
-	unsigned int error = 0, k, pos, order[4] = {3,1,0,2};
+	unsigned int error = 0, k, order[4] = {3,1,0,2};
 	int n;
-	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
 	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
@@ -10872,12 +10872,17 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			strcpy (ms->label[3], GMT->current.language.cardinal_name[2][0]);
 		}
 		else {	/* Decode w,e,s,n strings */
-			k = pos = 0;
-			while (k < 4 && (gmt_strtok (string, ",", &pos, p))) {	/* Get the four labels */
-				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
+			size_t len;
+			unsigned int n_comma = 0;
+			char *tmp = string, *pp = NULL;
+			/* Check we got 3 commas */
+			for (len = strlen (string); len > 0; len--) if (string[len-1] == ',') n_comma++;
+			k = 0;
+			while (k < 4 && (pp = strsep (&tmp, ",")) != NULL) {	/* Get the four labels */
+				if (pp[0] == '\0' || strcmp (pp, "-")) strncpy (ms->label[order[k]], pp, GMT_LEN64-1);
 				k++;
 			}
-			if (k != 4) {	/* Ran out of labels */
+			if (n_comma < 3 && k != 4) {	/* Ran out of labels */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: 4 Labels must be given via modifier +lw,e,s,n\n", option);
 				error++;
 			}

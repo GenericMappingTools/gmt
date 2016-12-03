@@ -187,7 +187,7 @@ Plate Flexure Notes
 
 The FFT solution to plate flexure requires the infill density to equal
 the load density.  This is typically only true directly beneath the load; beyond the load
-the infill tends to be lower-density sediments or even water (or air).  Wessel [2001]
+the infill tends to be lower-density sediments or even water (or air).  Wessel [2001, 2016]
 proposed an approximation that allows for the specification of an infill density
 different from the load density while still allowing for an FFT solution. Basically,
 the plate flexure is solved for using the infill density as the effective load density but
@@ -221,7 +221,12 @@ Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton Universit
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_
+`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_.
+
+Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates
+of Hawaii plume flux, *Geophys. J. Int., 204(2)*, 932-947,
+`http://dx.doi.org/10.1093/gji/ggv472 <http://dx.doi.org/10.1093/gji/ggv472>`_.
+
 
 See Also
 --------

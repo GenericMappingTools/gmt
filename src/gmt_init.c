@@ -1400,7 +1400,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 #endif
 
-/*! Parse the -U option.  Full syntax: -U[<just>/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int i, just, n = 0, n_slashes, error = 0;
 	char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
@@ -6021,25 +6021,25 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 }
 
 
-void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part) {
+void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose"}, *tab[2] = {"", "     "};
 	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
-		if (string) gmt_message (GMT, "\t-%c %s\n", option, string);
+		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
 		gmt_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
-		gmt_message (GMT, "\t   %s  Use -%cg to specify <refpoint> with map coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%cj or -%cJ to specify <refpoint> with 2-char justification code (BL, MC, etc).\n", tab[shift], option, option);
-		gmt_message (GMT, "\t   %s  Use -%cn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%cx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sAll except -%cx require the -R and -J options to be set.\n", tab[shift], option);
+		gmt_message (GMT, "\t   %s  Use -%sg to specify <refpoint> with map coordinates.\n", tab[shift], option);
+		gmt_message (GMT, "\t   %s  Use -%sj or -%sJ to specify <refpoint> with 2-char justification code (BL, MC, etc).\n", tab[shift], option, option);
+		gmt_message (GMT, "\t   %s  Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
+		gmt_message (GMT, "\t   %s  Use -%sx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
+		gmt_message (GMT, "\t   %sAll except -%sx require the -R and -J options to be set.\n", tab[shift], option);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC"};
 		gmt_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
-		gmt_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%cj),\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%cJ), or %s (else).\n", tab[shift], option, just[kind]);
+		gmt_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj),\n", tab[shift], option);
+		gmt_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%sJ), or %s (else).\n", tab[shift], option, just[kind]);
 		gmt_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }
@@ -6058,9 +6058,9 @@ void gmt_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t        Append r if coordinates are the lower left and upper right corners of a rectangular area.\n");
 	gmt_message (GMT, "\t     b) Give <u><xmin>/<xmax>/<ymin>/<ymax> of bounding rectangle in projected coordinates.\n");
 	gmt_message (GMT, "\t     c) Set reference point and dimensions of the insert:\n");
-	gmt_refpoint_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 1);
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
 	gmt_message (GMT, "\t        Append <width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
-	gmt_refpoint_syntax (GMT, 'D', NULL, GMT_ANCHOR_INSERT, 2);
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 2);
 	gmt_message (GMT, "\t     Append +s<file> to save insert lower left corner and dimensions to <file>.\n");
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }
@@ -6074,7 +6074,7 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	/* Used in psbasemap and pscoast */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_refpoint_syntax (GMT, 'L', NULL, GMT_ANCHOR_MAPSCALE, 3);
+	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 	gmt_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify scale origin.\n");
 	gmt_message (GMT, "\t   Set scale length with +w<length> and append a unit from %s [km].  Use -%cf to draw a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
 	gmt_message (GMT, "\t   Several modifiers are optional:\n");
@@ -6095,7 +6095,7 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_message (GMT, "\t   Choose between a directional (-Td) or magnetic (-Tm) rose.\n");
 	gmt_message (GMT, "\t   Both share most modifiers for locating and sizing the rose.\n");
-	gmt_refpoint_syntax (GMT, 'T', NULL, GMT_ANCHOR_MAPROSE, 3);
+	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 	gmt_message (GMT, "\t   Set the diameter of the rose with modifier +w<width>.\n");
 	gmt_message (GMT, "\t   Several modifiers are optional:\n");
 	gmt_message (GMT, "\t   Add labels with +l, which places the letters W, E, S, N at the cardinal points.\n");

@@ -86,10 +86,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_refpoint_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
+	gmt_refpoint_syntax (API->GMT, "D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify legend width with +w<width>; <height> is optional [estimated from <specfile>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
-	gmt_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LEGEND, 2);
+	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");

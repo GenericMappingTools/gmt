@@ -153,11 +153,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_refpoint_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
+	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
-	gmt_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_COLORBAR, 2);
+	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to add sidebar triangles for back- and foreground colors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append triangle height [Default is half the barwidth].\n");

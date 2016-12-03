@@ -173,5 +173,5 @@ References
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`gravfft </supplements/potential/gravfft>`
-:doc:`grdflexure </supplements/potential/grdflexure>`:doc:`grdmath </grdmath>`
+:doc:`gmt </gmt>`, :doc:`gravfft </supplements/potential/gravfft>`,
+:doc:`grdflexure </supplements/potential/grdflexure>`, :doc:`grdmath </grdmath>`
