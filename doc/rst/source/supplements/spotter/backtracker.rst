@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ [*young*/*old*] ]
 [ |-D|\ **f**\ \|\ **b** ]
 [ |-F|\ *drift.txt* ]
-[ |-L|\ **f**\ \|\ **b**\ *step* ]
+[ |-L|\ **f**\ \|\ **b**\ [*step*] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *fixed_age* ]
 [ |-S|\ *filestem* ]
@@ -115,10 +115,10 @@ Optional Arguments
 
 .. _-L:
 
-**-Lf**\ \|\ **b**\ *step*
+**-Lf**\ \|\ **b**\ [*step*]
     Specify a sampled path between initial and final position: **-Lf**
     will draw particle flowlines, while **-Lb** will draw backtrack
-    (hotspot track) paths. Append sampling interval in km. If *step* < 0
+    (hotspot track) paths. Append sampling interval in km. If *step* < 0 or not provided
     then only the rotation times will be returned. When **-LF** or
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
