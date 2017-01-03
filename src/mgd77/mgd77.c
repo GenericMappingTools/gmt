@@ -1043,7 +1043,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 
 static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* Applies to MGD77T files */
-	char *MGD77_header = NULL, line[BUFSIZ] = {""};
+	char *MGD77_header = NULL, line[GMT_BUFSIZ] = {""};
 	int i, err;
 	gmt_M_unused(file);
 
@@ -1051,17 +1051,17 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 
 	gmt_M_memset (H, 1, struct MGD77_HEADER);	/* Completely wipe existing header */
 	/* Since we do not know the number of records, we must quickly count lines */
-	while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
+	while (fgets (line, GMT_BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
 	rewind (F->fp);					/* Go back to beginning of file */
 	H->n_records -= MGD77T_N_HEADER_RECORDS;	/* Adjust for the 2 records in the header block */
 
-	if (!fgets (line, BUFSIZ, F->fp)) {		/* Skip the column header  */
+	if (!fgets (line, GMT_BUFSIZ, F->fp)) {		/* Skip the column header  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 
 	MGD77_header = gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
-	if (!fgets (MGD77_header, BUFSIZ, F->fp)) {			/* Read the entire header record  */
+	if (!fgets (MGD77_header, GMT_BUFSIZ, F->fp)) {			/* Read the entire header record  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
@@ -1499,7 +1499,7 @@ static int MGD77_Write_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTR
 
 static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record) {
 	/* Will read a single tabular MGD77T record */
-	char buffer[BUFSIZ] = {""}, line[BUFSIZ] = {""}, *end = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, *end = NULL;
 	double r_time;
 
 	/* Because some values may be 9 or 99 as that was used in the old sMGD77 ystem, these should now become NaN/NULL to prevent their output */
