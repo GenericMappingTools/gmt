@@ -1,9 +1,9 @@
 **-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [**+u**]
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
+    (1) Use **-Lg** for map (user) coordinates, (2) use **-Lj** or **-LJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (3) use **-Ln** for normalized (0-1) coordinates, or (4) use **-Lx** for plot coordinates
     (inches, cm, etc.).  Scale is calculated for latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
     is central meridian]), *length* is in km, or append unit from
