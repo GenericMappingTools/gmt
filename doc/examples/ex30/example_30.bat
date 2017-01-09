@@ -10,7 +10,7 @@ echo GMT EXAMPLE 30
 set ps=example_30.ps
 gmt set PS_CHAR_ENCODING	Standard+
 
-gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u"\\312" -By1g10 -BWS+t"Two Trigonometric Functions" -K --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > %ps%
+gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u"\312" -By1g10 -BWS+t"Two Trigonometric Functions" -K --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > %ps%
 
 REM Draw sine an cosine curves
 
