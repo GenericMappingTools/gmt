@@ -1602,8 +1602,8 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	int err, col[MGD77_N_DATA_FIELDS+1];
 	bool make_ymdhm;
 	struct MGD77_DATA_RECORD MGD77Record;
-	double tz, *values[MGD77_N_DATA_FIELDS+1];
-	char *text[MGD77_N_DATA_FIELDS+1];
+	double tz, *values[MGD77_N_DATA_EXTENDED+1];
+	char *text[MGD77_N_DATA_EXTENDED+1];
 	struct GMT_GCAL cal;
 	gmt_M_unused(file);
 
@@ -1662,7 +1662,6 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S) {
 	/* Must determine which columns are present and if time is available, etc.
 	 * MUST BE CALLED BEFORE MGD77_Write_Header_Record_cdf!
-	 *
 	 */
 
 	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
@@ -1710,10 +1709,12 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	if (crossed_dateline && crossed_greenwich)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n");
 	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
-		for (rec = 0; rec < S->H.n_records; rec++) if (values[rec] < 0.0) values[rec] += 360.0;
+		for (rec = 0; rec < S->H.n_records; rec++)
+			if (values[rec] < 0.0) values[rec] += 360.0;
 	}
 	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
-		for (rec = 0; rec < S->H.n_records; rec++) if (values[rec] > 180.0) values[rec] -= 360.0;
+		for (rec = 0; rec < S->H.n_records; rec++)
+			if (values[rec] > 180.0) values[rec] -= 360.0;
 	}
 
 	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
@@ -1744,7 +1745,6 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	 * MGD77_Write_File_cdf which also writes the data.  Note that no optional factors
 	 * such as 2ndary correction scale and offset are defined since they do not exist
 	 * for MGD77 standard files.  Such terms can be added by mgd77manage.
-	 *
 	 */
 
 	int dims[2] = {0, 0}, var_id, time_id;
@@ -1769,14 +1769,16 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 		(void) time (&now);
 		sprintf (string, "%s [%s] Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now), H->author);
 		k = strlen (string);
-		for (k0 = 0; k0 < k; k0++) if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
+		for (k0 = 0; k0 < k; k0++)
+			if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
 		H->history = gmt_M_memory (GMT, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
 		strcpy (H->history, string);
 	}
 	/* else, history already filled out, use as is */
 	MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
-	if (H->E77 && strlen(H->E77) > 0) MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "E77", strlen (H->E77), H->E77));
+	if (H->E77 && strlen(H->E77) > 0)
+		MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "E77", strlen (H->E77), H->E77));
 	MGD77_Write_Header_Params (GMT, F, H->mgd77);	/* Write all the MGD77 header attributes */
 
 	/* It is assumed that MGD77_Prep_Header_cdf has been called */
