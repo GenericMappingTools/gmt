@@ -327,8 +327,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			}
 			jaft = 0;
 			n = 0;
-			n_Dst_rows = 18262;	/* Current (13-05-2009) number of lines in Dst_all.wdc file */
-			dstx = calloc(((size_t)n_Dst_rows * 24U), sizeof(double));
+			n_Dst_rows = 21884 * 24;		/* Current (13-05-2009) number of lines in Dst_all.wdc file */
+			dstx = calloc(((size_t)n_Dst_rows), sizeof(double));
 			/* One improvement would be to compute year_min/year_max and retain only the needed data in dstx */
 
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -343,11 +343,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					jaft = 1;
 					mjdl = jmjd;
 				}
-				if (n >= n_Dst_rows) {
-					n_Dst_rows += 1000;
+				k = (jmjd - mjdl) * 24;
+				if (k >= n_Dst_rows) {
+					n_Dst_rows += (100 * 24);
 					dstx = realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double));
 				}
-				k = (jmjd - mjdl) * 24;
 				for (j = 0; j < 24; ++j)
 					dstx[k + j] = (double)jdst[j];
 				n++;
