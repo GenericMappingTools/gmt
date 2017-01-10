@@ -288,27 +288,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
 
-	if (GMT->common.R.active) {	/* Restrict output to given domain */
-		if (xpos == -1 || ypos == -1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
-			x2sys_end (GMT, s);
-			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (GMT_RUNTIME_ERROR);		
-		}
-		/* Supply dummy linear proj */
-		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
-		GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
-		GMT->common.J.active = true;
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {
-			GMT->common.R.wesn[XLO] += 360.0;
-			GMT->common.R.wesn[XHI] += 360.0;
-		}
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
-			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (GMT_PROJECTION_ERROR);
-		}
-	}
-
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (ocol = n_data_col_out = 0; ocol < s->n_out_columns; ocol++) {
 			this_col = s->out_order[ocol];
@@ -426,6 +405,28 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}
+
+	if (GMT->common.R.active) {	/* Restrict output to given domain */
+		if (xpos == -1 || ypos == -1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
+			x2sys_end (GMT, s);
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			Return (GMT_RUNTIME_ERROR);		
+		}
+		/* Supply dummy linear proj */
+		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
+		GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
+		GMT->common.J.active = true;
+		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {
+			GMT->common.R.wesn[XLO] += 360.0;
+			GMT->common.R.wesn[XHI] += 360.0;
+		}
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			Return (GMT_PROJECTION_ERROR);
+		}
+	}
+
 	if (API->mode && gmt_formatting) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Disabling text formatting for external interface\n");
 		gmt_formatting = false;
