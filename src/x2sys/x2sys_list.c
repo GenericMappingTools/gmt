@@ -595,7 +595,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 						strcat (record, "vel");
 					break;
 				case 'w':	/* Composite weight of crossover */
-					fprintf (GMT->session.std[GMT_OUT], "weight");
+					strcat (record, "weight");
 					break;
 				case 'x':	/* x coordinate of crossover */
 					(s->geographic) ? strcat (record, "lon") : strcat (record, "x");
