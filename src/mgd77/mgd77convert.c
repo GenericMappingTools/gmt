@@ -211,8 +211,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	int i, argno, n_cruises = 0, n_paths, error = 0;
 	
-	char file[GMT_BUFSIZ] = {""}, **list = NULL, *fcode = "actm";
-	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};
+	char file[GMT_BUFSIZ] = {""}, **list = NULL, *fcode = "cmat";
+	char *format_name[MGD77_N_FORMATS] = {"MGD77+ netCDF", "MGD77T ASCII", "MGD77 ASCII", "ASCII table"};
 
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;

@@ -1043,7 +1043,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 
 static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* Applies to MGD77T files */
-	char *MGD77_header = NULL, line[GMT_BUFSIZ] = {""};
+	char *MGD77_header = NULL, line[BUFSIZ] = {""};
 	int i, err;
 	gmt_M_unused(file);
 
@@ -1051,17 +1051,17 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 
 	gmt_M_memset (H, 1, struct MGD77_HEADER);	/* Completely wipe existing header */
 	/* Since we do not know the number of records, we must quickly count lines */
-	while (fgets (line, GMT_BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
+	while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
 	rewind (F->fp);					/* Go back to beginning of file */
 	H->n_records -= MGD77T_N_HEADER_RECORDS;	/* Adjust for the 2 records in the header block */
 
-	if (!fgets (line, GMT_BUFSIZ, F->fp)) {		/* Skip the column header  */
+	if (!fgets (line, BUFSIZ, F->fp)) {		/* Skip the column header  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 
 	MGD77_header = gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
-	if (!fgets (MGD77_header, GMT_BUFSIZ, F->fp)) {			/* Read the entire header record  */
+	if (!fgets (MGD77_header, BUFSIZ, F->fp)) {			/* Read the entire header record  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
@@ -1499,7 +1499,7 @@ static int MGD77_Write_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTR
 
 static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record) {
 	/* Will read a single tabular MGD77T record */
-	char buffer[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, *end = NULL;
+	char buffer[BUFSIZ] = {""}, line[BUFSIZ] = {""}, *end = NULL;
 	double r_time;
 
 	/* Because some values may be 9 or 99 as that was used in the old sMGD77 ystem, these should now become NaN/NULL to prevent their output */
@@ -1602,8 +1602,8 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	int err, col[MGD77_N_DATA_FIELDS+1];
 	bool make_ymdhm;
 	struct MGD77_DATA_RECORD MGD77Record;
-	double tz, *values[MGD77_N_DATA_EXTENDED+1];
-	char *text[MGD77_N_DATA_EXTENDED+1];
+	double tz, *values[MGD77_N_DATA_FIELDS+1];
+	char *text[MGD77_N_DATA_FIELDS+1];
 	struct GMT_GCAL cal;
 	gmt_M_unused(file);
 
@@ -1662,6 +1662,7 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S) {
 	/* Must determine which columns are present and if time is available, etc.
 	 * MUST BE CALLED BEFORE MGD77_Write_Header_Record_cdf!
+	 *
 	 */
 
 	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
@@ -1709,12 +1710,10 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	if (crossed_dateline && crossed_greenwich)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n");
 	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
-		for (rec = 0; rec < S->H.n_records; rec++)
-			if (values[rec] < 0.0) values[rec] += 360.0;
+		for (rec = 0; rec < S->H.n_records; rec++) if (values[rec] < 0.0) values[rec] += 360.0;
 	}
 	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
-		for (rec = 0; rec < S->H.n_records; rec++)
-			if (values[rec] > 180.0) values[rec] -= 360.0;
+		for (rec = 0; rec < S->H.n_records; rec++) if (values[rec] > 180.0) values[rec] -= 360.0;
 	}
 
 	for (set = entry = 0; set < MGD77_N_SETS; set++) {	/* For both sets */
@@ -1745,6 +1744,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	 * MGD77_Write_File_cdf which also writes the data.  Note that no optional factors
 	 * such as 2ndary correction scale and offset are defined since they do not exist
 	 * for MGD77 standard files.  Such terms can be added by mgd77manage.
+	 *
 	 */
 
 	int dims[2] = {0, 0}, var_id, time_id;
@@ -1769,16 +1769,14 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 		(void) time (&now);
 		sprintf (string, "%s [%s] Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now), H->author);
 		k = strlen (string);
-		for (k0 = 0; k0 < k; k0++)
-			if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
+		for (k0 = 0; k0 < k; k0++) if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
 		H->history = gmt_M_memory (GMT, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
 		strcpy (H->history, string);
 	}
 	/* else, history already filled out, use as is */
 	MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
-	if (H->E77 && strlen(H->E77) > 0)
-		MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "E77", strlen (H->E77), H->E77));
+	if (H->E77 && strlen(H->E77) > 0) MGD77_nc_status (GMT, nc_put_att_text (F->nc_id, NC_GLOBAL, "E77", strlen (H->E77), H->E77));
 	MGD77_Write_Header_Params (GMT, F, H->mgd77);	/* Write all the MGD77 header attributes */
 
 	/* It is assumed that MGD77_Prep_Header_cdf has been called */
@@ -1997,6 +1995,8 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		else {
 			values = MGD77_Read_Column (GMT, F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 #if 0
+		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
+		 * so we dont do anything here but let that happen naturally later. */
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
 				for (rec = 0; rec < count[0]; rec++) values[rec] = MGD77_utime2time (GMT, F, values[rec]);
 			}
@@ -2224,7 +2224,12 @@ static int MGD77_Read_Data_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 			MGD77_do_scale_offset_after_read (GMT, &dvals[n_val], 1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
-		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (GMT, F, dvals[n_val]); */
+		/* Would have been helpful with a comment here as to why this is excluded. */
+#if 0
+		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
+ 		* so we dont do anything here but let that happen naturally later. */
+		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (GMT, F, dvals[n_val]);
+#endif
 	}
 	return (MGD77_NO_ERROR);
 }
@@ -2732,8 +2737,8 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 			f_start = f_stop = MGD77_FORMAT_M7T;
 			break;
 		case MGD77_FORMAT_ANY:		/* Not set, try all */
-			f_start = MGD77_FORMAT_M77;
-			f_stop  = MGD77_FORMAT_M7T;
+			f_start = MGD77_FORMAT_CDF;
+			f_stop  = MGD77_FORMAT_TBL;
 			break;
 		default:	/* Bad */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad file format specified given (%d)\n", F->format);
@@ -3736,10 +3741,10 @@ void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format) {
 
 	 gmt_M_unused(GMT);
 	 if (format == MGD77_FORMAT_ANY) {
-	 	MGD77_format_allowed[MGD77_FORMAT_M77] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_CDF] = true;
-	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = true;
+	 	MGD77_format_allowed[MGD77_FORMAT_M77] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_M7T] = true;
+	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = true;
 	}
 	else if (format >= MGD77_FORMAT_M77 && format <= MGD77_FORMAT_TBL)
 		MGD77_format_allowed[format] = false;
@@ -3797,11 +3802,17 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	mgd77_init_columns (F);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = true;		/* true means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = true;	/* true means we will apply correction factors (if present) when reading data */
-	gmt_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
+#if 0
+	/* This looks like nonsense to me: It ignores any --TIME_* settings we may have used and
+	 * forces unix time so that only absolute time or seconds from 1970 will work.  Commented
+	 * out but probably will need to be chopped.  P. Wessel, Dec 14, 2016 */
+	gmt_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));		/* MGD77+ uses GMT's Unix time epoch */
 	gmt_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	gmt_get_time_system (GMT, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
+#endif
+	gmt_get_time_system (GMT, "unix", &(F->utime));		/* MGD77+ uses GMT's Unix time epoch */
 	gmt_init_time_system_structure (GMT, &(F->utime));
-	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;	/* Since MGD77+ uses unix time we must convert to new epoch */
+	/* Since MGD77+ uses UNIX time we may need convert to a different epoch if GMT settings have changed. */
+	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;
 	gmt_M_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1U << i;
 	strncpy (F->user, gmt_putusername(GMT), MGD77_COL_ABBREV_LEN);
@@ -4400,6 +4411,7 @@ void MGD77_Free_Dataset (struct GMT_CTRL *GMT, struct MGD77_DATASET **D) {
 	mgd77_free_plain_mgd77 (&S->H);
 	gmt_M_free (GMT, S->H.author);
 	gmt_M_free (GMT, S->H.history);
+	gmt_M_free (GMT, S->H.E77);
 	gmt_M_free (GMT, S);
 	D = NULL;
 }
