@@ -251,6 +251,7 @@ enum GMT_enum_dimindex {
 };
 
 enum GMT_enum_gridio {
+	GMT_GRID_IS_CARTESIAN	   = 0U,    /* Grid is not geographic but Cartesian */
 	GMT_GRID_IS_REAL	   = 0U,    /* Read|write a normal real-valued grid */
 	GMT_GRID_ALL		   = 0U,    /* Read|write both grid header and the entire grid (no subset) */
 	GMT_GRID_HEADER_ONLY	   = 1U,    /* Just read|write the grid header */
@@ -261,7 +262,8 @@ enum GMT_enum_gridio {
 	GMT_GRID_NO_HEADER	   = 16U,   /* Write a native grid without the leading grid header */
 	GMT_GRID_ROW_BY_ROW	   = 32U,   /* Read|write the grid array one row at the time sequentially */
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
-	GMT_GRID_XY		   = 128U}; /* Allocate and initialize x,y vectors */
+	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
+	GMT_GRID_IS_GEO		   = 256U}; /* Grid is a geographic grid, not Cartesian */
 
 /* These lengths (except GMT_GRID_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
 enum GMT_enum_grdlen {
