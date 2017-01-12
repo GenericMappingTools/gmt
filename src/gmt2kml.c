@@ -744,7 +744,6 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	out[GMT_Z] = Ctrl->A.altitude;
 	strcpy (GMT->current.setting.io_col_separator, ",");		/* Specify comma-separated output */
-	GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;		/* Want -180/+180 longitude output format */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
