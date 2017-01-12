@@ -236,7 +236,7 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
-		else if (gmt_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
+		else if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
 			Ctrl->G.file[ng] = strdup (line);
 		else
 			return (0);
@@ -799,6 +799,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
 		double xyz[2][3];
+		bool resample = !(Ctrl->C.active && Ctrl->C.spacing > 0.0);
 
 		if (get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
 			for (g = 0; g < Ctrl->G.n_grids; g++) {	/* Free up the grids */
@@ -822,10 +823,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			gmt_grd_minmax (GMT, GC[0].G, xyz);
-			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
 		}
 		else
-			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
 		if (Din->table[0] == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
