@@ -109,9 +109,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <n_columns> by <n_rows> times [Default is no replication].\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) set the background and foreground color,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Use <color> = - for transparency [Default is black and white].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Gt (not for 1-bit images) indicate which color should be made transparent\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default no transparency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_Option (API, "J-Z,K");
