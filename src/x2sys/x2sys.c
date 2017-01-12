@@ -516,11 +516,8 @@ double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n) {
 	double *t;
 
 	/* Make monotonically increasing dummy time sequence */
-
 	t = gmt_M_memory (GMT, NULL, n, double);
-
 	for (i = 0; i < n; i++) t[i] = (double)i;
-
 	return (t);
 }
 
@@ -835,7 +832,8 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	j = 0;
 	while (!MGD77_Read_Data_Record (GMT, &MC, &H, dvals, tvals)) {		/* While able to read a data record */
 		gmt_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
-		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
+		for (i = 0; i < s->n_out_columns; i++)
+			z[i][j] = dvals[col[i]];
 		if (p->year == 0 && !gmt_M_is_dnan (dvals[0])) p->year = get_first_year (GMT, dvals[0]);
 		j++;
 		if (j == n_alloc) {
@@ -1713,7 +1711,8 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		if (!(coe_kind & 2) &&  strcmp (trk[0], trk[1])) skip = true;	/* Do not want external crossovers */
 		if (one_trk && (strcmp (one_trk, trk[0]) && strcmp (one_trk, trk[1]))) skip = true;	/* Looking for a specific track and these do not match */
 		if (!skip && n_ignore) {	/* See if one of the tracks are in the ignore list */
-			for (k = 0; !skip && k < n_ignore; k++) if (!strcmp (trk[0], ignore[k]) || !strcmp (trk[1], ignore[k])) skip = true;
+			for (k = 0; !skip && k < n_ignore; k++)
+				if (!strcmp (trk[0], ignore[k]) || !strcmp (trk[1], ignore[k])) skip = true;
 		}
 		if (skip) {	/* Skip this pair's data records */
 			while ((t = fgets (line, GMT_BUFSIZ, fp)) != NULL && line[0] != '>') rec_no++;
@@ -1941,7 +1940,8 @@ GMT_LOCAL unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int
 	gmt_M_unused(GMT);
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
-		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
+		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++)
+			if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
 		if (this_aux != MGD77_NOT_SET) {	/* Found a request for an auxiliary column  */
 			aux[n_aux].type = auxlist[this_aux].type;
 			aux[n_aux].text = auxlist[this_aux].text;
