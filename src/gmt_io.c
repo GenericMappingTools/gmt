@@ -1771,14 +1771,14 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	 * Items not encountered are left as -1.
 	 */
 
-	unsigned int j, n_d, n_m, n_s, n_x, n_dec, order, error = 0;
+	unsigned int j, n_d, n_m, n_s, n_x, n_dec, n_period, order, error = 0;
 	int sequence[3], last, i_signed, n_delim;
 	size_t i1, i;
 	bool big_to_small;
 
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 
-	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
+	n_d = n_m = n_s = n_x = n_dec = n_delim = n_period = 0;
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
 
@@ -1836,6 +1836,7 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				n_s++;
 				break;
 			case '.':	/* Decimal point for seconds? */
+				n_period++;
 				if (text[i+1] == 'x')
 					n_dec++;
 				else {	/* Must be a delimiter */
@@ -1887,6 +1888,8 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Unacceptable dmmss template %s\n", text);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
+	else if (n_period > 1)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "WARNING: Multiple periods in dmmss template %s is likely to lead to confusion\n", text);
 	return (GMT_NOERROR);
 }
 
