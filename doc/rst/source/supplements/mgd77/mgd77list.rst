@@ -235,7 +235,9 @@ Required Arguments
     those flags, and observations associated with ON-bits (meaning they
     are flagged as bad) will be set to NaN; append : with no trailing
     information to turn this behavior off (i.e., no bit flags will be
-    consulted).
+    consulted).  Note that these record-based flags are different from
+    any systematic corrections along track; the latter are deactivated
+    by **-T**.
 
 Optional Arguments
 ------------------
@@ -328,18 +330,18 @@ Optional Arguments
     **x** is the sensor (**2** or **1**) *not* indicated by the
     **msens** data field (defaults to **2** if unspecified).
 
-    **-Amc<offset>[unit]** Apply a correction that tries to compensate
-    the fact that the magnetic field was not acquired at the same
-    position as the navigation refer (ship's position). This is
+    **-Amc**\ *offset*\ [*unit*\ ] applies a correction to compensate
+    for the fact that the magnetic field was not acquired at the same
+    position as the ship's position [i.e., the navigation]. This is
     accomplished by re-interpolating the total magnetic field to what it
-    would have had if it was measured at the ship's position (remember,
-    it probably was measured <offset> meters behind). Due to this
+    would have been if it were measured at the ship's position (remember,
+    it probably was measured *offset* meters behind). Due to this
     interpolation step, bad navigation, namely too many repeated points,
-    may cause troubles. Measures are taken to minimize this effect but
-    they aren't 100% full prof. The interpolation method is controlled
+    may cause trouble.  Measures are taken to minimize this effect but
+    they aren't 100% fool proof. The interpolation method is controlled
     by the GMT default GMT_INTERPOLANT. Append **e** for meter, **f**
-    for feet, **k** for km, **m** for miles, **n** for nautical miles,
-    or **u** for survey feet [Default is e (meters)].
+    for feet, **k** for km, **M** for miles, **n** for nautical miles,
+    or **u** for survey feet [Default is **e** (meters)].
 
 .. _-C:
 
@@ -357,12 +359,12 @@ Optional Arguments
 
 **-Da**\ *startdate*
     Do not list data collected before *startdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is start of cruise]. Use
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]) [Default is start of cruise]. Use
     **-DA** to exclude records whose time is undefined (i.e., NaN).
     [Default reports those records].
 **-Db**\ *stopdate*
     Do not list data collected on or after *stopdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is end of cruise]. Use **-DB**
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]). [Default is end of cruise]. Use **-DB**
     to exclude records whose time is undefined (i.e., NaN). [Default
     reports those records].
 
@@ -451,7 +453,10 @@ Optional Arguments
     when creating the original MGD77 file from which the MGD77+ file
     derives (the option has no effect on plain MGD77 ASCII files).
     Append **m** or **e** to limit the option to the MGD77 or extended
-    columns set only [Default applies to both]. 
+    columns set only [Default applies to both].  Note that record-based
+    E77 flags (MGD77+ format only) are not considered systematic corrections.
+    Instead, the application of these bit-flags can be controlled via
+    the : (colon) modifier to OPT(F).
 
 .. _-V:
 
@@ -463,8 +468,8 @@ Optional Arguments
 **-W**\ *weight*
     Set the weight for these data. Weight output option must be set in
     **-F**. This is useful if the data are to be processed with the
-    weighted averaging techniques offered by **blockmean**,
-    **blockmedian**, and **blockmode** [1].
+    weighted averaging techniques offered by :doc:`blockmean </blockmean>`,
+    :doc:`blockmedian </blockmedian>`, and :doc:`blockmode </blockmode>` [1].
 
 .. _-Z:
 
@@ -619,6 +624,9 @@ corrected by a strange dependency on ship heading and latitude, and
 See Also
 --------
 
+:doc:`blockmean </blockmean>`,
+:doc:`blockmedian </blockmedian>`,
+:doc:`blockmode </blockmode>`,
 :doc:`mgd77convert`,
 :doc:`mgd77info`,
 :doc:`mgd77manage`,
