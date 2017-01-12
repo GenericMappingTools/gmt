@@ -1980,29 +1980,29 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	if (!gmt_getdatapath (GMT, imgfile, file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
-	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85 */
+	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85.  Set exact latitude */
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_85*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_85;
+			lat = GMT_IMG_MAXLAT_85;
 			min = 1;
 			break;
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+			lat = GMT_IMG_MAXLAT_80;
 			min = 1;
 			break;
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_72*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
+			lat = GMT_IMG_MAXLAT_72;
 			min = 1;
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_85*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_85;
+			lat = GMT_IMG_MAXLAT_85;
 			min = 2;
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+			lat = GMT_IMG_MAXLAT_80;
 			min = 2;
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_72*GMT_IMG_ITEMSIZE:
-			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
+			lat = GMT_IMG_MAXLAT_72;
 			min = 2;
 			break;
 		default:
