@@ -92,7 +92,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 
-	gmt_set_seg_minmax (GMT, P);	/* Set the domain of the segment */
+	gmt_set_seg_minmax (GMT, GMT_IS_POLY, P);	/* Set the domain of the segment */
 
 	/* Then loop over points to accumulate sums */
 
@@ -267,7 +267,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
 	unsigned int row, col, p_col, west_col, east_col, nx1, n_in = 0;
-	uint64_t n_dup = 0, n_set = 0, side, ij, node, n = 0;
+	uint64_t n_dup = 0, n_set = 0, side, ij, node, n_new, n = 0;
 	uint64_t vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
 	size_t n_alloc, p_alloc = 0;
@@ -537,7 +537,10 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 		/* Here we have the polygon in P */
 
-		P->n_rows = gmt_fix_up_path (GMT, &P->data[GMT_X], &P->data[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
+		if ((n_new = gmt_fix_up_path (GMT, &P->data[GMT_X], &P->data[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF)) == 0) {
+			Return (GMT_RUNTIME_ERROR);
+		}
+		P->n_rows = n_new;
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);

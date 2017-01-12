@@ -1347,7 +1347,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
 			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Avoid longitude adjustments: longitudes are guaranteed to be correct; rounding errors only messes things up */
-			gmt_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
+			gmt_set_tbl_minmax (GMT, GMT_IS_LINE, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* Reset X column to be longitudes */
 		}
 		gmt_free_shore (GMT, &c);	/* Done with this GSHHS bin */
