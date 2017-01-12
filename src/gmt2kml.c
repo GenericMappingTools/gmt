@@ -202,11 +202,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend feature down to the ground [no extrusion].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Feature type; choose from (e)vent, (s)symbol, (t)imespan, (l)ine, or (p)olygon [s].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Feature type; choose from (e)vent, (s)ymbol, (t)imespan, (l)ine, or (p)olygon [s].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All features expect lon, lat in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Value or altitude is given in the third column (see -A and -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Event requires a timestamp in the next column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end timestamps in the next two columns\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end ISO timestamps in the next two columns\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (use NaN for unlimited begin and/or end times).\n");
 	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency.\n");
@@ -414,14 +414,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0])
 					n_errors += gmt_parse_R_option (GMT, opt->arg);
 				break;
-			case 'S':	/* Scale for symbol or text */
+			case 'S':	/* Scale for symbol (c) or text (n) */
 				Ctrl->S.active = true;
-				if (opt->arg[0] == 'f')
+				if (opt->arg[0] == 'c')
 					Ctrl->S.scale[F_ID] = atof (&opt->arg[1]);
 				else if (opt->arg[0] == 'n')
 					Ctrl->S.scale[N_ID] = atof (&opt->arg[1]);
 				else {
-					GMT_Message (API, GMT_TIME_NONE, "-S requires f or n, then size\n");
+					GMT_Message (API, GMT_TIME_NONE, "-S requires c or n, then nondimensional scale\n");
 					n_errors++;
 				}
 				break;
@@ -820,6 +820,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (use_folder) {
 		kml_print (API, N++, "<%s>\n", Document[KML_FOLDER]);
 		kml_print (API, N, "<name>%s</name>\n", Ctrl->T.folder);
+		if (Ctrl->Z.invisible) kml_print (API, N, "<visibility>0</visibility>\n");
+		if (Ctrl->Z.open) kml_print (API, N, "<open>1</open>\n");
 	}
 
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
@@ -1117,7 +1119,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
 						/* GE cannot handle polygons crossing the dateline; warn for now */
 						GMT_Report (API, GMT_MSG_NORMAL,
-						            "Warning: At least on polygon is straddling the Dateline. Google Earth will wrap these the wrong way\n");
+						            "Warning: At least one polygon is straddling the Dateline. Google Earth will wrap these the wrong way\n");
 						GMT_Report (API, GMT_MSG_NORMAL,
 						            "Split such polygons into East and West parts and plot them as separate polygons.\n");
 						GMT_Report (API, GMT_MSG_NORMAL, "Use gmtconvert to help in this conversion.\n");
