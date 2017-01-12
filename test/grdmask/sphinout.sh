@@ -7,7 +7,7 @@ ps=sphinout.ps
 
 # 2k.dat contains many repeat points but no point are integer lon,lat
 # hence, no node in the grid below lies exactly on the perimeter. We
-# therefore should only see read and green colors in the image.
+# therefore should only see red and green colors in the image.
 cat << EOF > mask.cpt
 -0.25   red     0.25    red	; OUTSIDE
 0.25    yellow  0.75    yellow	; ON LINE
