@@ -346,10 +346,10 @@ GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
 }
 
 int GMT_x2sys_solve (void *V_API, int mode, void *args) {
-	char **trk_list = NULL, text[GMT_BUFSIZ] = {""};
+	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[8] = {""};
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks, t, error = 0, expect;
+	int *ID[2] = {NULL, NULL}, ks, t, error = 0, expect, max_len;
 	uint64_t n_par = 0, n, m, n_tracks = 0, n_active, n_expected_fields, n_constraints = 0;
 	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL, *cluster = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
@@ -901,9 +901,15 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	/* Calculate the format string for the cruise name so that the printed table is better formatted */
+	max_len = 0;
+	for (p = 0; p < n_tracks; p++)
+		max_len = MAX(max_len, (int)strlen(trk_list[p])+1);
+	sprintf (frmt_name, "%%-%ds", max_len+2);
+
 	for (p = 0; p < n_tracks; p++) {
 		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
-		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, "%s", trk_list[p]);
+		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, frmt_name, trk_list[p]);
 		strcat (line, "\t");
 		strcat (line, Ctrl->C.col);
 		gmt_M_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
@@ -916,7 +922,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				sprintf (text, "\t%g\t%g*((time-T))\n", var[0], var[1]);
 				break;
 			case F_IS_DRIFT_D:
-				sprintf (text, "\t%g\t%g*((dist))\n", var[0], var[1]);
+				sprintf (text, "\t% 10.4f\t% g*((dist))\n", var[0], var[1]);
 				break;
 			case F_IS_GRAV1930:
 				sprintf (text, "\t%g\t%g*sin((lat))^2\n", var[0], var[1]);
