@@ -718,6 +718,56 @@ void gmt_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, d
 
 /* -JJ MILLER CYLINDRICAL PROJECTION */
 
+//#define CHRISTMAS
+/* Turning on Christmas makes the Miller projection a triangular projection
+ * that projects 90 degrees of longitude and latitudes 45-90 into a 45-degree
+ * triangle.  Doing all for quadrants results in a square map with radial
+ * meridians and lots of distortion along the boundaries.  This was used to
+ * build a 3-D cube of the world with this triangle projection being used to
+ * map the top (N polar to 34N) and bottom (S pole to 45S) sides, with the
+ * remaining 4 sides just being -JQ maps.  I left it here since I may want
+ * to mess with this in the future.  P. Wessel, Dec. 2016.
+ */
+#ifdef CHRISTMAS
+/* Bypass Miller projection entirely and introduce a triangle projection */
+void gmt_vmiller (struct GMT_CTRL *GMT, double lon0, double slat) {
+	/* Set up a Cylindrical equidistant transformation */
+	GMT->current.proj.north_pole = (slat > 0.0);
+	proj_check_R_J (GMT, &lon0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = 0.25 * D2R * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_y = 0.25 * D2R * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
+}
+
+void gmt_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Cylindrical equidistant x/y */
+
+	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (lat > 0.0) {
+		*x = (0.5 + lon * (90.0 - lat) / 4050.0) * GMT->current.proj.j_x;
+		*y = ((lat-45.0) / 90.0) * GMT->current.proj.j_y;
+	}
+	else {
+		*x = (0.5 - lon * (90.0 + lat) / 4050.0) * GMT->current.proj.j_x;
+		*y = -((lat+45) / 90.0) * GMT->current.proj.j_y;
+	}
+}
+
+void gmt_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Cylindrical equal-area x/y to lon/lat */
+
+	if (GMT->current.proj.north_pole) {
+		*lat = 45.0 + 90.0 * y * GMT->current.proj.j_iy;
+		*lon = (4050.0 * (x * GMT->current.proj.j_ix - 0.5)) / (90.0 - *lat) + GMT->current.proj.central_meridian;
+	}
+	else {
+		*lat = -(45.0 + 90.0 * y * GMT->current.proj.j_iy);
+		*lon = -(4050.0 * (x * GMT->current.proj.j_ix - 0.5)) / (90.0 + *lat) + GMT->current.proj.central_meridian;
+	}
+}
+#else
 void gmt_vmiller (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up a Miller Cylindrical transformation */
 
@@ -743,6 +793,7 @@ void gmt_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
 	*lat = 2.5 * atand (exp (y * GMT->current.proj.j_iy)) - 112.5;
 }
+#endif
 
 /* -JCyl_stere CYLINDRICAL STEREOGRAPHIC PROJECTION */
 
