@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				len = strlen (opt->arg) - 1;
-				f (len > 0 && opt->arg[len] == '+') {	/* Old-style + only */
+				if (len > 0 && opt->arg[len] == '+') {	/* Old-style + only */
 					Ctrl->G.header = len;	/* Wish to place a segment header on output */
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 				}
