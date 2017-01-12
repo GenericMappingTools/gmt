@@ -1662,7 +1662,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 		switch (p[0]) {
 			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p (%s): Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p (%s): Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 					return 1;
 				}
 				GMT->current.proj.z_project.view_x = gmt_M_to_inch (GMT, txt_a);
@@ -1671,7 +1671,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 				break;
 			case 'w':	/* Specify fixed World point in user's coordinates */
 				if (sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) < 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p: (%s)  Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p: (%s)  Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 					return 1;
 				}
 				error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.proj.z_project.world_x), txt_a);
@@ -5671,21 +5671,21 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
 			gmt_message (GMT, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
 			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
-			gmt_message (GMT, "\t   -fp[<unit>] means input is projected coordinates.\n");
+			gmt_message (GMT, "\t   -fp[<unit>] means input x,y are in projected coordinates.\n");
 			break;
 
 		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
 
-			gmt_message (GMT, "\t-g Use data point separations to determine data gaps.\n");
-			gmt_message (GMT, "\t   Append x|X or y|Y to flag data gaps in x or y coordinates,\n");
-			gmt_message (GMT, "\t   respectively, and d|D for distance gaps.\n");
-			gmt_message (GMT, "\t   Upper case means we first project the points.  Append <gap>[unit].\n");
+			gmt_message (GMT, "\t-g Use data point separations to determine if there are data gaps.\n");
+			gmt_message (GMT, "\t   Append x|X or y|Y to identify data gaps in x or y coordinates,\n");
+			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D\n");
+			gmt_message (GMT, "\t   means we first project the points (requires -J).  Append [+|-]<gap>[unit].\n");
 			gmt_message (GMT, "\t   Geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
-			gmt_message (GMT, "\t   For gaps based on mapped coordinates, choose from %s [%s].\n",
+			gmt_message (GMT, "\t   For gaps based on mapped coordinates, choose unit from %s [%s].\n",
 			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t   Note: For x|y with time data the unit is controlled by TIME_UNIT.\n");
-			gmt_message (GMT, "\t   Repeat option to specify multiple criteria, and prepend +\n");
-			gmt_message (GMT, "\t   to indicate that all the criteria must be met [any].\n");
+			gmt_message (GMT, "\t   Repeat the -g option to specify multiple criteria, and add -ga\n");
+			gmt_message (GMT, "\t   to indicate that all criteria must be met [just one must be met].\n");
 			break;
 
 		case 'h':	/* Header */
@@ -5709,13 +5709,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Determine the grid interpolation mode.\n");
-			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
-			gmt_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
+			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
+			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
+			gmt_message (GMT, "\t   Append +a to switch off antialiasing (except for l) [Default: on].\n");
 			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
-			gmt_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-			gmt_message (GMT, "\t   x for periodic boundary conditions on x,\n");
-			gmt_message (GMT, "\t   y for periodic boundary conditions on y.\n");
+			gmt_message (GMT, "\t     g for geographic boundary conditions, or one or both of\n");
+			gmt_message (GMT, "\t     x for periodic boundary conditions on x,\n");
+			gmt_message (GMT, "\t     y for periodic boundary conditions on y.\n");
 			gmt_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
 			gmt_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
 			gmt_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
@@ -5733,7 +5733,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
 				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
 				gmt_message (GMT, "\t   azimuth and elevation of the viewpoint [180/90].\n");
-				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add zlevel for frame, etc [bottom of z-axis]\n");
+				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add zlevel for frame, etc. [bottom of z-axis]\n");
 				gmt_message (GMT, "\t   Optionally, append +w<lon/lat[/z] to specify a fixed point\n");
 				gmt_message (GMT, "\t   and +vx/y for its justification.  Just append + by itself\n");
 				gmt_message (GMT, "\t   to select default values [region center and page center].\n");
@@ -5860,7 +5860,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		gmt_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
 		gmt_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
 	}
-	gmt_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
+	if (kind < 2) gmt_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
 }
 
 /*! Contour/line label placement specifications in *contour and psxy[z] */
@@ -5965,7 +5965,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	gmt_message (GMT, "\t-%c ", option);
 	gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	gmt_message (GMT, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
-	gmt_message (GMT, "\t       <width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS, GMT_DIM_UNITS);
+	gmt_message (GMT, "\t       <width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	gmt_message (GMT, "\t   <width> >= 0.0 sets pen width (default units are points); alternatively a pen\n");
 	gmt_message (GMT, "\t       name: Choose among faint, default, or [thin|thick|fat][er|est], or obese.\n");
 	gmt_message (GMT, "\t   <color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255,\n");
@@ -6692,8 +6692,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			return (GMT->parent->error);
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
-			if (gmt_M_is_Npole (GMT->current.io.grd_info.grd.wesn[YHI])) GMT->current.io.grd_info.grd.wesn[YHI] = 90.0;
-			if (gmt_M_is_Spole (GMT->current.io.grd_info.grd.wesn[YLO])) GMT->current.io.grd_info.grd.wesn[YLO] = 90.0;
+			if (gmt_M_is_Npole (GMT->current.io.grd_info.grd.wesn[YHI])) GMT->current.io.grd_info.grd.wesn[YHI] = +90.0;
+			if (gmt_M_is_Spole (GMT->current.io.grd_info.grd.wesn[YLO])) GMT->current.io.grd_info.grd.wesn[YLO] = -90.0;
 		}
 		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
 			if (fabs (GMT->current.io.grd_info.grd.wesn[XLO]) > 360.0 || fabs (GMT->current.io.grd_info.grd.wesn[XHI]) > 360.0 \
@@ -11876,6 +11876,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			if (item[0]) {
 				GMT->common.t.active = true;
 				GMT->common.t.value = atof (item);
+				if (GMT->common.t.value < 0.0 || GMT->common.t.value > 100.0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -t: Transparency must be in 0-100%% range!\n");
+					error++;
+				}
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in 0-100%% range)!\n");
