@@ -834,6 +834,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT will be ignored\n");
 
+	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
+	if (Ctrl->Q.active) {	/* Want colormask via NaN entries */
+		if (gray_only) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
+			gray_only = false;
+			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since the entire image is gray only */
+			gmt_M_memcpy (P->bfn[GMT_NAN].rgb, red, 4, double);
+		}
+		if (!Ctrl->A.return_image) rgb_used = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);	/* Keep track of which colors we encounter */
+	}
+
 	if (Ctrl->A.active) {	/* We desire a raster image, not a PostScript plot */
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
@@ -890,16 +901,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
-	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
-	if (Ctrl->Q.active) {	/* Want colormask via NaN entries */
-		if (gray_only) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
-			gray_only = false;
-			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since the entire image is gray only */
-			gmt_M_memcpy (P->bfn[GMT_NAN].rgb, red, 4, double);
-		}
-		if (!Ctrl->A.return_image) rgb_used = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);	/* Keep track of which colors we encounter */
-	}
 
 	/* Worry about linear projections with negative scales that may reverse the orientation of the image */
 	normal_x = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
