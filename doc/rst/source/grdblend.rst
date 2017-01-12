@@ -36,7 +36,7 @@ not filled in with data. Such unconstrained nodes are set to a value
 specified by the user [Default is NaN]. Nodes with more than one value
 will be set to the weighted average value. Any input grid that does not
 share the final output grid's node registration and grid spacing will
-automatically be resampled via calls to grdsample. Note: Due to the
+automatically be resampled via calls to :doc:`grdsample`. Note: Due to the
 row-by-row i/o nature of operations in grdblend we only support the
 netCDF and native binary grid formats for both input and output. 
 
@@ -84,8 +84,8 @@ Optional Arguments
     *blendfile*. You must specify at least 2 input grids for this
     mechanism to work. Any grid that is not co-registered with the
     desired output layout implied by **-R**, **-I** (and **-r**) will
-    first be resampled via **grdsample**. Also, grids that are not in
-    netCDF or native binary format will first be reformatted via **grdconvert**.
+    first be resampled via :doc:`grdsample`. Also, grids that are not in
+    netCDF or native binary format will first be reformatted via :doc:`grdconvert`.
 
 .. _-C:
 
@@ -107,7 +107,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Create a header-less grid file suitable for use with **grdraster**.
+    Create a header-less grid file suitable for use with :doc:`grdraster`.
     Requires that the output grid file is a native format (i.e., not netCDF). 
 
 .. _-V:
@@ -187,5 +187,9 @@ documentation for how to change system limits.
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2xyz`,
-:doc:`grdedit` :doc:`grdraster`
+:doc:`gmt`,
+:doc:`grd2xyz`,
+:doc:`grdconvert`,
+:doc:`grdedit`,
+:doc:`grdsample`,
+:doc:`grdraster`

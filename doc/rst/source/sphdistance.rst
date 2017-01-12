@@ -148,7 +148,7 @@ and then calculate distances from the data to a global 1x1 degree grid, use
 
     gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
-To generate the same grid in two steps using **sphtriangulate** separately, try
+To generate the same grid in two steps using :doc:`sphtriangulate` separately, try
 
    ::
 

@@ -153,7 +153,7 @@ can be directly compared. NOTE: The stable model coefficients are
 Chebyshev coefficients. The corresponding polynomial coefficients in a +
 bx + cxx + ... are also given in Verbose mode but users must realize
 that they are NOT stable beyond degree 7 or 8. See Numerical Recipes for
-more discussion. For evaluating Chebyshev polynomials, see **gmtmath**.
+more discussion. For evaluating Chebyshev polynomials, see :doc:`gmtmath`.
 
 The **-N**\ ...\ **+r** (robust) and **-I** (iterative) options evaluate the
 significance of the improvement in model misfit Chi-Squared by an F

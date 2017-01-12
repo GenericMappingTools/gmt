@@ -149,6 +149,8 @@ Optional Arguments
     great circle distances in km (if geographic).  If working with geographic
     data you can prepend - (Flat Earth) or + (Geodesic) to *inc*, *length*, or *radius*
     to change the mode of distance calculation [Great Circle].
+    Note: If **-C** is set and *spacing* is given the that sampling scheme
+    overrules any modifier in **-E**.
 
 .. _-N:
 

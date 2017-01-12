@@ -32,7 +32,7 @@ Description
 by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
-curvature of heights vs contour value) is reported as well. This feature may be used with **grdfilter**
+curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
 in designing an Optimal Robust Separator [*Wessel*, 1998]. 
 
 Required Arguments

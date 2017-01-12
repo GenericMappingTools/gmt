@@ -20,7 +20,7 @@ Synopsis
 [ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
-[ |-N|\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**]
+[ |-N|\ [+\|\ *name\_template*\ \|\ *name*] ] [ **-O**]
 [ |-R|\ **a**\ \|\ *w/e/s/n* ]
 [ |-S|\ **c**\ \|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]

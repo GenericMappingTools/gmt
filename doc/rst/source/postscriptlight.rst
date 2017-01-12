@@ -100,9 +100,13 @@ apply. Nine different values are possible, as shown schematically in
 this diagram:
 
     9------------10----------- 11
+
     \|                         \|
+
     5             6             7
+
     \|                          \|
+
     1------------ 2------------ 3
 
 The box represents the text or image. E.g., to plot a text string with
@@ -796,7 +800,7 @@ and others and issue calculations with **PSL_setcommand**.
 *\*xpath*, **double** *\*ypath*, **long** *\*np*, **long** *nseg*,
 **void** *\*arg1*\, **void** *\*arg2*\, **char** *\*text*\ [],
 **double** *angle*\ [], **long** *n_per_seg*\ [], **double** *fontsize,
-***long** *justify*, **double** *offset*\ [], **long** *mode*)
+**long** *justify*, **double** *offset*\ [], **long** *mode*)
 
     Please text along one or more path segments. The function does
     different things depending on the bit flags in *mode*. A key

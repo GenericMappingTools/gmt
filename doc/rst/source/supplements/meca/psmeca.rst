@@ -42,8 +42,8 @@ Description
 
 **psmeca** reads data values from *files* [or standard input] and
 generates PostScript code that will plot focal mechanisms on a map.
-Most options are the same as for **psxy**. The PostScript code is
-written to standard output.
+Most options are the same as for :doc:`psxy </psxy>`. The PostScript
+code is written to standard output.
 
 Required Arguments
 ------------------

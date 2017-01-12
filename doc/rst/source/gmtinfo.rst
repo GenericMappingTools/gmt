@@ -120,7 +120,7 @@ Optional Arguments
 
 **-S**\ [**x**][**y**]
     Add extra space for error bars. Useful together with **-I** option
-    and when later plotting with **psxy** **-E**. **-Sx** leaves space
+    and when later plotting with :doc:`psxy` **-E**. **-Sx** leaves space
     for horizontal error bars using the values in third
     (2) column. **-Sy** leaves space for vertical error
     bars using the values in third (2) column. **-S**
@@ -218,5 +218,6 @@ See Also
 --------
 
 :doc:`gmt`,
-:doc:`gmtconvert`
+:doc:`gmtconvert`,
+:doc:`psxy`,
 

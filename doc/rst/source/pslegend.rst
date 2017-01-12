@@ -154,10 +154,11 @@ Pslegend Codes
     which can be used for the color look-up via the given CPT *cptname*.
     You may switch to other *cptname* by repeating this command.
 **B** *cptname offset height* [ *optional arguments* ]
-    The **B** record will plot a horizontal color bar, **psscale**-style
+    The **B** record will plot a horizontal color bar, :doc:`psscale`-style
     in the middle, starting at *offset* from the left edge, and of the
-    given *height*. You may add any additional **psscale** options as well.
-    Any of the modifiers [+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]] may be
+    given *height*. You may add any additional :doc:`psscale` options as well.
+    Any of the modifiers
+    [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
     **-B** **-I** **-L** **-M** **-N** **-S** **-Z** and **-p** may be appended as
     *optional arguments* at the end of the record.
@@ -165,7 +166,7 @@ Pslegend Codes
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
-    a named color, or an indirect color via z=*value* (requires the **A** command).
+    a named color, or an indirect color via z=\ *value\* (requires a prior **A** code as well).
     Use **-** to reset to default color.
 **D** [*offset*] *pen* [**-**\ \|\ **+**\ \|\ **=**]
     The **D** record results in a horizontal line with specified *pen*
@@ -180,7 +181,7 @@ Pslegend Codes
     [Default places a quarter line-spacing both before and after the line].
 **F** *fill1 fill2 ... filln*
     Specify fill (color of pattern) for cells.  Alternatively, you can
-    specify an indirect color via z=*value* (requires the **A** command).
+    specify an indirect color via z=\ *value* (requires a prior **A** code).
     If only *fill1* is given
     then it is used to fill the entire row, otherwise give one fill value
     for each active column (see **N**).  If any fill is - then no fill
@@ -244,13 +245,13 @@ Pslegend Codes
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
-    may be specified indirectly via z=*value* and the color is assigned
-    vi the CPT look-up (requires the **A** command).
+    may be specified indirectly via z=\ *value* and the color is assigned
+    vi the CPT look-up (requires a prior **A** code).
     When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
     can also be given as a justification code L, C, R which justifies the
     symbol with respect to the current column.  If no arguments are given
-    to **S** then we simply skip to the next column.  Three **psxy**
+    to **S** then we simply skip to the next column.  Three :doc:`psxy`
     symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
@@ -359,7 +360,7 @@ Windows Remarks
 Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
 script you need to repeat it (%%); hence the font switching mechanism
-(@%*font*\ % and @%%) may require twice the number of percent signs.
+(@%\ *font*\ % and @%%) may require twice the number of percent signs.
 This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pslegend** do not need
 such duplication.

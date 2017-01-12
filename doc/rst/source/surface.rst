@@ -54,7 +54,7 @@ effects. Experience suggests T ~ 0.25 usually looks good for potential
 field data and T should be larger (T ~ 0.35) for steep topography data.
 T = 1 gives a harmonic surface (no maxima or minima are possible except
 at control data points). It is recommended that the user pre-process the
-data with **blockmean**, **blockmedian**, or **blockmode** to avoid
+data with :doc:`blockmean`, :doc:`blockmedian`, or :doc:`blockmode` to avoid
 spatial aliasing and eliminate redundant data. You may impose lower
 and/or upper bounds on the solution. These may be entered in the form of
 a fixed value, a grid with values, or simply be the minimum/maximum
@@ -223,13 +223,13 @@ Bugs
 ----
 
 **surface** will complain when more than one data point is found for any
-node and suggest that you run **blockmean**, **blockmedian**, or
-:doc:`blockmode` first. If you did run **blockm\*** and still get this
+node and suggest that you run :doc:`blockmean`, :doc:`blockmedian`, or
+:doc:`blockmode` first. If you did run any of these and still get this
 message it usually means that your grid spacing is so small that you
-need more decimals in the output format used by **blockm\***. You may
+need more decimals in the output format. You may
 specify more decimal places by editing the parameter
 **FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
-**blockm\***, or choose binary input and/or output using single or
+these filters, or choose binary input and/or output using single or
 double precision storage.
 
 Note that only gridline registration is possible with **surface**. If

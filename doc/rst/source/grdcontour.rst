@@ -16,7 +16,7 @@ Synopsis
 **grdcontour** *grid* |-C|\ [+]\ *cont_int*\ \|\ *cpt*
 |-J|\ *parameters* [ |-A|\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ |-D|\ *<template>* ]
+[ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] [ |-L|\ *low/high* ]
@@ -29,7 +29,7 @@ Synopsis
 [ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [*factor*\ [/*shift*]][**p**] ]
+[ |-Z|\ [\*factor*\ [/*offset*]][**p**] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-do| ]
@@ -113,7 +113,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *<template>* 
+**-D**\ *template* 
     Dump contours as data line segments; no plotting takes place.
     Append filename template which may contain C-format specifiers.
     If no filename template is given we write all lines to stdout.
@@ -221,8 +221,8 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [*factor*\ [/*shift*]][**p**]
-    Use to subtract *shift* from the data and multiply the results by
+**-Z**\ [\ *factor*\ [/*offset*]][**p**]
+    Use to subtract *offset* from the data and multiply the results by
     *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append
     **p** to indicate that this grid file contains z-values that are

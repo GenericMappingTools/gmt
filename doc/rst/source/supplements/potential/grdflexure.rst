@@ -47,7 +47,7 @@ Required Arguments
     will be set and loaded for each time step.  The load times thus
     coincide with the times given via **-T** (but not all times need
     to have a corresponding file).  Alternatively, give *topogrd* as
-    =*flist*, where *flist* is an ASCII table with one *topogrd* filename
+    =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
     and load time per record.  These load times can be different from
     the evaluation times given via **-T**.  For load time format, see
     **-T**.

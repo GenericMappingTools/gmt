@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ color
+**-E**\ *color*
     Selects filling of symbols for stations in extensive quadrants. Set
     the color [Default is 250]. If **-E**\ *color* is the same as
     **-F**\ *color*, use **-e** to outline.

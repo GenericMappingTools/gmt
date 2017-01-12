@@ -91,7 +91,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT or specify -Ccolor1,color2[,color3,...]
+    Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...]
     to build a linear continuous CPT from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).

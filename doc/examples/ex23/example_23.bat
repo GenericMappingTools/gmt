@@ -34,22 +34,7 @@ gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 -B+t"Distances from $n
 gmt grdcontour dist.nc -A1000+v+ukm+fwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> %ps%
 
 REM For each of the cities, plot great circle arc to Rome with gmt psxy
-
-echo 105.87 21.02 > pts.d
-echo %lon% %lat% >> pts.d
-gmt psxy -R -J -O -K -Wthickest,red pts.d >> %ps%
-echo 282.95 -12.1 > pts.d
-echo %lon% %lat% >> pts.d
-gmt psxy -R -J -O -K -Wthickest,red pts.d >> %ps%
-echo 178.42 -18.13 > pts.d
-echo %lon% %lat% >> pts.d
-gmt psxy -R -J -O -K -Wthickest,red pts.d >> %ps%
-echo 237.67 47.58 > pts.d
-echo %lon% 	%lat% >> pts.d
-gmt psxy -R -J -O -K -Wthickest,red pts.d >> %ps%
-echo 28.20 -25.75 > pts.d
-echo %lon% %lat% >> pts.d
-gmt psxy -R -J -O -K -Wthickest,red pts.d >> %ps%
+gmt psxy -R -J -O -K -Wthickest,red -Fr%lon%/%lat% cities.d >> %ps%
 
 REM Plot red squares at cities and plot names:
 gmt psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> %ps%

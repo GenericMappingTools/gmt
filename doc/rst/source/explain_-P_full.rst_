@@ -2,6 +2,6 @@
 
 **-P**
     Select "Portrait" plot orientation [Default is "Landscape"; see
-    **gmt.conf** or **gmtset** to change the **PS_PAGE_ORIENTATION**
+    :doc:`gmt.conf` or :doc:`gmtset` to change the **PS_PAGE_ORIENTATION**
     parameter, or supply **-**\ **-PS_PAGE_ORIENTATION=**\ *orientation* on the
     command line].

@@ -229,11 +229,11 @@ Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
 271869*, 10pp, Central Intelligence Agency, Washington, DC.
 
 Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
-Hydrograph. Rev., LXVII(1), 27-35.*
+Hydrograph. Rev., LXVII(1)*, 27-35.
 
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
-101(B4)*, 8741-8743.*
+101(B4)*, 8741-8743.
 
 See Also
 --------

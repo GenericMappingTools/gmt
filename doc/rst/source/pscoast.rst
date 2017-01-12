@@ -24,7 +24,7 @@ Synopsis
 [ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ *river*\ [/\ *pen*] ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
-[ |-L|\ *ruler* ]
+[ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]
 [ |-O| ]
