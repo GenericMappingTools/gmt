@@ -14,8 +14,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **dimfilter** *input_file.nc* |-D|\ *distance_flag*
-|-F|\ *<filtertype><width>*\ [*mode*] |-G|\ *output_file.nc*
-|-N|\ *<filtertype><n_sectors>* [ |-Q|\ *cols* ]
+|-F|\ **x**\ *width*\ [*mode*] |-G|\ *output_file.nc*
+|-N|\ **x**\ *sectors* [ |-Q|\ *cols* ]
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
@@ -73,9 +73,9 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ *<filtertype><width>*\ [*mode*]
+**-F**\ **x**\ *width*\ [*mode*]
     Sets the primary filter type. Choose among convolution and
-    non-convolution filters. Append the filter code followed by the full
+    non-convolution filters. Append the filter code **x** followed by the full
     diameter *width*. Available convolution filters are:
 
     (**b**) Boxcar: All weights are equal.
@@ -95,9 +95,9 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *<filtertype><n_sectors>*
-    Sets the secondary filter type and the number of bow-tie sectors.
-    *n\_sectors* must be integer and larger than 0. When *n\_sectors* is
+**-N**\ **x**\ *sectors*
+    Sets the secondary filter type **x** and the number of bow-tie sectors.
+    *sectors* must be integer and larger than 0. When *sectors* is
     set to 1, the secondary filter is not effective. Available secondary
     filters are:
 

@@ -1771,14 +1771,14 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	 * Items not encountered are left as -1.
 	 */
 
-	unsigned int j, n_d, n_m, n_s, n_x, n_dec, order, error = 0;
+	unsigned int j, n_d, n_m, n_s, n_x, n_dec, n_period, order, error = 0;
 	int sequence[3], last, i_signed, n_delim;
 	size_t i1, i;
 	bool big_to_small;
 
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 
-	n_d = n_m = n_s = n_x = n_dec = n_delim = 0;
+	n_d = n_m = n_s = n_x = n_dec = n_delim = n_period = 0;
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = -1;
 
@@ -1836,6 +1836,7 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				n_s++;
 				break;
 			case '.':	/* Decimal point for seconds? */
+				n_period++;
 				if (text[i+1] == 'x')
 					n_dec++;
 				else {	/* Must be a delimiter */
@@ -1887,6 +1888,8 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Unacceptable dmmss template %s\n", text);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
+	else if (n_period > 1)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "WARNING: Multiple periods in dmmss template %s is likely to lead to confusion\n", text);
 	return (GMT_NOERROR);
 }
 
@@ -2626,7 +2629,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			}
 			gmtio_alloc_ogr_seg (GMT, T->segment[seg], T->ogr->n_aspatial);	/* Copy over any feature-specific values */
 			T->segment[seg]->ogr->pol_mode = GMT_IS_PERIMETER;
-			gmt_set_seg_minmax (GMT, T->segment[seg]);	/* Make sure min/max are set per polygon */
+			gmt_set_seg_minmax (GMT, T->ogr->geometry, T->segment[seg]);	/* Make sure min/max are set per polygon */
 
 		}
 		/* OK, they are all polygons.  Determine any polygon holes: if a point is fully inside another polygon (not on the edge) */
@@ -4943,6 +4946,7 @@ void gmt_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	 * true of course. */
 	int answer;
 
+	if ((GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) == 0 || S->n_columns < 2) return;	/* No can do */
 	if ((answer = gmtlib_determine_pole (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == -99) return;	/* No good */
 	if (answer) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
 		S->pole = (answer < 0) ? -1 : +1;
@@ -6182,7 +6186,7 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 }
 
 /*! . */
-void gmt_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+void gmt_set_seg_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT_DATASEGMENT *S) {
 	/* Determine the min/max values for each column in the segment */
 	uint64_t row, col;
 
@@ -6201,10 +6205,12 @@ void gmt_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 			}
 		}
 	}
+	if (geometry & GMT_IS_POLY)
+		gmt_set_seg_polar (GMT, S);
 }
 
 /*! . */
-void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T) {
+void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT_DATATABLE *T) {
 	/* Update the min/max of all segments and the entire table */
 	uint64_t seg, col;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -6220,7 +6226,7 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T) {
 	T->n_records = 0;
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
-		gmt_set_seg_minmax (GMT, S);
+		gmt_set_seg_minmax (GMT, geometry, S);
 		if (S->n_rows == 0) continue;
 		for (col = 0; col < T->n_columns; col++) {
 			if (S->min[col] < T->min[col]) T->min[col] = S->min[col];
@@ -6245,7 +6251,7 @@ void gmtlib_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	D->n_records = D->n_segments = 0;
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
-		gmt_set_tbl_minmax (GMT, T);
+		gmt_set_tbl_minmax (GMT, D->geometry, T);
 		for (col = 0; col < D->n_columns; col++) {
 			if (T->min[col] < D->min[col]) D->min[col] = T->min[col];
 			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
@@ -7118,8 +7124,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		}
 		else {	/* OK to populate segment and increment counters */
 			gmtlib_assign_segment (GMT, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
-			gmt_set_seg_minmax (GMT, T->segment[seg]);	/* Set min/max */
-			if (poly && (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO)) gmt_set_seg_polar (GMT, T->segment[seg]);
+			gmt_set_seg_minmax (GMT, *geometry, T->segment[seg]);	/* Set min/max */
 			T->n_records += row;		/* Total number of records so far */
 			T->segment[seg]->id = seg;	/* Internal segment number */
 		}

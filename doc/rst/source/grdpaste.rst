@@ -25,8 +25,8 @@ Description
 **grdpaste** will combine *file_a.nc* and *file_b.nc* into
 *outfile.nc* by pasting them together along their common edge. Files
 *file_a.nc* and *file_b.nc* must have the same dx, dy and have one
-edge in common. If in doubt, check with **grdinfo** and use **grdcut**
-and/or **grdsample** if necessary to prepare the edge joint. Note: For
+edge in common. If in doubt, check with :doc:`grdinfo` and use :doc:`grdcut`
+and/or :doc:`grdsample` if necessary to prepare the edge joint. Note: For
 geographical grids, you may have to use **-f** to handle periodic longitudes
 unless the input grids are properly recognized as such via their meta-data.
 

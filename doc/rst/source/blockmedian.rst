@@ -80,7 +80,7 @@ Optional Arguments
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
     **-Eb** which will output
-    *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,*w*], where *q25* and
+    *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
     *w* output.
 **-E**\ **r**\ \|\ **s**\ [**-**\ ]
@@ -113,13 +113,13 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**i**\ \|\ **o**][**+s**]
-    Weighted modifier[s]. Unweighted input and output has 3 columns
+    Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
-    Weights can be used in input to construct weighted mean values in
-    blocks. Weight sums can be reported in output for later combining
+    Weights can be used in input to construct weighted median values for each
+    block. Weight sums can be reported in output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, **-Wo** for weighted output only. [Default uses
-    unweighted i/o]. If your weights are actually uncertainties (sigma)
+    input only, and **-Wo** for weighted output only. [Default uses
+    unweighted i/o]. If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
@@ -141,8 +141,8 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. |Add_nodereg| replace:: 
-    Each block is the locus of points nearest the grid value location. For example, with
-    **-R**\ 10/15/10/15 and **-I**\ 1: with the **-r** option 10 <=
+    Each block is the locus of points nearest the grid value location. Consider an example with
+    **-R**\ 10/15/10/15 and **-I**\ 1: With the **-r** option, 10 <=
     (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_

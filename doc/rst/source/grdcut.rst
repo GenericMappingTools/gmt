@@ -29,9 +29,9 @@ Description
 **grdcut** will produce a new *outgrid* file which is a subregion of
 *ingrid*. The subregion is specified with **-R** as in other programs;
 the specified range must not exceed the range of *ingrid* (but see **-N**).
-If in doubt, run **grdinfo** to check range. Alternatively, define the subregion
+If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
-given point. Complementary to **grdcut** there is **grdpaste**, which
+given point. Complementary to **grdcut** there is :doc:`grdpaste`, which
 will join together two grid files along a common edge. 
 
 Required Arguments
@@ -99,7 +99,7 @@ Optional Arguments
 Examples
 --------
 
-Suppose you have used **surface** to grid ship gravity in the region
+Suppose you have used :doc:`surface` to grid ship gravity in the region
 between 148E - 162E and 8N - 32N, and you do not trust the gridding near
 the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:
 
@@ -127,4 +127,5 @@ See Also
 :doc:`gmt`,
 :doc:`grdclip`,
 :doc:`grdpaste`,
-:doc:`grdinfo`
+:doc:`grdinfo`,
+:doc:`surface`

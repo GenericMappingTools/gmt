@@ -4,7 +4,7 @@
 #
 # Purpose:      Illustrate Antarctica and stereographic projection
 # GMT modules:  makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy
-# Unix progs:   [curl grdreformat]
+# Unix progs:   [curl grdconvert]
 #
 ps=example_42.ps
 
@@ -12,7 +12,7 @@ gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p PROJ_ELLIPSOID WGS-84 FORMAT_GEO_M
 # Data obtained via website and converted to netCDF thus:
 # curl http://www.antarctica.ac.uk//bas_research/data/access/bedmap/download/bedelev.asc.gz
 # gunzip bedelev.asc.gz
-# grdreformat bedelev.asc BEDMAP_elevation.nc=ns -V
+# grdconvert bedelev.asc BEDMAP_elevation.nc=ns -V
 gmt makecpt -Cearth -T-7000/4000 > t.cpt
 gmt grdimage -Ct.cpt BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > $ps
 gmt pscoast -R-180/180/-90/-60 -Js0/-90/-71/1:60000000 -Bafg -Di -W0.25p -O -K >> $ps

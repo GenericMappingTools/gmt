@@ -30,7 +30,7 @@
 
     but you may also split this into two separate invocations for clarity, i.e.,
 
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or

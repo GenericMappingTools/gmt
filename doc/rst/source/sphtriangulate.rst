@@ -138,7 +138,7 @@ diagram via :doc:`psxy`, use
 
    ::
 
-    gmt sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -B0g30 | gv -
+    gmt sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -Bag | gv -
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.d and save the area of each triangle

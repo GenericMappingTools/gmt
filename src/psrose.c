@@ -128,7 +128,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|<modefile>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|<modefile>]] [-D] [-F] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
@@ -141,12 +141,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
 	GMT_Option (API, "B-");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
+	if (gmt_M_showusage (API)) {
+		GMT_Message (API, GMT_TIME_NONE, "\t   The scale bar length is set to the radial gridline spacing.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modefile> file.  To use mean direction, choose -Cm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute and report statistics - no plot is created.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is West/East/South/North (depending on GMT_LANGUAGE)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W/90E/-/0 for half-circle].\n");
@@ -162,14 +165,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
 	r = (API->GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if -Sn is used.\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit], r);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the plot radius of the unit circle in %s [%g].\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit], r);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to normalize data, i.e., divide all radii (or bin counts) by the maximum radius (or count).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This implies both <azimuth> and <azimuth> + 180 will be counted as inputs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Wv<pen> to set a different pen for the vector (requires -C) [Same as rose outline].\n");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting or use -Zu to give each item unit weight.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting; use -Zu to set input radii to 1.\n");
 	GMT_Option (API, "c");
 	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
 	GMT_Option (API, "bi2,di,h,i,p,s,t,.");
@@ -397,7 +402,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (Ctrl->A.rose) windrose = false;
 	sector_plot = (Ctrl->A.inc > 0.0);
 	if (sector_plot) windrose = false;	/* Draw rose diagram instead of sector diagram */
-	if (!Ctrl->S.normalize) Ctrl->N.active = false;	/* Only do this is data is normalized for length also */
+	if (!Ctrl->S.normalize) Ctrl->N.active = false;	/* Only do this if data is normalized for length also */
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (Ctrl->T.active) one_or_two = 2.0;
 	half_bin_width = Ctrl->D.active * Ctrl->A.inc * 0.5;
@@ -549,8 +554,50 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
+			double out[7];
+			unsigned int col_type[2];
+			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
+			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 7U)) != GMT_NOERROR) {
+				gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, azimuth);
+				gmt_M_free (GMT, length);
+				Return (error);
+			}
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+				gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, azimuth);
+				gmt_M_free (GMT, length);
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
+				gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, azimuth);
+				gmt_M_free (GMT, length);
+				Return (API->error);	/* Enables data output and sets access mode */
+			}
+			sprintf (format, "n\tmean_az\tmean_r\tmean_resultant_length\tmax\tscaled_mean_r\tlinear_length_sum");
+			out[0] = n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
+			out[4] = max;	out[5] = mean_radius;	out[6] = total;
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+				gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, azimuth);
+				gmt_M_free (GMT, length);
+				Return (API->error);
+			}
+			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2U, unsigned int);	/* Restore 2 current output col types */
 			gmt_M_free (GMT, sum);
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
@@ -850,7 +897,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		else {
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 			PSL_plottext (PSL, 0.0, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.s, 0.0, PSL_TC, form);
-			if (!Ctrl->F.active) {	/* Draw scale bar */
+			if (!Ctrl->F.active && GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {	/* Draw scale bar but only if x-grid interval is set */
 				PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
 				PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
 				PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);

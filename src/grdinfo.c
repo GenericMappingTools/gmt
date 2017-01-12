@@ -683,7 +683,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (API->mode) {	/* External interface, return as data with no leading text */
 			/* w e s n z0 z1 */
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
-			out[YLO] = global_xmin;		out[YHI] = global_xmax;
+			out[YLO] = global_ymin;		out[YHI] = global_ymax;
 			out[ZLO] = global_zmin;		out[ZHI] = global_zmax;
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 		}

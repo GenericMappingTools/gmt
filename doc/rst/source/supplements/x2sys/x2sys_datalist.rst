@@ -16,7 +16,7 @@ Synopsis
 **x2sys_datalist** *track(s)* **-T**\ *TAG* 
 [ |-A| ]
 [ |-E| ]
-[ |-F|\ *name1*,\ *name2*,...) ]
+[ |-F|\ *name1*,\ *name2*,... ]
 [ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
 [ |SYN_OPT-R| ]
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *name1*,\ *name2*,...)
+**-F**\ *name1*,\ *name2*,...
     Give a comma-separated sub-set list of column names defined in the
     definition file. [Default selects all data columns].
 

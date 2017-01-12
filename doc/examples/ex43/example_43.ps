@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14419 [64-bit] Document from psbasemap
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.2_r17374 [64-bit] Document from psbasemap
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 29 14:12:17 2015
+%%CreationDate: Tue Jan  3 23:53:37 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1800 4800 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0.01/1e6/0.1/1e5 -JX6il -P -Ba1pf3 '-Bx+lLog@-10@- body weight (kg)' '-By+lLog@-10@- brain weight (g)' -BWSne+glightblue -K -X1.5i -Y4i
-%%PROJ: xy 0.01000000 1000000.00000000 0.10000000 100000.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psbasemap -R0.01/1e6/0.1/1e5 -JX6il -P -Ba1pf3 '-Bx+lLog@-10@- body weight (kg)' '-By+lLog@-10@- brain weight (g)' -BWSne+glightblue -K -X1.5i -Y4i
+%@PROJ: xy 0.01000000 1000000.00000000 0.10000000 100000.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1088,8 +1085,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -L+yt -Glightgoldenrod
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -L+yt -Glightgoldenrod
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1108,8 +1105,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0.01/1e6/0.1/1e5 -JX6il -O -K -F+f12p+jRM -Dj0.15i
-%%PROJ: xy 0.01000000 1000000.00000000 0.10000000 100000.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0.01/1e6/0.1/1e5 -JX6il -O -K -F+f12p+jRM -Dj0.15i
+%@PROJ: xy 0.01000000 1000000.00000000 0.10000000 100000.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1135,8 +1132,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-2/6/-1/5 -JX6i -O -K -L+d+p0.25p,- -Gcornsilk1 rls_line.txt
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-2/6/-1/5 -JX6i -O -K -L+d+p0.25p,- -Gcornsilk1 rls_line.txt
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1214,8 +1211,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -W3p
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -W3p
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1231,8 +1228,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-2/6/-1/5 -JX6i -O -K ls_line.txt -W1p,-
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-2/6/-1/5 -JX6i -O -K ls_line.txt -W1p,-
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1250,8 +1247,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-2/6/-1/5 -JX6i -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-2/6/-1/5 -JX6i -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -1311,8 +1308,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-2/6/-1/5 -JX6i -O -K -F+f8p+jCM -B0
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext A.txt -R-2/6/-1/5 -JX6i -O -K -F+f8p+jCM+r1 -B0
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -1384,8 +1381,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pslegend -DjBR+w2.5i+o0.4c -R-2/6/-1/5 -JX6i -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p
-%%PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pslegend -DjBR+w2.5i+o0.4c -R-2/6/-1/5 -JX6i -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p
+%@PROJ: xy -2.00000000 6.00000000 -1.00000000 5.00000000 -2.000 6.000 -1.000 5.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1406,73 +1403,73 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6/0/6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
-%%PROJ: xy 0.00000000 6.00000000 0.00000000 6.00000000 0.000 6.000 0.000 6.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6/0/6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
+%@PROJ: xy 0.00000000 6.00000000 0.00000000 6.00000000 0.000 6.000 0.000 6.000 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1500 2294 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1500 2294 M 300 F4
 (Index of Animals) bc Z
-105 2000 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-133 F0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+105 2000 M 133 F0
 (1.) bc Z
-277 2000 M (Mountain beaver) Z
+277 2000 M (Mountain beaver) bl Z
 1605 2000 M (2.) bc Z
-1777 2000 M (Cow) Z
+1777 2000 M (Cow) bl Z
 105 1853 M (3.) bc Z
-277 1853 M (Gray wolf) Z
+277 1853 M (Gray wolf) bl Z
 1605 1853 M (4.) bc Z
-1777 1853 M (Goat) Z
+1777 1853 M (Goat) bl Z
 105 1707 M (5.) bc Z
-277 1707 M (Guinea pig) Z
+277 1707 M (Guinea pig) bl Z
 1605 1707 M (6.) bc Z
-1777 1707 M (Diplodocus) Z
+1777 1707 M (Diplodocus) bl Z
 105 1560 M (7.) bc Z
-277 1560 M (Asian elephant) Z
+277 1560 M (Asian elephant) bl Z
 1605 1560 M (8.) bc Z
-1777 1560 M (Donkey) Z
+1777 1560 M (Donkey) bl Z
 105 1413 M (9.) bc Z
-277 1413 M (Horse) Z
+277 1413 M (Horse) bl Z
 1605 1413 M (10.) bc Z
-1777 1413 M (Potar monkey) Z
+1777 1413 M (Potar monkey) bl Z
 105 1267 M (11.) bc Z
-277 1267 M (Cat) Z
+277 1267 M (Cat) bl Z
 1605 1267 M (12.) bc Z
-1777 1267 M (Giraffe) Z
+1777 1267 M (Giraffe) bl Z
 105 1120 M (13.) bc Z
-277 1120 M (Gorilla) Z
+277 1120 M (Gorilla) bl Z
 1605 1120 M (14.) bc Z
-1777 1120 M (Human) Z
+1777 1120 M (Human) bl Z
 105 973 M (15.) bc Z
-277 973 M (African elephant) Z
+277 973 M (African elephant) bl Z
 1605 973 M (16.) bc Z
-1777 973 M (Triceratops) Z
+1777 973 M (Triceratops) bl Z
 105 827 M (17.) bc Z
-277 827 M (Rhesus monkey) Z
+277 827 M (Rhesus monkey) bl Z
 1605 827 M (18.) bc Z
-1777 827 M (Kangaroo) Z
+1777 827 M (Kangaroo) bl Z
 105 680 M (19.) bc Z
-277 680 M (Hamster) Z
+277 680 M (Hamster) bl Z
 1605 680 M (20.) bc Z
-1777 680 M (Mouse) Z
+1777 680 M (Mouse) bl Z
 105 533 M (21.) bc Z
-277 533 M (Rabbit) Z
+277 533 M (Rabbit) bl Z
 1605 533 M (22.) bc Z
-1777 533 M (Sheep) Z
+1777 533 M (Sheep) bl Z
 105 387 M (23.) bc Z
-277 387 M (Jaguar) Z
+277 387 M (Jaguar) bl Z
 1605 387 M (24.) bc Z
-1777 387 M (Chimpanzee) Z
+1777 387 M (Chimpanzee) bl Z
 105 240 M (25.) bc Z
-277 240 M (Brachiosaurus) Z
+277 240 M (Brachiosaurus) bl Z
 1605 240 M (26.) bc Z
-1777 240 M (Rat) Z
+1777 240 M (Rat) bl Z
 105 93 M (27.) bc Z
-277 93 M (Mole) Z
+277 93 M (Mole) bl Z
 1605 93 M (28.) bc Z
-1777 93 M (Pig) Z
+1777 93 M (Pig) bl Z
 %%EndObject
 -4011 -189 T
 %%EndObject
@@ -1482,8 +1479,8 @@ O0
 0 -3480 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Y-2.9i -B+glightgoldenrod
-%%PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Y-2.9i -B+glightgoldenrod
+%@PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -1498,8 +1495,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -K -Gcornsilk1 -W0.25p,-
-%%PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -K -Gcornsilk1 -W0.25p,-
+%@PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -1525,8 +1522,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -K -Sb1ub0 -W0.25p -Ct.cpt
-%%PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -K -Sb1ub0 -W0.25p -Ct.cpt
+%@PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -1586,8 +1583,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Bafg100 '-Bx+lAnimal index number' -By+lz-zcore -BWSne
-%%PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Bafg100 '-Bx+lAnimal index number' -By+lz-zcore -BWSne
+%@PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -1764,8 +1761,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -T
-%%PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0.5/28.5/-10/4 -JX6i/2i -O -T
+%@PROJ: xy 0.50000000 28.50000000 -10.00000000 4.00000000 0.500 28.500 -10.000 4.000 +xy
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin

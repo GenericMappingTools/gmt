@@ -141,7 +141,7 @@ gradients to the range [-1, 1], you will get correct shading of 68% of
 your data, while 16% of them will be clipped to -1 and 16% of them
 clipped to +1. If this makes too much of the image too light or too
 dark, you should take the output of **grdhisteq** and rescale it using
-**grdmath** and multiplying by something less than 1.0, to shrink the
+:doc:`grdmath` and multiplying by something less than 1.0, to shrink the
 range of the values, thus bringing more than 68% of the image into the
 range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 

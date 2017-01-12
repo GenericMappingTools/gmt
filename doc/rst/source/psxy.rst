@@ -104,7 +104,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT or specify -Ccolor1,color2[,color3,...]
+    Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...]
     to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
@@ -397,6 +397,18 @@ Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See Appendix
 :ref:`App-custom_symbols` for macro definitions.
+
+Polar Caps
+----------
+
+**psxy** will automatically determine if a closed polygon is containing
+a geographic pole, i.e., being a polar cap.  Such polygons requires special
+treatment under the hood to ensure proper filling.  Many tools such
+as GIS packages are unable to handle polygons covering a pole and some
+cannot handle polygons crossing the Dateline.  They work around this
+problem by splitting polygons into a west and east polygon or inserting
+artificial helper lines that makes a cut into the pole and back.  Such
+doctored polygons may be misrepresented in GMT.
 
 See Also
 --------

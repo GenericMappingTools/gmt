@@ -81,7 +81,6 @@ struct PSSOLAR_CTRL {
 	} T;
 	struct PSSOL_W {		/* -W<pen> */
 		bool active;
-		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
@@ -146,6 +145,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   c means civil twilight.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n means nautical twilight.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a means astronomical twilight.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute terminators\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X,c,o,p");
@@ -239,13 +240,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
-				j = 0;
-				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
-				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
-				if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;

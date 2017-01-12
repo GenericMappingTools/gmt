@@ -3,9 +3,11 @@ ASCII Format Precision
 
 The ASCII output formats of numerical data are controlled by parameters
 in your :doc:`gmt.conf` file. Longitude and latitude are formatted
-according to :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`, whereas other values are formatted
+according to :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`, absolute time is
+under the control of :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and
+:ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`, whereas general floating point values are formatted
 according to :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`. Be aware that the format in effect
-can lead to loss of precision in the output, which can lead to various
+can lead to loss of precision in ASCII output, which can lead to various
 problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (**-bo** if available) or
 specify more decimals using the :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` setting.

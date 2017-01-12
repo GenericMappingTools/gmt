@@ -54,6 +54,28 @@
 #define ADJ_GR	2
 #define ADJ_MG	3
 
+/* Carter adjustment options */
+#define CT_U_MINUS_DEPTH				1
+#define CT_U_MINUS_CARTER				2
+#define CT_UCORR_MINUS_CARTER_TU		4
+#define CT_UCORR_CARTER_TU_MINUS_DEPTH	8
+
+/* FAA adjustment options */
+#define GR_FAA_STORED					1
+#define GR_OBS_MINUS_NGRAV				2
+#define GR_OBS_PLUS_EOT_MINUS_NGRAV		4
+#define GR_OBS_PLUS_CEOT_MINUS_NGRAV	8
+
+/* Depth adjustment options */
+#define DP_DEPTH_STORED				1
+#define DP_TWT_X_V					2
+#define DP_TWT_X_V_MINUS_CARTER		4
+
+/* Mag adjustment options */
+#define MG_MAG_STORED			1
+#define MG_MTF1_MINUS_IGRF		2
+#define MG_MTF2_MINUS_IGRF		4
+
 #define N_D	0	/* These are indices for -N subsets */
 #define N_S	1
 #define Q_A	0	/* These are indices for -Q subsets */
@@ -64,12 +86,12 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	/* active is true if the option has been activated */
 	struct MGD77LIST_A {	/* -A */
 		bool active;
-		int code[4];
 		bool force;
 		bool cable_adjust;
 		bool cable_adjust_coord;
-		int GF_version;
 		bool fake_times;
+		int code[4];
+		int GF_version;
 		double sound_speed;
 		double sensor_offset;
 	} A;
@@ -242,10 +264,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  else at least ONE of the tests must pass for output to take place.  When using operators\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  involving characters <, >, and |, put entire argument to -F in single quotes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Finally, for MGD77+ files you may optionally append : followed by one or more comma-\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  separated -+|-<col> terms.  This compares specific bitflags for each listed column\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  separated -+|-<col> terms.  This compares specific E77 bitflags for each listed column\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  + means bit must be 1, - means it must be 0.  All bit tests given must be passed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  By default, MGD77+ files with error bit flags will use the flags to suppress bad data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  Turn this behavior off by append : with no arguments.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Turn this behavior off by append : with no arguments.  For controlling systematic\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  corrections encoded in MGD77+ files, see -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<code>[,<v>] Adjust field carter. <v>, the sound velocity in water, is taken from\n");
@@ -278,7 +301,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       m1 return mag as stored in file [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       c<offset>[unit] Apply cable tow distance correction to mtf1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[unit] Apply cable tow distance correction to mtf1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
@@ -316,6 +339,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m or e to indicate the MGD77 data set or the extended columns set [Default is both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For controlling application of point bit flags, see -F and the : modifier discussion.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set weight for these data [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
@@ -840,6 +864,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	select_option = MGD77_RESET_CONSTRAINT | MGD77_RESET_EXACT;	/* Make sure these start at zero */
 	if (Ctrl->E.active) select_option |= MGD77_SET_ALLEXACT;	/* Sets all columns listed as "must be present" */
 	MGD77_Select_Columns (GMT, Ctrl->F.flags, &M, select_option);	/* This is the list of columns the user ultimately wants output */
+	if (M.time_format == GMT_IS_RELTIME) M.adjust_time = true;
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
 	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidentally access dvalue[z_col] further down in the loop */
 	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidentally access dvalue[m_col] further down in the loop */
@@ -860,36 +885,36 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
-	if (Ctrl->A.code[ADJ_GR] & 8 || auxlist[MGD77_AUX_ET].requested) {	/* Eotvos needs heading and speed */
+	if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_CEOT_MINUS_NGRAV || auxlist[MGD77_AUX_ET].requested) {	/* Computing Eotvos requires heading and speed */
 		auxlist[MGD77_AUX_AZ].requested = true;
 		auxlist[MGD77_AUX_SP].requested = true;
 	}
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
-	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
+	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED || Ctrl->A.code[ADJ_DP] & DP_TWT_X_V_MINUS_CARTER || Ctrl->A.code[ADJ_CT] > CT_U_MINUS_DEPTH || Ctrl->A.code[ADJ_GR] > GR_FAA_STORED || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested \
-		|| auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested || Ctrl->A.code[ADJ_MG] > 1);
+		|| auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED);
 	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxiliary values) */
 	if (need_distances || need_lonlat) {	/* Must make sure we get lon,lat if they are not already requested */
 		 if (MGD77_Get_Column (GMT, "lat", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lat"), n_sub++;	/* Append lat to requested list */
 		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
 	}
 	if ((Ctrl->D.active || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
-	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] < 3) || (Ctrl->A.code[ADJ_DP] > 1));
+	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] <= CT_U_MINUS_CARTER) || (Ctrl->A.code[ADJ_DP] > DP_DEPTH_STORED));
 	if (need_twt) {	/* Want to estimate Carter corrections */
 		 if (MGD77_Get_Column (GMT, "twt", &M) == MGD77_NOT_SET) strcat (fx_setting, ",twt"), n_sub++;	/* Must append twt to requested list */
 		MGD77_carter_init (GMT, &Carter);	/* Initialize Carter machinery */
 	}
-	need_depth = ((Ctrl->A.code[ADJ_CT] & (1 | 3 | 8)) || (Ctrl->A.code[ADJ_DP] & 1));
+	need_depth = ((Ctrl->A.code[ADJ_CT] & (CT_U_MINUS_DEPTH | CT_UCORR_MINUS_CARTER_TU | CT_UCORR_CARTER_TU_MINUS_DEPTH)) || (Ctrl->A.code[ADJ_DP] & DP_DEPTH_STORED));
 	if (need_depth) {                   /* Need depth*/
 		 if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) strcat (fx_setting, ",depth"), n_sub++;	/* Must append depth to requested list */
 	}
-	if (Ctrl->A.code[ADJ_GR] > 1) {     /* Need gobs */
+	if (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED) {     /* Need gobs */
 		 if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET) strcat (fx_setting, ",gobs"), n_sub++;	/* Must append gobs to requested list */
 	}
-	if (Ctrl->A.code[ADJ_GR] == 3) {    /* Need eot */
+	if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_EOT_MINUS_NGRAV) {    /* Need stored eot */
 		 if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
 	}
-	if (Ctrl->A.code[ADJ_MG] > 1) {     /* Need mtf1,2, and msens */
+	if (Ctrl->A.code[ADJ_MG] > MG_MAG_STORED) {     /* Need mtf1,2, and msens */
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
 		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
 		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET) strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
@@ -904,7 +929,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		strcat (fx_setting, M.Constraint[kk].name);	/* Must add to our list */
 		n_sub++;
 	}
-	need_sound = (((Ctrl->A.code[ADJ_CT] & (1 | 2 | 8)) || Ctrl->A.code[ADJ_DP] & 2) && Ctrl->A.sound_speed == 0.0);
+	need_sound = (((Ctrl->A.code[ADJ_CT] & (CT_U_MINUS_DEPTH | CT_U_MINUS_CARTER | CT_UCORR_CARTER_TU_MINUS_DEPTH)) || Ctrl->A.code[ADJ_DP] & DP_TWT_X_V) && Ctrl->A.sound_speed == 0.0);
 	Ctrl->A.sound_speed *= 0.5;	/* Takes care of the 2 in 2-way travel time */
 	MGD77_Select_Columns (GMT, fx_setting, &M, 0);	/* Only deal with col names - leave constraints/exacts unchanged from last call */
 	n_cols_to_process = M.n_out_columns - n_sub;
@@ -1094,15 +1119,15 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		z_col = MGD77_Get_Column (GMT, "depth",  &M);
 		if (need_twt) twt_col = MGD77_Get_Column (GMT, "twt",  &M);
 		if (Ctrl->A.code[ADJ_GR]) f_col = MGD77_Get_Column (GMT, "faa",  &M);
-		if (Ctrl->A.code[ADJ_GR] > 1) g_col = MGD77_Get_Column (GMT, "gobs",  &M);
-		if (Ctrl->A.code[ADJ_GR] == 3) e_col = MGD77_Get_Column (GMT, "eot",  &M);
+		if (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED) g_col = MGD77_Get_Column (GMT, "gobs",  &M);
+		if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_EOT_MINUS_NGRAV) e_col = MGD77_Get_Column (GMT, "eot",  &M);
 		if (Ctrl->A.code[ADJ_MG]) m_col = MGD77_Get_Column (GMT, "mag",  &M);
-		if (Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.cable_adjust) {	/* Need more magnetics items */
+		if (Ctrl->A.code[ADJ_MG] > MG_MAG_STORED || Ctrl->A.cable_adjust) {	/* Need more magnetics items */
 			m1_col = MGD77_Get_Column (GMT, "mtf1",  &M);
 			m2_col = MGD77_Get_Column (GMT, "mtf2",  &M);
 			ms_col = MGD77_Get_Column (GMT, "msens",  &M);
 		}
-		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > 1 )) && Ctrl->A.GF_version == MGD77_NOT_SET) {
+		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED)) && Ctrl->A.GF_version == MGD77_NOT_SET) {
 			Ctrl->A.GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 			if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
@@ -1277,18 +1302,18 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (auxlist[MGD77_AUX_CT].requested) {	/* Carter is one of the output columns */
 				if (Ctrl->A.code[ADJ_CT]) {	/* We have requested some adjustment to the carter value */
 					aux_dvalue[MGD77_AUX_CT] = GMT->session.d_NaN;
-					if (Ctrl->A.code[ADJ_CT] & 1)	/* Try uncorr. depth - obs. depth */
+					if (Ctrl->A.code[ADJ_CT] & CT_U_MINUS_DEPTH)	/* Try uncorr. depth - obs. depth */
 						aux_dvalue[MGD77_AUX_CT] = dvalue[twt_col][rec] * Ctrl->A.sound_speed - dvalue[z_col][rec];	/* Factor of 2 dealt with earlier */
-					if (Ctrl->A.code[ADJ_CT] & 2 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - Carter depth */
+					if ((Ctrl->A.code[ADJ_CT] & CT_U_MINUS_CARTER) && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - Carter depth */
 						MGD77_carter_depth_from_xytwt (GMT, dvalue[x_col][rec], dvalue[y_col][rec], 1000.0 * dvalue[twt_col][rec], &Carter, &z);
 						aux_dvalue[MGD77_AUX_CT] = dvalue[twt_col][rec] * i_sound_speed - z;
 					}
-					if (Ctrl->A.code[ADJ_CT] & 4 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - inferred Carter depth */
+					if ((Ctrl->A.code[ADJ_CT] & CT_UCORR_MINUS_CARTER_TU) && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - inferred Carter depth */
 						twt = dvalue[z_col][rec] * i_sound_speed;	/* Factor of 2 dealt with earlier */
 						MGD77_carter_depth_from_xytwt (GMT, dvalue[x_col][rec], dvalue[y_col][rec], twt, &Carter, &z);
 						aux_dvalue[MGD77_AUX_CT] = dvalue[z_col][rec] - z;
 					}
-					if (Ctrl->A.code[ADJ_CT] & 8 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try inferred uncorr. depth - obs. depth */
+					if ((Ctrl->A.code[ADJ_CT] & CT_UCORR_CARTER_TU_MINUS_DEPTH) && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try inferred uncorr. depth - obs. depth */
 						MGD77_carter_twt_from_xydepth (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[z_col][rec], &Carter, &twt);
 						z = twt * Ctrl->A.sound_speed;
 						aux_dvalue[MGD77_AUX_CT] = z - dvalue[z_col][rec];
@@ -1306,11 +1331,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			/* --------------------------------------------------------------------------------------------------- */
 			if (z_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_DP]) {
 				z = GMT->session.d_NaN;
-				if (Ctrl->A.code[ADJ_DP] & 1)	/* Try obs. depth */
+				if (Ctrl->A.code[ADJ_DP] & DP_DEPTH_STORED)	/* Try obs. depth */
 					z = dvalue[z_col][rec];
-				if (Ctrl->A.code[ADJ_DP] & 2 && gmt_M_is_dnan (z))	/* Try uncorr. depth */
+				if ((Ctrl->A.code[ADJ_DP] & DP_TWT_X_V) && gmt_M_is_dnan (z))	/* Try uncorr. depth */
 					z = dvalue[twt_col][rec] * i_sound_speed;
-				if (Ctrl->A.code[ADJ_DP] & 4 && gmt_M_is_dnan (z)) {	/* Try Carter depth */
+				if ((Ctrl->A.code[ADJ_DP] & DP_TWT_X_V_MINUS_CARTER) && gmt_M_is_dnan (z)) {	/* Try Carter depth */
 					twt = dvalue[twt_col][rec];
 					if (!gmt_M_is_dnan (twt)) {	/* OK, valid twt */
 						if (has_prev_twt) {	/* OK, may look at change in twt */
@@ -1335,13 +1360,13 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			/* --------------------------------------------------------------------------------------------------- */
 			if (f_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_GR]) {
 				g = GMT->session.d_NaN;
-				if (Ctrl->A.code[ADJ_GR] & 1)	/* Try faa */
+				if (Ctrl->A.code[ADJ_GR] & GR_FAA_STORED)	/* Try faa */
 					g = dvalue[f_col][rec];
-				if (Ctrl->A.code[ADJ_GR] & 2 && gmt_M_is_dnan (g))	/* Try gobs - ngrav */
+				if ((Ctrl->A.code[ADJ_GR] & GR_OBS_MINUS_NGRAV) && gmt_M_is_dnan (g))	/* Try gobs - ngrav */
 					g = dvalue[g_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.code[ADJ_GR] & 4 && gmt_M_is_dnan (g))	/* Try gobs + eot - ngrav */
+				if ((Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_EOT_MINUS_NGRAV )&& gmt_M_is_dnan (g))	/* Try gobs + eot - ngrav */
 					g = dvalue[g_col][rec] + dvalue[e_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.code[ADJ_GR] & 8 && gmt_M_is_dnan (g))	/* Try gobs + pred_eot - ngrav */
+				if ((Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_CEOT_MINUS_NGRAV) && gmt_M_is_dnan (g))	/* Try gobs + pred_eot - ngrav */
 					g = dvalue[g_col][rec] + MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]) - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
 				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
 			}
@@ -1351,9 +1376,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			/* --------------------------------------------------------------------------------------------------- */
 			if (m_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_MG]) {
 				m = GMT->session.d_NaN;
-				if (Ctrl->A.code[ADJ_MG] & 1)	/* Try mag */
+				if (Ctrl->A.code[ADJ_MG] & MG_MAG_STORED)	/* Try mag as is */
 					m = dvalue[m_col][rec];
-				if (Ctrl->A.code[ADJ_MG] & 2 && gmt_M_is_dnan (m)) {	/* Try mtf 1st - igrf */
+				if ((Ctrl->A.code[ADJ_MG] & MG_MTF1_MINUS_IGRF) && gmt_M_is_dnan (m)) {	/* Try mtf 1st - igrf */
 					if (need_date) {	/* Did not get computed already */
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;
@@ -1362,7 +1387,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					k = (i == 2) ? m2_col : m1_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
-				if (Ctrl->A.code[ADJ_MG] & 4 && gmt_M_is_dnan (m)) {	/* Try mtf 2nd - igrf */
+				if ((Ctrl->A.code[ADJ_MG] & MG_MTF2_MINUS_IGRF) && gmt_M_is_dnan (m)) {	/* Try mtf 2nd - igrf */
 					if (need_date) {	/* Did not get computed already */
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;

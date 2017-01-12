@@ -83,8 +83,7 @@ Optional Arguments
     coordinates, and append *flags* to specify which coordinates you would like. You
     can choose from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
-    **c
-    ** (pole of small circle and its colatitude, which requires **-S**).
+    **c** (pole of small circle and its colatitude, which requires **-S**).
 
 .. _-S:
 

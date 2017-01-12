@@ -525,7 +525,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			}
 			gmt_set_seg_polar (GMT, Sr);	/* Determine if it is a polar cap */
 		}
-		gmt_set_tbl_minmax (GMT, polr);	/* Update table domain */
+		gmt_set_tbl_minmax (GMT, GMT_IS_POLY, polr);	/* Update table domain */
 		if (!Ctrl->N.active && not_global) {
 			char dfile[GMT_BUFSIZ] = {""}, *file = NULL;
 			if (Ctrl->T.n_times > 1) {

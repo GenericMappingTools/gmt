@@ -15,7 +15,7 @@ Synopsis
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ] [ |-C|\ *cpt* ]
-[ |-D|\ [**r**\ ] ] [ |-E|\ **i**\ [\|\ *dpi*] ] |-J|\ *parameters*
+[ |-D|\ [**r**\ ] ] [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*] ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. _-E:
 
-**-Ei**\ [\|\ *dpi*]
+**-E**\ [\ **i**\ \|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
@@ -154,7 +154,7 @@ Optional Arguments
     or a constant intensity to apply everywhere; this simply affects the
     ambient light.  If no argument is given then we derive an intensity
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
-    using the arguments **-A-45** and **-Nt1** for that module. If you want
+    using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. If you want
     other settings then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 

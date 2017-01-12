@@ -5143,14 +5143,14 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	info.t_min = Ctrl->T.min;	info.t_max = Ctrl->T.max;	info.t_inc = Ctrl->T.inc;
 	info.n_col = n_columns;		info.local = Ctrl->L.active;
 	info.notime = Ctrl->T.notime;
-	gmt_set_tbl_minmax (GMT, info.T);
+	gmt_set_tbl_minmax (GMT, GMT_IS_POINT, info.T);
 
 	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | [w | ] b ], with w the optional weights */
 		if (!stack[0]->D)
 			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Always put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		if (!Ctrl->A.null) load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Optionally, put the t vector in the time column of the item on the stack */
-		gmt_set_tbl_minmax (GMT, stack[0]->D->table[0]);
+		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
 		nstack = 1;
 		info.fit_mode = Ctrl->A.e_mode;
 		info.w_mode = Ctrl->A.w_mode;
@@ -5255,7 +5255,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (!stack[nstack]->D)
 						stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 					for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
-					gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+					gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
 				nstack++;
@@ -5288,7 +5288,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
-				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
 				if (Ctrl->T.notime) {
@@ -5299,14 +5299,14 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
-				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_J_MATRIX) {	/* Need to set up matrix of row numbers */
 				if (!stack[nstack]->D)
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TJ);
-				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
 				struct GMT_DATASET *F = NULL;
@@ -5327,7 +5327,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					T_in = F->table[0];	/* Only one table since only a single file */
 				}
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, T_in, j);
-				gmt_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				if (!same_size (stack[nstack]->D, Template)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "tables not of same size!\n");
 					Return (GMT_RUNTIME_ERROR);
@@ -5416,7 +5416,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (!Ctrl->C.cols[j])
 				load_const_column (stack[0]->D, j, stack[0]->factor);
 		}
-		gmt_set_tbl_minmax (GMT, stack[0]->D->table[0]);
+		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -5447,7 +5447,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 		if (place_t_col && Ctrl->N.tcol < R->n_columns) {
 			load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
-			gmt_set_tbl_minmax (GMT, R->table[0]);
+			gmt_set_tbl_minmax (GMT, R->geometry, R->table[0]);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, R->n_columns)) != 0) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */

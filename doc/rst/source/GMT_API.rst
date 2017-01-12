@@ -2205,7 +2205,10 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     using GMT_Put_Row_. By default the rows will be automatically
     processed in order. To completely specify which row to be written,
     use ``GMT_GRID_ROW_BY_ROW_MANUAL`` instead; this requires a file format
-    that supports direct writes, such as netCDF.
+    that supports direct writes, such as netCDF.  Finally, if you are
+    preparing a geographic grid outside of GMT you need to add the mode
+    ``GMT_GRID_IS_GEO`` to ensure that the proper metadata will be written
+    to the netCDF header, thus letting the grid be recognized as such.
 
 Note: If ``method`` is GMT_IS_FILE, :ref:`family <tbl-family>` is ``GMT_IS_GRID``,
 and the filename implies a change from NaN to another value then the grid is

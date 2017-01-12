@@ -148,7 +148,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *smooth*
-    Smooth the contours before plotting (see **grdcontour**) [Default is no smoothing].
+    Smooth the contours before plotting (see :doc:`grdcontour`) [Default is no smoothing].
 
 .. _-t:
 
@@ -246,7 +246,7 @@ topo_intens.nc, and looking from the SE, run
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt \
                 -Qs -p140/30 -Itopo_intens.nc > draped3D.ps
 
-Given topo.nc and the Landsat image veggies.ras, first run **grd2rgb**
+Given topo.nc and the Landsat image veggies.ras, first run :doc:`grd2rgb`
 to get the red, green, and blue grids, and then drape this image over
 the topography and shade the result for good measure. The commands are
 
@@ -262,8 +262,8 @@ Remarks
 For the **-Qs** option: PostScript provides no way of smoothly varying
 colors within a polygon, so colors can only vary from polygon to
 polygon. To obtain smooth images this way you may resample the grid
-file(s) using **grdsample** or use a finer grid size when running
-gridding programs like **surface** or **nearneighbor**. Unfortunately,
+file(s) using :doc:`grdsample` or use a finer grid size when running
+gridding programs like **surface** or :doc:`nearneighbor`. Unfortunately,
 this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.
@@ -275,6 +275,7 @@ See Also
 :doc:`gmtcolors`,
 :doc:`grdcontour`,
 :doc:`grdimage`,
+:doc:`grdsample`,
 :doc:`nearneighbor`,
 :doc:`psbasemap`,
 :doc:`pscontour`, :doc:`pstext`,

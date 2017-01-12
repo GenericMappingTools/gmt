@@ -172,7 +172,7 @@ If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across
 all the maps, use the **-N** option and supply the same value of *sigma*
 and *offset* to **grdgradient** for each map. A good guess is *offset* =
-0 and *sigma* found by **grdinfo** **-L2** or **-L1** applied to an
+0 and *sigma* found by :doc:`grdinfo` **-L2** or **-L1** applied to an
 unnormalized gradient grd.
 
 If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
@@ -208,6 +208,7 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf` 
 :doc:`grdhisteq`,
+:doc:`grdinfo`,
 :doc:`grdmath`,
 :doc:`grdimage`, :doc:`grdview`,
 :doc:`grdvector`

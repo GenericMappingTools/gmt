@@ -8342,7 +8342,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	enum GMT_profmode p_mode;
 	uint64_t dim[4] = {1, 1, 0, 0};
 	int n, error = 0;
-	double L, az = 0.0, length = 0.0, r = 0.0;
+	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
@@ -8375,7 +8375,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 					case 'd':	/* Already processed up front to set n_cols*/		break;
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
-					case 'i':	step = fabs (atof (&p2[1]));	p_mode |= GMT_GOT_INC;		break;
+					case 'i':	step = fabs (atof (&p2[1]));
+								if (step > 2.0*orig_step)
+									GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Output sampling interval in d exceeds grid interval and may lead to aliasing.\n");
+								p_mode |= GMT_GOT_INC;		break;
 					case 'l':	length = fabs (atof (&p2[1]));	p_mode |= GMT_GOT_LENGTH;	break;
 					case 'r':	r = fabs (atof (&p2[1]));	p_mode |= GMT_GOT_RADIUS;	break;
 					default:	error++;	break;

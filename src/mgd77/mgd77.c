@@ -1997,6 +1997,8 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		else {
 			values = MGD77_Read_Column (GMT, F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 #if 0
+		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
+		 * so we dont do anything here but let that happen naturally later. */
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
 				for (rec = 0; rec < count[0]; rec++) values[rec] = MGD77_utime2time (GMT, F, values[rec]);
 			}
@@ -2224,7 +2226,12 @@ static int MGD77_Read_Data_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 			MGD77_do_scale_offset_after_read (GMT, &dvals[n_val], 1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
-		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (GMT, F, dvals[n_val]); */
+		/* Would have been helpful with a comment here as to why this is excluded. */
+#if 0
+		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
+ 		* so we dont do anything here but let that happen naturally later. */
+		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (GMT, F, dvals[n_val]);
+#endif
 	}
 	return (MGD77_NO_ERROR);
 }
@@ -2732,8 +2739,8 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 			f_start = f_stop = MGD77_FORMAT_M7T;
 			break;
 		case MGD77_FORMAT_ANY:		/* Not set, try all */
-			f_start = MGD77_FORMAT_M77;
-			f_stop  = MGD77_FORMAT_M7T;
+			f_start = MGD77_FORMAT_CDF;
+			f_stop  = MGD77_FORMAT_TBL;
 			break;
 		default:	/* Bad */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad file format specified given (%d)\n", F->format);
@@ -3736,10 +3743,10 @@ void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format) {
 
 	 gmt_M_unused(GMT);
 	 if (format == MGD77_FORMAT_ANY) {
-	 	MGD77_format_allowed[MGD77_FORMAT_M77] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_CDF] = true;
-	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = true;
+	 	MGD77_format_allowed[MGD77_FORMAT_M77] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_M7T] = true;
+	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = true;
 	}
 	else if (format >= MGD77_FORMAT_M77 && format <= MGD77_FORMAT_TBL)
 		MGD77_format_allowed[format] = false;
@@ -3797,11 +3804,17 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	mgd77_init_columns (F);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = true;		/* true means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = true;	/* true means we will apply correction factors (if present) when reading data */
-	gmt_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
+#if 0
+	/* This looks like nonsense to me: It ignores any --TIME_* settings we may have used and
+	 * forces unix time so that only absolute time or seconds from 1970 will work.  Commented
+	 * out but probably will need to be chopped.  P. Wessel, Dec 14, 2016 */
+	gmt_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));		/* MGD77+ uses GMT's Unix time epoch */
 	gmt_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	gmt_get_time_system (GMT, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
+#endif
+	gmt_get_time_system (GMT, "unix", &(F->utime));		/* MGD77+ uses GMT's Unix time epoch */
 	gmt_init_time_system_structure (GMT, &(F->utime));
-	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;	/* Since MGD77+ uses unix time we must convert to new epoch */
+	/* Since MGD77+ uses UNIX time we may need convert to a different epoch if GMT settings have changed. */
+	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;
 	gmt_M_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1U << i;
 	strncpy (F->user, gmt_putusername(GMT), MGD77_COL_ABBREV_LEN);
@@ -4400,6 +4413,7 @@ void MGD77_Free_Dataset (struct GMT_CTRL *GMT, struct MGD77_DATASET **D) {
 	mgd77_free_plain_mgd77 (&S->H);
 	gmt_M_free (GMT, S->H.author);
 	gmt_M_free (GMT, S->H.history);
+	gmt_M_free (GMT, S->H.E77);
 	gmt_M_free (GMT, S);
 	D = NULL;
 }

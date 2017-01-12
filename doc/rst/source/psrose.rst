@@ -17,12 +17,13 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ **m**\ \|\ *mode_file* ]
 [ |-D| ]
+[ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ] [ |-K| ]
 [ |-L|\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ]
 [ |-M|\ *parameters* ]
 [ |-O| ] [ |-P| ]
 [ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
-[ |-S|\ [**n**]*radial\_scale* ]
+[ |-S|\ [**n**]\ *radial\_scale* ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -45,7 +46,8 @@ Description
 -----------
 
 **psrose** reads (length,azimuth) pairs from *file* [or standard input]
-and generates PostScript code that will plot a windrose diagram.
+and generates PostScript code that will plot a windrose diagram.  Add **-i**\ 0
+if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
 PostScript code is written to standard output. The outline of the
@@ -78,6 +80,7 @@ Optional Arguments
 |
 |   Remember that "x" here is
 |   radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption.
+|   The scale bar length is determined by the radial gridline spacing.
 
 .. _-C:
 
@@ -105,8 +108,10 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Inquire. Computes statistics needed to specify useful **-R**. No
-    plot is generated. 
+    Inquire. Computes statistics needed to specify a useful **-R**. No
+    plot is generated.  The following statistics are written to stdout:
+    *n*, *mean az*, *mean r*, *mean resultant length*, *max bin sum*,
+    *scaled mean*, and *linear length sum*.
 
 .. _-K:
 
@@ -147,14 +152,18 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**n**]*radial_scale*
-    Specifies radius of circle. Use **-Sn** to normalize input radii to go from 0 to 1.
+**-S**\ [**n**]\ *plot_radius*
+    Specifies radius of plotted circle (append a unit from **c**\ \|\ **i**\ \|\ **p**).
+    Use **-Sn** to normalize input radii (or bin counts if **-A** is used) by the largest
+    value so all adii (or bin counts) range from 0 to 1.
 
 .. _-T:
 
 **-T**
-    Specifies that the input data is orientation data (has a 180 degree
-    ambiguity) instead of true 0-360 degree directions [Default]. 
+    Specifies that the input data are orientation data (i.e., have a 180 degree
+    ambiguity) instead of true 0-360 degree directions [Default]. We
+    compensate by counting each record twice: First as *azimuth* and second
+    as *azimuth + 180*.  Ignored if range is given as -90/90 or 0/180.
 
 .. _-U:
 
@@ -178,7 +187,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *scale*
+**-Z**\ **u**\ \|\ *scale*
     Multiply the data radii by *scale*. E.g., use **-Z**\ 0.001 to
     convert your data from m to km. To exclude the radii from
     consideration, set them all to unity with **-Zu** [Default is no

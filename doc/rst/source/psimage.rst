@@ -170,9 +170,12 @@ plotting other images or PostScript files.
     **-Gf**
         Sets foreground color (replace black pixel) of 1-bit images. Use -
         for transparency (and set **-Gb** to the desired color).
-    **-I**
-        Invert 1-bit image before plotting. This is what is done when you
-        use **-GP** in other GMT programs.
+
+.. _-I:
+
+**-I**
+   Invert 1-bit image before plotting. This is what is done when you
+   use **-GP** to invert patterns in other GMT plotting programs.
 
 These options are for 8-, 24-, and 32-bit raster images only. They have
 no effect when plotting 1-bit images or PostScript files.

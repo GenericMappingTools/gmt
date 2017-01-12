@@ -17,8 +17,8 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
-[ |-F|\ *color* ]
 [ |-E|\ *color* ]
+[ |-F|\ *color* ]
 [ |-G|\ *color* ]
 [ |-K| ]
 [ |-L| ]
@@ -179,17 +179,17 @@ Optional Arguments
     can be used to rescale the uncertainties of velocities (**-Se** and
     **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
 
-.. _-F:
-
-**-F**\ *fill*
-    Sets the color or shade used for frame and annotation. [Default is black]
-
 .. _-E:
 
 **-E**\ *fill*
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
     **-E** is not specified, the uncertainty regions will be transparent.]
+
+.. _-F:
+
+**-F**\ *fill*
+    Sets the color or shade used for frame and annotation. [Default is black]
 
 .. _-G:
 

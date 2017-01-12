@@ -35,10 +35,7 @@ gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
 	-Wathin,white -Wcthinnest,white,- >> $ps
 
 # For each of the cities, plot great circle arc to Rome with gmt psxy
-
-while read clon clat city; do
-	(echo $lon $lat; echo $clon $clat) | gmt psxy -R -J -O -K -Wthickest,red >> $ps
-done < cities.d
+gmt psxy -R -J -O -K -Wthickest,red -Fr$lon/$lat cities.d >> $ps
 
 # Plot red squares at cities and plot names:
 gmt psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps

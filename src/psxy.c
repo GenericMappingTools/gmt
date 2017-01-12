@@ -1457,7 +1457,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Line/polygon part */
-		uint64_t seg, seg_out = 0;
+		uint64_t seg, seg_out = 0, n_new;
 		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
@@ -1514,9 +1514,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
 						/* The whole trimming stuff requires at least 2 points per line so we resample */
 						if (gmt_M_is_geographic (GMT, GMT_IN))
-							L->n_rows = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+							n_new = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 						else
-							L->n_rows = gmt_resample_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, 0.5 * hypot (L->data[GMT_X][1]-L->data[GMT_X][0], L->data[GMT_Y][1]-L->data[GMT_Y][0]), GMT_TRACK_FILL);
+							n_new = gmt_resample_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, 0.5 * hypot (L->data[GMT_X][1]-L->data[GMT_X][0], L->data[GMT_Y][1]-L->data[GMT_Y][0]), GMT_TRACK_FILL);
+						if (n_new == 0) {
+							Return (GMT_RUNTIME_ERROR);
+						}
+						L->n_rows = n_new;
+						gmt_set_seg_minmax (GMT, D->geometry, L);	/* Update min/max */
 						resampled = true;	/* To avoid doing it twice */
 					}
 					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
@@ -1592,8 +1597,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					L->data[GMT_Y][L->n_rows-1] = L->data[GMT_Y][0];
 				}
 
-				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && !resampled)	/* Resample if spacing is too coarse */
-					L->n_rows = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && !resampled) {	/* Resample if spacing is too coarse */
+					if ((n_new = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode)) == 0) {
+						Return (GMT_RUNTIME_ERROR);
+					}
+					L->n_rows = n_new;
+					gmt_set_seg_minmax (GMT, D->geometry, L);	/* Update min/max */
+				}
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					gmt_setfill (GMT, &current_fill, outline_active);

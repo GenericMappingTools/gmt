@@ -15,7 +15,7 @@ Synopsis
 
 **project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+**] ]
+[ |-G|\ *dist*\ [/*colat*][**+**] ] ]
 [ |-L|\ [**w**\ ][\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
@@ -140,7 +140,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*]
+**-G**\ *dist*\ [/*colat*][**+**\ ]
     Generate mode. No input is read. Create (*r*, *s*, *p*) output
     points every *dist* units of *p*. See **-Q** option. Alternatively,
     append **/**\ *colat* for a small circle instead [Default is a
@@ -231,7 +231,14 @@ To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
     gmt project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
 
-(Note that great_circle_points.xyp could now be used as input for **grdtrack**, etc. ).
+(Note that great_circle_points.xyp could now be used as input for :doc:`grdtrack`, etc. ).
+
+To generate points every 1 degree along a great circle from 30N,10W with
+azimuth 30 and covering a full 360, try:
+
+   ::
+
+    gmt project -C10W/30N -A30 -G1 --L-180/180 > great_circle.txt
 
 To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 
@@ -304,5 +311,6 @@ See Also
 :doc:`fitcircle`,
 :doc:`gmt`,
 :doc:`gmtvector`,
+:doc:`grdtrack`,
 :doc:`mapproject`,
 :doc:`grdproject`

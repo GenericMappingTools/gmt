@@ -25,8 +25,7 @@ gmt grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K 
 	-Y5.85i > $ps
 gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
 gmt psscale -DJBC+o0/0.4i+w4i/0.15i+h -R -J -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> $ps
-$AWK '{print $1, $2, "Pratt"}' pratt.txt | gmt pstext -R -J -O -K -D0.1i/0.1i \
-	-F+f12p,Helvetica-Bold+jLB >> $ps
+gmt pstext pratt.txt -R -J -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt >> $ps
 gmt psxy pratt.txt -R -J -O -K -SE- -Wthinnest >> $ps
 
 # Then draw 10 mGal contours and overlay 50 mGal contour in green

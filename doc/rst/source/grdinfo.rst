@@ -17,7 +17,7 @@ Synopsis
 [ |-I|\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**] ]
 [ |-L|\ [**0**\ \|\ **1**\ \|\ **2**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
-[ |-T|\ [*dz*]\ [**+a**\ [*alpha*]] [**+s**] ]
+[ |-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -98,7 +98,7 @@ Optional Arguments
 
 .. _-T:
 
-|-T|\ [*dz*]\ [**+a**\ [*alpha*]] [**+s**]
+|-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**]
     Determine min and max z-value.  If *dz* is provided then we first round these
     values off to multiples of *dz*. To exclude the two tails of the distribution
     when determining the min and max you can add **+a** to set the *alpha*

@@ -17,14 +17,14 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-G|\ *fill*\ \|\ **c** ]
-[ |-I|\ [*lon/lat*][**+d**\ *<date>*][**+z**\ *<TZ>*] ]
+[ |-I|\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-M| ]
 [ |-N| ]
 [ |-O| ] [|-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-T|\ *<dcna>*\ [**+d**\ *<date>*][**+z**\ *<TZ>*]]
+[ |-T|\ **dcna**\ [**+d**\ *date*][**+z**\ *TZ*]]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -61,7 +61,7 @@ Optional Arguments
 
 **-C**
     Formats the report selected by **-I** using tab-separated fields on a single line. The
-    output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in dedimal days,
+    output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in decimal days,
     *day length* in minutes, *SolarElevationCorrected* corrected for the effect of refraction index
     and *Equation of time* in minutes. Note that if no position is provided in **-I**\ *lon/lat* the
     data after *Elevation* refers to the point (0,0).
@@ -74,11 +74,11 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*lon/lat*][**+d**\ *<date>*][**+z**\ *<TZ>*]
+**-I**\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*]
     Print current sun position as well as Azimuth and Elevation. Append lon/lat to print also the times of
     Sunrise, Sunset, Noon and length of the day.
-    Add +d<date> in ISO format, e.g, **+d**\ *2000-04-25*, to compute sun parameters
-    for this date. If necessary, append time zone via **+z**\ *<TZ>*.
+    Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25*, to compute sun parameters
+    for this date. If necessary, append time zone via **+z**\ *TZ*.
 
 .. _-J:
 
@@ -115,11 +115,11 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *<dcna>*\ [**+d**\ *<date>*][**+z**\ *<TZ>*]
-    Plot (or dump; see -M) one or more terminators defined via the *dcna* flags. Where:
+**-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
+    Plot (or dump; see **-M**\ ) one or more terminators defined via the **dcna** flags. Where:
     **d** means day/night terminator; **c** means civil twilight; **n** means nautical twilight;
-    **a** means astronomical twilight.  Add +d<date> in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
-    to know where the day-night was at that date. If necessary, append time zone via **+z**\ *<TZ>*.
+    **a** means astronomical twilight.  Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
+    to know where the day-night was at that date. If necessary, append time zone via **+z**\ *TZ*.
 
 .. _-U:
 
@@ -132,20 +132,9 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
+**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. A leading **+** will
-    use the lookup color (via **-C**) for both symbol fill and outline
-    pen color, while a leading **-** will set outline pen color and turn
-    off symbol fill.  You can also append one or more line attribute modifiers:
-    **+o**\ *offset*\ **u** will start and stop drawing the line the given distance offsets
-    from the end point.  Append unit **u** from **c**\ \|\ **i**\ \|\ **p** to
-    indicate plot distance on the map or append map distance units instead (see below)
-    [Cartesian distances];
-    **+s** will draw the line using a *PostScript* Bezier spline [linear spline];
-    **+v**\ *vspecs* will place a vector head at the ends of the lines.  You can
-    use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
-    See the :ref:`Vec_attributes` for more information.
+    width = default, color = black, style = solid].
 
 .. _-X:
 

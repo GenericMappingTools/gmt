@@ -134,7 +134,7 @@ Optional Arguments
 **-E**\ *indexfile*
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
-    using Delaunay triangulation (see **triangulate**)].
+    using Delaunay triangulation (see :doc:`triangulate`)].
 
 .. _-G:
 

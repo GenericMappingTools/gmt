@@ -187,7 +187,7 @@ Optional Arguments
     has height above ellipsoid [Default assumes height = 0, i.e., on the
     ellipsoid]. Specify datums using the datum ID (see **-Qd**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,*inv_f*], where *a* is the
+    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. **-T** may
     be used in conjunction with **-R** **-J** to change the datum before

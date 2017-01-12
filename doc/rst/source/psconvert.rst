@@ -299,7 +299,7 @@ BoundingBox when the **-A** option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
 optional HiResBoundingBox to add more precision in sizing. The **-A**
 option calculates both and writes both to the EPS file and is subsequently
-used in any rasterization, if requested. When the **-TE* option is used, a
+used in any rasterization, if requested. When the **-TE** option is used, a
 new setpagedevice command is added that will indicate the actual pagesize for
 the plot, similar to the BoundingBox. Note that when the command setpagedevice
 exists in a PostScript file that is included in another document, this can wreak

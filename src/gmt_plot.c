@@ -3152,7 +3152,11 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 			plon[n-1] = S->data[GMT_X][S->n_rows-1];
 			gmt_M_memcpy (&plon[1], S->data[GMT_X], S->n_rows, double);
 			gmt_M_memcpy (&plat[1], S->data[GMT_Y], S->n_rows, double);
-			if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) n = gmt_fix_up_path (GMT, &plon, &plat, n, 0.0, 0);
+			if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && (n = gmt_fix_up_path (GMT, &plon, &plat, n, 0.0, 0)) == 0) {
+				gmt_M_free (GMT, plon);
+				gmt_M_free (GMT, plat);
+				return 0;
+			}
 		}
 	}
 	k = plot_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
@@ -5831,6 +5835,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
  	*/
 
 	int N, k, kk, n_path;
+	uint64_t n_new;
 	double d_az, px, py, qx, qy, L, plat, plon, qlon, qlat, az, rot_start, E[3], P[3], Q[3], R[3][3];
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -5881,9 +5886,12 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		/* Close polygon */
 		S->data[GMT_X][kk] = S->data[GMT_X][0];	S->data[GMT_Y][kk] = S->data[GMT_Y][0];
 	}
-	S->n_rows = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0);
-	gmt_set_seg_minmax (GMT, S);	/* Set min/max */
-	if (mode == 3) gmt_set_seg_polar (GMT, S);
+	if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, 0.0, 0)) == 0) {
+		gmt_free_segment (GMT, &S);
+		return;
+	}
+	S->n_rows = n_new;
+	gmt_set_seg_minmax (GMT, (mode == 3) ? GMT_IS_POLY : GMT_IS_LINE, S);	/* Update min/max */
 
 	gmt_geo_polygons (GMT, S);
 

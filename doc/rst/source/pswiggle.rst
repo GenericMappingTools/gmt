@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*
-[ |-A|\ *azimuth* ]
+**pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units]
+[ |-A|\ [*azimuth*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
@@ -47,7 +47,8 @@ Description
 **pswiggle** reads (*x*,\ *y*,\ *z*) triplets from files [or standard
 input] and plots z as a function of distance along track. This means
 that two consecutive (*x*,\ *y*) points define the local distance axis,
-and the local *z* axis is then perpendicular to the distance axis. The
+and the local *z* axis is then perpendicular to the distance axis,
+forming a right-handed coordinate system. The
 user may set a preferred positive anomaly plot direction, and if the
 positive normal is outside the plus/minus 90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
@@ -72,8 +73,11 @@ Required Arguments
 
 .. _-Z:
 
-**-Z**\ *scale*
-    Gives anomaly scale in data-units/distance-unit.
+**-Z**\ *scale*\ [*units]
+    Gives anomaly scale in data-units/distance-unit, where
+    distance-unit is the currently chosen unit specified
+    by PROJ_LENGTH_UNIT.  Alternatively,
+    append a distance-unit among the other choices (c\|i\|p).
 
 Optional Arguments
 ------------------
@@ -83,9 +87,13 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *azimuth*
+**-A**\ [*azimuth*]
     Sets the preferred positive azimuth. Positive wiggles will
-    "gravitate" towards that direction. 
+    "gravitate" towards that direction, i.e., azimuths of the
+    normal direction to the track will be flipped into the
+    -90/+90 degree window centered on *azimuth* and that defines
+    the positive wiggle side.  If no azimuth is given the no
+    preferred azimuth is enforced.  Default is **-A**\ 0.
 
 .. _-B:
 
@@ -109,7 +117,8 @@ Optional Arguments
 
 **-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
-    azimuth, but see **-A**]. 
+    azimuth, but see **-A**]. With this option, the calculated
+    track-normal azimuths are overridden by *fixed_az*.
 
 .. include:: explain_-Jz.rst_
 
@@ -194,6 +203,15 @@ points, use
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
                  -C32000 -P -Gred -T0.25p,blue -S1000 -V > track_xym.ps
 
+and the positive anomalies will in general point in the north direction.
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
+and obtain
+
+   ::
+
+    gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
+              -C32000 -P -Gred -I45 -T0.25p,blue -S1000 -V > track_xym.ps
+
 Bugs
 ----
 
@@ -213,7 +231,7 @@ this). Then if these numbers jump around a lot, you may do this:
     awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 \
     --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
-and plot this data set instead.
+which performs a 5-point boxcar filter, and plot this data set instead.
 
 See Also
 --------

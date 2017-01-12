@@ -2806,6 +2806,7 @@ GMT_LOCAL bool map_init_cyleqdist (struct GMT_CTRL *GMT) {
 
 	return (false);	/* No need to search for wesn */
 }
+//#define CHRISTMAS
 
 /*!
  *	TRANSFORMATION ROUTINES FOR MILLER CYLINDRICAL PROJECTION (GMT_MILLER)
@@ -2819,7 +2820,19 @@ GMT_LOCAL bool map_init_miller (struct GMT_CTRL *GMT) {
 	map_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
 	gmt_vmiller (GMT, GMT->current.proj.pars[0]);
 	gmt_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+#ifdef CHRISTMAS
+	if (GMT->common.R.wesn[YLO] > 0.0) {
+		gmt_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_miller (GMT, 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]), GMT->common.R.wesn[YHI], &xmax, &ymax);
+	}
+	else {
+		gmt_miller (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmin, &ymin);
+		gmt_miller (GMT, 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]), GMT->common.R.wesn[YLO], &xmax, &ymax);
+	}
+#else
+	gmt_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	gmt_miller (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+#endif
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);

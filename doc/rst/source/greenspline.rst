@@ -191,7 +191,7 @@ Optional Arguments
 
 .. _-R:
 
-**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]]
+**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*\ ]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
 
@@ -380,12 +380,12 @@ Considerations
    double precision matrix for the Green function coefficients, where *n*
    is the number of data constraints. Hence, your computer's memory may
    place restrictions on how large data sets you can process with
-   `greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
-   `blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
+   greenspline. Pre-processing your data with doc:`blockmean`,
+   doc:`blockmedian`, or doc:`blockmode` is recommended to avoid aliasing and
    may also control the size of *n*. For information, if *n* = 1024 then
    only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
-   that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
-   For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
+   that greenspline is fully 64-bit compliant if compiled as such.
+   For spherical data you may consider decimating using doc:`gmtspatial`
    nearest neighbor reduction.
 
 #. The inversion for coefficients can become numerically unstable when
@@ -400,7 +400,7 @@ Considerations
    gratefully acknowledge.
 
 #. If you need to fit a certain 1-D spline through your data
-   points you may wish to consider `sample1d <sample1d.html>` instead.
+   points you may wish to consider doc:`sample1d>` instead.
    It will offer traditional splines with standard boundary conditions
    (such as the natural cubic spline, which sets the curvatures at the ends
    to zero).  In contrast, greenspline's 1-D spline, as is explained in

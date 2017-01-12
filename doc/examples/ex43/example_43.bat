@@ -23,7 +23,7 @@ gmt psxy -R-2/6/-1/5 -JX6i -O -K -L+d+p0.25p,- -Gcornsilk1 rls_line.txt >> %ps%
 gmt psxy -R -J -O -K rls_line.txt -W3p >> %ps%
 gmt psxy -R -J -O -K ls_line.txt -W1p,- >> %ps%
 gmt psxy -R -J -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt >> %ps%
-awk '{print $1, $2, NR}' A.txt | gmt pstext -R -J -O -K -F+f8p+jCM  -B0 >> %ps%
+gmt pstext A.txt -R -J -O -K -F+f8p+jCM+r1  -B0 >> %ps%
 REM Build legend
 echo H 18 Times-Roman Index of Animals > legend.txt
 echo D 1p >> legend.txt

@@ -247,7 +247,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1;
 		bool duplicate;
-		uint64_t row, seg;
+		uint64_t row, seg, n_new;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
@@ -279,7 +279,11 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 						S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 					}
 					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
-						S->n_rows = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode)) == 0) {
+							Return (GMT_RUNTIME_ERROR);
+						}
+						S->n_rows = n_new;
+						gmt_set_seg_minmax (GMT, D->geometry, S);	/* Update min/max */
 						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
 

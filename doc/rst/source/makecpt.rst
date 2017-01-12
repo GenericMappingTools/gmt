@@ -162,7 +162,7 @@ Optional Arguments
     discretely at intervals *z_inc* between *z_min* and *z_max*;
     append a trailing **+** to interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
-    per record, or provide a list of comma-separated z-values instead
+    per record, or provide a list of comma-separated z-values instead.
     If **-T** is not given, the existing range in the master
     CPT will be used intact.
 

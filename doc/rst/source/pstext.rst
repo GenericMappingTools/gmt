@@ -18,7 +18,7 @@ Synopsis
 [ |-A| ]
 |SYN_OPT-B|
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
-[ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]] ] 
+[ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ] [ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-|-F|\ [**+a**\ \|\ **A**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by
@@ -157,7 +157,7 @@ Optional Arguments
     comes from the data record.  Instead, use **+h** or **+l** to select the
     text as the most recent segment header or segment label, respectively in
     a multisegment input file, **+r** to use the record number (counting up from *first*),
-    **+t**\ *text* to set a fixed text string, or **z**\ to format incoming *z* values
+    **+t**\ *text* to set a fixed text string, or **+z** to format incoming *z* values
     to a string using the supplied *format* [use FORMAT_FLOAT_MAP].
 
 .. _-G:
@@ -311,7 +311,7 @@ Windows Remarks
 Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
 script you need to repeat it (%%); hence the font switching mechanism
-(@%*font*\ % and @%%) may require twice the number of percent signs.
+(@%\ *font*\ % and @%%) may require twice the number of percent signs.
 This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pstext** do not need
 such duplication.

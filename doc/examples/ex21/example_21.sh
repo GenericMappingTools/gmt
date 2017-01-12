@@ -4,7 +4,7 @@
 #
 # Purpose:	Plot a time-series
 # GMT modules:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy 
-# Unix progs:	cut, echo
+# Unix progs:	echo
 #
 ps=example_21.ps
 
@@ -15,12 +15,8 @@ gmt set FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format
 
-gmt info -fT -I50 -C RHAT_price.csv > RHAT.info
-w=`cut -f1 RHAT.info`
-e=`cut -f2 RHAT.info`
-s=`cut -f3 RHAT.info`
-n=`cut -f4 RHAT.info`
-R="-R$w/$e/$s/$n"
+wesn=(`gmt info -fT -I50 -C RHAT_price.csv --FORMAT_DATE_IN=dd-o-yy`)
+R="-R${wesn[0]}/${wesn[1]}/${wesn[2]}/${wesn[3]}"
 
 # Lay down the basemap:
 
@@ -45,7 +41,7 @@ echo "01-Jan-99	25" > RHAT.pw
 echo "01-Jan-02	25" >> RHAT.pw
 gmt psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
 gmt set FORMAT_DATE_IN yyyy-mm-dd
-echo "$w 25 PW buy" | gmt pstext -R -J -O -K -D1.5i/0.05i -N -F+f12p,Bookman-Demi+jLB >> $ps
+echo "${wesn[0]} 25 PW buy" | gmt pstext -R -J -O -K -D1.5i/0.05i -N -F+f12p,Bookman-Demi+jLB >> $ps
 gmt set FORMAT_DATE_IN dd-o-yy
 
 # Draw P Wessel's sales price as line and label it.
@@ -57,13 +53,13 @@ echo "01-Aug-06	23.8852" > RHAT.pw
 echo "01-Jan-08	23.8852" >> RHAT.pw
 gmt psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
 gmt set FORMAT_DATE_IN yyyy-mm-dd
-echo "$e 23.8852 PW sell" | gmt pstext -R -J -O -K -Dj0.8i/0.05i -N \
+echo "${wesn[1]} 23.8852 PW sell" | gmt pstext -R -J -O -K -Dj0.8i/0.05i -N \
 	-F+f12p,Bookman-Demi+jRB >> $ps
 gmt set FORMAT_DATE_IN dd-o-yy
 
 # Get smaller region for insert for trend since 2004
 
-R="-R2004T/$e/$s/40"
+R="-R2004T/${wesn[1]}/${wesn[2]}/40"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right
 

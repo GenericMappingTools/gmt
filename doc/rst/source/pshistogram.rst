@@ -237,7 +237,7 @@ bars, run:
    ::
 
     gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c \
-                    -Bx2+lError -By100+lCounts: -Gblack -i1 -V > plot.ps
+                    -Bx2+lError -By100+lCounts -Gblack -i1 -V > plot.ps
 
 Since no y-range was specified, pshistogram will calculate ymax in even
 increments of 100.
