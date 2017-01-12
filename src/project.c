@@ -57,7 +57,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 	} F;
 	struct G {	/* -G<inc>[/<colat>][+] */
 		bool active;
-		bool header;
+		unsigned int header;
 		unsigned int mode;
 		double inc;
 		double colat;
@@ -462,8 +462,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				len = strlen (opt->arg) - 1;
-				if (len > 0 && opt->arg[len] == '+') {
-					Ctrl->G.header = true;	/* Wish to place a segment header on output */
+				f (len > 0 && opt->arg[len] == '+') {	/* Old-style + only */
+					Ctrl->G.header = len;	/* Wish to place a segment header on output */
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
@@ -473,7 +473,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				}
 				else
 					Ctrl->G.inc = atof (opt->arg);
-				if (Ctrl->G.header) opt->arg[len] = '+';	/* Restore it */
+				if (Ctrl->G.header) opt->arg[Ctrl->G.header] = '+';	/* Restore the plus-sign */
 				break;
 			case 'L':
 				Ctrl->L.active = true;
