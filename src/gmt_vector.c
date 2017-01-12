@@ -1451,8 +1451,17 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		}
 
 		/* Follow great circle */
-		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0)	/* trouble, no unique great circle */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
+		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
+			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Fix input data or use project -A to generate athe desired great circle by providing an azimuth.\n");
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
+			}
+			return 0;
+		}
 
 		else if ((n_step = lrint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
