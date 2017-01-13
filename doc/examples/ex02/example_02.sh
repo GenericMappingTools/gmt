@@ -9,7 +9,7 @@
 ps=example_02.ps
 gmt set FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
 gmt makecpt -Crainbow -T-2/14/2 > g.cpt
-gmt grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
+gmt grdimage HI_geoid2.nc -R160/20/220/30+r -JOc190/25.5/292/69/4.5i -E50 -K -P \
             -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
 gmt psscale -Cg.cpt -DjRM+o0.6i/0+jLM+w2.88i/0.4i+mc+e -R -J -O -K -Bx2+lGEOID -By+lm >> $ps
 gmt grd2cpt HI_topo2.nc -Crelief -Z > t.cpt

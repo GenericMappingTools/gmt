@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ] [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
+[ |-E|\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
@@ -124,26 +124,28 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*]
+**-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*]
     Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,size) triplet]. If
-    a **+** is appended after **x** and/or **y** then we will draw asymmetrical
-    error bar; these requires two rather than one extra data column.  The
-    *cap* parameter indicates the length of the end-cap on the error bars
-    [7\ **p**]. Pen attributes for error bars may also be set [Defaults: width
-    = default, color = black, style = solid]. A leading **+** will use the
-    lookup color (via **-C**) for both symbol fill and error pen color,
-    while a leading **-** will set error pen color and turn off symbol fill.
-    If upper case **X** and/or **Y** is used we will instead draw
+    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+    **+a** is appended then we will draw asymmetrical error bars; these requires
+    two rather than one extra data column, with the low and high value.
+    If upper case **X** and/or **Y** are used we will instead draw
     "box-and-whisker" (or "stem-and-leaf") symbols. The x (or y) coordinate
-    is then taken as the median value, and 4 more columns are expected to
+    is then taken as the median value, and four more columns are expected to
     contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
     and the maximum (100% quantile) values. The 25-75% box may be filled by
-    using **-G**. If **n** is appended to **X** (or **Y**) we draw a notched
+    using **-G**. If **+n** is appended the we draw a notched
     "box-and-whisker" symbol where the notch width reflects the uncertainty
-    in the median. Then a 5th extra data column is expected to contain the
-    number of points in the distribution.
+    in the median. This symbol requires a 5th extra data column to contain the
+    number of points in the distribution.  The **+w** modifier sets the
+    *cap* width that indicates the length of the end-cap on the error bars
+    [7\ **p**]. Pen attributes for error bars may also be set via **+p**\ *pen*.
+    [Defaults: width = default, color = black, style = solid]. When **-C** is
+    used we can control how the look-up color is applied to our symbol.
+    Append **+cf** to use it to fill the symbol, while **+cl** will just
+    set the error pen color and turn off symbol fill.  Giving **+c** will
+    set both color items.
 
 .. _-F:
 

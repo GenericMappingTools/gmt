@@ -55,7 +55,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct G {	/* -G<inc>[/<colat>][+] */
+	struct G {	/* -G<inc>[/<colat>][+h] */
 		bool active;
 		unsigned int header;
 		unsigned int mode;
@@ -325,7 +325,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+h]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w][<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -362,7 +362,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E) [90].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append + if you want information about the pole in a segment header [no header].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append +h if you want information about the pole in a segment header [no header].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
@@ -462,8 +462,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				len = strlen (opt->arg) - 1;
-				if (len > 0 && opt->arg[len] == '+') {	/* Old-style + only */
-					Ctrl->G.header = len;	/* Wish to place a segment header on output */
+				if (len > 1 && opt->arg[len-1] == '+' && opt->arg[len] == 'h') {
+					Ctrl->G.header = len-1;	/* Wish to place a segment header on output via +h */
+					opt->arg[len-1] = 0;	/* Temporarily remove the trailing + sign */
+				}
+				else if (len > 0 && opt->arg[len] == '+') {
+					Ctrl->G.header = true;	/* Wish to place a segment header on output */
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */

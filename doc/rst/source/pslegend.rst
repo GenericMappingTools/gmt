@@ -157,6 +157,8 @@ Pslegend Codes
     The **B** record will plot a horizontal color bar, :doc:`psscale`-style
     in the middle, starting at *offset* from the left edge, and of the
     given *height*. You may add any additional :doc:`psscale` options as well.
+    Any of the modifiers [+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]] may be
+    given *height*. You may add any additional :doc:`psscale` options as well.
     Any of the modifiers
     [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
@@ -233,7 +235,7 @@ Pslegend Codes
     *n_columns* to 1.
 **P** *paragraph-mode-header-for-pstext*
     Start a new text paragraph by specifying all the parameters needed
-    (see **pstext -M** record description). Note that **pslegend** knows
+    (see :doc:`pstext` **-M** record description). Note that **pslegend** knows
     what all those values should be, so normally you can leave the
     entire record (after P) blank or leave it out all together. If you
     need to set at least one of the parameters directly, you must

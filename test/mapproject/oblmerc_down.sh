@@ -42,8 +42,8 @@ gmt psbasemap -R -J -Bafg30 -B+o${plon}/${plat} -O -K --MAP_GRID_PEN_PRIMARY=0.2
 echo $lon $lat 0 200 200 | gmt psxy -R -J -O -K -SE -Gblack >> $ps
 gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
 gmt project -C$lon/$lat -G25 -A$az_y -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
-echo $lon $lat $az_x 1000 | gmt psxy -R -J -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
-echo $lon $lat $az_y 1000 | gmt psxy -R -J -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo $lon $lat $az_x 1000 | gmt psxy -R -J -O -K -S=0.1i+e+h0.5 -Gred -W0.5p,red >> $ps
+echo $lon $lat $az_y 1000 | gmt psxy -R -J -O -K -S=0.1i+e+h0.5 -Gred -W0.5p,red >> $ps
 echo $plon $plat 0 200 200 | gmt psxy -R -J -O -K -SE -Gred >> $ps
 gmt pstext -R -J -O -K -F+f12p+j -Dj0.1i << EOF >> $ps
 -42 63 CM x
@@ -59,8 +59,8 @@ gmt psbasemap  -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$s
 gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
 gmt project -C$lon/$lat -G25 -A$az_y -L-2000/2000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
 echo $lon $lat 0 100 100 | gmt psxy -R -J -O -K -SE -Gblack >> $ps
-echo $lon $lat $az_x 1000 | gmt psxy -R -J -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
-echo $lon $lat $az_y 1000 | gmt psxy -R -J -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo $lon $lat $az_x 1000 | gmt psxy -R -J -O -K -S=0.15i+e+h0.5 -Gred -W1p,red >> $ps
+echo $lon $lat $az_y 1000 | gmt psxy -R -J -O -K -S=0.15i+e+h0.5 -Gred -W1p,red >> $ps
 echo $LL_lon $LL_lat 0 150 150 | gmt psxy -R -J -O -K -SE -Gblue >> $ps
 echo $UR_lon $UR_lat 0 150 150 | gmt psxy -R -J -O -K -SE -Gblue >> $ps
 gmt pstext -R -J -O -K -F+f12p+j -Dj0.1i -N << EOF >> $ps

@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\ \|\ **g**] ]
-[ |-E|\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]][**n**] ]
+[ |-E|\ [**r**\ \|\ **x**\ \|\ **y**][\ **+w**\ [**k**]][**+n**] ]
 [ |-F|\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\ \|\ **g**] ]
 [ |-N|\ *params* ]
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]][**n**]
+**-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **+w**\ [**k**]][**+n**]
     Estimate power spectrum in the radial direction [**r**\ ]. Place
     **x** or **y** immediately after **-E** to compute the spectrum in
     the x or y direction instead. No grid file is created. If one grid
@@ -88,10 +88,10 @@ Optional Arguments
     Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
     admittance[f], gain[f], coherency[f].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
-    Append **w** to write wavelength instead of frequency. If your grid
+    Give **+w** to write wavelength instead of frequency, and if your grid
     is geographic you may further append **k** to scale wavelengths from
     meter [Default] to km.  Finally, the spectrum is obtained by summing
-    over several frequencies.  Append **n** to normalize so that the
+    over several frequencies.  Append **+n** to normalize so that the
     mean spectral values per frequency are reported instead.
 
 .. _-F:
@@ -238,7 +238,7 @@ gravity grids, and report result as functions of wavelengths in km, try
 
    ::
 
-    gmt grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
+    gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary

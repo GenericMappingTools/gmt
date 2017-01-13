@@ -52,7 +52,7 @@ struct GRDEDIT_CTRL {
 	struct C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
@@ -109,7 +109,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Remove the command history from the header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
+	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
@@ -297,7 +297,9 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;
 		nan_value = G->header->nan_value;
-		gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
+		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
+			Return (GMT_PARSE_ERROR);
+		
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)

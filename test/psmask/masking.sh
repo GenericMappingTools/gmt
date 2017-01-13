@@ -8,7 +8,7 @@ function arrow() {
 	for file in tmp.*; do
 		first=`sed -n 2p $file`
 		second=`sed -n 3p $file`
-		echo $first $second | awk '{print $1, $2, $3, $4}' | gmt psxy -R -J -O -K -Sv0.15i+e+s -Gblack
+		echo $first $second | awk '{print $1, $2, $3, $4}' | gmt psxy -R -J -O -K -Sv0.15i+e+s+h0.5 -Gblack
 	done
 	rm -f tmp.*
 }
@@ -51,7 +51,6 @@ cat << EOF > data.txt
 EOF
 Ri=-R0/10/0/10
 Ro=-R-1/11/-1/11
-gmt set MAP_VECTOR_SHAPE 0.5
 gmt psxy $Ro -JX3i -P -Bafg1 -BWSne data.txt -Ss0.1i -Gblue -W0.25p -K -Y0.5i > $ps
 gmt psmask $Ri -J -I1 data.txt -Dclip.txt -L+psmask.nc
 gmt grd2xyz -s psmask.nc | gmt psxy $Ro -J -O -K -Sc0.03i -Gred >> $ps

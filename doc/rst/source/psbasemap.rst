@@ -527,6 +527,17 @@ thus the spherical form is used. To get a 18-cm-wide world map centered on the D
 
     gmt psbasemap -Rg -JV180/18c -Bafg -B+t"Van der Grinten" > grinten.ps
 
+Arbitrary rotation
+~~~~~~~~~~~~~~~~~~
+
+If you need to plot a map but have it rotated about a vertical axis then
+use the **-p** option.  For instance, the rotate the basemap below 90
+degrees about an axis centered on the map, try
+
+   ::
+
+    gmt psbasemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc > rotated.ps
+
 Custom Labels or Intervals
 --------------------------
 

@@ -41,7 +41,7 @@ gmt psxyz -R -J -JZ -p135/35 -O -Y4.25i -Gred -L -B2g1 -Ctt.cpt << EOF >> $ps
 0	4	0
 3	6	0
 2	7	0
-> -Gp100/32 -W-
+> -Gp32+r100 -W-
 5	0	0
 6	5	0
 4	3	0

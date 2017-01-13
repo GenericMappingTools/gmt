@@ -163,6 +163,7 @@ struct GMT_COMMON {
 	struct i {	/* -i<col>|<colrange>,... */
 		bool active, orig;
 		uint64_t n_cols;
+		uint64_t n_actual_cols;
 	} i;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
@@ -178,8 +179,10 @@ struct GMT_COMMON {
 		bool active;
 		uint64_t n_cols;
 	} o;
-	struct p {	/* -p<az>/<el>[+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
+	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;
+		bool do_z_rotation;	/* true if rotating plot about a vertical axis */
+		double z_rotation;	/* Rotation of <angle> about vertical axis */
 	} p;
 	struct r {	/* -r */
 		bool active;

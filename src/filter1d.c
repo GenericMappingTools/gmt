@@ -85,7 +85,7 @@ struct FILTER1D_CTRL {
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T<tmin/tmax/tinc>[+] */
+	struct T {	/* -T<tmin/tmax/tinc>[+n] */
 		bool active;
 		double min, max, inc;
 	} T;
@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>][+h] [-D<increment>] [-E] [-I<ignore_val>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+n]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -223,7 +223,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to <t_inc> to indicate number of t-values to produce instead.\n");
 	GMT_Option (API, "V,bi,bo,d,f,g,h,i,o,:,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -334,7 +334,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				else {
 					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
 					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
-					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
+					if (strstr (opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
 					}
 				}

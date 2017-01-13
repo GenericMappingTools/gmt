@@ -114,7 +114,7 @@ Optional Arguments
     **c**\ : Form continuous line segments for each group [Default].
     **r**\ : Form line segments from a reference point reset for each group.
     **n**\ : Form networks of line segments between all points in each group.
-    **v**\ : Form vector line segments suitable for psxy **-Sv+s**.
+    **v**\ : Form vector line segments suitable for :doc:`psxy` **-Sv+s**.
     Optionally, append the one of four segmentation methods to define the group:
     **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
     and set group reference point to the very first point of the first file.

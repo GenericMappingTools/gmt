@@ -29,13 +29,13 @@ given grid file into patches of equal area. One common use of
 **grdhisteq** is in a kind of histogram equalization of an image. In
 this application, the user might have a grid of flat topography with a
 mountain in the middle. Ordinary gray shading of this file (using
-grdimage/grdview) with a linear mapping from topography to graytone will
+:doc:`grdimage` or :doc:`grdview`) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
 being almost white. One could use **grdhisteq** to write to stdout or file an
 ASCII list of those data values which divide the range of the data into
 *n_cells* segments, each of which has an equal area in the image. Using
 **awk** or :doc:`makecpt` one can take this output and build a CPT;
-using the CPT with grdimage will result in an image with all levels
+using the CPT with :doc:`grdimage` will result in an image with all levels
 of gray occurring equally. Alternatively, see :doc:`grd2cpt`.
 
 The second common use of **grdhisteq** is in writing a grid with

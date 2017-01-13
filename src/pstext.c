@@ -272,7 +272,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|t|z[<fmt>]][+j[<justify>]]] [-G<color>|c|C] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -316,7 +316,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +A to force text-baselines in the -90/+90 range.\n");
@@ -405,10 +405,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
 				else if (opt->arg[k] == 'J') { Ctrl->D.justify = 2, k++; }
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
-				if (opt->arg[j] == 'v') {
+				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
-					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after c\n");
-					opt->arg[j] = 0;
+					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after +v\n");
+					if (opt->arg[j-1] == '+')	/* New-style syntax */
+						opt->arg[j-1] = 0;
+					else
+						opt->arg[j] = 0;
 				}
 				j = sscanf (&opt->arg[k], "%[^/]/%s", txt_a, txt_b);
 				Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);

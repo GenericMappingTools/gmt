@@ -42,7 +42,7 @@ which contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
 sectors. The output can be rough unless the input data is noise-free.
-Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
+Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter </grdfilter>`) of the
 DiM-filtered data is generally recommended.
 
 Required Arguments
@@ -220,7 +220,7 @@ geographic pole. However, the spatial filters, such as median and mode
 filters, do not use weights and thus should only be used on Cartesian
 grids (or at very low latitudes) only. If you want to apply such spatial
 filters you should project your data to an equal-area projection and run
-dimfilter on the resulting Cartesian grid.
+**dimfilter** on the resulting Cartesian grid.
 
 Script Template
 ---------------

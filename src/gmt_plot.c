@@ -3581,7 +3581,7 @@ GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double
 		else {
 			dr[0] /= sind (C.colat);	/* Scale dr[0] to opening angle degrees given colatitude */
 			/* Determine mid-back point of arrow head by rotating A back by chosen fraction rot of dr[0] */
-			rot_v[0] = 0.5 * dr[0] * (1.95 - GMT->current.setting.map_vector_shape);	/* 1.95 instead of 2 to allow for slop */
+			rot_v[0] = 0.5 * dr[0] * (1.95 - S->v.v_shape);	/* 1.95 instead of 2 to allow for slop */
 			gmt_make_rot_matrix2 (GMT, C.P, rot_v[0], R);	/* Rotation of rot_v[0] degrees about pole P */
 			gmt_matrix_vect_mult (GMT, 3U, R, C.A, Ax);	/* Get Ax = R * A*/
 			C.rot -= rot_v[0];	/* Shorten full arc by the same amount */
@@ -3603,7 +3603,7 @@ GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double
 		else {
 			dr[1] /= sind (C.colat);	/* Scale dr[1] to opening angle degrees given colatitude */
 			/* Determine mid-back point of arrow head by rotating B back by chosen fraction rot of dr[1] */
-			rot_v[1] = 0.5 * dr[1] * (1.95 - GMT->current.setting.map_vector_shape);	/* 1.95 instead of 2 to allow for slop */
+			rot_v[1] = 0.5 * dr[1] * (1.95 - S->v.v_shape);	/* 1.95 instead of 2 to allow for slop */
 			gmt_make_rot_matrix2 (GMT, C.P, -rot_v[1], R);	/* Rotation of -rot_v[1] degrees about pole P */
 			gmt_matrix_vect_mult (GMT, 3U, R, C.B, Bx);	/* Get Bx = R * B*/
 			C.rot -= rot_v[1];	/* Shorten full arc by the same amount */
@@ -3819,7 +3819,7 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 			warn = 1;
 		}
 		else {
-			gmtlib_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(1.95 - GMT->current.setting.map_vector_shape), az[0], &tlon, &tlat);	/* Back mid-point of arrow */
+			gmtlib_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(1.95 - S->v.v_shape), az[0], &tlon, &tlat);	/* Back mid-point of arrow */
 			gmt_geo_to_cart (GMT, tlat, tlon, Ax, true);	/* Get Cartesian coordinates of this new start point for arc */
 			dr[0] = scl[0] * head_length;	/* This is arrow head length in degrees, approximately, without any pen-width compensation */
 		}
@@ -3837,7 +3837,7 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 			warn = 1;
 		}
 		else {
-			gmtlib_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(1.95 - GMT->current.setting.map_vector_shape), az[1], &tlon, &tlat);	/* Back mid-point of arrow */
+			gmtlib_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(1.95 - S->v.v_shape), az[1], &tlon, &tlat);	/* Back mid-point of arrow */
 			gmt_geo_to_cart (GMT, tlat, tlon, Bx, true);	/* Get Cartesian coordinates of this new end point for arc */
 			dr[1] = scl[1] * head_length;	/* This is arrow head length in degrees, approximately, without any pen-width compensation */
 		}
@@ -3868,7 +3868,7 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 
 	if (heads & 1) { /* Place arrow head at A */
 		if (C.longway) az[0] += 180.0;
-		gmtlib_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(2.0 - GMT->current.setting.map_vector_shape), az[0], &mlon, &mlat);	/* Back mid-point of arrow  */
+		gmtlib_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(2.0 - S->v.v_shape), az[0], &mlon, &mlat);	/* Back mid-point of arrow  */
 		if (side[0]) {	/* Must adjust the back mid- and end point by 1/2 the pen width */
 			az[0] = gmt_az_backaz (GMT, mlon, mlat, C.lon[1], C.lat[1], false);	/* Compute the azimuth from M to B at M */
 			scl[0] = (perspective) ? S->v.scale : plot_get_local_scale (GMT, mlon, mlat, tand (da) * dr[0], az[0]+side[0]*90.0);	/* Get deg/inch scale at M perpendicular to arc */
@@ -3907,7 +3907,7 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 	}
 	if (heads & 2) { /* Place arrow head at B */
 		if (C.longway) az[1] += 180.0;
-		gmtlib_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(2.0 - GMT->current.setting.map_vector_shape), az[1], &mlon, &mlat);	/* Mid point of arrow */
+		gmtlib_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(2.0 - S->v.v_shape), az[1], &mlon, &mlat);	/* Mid point of arrow */
 		if (side[1]) {	/* Must adjust the mid-point and end point by 1/2 the pen width */
 			az[1] = gmt_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from M to A at M */
 			scl[1] = (perspective) ? S->v.scale : plot_get_local_scale (GMT, mlon, mlat, tand (da) * dr[1], az[1]+side[1]*90.0);	/* Get deg/inch scale at M perpendicular to arc */
@@ -5473,6 +5473,20 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	plot_echo_command (GMT, PSL, options);
 
+	if (GMT->common.p.do_z_rotation) {	/* Need a rotation about z of the whole page */
+		double x0 = 0.0, y0 = 0.0;	/* Default is to rotate around plot origin */
+		if (GMT->current.proj.z_project.view_given) {	/* Rotation is about another z-axis than through the origin */
+			x0 = GMT->current.proj.z_project.view_x;
+			y0 = GMT->current.proj.z_project.view_y;
+		}
+		else if (GMT->current.proj.z_project.world_given)	/* Rotation is about another lon/lat pole than the origin */
+			gmt_geo_to_xy (GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, &x0, &y0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Transrot: Rotating plot by %g degrees about (%g, %g)\n", GMT->common.p.z_rotation, x0, y0);
+		PSL_comment (GMT->PSL, "Possibly translate then rotate whole page\n");
+		PSL_setorigin (PSL, x0, y0, GMT->common.p.z_rotation, PSL_FWD);
+		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
+	}
+	
 	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
 	this_proj = GMT->current.proj.projection;

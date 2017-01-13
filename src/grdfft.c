@@ -571,7 +571,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]][n] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
 
@@ -587,9 +587,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to write wavelength instead of frequency; append k to report\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give +w to write wavelength instead of frequency; append k to report\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append n to yield mean power instead of total power per frequency.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to yield mean power instead of total power per frequency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
@@ -633,10 +633,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, k, n_errors = 0, filter_type = 0;
+	unsigned int j, k, pos, n_errors = 0, filter_type = 0;
 	int n_scan;
 	double par[5];
-	char combined[GMT_BUFSIZ] = {""}, argument[GMT_LEN16] = {""};
+	char combined[GMT_BUFSIZ] = {""}, argument[GMT_LEN16] = {""}, p[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL, *ptr = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -693,18 +693,34 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical, n for normalize */
+				/* Old syntax: -E[x|y|r][w[k]][n]  new syntax: -E[x|y|r][+w[k]][+n] */
 				Ctrl->E.active = true;
 				j = 0;
-				while (opt->arg[j]) {
-					switch (opt->arg[j]) {
-						case 'r': Ctrl->E.mode =  0; break;
-						case 'x': Ctrl->E.mode = +1; break;
-						case 'y': Ctrl->E.mode = -1; break;
-						case 'w': Ctrl->E.give_wavelength = true; break;
-						case 'k': if (Ctrl->E.give_wavelength) Ctrl->E.km = true; break;
-						case 'n': Ctrl->E.normalize = true; break;
+				switch (opt->arg[0]) {	/* Determine direction for spectrum or default to radial */
+					case 'r': Ctrl->E.mode =  0; j = 1; break;
+					case 'x': Ctrl->E.mode = +1; j = 1;  break;
+					case 'y': Ctrl->E.mode = -1; j = 1;  break;
+					default :Ctrl->E.mode =  0;  break;
+				}
+				if ((c = gmt_first_modifier (GMT, opt->arg, "wn"))) {	/* Process new modifiers [+w[k]][+n] */
+					pos = 0;	/* Reset to start of new word */
+					while (gmt_getmodopt (GMT, c, "wn", &pos, p)) {
+						switch (p[0]) {
+							case 'w': Ctrl->E.give_wavelength = true; if (p[1] == 'k') Ctrl->E.km = true; break;
+							case 'n': Ctrl->E.normalize = true; break;
+							default: n_errors++; break;
+						}
 					}
-					j++;
+				}
+				else {	/* Old-style modifiers [w[k]][n] */
+					while (opt->arg[j]) {
+						switch (opt->arg[j]) {
+							case 'w': Ctrl->E.give_wavelength = true; break;
+							case 'k': if (Ctrl->E.give_wavelength) Ctrl->E.km = true; break;
+							case 'n': Ctrl->E.normalize = true; break;
+						}
+						j++;
+					}
 				}
 				par[0] = Ctrl->E.mode;
 				add_operation (GMT, Ctrl, GRDFFT_SPECTRUM, 1, par);

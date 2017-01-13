@@ -36,7 +36,7 @@ gmt psxy -R -J -O -K -Sc0.075i -Gcyan -W0.25p -N << EOF >> $ps
 0.29	0.75
 0.44	0.75
 EOF
-gmt pstext -R -J -O -K -F+f14p,Helvetica-Bold+j -Dj0.25iv0.25p -N << EOF >> $ps
+gmt pstext -R -J -O -K -F+f14p,Helvetica-Bold+j -Dj0.25i+v0.25p -N << EOF >> $ps
 0	0  	RT	LB
 0.5	0  	CT	CB
 1	0  	LT	RB

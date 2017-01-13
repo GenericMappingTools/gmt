@@ -15,7 +15,7 @@ Synopsis
 
 **grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
-[ |-D|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]] ]
+[ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ ***+e**\ \|\ **n**]] ]
 [ |-E|\ *dpi* ] [ |-F|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -76,7 +76,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+**-D**\ *xinc*\ [*unit*\ ][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*\ ][\ **+e**\ \|\ **n**]]
     Set the grid spacing for the new grid. Append **m** for arc minute,
     **s** for arc second. If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.

@@ -70,7 +70,7 @@ Optional Arguments
 
 **-G**\ *fill*\ \|\ **c**
     Select color or pattern for filling of terminators; or use **-Gc** for clipping [Default is no fill].
-    Deactivate clipping by appending the output of gmt psclip **-C**.
+    Deactivate clipping by appending the output of gmt :doc:`psclip` **-C**.
 
 .. _-I:
 
@@ -183,4 +183,4 @@ Set up a clip path overlay based on the day/night terminator:
 See Also
 --------
 
-:doc:`gmt`, :doc:`pscoast`, :doc:`psxy`
+:doc:`gmt`, :doc:`psclip`, :doc:`pscoast`, :doc:`psxy`

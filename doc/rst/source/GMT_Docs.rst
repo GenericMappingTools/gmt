@@ -448,9 +448,12 @@ We have added two new lower-case GMT common options:
    available cores (only available if compiled with OpenMP support).
    Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
    how many cores to assign to the task.  The modules that currently
-   have this option are greenspline, grdmask, grdmath, grdfilter,
-   grdsample, sph2grd, the potential supplement's grdgravmag3d,
-   talwani2d and talwani3d, and the x2sys supplement's x2sys_solve.
+   have this option are :doc:`greenspline`, :doc:`grdmask`, :doc:`grdmath`,
+   :doc:`grdfilter`, :doc:`grdsample`, :doc:`sph2grd`, the potential supplement's
+   :doc:`grdgravmag3d <supplements/potential/grdgravmag3d`,
+   :doc:`talwani2d <supplements/potential/talwani2d` and
+   :doc:`talwani3d <supplements/potential/talwani3d`, and the x2sys
+   supplement's :doc:`x2sys_solve <supplements/x2sys/x2sys_solve`.
    This list will grow longer with time.
 
 New default parameters
@@ -502,10 +505,11 @@ General improvements
 Several changes have affects across GMT; these are:
 
 *  Added optional multi-threading capabilities to several modules, such as
-   greenspline, grdfilter, grdmask, grdsample, the potential supplement's
-   grdgravmag3d, talwani2d and talwani3d and x2sys's x2sys_solve.
+   :doc:`greenspline`, :doc:`grdfilter`, :doc:`grdmask`, :doc:`grdsample`,
+   the potential supplement's :doc:`grdgravmag3d`, :doc:`talwani2d` and
+   :doc:`talwani3d` and x2sys's :doc:`x2sys_solve`.
 
-*  Optional prerequisite LAPACK means SVD decomposition in greenspline is
+*  Optional prerequisite LAPACK means SVD decomposition in :doc:`greenspline` is
    now very fast, as is true for the regular Gauss-Jordan solution via a
    new multi-processor enabled algorithm.
 
@@ -997,7 +1001,7 @@ ways, such as
    option.
 
 *  While we support the scaling of z-values in grids via the filename convention
-   name[=\ *ID*\ [/*scale*/*offset*\ [/*nan*]]] mechanism, there are times
+   name[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*] mechanism, there are times
    when we wish to scale the x,y domain as well. Users can now
    append **+u**\ *unit* to their gridfile names, where *unit* is one of non-arc units listed
    in Table :ref:`distunits <tbl-distunits>`.  This will convert your Cartesian
@@ -2210,7 +2214,7 @@ select this mode of computation by using the **+** prefix to the
 specified distance (or to the unit itself in cases where no distance is
 required). For instance, a search radius of 20 km using this mode of
 computation would be set by **-S+**\ 20\ **k**.  You may use the
-gmtdefaults :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
+setting :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
 that is much faster to compute.
@@ -2455,11 +2459,11 @@ may be specified in one of four ways, two of which are shown in Figure
    specify Cartesian data domains and geographical regions when using
    map projections where meridians and parallels are rectilinear.
 
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **r**. This form is
+#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is
    used with map projections that are oblique, making meridians and
    parallels poor choices for map boundaries. Here, we instead specify
    the lower left corner and upper right corner geographic coordinates,
-   followed by the suffix **r**. This form guarantees a rectangular map
+   followed by the modifier **+r**. This form guarantees a rectangular map
    even though lines of equal longitude and latitude are not straight lines.
 
 #. **-R**\ *gridfile*. This will copy the domain settings found for the
@@ -2469,8 +2473,8 @@ may be specified in one of four ways, two of which are shown in Figure
    Section `Grid registration: The -r option`_).
 
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
-   grids.  Here, *code* is a 2-character combination of L, C, R (for left, center,
-   or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+   grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,
+   or right) and **T**\ , **M**\ , **B** for top, middle, or bottom. e.g., **BL** for lower left.  This
    indicates which point on a rectangular grid region the *x0*/*y0* coordinates
    refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
    via **-I** to create the corresponding region.
@@ -2491,7 +2495,7 @@ data), the boundary coordinates may take on several different formats:
 Geographic coordinates:
     These are longitudes and latitudes and may be given in decimal
     degrees (e.g., -123.45417) or in the
-    [+\ \|\ -]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
     format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
     shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
     **-R**\ *-180*/*180*/*-90*/*90*, respectively.
@@ -2516,8 +2520,8 @@ Geographic coordinates:
 
 Projected coordinates:
     These are Cartesian projected coordinates compatible with the chosen
-    projection and are given with a leading length *unit*, (e.g.,
-    **k**-200/200/-300/300 for a 400 by 600 km rectangular area centered
+    projection and are given in a length *unit* set via the **+u** modifier, (e.g.,
+    -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
     on the projection center (0, 0). These coordinates are internally
     converted to the corresponding geographic (longitude, latitude)
     coordinates for the lower left and upper right corners. This form is
@@ -2561,9 +2565,9 @@ Other coordinates:
     These are simply any coordinates that are not related to geographic
     or calendar time or relative time and are expected to be simple
     floating point values such as
-    [+\ \|\ -]\ *xxx.xxx*\ [E\ \|\ e\ \|\ D\ \|\ d[+\ \|\ -]xx], i.e.,
-    regular or exponential notations, with the enhancement to understand
-    FORTRAN double precision output which may use D instead of E for
+    [±]\ *xxx.xxx*\ [**E**\ \|\ **e**\ \|\ **D**\ \|\ **d**\ [±]\ *xx*\ ],
+    i.e., regular or exponential notations, with the enhancement to understand
+    FORTRAN double precision output which may use **D** instead of **E** for
     exponents. These values are simply converted as they are to internal
     representation. [12]_
 
@@ -2589,13 +2593,13 @@ Since GMT version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
 **Proj4**. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, **abbrev** is a
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
    *lower-case* abbreviation that selects a particular map projection,
    the *parameters* is zero or more slash-delimited projection
    parameter, and *scale* is map scale given in distance units per
    degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, **Abbrev** is an
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an
    *capitalized* abbreviation that selects a particular map projection,
    the *parameters* is zero or more slash-delimited projection
    parameter, and *width* is map width (map height is automatically
@@ -3481,7 +3485,9 @@ point with **+w**\ *lon0/lat*\ [*z*\ ]) which will project to the center
 of your page size (or you may specify the coordinates of the *projected*
 view point with **+v**\ *x0/y0*. When **-p** is used without any further
 arguments, the values from the last use of **-p** in a previous
-GMT\ command will be used.
+GMT command will be used.  Alternatively, you can perform a simple rotation
+about the z-axis by just giving the rotation angle.  Optionally, use **+v**
+or **+w** to select another axis location than the plot origin.
 
 .. _grid-registration:
 
@@ -3725,7 +3731,7 @@ the same form as the arguments to the **-R** option (see
 Section `Data domain or map region: The -R option`_), with additional flexibility for calendar data.
 Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
-[+\ \|\ -]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ \| \ **E**\ \| \ **S**\ \| \ **N**]
+[±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
 format (e.g., 123:27:15W). With **-fp** you may even supply projected
 data like UTM coordinates.
 
@@ -3996,7 +4002,7 @@ symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
 
-**-Gp**\ *dpi/pattern*\ [:**B**\ *color*\ [**F**\ *color*]]
+**-Gp**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**-r**\ *dpi*]
 
 fill:
     In the first case we may specify a *gray* shade (0--255), RGB color
@@ -4010,28 +4016,28 @@ fill:
 pattern:
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1--90 or the name of a
-    1-, 8-, or 24-bit Sun raster file. The former will result in one of
+    1-, 8-, or 24-bit image raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
     reproduced in Chapter `Predefined Bit and Hachure Patterns in GMT`_.
     The latter allows the user to create
-    customized, repeating images using standard Sun raster files [18]_.
-    The *dpi* parameter sets the resolution of this image on the page;
-    the area fill is thus made up of a series of these "tiles".
-    Specifying *dpi* as 0 will result in highest resolution obtainable
-    given the present dpi setting in  ``gmt.history``. By specifying upper case **-GP**
+    customized, repeating images using image raster files.
+    The optional *dpi* parameter sets the resolution of this image on the page;
+    the area fill is thus made up of a series of these "tiles".  The
+    default resolution is 1200.  By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit
     images one may specify alternative background and foreground colors
-    (by appending :**B**\ *color*\ [**F**\ *color*]) that will replace
+    (by appending **+b**\ *color* and/or **+f**\ *color*) that will replace
     the default white and black pixels, respectively. Setting one of the
     fore- or background colors to - yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
 Due to *PostScript* implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
-images see :doc:`psimage`. The format of Sun
-raster files is outlined in Chapter `GMT file formats`_. Note that under
+images see :doc:`psimage`. The format of Sun raster files [18]_ is
+outlined in Chapter `GMT file formats`_. However, if you built GMT
+with GDAL then other image formats can be used as well. Note that under
 *PostScript* Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 *PostScript* interpreter has been assigned. There is therefore the
@@ -4045,26 +4051,26 @@ Table :ref:`fillex <tbl-fillex>` contains a few examples of fill specifications.
 
 .. _tbl-fillex:
 
-+---------------------------+-----------------------------------------------------+
-+===========================+=====================================================+
-| **-G**\ 128               | Solid gray                                          |
-+---------------------------+-----------------------------------------------------+
-| **-G**\ 127/255/0         | Chartreuse, R/G/B-style                             |
-+---------------------------+-----------------------------------------------------+
-| **-G**\ #00ff00           | Green, hexadecimal RGB code                         |
-+---------------------------+-----------------------------------------------------+
-| **-G**\ 25-0.86-0.82      | Chocolate, h-s-v-style                              |
-+---------------------------+-----------------------------------------------------+
-| **-G**\ DarkOliveGreen1   | One of the named colors                             |
-+---------------------------+-----------------------------------------------------+
-| **-Gp**\ 300/7            | Simple diagonal hachure pattern in b/w at 300 dpi   |
-+---------------------------+-----------------------------------------------------+
-| **-Gp**\ 300/7:Bred       | Same, but with red lines on white                   |
-+---------------------------+-----------------------------------------------------+
-| **-Gp**\ 300/7:BredF-     | Now the gaps between red lines are transparent      |
-+---------------------------+-----------------------------------------------------+
-| **-Gp**\ 100/marble.ras   | Using user image of marble as the fill at 100 dpi   |
-+---------------------------+-----------------------------------------------------+
++-------------------------------------------------+-----------------------------------------------------+
++=================================================+=====================================================+
+| **-G**\ 128                                     | Solid gray                                          |
++-------------------------------------------------+-----------------------------------------------------+
+| **-G**\ 127/255/0                               | Chartreuse, R/G/B-style                             |
++-------------------------------------------------+-----------------------------------------------------+
+| **-G**\ #00ff00                                 | Green, hexadecimal RGB code                         |
++-------------------------------------------------+-----------------------------------------------------+
+| **-G**\ 25-0.86-0.82                            | Chocolate, h-s-v-style                              |
++-------------------------------------------------+-----------------------------------------------------+
+| **-G**\ DarkOliveGreen1                         | One of the named colors                             |
++-------------------------------------------------+-----------------------------------------------------+
+| **-Gp**\ 7\ **+r**\ 300                         | Simple diagonal hachure pattern in b/w at 300 dpi   |
++-------------------------------------------------+-----------------------------------------------------+
+| **-Gp**\ 7\ **+b**\ red\ **+r**\ 300            | Same, but with red lines on white                   |
++-------------------------------------------------+-----------------------------------------------------+
+| **-Gp**\ 7\ **+b**\ red\ **+f**\ -\ **+r**\ 300 | Now the gaps between red lines are transparent      |
++-------------------------------------------------+-----------------------------------------------------+
+| **-Gp**\ marble.ras\ **+r**\ 100                | Using user image of marble as the fill at 100 dpi   |
++-------------------------------------------------+-----------------------------------------------------+
 
 Specifying Fonts
 ----------------
@@ -4307,15 +4313,15 @@ of gray-shades. You must specify the pattern as in Section `Specifying area fill
 some programs let you skip features whose *z*-slice in the CPT
 file has gray-shades set to -. As an example, consider
 
-+-----+---------+-------------+-------+
-| 30  | p200/16 | 80          | \-    |
-+-----+---------+-------------+-------+
-| 80  | \-      | 100         | \-    |
-+-----+---------+-------------+-------+
-| 100 | 200/0/0 | 200/255/255 | 0     |
-+-----+---------+-------------+-------+
-| 200 | yellow  | 300         | green |
-+-----+---------+-------------+-------+
++-----+----------+-------------+-------+
+| 30  | p16+r200 | 80          | \-    |
++-----+----------+-------------+-------+
+| 80  | \-       | 100         | \-    |
++-----+----------+-------------+-------+
+| 100 | 200/0/0  | 200/255/255 | 0     |
++-----+----------+-------------+-------+
+| 200 | yellow   | 300         | green |
++-----+----------+-------------+-------+
 
 where slice 30 < z < 80 is painted with pattern # 16 at 200 dpi,
 slice 80 < z < 100 is skipped, slice 100 < z < 200 is
@@ -4387,6 +4393,21 @@ while :doc:`grd2cpt` can derive the range from one or more grids.
    is asymmetrical, going from -8,000 meter depths up to +3,000 meter elevations.
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range while utilizing the full color range.
+
+Cyclic (wrapped) CPTs
+~~~~~~~~~~~~~~~~~~~~~
+
+Any color table you produce can be turned into a cyclic or *wrapped* color table.
+This is performed by adding the **-Ww** option when running :doc:`makecpt` or
+:doc:`grd2cpt`.  This option simply adds the special comment
+
+| ``# CYCLIC``
+
+to the color table and then GMT knows that when looking up a color from a *z*
+value it will remove an integer multiple of the *z*-range represented by the
+color table so that we are always inside the range of the color table.  This
+means that the fore- and back-ground colors can never be activated.  Wrapped
+color tables are useful for highlighting small changes.
 
 .. _manipulating_CPTs:
 
@@ -4935,8 +4956,8 @@ first, then supply suitable required and optional modifiers:
    :width: 500 px
    :align: center
 
-   Example of a map legend placed with pslegend.  Apart from the placement and dimensions discussed
-   here, pslegend reads macro commands that specifies each item of the legend, including colors,
+   Example of a map legend placed with :doc:`pslegend`.  Apart from the placement and dimensions discussed
+   here, :doc:`pslegend` reads macro commands that specifies each item of the legend, including colors,
    widths of columns, the number of columns, and presents a broad selection of items.  Here, we
    simply used **-Dx**\ 0/0\ **+w**\ 5.6i\ **+j**\ *BL*.
 
@@ -5003,12 +5024,12 @@ The first is the standard way of specifying the reference and anchor points and 
 while the second specifies a *subregion* in the current plot that should be designated the
 map insert area.  Depending on the map projection this may or may not be a rectangular area.
 Map inserts are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
-use the reference point approach you must first append [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**],
-where the optional leading unit indicate that the four coordinates to follow are projected
-distances (e.g., km, miles).  If the leading unit is missing then we assume the coordinates are
+use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
+where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
+distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
 map coordinates (e.g., geographic *west*, *east*, *south*, and *north*).  For oblique
 projections you may wish to specify the domain using the lower-left and upper-right coordinates
-instead (similar to how the **-R** option works).  Some optional modifiers are available:
+instead (similar to how the **-R** option works), by adding **+r**\ .  Some optional modifiers are available:
 
 #. Set insert size.  If you specified a reference point then you must also specify the insert dimensions with the
    **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
@@ -5150,21 +5171,19 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*\ [/*scale*/*offset*\ [/*nan*]]]
+name[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
 
-where everything in brackets is optional. If you are reading a grid then
+where anything in brackets is optional. If you are reading a grid then
 no options are needed: just continue to pass the name of the grid file.
 However, if you write another format you must append the =\ *ID* string,
 where *ID* is the format code listed above. In addition, should you want
 to (1) multiply the data by a scale factor, and (2) add a constant
-offset you must append the /*scale*/*offset* modifier. Finally, if you
+offset you must append the **+s**\ *scale* and **+o**\ *offset* modifiers. Finally, if you
 need to indicate that a certain data value should be interpreted as a
-NaN (not-a-number) you must append the /*nan* suffix to the scaling
-string (it cannot go by itself; note the nesting of the brackets!). The
-/*scale* and /*offset* modifiers may be left empty to select default
-values (scale = 1, offset = 0), or you may specify *a* for
-auto-adjusting the scale and/or offset of packed integer grids
-(=\ *ID*/*a* is a shorthand for =\ *ID*/*a*/*a*).
+NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
+You may the scale as *a* for auto-adjusting the scale and/or offset of
+packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
+=\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
 
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect GMT programs that
@@ -5180,20 +5199,21 @@ Everything looks clearer after a few examples:
 
 *  To read a native short integer grid file, multiply the data by 10 and
    then add 32000, but first let values that equal 32767 be set to NaN,
-   use the filename ``my_file.i2=bs/10/32000/32767``.
+   use the filename ``my_file.i2=bs+s10+o32000+n32767``.
 
 *  To read a Golden Software "surfer" format 6 grid file, just pass the
    file name, e.g., ``my_surferfile.grd``.
 
 *  To read a 8-bit standard Sun raster file (with values in the 0--255
-   range) and convert it to a 1 range, give the name as ``rasterfile=rb/7.84313725e-3/-1`` (i.e., 1/127.5).
+   range) and convert it to a 1 range, give the name as ``rasterfile=rb+s7.84313725e-3+o-1``
+   (i.e., 1/127.5).
 
 *  To write a native binary short integer grid file to standard output
    after subtracting 32000 and dividing its values by 10, give filename
-   as ``=bs/0.1/-3200``.
+   as ``=bs+s0.1+o-3200``.
 
 *  To write an 8-bit integer netCDF grid file with an auto-adjusted
-   offset, give filename as ``=nb//a``.
+   offset, give filename as ``=nb+oa``.
 
 *  To read a short integer *.bil* grid file stored in binary and and force
    the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
@@ -5212,9 +5232,10 @@ to specify the various file formats. The user may create a file called
 a ``gmt.io`` file:
 
 +---------------------------------------------------------------------------+
-| # suffix format_id scale offset NaNxxxComments # GMT i/o shorthand file   |
+| # GMT i/o shorthand file                                                  |
+|                                                                           |
 | # It can have any number of comment lines like this one anywhere          |
-| # suffix format\_id scale offset NaNComments                              |
+| # suffix format_id scale offset NaN Comments                              |
 +-------+-----+-----+---+-------+-------------------------------------------+
 | grd   | nf  | \-  | \-| \-    | Default format                            |
 +-------+-----+-----+---+-------+-------------------------------------------+
@@ -5238,8 +5259,8 @@ a ``gmt.io`` file:
 
 These suffices can be anything that makes sense to the user. To activate
 this mechanism, set parameter :ref:`IO_GRIDFILE_SHORTHAND <IO_GRIDFILE_SHORTHAND>` to TRUE in
-your :doc:`gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
-filename ``wet.mask`` means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
+your :doc:`gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
+filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
 small as 1/32 the size of the corresponding grid float format file.
 
@@ -5533,9 +5554,9 @@ instance, coast lines) or text will not be saved. To save an image with
 name used by GDAL (e.g. GTiff).
 
 For all other programs that create grids, it is also possible to save
-them using GDAL. To do this one needs to use the =gd suffix appended with the
-necessary information regarding the desired driver and data type.
-The syntax is =\ **gd**\ [/*scale*/*offset*\ [/*nan*][:<*driver*\ >[/\ *dataType*]]
+them using GDAL. To do it one need to use the =gd appended with the
+necessary information regarding the driver and the data type to use.
+Generically, =\ **gd**\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*][:<*driver*\ >[/\ *dataType*]]
 where *driver* is the same as explained above and *dataType* is a 2 or 3
 chars code from: u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes
 signed\|unsigned. If not provided the default type is float32. Both
@@ -7335,6 +7356,7 @@ mgd77: MGD77 extractor and plotting tools
 
 This package currently holds the programs
 :doc:`mgd77convert <supplements/mgd77/mgd77convert>`,
+:doc:`mgd77header <supplements/mgd77/mgd77header>`,
 :doc:`mgd77info <supplements/mgd77/mgd77info>`,
 :doc:`mgd77list <supplements/mgd77/mgd77list>`,
 :doc:`mgd77magref <supplements/mgd77/mgd77magref>`,
@@ -7344,7 +7366,7 @@ This package currently holds the programs
 :doc:`mgd77track <supplements/mgd77/mgd77track>` which can be used to
 extract information or data values from or plot marine geophysical data
 files in the ASCII MGD77 or netCDF MGD77+ formats [29]_). This package
-has replaced the old **mgg** package. The package is maintained by Paul Wessel.
+has replaced the old **mgg** package. The package is maintained by Paul Wessel and Mike Chandler.
 
 misc: Miscellaneous tools
 -------------------------
@@ -7457,7 +7479,7 @@ records that do *not* start with '#' then you must make sure to use the
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
+[±]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character

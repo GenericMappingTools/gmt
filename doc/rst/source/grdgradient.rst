@@ -15,9 +15,9 @@ Synopsis
 
 **grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
-[ |-E|\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*] ] 
+[ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
 [ |-L|\ *flag* ] 
-[ |-N|\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
+[ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ **-fg** ]
 [ |SYN_OPT-n| ]
@@ -81,20 +81,17 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
+**-E**\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that
     reflects all the light that strikes it and the surface appears
-    equally bright from all viewing directions. *azim* and *elev* are
-    the azimuth and elevation of light vector. Optionally, supply
-    *ambient* *diffuse* *specular* *shine* which are parameters that
-    control the reflectance properties of the surface. Default values
-    are: *0.55*/*0.6*/*0.4*/*10* To leave some of the values untouched,
-    specify = as the new value. For example **-E**\ *60*/*30*/*=*/*0.5*
-    sets the *azim* *elev* and *diffuse* to 60, 30 and 0.5 and leaves
-    the other reflectance parameters untouched. Append **s** to use a
+    equally bright from all viewing directions. Here, *azim* and *elev* are
+    the azimuth and elevation of the light vector. Optionally, supply
+    *ambient* [0.55], *diffuse* [0.6], *specular* [0.4], or *shine* [10],
+    which are parameters that control the reflectance properties of the
+    surface. Default values are given in the brackets. Use **-Es** for a
     simpler Lambertian algorithm. Note that with this form you only have
-    to provide the azimuth and elevation parameters. Append **p** to use
+    to provide azimuth and elevation. Alternatively, use **-Ep** for
     the Peucker piecewise linear approximation (simpler but faster
     algorithm; in this case the *azim* and *elev* are hardwired to 315
     and 45 degrees. This means that even if you provide other values
@@ -111,15 +108,15 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**e**][**t**][*amp*][/\ *sigma*\ [/*offset*]]
-    Normalization. [Default: no normalization.] The actual gradients *g*
+**-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
+    Normalization. [Default is no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
     maximum output magnitude of *amp*. If *amp* is not given, default
     *amp* = 1. If *offset* is not given, it is set to the average of
     *g*. **-N** yields *gn* = *amp* \* (*g* - *offset*)/max(abs(\ *g* -
     *offset*)). **-Ne** normalizes using a cumulative Laplace
     distribution yielding *gn* = *amp* \* (1.0 -
-    exp(sqrt(2) \* (*g* - *offset*)/ *sigma*)) where
+    exp(sqrt(2) \* (*g* - *offset*)/ *sigma*)), where
     *sigma* is estimated using the L1 norm of (*g* - *offset*) if it is
     not given. **-Nt** normalizes using a cumulative Cauchy distribution
     yielding *gn* = (2 \* *amp* / PI) \* atan( (*g* - *offset*)/

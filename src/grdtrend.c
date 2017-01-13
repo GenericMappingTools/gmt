@@ -136,14 +136,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[+r] [-D<diffgrid>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of grid file to fit trend to.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows; append +r for robust solution:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Supply filename to write grid file of differences (input - trend).\n");
@@ -194,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
 				Ctrl->N.active = true;
 				if (strchr (opt->arg, 'r')) Ctrl->N.robust = true;
-				j = (opt->arg[0] == 'r') ? 1 : 0;
+				j = (opt->arg[0] == 'r') ? 1 : 0;	/* GMT4 backwardness */
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':

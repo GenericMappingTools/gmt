@@ -18,7 +18,8 @@ Synopsis
 |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |-N|\ **i**\ \|\ **p**\ \|\ **r** ]
-[ |SYN_OPT-R| ] [ |-T| ]
+[ |SYN_OPT-R| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -142,12 +143,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-    *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
-    **m** to indicate arc minutes, or **s** to indicate arc seconds. If
-    the new *x\_inc*, *y\_inc* are NOT integer multiples of the old ones
-    (in the input data), filtering will be considerably slower.
-    [Default: Same as input.]
+.. include:: explain_-I.rst_
 
 .. _-N:
 
@@ -203,7 +199,7 @@ calculations, you need:
                   -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
-corresponding low-pass filter using a coarse grid interval as grdfilter
+corresponding low-pass filter using a coarse grid interval as **grdfilter**
 will resample the result to the same resolution as the input grid so we
 can compute the residuals, e.g.,
 
@@ -229,9 +225,13 @@ horizontal, try
 Limitations
 -----------
 
-To use the **-D**\ 5 option the input Mercator grid must be created by
-img2mercgrd using the **-C** option so the origin of the y-values is the
-Equator (i.e., x = y = 0 correspond to lon = lat = 0).
+#. To use the **-D**\ 5 option the input Mercator grid must be created by
+   img2mercgrd using the **-C** option so the origin of the y-values is the
+   Equator (i.e., x = y = 0 correspond to lon = lat = 0).
+#. If the new *x\_inc*, *y\_inc* set with **-I** are NOT integer multiples
+   of the increments in the input data, filtering will be considerably slower.
+   [Default increments: Same as input.]
+
 
 See Also
 --------

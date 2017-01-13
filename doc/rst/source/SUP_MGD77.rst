@@ -6,6 +6,7 @@ MGD77
    :maxdepth: 1
 
    supplements/mgd77/mgd77convert
+   supplements/mgd77/mgd77header
    supplements/mgd77/mgd77info
    supplements/mgd77/mgd77list
    supplements/mgd77/mgd77magref

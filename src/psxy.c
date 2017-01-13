@@ -353,7 +353,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		P->end[k].V->v.v_width = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
 		dim[0] = x[current[k]] + c * L; dim[1] = y[current[k]] + s * L;
 		dim[2] = P->end[k].V->v.v_width, dim[3] = P->end[k].V->v.h_length, dim[4] = P->end[k].V->v.h_width;
-		dim[5] = GMT->current.setting.map_vector_shape;
+		dim[5] = P->end[k].V->v.v_shape;
 		dim[6] = (double)P->end[k].V->v.status;
 		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
 		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
@@ -371,7 +371,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p|x|y]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O] [-P]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, \
@@ -393,16 +393,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header. Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy> [no offset].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw (symmetrical) error bars for x, y, or both.  Add cap-width [%gp].\n", EBAR_CAP_WIDTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t   If + is appended after x|y then we expect asymmetrical errors (two columns) [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append pen attributes. A leading + applies cpt color (-C) to symbol\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   fill and error pen; - applies it to pen only.  If X or Y is used then\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a box-and-whisker diagram is drawn instead, using data from 4 extra\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   columns to get the 0 %%, 25 %%, 75 %%, and 100%% quantiles (point value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   is assumed to be 50%%).  If n is appended after X (or Y) we expect a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   5th extra column with the sample size, which is needed to draw a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   notched box-and whisker diagram (notch width represents uncertainty.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the median).  Finally, use -W, -G to affect the 25-75%% box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw (symmetrical) standard error bars for x and/or y.  Append +a for\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetrical errors (reads two columns) [symmetrical reads one column].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If X or Y are specified instead then a box-and-whisker diagram is drawn,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   requiring four extra columns with the 0%%, 25%%, 75%%, and 100%% quantiles.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (The x or y coordinate is expected to represent the 50%% quantile.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add cap-width with +w [%gp] and error pen attributes with +p<pen>\n", EBAR_CAP_WIDTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Given -C, use +cl to apply cpt color to error pen and +cf for error fill [both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n for a notched box-and whisker (notch width represents uncertainty.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the median.  A 5th extra column with the sample size is required.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The settings of -W, -G affect the appearance of the 25-75%% box.\n");
 	gmt_segmentize_syntax (API->GMT, 'F', 1);
 	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
@@ -500,11 +500,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_vector_syntax (API->GMT, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 7);
-	GMT_Message (API, GMT_TIME_NONE, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append l to let pen colors follow the CPT setting (requires -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append f to let fill/font colors follow the CPT setting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
+	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,f,g,h,i,p,t,:,.");
@@ -517,13 +513,59 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXY_CTRL *C
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "\t   Append +c for both effects [none].\n");
+		gmt_pen_syntax (API->GMT, 'W', "sets pen attributes [Default pen is %s]:", 15);
 		n_errors++;
 	}
 	return n_errors;
+}
+
+GMT_LOCAL unsigned int parse_old_E (struct GMTAPI_CTRL *API, struct PSXY_CTRL *Ctrl, char *text) {
+	unsigned int j = 0, j0, n_errors = 0;
+	char txt_a[GMT_LEN256] = {""};
+	
+	while (text[j] && text[j] != '/') {
+		switch (text[j]) {
+			case 'x':	/* Error bar for x */
+				Ctrl->E.xbar = EBAR_NORMAL;
+				if (text[j+1] == '+') { Ctrl->E.xbar = EBAR_ASYMMETRICAL; j++;}
+				break;
+			case 'X':	/* Box-whisker instead */
+				Ctrl->E.xbar = EBAR_WHISKER;
+				if (text[j+1] == 'n') {Ctrl->E.xbar = EBAR_NOTCHED_WHISKER; j++;}
+				break;
+			case 'y':	/* Error bar for y */
+				Ctrl->E.ybar = EBAR_NORMAL;
+				if (text[j+1] == '+') { Ctrl->E.ybar = EBAR_ASYMMETRICAL; j++;}
+				break;
+			case 'Y':	/* Box-whisker instead */
+				Ctrl->E.ybar = EBAR_WHISKER;
+				if (text[j+1] == 'n') {Ctrl->E.ybar = EBAR_NOTCHED_WHISKER; j++;}
+				break;
+			case '+':	/* Only allowed for -E+ as shorthand for -Ex+y+ */
+				if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_ASYMMETRICAL;
+				break;
+			default:	/* Get error 'cap' width */
+				strncpy (txt_a, &text[j], GMT_LEN256);
+				j0 = 0;
+				while (txt_a[j0] && txt_a[j0] != '/') j0++;
+				txt_a[j0] = 0;
+				Ctrl->E.size = gmt_M_to_inch (API->GMT, txt_a);
+				while (text[j] && text[j] != '/') j++;
+				j--;
+				break;
+		}
+		j++;
+	}
+	if (text[j] == '/') {
+		j++;
+		if (text[j] == '-') {Ctrl->E.mode = 1; j++;}
+		if (text[j] == '+') {Ctrl->E.mode = 2; j++;}
+		if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->E.pen)) {
+			gmt_pen_syntax (API->GMT, 'E', "sets error bar pen attributes", 0);
+			n_errors++;
+		}
+	}
+	return (n_errors);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
@@ -534,7 +576,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j0, n_errors = 0;
+	unsigned int n_errors = 0;
 	int j;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -583,51 +625,57 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					Ctrl->D.active = true;
 				}
 				break;
-			case 'E':	/* Get info for error bars and bow-whisker bars */
+			case 'E':	/* Get info for error bars and box-whisker bars */
 				Ctrl->E.active = true;
-				j = 0;
-				while (opt->arg[j] && opt->arg[j] != '/') {
-					switch (opt->arg[j]) {
-						case 'x':	/* Error bar for x */
-							Ctrl->E.xbar = EBAR_NORMAL;
-							if (opt->arg[j+1] == '+') { Ctrl->E.xbar = EBAR_ASYMMETRICAL; j++;}
-							break;
-						case 'X':	/* Box-whisker instead */
-							Ctrl->E.xbar = EBAR_WHISKER;
-							if (opt->arg[j+1] == 'n') {Ctrl->E.xbar = EBAR_NOTCHED_WHISKER; j++;}
-							break;
-						case 'y':	/* Error bar for y */
-							Ctrl->E.ybar = EBAR_NORMAL;
-							if (opt->arg[j+1] == '+') { Ctrl->E.ybar = EBAR_ASYMMETRICAL; j++;}
-							break;
-						case 'Y':	/* Box-whisker instead */
-							Ctrl->E.ybar = EBAR_WHISKER;
-							if (opt->arg[j+1] == 'n') {Ctrl->E.ybar = EBAR_NOTCHED_WHISKER; j++;}
-							break;
-						case '+':	/* Only allowed for -E+ as shorthand for -Ex+y+ */
-							if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_ASYMMETRICAL;
-							break;
-						default:	/* Get error 'cap' width */
-							strncpy (txt_a, &opt->arg[j], GMT_LEN256);
-							j0 = 0;
-							while (txt_a[j0] && txt_a[j0] != '/') j0++;
-							txt_a[j0] = 0;
-							Ctrl->E.size = gmt_M_to_inch (GMT, txt_a);
-							while (opt->arg[j] && opt->arg[j] != '/') j++;
-							j--;
-							break;
+				if (strstr (opt->arg, "+a") || strstr (opt->arg, "+c") || strstr (opt->arg, "+n") || strstr (opt->arg, "+p") || strstr (opt->arg, "+w")) {
+					/* New parser for -E[x|y|X|Y][+a][+cl|f][+n][+p<pen>][+w<capwidth>] */
+					char p[GMT_LEN64] = {""};
+					unsigned int pos = 0;
+					j = 0;
+					while (opt->arg[j] != '+' && j < 2) {	/* Process one or two selections */
+						switch (opt->arg[j]) {
+							case 'x':	Ctrl->E.xbar = EBAR_NORMAL;  break;	/* Error bar for x */
+							case 'y':	Ctrl->E.ybar = EBAR_NORMAL;  break;	/* Error bar for x */
+							case 'X':	Ctrl->E.xbar = EBAR_WHISKER; break;	/* Box-whisker for x */
+							case 'Y':	Ctrl->E.ybar = EBAR_WHISKER; break;	/* Box-whisker for y */
+							default: 
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Unrecognized error bar selection %c\n", opt->arg[j]);
+								n_errors++;	break;
+						}
+						j++;
 					}
-					j++;
-				}
-				if (opt->arg[j] == '/') {
-					j++;
-					if (opt->arg[j] == '-') {Ctrl->E.mode = 1; j++;}
-					if (opt->arg[j] == '+') {Ctrl->E.mode = 2; j++;}
-					if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->E.pen)) {
-						gmt_pen_syntax (GMT, 'E', "sets error bar pen attributes", 0);
-						n_errors++;
+					if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_NORMAL;	/* Default is both x and y error bars */
+					while (gmt_getmodopt (GMT, &(opt->arg[j]), "acnpw", &pos, p)) {
+						switch (p[0]) {
+							case 'a':	/* Asymmetrical error bars */
+								if (Ctrl->E.xbar == EBAR_NORMAL) Ctrl->E.xbar = EBAR_ASYMMETRICAL;
+								if (Ctrl->E.ybar == EBAR_NORMAL) Ctrl->E.ybar = EBAR_ASYMMETRICAL;
+								break;
+							case 'c':	/* Control CPT usage for fill or pen or both */
+								switch (p[1]) {
+									case 'l': Ctrl->E.mode = 1; break;
+									case 'f': Ctrl->E.mode = 2; break;
+									default:  Ctrl->E.mode = 3; break;
+								}
+								break;
+							case 'n':	/* Notched box-and-whisker */
+								if (Ctrl->E.xbar == EBAR_WHISKER) Ctrl->E.xbar = EBAR_NOTCHED_WHISKER;
+								if (Ctrl->E.ybar == EBAR_WHISKER) Ctrl->E.ybar = EBAR_NOTCHED_WHISKER;
+								break;
+							case 'p':	/* Error bar pen */
+								if (p[1] && gmt_getpen (GMT, &p[1], &Ctrl->E.pen)) {
+									gmt_pen_syntax (GMT, 'E', "sets error bar pen attributes", 0);
+									n_errors++;
+								}
+								break;
+							case 'w':	/* Error bar cap width */
+								Ctrl->E.size = gmt_M_to_inch (GMT, &p[1]);
+								break;
+						}
 					}
 				}
+				else	/* Old parsing of -E[x[+]|y[+]|X|Y][n][cap][/[+|-]<pen>] */
+					n_errors += parse_old_E (API, Ctrl, opt->arg);
 				GMT_Report (API, GMT_MSG_DEBUG, "Settings for -E: x = %d y = %d\n", Ctrl->E.xbar, Ctrl->E.ybar);
 				break;
 			case 'F':
@@ -1363,7 +1411,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
-					dim[5] = GMT->current.setting.map_vector_shape;
+					dim[5] = S.v.v_shape;
 					dim[6] = (double)S.v.status;
 					dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
 					dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
@@ -1399,7 +1447,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
-					dim[6] = GMT->current.setting.map_vector_shape;
+					dim[6] = S.v.v_shape;
 					dim[7] = (double)S.v.status;
 					dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
 					dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];

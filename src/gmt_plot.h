@@ -162,6 +162,7 @@ struct GMT_VECT_ATTR {
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_stem;		/* Min length in % of visible vector when head is large [10%] */
 	float v_width;		/* Width of vector stem in inches */
+	float v_shape;		/* Shape of vector head [MAP_VECTOR_SHAPE] */
 	float h_length;		/* Length of vector head in inches */
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */

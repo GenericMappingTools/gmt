@@ -18,7 +18,7 @@ Synopsis
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
 [ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
-[ |-T|\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
+[ |-T|\ *t\_min*/*t_max*/*t_inc*\ [**+n**\ ]\|\ *tfile* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -133,10 +133,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile*
+**-T**\ *t_min*/*t_max*/*t_inc*\ [**+n**\ ]\|\ *tfile*
     Required when no input files are given. Sets the t-coordinates of
     the first and last point and the equidistant sampling interval for
-    the "time" column (see **-N**). Append **+** if you are specifying
+    the "time" column (see **-N**). Append **+n** if you are specifying
     the number of equidistant points instead. If there is no time column
     (only data columns), give **-T** with no arguments; this also
     implies **-Ca**. Alternatively, give the name of a file whose first
@@ -702,7 +702,7 @@ trigonometric argument (2\*pi\*T/360):
     gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
                 @kT 3 MUL COS ADD = harmonics.d
 
-To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no
+To use **gmtmath** as a RPN Hewlett-Packard calculator on scalars (i.e., no
 input files) and calculate arbitrary expressions, use the **-Q** option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:

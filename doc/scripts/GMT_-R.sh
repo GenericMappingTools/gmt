@@ -28,9 +28,9 @@ gmt psxy -R -J -O -K -N -Wthinner << EOF >> GMT_-R.ps
 1.05	-0.35
 EOF
 #
-gmt pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K -X2.75 -Y0.5 >> GMT_-R.ps
+gmt pscoast -R-90/20/-65.5327/29.4248+rr -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K -X2.75 -Y0.5 >> GMT_-R.ps
 gmt pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT << EOF >> GMT_-R.ps
-1	-0.375	@%0%b)@%% @%1%\035R@%%xlleft/ylleft/xuright/yuright @%1%r@%%
+1	-0.375	@%0%b)@%% @%1%\035R@%%xlleft/ylleft/xuright/yuright@%1%+r@%%
 EOF
 gmt psxy -R -J -O -K -N -Sc0.1 -Wthinner << EOF >> GMT_-R.ps
 0	0
@@ -50,4 +50,3 @@ gmt psxy -R -J -O -N -Wthinner << EOF >> GMT_-R.ps
 2	2
 1.63	-0.35
 EOF
-

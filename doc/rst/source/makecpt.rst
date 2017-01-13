@@ -22,7 +22,9 @@ Synopsis
 [ |-I|\ [**c**][**z**] ] [ |-M| ]
 [ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
 [ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn* ]
-[ |-V|\ [*level*\ ] ] [ |-W| ] [ |-Z| ]
+[ |-V|\ [*level*\ ] ]
+[ |-W|\ [**w**] ]
+[ |-Z| ]
 
 |No-spaces|
 
@@ -178,7 +180,8 @@ Optional Arguments
     starting at the beginning of the color table, until colors for all
     intervals are assigned. This is particularly useful in combination
     with a categorical color table, like "categorical". Cannot be used
-    in combination with **-Z**.
+    in combination with **-Z**.  Alternatively, use **-Ww** to produce
+    a wrapped (cyclic) color table that endlessly repeats its range.
 
 .. _-Z:
 
@@ -264,12 +267,20 @@ earthquakes, use
    
     gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
-Finally, to make a continuous CPT from white to blue as z goes from
+To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
    
     gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
+
+To make a wrapped (cyclic) CPT from the jet table over the interval
+0 to 500, i.e., the color will be wrapped every 500 z-units so that
+we always get a color regardless of the *z* value, try
+
+   ::
+
+    gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
 Bugs
 ----

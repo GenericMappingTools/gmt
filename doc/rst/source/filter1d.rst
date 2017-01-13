@@ -16,7 +16,7 @@ Synopsis
 **filter1d** [ *table* ] |-F|\ *type<width>*\ [*mode*][**+h**]
 [ |-D|\ *increment* ] [ |-E| ] [ |-I|\ *ignore\_val* ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
-[ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+**] ]
+[ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -141,7 +141,7 @@ Optional Arguments
 
 **-T**\ *t_min/t_max/t_inc*\ [**+**]
     Make evenly spaced time-steps from *t\_min* to *t_max* by *t_inc*
-    [Default uses input times]. Append **+** to *t_inc* if you are
+    [Default uses input times]. Append **+n** to *t_inc* if you are
     specifying the number of equidistant points instead. 
 
 .. _-V:

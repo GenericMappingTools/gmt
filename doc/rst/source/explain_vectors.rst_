@@ -26,6 +26,9 @@ end point of the segment:
     **+g**-\ \|\ *fill* turns off vector head fill (if -) or sets the vector
     head fill [Default fill is used, which may be no fill].
 
+    **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
+    is controlled by MAP_VECTOR_SHAPE [0].
+ 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
 
     **+m** places a vector head at the mid-point the vector path [none].

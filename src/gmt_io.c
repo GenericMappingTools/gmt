@@ -201,7 +201,7 @@ typedef enum {
 } SwapWidth;
 
 /*! Macro to apply columns log/scale/offset conversion on the fly */
-#define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
+#define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset;}
 
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
@@ -3042,15 +3042,17 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token, *stringp;
 	double val;
 
-	/* gmt_ascii_input will skip blank lines and shell comment lines which start
+	/* gmtio_ascii_input will skip blank lines and shell comment lines which start
 	 * with #.  Fields may be separated by spaces, tabs, or commas.  The routine returns
 	 * the actual number of items read [or 0 for segment header and -1 for EOF]
 	 * If *n is passed as GMT_BUFSIZ it will be reset to the actual number of fields.
 	 * If gap checking is in effect and one of the checks involves a column beyond
 	 * the ones otherwise needed by the program we extend the reading so we may
-	 * examin the column needed in the gap test.
+	 * examine the column needed in the gap test.
 	 * *status returns the number of fields read, 0 for header records, -1 for EOF.
 	 * We return NULL (headers or errors) or pointer to GMT->current.io.curr_rec.
+	 * If -i is in effect we must handle the modified output order as well as
+	 * check for repeated input column usage.
 	 */
 
 	while (!done) {	/* Done becomes true when we successfully have read a data record */
@@ -3170,13 +3172,21 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				else	/* Cannot have NaN in this column, flag record as bad */
 					bad_record = true;
 				if (GMT->current.io.skip_if_NaN[col_pos]) set_nan_flag = true;	/* Flag that we found NaN in a column that means we should skip */
+				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
 				gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				GMT->current.io.curr_rec[col_pos] = val;
+				col_no++;		/* Count up number of columns found */
 				n_ok++;
+				while (GMT->common.i.active && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
+					/* This input column is requested more than once */
+					col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* The data column that will receive this value */
+					GMT->current.io.curr_rec[col_pos] = val;
+					col_no++;
+					n_ok++;
+				}
 			}
-			col_no++;		/* Count up number of columns found */
 		}
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
@@ -3344,7 +3354,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			if (table->segment[seg]->ogr && GMT->common.a.output) gmtio_write_ogr_segheader (GMT, fp, table->segment[seg]);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
-		if (table->segment[seg]->range != GMT->current.io.geo.range) {	/* Segment-specific formatting for longitudes */
+		if (table->segment[seg]->range && table->segment[seg]->range != GMT->current.io.geo.range) {	/* Segment-specific formatting for longitudes */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s Segment %d changed io.geo.range from %d to %d\n",
 			            out_file, (int)seg, GMT->current.io.geo.range, table->segment[seg]->range);
 			save = GMT->current.io.geo.range; GMT->current.io.geo.range = table->segment[seg]->range;
@@ -4199,7 +4209,8 @@ int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
 		return GMT_OK;
 	}
-	if (direction == GMT_IN && GMT->common.i.active && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_cols) {
+	//if (direction == GMT_IN && GMT->common.i.active && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_cols) {
+	if (direction == GMT_IN && GMT->common.i.active && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_actual_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of input columns set by -i exceeds those set by -bi!\n");
 		GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
 	}
@@ -4324,9 +4335,10 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		gmtlib_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
 	}
-	if (direction == GMT_IN && expected && GMT->common.i.active && GMT->common.i.n_cols > expected)
+	//if (direction == GMT_IN && expected && GMT->common.i.active && GMT->common.i.n_cols > expected)
+	if (direction == GMT_IN && expected && GMT->common.i.active && GMT->common.i.n_actual_cols > expected)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n",
-		            mode[GMT_IN], expected, GMT->common.i.n_cols);
+		            mode[GMT_IN], expected, GMT->common.i.n_actual_cols);
 	return (GMT_OK);
 }
 
@@ -4691,6 +4703,42 @@ void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text) {
 		sprintf (text, "%sT%s", date, tclock);
 }
 
+#define N_T_UNITS 5
+/* Using average year and month here for durations */
+static double tcount[N_T_UNITS] = {31557600.0, 2629800.0, 86400.0, 3600.0, 60.0};
+static char *tformat[N_T_UNITS] = {"%uY","%2.2uM", "%2.2uD", "%2.2uH", "%2.2uM"};
+
+/*! . */
+void gmt_format_duration_output (struct GMT_CTRL *GMT, double dt, char *text) {
+	unsigned int k, k0 = N_T_UNITS, n[N_T_UNITS];
+	char item[GMT_LEN16] = {""};
+	double sec;	/* Get seconds */
+	text[0] = 'P';	/* The ISO duration designator */
+	if (dt == 0.0) {	/* Zero duration */
+		text[1] = '0';	text[2] = 0;
+		return;
+	}
+	sec = dt * GMT->current.setting.time_system.scale;	/* Get seconds */
+	for (k = 0; k < N_T_UNITS; k++) {	/* Add up number of time units */
+		if ((n[k] = (unsigned int)floor (sec / tcount[k]))) {
+			sec -= n[k] * tcount[k];
+			if (k0 == N_T_UNITS) k0 = k;
+		}
+	}
+	while (k0 < N_T_UNITS) {	/* For remaining units... */
+		sprintf (item, tformat[k0], n[k0]);
+		strcat (text, item);
+		k0++;
+	}
+	if (sec > 0.0) {	/* Also add seconds */
+		if (GMT->current.io.clock_output.n_sec_decimals)
+			sprintf (item, "%0*.*fS", GMT->current.io.clock_output.n_sec_decimals+3, GMT->current.io.clock_output.n_sec_decimals, sec);
+		else
+			sprintf (item, "%2.2uS", urint (sec));
+		strcat (text, item);
+	}
+}
+
 /*! . */
 void gmt_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int direction, uint64_t col) {
 	/* Format based on column position in in or out direction */
@@ -4708,11 +4756,35 @@ void gmt_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned 
 		case GMT_IS_ABSTIME:
 			gmt_format_abstime_output (GMT, x, text);
 			break;
+		case GMT_IS_DURATION:
+			gmt_format_duration_output (GMT, x, text);
+			break;
 		default:	/* Floating point */
 			if (GMT->current.io.o_format[col])	/* Specific to this column */
 				sprintf (text, GMT->current.io.o_format[col], x);
 			else	/* Use the general float format */
 				sprintf (text, GMT->current.setting.format_float_out, x);
+			break;
+	}
+}
+
+void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned int type) {
+	if (gmt_M_is_dnan (x)) {
+		sprintf (text, "NaN");
+		return;
+	}
+	switch (type) {
+		case GMT_IS_LON:
+			gmtio_format_geo_output (GMT, false, x, text);
+			break;
+		case GMT_IS_LAT:
+			gmtio_format_geo_output (GMT, true, x, text);
+			break;
+		case GMT_IS_ABSTIME:
+			gmt_format_abstime_output (GMT, x, text);
+			break;
+		default:
+			sprintf (text, GMT->current.setting.format_float_out, x);
 			break;
 	}
 }

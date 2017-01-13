@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
-[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
+[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ [*flags*\ ] ]
@@ -194,20 +194,20 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-    gmt xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0//"Hawaiian Gravity"/"GRS-80 Ellipsoid used" \
+    gmt xyz2grd hawaii_grv.xyz -D+xdegree+ydegree+zGal+t"Hawaiian Gravity"+r"GRS-80 Ellipsoid used" \
                 -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
 
-    gmt xyz2grd raw.b -Dm/m/m/1/0 -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+    gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
 scanline-oriented data topo30.b on the NGDC global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun), use
 
-    gmt xyz2grd topo30.b -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
+    gmt xyz2grd topo30.b -D+xm+ym+zm -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can

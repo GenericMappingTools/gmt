@@ -107,18 +107,19 @@ enum GMT_enum_segopt {
 enum gmt_M_col_enum {
 	GMT_IS_NAN   =   0,	/* Returned by gmt_scanf routines when read fails */
 	GMT_IS_FLOAT	=   1,	/* Generic (double) data type, no special format */
-	GMT_IS_LAT		=   2,
-	GMT_IS_LON		=   4,
-	GMT_IS_GEO		=   6,	/* data type is either Lat or Lon */
-	GMT_IS_RELTIME		=   8,	/* For I/O of data in user units */
-	GMT_IS_ABSTIME		=  16,	/* For I/O of data in calendar+clock units */
-	GMT_IS_RATIME		=  24,	/* To see if time is either Relative or Absolute */
-	GMT_IS_ARGTIME		=  32,	/* To invoke gmt_scanf_argtime()  */
-	GMT_IS_DIMENSION	=  64,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
-	GMT_IS_GEODIMENSION	= 128,	/* A float with [optional] geo-distance unit suffix, e.g., 7.5n, 0.4d; convert to km  */
-	GMT_IS_GEOANGLE		= 256,	/* An angle to be converted via map projection to angle on map  */
-	GMT_IS_STRING		= 512,	/* An text argument [internally used, not via -f]  */
-	GMT_IS_UNKNOWN		= 1024};	/* Input type is not knowable without -f */
+	GMT_IS_LAT		=    2,
+	GMT_IS_LON		=    4,
+	GMT_IS_GEO		=    6,	/* data type is either Lat or Lon */
+	GMT_IS_RELTIME		=    8,	/* For I/O of data in user units */
+	GMT_IS_ABSTIME		=   16,	/* For I/O of data in calendar+clock units */
+	GMT_IS_RATIME		=   24,	/* To see if time is either Relative or Absolute */
+	GMT_IS_ARGTIME		=   32,	/* To invoke gmt_scanf_argtime()  */
+	GMT_IS_DURATION		=   64,	/* For elapsed time */
+	GMT_IS_DIMENSION	=  128,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
+	GMT_IS_GEODIMENSION	=  256,	/* A float with [optional] geo-distance unit suffix, e.g., 7.5n, 0.4d; convert to km  */
+	GMT_IS_GEOANGLE		=  512,	/* An angle to be converted via map projection to angle on map  */
+	GMT_IS_STRING		= 1024,	/* An text argument [internally used, not via -f]  */
+	GMT_IS_UNKNOWN		= 2048};	/* Input type is not knowable without -f */
 
 /*! Various ways to report longitudes */
 enum GMT_lon_enum {

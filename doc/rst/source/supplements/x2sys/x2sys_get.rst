@@ -72,7 +72,7 @@ Optional Arguments
     the data base. Append the name of a file with a list of tracks if
     you want to limit the output to those pairs that involve at least
     one of the track names in your list. The output is suitable for the
-    **-A** option in **x2sys_cross**. By default, only external
+    **-A** option in :doc:`x2sys_cross`. By default, only external
     crossover pairs are listed. Use **-L+** to include internal pairs in the list.
 
 .. _-N:

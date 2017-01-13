@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdconvert** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]]]
-*outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]][\ *:driver*\ [*/datatype*]]]
+**grdconvert** *ingrdfile*\ [=\ *id*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+|-G|\ *outgrdfile*\ [=\ *id*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][\ *:driver*\ [*/datatype*]]]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -35,38 +35,36 @@ Required Arguments
 *ingrdfile*
     The grid file to be read. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
-    below), you may optionally append *scale* and *offset*. These
-    options will scale the data and then offset them with the specified
-    amounts after reading.
-    If *scale* and *offset* are supplied you may also append a value
-    that represents 'Not-a-Number' (for floating-point grids this is
+    below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
+    and **+n**\ *invalid*. The first two options will scale the data
+    and then offset them with the specified amounts after reading
+    while the latter lets you supply a value that represents an invalid
+    grid entry, i.e., 'Not-a-Number' (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available). The *scale* and *offset*
-    modifiers may be left empty to select default values (scale = 1,
-    offset = 0). When *id=gd*, the file will be read using the GDAL library, which will take
-    care to detect the format of the file being read. This mechanism is actually used in a automatic
-    form when the file format is not one of those that GMT recognize. However, sometimes the guessing
-    may fail and than stating *id=gd* forces a read via GDAL.
+    value which means no data available). When *id=gd*, the file will
+    be read using the GDAL library, which will take care to detect the
+    format of the file being read. This mechanism is actually used
+    automatically when the file format is not one of those that GMT
+    recognize. However, sometimes the guessing may fail, so adding
+    *id=gd* forces a read via GDAL.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-*outgrdfile*
+**-G**\ *outgrdfile*
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
-    below), you may optionally append *scale* and *offset*. These
-    options are particularly practical when storing the data as
-    integers, first removing an offset and then scaling down the values.
+    below), you may optionally append  any of **+s**\ *scale*, 
+    **+o**\ *offset*, and **+n**\ *invalid*.  These modifiers are
+    particularly practical when storing the data as integers, by
+    first removing an offset and then scaling down the values.
     Since the scale and offset are applied in reverse order when
     reading, this does not affect the data values (except for
-    round-offs).
-
-    If *scale* and *offset* are supplied you may also append a value
+    round-offs).  The **+n** modifier let you append a value
     that represents 'Not-a-Number' (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available). The *scale* and *offset*
-    modifiers may be left empty to select default values (scale = 1,
-    offset = 0), or you may specify *a* for auto-adjusting the scale
-    and/or offset of packed integer grids (=\ *id/a* is a shorthand for
-    =\ *id/a/a*). When *id*\ =\ *gd*, the file will be saved using the
+    value which means no data available). You may specify **+s**\ *a*
+    for auto-adjusting the scale and/or offset of packed integer grids
+    (=\ *id*\ **+s**\ *a* is a shorthand for =\ *id*\ **+s**\ *a*\ **+o**\ *a*).
+    When *id*\ =\ *gd*, the file will be saved using the
     GDAL library. Append the format *:driver* and optionally the output
     *datatype*. The driver names are those used by GDAL itself (e.g.,
     netCDF, GTiFF, etc.), and the data type is one of
@@ -239,40 +237,37 @@ COARDS-compliant netCDF file climate.nc:
 
    ::
 
-    gmt grdconvert climate.nc?temp[1] temp.nc -V
+    gmt grdconvert climate.nc?temp[1] -Gtemp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
 netCDF file data.nc:
 
    ::
 
-    gmt grdconvert data.nc ras_data.b4=bf -V
+    gmt grdconvert data.nc -Gras_data.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do
 
    ::
 
-    gmt grdconvert values.nc shorts.i2=bs/10/-32000/-9999 -V
+    gmt grdconvert values.nc -Gshorts.i2=bs+s10+o-32000+n-9999 -V
 
 To create a Sun standard 8-bit rasterfile for a subset of the data file
 image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run
 
    ::
 
-    gmt grdconvert image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
+    gmt grdconvert image.nc -R-60/-40/-40/-30 -Gimage.ras8=rb+s255 -V
 
 To convert etopo2.nc to etopo2.i2 that can be used by :doc:`grdraster`, try
 
    ::
 
-    gmt grdconvert etopo2.nc etopo2.i2=bs -N -V
+    gmt grdconvert etopo2.nc -Getopo2.i2=bs -N -V
 
 See Also
 --------
 
-:doc:`gmt.conf`,
-:doc:`gmt`,
-:doc:`grdmath`,
-:doc:`grdraster`
-
+:doc:`gmt.conf`, :doc:`gmt`,
+:doc:`grdmath`, :doc:`grdraster`

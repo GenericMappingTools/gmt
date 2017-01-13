@@ -192,14 +192,14 @@ Let say you have rotated gridA.nc and gridB.nc, restricting each
 rotation to nodes inside polygons polyA.d and polyB.d, respectively,
 using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5),
 yielding rotated grids rot_gridA.nc and rot_gridB.nc. To determine the
-region of overlap between the rotated grids, we use grdmath:
+region of overlap between the rotated grids, we use :doc:`grdmath </grdmath>`:
 
    ::
 
     gmt grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
 
 The grid overlap.nc now has 1s in the regions of overlap and 0
-elsewhere. You can use it as a mask or use grdcontour **-D** to extract
+elsewhere. You can use it as a mask or use :doc:`grdcontour </grdcontour>` **-D** to extract
 a polygon (i.e., a contour).
 
 Notes
@@ -213,7 +213,9 @@ See Also
 --------
 
 :doc:`backtracker`,
+:doc:`grdcontour </grdcontour>`,
 :doc:`gmtpmodeler`,
+:doc:`grdmath </grdmath>`,
 :doc:`grdpmodeler`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,

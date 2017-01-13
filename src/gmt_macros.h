@@ -118,6 +118,11 @@
 
 /* COLOR MACROS */
 
+/* Determine if fill is in fact a pattern */
+/* Old: always starts with integer dpi.
+ * New: Either start with pattern 1-88 or a file which should have an extension */
+#define gmt_M_is_pattern(txt) ((txt[0] == 'p' || txt[0] == 'P') && (isdigit((int)txt[1]) || strchr(txt,'.')))
+
 /*! Copy two RGB[T] arrays (a = b) */
 #define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 

@@ -276,7 +276,7 @@ Notes
 OGR/GMT files are considered complete datasets and thus you cannot specify more than one
 at a given time. This causes problems if you want to examine the intersections of
 two OGR/GMT files.  The solution is to convert them to regular datasets via
-gmtconvert and then run gmtspatial on the converted files.
+:doc:`gmtconvert` and then run **gmtspatial** on the converted files.
 
 See Also
 --------

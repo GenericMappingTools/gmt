@@ -33,10 +33,14 @@
 #define GMT_PROG_OPTIONS "-RVf"
 
 struct GRDCONVERT_CTRL {
-	struct IO {
+	struct In {
 		bool active;
-		char *file[2];
-	} IO;
+		char *file;
+	} In;
+	struct G {	/* -G<outgrid> */
+		bool active;
+		char *file;
+	} G;
 	struct N {	/* -N */
 		bool active;
 	} N;
@@ -54,8 +58,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->IO.file[GMT_IN]);	
-	gmt_M_str_free (C->IO.file[GMT_OUT]);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->G.file);	
 	gmt_M_free (GMT, C);	
 }
 
@@ -65,14 +69,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdconvert <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]]\n\t<outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]] [-N]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdconvert <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]\n\t-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]] [-N]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file to convert.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<outgrid> is the new converted grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tscale and offset, if given, will multiply data by scale and add offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the new converted grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   scale and offset, if given, will multiply data by scale and add offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, +n designates an invalid grid value to act as NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by grdraster.\n");
@@ -107,25 +112,43 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Input and Output files */
-				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->IO.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->IO.file[n_in++] = strdup (opt->arg);
+				/* Since grdconvert allowed output grid to be given without -G we must actually
+				 * check for two input files and assign the 2nd as the actual output file */
+				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) {
+					Ctrl->In.file= strdup (opt->arg);
+					n_in++;
+				}
+				else if (n_in == 1 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID)) {
+					Ctrl->G.active = true;
+					Ctrl->G.file= strdup (opt->arg);
+					n_in++;
+				}
 				else {
 					n_in++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one input and one output file\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one input file\n");
 					n_errors++;
 				}
 				break;
-			case '>':	/* Output file */
+			case '>':	/* Output file may be set this way from the external API */
+				Ctrl->G.active = true;
 				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
+					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
 				n_in++;
 				break;
 
 			/* Processes program-specific parameters */
+
+			case 'G':
+				Ctrl->G.active = true;
+				if (Ctrl->G.file) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one output file\n");
+					n_errors++;
+				}
+				else
+					Ctrl->G.file = strdup (opt->arg);
+				break;
 
 			case 'N':
 				Ctrl->N.active = true;
@@ -137,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_in != 2, "Syntax error: Must specify both input and output file names\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.file && Ctrl->G.file), "Syntax error: Must specify both input and output file names\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -147,9 +170,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 
 int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int hmode, type[2];
+	unsigned int hmode, type[2] = {0, 0};
 	char fname[2][GMT_BUFSIZ];
-	char   command[GMT_GRID_COMMAND_LEN320] = {""};
+	char command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GRDCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -177,30 +200,30 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	if ((Grid = gmt_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
 	gmt_grd_init (GMT, Grid->header, options, false);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
-	type[0] = Grid->header->type;
-	strncpy (fname[0], Grid->header->name, GMT_BUFSIZ);
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
-	type[1] = Grid->header->type;
-	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
+	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file);
+	type[GMT_IN] = Grid->header->type;
+	strncpy (fname[GMT_IN], Grid->header->name, GMT_BUFSIZ);
+	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file);
+	type[GMT_OUT] = Grid->header->type;
+	strncpy (fname[GMT_OUT], Grid->header->name, GMT_BUFSIZ);
 	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
-	if (type[1] == GMT_GRID_IS_SD) {
+	if (type[GMT_OUT] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
 		GMT_Report (API, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
-		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
+		if (Ctrl->In.file[0] == '=') strcpy (fname[GMT_IN], "<stdin>");
+		if (Ctrl->G.file[0] == '=') strcpy (fname[GMT_OUT], "<stdout>");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
-		            fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
-		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n')
+		            fname[GMT_IN], GMT->session.grdformat[type[GMT_IN]], fname[GMT_OUT], GMT->session.grdformat[type[GMT_OUT]]);
+		if (hmode && GMT->session.grdformat[type[GMT_OUT]][0] != 'c' && GMT->session.grdformat[type[GMT_OUT]][0] != 'n')
 			GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -213,15 +236,15 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->IO.file[0], Grid) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
 	}
-	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->IO.file[0], Grid) == NULL) {
+	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
 
-	Grid->header->type = type[1];
+	Grid->header->type = type[GMT_OUT];
 
 	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
 	command[0] = '\n';	command[1] = '\t';
@@ -230,10 +253,10 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
-	if (!GMT->common.R.active && ((type[0] >= GMT_GRID_IS_CB && type[0] <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
-	                              (type[0] >= GMT_GRID_IS_NB && type[0] <= GMT_GRID_IS_ND)) &&
-	                             ((type[1] >= GMT_GRID_IS_CB && type[1] <= GMT_GRID_IS_CD)  ||
-	                              (type[1] >= GMT_GRID_IS_NB && type[1] <= GMT_GRID_IS_ND)) ) {
+	if (!GMT->common.R.active && ((type[GMT_IN]  >= GMT_GRID_IS_CB && type[GMT_IN]  <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
+	                              (type[GMT_IN]  >= GMT_GRID_IS_NB && type[GMT_IN]  <= GMT_GRID_IS_ND)) &&
+	                             ((type[GMT_OUT] >= GMT_GRID_IS_CB && type[GMT_OUT] <= GMT_GRID_IS_CD)  ||
+	                              (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND)) ) {
 		/* Do nothing, which means the new grid will keep the command string of the old grid */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, Grid))
 			Return (API->error);
@@ -241,7 +264,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 		Return (API->error);
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->IO.file[1], Grid) != GMT_NOERROR)
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		Return (API->error);
 
 	Return (GMT_NOERROR);

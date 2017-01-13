@@ -515,6 +515,30 @@ GMT_LOCAL void fix_format (char *unit, char *format) {
 	}
 }
 
+void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
+	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
+	struct GMT_SYMBOL S;
+	struct GMT_FILL black;
+	struct GMT_PEN pen;
+	gmt_init_pen (GMT, &pen, 0.5);
+	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
+	gmt_M_memset (vdim, PSL_MAX_DIMS, double);
+	p_width = (float)(s * pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+	pen.width = p_width * GMT->session.u2u[GMT_INCH][GMT_PT];
+	vdim[0] = 0.9 * width;
+	vdim[1] = 50.0;	vdim[2] = 210.0;
+	vdim[3] = s * width, vdim[4] = s * width * tand (20.0), vdim[5] = p_width;
+	vdim[6] = 0.75;
+	vdim[7] = (double)(GMT_VEC_END|GMT_VEC_FILL);
+	vdim[9] = (double)GMT_VEC_ARROW;
+	gmt_setfill (GMT, &black, false);
+	gmt_setpen (GMT, &pen);
+	PSL_plotsymbol (GMT->PSL, x, y, vdim, GMT_SYMBOL_MARC);
+	vdim[1] = 230.0;	vdim[2] = 390.0;
+	PSL_plotsymbol (GMT->PSL, x, y, vdim, GMT_SYMBOL_MARC);
+}
+
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 
 GMT_LOCAL bool hangs_down (char *text) {
@@ -1023,6 +1047,13 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			else
 				PSL_plottext (PSL, xright + Ctrl->D.elength + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_ML, form);
 		}
+		if (P->is_wrapping) {	/* Add cyclic glyph */
+			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
+				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+			else
+				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+			plot_cycle (GMT, x0, 0.5 * width, 0.5 * width);
+		}
 	}
 	else {	/* Vertical scale */
 		PSL_setorigin (PSL, width, 0.0, 90.0, PSL_FWD);
@@ -1270,6 +1301,13 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_plottext (PSL, xleft  - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_TC, form);
 			else
 				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_BC, form);
+		}
+		if (P->is_wrapping) {	/* Add cyclic glyph */
+			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
+				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+			else
+				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+			plot_cycle (GMT, x0, 0.5 * width, 0.5 * width);
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}

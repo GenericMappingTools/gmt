@@ -28,9 +28,9 @@ do
 	for ix in 1 2 3 4 5 6
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
-		gmt psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
+		gmt psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp$p+r300 -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
 		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
-		gmt psxy -R -J -GP300/$p -O -K tt.App_E.d -X${xwidth}i >> $ps
+		gmt psxy -R -J -GP$p+r300 -O -K tt.App_E.d -X${xwidth}i >> $ps
 		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
 		echo "0 0.225" | gmt psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
 		echo "0 0.225 $p" | gmt pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps

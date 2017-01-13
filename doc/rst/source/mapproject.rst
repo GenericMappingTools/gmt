@@ -15,11 +15,11 @@ Synopsis
 
 **mapproject** [ *tables* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ **b**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*] ]
+[ |-A|\ **b**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*] ]
 [ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
-[ |-G|\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ]
+[ |-G|\ [*lon0*/*lat0*/][[**+**\ \|\ **-**]\ *unit*][**+a**][**+i**][**+v**] ]
 [ |-I| ]
 [ |-L|\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**] ]
 [ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
@@ -28,6 +28,7 @@ Synopsis
 [ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**\ \|\ **h**] ]
+[ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -51,10 +52,16 @@ compute (longitude, latitude) values doing the inverse transformation.
 This can be used to transform linear (x,y) points obtained by digitizing
 a map of known projection to geographical coordinates. May also
 calculate distances along track, to a fixed point, or closest approach
-to a line. Finally, can be used to perform various datum conversions.
+to a line.
+Alternatively, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which
 must have (longitude,latitude) or (x,y). See option **-:** on how to
 read (latitude,longitude) files. 
+Finally, **mapproject** can compute a variety of auxiliary output
+data from input coordinates that make up a track.  Items like
+azimuth, distances, distances to other lines, and travel-times
+along lines can all be computed by using one or more of the options
+**-A**, **-G**, **-L**, and **-Z**.
 
 Required Arguments
 ------------------
@@ -80,15 +87,17 @@ Optional Arguments
 
 .. _-A:
 
-**-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]
-    **-Af** calculates the (forward) azimuth from fixed point *lon/lat*
+**-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*][**+v**]
+    Calculate azimuth along track *or* to the optional *fixed* point set
+    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth 
     to each data point. Use **-Ab** to get back-azimuth from data points
     to fixed point. Use **-Ao** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
     (assuming the current ellipsoid is not a sphere). If no fixed point
     is given then we compute the azimuth (or back-azimuth) from the
-    previous point.
+    previous point.  Alternatively, append **+v** to obtain a
+    *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
 
 .. _-C:
 
@@ -129,16 +138,18 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**]
+**-G**\ [*lon0*/*lat0*/][[**+**\ \|\ **-**]\ *unit*][**+a**][**+i**][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *x0/y0*. Append the distance unit (see UNITS), including
+    with **-G**\ *lon0*/*lat0*. Append the distance unit (see UNITS for available
+    units and how distances are computed), including
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
     requires **-R** and **-J** to be set. When no fixed point is given
-    we calculate cumulative distances along the track defined by the input
-    points. Append **-** to obtain *incremental* distances between
-    successive points instead. Finally, append **+** to use obtain a
-    *variable* 2nd point (*x0*/*y0*) via columns 3-4 in the input file.
+    we calculate accumulative distances [or by adding **+a**] along the
+    track defined by the input points. Append **+i** to obtain *incremental*
+    distances between successive points, or append both modifiers to get
+    both distance measurements. Alternatively, append **+v** to obtain a
+    *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
 
 .. _-I:
 
@@ -151,7 +162,8 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. Append the distance unit (see UNITS),
+    output as three new columns. Append the distance unit (see UNITS
+    for available units and how distances are computed),
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). The **C**
     unit requires **-R** and **-J** to be set. Finally, append **+p** to
@@ -206,6 +218,23 @@ Optional Arguments
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     The units of the dimensions may be changed via **-D**.
+
+.. _-Z:
+
+**-Z**\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*]
+    Calculate travel times along track as specified with **-G**.
+    Append a constant speed unit; if missing we expect to read
+    a variable speed from column 3.  The speed is expected to be
+    in the distance units set via **-G** per time unit controlled
+    by :ref:`TIME_UNIT <TIME_UNIT>` [m/s].  Append **+i** to output
+    *incremental* travel times between successive points, **+a**
+    to obtain *accumulated* travel times, or both to get both kinds
+    of time information.  Use **+f** to format the accumulated
+    (elapsed) travel time according to the ISO 8601 convention. 
+    As for the number of decimals used to represent seconds we
+    consult the :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`
+    setting. Finally, append **+t**\ *epoch* to
+    report absolute times (ETA) for successive points.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
@@ -286,6 +315,19 @@ file coastline.xy, run
 
     gmt mapproject quakes.dat -Lcoastline.xy+uk > quake_dist.dat
 
+Given a file with longitude and latitude, compute both incremental
+and accumulated distance along track, and estimate travel times
+assuming a fixed speed of 12 knots.  We do this with
+
+   ::
+
+    gmt mapproject track.txt -Gn+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
+
+where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
+measured in nm (set by **-G**) per hour (set by :ref:`TIME_UNIT <TIME_UNIT>`).
+Elapsed times will be reported in hours (unless **+f** is added to **-Z**
+for ISO elapsed time).
+
 Restrictions
 ------------
 
@@ -342,6 +384,15 @@ may experience mismatches of tens to hundreds of meters. (3) Finally, be
 aware that :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` have certain default values for some
 projections so you may have to override the setting in order to match
 results produced with other settings.
+
+Output Order
+------------
+
+The production order for the geodetic and temporal columns produced by the
+options **-A**, **-G**, **-L**, and **-Z** is fixed and follows the
+alphabetical order of the options.  Hence, the order these options
+appear on the command line is irrelevant.  The actual output order
+can of course be modulated via **-o**.
 
 See Also
 --------

@@ -37,7 +37,7 @@ specified by the user [Default is NaN]. Nodes with more than one value
 will be set to the weighted average value. Any input grid that does not
 share the final output grid's node registration and grid spacing will
 automatically be resampled via calls to :doc:`grdsample`. Note: Due to the
-row-by-row i/o nature of operations in grdblend we only support the
+row-by-row i/o nature of operations in **grdblend** we only support the
 netCDF and native binary grid formats for both input and output. 
 
 Required Arguments
@@ -176,7 +176,7 @@ To blend all the grids called MB\_\*.nc given them all equal weight, try
 Warning on large file sets
 --------------------------
 
-While grdblend can process any number of files, it works by keeping those
+While **grdblend** can process any number of files, it works by keeping those
 files open that are being blended, and close files as soon as they are finished.
 Depending on your session, many files may remain open at the same time.
 Some operating systems set fairly modest
@@ -191,5 +191,5 @@ See Also
 :doc:`grd2xyz`,
 :doc:`grdconvert`,
 :doc:`grdedit`,
-:doc:`grdsample`,
-:doc:`grdraster`
+:doc:`grdraster`,
+:doc:`grdsample`

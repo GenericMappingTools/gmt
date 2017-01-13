@@ -4329,6 +4329,52 @@ GMT_LOCAL void grd_TPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	}
 }
 
+GMT_LOCAL void grd_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: TRIM 3 1 Alpha-trimming for %-left = A, %-right = B, and grid = C.  */
+{
+	/* Determine cumulative distribution and find left and right tail z cutoffs,
+	 * then set grid values in the tails to NaN */
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	float global_zmin, global_zmax, *tmp_grid = NULL;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: 3rd operand for TRIM must be a grid!\n");
+		return;
+	}
+	if (!stack[prev1]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: 1st operand for TRIM must be constants!\n");
+		return;
+	}
+	if (stack[prev1]->factor <= 0.0 || stack[prev1]->factor > 100.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Right alpha for TRIM must be in 0-100%% range!\n");
+		return;
+	}
+	if (!stack[prev2]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: 2nd operand for TRIM must be constants!\n");
+		return;
+	}
+	if (stack[prev2]->factor <= 0.0 || stack[prev2]->factor > 100.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Left alpha for TRIM must be in 0-100%% range!\n");
+		return;
+	}
+	if (stack[prev1]->factor <= stack[prev2]->factor) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Right alpha for TRIM must exceed left alpha!\n");
+		return;
+	}
+	tmp_grid = gmt_M_memory_aligned (GMT, NULL, stack[last]->G->header->size, float);
+	gmt_M_memcpy (tmp_grid, stack[last]->G->data, stack[last]->G->header->size, float);
+	gmt_sort_array (GMT, tmp_grid, stack[last]->G->header->size, GMT_FLOAT);	/* Sort so we can find quantiles */
+	global_zmin = gmt_quantile_f (GMT, tmp_grid, stack[prev2]->factor, stack[last]->G->header->size);	/* "Left" quantile */
+	global_zmax = gmt_quantile_f (GMT, tmp_grid, stack[prev1]->factor, stack[last]->G->header->size);	/* "Right" quantile */
+	gmt_M_free (GMT, tmp_grid);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		stack[prev2]->G->data[node] = (stack[last]->G->data[node] < global_zmin || stack[last]->G->data[node] > global_zmax) ? GMT->session.f_NaN : stack[last]->G->data[node];
+	}
+}
+
 GMT_LOCAL void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: UPPER 1 1 The highest (maximum) value of A.  */
 {

@@ -17,6 +17,7 @@ Synopsis
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*\ ]] ]
 [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
+[ |-F|\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
 [ |-I|\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ |-L| ]
 [ |-S|\ [**x**\ ][**y**] ]
@@ -89,6 +90,17 @@ Optional Arguments
     (**L\|H**) works on absolute value of the data. In case of multiple
     matches, only the first record is returned. If *col* is not
     specified we default to the last column in the data.
+
+.. _-F:
+
+**-F**\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
+    Returns the counts of various records depending on the appended mode:
+    **i** returns a single record with the total number of tables, segments,
+    data records, header records, and overall records.  In contrast, **d** returns
+    information for each segment in the virtual data set: *tbl_number, seg_number,
+    n_rows, start_rec, stop_rec*. **t** does the same but honors the input
+    table organization and thus resets *seg_number, start_rec, stop_rec* at the
+    start of each new table.
 
 .. _-I:
 
@@ -184,7 +196,7 @@ Output should look like
 
 To find the extreme values in the file track.xy to the nearest 5 units
 but shifted to within 1 unit of the data center, and use this region to
-draw a line using psxy, run
+draw a line using :doc:`psxy`, run
 
   ::
 
@@ -206,6 +218,14 @@ common to all the profiles.  We use
 
     gmt info profile_[123567].txt -L -I5
 
+The file magprofs.txt contains a number of magnetic profiles stored
+as separate data segments.  We need to know how many segments there
+are and use
+
+  ::
+
+    gmt info magprofs.txt -Fi
+
 Bugs
 ----
 
@@ -219,5 +239,5 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmtconvert`,
-:doc:`psxy`,
+:doc:`psxy`
 

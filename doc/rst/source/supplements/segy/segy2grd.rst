@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**n**\ \|\ **z**] ]
-[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
 [ |-L|\ [*nsamp*\ ] ]
 [ |-M|\ [*ntraces*\ ] ]
 [ |-N|\ *nodata* ]
@@ -33,7 +33,7 @@ Description
 -----------
 
 **segy2grd** reads an IEEE SEGY file and creates a binary grid file.
-Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
+Either a simple mapping (equivalent to :doc:`xyz2grd </xyz2grd>` -Z) or a more complicated
 averaging where a particular grid cell includes values from more than
 one sample in the SEGY file can be done. **segy2grd** will report if
 some of the nodes are not filled in with data. Such unconstrained nodes
@@ -147,4 +147,5 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`grd2xyz </grd2xyz>`,
-:doc:`grdedit </grdedit>`, :doc:`pssegy`
+:doc:`grdedit </grdedit>`, :doc:`pssegy`,
+:doc:`xyz2grd </xyz2grd>`

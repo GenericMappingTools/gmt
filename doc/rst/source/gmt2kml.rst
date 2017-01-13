@@ -16,16 +16,18 @@ Synopsis
 **gmt2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
-[ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ]
+[ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
 [ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [+\|\ *name\_template*\ \|\ *name*] ] [ **-O**]
+[ |-Q|\ **a**\ \|\ **i**\ *az* ]
+[ |-Q|\ **s**\ *scale*\ [*unit*\ ] ]
 [ |-R|\ **a**\ \|\ *w/e/s/n* ]
 [ |-S|\ **c**\ \|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-**\ \|\ **+**]\ *pen* ]
+[ |-W|\ [*pen*][*attr*] ]
 [ |-Z|\ *args* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -42,10 +44,13 @@ Description
 
 **gmt2kml** reads one or more GMT table file and converts them to a
 single output file using Google Earth's KML format. Data may represent
-points, lines, or polygons, and you may specify additional attributes
+points, lines, polygons, or wiggles, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
 and data descriptions. You may also extend the feature down to ground
 level (assuming it is above it) and use custom icons for point symbols.
+Finally, there are controls on visibility depending on level of detail
+settings, altitude, regions, including the status upon loading into
+Google Earth as well as fading depending on zoom.
 
 The input files should contain the following columns:
 
@@ -53,7 +58,10 @@ The input files should contain the following columns:
 
 where *lon* and *lat* are required for all features, *alt* is optional
 for all features (see also **-A** and **-C**), and *timestart* and
-*timestop* apply to events and timespan features. 
+*timestop* apply to events and timespan features.   For wiggles,
+the *alt* column is required but is expected to represent an along-track
+data anomaly such as gravity, magnetics, etc.  These values will be
+scaled to yield distances from the line in degrees.
 
 Required Arguments
 ------------------
@@ -102,10 +110,10 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**
+**-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w**
     Sets the feature type. Choose from points (**e**\ vent,
-    **s**\ ymbol, or **t**\ imespan), **l**\ ine, or **p**\ olygon
-    [symbol]. The first two columns of the input file should contain
+    **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
+    **w**\ iggle [symbol]. The first two columns of the input file should contain
     (*lon*, *lat*). When altitude or value is required (i.e., no
     *altitude* value was given with **-A**, or **-C** is set), the third
     column needs to contain the *altitude* (in m) or *value*. The event
@@ -114,15 +122,20 @@ Optional Arguments
     that should only be active during a particular time period indicated
     by the next two columns (*timestart*, *timestop*). Use NaN to
     indicate unbounded time limits. If used, times should be in ISO
-    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format (see **-f**).
+    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format
+    (see **-f**).  For wiggles, the data anomaly is required to be
+    in the 3rd input column.  If you also need to plot the track itself
+    then do that separately with **-Fl**.
 
 .. _-G:
 
 **-G**\ **f\|n**\ *fill*
-    Set fill color for symbols, extrusions and polygons (**-Gf**)
-    [Default is light orange at 75% transparency] or text labels
-    (**-Gn**) [Default is white]. Optionally, use **-Gf-** to turn off
-    polygon fill, and **-Gn-** to disable labels.
+    Sets color fill (**-Gf**) or label font color (**-Gn**).
+    Fill: Set fill color for symbols, extrusions, polygons and positive anomaly
+    wiggles [Default is light orange at 75% transparency].  Optionally,
+    use **-Gf-** to turn off polygon fill.
+    Text labels: Specify color for font [Default is white]. Optionally
+    use **-Gn-** to disable labels.
 
 .. _-I:
 
@@ -146,7 +159,7 @@ Optional Arguments
     commas. We will expect the listed data columns to exist in the input
     immediately following the data coordinates and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
-    available in the Google Earth balloon when the item is selected.
+    available in a Google Earth balloon when the item is selected.
     This option is not available unless input is an ASCII file.
 
 .. _-N:
@@ -162,7 +175,7 @@ Optional Arguments
     Alternatively, select one of these options: (1) append **-** to
     supply individual symbol labels (single word) via the field
     immediately following the data coordinates, (2) append **+** to
-    supply individual symbol labels as the rest the end of the data
+    supply individual symbol labels as everything to the end of the data
     record following the data coordinates, (3) append a string that may
     include %d or a similar integer format to assign unique name IDs for
     each feature, with the segment number (for lines and polygons) or
@@ -175,7 +188,24 @@ Optional Arguments
 .. _-O:
 
 **-O**
-    Appended KML code to an existing KML file [initialize a new KML file].
+    Append KML code to an existing KML file [initialize a new KML file].
+
+.. _-Q:
+
+**-Qa**\ \|\ **i**\ *azimuth*
+    Option in support of wiggle plots (requires **-Fw**). You may
+    control which directions the positive wiggles will tend to point
+    to with **-Qa**.  The provided azimuth defines a half-circle
+    centered on the selected azimuth [0] where positive anomalies
+    will plot.  If outside then switch by 180 degrees.  Alternatively,
+    use **-Qi** to set a fixed direction with no further variation.
+
+**-Qs**\ *scale*\ [*unit*\ ]
+    Required setting for wiggle plots (i.e., it requires **-Fw**).
+    Sets a wiggle scale in *z*-data units per the user's units (given
+    via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
+    is then inverted to yield degrees per user z-unit and used to
+    convert wiggle anomalies to map distances and positions.
 
 .. _-R:
 
@@ -198,7 +228,7 @@ Optional Arguments
     /*FolderName*; this allows you, with **-O**, **-K**, to group
     features into folders within the KML document. [The default folder
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
-    Line, or Polygon].
+    Line, Polygon or Wiggle].
 
 .. _-V:
 
@@ -207,15 +237,14 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**]\ *pen*
-    Set pen attributes for lines or polygon outlines. Append pen
+**-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
+    Set pen attributes for lines, wiggles or polygon outlines. Append pen
     attributes to use [Defaults: width = default, color = black, style =
-    solid]. If **-C** is given you may optionally use **-W-** to apply
-    the cpt color to the polygon outline only (fill determined by
-    **-G**) or **-W+** to use the cpt color for both polygon fill and
-    outline. Note that for KML the pen width is given as integer pixel
-    widths so you must specify pen width as *n*\ **p**, where *n* is an
-    integer.
+    solid]. If the modifier **+cl** is appended then the color of the line
+    are taken from the CPT (see **-C**). If instead modifier **+cf** is
+    appended then the color from the cpt file is applied to symbol fill.
+    Use just **+c** for both effects.  Note that for KML the pen width is
+    given in (fractional) pixels and not in points (1/72 inch).
 
 .. _-Z:
 
@@ -229,7 +258,7 @@ Optional Arguments
     feature *not* visible when loaded [visible]. Append **+o** to open a
     folder or document in the sidebar when loaded [closed]. 
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings]. 
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -304,12 +333,26 @@ file contours.cpt, try
 
     gmt gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
+To plot magnetic anomalies as wiggles along track, with positive
+wiggles painted orange and the wiggle line drawn with a black pen
+of width 2p, scaling the magnetic anomalies (in nTesla) so that
+50 nT equals 1 nm on the map, and place the wiggles 50m above the
+sea surface, use
+
+   ::
+
+    gmt gmt2kml magnetics_lon_lat_mag.txt -Fw -Gforange -W2p -Ag50 -Qs50n > wiggles.kml
+
 Limitations
 -----------
 
 Google Earth has trouble displaying filled polygons across the Dateline.
 For now you must manually break any polygon crossing the dateline into a
-west and east polygon and plot them separately.
+west and east polygon and plot them separately.  Google Earth also has
+other less obvious limitations on file size or line length.  These do
+not seem to be documented.  If features do not show and you are not
+getting an error, try to reduce the size of the file by splitting
+things up.
 
 Making Kmz Files
 ----------------
@@ -320,7 +363,9 @@ contained in a zip archive. One way to organize large data sets is to
 split them into groups called Folders. A Document can contain any number
 of folders. Using scripts you can create a composite KML file using the
 **-K**, **-O** options just like you do with GMT plots. See **-T** for
-switching between folders and documents.
+switching between folders and documents.  The gmt_shell_scripts.sh
+contains function gmt_build_kmz that can assist in building a KMZ file
+from any number of KML files (and optionally images they may refer to).
 
 Kml Hierarchy
 -------------
@@ -392,9 +437,19 @@ Segment Information
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 
+Making KMZ files
+----------------
+
+If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it. 
+
 See Also
 --------
 
-:doc:`gmt` , :doc:`gmt.conf`,
+:doc:`gmt` , :doc:`gmt.conf`, :doc:`gmt_shell_functions.sh`,
 :doc:`img2google <supplements/img/img2google>`,
 :doc:`kml2gmt` , :doc:`psconvert`

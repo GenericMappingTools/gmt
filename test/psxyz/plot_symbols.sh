@@ -17,13 +17,13 @@ gmt psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EO
 1.5	4.5	0	90	1	0.5	e
 2.5	4.5	0	g
 3.5	4.5	0	h
-> Do pattern # 7 -Gp100/7
+> Do pattern # 7 -Gp7+r100
 0.5	3.5	0	i
 1.5	3.5	0	90	1	0.5	j
 > Do orange -Gorange
 2.5	3.5	0	l+tM
 3.5	3.5	0	n
-> Do yellowized pattern # 20 -Gp100/20:Fyellow
+> Do yellowized pattern # 20 -Gp20+fyellow+r100
 0.5	2.5	0	1	0.5	r
 1.5	2.5	0	s
 2.5	2.5	0	t
@@ -35,7 +35,7 @@ gmt psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EO
 > Fat pen -W2p
 1.5	1.5	0	+
 2.5	1.5	0	y
-> Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
+> Dual-colored pattern # 12 -Gp12+fred+bgreen+r100 -W3p,orange
 3.5	1.5	0	a
 EOF
 gmt psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -Bxyzg1 -G0 -W0.25p -p155/35 -S1i -Y4i << EOF >> $ps

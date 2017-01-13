@@ -501,14 +501,13 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_GRIDFILE_FORMAT**
     Default file format for grids, with optional scale, offset and
-    invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
+    invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]. The
     2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
     :doc:`grdconvert` and Section :ref:`grid-file-format` of the
-    GMT Technical Reference and Cookbook for more information. The
-    *scale* and *offset* modifiers may be left empty to select default
-    values (scale = 1, offset = 0), or you may specify *a* for
-    auto-adjusting the scale and/or offset of packed integer grids
-    (=\ *id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
+    GMT Technical Reference and Cookbook for more information.
+    You may the scale as *a* for auto-adjusting the scale and/or offset of
+    packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
+    =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When *invalid* is omitted
     the appropriate value for the given format is used (NaN or largest negative). [nf].
 
 .. _IO_GRIDFILE_SHORTHAND:

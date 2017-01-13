@@ -167,7 +167,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_do_OPT, GMT_c_OPT, GMT_ho_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
@@ -237,8 +237,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append f to let fill/font colors follow the CPT setting.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) and multiply data by <fact> (via +s<fact> [1])\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   before contouring. Append + for z-data that are periodic in 360 (i.e., phase data).\n");
 	GMT_Option (API, "bo3,c,do,f,h,p,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -281,6 +281,37 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 		}
 	}
 	return (n_errors);
+}
+
+GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONTOUR_CTRL *Ctrl) {
+	/* Parse the -Z option: -Z[+s<scale>][+o<offset>][+p] */
+	
+	if (!txt || txt[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+    		"Syntax error -Z option: No arguments given\n");
+		return (GMT_PARSE_ERROR);
+	}
+	if (strstr (txt, "+s") || strstr (txt, "+o") || strstr (txt, "+p")) {
+		char p[GMT_LEN64] = {""};
+		unsigned int pos = 0;
+		while (gmt_getmodopt (GMT, txt, "sop", &pos, p)) {
+			switch (p[0]) {
+				case 's':	Ctrl->Z.scale = atof (&p[1]);	break;
+				case 'o':	Ctrl->Z.offset = atof (&p[1]);	break;
+				case 'p':	Ctrl->Z.periodic = true;		break;
+				default: 
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+	            		"Syntax error -Z option: Modifier +%s not recognized.\n", p[0]);
+					return (GMT_PARSE_ERROR);
+					break;
+			}
+		}
+	}
+	else {	/* Old syntax */
+		if (txt[0] && txt[0] != 'p') sscanf (txt, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset);
+		Ctrl->Z.periodic = (txt[strlen(txt)-1] == 'p');	/* Phase data */
+	}
+	return (GMT_NOERROR);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -483,8 +514,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'Z':	/* For scaling or phase data */
 				Ctrl->Z.active = true;
-				if (opt->arg[0] && opt->arg[0] != 'p') sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset);
-				Ctrl->Z.periodic = (opt->arg[strlen(opt->arg)-1] == 'p');	/* Phase data */
+				n_errors += parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;
 
 			default:	/* Report bad options */

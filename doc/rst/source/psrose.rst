@@ -15,13 +15,14 @@ Synopsis
 
 **psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
-[ |-C|\ **m**\ \|\ *mode_file* ]
+[ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-D| ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ] [ |-K| ]
-[ |-L|\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ]
+[ |-L|\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] ]
 [ |-M|\ *parameters* ]
 [ |-O| ] [ |-P| ]
+[ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
 [ |-S|\ [**n**]\ *radial\_scale* ]
 [ |-T| ]
@@ -84,10 +85,15 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ **m**\ \|\ *mode_file*
+**-C**\ **m**\ \|\ [**+w**\ ]\ *mode_file*
     Plot vectors showing the principal directions given in the *mode_file*
     file. Alternatively, specify **-Cm** to compute and plot mean direction. See
-    **-M** to control the vector attributes.
+    **-M** to control the vector attributes.  Finally, to instead save the
+    computed mean direction and other statistics, use [**m**\ ]\ **+w**\ *mode_file*.
+    The eight items saved to a single record are: 
+    *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
+    where the last term is 0 or 1 depending on whether the mean resultant is significant
+    at the level of confidence set via **-Q**.
 
 .. _-D:
 
@@ -119,11 +125,12 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*]
+**-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ]
     Specify labels for the 0, 90, 180, and 270 degree marks. For
-    full-circle plot the default is WEST/EAST/SOUTH/NORTH and for
-    half-circle the default is 90W/90E/-/0. A - in any entry disables
-    that label. Use **-L** with no argument to disable all four labels
+    full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
+    half-circle the default is 90W,90E,-,0. A - in any entry disables
+    that label. Use **-L** with no argument to disable all four labels.
+    Note that the GMT_LANGUAGE setting will affect the words used.
 
 .. _-M:
 
@@ -143,6 +150,16 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
+**-Q**\ *alpha* ]
+    Sets the confidence level used to determine if the mean resultant
+    is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
+    Note: The critical values are approximated [Berens, 2009] and
+    requires at least 10 points; the critical resultants are accurate
+    to at least 3 significant digits.  For smaller data sets you
+    should consult exact statistical tables.
+
 .. _-R:
 
 **-R**\ *r0*/*r1*/*az\_0*/*az\_1*
@@ -155,7 +172,7 @@ Optional Arguments
 **-S**\ [**n**]\ *plot_radius*
     Specifies radius of plotted circle (append a unit from **c**\ \|\ **i**\ \|\ **p**).
     Use **-Sn** to normalize input radii (or bin counts if **-A** is used) by the largest
-    value so all adii (or bin counts) range from 0 to 1.
+    value so all radii (or bin counts) range from 0 to 1.
 
 .. _-T:
 
@@ -258,6 +275,11 @@ Bugs
 
 No default radial scale and grid settings for polar histograms. User
 must run **psrose** **-I** to find max length in binned data set.
+
+References
+----------
+
+Berens, P., 2009, CircStat: A MATLAB Toolbox for Circular Statistics, *J. Stat. Software, 31(10)*\ , 1-21.
 
 See Also
 --------

@@ -1,14 +1,14 @@
 .. |SYN_OPT-B| replace:: |-B|\ [**p**\ \|\ **s**]\ *parameters*
 
-.. .. |SYN_OPT-I| replace:: |-I|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+.. .. |SYN_OPT-I| replace:: |-I|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ **+e**\ \|\ **n**]]
 
 .. |SYN_OPT-I| replace:: |-I|\ *increment*
 
-.. .. |SYN_OPT-R| replace:: |-R|\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+.. .. |SYN_OPT-R| replace:: |-R|\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*]
 
 .. |SYN_OPT-R| replace:: |-R|\ *region*
 
-.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**]
 
 .. .. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 
@@ -66,7 +66,7 @@
 
 .. |SYN_OPT-h| replace:: **-h**\ :ref:`headers <-h_full>`
 
-.. .. |SYN_OPT-i| replace:: **-i**\ *cols*\ [**l**][\ **s**\ *scale*][\ **o**\ *offset*][,...] 
+.. .. |SYN_OPT-i| replace:: **-i**\ *cols*\ [**+l**][\ **+s**\ *scale*][\ **+o**\ *offset*][,...] 
 
 .. |SYN_OPT-i| replace:: **-i**\ :ref:`flags <-icols_full>`
 
@@ -78,7 +78,7 @@
 
 .. |SYN_OPT-o| replace:: **-o**\ :ref:`flags <-ocols_full>`
 
-.. .. |SYN_OPT-p| replace:: **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+.. .. |SYN_OPT-p| replace:: **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 
 .. |SYN_OPT-p| replace:: **-p**\ :ref:`flags <perspective_full>`  
 

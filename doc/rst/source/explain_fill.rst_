@@ -4,11 +4,11 @@
 *fill*
     The attribute *fill* specifies the solid shade or solid *color* (see
     `Specifying Color`_ above) or the pattern used for filling polygons.
-    Patterns are specified as **p**\ *dpi/pattern*, where *pattern*
-    gives the number of the built-in pattern (1-90) *or* the name of a
-    Sun 1-, 8-, or 24-bit raster file. The *dpi* sets the resolution of
-    the image. For 1-bit rasters: use **P**\ *dpi/pattern* for inverse
-    video, or append **:F**\ *color*\ [**B**\ [*color*\ ]] to specify
+    Patterns are specified as **p**\ *pattern*, where *pattern*
+    set the number of the built-in pattern (1-90) *or* the name of a
+    raster image file. The optional **+r**\ *dpi* sets the resolution of
+    the image [1200]. For 1-bit rasters: use upper case **P**  for inverse
+    video, or append **+f**\ *color* and/or **+b**\ *color* to specify
     fore- and background colors (use *color* = - for transparency). See
     GMT Cookbook & Technical Reference Appendix E for information on
-    individual patterns.
+    individual built-in patterns.

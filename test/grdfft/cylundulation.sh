@@ -21,7 +21,7 @@ gmt psxy -R"${src:-.}"/surf.nc -J -O -K -Sv0.21i+e -Wthick -Gblack << EOF >> $ps
 64 64 -60 2i
 EOF
 gmt psscale -DjRM+w4.5i/0.1i+jLM+o0.2i/0 -Ct.cpt -Baf -R -J -O -K >> $ps
-gmt grdfft "${src:-.}"/surf.nc -Exw -N+zp --GMT_FFT=brenner > /dev/null
+gmt grdfft "${src:-.}"/surf.nc -Ex+w -N+zp --GMT_FFT=brenner > /dev/null
 gmt makecpt -Cwhite,gray -T0,0.5 -N -Z > t.cpt
 gmt makecpt -N -T0.5/3.5/1 -Crainbow >> t.cpt
 gmt grdimage surf_mag.nc -R-1/1/-1/1 -J -O -K -Ct.cpt -Bafg1+u" m@+-1@+" -BWSne+t"Two cylindrical undulations and noise" -Y5i >> $ps

@@ -1,4 +1,4 @@
-**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+**-I**\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ **+e**\ \|\ **n**]]
     *x_inc* [and optionally *y_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**: Append
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one
@@ -8,12 +8,12 @@
     the equivalent degrees longitude at the middle latitude of the region
     (the conversion depends on :ref:`PROJ_ELLIPSOID <Projection Parameters>`). If *y_inc* is given
     but set to 0 it will be reset equal to *x_inc*; otherwise it will be
-    converted to degrees latitude. **All coordinates**: If **=** is appended
+    converted to degrees latitude. **All coordinates**: If **+e** is appended
     then the corresponding max *x* (*east*) or *y* (*north*) may be slightly
     adjusted to fit exactly the given increment [by default the increment
     may be adjusted slightly to fit the given domain]. Finally, instead of
     giving an increment you may specify the *number of nodes* desired by
-    appending **+** to the supplied integer argument; the increment is then
+    appending **+n** to the supplied integer argument; the increment is then
     recalculated from the number of nodes and the domain. The resulting
     increment value depends on whether you have selected a
     gridline-registered or pixel-registered grid; see :ref:`App-file-formats` for

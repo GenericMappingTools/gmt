@@ -36,16 +36,16 @@ are given a short-hand notation called an x2sys TAG. The TAG keeps track
 of settings such as file format, whether the data are geographic or not,
 and the binning resolution for track indices. Running **x2sys_init** is
 a prerequisite to running any of the other x2sys programs, such as
-**x2sys_binlist**, which will create a crude representation of where
+:doc:`x2sys_binlist`, which will create a crude representation of where
 each data track go within the domain and which observations are
-available; this information serves as input to **x2sys_put** which
-updates the track data base. Then, **x2sys_get** can be used to find
+available; this information serves as input to :doc:`x2sys_put` which
+updates the track data base. Then, :doc:`x2sys_get` can be used to find
 which tracks and data are available inside a given region. With that
-list of tracks you can use **x2sys_cross** to calculate track
-crossovers, use **x2sys_report** to report crossover statistics or
-**x2sys_list** to pull out selected crossover information that
-**x2sys_solve** can use to determine track-specific systematic
-corrections. These corrections may be used with **x2sys_datalist** to
+list of tracks you can use :doc:`x2sys_cross` to calculate track
+crossovers, use :doc:`x2sys_report` to report crossover statistics or
+:doc:`x2sys_list` to pull out selected crossover information that
+:doc:`x2sys_solve` can use to determine track-specific systematic
+corrections. These corrections may be used with :doc:`x2sys_datalist` to
 extract corrected data values for use in subsequent work.  Because you
 can run **x2sys_init** you *must* set the environmental parameter
 X2SYS_HOME to a directory where you have write permission, which  is
@@ -260,7 +260,7 @@ to find it.
 
 **Create tbf file(s):**
     Once the (empty) TAG databases have been initialized we go through a
-    two-step process to populate them. First we run **x2sys_binlist**
+    two-step process to populate them. First we run :doc:`x2sys_binlist`
     on all our track files to create one (or more) multisegment track
     bin-index files (tbf). These contain information on which 1 x 1
     degree bins (or any other blocksize; see **-I**) each track has
@@ -274,7 +274,7 @@ to find it.
        gmt x2sys_binlist -V -TLINE :tracks.lis > tracks.tbf
 
 **Update index data base:**
-    Next, the track bin-index files are fed to **x2sys_put** which will
+    Next, the track bin-index files are fed to :doc:`x2sys_put` which will
     insert the information into the TAG databases:
 
       ::
@@ -282,7 +282,7 @@ to find it.
        gmt x2sys_put -V -TLINE tracks.tbf
 
 **Search for data:**
-    You may now use **x2sys_get** to find all the tracks within a
+    You may now use :doc:`x2sys_get` to find all the tracks within a
     certain sub-region, and optionally limit the search to those tracks
     that have a particular combination of observables. E.g., to find all
     the tracks which has both obs1 and obs3 inside the specified region, run
@@ -373,4 +373,5 @@ See Also
 :doc:`x2sys_list`,
 :doc:`x2sys_put`,
 :doc:`x2sys_report`,
-:doc:`x2sys_solve`
+:doc:`x2sys_solve`,
+:doc:`x2sys_cross`

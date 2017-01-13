@@ -45,7 +45,7 @@ struct XYZ2GRD_CTRL {
 		bool active;
 		char mode;
 	} A;
-	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
@@ -115,7 +115,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Az: Sum multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will compute mean values].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Append header information; leave field blank to get default value.\n");
+	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Swap the byte-order of the input data and write result to <zfile>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For this option, only one input file (or stdin) is allowed.\n");
@@ -553,7 +553,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
 
-	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
+	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header))
+		Return (GMT_PARSE_ERROR);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 

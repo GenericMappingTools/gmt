@@ -341,12 +341,11 @@ static inline int MGD77_atoi (char *txt) {
 	return (atoi (txt));
 }
 
-#if 0	/* Seems to be unused */
-static inline int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *item) {
+int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *item) {
 	/* Used internally where item is known to be a single full name of a header item.
 	 * The id returned can used to get stuff in MGD77_Header_Lookup. */
 	int i, id;
-
+	gmt_M_unused (F);
 	/* Search for matching text strings.  We only look for the first n characters where n is length of item */
 
 	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
@@ -358,7 +357,6 @@ static inline int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONT
 
 	return id;
 }
-#endif
 
 static inline void mgd77_set_plain_mgd77 (struct MGD77_HEADER *H, int mgd77t_format) {
 	int i, j, k;
@@ -906,7 +904,7 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *rec
 	return (MGD77_NO_ERROR);
 }
 
-static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
+void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* If MGD77_Select_Column has not been called, we want to return all the columns
 	 * present in the current file.  Here, we implement this default "-Fall" choice
 	 */
@@ -930,7 +928,7 @@ static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL
 	F->n_out_columns = k;
 }
 
-static int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
+int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* Having processed -F and read the file's header, we can organize which
 	 * columns must be read and in what order.  If -F was never set we call
 	 * MGD77_Select_All_Columns to select every column for output. */
@@ -2453,7 +2451,7 @@ int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD7
 	return (MGD77_NO_ERROR);
 }
 
-static int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
+int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* Will write the new 2-rec header structure */
 	int use;
 	struct MGD77_HEADER_PARAMS *P = NULL;
@@ -2948,6 +2946,186 @@ int MGD77_Write_Header_Record (struct GMT_CTRL *GMT, char *file, struct MGD77_CO
 	}
 
 	return (error);
+}
+
+GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+{	/* Applies to MGD77 files */
+	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ], *not_used = NULL;
+	int i, sequence, err, n_eols, c, n;
+	struct stat buf;
+	gmt_M_unused(file);
+
+	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
+
+	/* argument file is generally ignored since file is already open */
+
+	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
+	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
+		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to stat file %s\n\n", F->path);
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		}
+#ifdef WIN32
+		/* Count number of records by counting number of new line characters. The non-Windows solution does not work here
+		   because the '\r' characters which are present on Win terminated EOLs are apparently stripped by the stdio and
+		   so if we cant find their traces (!!!) */
+		while ( (c = fgetc( F->fp )) != EOF ) {
+			if (c == '\n') n++;
+		}
+		H->n_records = n;					/* 0 is the header size */
+		rewind (F->fp);					/* Go back to beginning of file */
+#else
+
+		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
+		not_used = fgets (line, BUFSIZ, F->fp);
+		rewind (F->fp);					/* Go back to beginning of file */
+		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
+		H->n_records = irint ((double)(buf.st_size) / (double)(MGD77_RECORD_LENGTH + n_eols));
+#endif
+	}
+	else {
+		/* Since we do not know the number of records, we must quickly count lines */
+		while (fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
+		rewind (F->fp);					/* Go back to beginning of file */
+	}
+
+	/* Read Sequences No 01-24: */
+
+	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) {
+		MGD77_header[sequence] = gmt_M_memory (GMT, NULL, MGD77_HEADER_LENGTH + 2, char);
+/*		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);*/
+	}
+	if (F->format != MGD77_FORMAT_M77) not_used = fgets (line, BUFSIZ, F->fp);	/* Skip the column header for tables */
+
+	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_M_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
+
+/*	if ((err = MGD77_Decode_Header_m77 (H->mgd77[MGD77_ORIG], MGD77_header, MGD77_FROM_HEADER))) return (err);	 Decode individual items in the text headers */
+	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) gmt_M_free (GMT, MGD77_header[sequence]);
+
+	/* Fill in info in F */
+
+	mgd77_set_plain_mgd77 (H, false);				/* Set the info for the standard 27 data fields in MGD-77 files */
+	if ((err = MGD77_Order_Columns (GMT, F, H))) return (err);	/* Make sure requested columns are OK; if not given set defaults */
+
+	return (MGD77_NO_ERROR);	/* Success, it seems */
+}
+
+GMT_LOCAL int MGD77_Read_Header_Record_m77t_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+{	/* Applies to MGD77T files */
+	char *MGD77_header, line[BUFSIZ], *not_used = NULL;
+	int i, err, n_eols, c, n;
+	gmt_M_unused(file);
+
+	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
+
+	/* argument file is generally ignored since file is already open */
+
+	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
+	/* Since we do not know the number of records, we must quickly count lines */
+	while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
+	rewind (F->fp);					/* Go back to beginning of file */
+
+	not_used = fgets (line, BUFSIZ, F->fp);		/* Skip the column header  */
+
+	MGD77_header = (char *)gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
+	// not_used = fgets (MGD77_header, BUFSIZ, F->fp);			/* Read the entire header record  */
+
+	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_M_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
+
+	if ((err = MGD77_Decode_Header_m77t (GMT, H->mgd77[MGD77_ORIG], MGD77_header))) return (err);	/* Decode individual items in the text headers */
+	gmt_M_free (GMT, MGD77_header);
+
+	/* Fill in info in F */
+
+	mgd77_set_plain_mgd77 (H, true);			/* Set the info for the standard 27 data fields in MGD-77 files */
+	if ((err = MGD77_Order_Columns (GMT, F, H))) return (err);	/* Make sure requested columns are OK; if not given set defaults */
+
+	return (MGD77_NO_ERROR);	/* Success, it seems */
+}
+
+GMT_LOCAL int MGD77_Read_Header_Record_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+{	/* Reads the header structure form a MGD77[+] file */
+	int error;
+
+	switch (F->format) {
+		case MGD77_FORMAT_M77:	/* Will read MGD77 headers from MGD77 files or ascii tables */
+			error = MGD77_Read_Header_Record_m77_nohdr (GMT, file, F, H);
+			break;
+		case MGD77_FORMAT_TBL:	/* Will read MGD77 headers from MGD77 files or ascii tables */
+			error = MGD77_Read_Header_Record_m77_nohdr (GMT, file, F, H);
+			break;
+		case MGD77_FORMAT_M7T:
+			error = MGD77_Read_Header_Record_m77t_nohdr (GMT, file, F, H);
+			break;
+		case MGD77_FORMAT_CDF:	/* Will read MGD77 headers from a netCDF file */
+			error = MGD77_Read_Header_Record_cdf (GMT, file, F, H);
+			break;
+		default:
+			error = MGD77_UNKNOWN_FORMAT;
+			break;
+	}
+
+	MGD77_Init_Ptr (GMT, MGD77_Header_Lookup, H->mgd77);	/* set pointers */
+
+	return (error);
+}
+
+GMT_LOCAL int MGD77_Read_File_cdf_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+{
+	int err;
+
+	MGD77_Select_All_Columns (GMT, F, &S->H);
+
+	err = MGD77_Read_Header_Record_nohdr (GMT, file, F, &S->H);  /* Will read the entire 24-section header structure */
+	if (err) return (err);
+
+	err = MGD77_Read_Data_cdf (GMT, file, F, S);
+	if (err) return (err);
+
+	MGD77_nc_status (GMT, nc_close (F->nc_id));
+
+	return (MGD77_NO_ERROR);
+}
+
+GMT_LOCAL int MGD77_Read_File_asc_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
+{
+	int err;
+
+	err = MGD77_Open_File (GMT, file, F, MGD77_READ_MODE);
+	if (err) return (err);
+
+	MGD77_Select_All_Columns (GMT, F, &S->H);	/* We know we only deal with items from set 0 here */
+
+	err = MGD77_Read_Header_Record_nohdr (GMT, file, F, &S->H);  /* Will read the entire 24-section header structure */
+	if (err) return (err);
+
+	err = MGD77_Read_Data_asc (GMT, file, F, S);	  /* Will read all MGD77 records in current file */
+	if (err) return (err);
+
+	MGD77_Close_File (GMT, F);
+
+	return (MGD77_NO_ERROR);
+}
+
+int MGD77_Read_File_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
+{
+	int err = 0;
+
+	switch (F->format) {
+		case MGD77_FORMAT_M77:	/* Plain MGD77 file */
+		case MGD77_FORMAT_M7T:	/* Plain MGD77T file */
+		case MGD77_FORMAT_TBL:	/* Plain ascii table */
+			err = MGD77_Read_File_asc_nohdr (GMT, file, F, S);
+			break;
+		case MGD77_FORMAT_CDF:	/* netCDF MGD77 file */
+			err = MGD77_Read_File_cdf_nohdr (GMT, file, F, S);
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			err = MGD77_UNKNOWN_FORMAT;
+	}
+
+	return (err);
 }
 
 int MGD77_Read_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]) {

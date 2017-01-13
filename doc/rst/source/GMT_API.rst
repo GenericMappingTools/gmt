@@ -1856,7 +1856,7 @@ grid and assign each node the product x \* y:
         }
     }
 
-Note the use of :GMT_Get_Index_ to get the grid node number associated
+Note the use of GMT_Get_Index_ to get the grid node number associated
 with the ``row`` and ``col`` we are visiting. Because GMT grids have
 padding (for boundary conditions) the relationship between rows,
 columns, and node indices is more complicated and hence we hide that

@@ -32,6 +32,7 @@ EXTERN_MSC int GMT_pspolar (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssac (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psvelo (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77convert (void *API, int mode, void *args);
+EXTERN_MSC int GMT_mgd77header (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77info (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77list (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77magref (void *API, int mode, void *args);

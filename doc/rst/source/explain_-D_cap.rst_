@@ -1,13 +1,9 @@
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark*
-    Give values for *xname*, *yname*, *zname* (give the names of those variables
+**-D**\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+    Give one or more combinations for values *xname*, *yname*, *zname* (give the names of those variables
     and in square bracket their units, e.g., "distance [km]"), *scale* (to multiply grid values after
     read [normally 1]), *offset* (to add to grid after scaling [normally 0]),
     *invalid* (a value to represent missing data [NaN]), *title* (anything you
-    like), and *remark* (anything you like). To leave some of these values untouched,
-    leave field blank. Empty fields in the end may be skipped. Alternatively,
-    to allow "/" to be part of one of the values, use any non-alphanumeric
-    character (and not the equal sign) as separator by both starting and ending
-    with it. For example:
-    **-D**:*xname*:*yname*:*zname*:*scale*:*offset*:*invalid*:*title*:*remark*:
+    like), and *remark* (anything you like). Items not listed will remain untouched.
+    Give a blank name to completely reset a particular string.
     Use quotes to group texts with more than one word.
     Note that for geographic grids (**-fg**) *xname* and *yname* are set automatically.

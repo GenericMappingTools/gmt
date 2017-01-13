@@ -1,10 +1,11 @@
 .. _-R_full:
 
-**-R**\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**\ ][**+u**\ *unit*\ ]
     *xmin*, *xmax*, *ymin*, and *ymax* specify the region of interest.
     For geographic regions, these limits correspond to *west*, *east*,
     *south*, and *north* and you may specify them in decimal degrees or
-    in [**+-**\ ]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*\ ][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ ] format. Append **r** if lower left
+    in [+\ \|\ -]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*\ ][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ ]
+    format. Append **+r** if lower left
     and upper right map coordinates are given instead of *west*/*east*/*south*/*north*. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
@@ -32,8 +33,8 @@
     must be exactly as indicated (however, input, output and plot
     formats are customizable; see **gmt.conf**).
     You can also use Cartesian projected coordinates compatible with the
-    chosen projection.  Give them with a leading length *unit*, (e.g.,
-    **-Rk**-200/200/-300/300 for a 400 by 600 km rectangular area centered
+    chosen projection.  Append the length *unit* via the **+u** modifier, (e.g.,
+    **-R**-200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
     on the projection center (0, 0). These coordinates are internally
     converted to the corresponding geographic (longitude, latitude)
     coordinates for the lower left and upper right corners. This form is

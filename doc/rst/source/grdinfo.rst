@@ -13,8 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdinfo** *grdfiles* [ |-C| ] [ |-F| ]
-[ |-I|\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**] ]
+**grdinfo** *grdfiles* [ |-C| ]
+[ |-D|\ [*xoff*\ [/*yoff*][**+n**] ]
+[ |-F| ]
+[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ] ]
 [ |-L|\ [**0**\ \|\ **1**\ \|\ **2**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
@@ -55,6 +57,15 @@ Optional Arguments
     output format is instead *NF w e s n z0 z1*, where *NF* is the total
     number of grids read and *w e s n* are rounded off (see **-I**).
 
+.. _-D:
+
+**-D**\ [*xoff*\ [/*yoff*][**+i**]
+    Divide a single grid's domain (or the **-R** domain, if no grid given)
+    into tiles of size *dx* times *dy* (set via **-I**).  You can specify
+    overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
+    grid is given you may use the modifier **+i** to ignore tiles that
+    have no data within each tile subregion.
+
 .. _-F:
 
 **-F**
@@ -63,10 +74,13 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**]
+**-I**\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ]
     Report the min/max of the region to the nearest multiple of *dx* and
     *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
-    is set). To report the actual grid region, select **-Ir**. If no
+    is set). To report the actual grid region, select **-Ir**. For a
+    grid produced by the img supplement (a Cartesian Mercator grid),
+    the exact geographic region is given with **-Ii** (if not found
+    then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
     **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid's
     bounding box polygon instead.

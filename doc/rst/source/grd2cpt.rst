@@ -25,7 +25,7 @@ Synopsis
 [ |-S|\ *zstart/zstop/zinc* ]
 [ |-T|\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ]
 [ |SYN_OPT-V| ]
-[ |-W| ]
+[ |-W|\ [**w**] ]
 [ |-Z| ]
 
 |No-spaces|
@@ -202,7 +202,8 @@ Optional Arguments
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
     combination with a categorical color table. Cannot be used in
-    combination with **-Z**.
+    combination with **-Z**.  Alternatively, use **-Ww** to produce
+    a wrapped (cyclic) color table that endlessly repeats its range.
 
 .. _-Z:
 
@@ -244,6 +245,7 @@ file relief, run
    ::
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+
 
 See Also
 --------

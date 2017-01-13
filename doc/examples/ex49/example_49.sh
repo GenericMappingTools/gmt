@@ -41,7 +41,7 @@ gmt math -T0/100/0.1 T SQRT 365 MUL 2600 ADD T 20 LE MUL 5651 T -0.0278 MUL EXP 
 # Plot curves and place the legend
 gmt psxy -R -J -O -K ss.txt -W4p,white  >> $ps
 gmt psxy -R -J -O -K ss.txt -W1p >> $ps
-gmt psxy -R -J -Ss0.4c -O -K -Gblue modal.txt -Ey/1p,blue >> $ps
+gmt psxy -R -J -Ss0.4c -O -K -Gblue modal.txt -Ey+p1p,blue >> $ps
 gmt psxy -R -J -Ss0.1c -O -K -Gwhite modal.txt >> $ps
 gmt psbasemap -R0/100/0/6.5 -JX6i/-4i -Bxaf+u" Myr" -Byaf+u" km" -BWsNe -O -K >> $ps
 gmt pslegend -R -J -O -K -DjRT+w2.5i+o0.1i -F+p1p+gbeige+s << EOF >> $ps

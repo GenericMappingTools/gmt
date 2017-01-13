@@ -27,11 +27,11 @@ while [ $k -lt 22 ]; do
 	gmt grdcontour $Rcut slice_$k.nc -JX -C10 -L9/11 -S8 -Ddump
 	$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
 	cat tmp >> total_dump
-	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp300/39:FgrayB- -Wthin >> $ps
+	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
 	k=`expr $k + 1`
 done
 #gmt info -M total_dump
-echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i/0.1i >> $ps
+echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i >> $ps
 gmt psxyz -R -JX -JZ -p$view -O -Wthin << EOF >> $ps
 >
 12 0 5

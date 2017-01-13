@@ -126,6 +126,6 @@ See Also
 
 :doc:`gmt`,
 :doc:`grdclip`,
-:doc:`grdpaste`,
 :doc:`grdinfo`,
+:doc:`grdpaste`,
 :doc:`surface`

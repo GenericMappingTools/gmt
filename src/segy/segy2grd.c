@@ -133,7 +133,7 @@ GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A (or -Az): Add multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
+	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Let <nsamp> override number of samples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix number of traces. Default reads all traces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
@@ -324,7 +324,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* Decode grd information given, if any */
 
-	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header);
+	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header))
+		Return (GMT_PARSE_ERROR);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 

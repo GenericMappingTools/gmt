@@ -21,6 +21,12 @@ Synopsis
 
 **gmt_abort** *message*
 
+**gmt_build_movie** [**-d** *directory*] [**-n**] [**-r** *framerate*] [**-v**] *namestem*
+
+**gmt_build_gif** [**-d** *directory*] [**-l** *loop*] [**-r** *delay*] *namestem*
+
+**gmt_build_kmz** **-p** *prefix* [ **-r** ] *files*
+
 **gmt_get_nrecords** *file(s)*
 
 **gmt_get_ndatarecords** *file(s)*
@@ -37,9 +43,11 @@ Synopsis
 
 **gmt_get_map_height** **-R** **-J**
 
-**gmt_set_psfile** *file*
+**gmt_launch_jobs** [**-c** *n_cores*] [**-l** *nlines_per_cluster*] [**-n**] [**-v**] [**-w**] *commandfile*
 
-**gmt_set_pdffile** *file*
+**gmt_set_psfile** *scriptfile*
+
+**gmt_set_pdffile** *scriptfile*
 
 **gmt_set_framename** *prefix framenumber*
 
@@ -96,11 +104,11 @@ functions made available are:
 
 **gmt_get_region**
     Returns the region in the form w/e/s/n based on the data in table
-    *file(s)*. Optionally add -I*dx*/\ *dy* to round off the answer.
+    *file(s)*. Optionally add **-I**\ *dx*/\ *dy* to round off the answer.
 
 **gmt_get_gridregion**
     Returns the region in the form w/e/s/n based on the header of a grid
-    *file*. Optionally add -I*dx*/\ *dy* to round off the answer.
+    *file*. Optionally add **-I**\ *dx*/\ *dy* to round off the answer.
 
 **gmt_get_map_width**
     Expects the user to give the desired **-R** **-J** settings and
@@ -109,6 +117,13 @@ functions made available are:
 **gmt_get_map_height**
     Expects the user to give the desired **-R** **-J** settings and
     returns the map height in the current measurement unit.
+
+**gmt_launch_jobs**
+    Takes a file with a long list of commands and splits them into
+    many chunks that can be executed concurrently. Without arguments
+    the function will display its usage.  Note: It is your responsibility
+    to make sure no race conditions occur (i.e., multiple commands
+    writing to the same file).
 
 **gmt_set_psfile**
     Create the output PostScript file name based on the base name of a
@@ -123,6 +138,24 @@ functions made available are:
 **gmt_set_framenext**
     Accepts the current frame integer counter and returns the next
     integer counter.
+
+**gmt_build_movie**
+    Accepts a *namestem* which gives the prefix of a series of image files
+    with names *dir*/*namestem*\ _*.*.  Optional argument sets the
+    directory [same as *namestem*], and frame rate [24].
+    Without arguments the function will display its usage.
+
+**gmt_build_gif**
+    Accepts a *namestem* which gives the prefix of a series of image files
+    with names *dir*/*namestem*\ _*.*.  Optional argument sets the
+    directory [same as *namestem*], loop count and delay [10].
+    Without arguments the function will display its usage.
+
+**gmt_build_kmz**
+    Accepts **-p** *prefix* [ **-r** ] and any number of KML files and
+    and the images they may refer to, and builds a single KMZ file with
+    the name *prefix*.kmz.
+    Without arguments the function will display its usage.
 
 Notes
 -----

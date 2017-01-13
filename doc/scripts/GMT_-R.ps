@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13469 [64-bit] Document from pscoast
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17371M [64-bit] Document from pscoast
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Aug 25 07:14:23 2014
+%%CreationDate: Mon Jan  2 19:28:21 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -291,15 +290,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +306,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +343,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +367,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +493,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -495,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -513,12 +539,14 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -557,7 +585,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -635,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K
-%%PROJ: merc -90.00000000 -70.00000000 18.00000000 35.81900000 -1113194.908 1113194.908 2024351.426 4250737.610 +proj=merc +lon_0=-80 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: pscoast -R-90/-70/18/35.819 -JM2i -P -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K
+%@PROJ: merc -90.00000000 -70.00000000 18.00000000 35.81900000 -1113194.908 1113194.908 2024351.426 4250737.610 +proj=merc +lon_0=-80 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -648,18 +676,18 @@ O0
 -7 8 D
 -16 -9 D
 0 -12 D
-17 0 D
+P
 {0.922 0.745 0.333 C} FS
 FO
 64 1572 M
 3 8 D
 -16 -8 D
-13 0 D
+P
 FO
 138 1572 M
 -4 7 D
 2 -7 D
-2 0 D
+P
 FO
 677 1572 M
 -3 5 D
@@ -811,7 +839,7 @@ FO
 -10 -7 D
 -25 17 D
 19 -17 D
-140 0 D
+P
 914 2126 M
 24 -39 D
 -48 -3 D
@@ -823,7 +851,7 @@ FO
 1 13 D
 28 -25 D
 -9 18 D
-6 -5 D
+P
 859 2222 M
 9 -11 D
 -8 -26 D
@@ -835,7 +863,7 @@ FO
 40 -17 D
 2 13 D
 -12 6 D
-10 1 D
+P
 736 2199 M
 9 -9 D
 -19 -28 D
@@ -845,7 +873,7 @@ FO
 -4 22 D
 14 -12 D
 0 13 D
-1 0 D
+P
 628 1682 M
 13 -1 D
 -27 -11 D
@@ -853,7 +881,7 @@ FO
 -2 23 D
 7 -21 D
 19 14 D
--2 -10 D
+P
 1142 2073 M
 13 -13 D
 21 6 D
@@ -861,26 +889,26 @@ FO
 -29 7 D
 -17 21 D
 6 -5 D
-0 1 D
+P
 1032 2150 M
 20 2 D
 2 -14 D
 -40 9 D
-18 3 D
+P
 298 2258 M
 42 -12 D
 32 -29 D
 -58 33 D
 -38 -3 D
-22 11 D
+P
 456 2075 M
 -7 -20 D
 -8 -1 D
-15 21 D
+P
 422 1988 M
 4 -25 D
 -8 33 D
-4 -8 D
+P
 FO
 1034 1729 M
 9 11 D
@@ -888,93 +916,93 @@ FO
 2 11 D
 -10 0 D
 -5 -13 D
-3 -9 D
+P
 FO
 1056 1802 M
 4 -12 D
 4 18 D
--8 -6 D
+P
 FO
 1062 1814 M
 13 10 D
 -12 5 D
--1 -15 D
+P
 FO
 360 1621 M
 -37 -4 D
 95 8 D
--58 -4 D
+P
 FO
 225 1606 M
 -24 -2 D
 30 2 D
--6 0 D
+P
 FO
 1146 1895 M
 -6 6 D
 -10 -13 D
-16 7 D
+P
 FO
 27 1579 M
 7 -4 D
 4 11 D
--11 -7 D
+P
 FO
 82 1580 M
 8 0 D
 1 9 D
 -9 -8 D
-0 -1 D
+P
 FO
 512 1588 M
 11 -6 D
--11 6 D
+P
 FO
 77 1579 M
 7 0 D
--7 0 D
+P
 FO
 1155 1919 M
 -4 7 D
-4 -7 D
+P
 FO
 1134 1918 M
 9 -1 D
--9 1 D
+P
 FO
 172 1602 M
 -25 3 D
-25 -3 D
+P
 FO
 1040 1760 M
 6 -5 D
 -6 6 D
-0 -1 D
+P
 FO
 45 1594 M
 12 4 D
--12 -4 D
+P
 FO
 101 1603 M
 12 2 D
--12 -2 D
+P
 FO
 91 1578 M
 6 1 D
--6 -1 D
+P
 FO
 33 1592 M
 8 1 D
 -8 0 D
-0 -1 D
+P
 FO
 179 1601 M
 13 -1 D
--13 1 D
+P
 FO
 1048 1804 M
 8 -1 D
--8 1 D
+P
 FO
 1038 1572 M
 -14 73 D
@@ -1361,7 +1389,7 @@ S
 3 -6 D
 -2 6 D
 -533 0 D
-0 -355 D
+P
 FO
 1736 2394 M
 2 -73 D
@@ -1369,62 +1397,62 @@ FO
 26 6 D
 8 53 D
 -8 27 D
--1 0 D
+P
 FO
 1560 2233 M
 -13 -5 D
 52 8 D
--39 -3 D
+P
 FO
 1440 2118 M
 5 -6 D
 10 34 D
--15 -28 D
+P
 FO
 1613 2224 M
 33 39 D
--33 -39 D
+P
 FO
 1539 2225 M
 7 3 D
--7 -3 D
+P
 FO
 1647 2263 M
 8 8 D
--8 -8 D
+P
 FO
 1227 1964 M
 4 6 D
--4 -6 D
+P
 FO
 1680 2290 M
 28 17 D
--28 -17 D
+P
 FO
 1536 2226 M
 5 4 D
--5 -4 D
+P
 FO
 1610 2238 M
 7 -4 D
--7 4 D
+P
 FO
 1597 2239 M
 9 -2 D
--9 2 D
+P
 FO
 1524 2214 M
 -1 0 D
 9 7 D
--8 -7 D
+P
 FO
 1654 2271 M
 7 6 D
--7 -6 D
+P
 FO
 1665 2280 M
 11 9 D
--11 -9 D
+P
 FO
 1200 1936 M
 16 18 D
@@ -1569,11 +1597,11 @@ S
 -122 -19 D
 -17 -9 D
 0 -151 D
-305 0 D
+P
 247 452 M
 -15 2 D
 16 -2 D
--1 0 D
+P
 FO
 1200 628 M
 -1 2 D
@@ -1633,7 +1661,7 @@ FO
 75 -1 D
 20 -22 D
 35 -22 D
-0 155 D
+P
 FO
 1008 1572 M
 6 -6 D
@@ -1736,67 +1764,67 @@ FO
 -44 68 D
 -44 103 D
 -5 24 D
--30 0 D
+P
 1049 1415 M
 17 -8 D
 -14 -14 D
 6 11 D
 -16 7 D
-7 4 D
+P
 999 1503 M
 17 -28 D
 -3 -13 D
 -14 15 D
-0 26 D
+P
 1110 1188 M
 17 -33 D
 -17 -34 D
 -42 38 D
 42 30 D
-0 -1 D
+P
 986 1404 M
 4 -12 D
 -16 12 D
-12 0 D
+P
 1052 1002 M
 7 -13 D
 -16 18 D
-9 -5 D
+P
 1077 1396 M
 8 -18 D
 -12 26 D
-4 -8 D
+P
 1050 1294 M
 8 -26 D
 -19 23 D
 11 4 D
-0 -1 D
+P
 1013 1384 M
 -4 -8 D
 -10 0 D
 2 14 D
-12 -6 D
+P
 1049 1222 M
 -4 -18 D
 -5 16 D
-9 2 D
+P
 1035 1335 M
 3 -19 D
 -9 11 D
-6 8 D
+P
 1031 1278 M
 -4 -7 D
-4 7 D
+P
 1029 1306 M
 7 -7 D
--7 7 D
+P
 1049 1338 M
 -7 -5 D
 7 6 D
-0 -1 D
+P
 1093 1436 M
 28 -48 D
--28 48 D
+P
 FO
 537 1572 M
 25 -23 D
@@ -1811,13 +1839,13 @@ FO
 -10 14 D
 11 -3 D
 -2 4 D
--140 0 D
+P
 FO
 136 1572 M
 3 -23 D
 3 13 D
 -4 10 D
--2 0 D
+P
 FO
 51 1572 M
 -4 -18 D
@@ -1872,14 +1900,15 @@ FO
 -7 15 D
 -12 -2 D
 2 7 D
--13 0 D
+P
 FO
 0 1496 M
+P
 FO
 0 1466 M
 6 5 D
 -6 -4 D
-0 -1 D
+P
 FO
 840 439 M
 19 -3 D
@@ -1890,343 +1919,345 @@ FO
 16 -24 D
 -9 -7 D
 -19 11 D
-23 -21 D
+P
 FO
 1175 637 M
 -2 6 D
 -17 -12 D
 18 -1 D
-1 7 D
+P
 FO
 360 309 M
 1 -23 D
 32 43 D
 -24 -6 D
--9 -14 D
+P
 FO
 960 457 M
 4 5 D
 -19 -9 D
-15 4 D
+P
 FO
 313 443 M
 17 0 D
 16 13 D
 -34 -12 D
-1 -1 D
+P
 FO
 967 462 M
 4 -5 D
 10 8 D
 -14 -2 D
-0 -1 D
+P
 FO
 1082 651 M
 23 4 D
 -5 7 D
--18 -11 D
+P
 FO
 1171 648 M
 7 -11 D
 8 12 D
--15 -1 D
+P
 FO
 1043 1552 M
 10 -21 D
 -7 28 D
--3 -7 D
+P
 FO
 1010 460 M
 9 -4 D
 18 14 D
 -27 -9 D
-0 -1 D
+P
 FO
 1018 854 M
 -5 4 D
 -3 -3 D
 4 -6 D
-4 5 D
+P
 FO
 1137 1297 M
 44 -110 D
 -58 167 D
-14 -57 D
+P
 FO
 629 1530 M
 7 9 D
 -31 -21 D
-24 12 D
+P
 FO
 938 1121 M
 15 -25 D
 -3 18 D
--12 7 D
+P
 FO
 1144 655 M
 12 2 D
--12 -2 D
+P
 FO
 600 1517 M
+0 0 D
+P
 FO
 1025 864 M
 7 -11 D
--7 11 D
+P
 FO
 1070 939 M
 6 -2 D
--6 2 D
+P
 FO
 891 477 M
 7 -6 D
--7 6 D
+P
 FO
 929 1122 M
 4 -10 D
--4 10 D
+P
 FO
 876 1409 M
 6 -2 D
 -6 3 D
-0 -1 D
+P
 FO
 1009 518 M
 7 -4 D
--7 4 D
+P
 FO
 1080 863 M
 8 6 D
 -9 -6 D
-1 0 D
+P
 FO
 643 1543 M
 8 4 D
--8 -4 D
+P
 FO
 926 1138 M
 3 -12 D
--3 12 D
+P
 FO
 1115 661 M
 6 3 D
 -6 -2 D
-0 -1 D
+P
 FO
 870 1236 M
 7 -12 D
--7 12 D
+P
 FO
 876 1402 M
 6 3 D
--6 -3 D
+P
 FO
 385 424 M
 -4 10 D
-4 -10 D
+P
 FO
 919 452 M
 8 4 D
 -8 -3 D
-0 -1 D
+P
 FO
 964 1092 M
 10 -8 D
--10 8 D
+P
 FO
 1004 848 M
 6 5 D
--6 -5 D
+P
 FO
 44 1507 M
 9 2 D
--9 -2 D
+P
 FO
 83 1560 M
 10 5 D
--10 -5 D
+P
 FO
 80 1559 M
 8 11 D
--8 -11 D
+P
 FO
 392 407 M
 -3 7 D
-3 -7 D
+P
 FO
 945 1089 M
 13 2 D
 -20 4 D
-7 -6 D
+P
 FO
 1127 665 M
 17 -6 D
--17 6 D
+P
 FO
 1032 862 M
 8 -11 D
--8 11 D
+P
 FO
 1027 1009 M
 9 -4 D
--9 4 D
+P
 FO
 1096 665 M
 19 -3 D
--19 3 D
+P
 FO
 1080 927 M
 1 9 D
--1 -9 D
+P
 FO
 1163 655 M
 9 -6 D
--9 6 D
+P
 FO
 982 839 M
 10 4 D
--10 -4 D
+P
 FO
 1025 517 M
 19 -5 D
--19 5 D
+P
 FO
 1086 671 M
 10 -3 D
--10 3 D
+P
 FO
 1017 856 M
 6 -4 D
--6 4 D
+P
 FO
 76 1544 M
 10 -5 D
--10 5 D
+P
 FO
 1065 860 M
 12 4 D
--12 -4 D
+P
 FO
 1004 527 M
 4 -9 D
--4 9 D
+P
 FO
 877 1223 M
 12 -15 D
--12 15 D
+P
 FO
 896 581 M
 1 10 D
--1 -10 D
+P
 FO
 1020 1011 M
 7 -3 D
--7 3 D
+P
 FO
 666 559 M
 9 0 D
 -9 1 D
-0 -1 D
+P
 FO
 1188 644 M
 7 -4 D
--7 4 D
+P
 FO
 869 1265 M
 2 -9 D
--2 9 D
+P
 FO
 787 500 M
 11 1 D
--11 -1 D
+P
 FO
 741 608 M
 8 4 D
 -8 -3 D
-0 -1 D
+P
 FO
 1124 655 M
 6 0 D
 -6 1 D
-0 -1 D
+P
 FO
 899 471 M
 6 -1 D
 -6 2 D
-0 -1 D
+P
 FO
 942 844 M
 6 -3 D
 -6 4 D
-0 -1 D
+P
 FO
 1111 878 M
 6 5 D
 -6 -4 D
-0 -1 D
+P
 FO
 1124 649 M
 5 2 D
--5 -2 D
+P
 FO
 1121 885 M
 5 6 D
--5 -6 D
+P
 FO
 386 439 M
 -3 9 D
 2 -9 D
-1 0 D
+P
 FO
 815 485 M
 3 -7 D
--3 7 D
+P
 FO
 1044 512 M
 7 1 D
 -7 0 D
-0 -1 D
+P
 FO
 933 1110 M
 3 -6 D
--3 6 D
+P
 FO
 93 1497 M
 7 4 D
 -7 -3 D
-0 -1 D
+P
 FO
 108 1505 M
 7 7 D
--7 -7 D
+P
 FO
 1111 650 M
 6 2 D
--6 -2 D
+P
 FO
 88 1564 M
 5 3 D
--5 -3 D
+P
 FO
 766 505 M
 9 -3 D
--9 3 D
+P
 FO
 904 453 M
 7 -1 D
--7 1 D
+P
 FO
 946 458 M
 8 0 D
--8 0 D
+P
 FO
 1033 1003 M
 6 -1 D
 -6 2 D
-0 -1 D
+P
 FO
 1098 872 M
 8 3 D
--8 -3 D
+P
 FO
 743 1572 M
 15 -11 D
@@ -2910,12 +2941,12 @@ P S
 -5 -18 D
 -56 -34 D
 -7 -12 D
-208 0 D
+P
 FO
 2085 252 M
 -22 12 D
 -20 -4 D
-42 -8 D
+P
 FO
 1440 809 M
 9 -2 D
@@ -2947,7 +2978,7 @@ FO
 6 -18 D
 9 5 D
 -9 -4 D
-4 10 D
+P
 FO
 1512 1030 M
 13 -1 D
@@ -2971,7 +3002,7 @@ FO
 -7 -8 D
 8 -8 D
 -26 -19 D
-1 -1 D
+P
 FO
 1497 767 M
 -9 28 D
@@ -2990,7 +3021,7 @@ FO
 7 -5 D
 10 10 D
 4 -10 D
-1 26 D
+P
 FO
 1662 898 M
 -7 -27 D
@@ -3003,7 +3034,7 @@ FO
 22 5 D
 26 -18 D
 29 -23 D
-0 -17 D
+P
 FO
 1809 637 M
 10 -18 D
@@ -3015,7 +3046,7 @@ FO
 -1 -17 D
 12 -17 D
 -21 10 D
-37 -23 D
+P
 FO
 2022 379 M
 16 25 D
@@ -3026,7 +3057,7 @@ FO
 -33 -16 D
 -4 -12 D
 6 -14 D
-60 11 D
+P
 FO
 1920 565 M
 -35 -36 D
@@ -3036,7 +3067,7 @@ FO
 -19 -5 D
 -1 -10 D
 19 -11 D
--14 -11 D
+P
 FO
 1440 1127 M
 -43 -5 D
@@ -3046,7 +3077,7 @@ FO
 -18 -13 D
 107 21 D
 -2 11 D
--12 -4 D
+P
 FO
 1457 507 M
 21 -13 D
@@ -3056,7 +3087,7 @@ FO
 -15 3 D
 -3 10 D
 -3 -17 D
-22 -24 D
+P
 FO
 2040 562 M
 -16 5 D
@@ -3064,7 +3095,7 @@ FO
 34 0 D
 13 -10 D
 7 6 D
--33 11 D
+P
 FO
 1708 855 M
 44 -55 D
@@ -3072,434 +3103,434 @@ FO
 29 -1 D
 -40 65 D
 -17 6 D
-0 -1 D
+P
 FO
 2182 487 M
 -12 -7 D
 5 -5 D
 28 -4 D
 -4 16 D
--17 0 D
+P
 FO
 1680 716 M
 -5 -3 D
 46 -19 D
 -41 33 D
 -6 -7 D
-6 -4 D
+P
 FO
 1878 615 M
 8 -18 D
 1 13 D
 10 -14 D
 22 5 D
--41 14 D
+P
 FO
 2117 477 M
 27 7 D
 -15 -3 D
 -9 10 D
--3 -14 D
+P
 FO
 1356 578 M
 18 -14 D
 33 -1 D
 -13 16 D
--38 -1 D
+P
 FO
 1400 559 M
 25 -20 D
 7 5 D
 -5 17 D
--27 -2 D
+P
 FO
 1518 898 M
 11 6 D
 -21 5 D
 -15 -7 D
-25 -4 D
+P
 FO
 2160 503 M
 -5 -15 D
 21 -4 D
 -6 17 D
--10 2 D
+P
 FO
 2206 479 M
 -5 -13 D
 21 -9 D
 1 16 D
--17 6 D
+P
 FO
 1855 767 M
 -4 -7 D
 10 0 D
 4 23 D
--10 -16 D
+P
 FO
 2040 451 M
 -9 -6 D
 2 -11 D
 17 10 D
--10 7 D
+P
 FO
 1283 990 M
 8 0 D
 -7 3 D
--1 -3 D
+P
 FO
 1440 790 M
 16 0 D
 8 10 D
--24 -10 D
+P
 FO
 1462 811 M
 16 0 D
 -3 11 D
--13 -11 D
+P
 FO
 1244 610 M
 40 -24 D
 -33 26 D
--7 -2 D
+P
 FO
 1480 738 M
 5 -9 D
 11 11 D
--16 -2 D
+P
 FO
 1320 364 M
 -8 3 D
 12 -8 D
--4 5 D
+P
 FO
 1486 492 M
 21 -12 D
 -16 18 D
--5 -6 D
+P
 FO
 1414 1164 M
 0 -8 D
 5 12 D
--5 -4 D
+P
 FO
 1452 1111 M
 4 -6 D
 5 8 D
--9 -2 D
+P
 FO
 1806 724 M
 14 -5 D
 5 8 D
--19 -3 D
+P
 FO
 1683 844 M
 10 -3 D
--10 3 D
+P
 FO
 1448 1116 M
 8 4 D
--8 -4 D
+P
 FO
 1416 566 M
 9 -1 D
--9 1 D
+P
 FO
 1268 592 M
 6 -8 D
--6 8 D
+P
 FO
 1527 1082 M
 4 -8 D
--4 8 D
+P
 FO
 1451 1113 M
 8 1 D
--8 -1 D
+P
 FO
 1348 575 M
 5 4 D
 -5 -3 D
-0 -1 D
+P
 FO
 1964 582 M
 4 5 D
--4 -5 D
+P
 FO
 1335 572 M
 6 -3 D
--6 3 D
+P
 FO
 1451 952 M
 10 4 D
--10 -4 D
+P
 FO
 1972 587 M
 12 -3 D
--12 3 D
+P
 FO
 1447 554 M
 5 -7 D
--5 7 D
+P
 FO
 1460 803 M
 10 2 D
--10 -2 D
+P
 FO
 1261 593 M
 7 0 D
--7 0 D
+P
 FO
 1292 590 M
 8 1 D
 -8 0 D
-0 -1 D
+P
 FO
 1450 1115 M
 7 2 D
--7 -2 D
+P
 FO
 1539 1123 M
 10 -5 D
 -10 6 D
-0 -1 D
+P
 FO
 2174 497 M
 1 -7 D
--1 7 D
+P
 FO
 1521 1077 M
 5 -6 D
--5 6 D
+P
 FO
 1283 565 M
 6 1 D
 -6 0 D
-0 -1 D
+P
 FO
 1531 910 M
 18 5 D
--18 -5 D
+P
 FO
 1701 558 M
 3 -6 D
--3 6 D
+P
 FO
 1440 524 M
 -6 6 D
-6 -6 D
+P
 FO
 1304 578 M
 6 -2 D
--6 2 D
+P
 FO
 1562 1097 M
 3 8 D
--3 -8 D
+P
 FO
 1581 844 M
 2 8 D
--2 -8 D
+P
 FO
 1464 951 M
 5 6 D
--5 -6 D
+P
 FO
 1428 533 M
 5 -3 D
--5 3 D
+P
 FO
 1445 1150 M
 16 3 D
--16 -3 D
+P
 FO
 1351 393 M
 5 -3 D
--5 3 D
+P
 FO
 1518 910 M
 7 -1 D
--7 1 D
+P
 FO
 1666 738 M
 5 -3 D
--5 3 D
+P
 FO
 1471 961 M
 3 6 D
--3 -6 D
+P
 FO
 1463 744 M
 6 2 D
--6 -2 D
+P
 FO
 1575 965 M
 8 3 D
--8 -3 D
+P
 FO
 1609 815 M
 3 -6 D
--3 6 D
+P
 FO
 1706 708 M
 6 -5 D
--6 5 D
+P
 FO
 1477 1163 M
 6 -3 D
--6 3 D
+P
 FO
 1307 582 M
 4 -4 D
 -4 5 D
-0 -1 D
+P
 FO
 1648 753 M
 5 -3 D
 -5 4 D
-0 -1 D
+P
 FO
 1561 1094 M
 1 -7 D
--1 7 D
+P
 FO
 1261 593 M
 5 -4 D
--5 4 D
+P
 FO
 1248 713 M
 6 -7 D
--6 7 D
+P
 FO
 1730 351 M
 13 -5 D
--13 5 D
+P
 FO
 1440 795 M
 10 6 D
--10 -6 D
+P
 FO
 1468 742 M
 14 -1 D
--14 1 D
+P
 FO
 1325 355 M
 14 -5 D
--14 5 D
+P
 FO
 1293 380 M
 19 -13 D
--19 13 D
+P
 FO
 1941 649 M
 19 -1 D
--19 1 D
+P
 FO
 1273 395 M
 12 -10 D
--12 10 D
+P
 FO
 1721 696 M
 17 -7 D
--17 7 D
+P
 FO
 1455 548 M
 16 -18 D
--16 18 D
+P
 FO
 1231 620 M
 11 -2 D
 -11 3 D
-0 -1 D
+P
 FO
 1452 1004 M
 11 -14 D
--11 14 D
+P
 FO
 1206 630 M
 9 -4 D
--9 4 D
+P
 FO
 2220 453 M
 -3 -11 D
 4 11 D
--1 0 D
+P
 FO
 1215 629 M
 8 1 D
 -8 0 D
-0 -1 D
+P
 FO
 2102 460 M
 7 11 D
--7 -11 D
+P
 FO
 1463 749 M
 13 -1 D
--13 1 D
+P
 FO
 1320 592 M
 -11 2 D
-11 -2 D
+P
 FO
 2263 434 M
 1 12 D
--1 -12 D
+P
 FO
 1384 329 M
 13 -8 D
--13 8 D
+P
 FO
 1490 1074 M
 2 -9 D
--2 9 D
+P
 FO
 1341 347 M
 8 -4 D
 -8 5 D
-0 -1 D
+P
 FO
 1382 851 M
 6 4 D
 -6 -3 D
-0 -1 D
+P
 FO
 1640 767 M
 -9 16 D
-9 -16 D
+P
 FO
 1526 1093 M
 6 -4 D
--6 4 D
+P
 FO
 1710 535 M
 5 -5 D
--5 5 D
+P
 FO
 1671 731 M
 2 -7 D
--2 7 D
+P
 FO
 1355 587 M
 8 -5 D
--8 5 D
+P
 FO
 1381 346 M
 7 -1 D
--7 1 D
+P
 FO
 1266 395 M
 7 -2 D
 -7 3 D
-0 -1 D
+P
 FO
 1399 538 M
 5 4 D
--5 -4 D
+P
 FO
 1577 939 M
 8 12 D
--8 -12 D
+P
 FO
 1815 252 M
 8 5 D
@@ -4102,11 +4133,11 @@ S
 1 28 D
 -305 0 D
 0 -252 D
-223 0 D
+P
 FO
 1200 215 M
 -13 -6 D
-13 6 D
+P
 FO
 1030 173 M
 4 -14 D
@@ -4114,21 +4145,21 @@ FO
 -23 6 D
 -9 -10 D
 -1 11 D
--7 -1 D
+P
 FO
 254 26 M
 -1 -5 D
-1 5 D
+P
 FO
 216 76 M
 -4 -5 D
-4 5 D
+P
 FO
 261 15 M
 -4 9 D
 -12 -24 D
 4 0 D
-12 15 D
+P
 FO
 223 0 M
 4 12 D
@@ -4170,11 +4201,10 @@ P S
 216 76 M
 -4 -5 D
 P S
-261 15 M
--4 9 D
--12 -24 D
 249 0 M
 12 15 D
+-4 9 D
+-12 -24 D
 S
 1200 215 M
 -13 -6 D
@@ -4250,37 +4280,37 @@ P S
 42 4 D
 16 25 D
 3 1 D
-0 157 D
+P
 2183 67 M
 14 4 D
 24 -13 D
 -14 -7 D
--24 16 D
+P
 2191 62 M
 13 -1 D
--13 1 D
+P
 2157 82 M
 14 -21 D
 -16 6 D
-2 15 D
+P
 2156 114 M
 18 -4 D
 -18 3 D
-0 1 D
+P
 2248 37 M
 0 1 D
 7 -3 D
--7 2 D
+P
 FO
 2083 252 M
 2 0 D
--2 0 D
+P
 FO
 1784 252 M
 -4 -13 D
 20 3 D
 15 10 D
--31 0 D
+P
 FO
 1695 252 M
 0 -4 D
@@ -4288,16 +4318,17 @@ FO
 35 -2 D
 20 8 D
 -3 7 D
--84 0 D
+P
 FO
 1483 252 M
 -12 -20 D
 181 20 D
 33 -5 D
 6 5 D
--208 0 D
+P
 FO
 1200 215 M
+P
 FO
 1651 0 M
 -12 20 D
@@ -4310,7 +4341,7 @@ FO
 -2 -15 D
 36 -4 D
 22 -26 D
-196 0 D
+P
 FO
 2040 112 M
 -24 10 D
@@ -4318,21 +4349,21 @@ FO
 11 -11 D
 48 -17 D
 -4 17 D
--18 7 D
+P
 FO
 1213 212 M
 20 9 D
 -20 -8 D
-0 -1 D
+P
 FO
 1944 76 M
 12 2 D
--12 -2 D
+P
 FO
 1955 12 M
 16 -4 D
 -16 5 D
-0 -1 D
+P
 FO
 2400 211 M
 -35 -3 D
@@ -4533,6 +4564,7 @@ N 2400 1572 M 60 0 D S
 2400 0 D
 0 2400 D
 -2400 0 D
+0 -2400 D
 P S
 %%EndObject
 0 A
@@ -4541,14 +4573,14 @@ O0
 0 -600 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1200 150 M PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
-150 F2
+PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
+1200 150 M 150 F2
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 V MU 0 0 M 150 F0 (a\)) FP 150 F2 ( ) FP 150 F1 (\035R) FP 150 F2 (xmin/xmax/ymin/ymax) FP pathbbox N 4 1 roll exch pop add exch U neg exch -2 div exch G
@@ -4563,8 +4595,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -4584,8 +4616,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Wthinner
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Wthinner
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -4610,8 +4642,8 @@ O0
 3300 600 TM
 
 % PostScript produced by:
-%%GMT: pscoast -R-90/20/-65.5327/29.4248r -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K -X2.75 -Y0.5
-%%PROJ: omerc 269.90000000 294.56730000 13.58504992 35.97448399 -1003319.691 1017207.567 1246230.658 3266753.448 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: pscoast -R-90/20/-65.5327/29.4248+rr -JOc280/20/22/69/2 -O -Dl -Glightbrown -Wthinnest -Ba10g5 -BWsEN -K -X2.75 -Y0.5
+%@PROJ: omerc 269.90000000 294.56730000 13.58504992 35.97448399 -1003319.691 1017207.567 -376167.604 1644355.186 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -4723,7 +4755,7 @@ O0
 25 -10 D
 25 10 D
 72 29 D
-37 15 D
+P
 178 2162 M
 38 -27 D
 -43 -22 D
@@ -4735,7 +4767,7 @@ O0
 -4 12 D
 36 -13 D
 -16 14 D
-8 -3 D
+P
 89 2231 M
 12 -6 D
 3 -28 D
@@ -4747,7 +4779,7 @@ O0
 45 0 D
 -4 12 D
 -14 2 D
-10 4 D
+P
 80 1629 M
 14 4 D
 -22 -21 D
@@ -4755,7 +4787,7 @@ O0
 -10 22 D
 14 -17 D
 13 20 D
-1 -10 D
+P
 414 2203 M
 18 -6 D
 18 14 D
@@ -4763,12 +4795,12 @@ O0
 -30 -6 D
 -25 14 D
 8 -2 D
--1 0 D
+P
 279 2232 M
 19 10 D
 7 -12 D
 -41 -8 D
-15 10 D
+P
 {0.922 0.745 0.333 C} FS
 FO
 450 1832 M
@@ -4776,43 +4808,43 @@ FO
 -2 10 D
 -10 -4 D
 0 -14 D
-7 -7 D
+P
 FO
 442 1911 M
 8 -11 D
 -3 19 D
--5 -8 D
+P
 FO
 443 1925 M
 8 15 D
 -13 -1 D
 4 -14 D
-1 0 D
+P
 FO
 490 2036 M
 -8 3 D
 -5 -16 D
-13 13 D
+P
 FO
 7 1495 M
 12 -2 D
--12 2 D
+P
 FO
 489 2062 M
 -7 5 D
-7 -5 D
+P
 FO
 469 2053 M
 9 2 D
--9 -2 D
+P
 FO
 443 1864 M
 8 -2 D
--8 2 D
+P
 FO
 433 1910 M
 8 2 D
--8 -2 D
+P
 FO
 517 1682 M
 -43 65 D
@@ -5021,16 +5053,16 @@ S
 3 -3 D
 1 3 D
 -285 0 D
-86 -199 D
+P
 FO
 678 2368 M
 7 -4 D
 -5 36 D
--2 -32 D
+P
 FO
 539 2134 M
 2 7 D
--2 -7 D
+P
 FO
 525 2096 M
 7 24 D
@@ -5052,12 +5084,10 @@ FO
 3 -3 D
 1 3 D
 S
-678 2368 M
-7 -4 D
--5 36 D
 680 2400 M
 -2 -32 D
-S
+7 -4 D
+P S
 539 2134 M
 2 7 D
 P S
@@ -5086,10 +5116,10 @@ FO
 -73 -41 D
 0 -187 D
 223 81 D
-79 29 D
+P
 172 288 M
 -16 -4 D
-16 4 D
+P
 FO
 1045 821 M
 -2 2 D
@@ -5149,7 +5179,7 @@ FO
 75 28 D
 29 -15 D
 43 -7 D
--61 153 D
+P
 FO
 487 1670 M
 9 -2 D
@@ -5253,68 +5283,68 @@ FO
 -70 48 D
 -83 82 D
 -13 21 D
--30 -12 D
+P
 589 1535 M
 19 -1 D
 -8 -19 D
 1 13 D
 -18 0 D
-6 7 D
+P
 506 1600 M
 27 -20 D
 2 -14 D
 -19 9 D
--10 25 D
+P
 737 1338 M
 29 -26 D
 -3 -39 D
 -55 21 D
 28 44 D
-1 0 D
+P
 532 1500 M
 9 -11 D
 -21 6 D
-12 5 D
+P
 753 1133 M
 13 -10 D
 -23 12 D
 10 -1 D
-0 -1 D
+P
 623 1528 M
 15 -15 D
 -22 20 D
-7 -5 D
+P
 638 1418 M
 17 -23 D
 -28 15 D
-11 8 D
+P
 566 1490 M
 0 -9 D
 -10 -4 D
 -4 15 D
-14 -2 D
+P
 665 1347 M
 2 -19 D
 -11 13 D
-9 6 D
+P
 606 1451 M
 10 -16 D
 -12 7 D
-2 9 D
+P
 626 1394 M
 -1 -8 D
 0 9 D
-1 -1 D
+P
 612 1421 M
 10 -4 D
--10 4 D
+P
 619 1460 M
 -5 -7 D
-5 7 D
+P
 623 1573 M
 -1 0 D
 47 -36 D
--46 36 D
+P
 FO
 36 1488 M
 33 -12 D
@@ -5331,7 +5361,7 @@ FO
 -4 3 D
 -37 -15 D
 -72 -29 D
--25 -10 D
+P
 FO
 762 496 M
 21 4 D
@@ -5343,318 +5373,320 @@ FO
 -6 -10 D
 -23 4 D
 30 -13 D
-0 1 D
+P
 FO
 1017 820 M
 -4 6 D
 -13 -19 D
 18 6 D
--1 7 D
+P
 FO
 336 186 M
 9 -22 D
 16 54 D
 -21 -14 D
--4 -18 D
+P
 FO
 874 559 M
 2 7 D
 -14 -17 D
-12 10 D
+P
 FO
 240 303 M
 17 7 D
 11 18 D
 -29 -25 D
-1 0 D
+P
 FO
 879 567 M
 7 -4 D
 6 12 D
--13 -8 D
+P
 FO
 919 798 M
 22 14 D
 -8 4 D
--14 -18 D
+P
 FO
 1009 830 M
 11 -8 D
 3 15 D
--14 -7 D
+P
 FO
 529 1665 M
 17 -16 D
 -17 24 D
-0 -8 D
+P
 FO
 923 581 M
 10 0 D
 13 20 D
 -23 -19 D
-0 -1 D
+P
 FO
 778 974 M
 -6 2 D
 -2 -3 D
 6 -5 D
-2 6 D
+P
 FO
 720 1455 M
 87 -91 D
 -123 141 D
-36 -50 D
+P
 FO
 140 1483 M
 3 12 D
 -22 -32 D
-19 20 D
+P
 FO
 596 1206 M
 24 -19 D
 -9 16 D
--15 3 D
+P
 FO
 980 826 M
 10 6 D
--10 -6 D
+P
 FO
 117 1460 M
+0 0 D
+P
 FO
 781 987 M
 11 -8 D
--11 8 D
+P
 FO
 796 1078 M
 6 0 D
--6 0 D
+P
 FO
 798 552 M
 10 -3 D
 -10 4 D
-0 -1 D
+P
 FO
 587 1202 M
 8 -7 D
 -8 8 D
-0 -1 D
+P
 FO
 424 1462 M
 7 0 D
--7 0 D
+P
 FO
 899 638 M
 8 -1 D
--8 1 D
+P
 FO
 835 1007 M
 6 9 D
--6 -9 D
+P
 FO
 149 1501 M
 6 8 D
--6 -8 D
+P
 FO
 578 1217 M
 7 -10 D
 -8 11 D
-1 -1 D
+P
 FO
 948 822 M
 5 5 D
--5 -5 D
+P
 FO
 486 1291 M
 11 -9 D
 -11 10 D
-0 -1 D
+P
 FO
 427 1455 M
 4 5 D
--4 -5 D
+P
 FO
 319 310 M
 -8 9 D
-8 -9 D
+P
 FO
 836 538 M
 6 7 D
--6 -7 D
+P
 FO
 632 1187 M
 13 -4 D
--13 4 D
+P
 FO
 767 964 M
 4 7 D
--4 -7 D
+P
 FO
 332 296 M
 -6 6 D
 6 -5 D
-0 -1 D
+P
 FO
 615 1176 M
 13 8 D
 -21 -4 D
-8 -4 D
+P
 FO
 959 830 M
 18 1 D
--18 -1 D
+P
 FO
 788 988 M
 13 -8 D
--13 8 D
+P
 FO
 726 1130 M
 11 0 D
--11 0 D
+P
 FO
 928 818 M
 20 5 D
--20 -5 D
+P
 FO
 810 1070 M
 -2 9 D
-2 -9 D
+P
 FO
 998 833 M
 11 -2 D
--11 2 D
+P
 FO
 749 946 M
 8 8 D
--8 -8 D
+P
 FO
 916 643 M
 20 3 D
 -20 -2 D
-0 -1 D
+P
 FO
 916 820 M
 11 1 D
--11 -1 D
+P
 FO
 777 976 M
 7 -2 D
 -8 2 D
-1 0 D
+P
 FO
 822 998 M
 10 9 D
--10 -9 D
+P
 FO
 891 645 M
 8 -7 D
 -9 8 D
-1 -1 D
+P
 FO
 497 1281 M
 18 -9 D
--18 9 D
+P
 FO
 764 658 M
 -3 10 D
-3 -10 D
+P
 FO
 719 1129 M
 7 0 D
--7 0 D
+P
 FO
 545 549 M
 9 3 D
 -9 -2 D
-0 -1 D
+P
 FO
 1028 833 M
 7 -1 D
--7 1 D
+P
 FO
 473 1319 M
 6 -8 D
--6 8 D
+P
 FO
 687 536 M
 11 5 D
--11 -5 D
+P
 FO
 601 626 M
 6 7 D
--6 -7 D
+P
 FO
 959 819 M
 6 2 D
--6 -2 D
+P
 FO
 809 550 M
 6 1 D
 -7 0 D
-1 -1 D
+P
 FO
 708 935 M
 6 -1 D
 -7 2 D
-1 -1 D
+P
 FO
 859 1034 M
 5 7 D
--5 -7 D
+P
 FO
 962 813 M
 4 4 D
 -5 -4 D
-1 0 D
+P
 FO
 867 1045 M
 3 8 D
 -4 -8 D
-1 0 D
+P
 FO
 314 325 M
 -6 9 D
 5 -9 D
-1 0 D
+P
 FO
 720 532 M
 6 -6 D
--6 6 D
+P
 FO
 936 646 M
 7 3 D
 -7 -2 D
-0 -1 D
+P
 FO
 596 1193 M
 5 -4 D
 -6 4 D
-1 0 D
+P
 FO
 949 809 M
 5 4 D
--5 -4 D
+P
 FO
 665 533 M
 10 1 D
 -11 -1 D
-1 0 D
+P
 FO
 821 534 M
 6 1 D
--6 -1 D
+P
 FO
 860 555 M
 7 3 D
--7 -3 D
+P
 FO
 735 1127 M
 6 1 D
 -7 0 D
-1 -1 D
+P
 FO
 849 1023 M
 7 6 D
--7 -6 D
+P
 FO
 233 1567 M
 19 -4 D
@@ -6257,12 +6289,12 @@ P S
 -43 -55 D
 -2 -15 D
 166 66 D
-42 16 D
+P
 FO
 2076 797 M
 -26 2 D
 -19 -11 D
-45 9 D
+P
 FO
 1210 1095 M
 10 2 D
@@ -6294,7 +6326,7 @@ FO
 13 -16 D
 7 10 D
 -7 -9 D
--1 12 D
+P
 FO
 1192 1342 M
 13 5 D
@@ -6317,7 +6349,7 @@ FO
 10 -4 D
 -4 -11 D
 11 -4 D
--17 -30 D
+P
 FO
 1283 1076 M
 -20 24 D
@@ -6336,7 +6368,7 @@ FO
 9 -1 D
 6 13 D
 8 -8 D
--10 26 D
+P
 FO
 1393 1272 M
 4 -29 D
@@ -6349,7 +6381,7 @@ FO
 19 13 D
 33 -7 D
 38 -12 D
-7 -16 D
+P
 FO
 1644 1072 M
 18 -14 D
@@ -6361,7 +6393,7 @@ FO
 5 -17 D
 19 -12 D
 -24 1 D
-45 -8 D
+P
 FO
 1961 900 M
 6 31 D
@@ -6372,7 +6404,7 @@ FO
 -27 -29 D
 1 -14 D
 12 -11 D
-55 36 D
+P
 FO
 1784 1045 M
 -21 -50 D
@@ -6382,7 +6414,7 @@ FO
 -17 -13 D
 3 -11 D
 23 -3 D
--9 -16 D
+P
 FO
 1083 1409 M
 -40 -22 D
@@ -6392,7 +6424,7 @@ FO
 -13 -20 D
 96 64 D
 -6 9 D
--10 -8 D
+P
 FO
 1347 802 M
 26 -5 D
@@ -6403,7 +6435,7 @@ FO
 -7 9 D
 3 -18 D
 32 -16 D
-0 1 D
+P
 FO
 1904 1090 M
 -17 -1 D
@@ -6411,7 +6443,7 @@ FO
 33 13 D
 18 -5 D
 4 10 D
--38 -3 D
+P
 FO
 1456 1248 M
 66 -37 D
@@ -6419,14 +6451,14 @@ FO
 29 10 D
 -66 49 D
 -18 -1 D
-0 -1 D
+P
 FO
 2077 1073 M
 -9 -12 D
 7 -4 D
 30 9 D
 -10 13 D
--18 -6 D
+P
 FO
 1485 1098 M
 -5 -5 D
@@ -6434,429 +6466,429 @@ FO
 -54 16 D
 -3 -8 D
 8 -2 D
-0 -1 D
+P
 FO
 1722 1078 M
 15 -15 D
 -4 13 D
 16 -10 D
 20 14 D
--47 -2 D
+P
 FO
 2017 1036 M
 24 18 D
 -14 -9 D
 -13 6 D
-3 -15 D
+P
 FO
 1219 832 M
 24 -6 D
 33 12 D
 -19 11 D
--38 -17 D
+P
 FO
 1270 831 M
 33 -9 D
 5 6 D
 -13 16 D
--25 -13 D
+P
 FO
 1251 1214 M
 9 10 D
 -23 -3 D
 -12 -12 D
-26 5 D
+P
 FO
 2049 1080 M
 0 -17 D
 23 5 D
 -12 14 D
--11 -2 D
+P
 FO
 2105 1074 M
 0 -14 D
 24 -1 D
 -5 16 D
--19 -1 D
+P
 FO
 1637 1220 M
 0 -9 D
 9 5 D
 -6 24 D
--3 -20 D
+P
 FO
 1950 979 M
 -7 -10 D
 7 -10 D
 13 17 D
--13 3 D
+P
 FO
 984 1212 M
 8 3 D
 -8 0 D
-0 -3 D
+P
 FO
 1218 1076 M
 16 6 D
 3 14 D
--19 -20 D
+P
 FO
 1231 1106 M
 16 6 D
 -8 10 D
--8 -16 D
+P
 FO
 1096 820 M
 49 -7 D
 -43 13 D
--6 -6 D
+P
 FO
 1278 1040 M
 9 -6 D
 6 15 D
 -15 -8 D
-0 -1 D
+P
 FO
 1268 605 M
 -10 0 D
 15 -3 D
--5 3 D
+P
 FO
 1382 798 M
 25 -4 D
 -22 12 D
--3 -8 D
+P
 FO
 1042 1434 M
 3 -7 D
 1 14 D
--4 -7 D
+P
 FO
 1101 1398 M
 7 -5 D
 1 10 D
--8 -5 D
+P
 FO
 1606 1157 M
 16 1 D
 2 9 D
--18 -10 D
+P
 FO
 1436 1227 M
 11 1 D
--11 -1 D
+P
 FO
 1095 1402 M
 6 6 D
--6 -6 D
+P
 FO
 1284 845 M
 9 1 D
--9 -1 D
+P
 FO
 1127 812 M
 9 -5 D
--9 5 D
+P
 FO
 1186 1399 M
 7 -6 D
--7 6 D
+P
 FO
 1100 1399 M
 7 5 D
 -8 -4 D
-1 -1 D
+P
 FO
 1212 827 M
 4 5 D
--4 -5 D
+P
 FO
 1821 1080 M
 2 6 D
--2 -6 D
+P
 FO
 1201 818 M
 6 0 D
--6 0 D
+P
 FO
 1164 1241 M
 8 8 D
 -9 -8 D
-1 0 D
+P
 FO
 1827 1088 M
 12 1 D
--12 -1 D
+P
 FO
 1319 844 M
 8 -4 D
--8 4 D
+P
 FO
 1232 1097 M
 9 6 D
--9 -6 D
+P
 FO
 1120 810 M
 6 3 D
--6 -3 D
+P
 FO
 1151 820 M
 7 4 D
--7 -4 D
+P
 FO
 1098 1400 M
 5 6 D
 -6 -5 D
-1 -1 D
+P
 FO
 1181 1445 M
 12 -1 D
--12 1 D
+P
 FO
 2065 1079 M
 4 -6 D
--4 6 D
+P
 FO
 1183 1392 M
 6 -4 D
 -7 4 D
-1 0 D
+P
 FO
 1151 791 M
 7 4 D
 -7 -3 D
-0 -1 D
+P
 FO
 1259 1231 M
 17 12 D
--17 -12 D
+P
 FO
 1569 950 M
 5 -6 D
--5 6 D
+P
 FO
 1323 812 M
 1 0 D
 -9 4 D
-8 -4 D
+P
 FO
 1168 812 M
 6 1 D
--6 -1 D
+P
 FO
 1214 1428 M
 0 9 D
-0 -9 D
+P
 FO
 1335 1186 M
 -1 9 D
-1 -9 D
+P
 FO
 1177 1245 M
 3 8 D
--3 -8 D
+P
 FO
 1308 817 M
 7 -2 D
--7 2 D
+P
 FO
 1079 1433 M
 14 9 D
--14 -9 D
+P
 FO
 1287 646 M
 6 -1 D
 -6 2 D
-0 -1 D
+P
 FO
 1246 1226 M
 8 2 D
--8 -2 D
+P
 FO
 1462 1114 M
 6 0 D
 -7 1 D
-1 -1 D
+P
 FO
 1180 1257 M
 0 1 D
-0 -1 D
+P
 FO
 1259 1040 M
 5 4 D
--5 -4 D
+P
 FO
 1280 1303 M
 7 7 D
--7 -7 D
+P
 FO
 1374 1168 M
 6 -4 D
 -6 5 D
-0 -1 D
+P
 FO
 1514 1101 M
 7 -2 D
--7 2 D
+P
 FO
 1105 1459 M
 7 0 D
 -8 0 D
-1 0 D
+P
 FO
 1169 818 M
 6 -3 D
--6 3 D
+P
 FO
 1438 1123 M
 6 -2 D
--6 2 D
+P
 FO
 1214 1425 M
 4 -6 D
--4 6 D
+P
 FO
 1119 810 M
 7 -2 D
--7 2 D
+P
 FO
 1059 924 M
 9 -4 D
--9 4 D
+P
 FO
 1681 753 M
 15 1 D
 -15 0 D
-0 -1 D
+P
 FO
 1216 1081 M
 7 10 D
--7 -10 D
+P
 FO
 1265 1039 M
 14 5 D
 -14 -4 D
-0 -1 D
+P
 FO
 1277 598 M
 15 1 D
--15 -1 D
+P
 FO
 1235 610 M
 23 -5 D
 -24 5 D
-1 0 D
+P
 FO
 1771 1137 M
 19 7 D
--19 -7 D
+P
 FO
 1209 618 M
 16 -6 D
--16 6 D
+P
 FO
 1533 1095 M
 19 0 D
--19 0 D
+P
 FO
 1329 842 M
 23 -12 D
--23 12 D
+P
 FO
 1079 826 M
 11 1 D
 -12 -1 D
-1 0 D
+P
 FO
 1144 1293 M
 16 -10 D
--16 10 D
+P
 FO
 1050 825 M
 11 0 D
 -11 1 D
-0 -1 D
+P
 FO
 2129 1054 M
 2 -13 D
 -1 14 D
--1 -1 D
+P
 FO
 1059 829 M
 8 3 D
--8 -3 D
+P
 FO
 2008 1013 M
 3 14 D
--3 -14 D
+P
 FO
 1257 1045 M
 13 4 D
--13 -4 D
+P
 FO
 1178 833 M
 -12 -3 D
-12 3 D
+P
 FO
 2180 1052 M
 -4 13 D
-4 -13 D
+P
 FO
 1345 595 M
 16 -3 D
 -16 4 D
-0 -1 D
+P
 FO
 1153 1377 M
 6 -9 D
--6 9 D
+P
 FO
 1295 597 M
 10 -2 D
 -10 3 D
-0 -1 D
+P
 FO
 1136 1114 M
 5 6 D
--5 -6 D
+P
 FO
 1424 1133 M
 1 0 D
 -16 13 D
-15 -13 D
+P
 FO
 1180 1410 M
 8 -2 D
--8 2 D
+P
 FO
 1587 930 M
 7 -3 D
--7 3 D
+P
 FO
 1470 1110 M
 5 -6 D
--5 6 D
+P
 FO
 1215 841 M
 10 -2 D
--10 2 D
+P
 FO
 1335 611 M
 8 1 D
--8 -1 D
+P
 FO
 1201 615 M
 8 1 D
 -8 0 D
-0 -1 D
+P
 FO
 1277 810 M
 4 6 D
--4 -6 D
+P
 FO
 1293 1279 M
 2 15 D
--2 -15 D
+P
 FO
 1806 689 M
 5 8 D
@@ -7464,11 +7496,11 @@ FO
 -10 29 D
 -180 -66 D
 -122 -44 D
-329 0 D
+P
 FO
 1206 410 M
 -11 -12 D
-11 12 D
+P
 FO
 1053 302 M
 9 -12 D
@@ -7476,7 +7508,7 @@ FO
 -25 -2 D
 -5 -14 D
 -6 11 D
--6 -4 D
+P
 FO
 329 0 M
 0 7 D
@@ -7574,37 +7606,37 @@ P S
 21 2 D
 23 36 D
 7 1 D
-0 187 D
+P
 2250 649 M
 13 10 D
 28 -4 D
 -11 -12 D
--30 6 D
+P
 2260 647 M
 0 1 D
 13 4 D
--13 -5 D
+P
 2218 654 M
 22 -16 D
 -18 0 D
 -5 15 D
-1 1 D
+P
 2203 685 M
 21 4 D
--21 -4 D
+P
 2327 645 M
 8 1 D
--8 -1 D
+P
 FO
 2074 796 M
 2 1 D
--2 -1 D
+P
 FO
 1775 676 M
 1 -15 D
 19 11 D
 11 17 D
--31 -13 D
+P
 FO
 1686 641 M
 1 -4 D
@@ -7612,7 +7644,7 @@ FO
 36 12 D
 16 15 D
 -6 7 D
--83 -33 D
+P
 FO
 1474 557 M
 -4 -25 D
@@ -7620,9 +7652,10 @@ FO
 34 8 D
 5 8 D
 -180 -71 D
--28 -11 D
+P
 FO
 1206 410 M
+P
 FO
 1658 314 M
 9 4 D
@@ -7647,7 +7680,7 @@ FO
 1 9 D
 -9 -2 D
 4 18 D
-18 1 D
+P
 FO
 2087 637 M
 -28 0 D
@@ -7655,26 +7688,26 @@ FO
 15 -7 D
 56 2 D
 -11 16 D
--22 0 D
+P
 FO
 2330 536 M
 9 8 D
 -8 2 D
--1 -10 D
+P
 FO
 1220 411 M
 17 17 D
 -17 -16 D
-0 -1 D
+P
 FO
 2006 562 M
 11 7 D
--11 -7 D
+P
 FO
 2042 502 M
 18 2 D
 -18 -1 D
-0 -1 D
+P
 FO
 2400 879 M
 -24 -13 D
@@ -8018,22 +8051,22 @@ O0
 0 -600 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: pstext -R0/2/-0.5/2 -Jx1i -O -K -N -Y-0.5 -F+f9p,Helvetica-Oblique+jCT
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1200 150 M PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
-150 F2
+PSL_font_encode 2 get 0 eq {ISOLatin1+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if
+1200 150 M 150 F2
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-V MU 0 0 M 150 F0 (b\)) FP 150 F2 ( ) FP 150 F1 (\035R) FP 150 F2 (xlleft/ylleft/xuright/yuright ) FP 150 F1 (r) FP pathbbox N 4 1 roll exch pop add exch U neg exch -2 div exch G
+V MU 0 0 M 150 F0 (b\)) FP 150 F2 ( ) FP 150 F1 (\035R) FP 150 F2 (xlleft/ylleft/xuright/yuright) FP 150 F1 (+r) FP pathbbox N 4 1 roll exch pop add exch U neg exch -2 div exch G
 150 F0 (b\)) Z
 150 F2 ( ) Z
 150 F1 (\035R) Z
-150 F2 (xlleft/ylleft/xuright/yuright ) Z
-150 F1 (r) Z
+150 F2 (xlleft/ylleft/xuright/yuright) Z
+150 F1 (+r) Z
 %%EndObject
 0 A
 FQ
@@ -8041,8 +8074,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psxy -R0/2/-0.5/2 -Jx1i -O -K -N -Sc0.1 -Wthinner
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -8060,8 +8093,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2/-0.5/2 -Jx1i -O -N -Wthinner
-%%PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psxy -R0/2/-0.5/2 -Jx1i -O -N -Wthinner
+%@PROJ: xy 0.00000000 2.00000000 -0.50000000 2.00000000 0.000 2.000 -0.500 2.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin

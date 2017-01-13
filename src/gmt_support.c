@@ -161,54 +161,194 @@ static struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths
 
 /* Local functions needed for public functions below */
 
+GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
+	/* Parse the fill pattern syntax: p|P<pattern>[+r<dpi>][+b<color>|-][+f<color>|-] */
+	char *c = NULL;
+	double fb_rgb[4];
+
+	fill->dpi = irint (PSL_DOTS_PER_INCH);
+	if ((c = strchr (line, '+'))) {	/* Got modifiers */
+		unsigned int pos = 0;
+		char p[GMT_BUFSIZ] = {""};
+		while (gmt_getmodopt (GMT, c, "bfr", &pos, p)) {	/* Looking for +b, +f, +r */
+			switch (p[0]) {
+				case 'b':	/* Background color */
+					if (p[1] == '-') {	/* Transparent */
+						fill->b_rgb[0] = fill->b_rgb[1] = fill->b_rgb[2] = -1,	fill->b_rgb[3] = 0;
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to transparent!\n");
+					}
+					else {
+						if (gmt_getrgb (GMT, &p[1], fill->b_rgb)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Background colorizing value %s not recognized!\n", &p[1]);
+							return 2;
+						}
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
+					}
+					break;
+				case 'f':	/* Foreround color */
+					if (p[1] == '-') {	/* Transparent */
+						fill->f_rgb[0] = fill->f_rgb[1] = fill->f_rgb[2] = -1,	fill->f_rgb[3] = 0;
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to transparent!\n");
+					}
+					else {
+						if (gmt_getrgb (GMT, &p[1], fill->f_rgb)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Foreground colorizing value %s not recognized!\n", &p[1]);
+							return 2;
+						}
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to colors %s\n", gmt_putrgb (GMT, fill->f_rgb));
+					}
+					break;
+				case 'r':	/* Dots-per-inch resolution */
+					if (p[1] == '-') {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pattern dpi %s is negative!\n", &p[1]);
+						return 4;
+					}
+					fill->dpi = atoi (&p[1]);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern dpi set to %d\n", fill->dpi);
+					break;
+			}
+		}
+	}
+	/* Copy name (or number) of pattern */
+	if (c) c[0] = '\0';	/* Chop off the modifiers */
+	strncpy (fill->pattern, &line[1], GMT_BUFSIZ-1);
+	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
+	fill->pattern_no = atoi (fill->pattern);
+	if (fill->pattern_no == 0) {
+		fill->pattern_no = -1;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern image is in file %s\n", fill->pattern);
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern number %d selected\n", fill->pattern_no);
+
+	/* If inverse, simply flip the colors around */
+	if (line[0] == 'p') {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern will be inverted\n");
+		gmt_M_rgb_copy (fb_rgb, fill->f_rgb);
+		gmt_M_rgb_copy (fill->f_rgb, fill->b_rgb);
+		gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
+	}
+	if (c) c[0] = '+';	/* Undo previous damage */
+	return (0);
+}
+
+GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
+	/* Parse the old-style pattern syntax */
+	int n, i, len, pos, end;
+	char f, word[GMT_LEN256] = {""};
+	double fb_rgb[4];
+
+	/* We only get here if there are no +r,+f,+b strings or : in line, and we know line[1] is integer.
+	 * However, if user gave -Gp1image.jpg then we will fail trying to parse as old.  So we do a check
+	 * here if the argument can be accessed as a file and if so we call the new parser and return */
+
+	if (!gmt_access (GMT, &line[1], F_OK))
+		return (gmtsupport_parse_pattern_new (GMT, line, fill));
+
+	n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
+	if (n != 2) return (1);
+	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
+	len = (int)strlen (fill->pattern);
+	for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
+	if (pos > -1) fill->pattern[pos] = '\0';
+	fill->pattern_no = atoi (fill->pattern);
+	if (fill->pattern_no == 0) fill->pattern_no = -1;
+
+	/* See if fore- and background colors are given */
+
+	len = (int)strlen (line);
+	for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
+	pos++;
+
+	if (pos > 0 && line[pos]) {	/* Gave colors */
+		while (line[pos]) {
+			f = line[pos++];
+			if (line[pos] == '-')	/* Signal for transpacency masking */
+				fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1,	fb_rgb[3] = 0;
+			else {
+				end = pos;
+				while (line[end] && !(line[end] == 'F' || line[end] == 'B')) end++;
+				strncpy (word, &line[pos], (size_t)(end - pos));
+				word[end - pos] = '\0';
+				if (gmt_getrgb (GMT, word, fb_rgb)) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing value %s not recognized!\n", word);
+					return 2;
+				}
+			}
+			if (f == 'f' || f == 'F')
+				gmt_M_rgb_copy (fill->f_rgb, fb_rgb);
+			else if (f == 'b' || f == 'B')
+				gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing argument %c not recognized!\n", f);
+				return 2;
+			}
+			while (line[pos] && !(line[pos] == 'F' || line[pos] == 'B')) pos++;
+		}
+	}
+
+	/* If inverse, simply flip the colors around */
+	if (line[0] == 'p') {
+		gmt_M_rgb_copy (fb_rgb, fill->f_rgb);
+		gmt_M_rgb_copy (fill->f_rgb, fill->b_rgb);
+		gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
+	}
+	return 0;
+}
+
+/*! . */
+GMT_LOCAL int gmtsupport_parse_pattern (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
+	int err;
+	/* New syntax may have a modifier or no slash AND no colon */
+	if ((strstr(line, "+r") || strstr(line, "+f") || strstr(line, "+b") || !strchr(line, '/')) && !strchr (line,':'))
+		err = gmtsupport_parse_pattern_new (GMT, line, fill);
+	else
+		err = gmtsupport_parse_pattern_old (GMT, line, fill);
+	if (err == 2) {
+		GMT_exit (GMT, GMT_PARSE_ERROR); return 2;
+	}
+	fill->use_pattern = true;
+	return (err);
+}
+
 /*! . */
 GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, char *cpt_path) {
 	/* When a cpt is not in the current directory but given by relative or absolute path
-	 * AND that cpt refers to a user pattern file (which may bhavee relative or absolute path)
+	 * AND that cpt refers to a user pattern file (which may be a relative or absolute path)
 	 * then unless that pattern file can be found we will try to prepend the path to the cpt
 	 * file and see if the pattern can be found that way.
 	 */
 
-	int i = 0, j, pos, len, c = 0;
+	int j, err;
 	char *name = NULL, path[PATH_MAX] = {""};
-	if (!((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1]))) return NULL;	/* Not an image specification */
-	len = (int)strlen (line);
-	while (i < len && line[i] != '/') i++;	/* Scan past the <dpi>/ setting */
-	if (i == len) return NULL;	/* Got nothing with a slash */
-	i++;	/* Start of pattern name */
-	/* Determine if it is one of the predefined patterns 1-92 patterns */
-	if (isdigit(line[i]) && (line[i+1] == '\0' || isdigit(line[i+1]))) return NULL;	/* Not a user image */
-	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>], then chop those off */
-	for (j = i, pos = -1; line[j] && pos == -1; j++) if (line[j] == ':' && i < len && (line[j+1] == 'B' || line[j+1] == 'F')) pos = j;
-	if (pos > -1) {	/* Temporarily chop off the colorization modifiers */
-		c = line[pos];
-		line[pos] = '\0';
-	}
+	struct GMT_FILL fill;
+	if (!gmt_M_is_pattern (line)) return NULL;	/* Not an image specification */
+	err = gmtsupport_parse_pattern (GMT, line, &fill);	/* See if this returns an error or not */
+	if (err) return NULL;	/* Not a valid image specification */
+	if (fill.pattern_no) return NULL;	/* Not a user image */
+	
+	/* Here we do have a pattern specification */
 	/* Try the user's default directories */
-	if (gmtlib_getuserpath (GMT, &line[i], path)) {
-		if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
+	if (gmtlib_getuserpath (GMT, fill.pattern, path))
 		return NULL;	/* Yes, found so no problems */
-	}
+
 	/* Now must put our faith in the cpt path and hope it has a path that can help us */
 	if (cpt_path == NULL || cpt_path[0] == '<') {	/* Without an actual file path we must warn and bail */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
-		if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", fill.pattern);
 		return NULL;
 	}
 	j = (int)strlen (cpt_path);
 	while (j > 0 && cpt_path[j] != '/') j--;	/* Find last slash */
 	if (j > 0) {	/* OK, got the cpt directory */
 		cpt_path[j] = '\0';	/* Temporarily chop off the slash */
-		sprintf (path, "%s/%s", cpt_path, &line[i]);
+		sprintf (path, "%s/%s", cpt_path, fill.pattern);
 		cpt_path[j] = '/';	/* Restore the slash */
 		if (access (path, R_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", &line[i]);
-			if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information to determine location of user pattern %s\n", fill.pattern);
 			return NULL;
 		}
 		name = strdup (path);	/* Must use this image name instead as it contains the full working path */
 	}
-	if (pos > -1) line[pos] = (char)c;	/* Restore the colorization modifiers */
 	return (name);
 }
 
@@ -916,8 +1056,54 @@ GMT_LOCAL void support_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PALET
 	for (hdr = 0; hdr < P_from->n_headers; hdr++) P_to->header[hdr] = strdup (P_from->header[hdr]);
 }
 
+#if 0
+/*! Decode the optional +w, +u|U<unit> and determine scales */
+GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
+	unsigned int pos = 0;
+	int unit;
+	char *c = NULL, p[GMT_LEN32] = {""};
+	struct CPT_Z_SCALE *Z = NULL;
+	gmt_M_unused(direction);
+
+	if ((c = gmt_first_modifier (GMT, file, "uUw")) == NULL) return NULL;	/* No modifiers found */
+	/* Found at least one modifier */
+	Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE);
+	while (gmt_getmodopt (GMT, c, "uUw", &pos, p)) {
+		switch (p[0]) {
+			case 'U': Z->z_mode = 1;	/* Fall through on purpose */
+			case 'u':
+				unit = gmtlib_get_unit_number (GMT, p[1]);		/* Convert char unit to enumeration constant for this unit */
+				if (unit == GMT_IS_NOUNIT) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+					gmt_M_free (GMT, Z);
+					return NULL;
+				}
+				Z->z_unit = (unsigned int)unit;
+				Z->z_unit_to_meter = GMT->current.proj.m_per_unit[Z->z_unit];	/* Converts unit to meters */
+				if (Z->z_mode) Z->z_unit_to_meter = 1.0 / Z->z_unit_to_meter;	/* Wanted the inverse */
+				Z->z_adjust |= 1;		/* Says we have successfully parsed and readied the x/y scaling */
+				break;
+			case 'w':
+				if (direction == GMT_IN)
+					Z->z_wrap = 1;
+				else
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "support_cpt_parse: Modifier +w ignored for output.\n");
+				break;
+			default:
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "support_cpt_parse: Modifier +%s was unrecognized (part of file name?) and is ignored.\n", p);
+				return NULL;
+				return NULL;
+				break;
+		}
+	}
+	c[0] = '\0';	/* Chop off all modifiers so the filename can be used */
+
+	return (Z);
+}
+#endif
+
 /*! Decode the optional +u|U<unit> and determine scales */
-GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
+GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
 	enum gmt_enum_units u_number;
 	unsigned int mode = 0;
 	char *c = NULL;
@@ -964,7 +1150,10 @@ GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P,
 	 * or scaled to another set of units */
 
 	if (direction == GMT_IN) {
-		if (Z) {P->z_adjust[GMT_IN] = Z->z_adjust; P->z_unit[GMT_IN] = Z->z_unit; P->z_mode[GMT_IN] = Z->z_mode; P->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter; }
+		if (Z) {
+			P->z_adjust[GMT_IN] = Z->z_adjust; P->z_unit[GMT_IN] = Z->z_unit;
+			P->z_mode[GMT_IN] = Z->z_mode; P->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter;
+		}
 		if (P->z_adjust[GMT_IN] == 0) return;	/* Nothing to do */
 		if (P->z_adjust[GMT_IN] & 2)  return;	/* Already scaled them */
 		scale = P->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT */
@@ -5211,75 +5400,21 @@ void gmt_init_fill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, double r, doubl
 
 /*! . */
 bool gmt_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
-	int n, end, pos, i, len;
 	bool error = false;
-	double fb_rgb[4];
-	char f, word[GMT_LEN256] = {""};
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_getfill\n"); GMT_exit (GMT, GMT_PARSE_ERROR); return false; }
 
-	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<dpi>/<image>[:F<rgb>B<rgb>]   */
+	/* Syntax:   -G<gray>, -G<rgb>, -G<cmyk>, -G<hsv> or -Gp|P<image>[+b<rgb>][+f<rgb>][+r<dpi>]   */
 	/* Note, <rgb> can be r/g/b, gray, or - for masks.  optionally, append @<transparency> [0] */
 
 	gmt_init_fill (GMT, fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);	/* No argument given: we are out of here */
 
-	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
-		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
-		if (n != 2) error = 1;
-		/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
-		len = (int)strlen (fill->pattern);
-		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
-		if (pos > -1) fill->pattern[pos] = '\0';
-		fill->pattern_no = atoi (fill->pattern);
-		if (fill->pattern_no == 0) fill->pattern_no = -1;
-		fill->use_pattern = true;
-
-		/* See if fore- and background colors are given */
-
-		len = (int)strlen (line);
-		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
-		pos++;
-
-		if (pos > 0 && line[pos]) {	/* Gave colors */
-			while (line[pos]) {
-				f = line[pos++];
-				if (line[pos] == '-')	/* Signal for transpacency masking */
-					fb_rgb[0] = fb_rgb[1] = fb_rgb[2] = -1,	fb_rgb[3] = 0;
-				else {
-					end = pos;
-					while (line[end] && !(line[end] == 'F' || line[end] == 'B')) end++;
-					strncpy (word, &line[pos], (size_t)(end - pos));
-					word[end - pos] = '\0';
-					if (gmt_getrgb (GMT, word, fb_rgb)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing value %s not recognized!\n", word);
-						GMT_exit (GMT, GMT_PARSE_ERROR); return false;
-					}
-				}
-				if (f == 'f' || f == 'F')
-					gmt_M_rgb_copy (fill->f_rgb, fb_rgb);
-				else if (f == 'b' || f == 'B')
-					gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
-				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Colorizing argument %c not recognized!\n", f);
-					GMT_exit (GMT, GMT_PARSE_ERROR); return false;
-				}
-				while (line[pos] && !(line[pos] == 'F' || line[pos] == 'B')) pos++;
-			}
-		}
-
-		/* If inverse, simply flip the colors around */
-		if (line[0] == 'p') {
-			gmt_M_rgb_copy (fb_rgb, fill->f_rgb);
-			gmt_M_rgb_copy (fill->f_rgb, fill->b_rgb);
-			gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
-		}
-	}
-	else {	/* Plain color or shade */
+	if (gmt_M_is_pattern (line))	/* Image specified */
+		error = gmtsupport_parse_pattern (GMT, line, fill);
+	else	/* Plain color or shade */
 		error = gmt_getrgb (GMT, line, fill->rgb);
-		fill->use_pattern = false;
-	}
 
 	return (error);
 }
@@ -5670,7 +5805,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 							P->end[n].V->v.v_kind[END] = MAX (P->end[n].V->v.v_kind[BEG], P->end[n].V->v.v_kind[END]);
 						switch (P->end[n].V->v.v_kind[END]) {
 							case GMT_VEC_ARROW:
-								P->end[n].length = 0.5 * P->end[n].V->size_x * (2.0 - GMT->current.setting.map_vector_shape);
+								P->end[n].length = 0.5 * P->end[n].V->size_x * (2.0 - P->end[n].V->v.v_shape);
 								break;
 							case GMT_VEC_CIRCLE:
 								P->end[n].length = sqrt (P->end[n].V->size_x * 0.5 * P->end[n].V->v.h_width / M_PI);	/* Same circle area as vector head */
@@ -5842,12 +5977,22 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 
 	while (i < n && (gmt_strtok (line, "/", &pos, p))) {
 		last = (unsigned int)strlen (p) - 1;
-		if (p[last] == '=') {	/* Let -I override -R */
+		if (last && p[last] == 'e' && p[last-1] == '+') {	/* +e: Let -I override -R */
+			p[last] = p[last-1] = 0;
+			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
+			last -= 2;
+		}
+		else if (p[last] == '=') {	/* Obsolete =: Let -I override -R */
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
 			last--;
 		}
-		else if (p[last] == '+' || p[last] == '!') {	/* Number of nodes given, determine inc from domain (! added since documentation mentioned this once... */
+		else if (last && p[last] == 'n' && p[last-1] == '+') {	/* +n: Number of nodes given, determine inc from domain (! added since documentation mentioned this once... */
+			p[last] = 0;
+			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
+			last -= 2;
+		}
+		else if (p[last] == '+' || p[last] == '!') {	/* Obsolete + (! added since documentation mentioned this once...) */
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
 			last--;
@@ -6278,7 +6423,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		strncpy (cpt_file, source, GMT_BUFSIZ-1);
-		Z = support_cpt_parse_z_unit (GMT, cpt_file, GMT_IN);
+		Z = support_cpt_parse (GMT, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open color palette table %s\n", cpt_file);
 			gmt_M_free (GMT, Z);
@@ -6380,6 +6525,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->has_range = 1;
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
+		else if ((h = strstr (line, "CYCLIC")))	/* CPT should wrap around */
+			X->is_wrapping = 1;
+
 		GMT->current.setting.color_model = X->model;
 
 		if (c == '#') {	/* Possibly a header/comment record */
@@ -6668,6 +6816,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->data[i].i_dz = 1.0 / dz;
 		}
 	}
+	X->wrap_length = X->data[X->n_colors-1].z_high - X->data[0].z_low;
 
 	for (i = annot = 0, gap = overlap = false; i < X->n_colors - 1; i++) {
 		dz = X->data[i].z_high - X->data[i+1].z_low;
@@ -6724,6 +6873,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 
 	struct GMT_PALETTE *P = NULL;
 	unsigned int continuous = (file && strchr(file,','));
+	char *c = NULL;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
@@ -6738,7 +6888,10 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   For 2 & 3 we take the master table and linearly stretch the z values to fit the range, or honor default range for dynamic CPTs.
 	*/
 
+	if (file && (c = gmt_first_modifier (GMT, file, "uUw")))
+		c[0] = '\0';	/* Must chop off modifiers for access to work */
 	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT was given and exists or is memory location */
+		if (c) c[0] = '+';	/* Restore the string */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Take master cpt and stretch to fit data range using continuous colors */
@@ -7134,6 +7287,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	if (log_mode) gmt_M_free (GMT, z_out);
 	P->model = Pin->model;
 	P->categorical = Pin->categorical;
+	P->is_wrapping = Pin->is_wrapping;
 	P->is_continuous = continuous;
 	P->is_bw = Pin->is_bw;
 	P->is_gray = Pin->is_gray;
@@ -7182,7 +7336,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		static char *msg2[2] = {"create", "append to"};
 		strncpy (cpt_file, dest, GMT_BUFSIZ-1);
 		append = (cpt_file[0] == '>');	/* Want to append to existing file */
-		if ((Z = support_cpt_parse_z_unit (GMT, &cpt_file[append], GMT_OUT))) {
+		if ((Z = support_cpt_parse (GMT, &cpt_file[append], GMT_OUT))) {
 			support_cpt_z_scale (GMT, P, Z, GMT_OUT);
 			gmt_M_free (GMT, Z);
 		}
@@ -7239,6 +7393,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		fprintf (fp, GMT->current.setting.format_float_out, P->hinge);
 		fprintf (fp, "\n");
 	}
+	if (P->is_wrapping)
+		fprintf (fp, "# CYCLIC\n");
 
 	sprintf (format, "%s\t%%s%%c", GMT->current.setting.format_float_out);
 
@@ -7387,6 +7543,7 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			P->data[n].z_low, P->data[n].z_high, gmt_putrgb (GMT, P->data[n].rgb_low), gmt_putrgb (GMT, P->data[n].rgb_high),
 			P->data[n].i_dz, P->data[n].rgb_diff[0], P->data[n].rgb_diff[1], P->data[n].rgb_diff[2]);
 	}
+	P->wrap_length = P->data[P->n_colors-1].z_high - P->data[0].z_low;
 	GMT->current.setting.color_model = (P->model | GMT_COLORINT);	/* So color interpolation will happen in the color system */
 
 	/* We leave BNF as we got them from the external API */
@@ -7402,10 +7559,13 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	unsigned int index, lo, hi, mid;
 	gmt_M_unused(GMT);
 
-	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);				/* Set to NaN color */
-	if (value > P->data[P->n_colors-1].z_high)
+	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
+	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
+		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
+	else if (value > P->data[P->n_colors-1].z_high)
 		return (GMT_FGD - 3);	/* Set to foreground color */
-	if (value < P->data[0].z_low) return (GMT_BGD - 3);	/* Set to background color */
+	else if (value < P->data[0].z_low)
+		return (GMT_BGD - 3);	/* Set to background color */
 
 	/* Must search for correct index */
 
@@ -10567,7 +10727,7 @@ bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 /*! . */
 int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSERT *B) {
 	/* Parse the map insert option, which comes in two flavors:
-	 * 1) -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>]
+	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
@@ -10628,33 +10788,45 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
 	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
-		char *c = NULL;
-		/* Syntax is -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>] */
-		if ((c = strstr (text, "+s")) && c[2]) {	/* Want to save insert information to file */
-			B->file = strdup (&c[2]);
-			c[0] = '\0';				/* Chop off this single modifier */
+		char *c = NULL, p[GMT_LEN128] = {""};
+		unsigned int pos;
+		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+u<unit>] or old -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>] */
+		if ((c = gmt_first_modifier (GMT, text, "rsu"))) {
+			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>] */
+			pos = 0;	/* Reset to start of new word */
+			while (gmt_getmodopt (GMT, c, "rsu", &pos, p)) {
+				switch (p[0]) {
+					case 'r': B->oblique = true;	break;
+					case 's': B->file = strdup (&p[1]);	break;
+					case 'u': B->unit = p[1]; break;
+					default: return (GMT_PARSE_ERROR); break;
+				}
+			}
+			c[0] = '\0';	/* Chop off all modifiers so other items can be determined */
 		}
-		/* Decode the w/e/s/n part */
-		if (strchr (GMT_LEN_UNITS2, text[0])) {	/* Got a rectangular region given in these units */
+		else if (strchr (GMT_LEN_UNITS2, text[0])) {	/* Got a rectangular region given in these units */
+			/* -D<unit>]<xmin/xmax/ymin/ymax> */
 			B->unit = text[0];
 			k = 1;
 		}
+		if (c) c[0] = '+';	/* Restore original argument */
+		/* Decode the w/e/s/n part */
 		if ((n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d)) != 4) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify w/e/s/n or <unit>xmin/xmax/ymin/ymax\n", option);
-			return (1);
+			return (GMT_PARSE_ERROR);
 		}
 		col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Set correct input types */
 		col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 		if (k == 0) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
 			n = (int)strlen(txt_d) - 1;
-			if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
-				B->oblique = true;
-				txt_d[n] = '\0';
+			if (B->oblique || txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
+				if (!B->oblique) txt_d[n] = '\0';
 				error += gmt_verify_expectations (GMT, col_type[GMT_X], gmt_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
 				error += gmt_verify_expectations (GMT, col_type[GMT_Y], gmt_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YLO]), txt_b);
 				error += gmt_verify_expectations (GMT, col_type[GMT_X], gmt_scanf (GMT, txt_c, col_type[GMT_X], &B->wesn[XHI]), txt_c);
 				error += gmt_verify_expectations (GMT, col_type[GMT_Y], gmt_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
-				txt_d[n] = 'r';
+				if (!B->oblique) txt_d[n] = 'r';
+				B->oblique = true;
 			}
 			else {	/* Got  w/e/s/n for box that follows meridians and parallels, which may or may not be rectangular */
 				error += gmt_verify_expectations (GMT, col_type[GMT_X], gmt_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
@@ -10667,7 +10839,6 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			B->wesn[XLO] = atof (txt_a);	B->wesn[XHI] = atof (txt_b);
 			B->wesn[YLO] = atof (txt_c);	B->wesn[YHI] = atof (txt_d);
 		}
-		if (c) c[0] = '+';	/* Restore original argument */
 	}
 
 	B->plot = true;
@@ -11096,10 +11267,63 @@ void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bad mode (%d)\n", mode);
 }
 
+char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
+	/* Return pointer to the first modifier +<char>, with three conditions:
+	 * 1. <char> must be one of the letters in sep, 
+	 * 2. We must not be inside quoted text, i.e., "my +shit title",
+	 * 3. The + must not be escaped, i.e., +t"My \+shit text"
+	 */
+	size_t len, k = 0;
+	bool inside_quote = false, done = false;
+	if (sep == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_first_modifier: No separation codes given\n");
+	
+	if (string == NULL) return NULL;
+	len = strlen (string);
+	inside_quote = (string[0] == '\"' || string[0] == '\'');
+	while (!done) {
+		while (k < len && (inside_quote || string[k] != '+' || (k > 0 && string[k-1] == '\\'))) {
+			k++;
+			if (string[k] == '\"' || string[k] == '\'') inside_quote = !inside_quote;
+		}
+		k++;	/* Advance to character after the + */
+		if (k >= len) return NULL;
+		if (strchr (sep, string[k])) done = true;
+	}
+	return (k > 0 && k < len) ? &string[k-1] : NULL;
+}
+
+#if 0
+/* Was used to test the tokenizing of +<code>[<args] in cases
+ * where <args> may contain an escaped or quoted +, etc. 
+ * To test, just add option case -N in psbasemap and call
+ * psbasemap -N<combination of +a+b+c+d with/without args. */
+void gmt_testing (struct GMT_CTRL *GMT, char *string) {
+	char *c = NULL, p[GMT_BUFSIZ] = {""}, *sep = "abcde";
+	unsigned int pos = 0;
+	c = gmt_first_modifier (GMT, string, sep);
+	while (gmt_getmodopt (GMT, c, sep, &pos, p)) {
+		switch (p[0]) {
+			case 'a': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
+			case 'b': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
+			case 'c': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
+			case 'd': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
+			default: fprintf (stderr, "Got up empty\n");	break;
+		}
+	}
+}
+#endif
+
 /*! . */
 unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token) {
 	/* Breaks string into tokens separated by one of more modifier separator
-	 * characters (in sep) following a +.  Set *pos to 0 before first call.
+	 * characters (in sep) following a "+".  E.g., if you are looking for a
+	 * set of modifiers +a, +g<arg>, and +z, set sep = "agz" and any other
+	 * +<char> will fail.  Set *pos to 0 before first call.
+	 * If any of your <arg> may contain a + (e.g., +t"My +ve experience") then you can
+	 * 1) Escape the plus with backslash (e.g., +t"My \+ve experience")
+	 * 2) Put everything in quotes (e.g., +t'"My +ve experience"') as we
+	 *    will ignore plus-signs inside quotes.  You may also switch around
+	 *    and do +t"'My +ve experience'" as long as quotes match properly.
 	 * Returns 1 if it finds a token and 0 if no more tokens left.
 	 * pos is updated and token is returned.  char *token must point
 	 * to memory of length >= strlen (string).
@@ -11107,15 +11331,18 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char
 	 */
 
 	unsigned int i, j, string_len;
-	bool done = false;
+	bool done = false, in_quote = false;
 	gmt_M_unused(GMT);
 
 	string_len = (unsigned int)strlen (string);
 	token[0] = 0;	/* Initialize token to NULL in case we are at end */
 
 	while (!done) {
-		/* Wind up *pos to first + */
-		while (string[*pos] && string[*pos] != '+') (*pos)++;
+		/* Wind up *pos to first + sign NOT inside quotes OR escaped */
+		while (string[*pos] && (in_quote || string[*pos] != '+' || ((*pos) > 0 && string[(*pos)-1] == '\\'))) {
+			(*pos)++;
+			if (string[*pos] == '\"' || string[*pos] == '\'') in_quote = !in_quote;	/* Watch if we enter quoted text */
+		}
 
 		if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
 
@@ -11125,7 +11352,11 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char
 
 	/* Search for next +sep occurrence */
 	i = *pos; j = 0;
-	while (string[i] && !(string[i] == '+' && strchr (sep, (int)string[i+1]))) token[j++] = string[i++];
+	while (string[i] && (in_quote || string[i] != '+' || (i && string[i-1] == '\\') || !strchr (sep, (int)string[i+1]))) {
+		if (string[i+1] != '+' || string[i] != '\\') token[j++] = string[i];	/* Do not return the escape char */
+		i++;	/* Go to next character */
+		if (string[i] == '\"' || string[i] == '\'') in_quote = !in_quote;	/* Check when we get past the quoted section */
+	}
 	token[j] = 0;	/* Add terminating \0 */
 
 	*pos = i;

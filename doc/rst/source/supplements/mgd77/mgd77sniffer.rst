@@ -336,7 +336,7 @@ For |-G| the grids must eitehr be in the format used by Sandwell & Smith,
 which is a spherical Mercator 2-byte grid with no header, or any grid type
 supported by GMT and therefore must
 contain a GMT header. A correctly formatted \*.i2 grid file can be
-generated using grdraster as shown below.
+generated using :doc:`grdraster </grdraster>` as shown below.
 
 gmtset GRIDFILE_SHORTHAND TRUE
 
@@ -526,6 +526,7 @@ Sandwell/Smith 2 min gravity version 11, try
 See Also
 --------
 
+:doc:`grdraster </grdraster>`,
 :doc:`mgd77list`,
 :doc:`mgd77track`
 :doc:`x2sys_init <../x2sys/x2sys_init>`

@@ -31,7 +31,7 @@
  * with 32-bit ints.  However, 1-D array indices (e.g., ij = row*n_columns + col) are
  * addressed with 64-bit integers.
  *
- * Public functions (41 [+2]):
+ * Public functions (42 [+2]):
  *
  *  gmt_grd_get_format      : Get format id, scale, offset and missing value for grdfile
  *  gmtlib_read_grd_info       : Read header from file
@@ -44,6 +44,7 @@
  *  gmt_grd_mux_demux       :
  *  gmtlib_grd_set_units       :
  *  gmt_grd_pad_status      :
+ *  gmt_grd_info_syntax
  *  gmtlib_get_grdtype         :
  *  gmt_grd_data_size       :
  *  gmt_grd_set_ij_inc      :
@@ -306,7 +307,7 @@ GMT_LOCAL void grdio_pack_grid (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *h
 	}
 }
 
-GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *header, char *format) {
+GMT_LOCAL int grdio_parse_grd_format_scale_old (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *header, char *format) {
 	/* parses format string after =-suffix: ff/scale/offset/invalid
 	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
@@ -324,7 +325,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 	strncpy (type_code, format, 2);
 	type_code[2] = '\0';
 	if (type_code[0] == '/')		/* user passed a scale with no id code  =/scale[...]. Assume "nf" */
-		header->type = 18;
+		header->type = GMT_GRID_IS_NF;
 	else {
 		err = gmt_grd_format_decoder(Ctrl, type_code, &header->type); /* update header type id */
 		if (err != GMT_NOERROR)
@@ -374,6 +375,80 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 	}
 
 	return GMT_NOERROR;
+}
+
+GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
+	/* parses format string after = suffix: ff[+f<scale>][+o<offset>/][+n<invalid>]
+	 * ff:      can be one of [abcegnrs][bsifd]
+	 * scale:   can be any non-zero normalized number or 'a' for scale and
+	 *          offset auto-adjust, defaults to 1.0 if omitted
+	 * offset:  can be any finite number or 'a' for offset auto-adjust, defaults to 0 if omitted
+	 * invalid: can be any finite number, defaults to NaN if omitted
+	 * scale and offset may be left empty (e.g., ns//a will auto-adjust the offset only)
+	 */
+
+	char type_code[3];
+	char p[GMT_BUFSIZ] = {""};
+	unsigned int pos = 0;
+	int err; /* gmt_M_err_trap */
+
+	/* decode grid type */
+	strncpy (type_code, format, 2);
+	type_code[2] = '\0';
+	if (type_code[0] == '+')		/* User passed a scale, offset, or nan-modifier with no id code, e.g.,  =+s<scale>[...]. Assume "nf" format */
+		header->type = GMT_GRID_IS_NF;
+	else {	/* Match given code with known codes */
+		err = gmt_grd_format_decoder (GMT, type_code, &header->type); /* update header type id */
+		if (err != GMT_NOERROR)
+			return err;
+	}
+
+	while (gmt_getmodopt (GMT, format, "bnos", &pos, p)) {	/* Looking for +b, +n, +o, +s */
+		switch (p[0]) {
+			case 'b':	/* bands */
+				break;
+			case 'n':	/* Nan value */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Using %s to represent missing value (NaN)\n", &p[1]);
+				header->nan_value = atof (&p[1]);
+				/* header->nan_value should be of same type as (float)*grid to avoid
+				 * round-off errors. For example, =gd+n-3.4028234e+38:gtiff, would fail
+				 * otherwise because the GTiff'd NoData values are of type double but the
+				 * grid is truncated to float.  Don't allow infinity: */
+				if (!isfinite (header->nan_value))
+					header->nan_value = (float)NAN;
+				break;
+			case 'o':	/* parse offset */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting offset as %s\n", &p[1]);
+				if (p[1] != 'a') {
+					header->z_offset_autoadust = false;
+					header->z_add_offset = atof (&p[1]);
+				}
+				else
+					header->z_offset_autoadust = true;
+				break;
+			case 's':	/* parse scale */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting scale as %s\n", &p[1]);
+				if (p[1] == 'a') /* This sets both scale and offset to auto */
+					header->z_scale_autoadust = header->z_offset_autoadust = true;
+				else
+					header->z_scale_factor = atof (&p[1]);
+				break;
+			default:	/* Unrecognized modifier */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%s\n", p);
+				return GMT_NOT_A_VALID_MODIFIER;
+				break;
+		}
+	}
+	return GMT_NOERROR;
+}
+
+GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
+	int code;
+	if (strstr(format, "+s") || strstr(format, "+o") || strstr(format, "+n"))
+		code = grdio_parse_grd_format_scale_new (GMT, header, format);
+	else
+		code = grdio_parse_grd_format_scale_old (GMT, header, format);
+	return (code);
 }
 
 GMT_LOCAL int grdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P) {
@@ -1477,7 +1552,7 @@ int gmt_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doubl
 	return (GMT_NOERROR);
 }
 
-void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
 	/* Given input string, copy elements into string portions of h.
 		 By default use "/" as the field separator. However, if the first and
 		 last character of the input string is the same AND that character
@@ -1564,7 +1639,91 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 		}
 		entry++;
 	}
-	return;
+}
+
+int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
+	size_t k, n_slash = 0;
+	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
+	if (n_slash > 4)	/* Pretty sure this is the old syntax */
+		/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+		gmt_decode_grd_h_info_old (GMT, input, h);
+	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+		char word[GMT_LEN256] = {""};
+		unsigned int pos = 0;
+		double d;
+		while (gmt_getmodopt (GMT, input, "xyzsontr", &pos, word)) {
+			switch (word[0]) {
+				case 'x':	/* Revise x-unit name */
+					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(word) > GMT_GRID_UNIT_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+							"Warning: x_unit string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_UNIT_LEN80);
+					if (word[1]) strncpy (h->x_units, &word[1], GMT_GRID_UNIT_LEN80-1);
+					break;
+				case 'y':	/* Revise y-unit name */
+					gmt_M_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(word) > GMT_GRID_UNIT_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+							"Warning: y_unit string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_UNIT_LEN80);
+					if (word[1]) strncpy (h->y_units, &word[1], GMT_GRID_UNIT_LEN80-1);
+					break;
+				case 'z':	/* Revise z-unit name */
+					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(word) > GMT_GRID_UNIT_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+							"Warning: z_unit string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_UNIT_LEN80);
+					if (word[1]) strncpy (h->z_units, &word[1], GMT_GRID_UNIT_LEN80-1);
+					break;
+				case 's':	/* Revise the scale */
+				 	d = strtod (&word[1], NULL);
+					if (d != 0.0) h->z_scale_factor = d;	/* Don't want scale factor to become zero */
+					break;
+				case 'o':	/* Revise the offset */
+					h->z_add_offset = strtod (&word[1], NULL);
+					break;
+				case 'n':	/* Revise the nan-value */
+					h->nan_value = strtof (&word[1], NULL);
+					break;
+				case 't':	/* Revise the title */
+					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
+					if (strlen(word) > GMT_GRID_TITLE_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+							"Warning: Title string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_TITLE_LEN80);
+					if (word[1]) strncpy (h->title, &word[1], GMT_GRID_TITLE_LEN80-1);
+					break;
+				case 'r':	/* Revise the title */
+					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
+					if (strlen(word) > GMT_GRID_REMARK_LEN160)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+							"Warning: Remark string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_REMARK_LEN160);
+					if (word[1]) strncpy (h->remark, &word[1], GMT_GRID_REMARK_LEN160-1);
+					break;
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%s\n", word);
+					return 1;
+					break;
+			}
+		}
+	}
+	return 0;
+}
+
+void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {
+	/* Display the option for setting grid metadata in grdedit etc. */
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t-%c Append grid header information as one string composed of one or\n", option);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t   more modifiers; items not listed will remain unchanged:\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +x[<name>]   Sets the x-unit name; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +y[<name>]   Sets the y-unit name; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +z[<name>]   Sets the z-unit name; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +t[<title>]  Sets the grid title;  leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +r[<remark>] Sets the grid remark; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +s<scale>    Sets the z-scale\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +o<offset>   Sets the z-offset\n");
 }
 
 void gmt_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {

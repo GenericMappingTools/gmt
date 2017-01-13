@@ -6,11 +6,11 @@ ps=tiling.ps
 dpi=300
 
 cat << EOF > tiling.txt
-> -Gp$dpi/${src:-.}/tiling1.jpg
+> -Gp${src:-.}/tiling1.jpg+r$dpi
 -2	-2
 2	-2
 0	0
-> -Gp$dpi/${src:-.}/tiling2.jpg
+> -Gp${src:-.}/tiling2.jpg+r$dpi
 0	0
 2	-2
 2	2

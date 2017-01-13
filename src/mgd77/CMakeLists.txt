@@ -23,7 +23,7 @@
 set (SUPPL_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_codes.h mgd77_init.h
 	mgd77_recalc.h mgd77magref.h mgd77defaults.h mgd77_functions.h
 	cm4_functions.h mgd77.c mgd77_functions.c cm4_functions.c)
-set (SUPPL_PROGS_SRCS mgd77convert.c mgd77info.c mgd77list.c
+set (SUPPL_PROGS_SRCS mgd77convert.c mgd77header.c mgd77info.c mgd77list.c
 	mgd77magref.c mgd77manage.c mgd77path.c mgd77sniffer.c mgd77track.c)
 
 # lib sources

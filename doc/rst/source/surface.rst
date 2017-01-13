@@ -137,7 +137,7 @@ Optional Arguments
     in the solution, yielding faster run times and better results. The
     sizes suggested by **-Q** can be achieved by altering **-R** and/or
     **-I**. You can recover the **-R** and **-I** you want later by
-    using **grdsample** or **grdcut** on the output of **surface**.
+    using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
 
 .. _-S:
 
@@ -224,12 +224,12 @@ Bugs
 
 **surface** will complain when more than one data point is found for any
 node and suggest that you run :doc:`blockmean`, :doc:`blockmedian`, or
-:doc:`blockmode` first. If you did run any of these and still get this
+:doc:`blockmode` first. If you did run these decimators and still get this
 message it usually means that your grid spacing is so small that you
-need more decimals in the output format. You may
+need more decimals in the output format used. You may
 specify more decimal places by editing the parameter
 **FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
-these filters, or choose binary input and/or output using single or
+the decimators or choose binary input and/or output using single or
 double precision storage.
 
 Note that only gridline registration is possible with **surface**. If
@@ -243,6 +243,8 @@ See Also
 :doc:`blockmedian`,
 :doc:`blockmode`,
 :doc:`gmt`,
+:doc:`grdcut`,
+:doc:`grdsample`,
 :doc:`greenspline`,
 :doc:`nearneighbor`,
 :doc:`triangulate`,

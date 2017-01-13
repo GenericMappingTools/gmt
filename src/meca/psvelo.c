@@ -105,6 +105,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 	if (gmt_M_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
+	C->A.S.v.v_shape = GMT->current.setting.map_vector_shape;
 	C->D.scale = 1.0;
 	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -481,7 +482,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					}
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = GMT->current.setting.map_vector_shape;
+					dim[5] = Ctrl->A.S.v.v_shape;
 					dim[6] = (double)Ctrl->A.S.v.status;
 					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
 					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)

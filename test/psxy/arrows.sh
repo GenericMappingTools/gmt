@@ -25,19 +25,19 @@ $xli	9
 $xri	0
 $xri	9
 EOF
-echo 0 8.8 0 3i | gmt psxy -R -J -O -K -Sv1i+jc -W6p --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 8.2 0 3i | gmt psxy -R -J -O -K -Sv1i+ea+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 7.6 0 3i | gmt psxy -R -J -O -K -Sv1i+ba+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 7.0 0 3i | gmt psxy -R -J -O -K -Sv1i+ea+bi+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 6.4 0 3i | gmt psxy -R -J -O -K -Sv1i+ba+ei+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 5.8 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 5.2 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 4.6 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+bI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 4.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
-echo 0 3.4 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
-echo 0 2.8 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
-echo 0 2.2 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+bI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
-echo 0 1.6 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
-echo 0 1.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bI+eI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
-echo 0 0.4 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
+echo 0 8.8 0 3i | gmt psxy -R -J -O -K -Sv1i+jc+h0.5 -W6p --PS_MITER_LIMIT=0 >> $ps
+echo 0 8.2 0 3i | gmt psxy -R -J -O -K -Sv1i+ea+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 7.6 0 3i | gmt psxy -R -J -O -K -Sv1i+ba+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 7.0 0 3i | gmt psxy -R -J -O -K -Sv1i+ea+bi+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 6.4 0 3i | gmt psxy -R -J -O -K -Sv1i+ba+ei+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 5.8 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 5.2 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 4.6 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+bI+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 4.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc+h0.5 -W6p -Gred --PS_MITER_LIMIT=0 >> $ps
+echo 0 3.4 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
+echo 0 2.8 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
+echo 0 2.2 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+bI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
+echo 0 1.6 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
+echo 0 1.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bI+eI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
+echo 0 0.4 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eA+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
 gmt psxy -R -J -O -T >> $ps

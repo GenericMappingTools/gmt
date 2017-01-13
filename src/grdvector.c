@@ -481,7 +481,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
-	dim[5] = GMT->current.setting.map_vector_shape;	/* dim[5-8] do not change inside the loop */
+	dim[5] = Ctrl->Q.S.v.v_shape;	/* dim[5-8] do not change inside the loop */
 	dim[6] = (double)Ctrl->Q.S.v.status;
 	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	

@@ -1,6 +1,6 @@
 .. _perspective_full:
 
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
     Selects perspective view and sets the azimuth and elevation of the
     viewpoint [180/90]. When **-p** is used in consort with **-Jz** or
     **-JZ**, a third value can be appended which indicates at which
@@ -14,4 +14,7 @@
     project to the center of your page size (or specify the coordinates
     of the projected view point with **+v**\ *x0*/*y0*. When **-p** is
     used without any further arguments, the values from the last use of
-    **-p** in a previous GMT command will be used.
+    **-p** in a previous GMT command will be used.  Alternatively, you
+    can perform a simple rotation about the z-axis by just giving the
+    rotation angle.  Optionally, use **+v** or **+w** to select another
+    axis location than the plot origin.

@@ -33,13 +33,13 @@
 #ifndef GMT_SYNOPSIS_H
 #define GMT_SYNOPSIS_H
 
-#define GMT_inc_OPT	"<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
+#define GMT_inc_OPT	"<xinc>[<unit>][+e|n][/<yinc>[<unit>][+e|n]]"
 #define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
-#define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
-#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][r]"
-#define GMT_Rx_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
+#define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[+r]"
+#define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][+r]"
+#define GMT_Rx_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[+r]"
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
@@ -73,7 +73,7 @@
 #define GMT_TROSE_MAG	GMT_XYANCHOR "+w<width>[+d[<dec>[/<dlabel>]]][+i<pen>]" GMT_JUSTIFY "[+l<w,e,s,n>][+p<pen>][+t<ints>]" GMT_OFFSET
 #define GMT_SCALE	GMT_XYANCHOR "+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]]" GMT_OFFSET "[+u]"
 #define GMT_INSERT_A	GMT_XYANCHOR "+w<width>[<unit>][/<height>[<unit>]]" GMT_JUSTIFY GMT_OFFSET "[+s<file>]"
-#define GMT_INSERT_B	"[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>]"
+#define GMT_INSERT_B	"<xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+u<unit>]"
 
 /* Options for background panel, used in gmtlogo, psimage, pslegend and psscale */
 
@@ -89,15 +89,15 @@
 
 /* Used in tools that sets grdheader information via a -D option */
 
-#define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark>"
+#define GMT_GRDEDIT	"-D[+x<xname>][+y<yname>][+z<zname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>]"
 
 /*! Macros for the common GMT options used in a program's usage synopsis */
 
 #define GMT_B_OPT	"-B<args>"
-#define GMT_I_OPT	"-I<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
+#define GMT_I_OPT	"-I<xinc>[<unit>][+e|n][/<yinc>[<unit>][+e|n]]"
 #define GMT_J_OPT	"-J<args>"
-#define GMT_R2_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
-#define GMT_R3_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r]"
+#define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
+#define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
 #define GMT_U_OPT	"-U[[<just>]/<dx>/<dy>/][c|<label>]"
 #define GMT_V_OPT	"-V[<level>]"
 #define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
@@ -109,10 +109,10 @@
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[<unit>]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[l][s<scale>][o<offset>][,...]"
+#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...]"
-#define GMT_p_OPT	"-p[x|y|z]<azim>/<elev>[/<zlevel>][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
+#define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r"
 #define GMT_s_OPT	"-s[<cols>][a|r]"
 #define GMT_t_OPT	"-t<transp>"

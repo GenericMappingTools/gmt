@@ -43,7 +43,7 @@ Description
 parameters.  We read a list with seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
-a background depth (more complicated backgrounds may be added via **grdmath**).
+a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).
 The input must contain *lon*, *lat*, *radius*, *height* for each seamount.
 For elliptical features (**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
 *height* instead. If flattening is specified (**-F**) with no value appended

@@ -123,7 +123,7 @@ recognized by the tag GMT:
 
     gmt x2sys_datalist c2104.gmt -TGMT > myfile
 
-To make lon,lat, and depth input for **blockmean** and **surface** using
+To make lon,lat, and depth input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using
 all the files listed in the file tracks.lis and define by the tag TRK,
 but only the data that are inside the specified area, and make output
 binary, run

@@ -15,7 +15,7 @@ Synopsis
 
 **project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+**] ] ]
+[ |-G|\ *dist*\ [/*colat*][**+h**] ]
 [ |-L|\ [**w**\ ][\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
@@ -94,7 +94,7 @@ degrees and *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*
 will be in km.
 
 Calculations of specific great-circle and geodesic distances or for
-back-azimuths or azimuths are better done using **mapproject**.
+back-azimuths or azimuths are better done using :doc:`mapproject`.
 
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
@@ -140,14 +140,14 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*][**+**\ ]
+**-G**\ *dist*\ [/*colat*][**+h**]
     Generate mode. No input is read. Create (*r*, *s*, *p*) output
     points every *dist* units of *p*. See **-Q** option. Alternatively,
     append **/**\ *colat* for a small circle instead [Default is a
     colatitude of 90, i.e., a great circle]. Use **-C** and **-E** to
     generate a circle that goes through the center and end point. Note,
     in this case the center and end point cannot be farther apart than
-    2\*\|\ *colat*\ \|. Finally, if you append **+** the we will report
+    2\*\|\ *colat*\ \|. Finally, if you append **+h** the we will report
     the position of the pole as part of the segment header [no header].
 
 .. _-L:
@@ -313,4 +313,5 @@ See Also
 :doc:`gmtvector`,
 :doc:`grdtrack`,
 :doc:`mapproject`,
-:doc:`grdproject`
+:doc:`grdproject`,
+:doc:`grdtrack`

@@ -201,7 +201,8 @@ Optional Arguments
     *y* coordinates. These may be Cartesian or geographical. If
     geographical, then *west*, *east*, *south*, and *north* specify the
     Region of interest, and you may specify them in decimal degrees or
-    in [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. The two shorthands **-Rg**
+    in [±]dd:mm[:ss.xxx][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    format. The two shorthands **-Rg**
     and **-Rd** stand for global domain (0/360 and -180/+180 in
     longitude respectively, with -90/+90 in latitude).
 
@@ -380,11 +381,11 @@ Considerations
    double precision matrix for the Green function coefficients, where *n*
    is the number of data constraints. Hence, your computer's memory may
    place restrictions on how large data sets you can process with
-   greenspline. Pre-processing your data with doc:`blockmean`,
+   **greenspline**. Pre-processing your data with doc:`blockmean`,
    doc:`blockmedian`, or doc:`blockmode` is recommended to avoid aliasing and
    may also control the size of *n*. For information, if *n* = 1024 then
    only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
-   that greenspline is fully 64-bit compliant if compiled as such.
+   that **greenspline** is fully 64-bit compliant if compiled as such.
    For spherical data you may consider decimating using doc:`gmtspatial`
    nearest neighbor reduction.
 
@@ -400,10 +401,10 @@ Considerations
    gratefully acknowledge.
 
 #. If you need to fit a certain 1-D spline through your data
-   points you may wish to consider doc:`sample1d>` instead.
+   points you may wish to consider :doc:`sample1d` instead.
    It will offer traditional splines with standard boundary conditions
    (such as the natural cubic spline, which sets the curvatures at the ends
-   to zero).  In contrast, greenspline's 1-D spline, as is explained in
+   to zero).  In contrast, **greenspline**\ 's 1-D spline, as is explained in
    note 1, does *not* specify boundary conditions at the end of the data domain.
    
 Tension
@@ -452,6 +453,7 @@ See Also
 
 :doc:`gmt`, :doc:`gmtmath`,
 :doc:`nearneighbor`, :doc:`psxy`,
+:doc:`sample1d`,
 :doc:`sphtriangulate`,
 :doc:`surface`,
 :doc:`triangulate`, :doc:`xyz2grd`

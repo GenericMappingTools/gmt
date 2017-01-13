@@ -17,9 +17,7 @@ gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 # Count the number of events (to be used in title later. one less due to header)
 
-n=`cat neic_quakes.txt | wc -l`
-n=`expr $n - 1`
-
+n=`gmt info neic_quakes.txt -h1 -Fi -o2`
 # Pull out the first and last timestamp to use in legend title
 
 first=`sed -n 2p neic_quakes.txt | $AWK -F, '{printf "%s %s\n", $1, $2}'`

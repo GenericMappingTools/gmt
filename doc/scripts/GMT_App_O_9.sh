@@ -22,7 +22,7 @@ gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
 gmt psxy -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
 gmt psxy -R -J -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white \
 	-O -K >> GMT_App_O_9.ps
-cat << EOF | gmt pstext -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j \
+cat << EOF | gmt pstext -R -J -O -K -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j \
 	>> GMT_App_O_9.ps
 74W	41N	RT	New York
 2.33E	48.87N	CT	Paris

@@ -644,6 +644,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
 	unsigned int model;		/* RGB, HSV, CMYK */
+	unsigned int is_wrapping;	/* If 1 then we must wrap around to find color - can never be F or B */
 	unsigned int is_gray;		/* true if only grayshades are needed */
 	unsigned int is_bw;		/* true if only black and white are needed */
 	unsigned int is_continuous;	/* true if continuous color tables have been given */
@@ -658,6 +659,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	double z_unit_to_meter[2];	/* Scale, given z_unit, to convert z from <unit> to meters */
 	double minmax[2];		/* Min/max z-value for a default range, if given */
 	double hinge;			/* z-value for hinged CPTs */
+	double wrap_length;		/* z-length of active CPT */
 #ifdef GMT_BACKWARDS_API
 	struct GMT_LUT *range;
 	struct GMT_BFN *patch;

@@ -46,8 +46,9 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		bool rose;
 		double inc;
 	} A;
-	struct C {	/* -Cm|<modefile> */
+	struct C {	/* -Cm|[+w]<modefile> */
 		bool active;
+		bool mode;
 		bool mean;
 		char *file;
 	} C;
@@ -75,6 +76,10 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 	struct N {	/* -N */
 		bool active;
 	} N;
+	struct Q {	/* -Q<alpha> */
+		bool active;
+		double value;
+	} Q;
 	struct S {	/* -Sscale[n] */
 		bool active;
 		bool normalize;
@@ -102,6 +107,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
+	C->Q.value = 0.05;
 	C->S.scale = 3.0;
 	C->Z.scale = 1.0;
 	if (GMT->current.setting.proj_length_unit == GMT_CM) {
@@ -120,6 +126,16 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
+GMT_LOCAL double Critical_Resultant (double alpha, int n) {
+	/* Return critial resultant for given alpha and sample size.
+	 * Based on Rayleigh test for uniformity as approximated by Zaar [1999]
+	 * and reported by Berens [2009] in CircStat (MATLAB).  Valid for
+	 * n >= 10 and for first 3 decimals (gets better with n). */
+	double Rn;
+	Rn = 0.5 * sqrt ((1.0 + 4.0 * n * (1.0 + n) - pow (log (alpha) + 1.0 + 2.0 * n, 2.0))) / n;
+	return (Rn);
+}
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	double r;
 	char *choice[2] = {"OFF", "ON"};
@@ -128,8 +144,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|<modefile>]] [-D] [-F] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|[+w]<modefile>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P] [-Q<alpha>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -145,22 +161,24 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   The scale bar length is set to the radial gridline spacing.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
 	}
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modefile> file.  To use mean direction, choose -Cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modefile> file. For calculated mean direction, choose -Cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To write the calculated mean direction etc. to file, append +w<modfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute and report statistics - no plot is created.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is West/East/South/North (depending on GMT_LANGUAGE)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W/90E/-/0 for half-circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [West,East,South,North (depending on GMT_LANGUAGE)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W,90E,-,0 for half-circle].  If no argument \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes.  If -C is used then the attributes apply to the -C vector(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Otherwise, if windrose mode is selected we apply vector attributes to individual directions.\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [false].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [no normalization].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -Sn<radius>.\n");
 	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set confidence level for Rayleigh test for uniformity [0.05].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
@@ -193,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	int n;
 	unsigned int n_errors = 0, k;
 	double range;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -215,9 +233,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+w"))) {	/* Wants to write out mean direction */
+					gmt_M_str_free (Ctrl->C.file);
+					if (c[2]) Ctrl->C.file = strdup (&c[2]);
+					Ctrl->C.mode = GMT_OUT;
+					c[0] = '\0';	/* Chop off temporarily */
+				}
 				if ((opt->arg[0] == 'm' && opt->arg[1] == '\0') || (API->mode == 0 && opt->arg[0] == '\0'))
 					Ctrl->C.mean = true;
-				else {
+				else if (Ctrl->C.mode == GMT_IN) {
 					gmt_M_str_free (Ctrl->C.file);
 					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				}
@@ -241,7 +265,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'L':	/* Overwride default labeling */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
-					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
+					unsigned int n_comma = 0;
+					for (k = 0; k < strlen (opt->arg); k++) if (opt->arg[k] == ',') n_comma++;
+					if (n_comma == 3)	/* New, comma-separated labels */
+						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^,],%[^,],%[^,],%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>,<eastlabel>,<southlabel>,<northlabel>\n");
+					else	/* Old slash-separated labels */
+						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
 					Ctrl->L.w = strdup (txt_a);	Ctrl->L.e = strdup (txt_b);
 					Ctrl->L.s = strdup (txt_c);	Ctrl->L.n = strdup (txt_d);
 				}
@@ -282,6 +311,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
 				Ctrl->N.active = true;
+				break;
+			case 'Q':	/* Scale radii before using data */
+				Ctrl->Q.active = true;
+				Ctrl->Q.value = atof (opt->arg);
 				break;
 			case 'S':	/* Get radius of unit circle in inches */
 				Ctrl->S.active = true;
@@ -325,11 +358,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && gmt_access (GMT, Ctrl->C.file, R_OK),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && Ctrl->C.mode == GMT_IN && gmt_access (GMT, Ctrl->C.file, R_OK),
 	                                 "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
 	if (!Ctrl->I.active) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
@@ -347,8 +381,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 
 int GMT_psrose (void *V_API, int mode, void *args) {
 	bool do_fill = false, automatic = false, sector_plot = false, windrose = true;
-	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;
-	int error = 0, k, n_annot, n_alpha, sbin;
+	unsigned int n_bins, n_modes = 0, form, n_in, half_only = 0, bin;
+	int error = 0, k, n_annot, n_alpha, sbin, significant;
 
 	uint64_t n = 0, i;
 
@@ -360,7 +394,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;
 	double x1, x2, y1, y2, total = 0.0, total_arc, off, max_radius, az_offset, start_angle;
 	double asize, lsize, this_az, half_bin_width, diameter, wesn[4], mean_vector, mean_resultant;
-	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL;
+	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL, critical_resultant;
 	double *length = NULL, *mode_direction = NULL, *mode_length = NULL, dim[PSL_MAX_DIMS];
 
 	struct PSROSE_CTRL *Ctrl = NULL;
@@ -536,6 +570,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (mean_theta < 0.0) mean_theta += 360.0;
 	mean_vector = hypot (xr, yr) / n;
 	mean_resultant = mean_radius = hypot (xr, yr) / total;
+	critical_resultant = Critical_Resultant (Ctrl->Q.value, n);
+	significant = (mean_resultant > critical_resultant);
 	if (!Ctrl->S.normalize) mean_radius *= max_radius;
 
 	if (Ctrl->A.inc > 0.0) {	/* Find max of the bins */
@@ -551,10 +587,10 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char *kind[2] = {"r", "bin sum"};
-		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
+		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s sign@%%.2f = %%d\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
+		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];
@@ -678,7 +714,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active) { /* Initialize vector head settings */
 			gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
 			Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-			dim[5] = GMT->current.setting.map_vector_shape;
+			dim[5] = Ctrl->M.S.v.v_shape;
 			dim[6] = (double)Ctrl->M.S.v.status;
 			dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
 			if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
@@ -758,6 +794,30 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {
 		unsigned int this_mode;
+		if (Ctrl->C.mode == GMT_OUT) {	/* Write mean vector and statistics to file */
+			uint64_t dim[4] = {1, 1, 1, 8};	/* One record with 8 columns */
+			struct GMT_DATASET *V = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
+			if ((V = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				Return (API->error);
+			}
+			S = V->table[0]->segment[0];	/* The only segment */
+			sprintf (format, "mean_az\tmean_r\tmean_resultant\tmax\tscaled_mean_r\tlength_sum\tn\tsign@%.2f", Ctrl->Q.value);
+			S->coord[GMT_X][0] = mean_theta;
+			S->coord[GMT_Y][0] = mean_radius;
+			S->coord[GMT_Z][0] = mean_resultant;
+			S->coord[3][0] = max;
+			S->coord[4][0] = mean_radius;
+			S->coord[5][0] = total;
+			S->coord[6][0] = n;
+			S->coord[7][0] = significant;
+			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, format, V)) {
+				Return (API->error);
+			}
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, V) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (Ctrl->C.mean) {	/* Not given, calculate and use mean direction only */
 			n_modes = 1;
@@ -766,7 +826,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			mode_direction[0] = mean_theta;
 			mode_length[0] = mean_radius;
 		}
-		else {	/* Get mode parameters from separate file */
+		else if (Ctrl->C.mode == GMT_IN) {	/* Get mode parameters from separate file */
 			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -790,7 +850,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
 		Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
-		dim[5] = GMT->current.setting.map_vector_shape;
+		dim[5] = Ctrl->M.S.v.v_shape;
 		dim[6] = (double)Ctrl->M.S.v.status;
 		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
 		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);

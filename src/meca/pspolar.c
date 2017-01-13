@@ -322,6 +322,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 									Ctrl->S2.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 									n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
 								}
+								Ctrl->S2.vector_shape = Ctrl->S2.S.v.v_shape;
 								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
 								   WOULD A COPY TO THE CORRESPONDING MEMBERS OF Ctrl->S2 BE GOOD ENOUGH? */
 							}
@@ -603,7 +604,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				gmt_M_memset (dim, PSL_MAX_DIMS, double);
 				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
 				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
-				dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
+				dim[5] = Ctrl->S2.vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
 				gmt_setfill (GMT, &(Ctrl->S2.fill), Ctrl->S2.outline);
 				PSL_plotsymbol (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, PSL_VECTOR);
 			}

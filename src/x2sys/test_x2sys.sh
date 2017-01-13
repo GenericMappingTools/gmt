@@ -13,13 +13,13 @@ delete=0	# Set to 0 for debug where files are not removed
 gmt grdmath -R-4/4/-4/4 -I0.1 0 0 CDIST DUP DUP MUL NEG 4 DIV EXP EXCH 3 MUL COS MUL = hat.nc
 
 # 2. Create 3 fake tracks
-cat << EOF | gmt mapgmt project -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -Ghat.nc > trackA.xydz
+cat << EOF | gmt mapproject -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -Ghat.nc > trackA.xydz
 -3	-3
 3	3
 3	1
 -2	1
 EOF
-cat << EOF | gmt mapgmt project -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -Ghat.nc > trackB.xydz
+cat << EOF | gmt mapproject -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -Ghat.nc > trackB.xydz
 3	-1
 0	2
 0	-2
@@ -27,7 +27,7 @@ cat << EOF | gmt mapgmt project -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack 
 EOF
 # THrow in a wrench by scaling the grid by 1.1 before sampling track C:
 gmt grdmath hat.nc 1.1 MUL = $$.nc
-cat << EOF | gmt mapgmt project -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -G$$.nc > trackC.xydz
+cat << EOF | gmt mapproject -Gc | gmt sample1d -Fl -T2 -I0.1 | gmt grdtrack -G$$.nc > trackC.xydz
 -3	-1
 2	-1
 2	3

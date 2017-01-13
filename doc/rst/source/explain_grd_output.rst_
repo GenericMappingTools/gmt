@@ -7,10 +7,10 @@ grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
 data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
-**=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
-*id* is a two-letter identifier of the grid type and precision, and
+=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*], where
+*ID* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
-to all grid values, and *nan* is the value used to indicate missing
+to all grid values, and *invalid* is the value used to indicate missing
 data. See :doc:`grdconvert` and Section
 :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.

@@ -13,7 +13,7 @@ grdtrend
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrend** *grdfile* |-N|\ *n\_model*\ [**r**]
+**grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
@@ -32,7 +32,7 @@ is defined by:
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *3* fits a bilinear trend, **-N**\ *6* a quadratic
-surface, and so on. Optionally, append **r** to the **-N** option to
+surface, and so on. Optionally, append **+r** to the **-N** option to
 perform a robust fit. In this case, the program will iteratively
 reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
@@ -51,9 +51,9 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *n\_model*\ [**r**\ ]
+**-N**\ *n\_model*\ [**+r**\ ]
     *n\_model* sets the number of model parameters to fit.
-    Append **r** for robust fit.
+    Append **+r** for robust fit.
 
 Optional Arguments
 ------------------
@@ -116,7 +116,7 @@ and reporting the progress:
 
    ::
 
-    gmt grdtrend hawaii_topo.nc -N10r -Thawaii_trend.nc -Whawaii_weight.nc -V
+    gmt grdtrend hawaii_topo.nc -N10+r -Thawaii_trend.nc -Whawaii_weight.nc -V
 
 See Also
 --------

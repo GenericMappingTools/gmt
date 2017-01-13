@@ -22,7 +22,7 @@ gmt psxy -R0/3/0/1.5 -Jx1i -O -K -W0.25p,- << EOF >> $ps
 1.5	0
 1.5	1.5
 EOF
-gmt psxy -R -J -O -K -Sv0.2i+e -Gblack -W2p -N --MAP_VECTOR_SHAPE=0.5 << EOF >> $ps
+gmt psxy -R -J -O -K -Sv0.2i+e+h0.5 -Gblack -W2p -N << EOF >> $ps
 1.5	0.75	0	1.5i
 1.5	0.75	90	0.75i
 EOF
@@ -43,7 +43,7 @@ gmt psxy -R0/3/0/1.5 -Jx1i -O -K -W0.25p,- << EOF >> $ps
 1.5	0
 1.5	1.5
 EOF
-gmt psxy -R -J -O -K -Sv0.2i+e -Gblack -W2p -N --MAP_VECTOR_SHAPE=0.5 << EOF >> $ps
+gmt psxy -R -J -O -K -Sv0.2i+e+h0.5 -Gblack -W2p -N << EOF >> $ps
 1.5	0.75	0	1.5i
 1.5	0.75	90	0.75i
 EOF

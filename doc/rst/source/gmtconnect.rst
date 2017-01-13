@@ -169,8 +169,8 @@ Bugs
 ----
 
 The line connection does not work if a line only has a single point.
-However, gmtconnect will correctly add the point to the nearest segment.
-Running gmtconnect again on the new set of lines will eventually connect
+However, **gmtconnect** will correctly add the point to the nearest segment.
+Running **gmtconnect** again on the new set of lines will eventually connect
 all close lines.
 
 See Also

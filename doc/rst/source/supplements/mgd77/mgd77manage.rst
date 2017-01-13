@@ -90,7 +90,7 @@ Optional Arguments
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
-    **mgd77sniffer** with the name *NGDC_ID*.e77 in the current
+    :doc:`mgd77sniffer` with the name *NGDC_ID*.e77 in the current
     directory or in $MGD77_HOME/E77; this file will examined and used
     to make modifications to the header values, specify a systematic
     correction for certain columns (such as scale and offset), specify
@@ -101,9 +101,9 @@ Optional Arguments
     Any fixed correction terms found (such as needing to scale a field
     by 0.1 or 10 because the source agency used incorrect units) will be
     written as attributes to the netCDF MGD77+ file and applied when the
-    data are read by **mgd77list**. Ephemeral corrections such as those
+    data are read by :doc:`mgd77list`. Ephemeral corrections such as those
     determined by crossover analysis are not kept in the data files but
-    reside in correction tables (see **mgd77list** for details). By
+    reside in correction tables (see :doc:`mgd77list` for details). By
     default, the first character of each header line in the e77 file
     (which is ?, Y or N) will be consulted to see if the corresponding
     adjustment should be applied. If any undecided settings are found
@@ -300,7 +300,7 @@ this variable defaults to **$GMT_SHAREDIR**/mgd77.
 **3. Conversion**
 
 Convert the ASCII MGD77 files to the new netCDF MGD77+ format using
-**mgd77convert**. Typically, you will make a list of all the cruises to
+:doc:`mgd77convert`. Typically, you will make a list of all the cruises to
 be converted (with or without extension), and you then run
 
     mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
@@ -332,7 +332,7 @@ Before we discuss how to correct errors we will first list the different
 classes of errors associated with MGD77 data: (1) Header record errors
 occur when some of the information fields in the header do not comply
 with the MGD77 specification or required information is missing.
-**mgd77convert** will list these errors when the extended verbose
+:doc:`mgd77convert` will list these errors when the extended verbose
 setting is selected. These errors typically do not affect the data and
 are instead errors in the *meta-data* (2). Fixed
 systematic errors occur when a particular data column, despite the MGD77
@@ -361,14 +361,14 @@ in a separate list of corrections.
 
 **6. Finding errors**
 
-The **mgd77sniffer** is a tool that does a thorough along-track sanity
+The :doc:`mgd77sniffer` is a tool that does a thorough along-track sanity
 check of the original MGD77 ASCII files and produces a corresponding
 \*.e77 error log. All problems found are encoded in the error log, and
 recommended fixed correction terms are given, if needed. An analyst may
 verify that the suggested corrections are indeed valid (we only want to
 correct truly obvious unit errors), edit these error logs and modify
 such correction terms and activate them by changing the relevant code
-key (see **mgd77sniffer** for more details). **mgd77manage** can ingest
+key (see :doc:`mgd77sniffer` for more details). **mgd77manage** can ingest
 these error logs and (1) correct bad header records given
 the suggestions in the log, (2) insert scale/offset correction terms to
 be used when reading certain columns, and (3) insert any
@@ -385,7 +385,7 @@ terms will have those corrections applied (if a correction table is
 supplied). All of these steps require the presence of the relevant
 meta-data and all can be overruled by the user. In addition, users may
 add their own bitflags as separate data columns and use
-**mgd77list**'s logical tests to further dictate which data are
+:doc:`mgd77list`'s logical tests to further dictate which data are
 suppressed from output.
 
 Credits

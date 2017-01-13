@@ -357,7 +357,7 @@ To create a 3 pages PDF file from 3 individual PS files
 
     gmt psconvert -TF -Fabc a.ps b.ps c.ps
 
-To create a simple linear map with pscoast and convert it to tif with a
+To create a simple linear map with :doc:`pscoast` and convert it to tif with a
 .tfw the tight BoundingBox computation.
 
    ::
@@ -380,7 +380,7 @@ To create a Polar Stereographic geotiff file of Patagonia
     gmt pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
     gmt psconvert patagonia.ps -Tt -W+g -V
 
-To create a simple KMZ file for use in Google Earth, try
+To create a simple KML file for use in Google Earth, try
 
    ::
 
@@ -405,7 +405,19 @@ quality for scaled images at the expense of speed, use
 **-C**-dDOINTERPOLATE. See www.ghostscript.com for complete
 documentation.
 
+Making KMZ files
+----------------
+
+If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it. 
+
 See Also
 --------
 
-:doc:`gmt`
+:doc:`gmt`,
+:doc:`pscoast`
+

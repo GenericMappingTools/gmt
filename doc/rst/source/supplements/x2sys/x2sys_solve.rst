@@ -37,7 +37,7 @@ Required Arguments
 
 *COE_list.d*
     Name of file with the required crossover columns as produced by
-    **x2sys_list**. NOTE: If **-bi** is used
+    :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect those columns to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.
@@ -49,7 +49,7 @@ Required Arguments
 **-C**\ *column*
     Specify which data column you want to process. Needed for proper
     formatting of the output correction table and must match the same
-    option used in **x2sys_list** when preparing the input data.
+    option used in :doc:`x2sys_list` when preparing the input data.
 
 .. _-E:
 

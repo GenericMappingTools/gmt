@@ -106,13 +106,13 @@ gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -
 #
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" \
 	-BWeSn+g240/255/240 -JX-4il/3.75i -R1/1000/0/1 -P -K -X2.5i -Sc0.07i -Gpurple \
-	-Ey/0.5p -Y1.5i > $ps
+	-Ey+p0.5p -Y1.5i > $ps
 echo "Coherency@+2@+" | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i \
 	-O -K >> $ps
 gmt psxy spectrum.xpower -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
 	-BWeSn+t"Ship and Satellite Gravity"+g240/255/240 \
-	-Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
-gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> $ps
+	-Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey+p0.5p >> $ps
+gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey+p0.5p >> $ps
 echo "Input Power" | gmt pstext -R0/4/0/3.75 -Jx1i -F+cTR+f18p,Helvetica-Bold -Dj0.1i -O -K >> $ps
 gmt pslegend -R -J -O -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold << EOF >> $ps
 S 0.1i T 0.07i red - 0.3i Ship
@@ -158,13 +158,13 @@ gmt convert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C
 # 
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
 	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \
-	-Sc0.07i -Gblack -Ey/0.5p -Y1.5i > example_03f.ps
+	-Sc0.07i -Gblack -Ey+p0.5p -Y1.5i > example_03f.ps
 echo "Coherency@+2@+" | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i \
 	-O -K -Wthicker -C0.1i >> example_03f.ps
 gmt psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" \
-	spectrum.xpower -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p \
+	spectrum.xpower -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey+p0.5p \
 	>> example_03f.ps
-gmt psxy spectrum.ypower -R -J -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03f.ps
+gmt psxy spectrum.ypower -R -J -O -K -Gblack -Sc0.07i -Ey+p0.5p >> example_03f.ps
 echo "Input Power" | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i \
 	-O -K -Wthicker -C0.1i >> example_03f.ps
 gmt pslegend -R0/4/0/3.75 -Jx -O -DjBL+w1.2i+o0.25i -F+glightgray+pthicker \

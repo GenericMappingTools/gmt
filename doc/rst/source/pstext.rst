@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
-[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
+[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ] [ |-J|\ *parameters* ]
 [ |-K| ]
@@ -121,13 +121,13 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]]
+**-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*\ ]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
     **-Dj** to offset the text away from the point instead (i.e., the
     text justification will determine the direction of the shift). Using
     **-DJ** will shorten diagonal offsets at corners by
-    sqrt(2). Optionally, append **v** which will draw
+    sqrt(2). Optionally, append **+v** which will draw
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
 
@@ -166,7 +166,7 @@ Optional Arguments
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, use **-Gc** to plot the text and then use the
     text dimensions (and **-C**) to build clip paths and turn clipping on.
-    This clipping can then be turned off later with psclip **-C**.
+    This clipping can then be turned off later with :doc:`psclip` **-C**.
     To **not** plot the text but activate clipping, use **-GC** instead.
 
 .. include:: explain_-Jz.rst_
@@ -329,6 +329,7 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
+:doc:`psclip`,
 :doc:`gmtcolors`,
 :doc:`psconvert`,
 :doc:`psbasemap`,

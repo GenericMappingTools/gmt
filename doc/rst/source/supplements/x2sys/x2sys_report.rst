@@ -38,7 +38,7 @@ Required Arguments
 
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
-    **x2sys_cross**. If not given we read standard input instead.
+    :doc:`x2sys_cross`. If not given we read standard input instead.
 
 .. _-C:
 
@@ -57,7 +57,7 @@ Optional Arguments
     Eliminate COEs by distributing the COE between the two tracks in
     proportion to track weight and producing (dist, adjustment) spline
     knots files for each track (for the selected *column*). Such
-    adjustments may be used by **x2sys_datalist**. The adjustment files
+    adjustments may be used by :doc:`x2sys_datalist`. The adjustment files
     are called *track.column*.adj and are placed in the
     **$X2SYS_HOME**/*TAG* directory. For background information on how
     these adjustments are designed, see *Mittal* [1984].
@@ -75,7 +75,7 @@ Optional Arguments
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
     **$X2SYS_HOME**/*TAG* directory]. For the format of this file, see
-    **x2sys_solve**.
+    :doc:`x2sys_solve`.
 
 .. _-N:
 

@@ -976,7 +976,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[2] = s * S.v.v_width;
 					data[n].dim[3] = s * S.v.h_length;
 					data[n].dim[4] = s * S.v.h_width;
-					data[n].dim[5] = GMT->current.setting.map_vector_shape;
+					data[n].dim[5] = S.v.v_shape;
 					data[n].dim[6] = (double)S.v.status;
 					data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
 					data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
@@ -1016,7 +1016,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[3] = s * S.v.h_length;	/* Length of (shrunk) vector head */
 					data[n].dim[4] = s * S.v.h_width;	/* Width of (shrunk) vector head */
 					data[n].dim[5] = s * S.v.v_width;	/* Thickness of (shrunk) vector */
-					data[n].dim[6] = GMT->current.setting.map_vector_shape;
+					data[n].dim[6] = S.v.v_shape;
 					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
 					data[n].dim[8] = (double)S.v.v_kind[0];	data[n].dim[9] = (double)S.v.v_kind[1];
 					data[n].dim[10] = (double)S.v.v_trim[0];	data[n].dim[11] = (double)S.v.v_trim[1];

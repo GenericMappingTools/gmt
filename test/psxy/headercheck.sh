@@ -41,7 +41,7 @@ gmt psxy -R -J -O -Y4.75i -Gred -L -B2g1 -Ctt.cpt << EOF >> $ps
 0	4
 3	6
 2	7
-> -Gp100/32 -W-
+> -Gp32+r100 -W-
 5	0
 6	5
 4	3

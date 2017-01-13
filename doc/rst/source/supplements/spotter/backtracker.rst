@@ -203,7 +203,7 @@ To project flowlines forward from the (x,y,t) points stored in several
 
     gmt backtracker points.\* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
 
-This file can then be plotted with **psxy**.
+This file can then be plotted with :doc:`psxy </psxy>`.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
 total reconstruction rotations for the plate (PAC_APM.txt), try
@@ -223,14 +223,15 @@ See Also
 --------
 
 :doc:`gmt </gmt>` ,
-:doc:`project </project>` ,
 :doc:`gmtpmodeler`,
 :doc:`grdpmodeler`,
 :doc:`grdrotater`,
 :doc:`grdspotter`,
-:doc:`mapproject </mapproject>`,
 :doc:`hotspotter`,
-:doc:`originator`
+:doc:`mapproject </mapproject>`,
+:doc:`originator`,
+:doc:`project </project>`,
+:doc:`psxy </psxy>`
 
 References
 ----------

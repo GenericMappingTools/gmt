@@ -72,8 +72,8 @@ Optional Arguments
     (1) mesh plot with contours (**-Qm**), or
     (2) shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
-    z-slice by setting red = -; to use a pattern give red =
-    **P\|p**\ *dpi/pattern*\ [:**F**\ *color*\ [**B**\ *color*]].
+    z-slice by setting the red r/g/b component to -; to use a pattern give red =
+    **P\|p**\ *pattern*\ [**+b**\ *color*\ ][**+f**\ *color*\ ][**+r**\ *dpi*\ ].
     Alternatively,
     supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
@@ -263,7 +263,7 @@ For the **-Qs** option: PostScript provides no way of smoothly varying
 colors within a polygon, so colors can only vary from polygon to
 polygon. To obtain smooth images this way you may resample the grid
 file(s) using :doc:`grdsample` or use a finer grid size when running
-gridding programs like **surface** or :doc:`nearneighbor`. Unfortunately,
+gridding programs like :doc:`surface` or :doc:`nearneighbor`. Unfortunately,
 this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.

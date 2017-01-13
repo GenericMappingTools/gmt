@@ -51,6 +51,8 @@ choose binary input and/or output to avoid loss of precision.
 Required Arguments
 ------------------
 
+.. _-I:
+
 .. include:: explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code

@@ -323,7 +323,7 @@ Mercator map at scale 1 cm/degree, run
 
    ::
 
-    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp100/28 > iceland.ps
+    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 > iceland.ps
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale

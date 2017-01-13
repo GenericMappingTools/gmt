@@ -106,7 +106,7 @@ write the reduced lines to file new_xylines.d, run
 Notes
 -----
 
-There is a slight difference in how gmtsimplify processes lines versus
+There is a slight difference in how **gmtsimplify** processes lines versus
 closed polygons.  Segments that are explicitly closed will be considered
 polygons, otherwise we treat them as line segments.  Hence, segments
 recognized as polygons may reduce to a 3-point polygon with no area;

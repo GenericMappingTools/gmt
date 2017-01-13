@@ -200,9 +200,11 @@ To extract data in the region **-R**-40/40/-70/-30 from
     gmt img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
 Note that the **-V** option tells us that the range was adjusted to
-**-R**-40/40/-70.0004681551/-29.9945810754. We can also use :doc:`grdinfo </grdinfo>`
+**-R**-40/40/-70.0004681551/-29.9945810754. For scripting purposes we
+can extract this original region string using :doc:`grdinfo </grdinfo>` **-Ii**.
+Furthermore, we can also use :doc:`grdinfo </grdinfo>`
 to find that the grid file header shows its region to be
-**-R**\ 0/80/0/67.9666667 This is the range of x,y we will get from a
+**-R**\ 0/80/0/67.9666667. This is the range of x,y we will get from a
 Spherical Mercator projection using
 **-R**-40/40/-70.0004681551/-29.9945810754 and **-Jm**\ 1. Thus, to take
 ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
@@ -248,7 +250,7 @@ use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
 match up.
 
 However, we can be smarter than this. Realizing that the input img file
-had pixels 2.0 minutes wide (or checking the nx and ny with grdinfo
+had pixels 2.0 minutes wide (or checking the nx and ny with :doc:`grdinfo </grdinfo>`
 merc_grav.nc) we realize that merc_grav.nc used the full resolution of
 the img file and it has 2400 by 2039 pixels, and at 8 inches wide this
 is 300 pixels per inch. We decide we do not need that many and we will be

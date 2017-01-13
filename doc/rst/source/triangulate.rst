@@ -89,10 +89,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**
-    *x\_inc* [and optionally *y\_inc*] sets the grid size for optional
-    grid output (see **-G**). Append **m** to indicate arc minutes or
-    **s** to indicate arc seconds. 
+.. include:: explain_-I.rst_
 
 .. _-J:
 

@@ -501,7 +501,7 @@ To get a (distance, heading, gravity, bathymetry) listing from
 
     gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
 
-To make input for **blockmean** and **surface** using free-air anomalies
+To make input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:
 
@@ -630,7 +630,8 @@ See Also
 :doc:`mgd77convert`,
 :doc:`mgd77info`,
 :doc:`mgd77manage`,
-:doc:`mgd77track`
+:doc:`mgd77track`,
+:doc:`surface </surface>`,
 
 References
 ----------
