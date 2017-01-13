@@ -252,7 +252,7 @@ enum Grid_packing_mode {
 GMT_LOCAL void grdio_pack_grid (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *header, float *grid, unsigned pack_mode) {
 	size_t n_representations = 0; /* number of distinct values >= 0 that a signed integral type can represent */
 
-	if (pack_mode == k_grd_pack && (header->z_scale_autoadust || header->z_offset_autoadust)) {
+	if (pack_mode == k_grd_pack && (header->z_scale_autoadjust || header->z_offset_autoadjust)) {
 		switch (Ctrl->session.grdformat[header->type][1]) {
 			case 'b':
 				n_representations = 128;         /* exp2 (8 * sizeof (int8_t)) / 2 */
@@ -273,13 +273,13 @@ GMT_LOCAL void grdio_pack_grid (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *h
 	if (n_representations != 0) {
 		/* Calculate auto-scale and offset */
 		gmt_grd_zminmax (Ctrl, header, grid); /* Calculate z_min/z_max */
-		if (header->z_offset_autoadust) {
+		if (header->z_offset_autoadjust) {
 			/* shift to center values around 0 but shift only by integral value */
 			double z_range = header->z_max - header->z_min;
 			if (isfinite (z_range))
 				header->z_add_offset = rint(z_range / 2.0 + header->z_min);
 		}
-		if (header->z_scale_autoadust) {
+		if (header->z_scale_autoadjust) {
 			/* scale z-range to use all n_representations */
 			double z_max = header->z_max - header->z_add_offset;
 			double z_min = fabs(header->z_min - header->z_add_offset);
@@ -337,7 +337,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 		++p;
 		/* parse scale */
 		if (*p == 'a')
-			header->z_scale_autoadust = header->z_offset_autoadust = true;
+			header->z_scale_autoadjust = header->z_offset_autoadjust = true;
 		else
 			sscanf (p, "%lf", &header->z_scale_factor);
 	}
@@ -349,11 +349,11 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GR
 		++p;
 		/* parse offset */
 		if (*p != 'a') {
-			header->z_offset_autoadust = false;
+			header->z_offset_autoadjust = false;
 			sscanf (p, "%lf", &header->z_add_offset);
 		}
 		else
-			header->z_offset_autoadust = true;
+			header->z_offset_autoadjust = true;
 	}
 	else
 		return GMT_NOERROR;

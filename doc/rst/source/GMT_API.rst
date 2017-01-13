@@ -3448,8 +3448,8 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
        size_t       z_chunksize[2];     /* chunk size (lat,lon) */
        unsigned int z_shuffle;          /* if shuffle filter is turned on */
        unsigned int z_deflate_level;    /* if deflate filter is in use */
-       unsigned int z_scale_autoadust;  /* if z_scale_factor should be auto-detected */
-       unsigned int z_offset_autoadust; /* if z_add_offset should be auto-detected */
+       unsigned int z_scale_autoadjust; /* if z_scale_factor should be auto-detected */
+       unsigned int z_offset_autoadjust;/* if z_add_offset should be auto-detected */
                                         /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
        unsigned int xy_adjust[2];       /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
        unsigned int xy_mode[2];         /* 1 if +U<unit> was parsed, 0 otherwise */
