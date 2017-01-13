@@ -420,16 +420,16 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 			case 'o':	/* parse offset */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting offset as %s\n", &p[1]);
 				if (p[1] != 'a') {
-					header->z_offset_autoadust = false;
+					header->z_offset_autoadjust = false;
 					header->z_add_offset = atof (&p[1]);
 				}
 				else
-					header->z_offset_autoadust = true;
+					header->z_offset_autoadjust = true;
 				break;
 			case 's':	/* parse scale */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting scale as %s\n", &p[1]);
 				if (p[1] == 'a') /* This sets both scale and offset to auto */
-					header->z_scale_autoadust = header->z_offset_autoadust = true;
+					header->z_scale_autoadjust = header->z_offset_autoadjust = true;
 				else
 					header->z_scale_factor = atof (&p[1]);
 				break;
