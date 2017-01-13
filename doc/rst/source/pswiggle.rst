@@ -73,11 +73,9 @@ Required Arguments
 
 .. _-Z:
 
-**-Z**\ *scale*\ [*units]
-    Gives anomaly scale in data-units/distance-unit, where
-    distance-unit is the currently chosen unit specified
-    by PROJ_LENGTH_UNIT.  Alternatively,
-    append a distance-unit among the other choices (c\|i\|p).
+**-Z**\ *scale*\ [*units*]
+    Gives anomaly scale in data-units/distance-unit, where distance-unit is the currently chosen unit specified
+    by PROJ_LENGTH_UNIT.  Alternatively, append a distance-unit among the other choices (c\|i\|p).
 
 Optional Arguments
 ------------------
