@@ -2,7 +2,7 @@
 #
 # $Id: gmt_make_custom_code.sh 15301 2015-12-04 13:59:07Z fwobbe $
 #
-# Copyright (c) 2012-2015
+# Copyright (c) 2012-2017
 # by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
