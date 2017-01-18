@@ -705,7 +705,9 @@ fonts can be found in the :doc:`gmt` man page.
     parallel the longitude and latitude directions (e.g., rectangular
     projections, polar projections). For situations where all boundary
     ticks and annotations must be inside the maps (e.g., for preparing
-    geotiffs), chose **inside**.
+    geotiffs), chose **inside**.  Finally, for Cartesian plots you can
+    also choose **graph**\ , which adds a vector to the end of each axis.
+    This works best when you reduce the number of axes plotted.
 
 .. _MAP_FRAME_WIDTH:
 
