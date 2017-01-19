@@ -247,7 +247,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		ks++;	/* Gave some codes */
 	}
 	if (ks == 0) return NULL;	/* No countries requested */
-	if (mode != GMT_DCW_REGION && F->region && (mode & 12) == 0) return NULL;	/* No plotting/dumping requested, just -R */
+	if (mode != GMT_DCW_REGION && F->region && (mode & (GMT_DCW_PLOT+GMT_DCW_DUMP+GMT_DCW_EXTRACT)) == 0) return NULL;	/* No plotting/dumping requested, just -R */
 
 	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
 		if (wesn == NULL) {
