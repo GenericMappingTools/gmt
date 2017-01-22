@@ -372,11 +372,12 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
-EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
+EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 
 int GMT_psimage (void *V_API, int mode, void *args) {
-	int i, j, n, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
+	int i, j, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
 	unsigned int row, col;
+	size_t n;
 	bool free_GMT = false, did_gray = false;
 
 	double x, y, wesn[4];

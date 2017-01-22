@@ -406,7 +406,7 @@ EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb
 EXTERN_MSC int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text);
 EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double value);
 
-EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
+EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 
