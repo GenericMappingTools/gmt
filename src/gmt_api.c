@@ -5291,11 +5291,13 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		gmt_strtok (*str, ",", &pos, last_color);	/* Get 1st color entry */
 		if (gmt_getrgb (API->GMT, last_color, rgb)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
+			fclose (fp);
 			return (GMT_NOTSET);
 		}
 		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
 			if (gmt_getrgb (API->GMT, color, rgb)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
+				fclose (fp);
 				return (GMT_NOTSET);
 			}
 			fprintf (fp, "%d\t%s\t%d\t%s\n", z, last_color, z+1, color);
@@ -5305,6 +5307,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		*mode -= GMT_CPT_CONTINUOUS;	/* Served its purpose */
 		if (z == 0) {	/* Needed at least two colors to specify a ramp */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot make a continuous color ramp from a single color: %s\n", *str);
+			fclose (fp);
 			return (GMT_NOTSET);
 		}
 	}
@@ -5312,6 +5315,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
 			if (gmt_getrgb (API->GMT, color, rgb)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
+				fclose (fp);
 				return (GMT_NOTSET);
 			}
 			fprintf (fp, "%d\t%s\t%d\t%s\n", z, color, z+1, color);
