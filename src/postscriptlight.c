@@ -929,7 +929,7 @@ static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsi
 	psl_byte_stream_t output;
 	unsigned char *buffer = NULL;
 
-	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
+	i = (int)MAX (512, *nbytes) + 8;	/* Maximum output length */
 	output = (psl_byte_stream_t)psl_memory (PSL, NULL, 1U, sizeof (*output));
 	output->buffer = PSL_memory (PSL, NULL, i, unsigned char);
 	code = PSL_memory (PSL, NULL, ncode, short int);
@@ -1008,10 +1008,10 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	output = PSL_memory (PSL, NULL, olen, unsigned char); /* Allocate output buffer */
 
-	strm.avail_in  = ilen;   /* number of bytes in input buffer */
-	strm.next_in   = input;  /* input buffer */
-	strm.avail_out = olen;   /* number of bytes available in output buffer */
-	strm.next_out  = output; /* output buffer */
+	strm.avail_in  = (int)ilen;   /* number of bytes in input buffer */
+	strm.next_in   = input;       /* input buffer */
+	strm.avail_out = (int)olen;   /* number of bytes available in output buffer */
+	strm.next_out  = output;      /* output buffer */
 
 	zstatus = deflate (&strm, Z_FINISH); /* deflate whole chunk */
 	deflateEnd (&strm);                  /* deallocate zlib memory */

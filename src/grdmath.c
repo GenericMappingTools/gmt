@@ -4367,8 +4367,8 @@ GMT_LOCAL void grd_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	tmp_grid = gmt_M_memory_aligned (GMT, NULL, stack[last]->G->header->size, float);
 	gmt_M_memcpy (tmp_grid, stack[last]->G->data, stack[last]->G->header->size, float);
 	gmt_sort_array (GMT, tmp_grid, stack[last]->G->header->size, GMT_FLOAT);	/* Sort so we can find quantiles */
-	global_zmin = gmt_quantile_f (GMT, tmp_grid, stack[prev2]->factor, stack[last]->G->header->size);	/* "Left" quantile */
-	global_zmax = gmt_quantile_f (GMT, tmp_grid, stack[prev1]->factor, stack[last]->G->header->size);	/* "Right" quantile */
+	global_zmin = (float)gmt_quantile_f (GMT, tmp_grid, stack[prev2]->factor, stack[last]->G->header->size);	/* "Left" quantile */
+	global_zmax = (float)gmt_quantile_f (GMT, tmp_grid, stack[prev1]->factor, stack[last]->G->header->size);	/* "Right" quantile */
 	gmt_M_free (GMT, tmp_grid);
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		stack[prev2]->G->data[node] = (stack[last]->G->data[node] < global_zmin || stack[last]->G->data[node] > global_zmax) ? GMT->session.f_NaN : stack[last]->G->data[node];

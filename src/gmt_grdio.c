@@ -409,7 +409,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 				break;
 			case 'n':	/* Nan value */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Using %s to represent missing value (NaN)\n", &p[1]);
-				header->nan_value = atof (&p[1]);
+				header->nan_value = (float)atof (&p[1]);
 				/* header->nan_value should be of same type as (float)*grid to avoid
 				 * round-off errors. For example, =gd+n-3.4028234e+38:gtiff, would fail
 				 * otherwise because the GTiff'd NoData values are of type double but the

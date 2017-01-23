@@ -570,7 +570,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (mean_theta < 0.0) mean_theta += 360.0;
 	mean_vector = hypot (xr, yr) / n;
 	mean_resultant = mean_radius = hypot (xr, yr) / total;
-	critical_resultant = Critical_Resultant (Ctrl->Q.value, n);
+	critical_resultant = Critical_Resultant (Ctrl->Q.value, (int)n);
 	significant = (mean_resultant > critical_resultant);
 	if (!Ctrl->S.normalize) mean_radius *= max_radius;
 
@@ -621,7 +621,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
 			sprintf (format, "n\tmean_az\tmean_r\tmean_resultant_length\tmax\tscaled_mean_r\tlinear_length_sum");
-			out[0] = n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
+			out[0] = (double)n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
 			out[4] = max;	out[5] = mean_radius;	out[6] = total;
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -809,7 +809,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			S->coord[3][0] = max;
 			S->coord[4][0] = mean_radius;
 			S->coord[5][0] = total;
-			S->coord[6][0] = n;
+			S->coord[6][0] = (double)n;
 			S->coord[7][0] = significant;
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, format, V)) {
 				Return (API->error);

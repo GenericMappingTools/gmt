@@ -1008,7 +1008,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		for (col = 0, k = GMT_Z; col < MP_COL_N; col++) {
 			if (Ctrl->used[col]) {
 				GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-				ecol_type[col] = k++;
+				ecol_type[col] = (unsigned int)k++;
 			}
 		}
 	}
@@ -1286,7 +1286,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 							for (col = 0, k = n_fields; col < MP_COL_N; col++) {
 								if (Ctrl->used[col]) {
 									GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-									ecol_type[col] = k++;
+									ecol_type[col] = (unsigned int)k++;
 								}
 							}
 						}
