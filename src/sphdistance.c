@@ -539,6 +539,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 		if ((n_new = gmt_fix_up_path (GMT, &P->data[GMT_X], &P->data[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF)) == 0) {
 			gmt_M_free (GMT, P);
+			gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		P->n_rows = n_new;
