@@ -456,10 +456,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
 	bool do_indexed = false;
-	unsigned int k, n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
+	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
 	unsigned int colormask_offset = 0, try, row, actual_row, col;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
-	uint64_t node, kk, byte, dim[3] = {0, 0, 3};
+	uint64_t node, k, kk, byte, dim[3] = {0, 0, 3};
 	int index = 0, ks, error = 0;
 	
 	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"};
@@ -1023,15 +1023,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++) 
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = false;
 
-	if (P && P->is_bw) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits */
+	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits */
 		int nx8, shift, b_or_w, nx_pixels, k8;
+		uint64_t imsize;
 		unsigned char *bit = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating 1-bit B/W image\n");
 
 		nx8 = irint (ceil (n_columns / 8.0));	/* Image width must be a multiple of 8 bits, so we round up */
 		nx_pixels = nx8 * 8;	/* The row length in bits after the rounding up */
-		bit = gmt_M_memory (GMT, NULL, nx8 * n_rows, unsigned char);	/* Memory to hold the 1-bit image */
+		imsize = gmt_M_get_nm (GMT, nx8, n_rows);
+		bit = gmt_M_memory (GMT, NULL, imsize, unsigned char);	/* Memory to hold the 1-bit image */
 
 		/* Reprocess the byte image.  Here there are no worries about direction of rows, cols since that was dealt with during color assignment */
 		
@@ -1077,7 +1079,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else {	/* Dealing with a 24-bit color image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
-			if (Ctrl->Q.active) {	/* Must initialize the transparency byte (alpha): 255 everywhere except at NaNs */
+			if (Ctrl->Q.active) {	/* Must initialize the transparency byte (alpha): 255 everywhere except at NaNs where it should be 0 */
 				memset (Out->alpha, 255, header_work->nm);
 				for (node = row = 0; row < n_rows; row++) {
 					kk = gmt_M_ijpgi (header_work, row, 0); 
