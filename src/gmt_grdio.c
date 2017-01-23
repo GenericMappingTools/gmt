@@ -628,8 +628,8 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 	uint64_t ij_new, ij_old, row, col, start_last_new_row, end_last_old_row;
 	
 	/* See if the index of start of last new row exceeds index of last node in old grid */
-	start_last_new_row = (G->header->pad[YHI] + G->header->n_rows - 1) * (G->header->pad[XLO] + G->header->n_columns + G->header->pad[XHI]) + G->header->pad[XLO];
-	end_last_old_row = (h_old->pad[YHI] + h_old->n_rows - 1) * (h_old->pad[XLO] + h_old->n_columns + h_old->pad[XHI]) + h_old->pad[XLO] + h_old->n_columns - 1;
+	start_last_new_row = gmt_M_get_nm (GMT, G->header->pad[YHI] + G->header->n_rows - 1, G->header->pad[XLO] + G->header->n_columns + G->header->pad[XHI]) + G->header->pad[XLO];
+	end_last_old_row   = gmt_M_get_nm (GMT, h_old->pad[YHI] + h_old->n_rows - 1, h_old->pad[XLO] + h_old->n_columns + h_old->pad[XHI]) + h_old->pad[XLO] + h_old->n_columns - 1;
 	if (start_last_new_row > end_last_old_row) {        /* May copy whole rows from bottom to top */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub can copy row-by-row\n");
 		for (row = G->header->n_rows; row > 0; row--) {

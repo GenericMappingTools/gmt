@@ -553,7 +553,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	double percent_limit, sim_m[8], sim_b[8], nav_on_land_threshold;
 	time_t clock;
 
-	char c, tmp_min[16] = {""}, tmp_max[16] = {""}, tmp_maxSlope[16] = {""}, tmp_area[16] = {""}, *derivative = NULL;
+	char c[8] = {""}, tmp_min[16] = {""}, tmp_max[16] = {""}, tmp_maxSlope[16] = {""}, tmp_area[16] = {""}, *derivative = NULL;
 	char *custom_limit_file = NULL, custom_limit_line[GMT_BUFSIZ] = {""}, arguments[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
 	char field_abbrev[8] = {""}, *speed_units = "m/s";
 	char *display = NULL, fpercent_limit[8] = {""}, **list = NULL;
@@ -858,20 +858,20 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			case 'W':	/* Choose which warning types to go to stdout (default - all) */
 				do_regression = false;
 				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = false;
-				while (gmt_strtok (opt->arg, ",", &pos, &c)) {
-					if (c == 'v')
+				while (gmt_strtok (opt->arg, ",", &pos, c)) {
+					if (c[0] == 'v')
 						warn[VALUE_WARN] = true;
-					else if (c == 'g')
+					else if (c[0] == 'g')
 						warn[SLOPE_WARN] = true;
-					else if (c == 'o')
+					else if (c[0] == 'o')
 						warn[GRID_WARN] = true;
-					else if (c == 't')
+					else if (c[0] == 't')
 						warn[TIME_WARN] = true;
-					else if (c == 's')
+					else if (c[0] == 's')
 						warn[SPEED_WARN] = true;
-					else if (c == 'c')
+					else if (c[0] == 'c')
 						warn[TYPE_WARN] = true;
-					else if (c == 'x') {
+					else if (c[0] == 'x') {
 						do_regression = true;
 						warn[SUMMARY_WARN] = true;
 					} else {

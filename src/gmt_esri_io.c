@@ -234,7 +234,8 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
 		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
-		stat (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
+		if (stat (header->name, &F))	/* Must finally find out if it is a 1 or 3 arcseconds file */
+			return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
 		if (F.st_size < 3e6) {		/* Actually the true size is 2884802 */
 			header->inc[GMT_X] = header->inc[GMT_Y] = 3.0 * GMT_SEC2DEG;	/* 3 arc seconds */
 			strcpy (header->remark, "Assumed to be a SRTM3 tile");
