@@ -530,6 +530,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 	MGD77_Path_Free (GMT, (int)n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
+	if (fp) gmt_fclose (GMT, fp);
 
 	Return (GMT_NOERROR);
 }
