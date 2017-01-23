@@ -11275,7 +11275,10 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 	 */
 	size_t len, k = 0;
 	bool inside_quote = false, done = false;
-	if (sep == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_first_modifier: No separation codes given\n");
+	if (sep == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_first_modifier: No separation codes given\n");
+		return NULL;
+	}
 	
 	if (string == NULL) return NULL;
 	len = strlen (string);
