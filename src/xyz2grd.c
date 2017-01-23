@@ -553,8 +553,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
 
-	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header))
+	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header)) {
+		gmt_M_free (GMT, data);
 		Return (GMT_PARSE_ERROR);
+	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
@@ -580,15 +582,18 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_NOERROR) {
+		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, flag);
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {
+		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
