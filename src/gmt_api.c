@@ -5287,7 +5287,10 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 
 	if ((*mode) & GMT_CPT_CONTINUOUS) {	/* Make a continuous cpt from the colors */
 		char last_color[GMT_LEN256] = {""};
-		gmt_strtok (*str, ",", &pos, last_color);	/* Get 1st color entry */
+		if (!gmt_strtok (*str, ",", &pos, last_color)) {	/* Get 1st color entry */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to find 1st color entry in: %s\n", *str);
+			return (GMT_NOTSET);
+		}
 		if (gmt_getrgb (API->GMT, last_color, rgb)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", color);
 			return (GMT_NOTSET);
