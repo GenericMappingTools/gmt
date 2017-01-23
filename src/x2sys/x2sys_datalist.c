@@ -286,8 +286,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
 
-	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
-
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (ocol = n_data_col_out = 0; ocol < s->n_out_columns; ocol++) {
 			this_col = s->out_order[ocol];
@@ -406,6 +404,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}
 
+	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;		/* The above lime might very well had set it to true */
+
 	if (GMT->common.R.active) {	/* Restrict output to given domain */
 		if (xpos == -1 || ypos == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
@@ -467,7 +467,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 
 		if (Ctrl->A.active) {	/* Load along-track adjustments */
-			for (k = 0; k < s->n_out_columns; k++) adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
+			for (k = 0; k < s->n_out_columns; k++)
+				adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
 		if (Ctrl->E.active) {	/* Insert a segment header between files */
