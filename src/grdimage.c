@@ -1040,7 +1040,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		/* Reprocess the byte image.  Here there are no worries about direction of rows, cols since that was dealt with during color assignment */
 		
-		for (row = k = k8 = 0; row < n_rows; row++) {	/* Process each scanline */
+		for (row = k8 = k = 0; row < n_rows; row++) {	/* Process each scanline */
 			shift = 0; byte = 0;
 			for (col = 0; col < n_columns; col++, k++) {	/* Visit each byte in the original grayshade image */
 				b_or_w = (bitimage_8[k] == 255);	/* Let white == 1, black == 0 */
