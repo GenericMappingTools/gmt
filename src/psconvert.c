@@ -1368,6 +1368,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
+				gmt_M_free (GMT, PS);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
@@ -1417,11 +1418,13 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				remove (BB_file);
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+				gmt_M_free (GMT, PS);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+				gmt_M_free (GMT, PS);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while ((file_line_reader (GMT, &line, &line_size, fpb, NULL, NULL) != EOF) && !got_BB) {
@@ -1453,6 +1456,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							remove (tmp_file);
 							if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+							gmt_M_free (GMT, PS);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						/* must leave loop because fpb has been closed and read_source would
