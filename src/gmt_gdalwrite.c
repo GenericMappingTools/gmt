@@ -206,9 +206,10 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	/* Find out in which data type was given the input array */
 	/* The two first cases below are messy. Decision should be made by a mem layout code stored in prhs */
 	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
+		uint64_t imsize = gmt_M_get_nm (GMT, n_cols, n_rows);
 		typeCLASS = GDT_Byte;
 		n_byteOffset = 1;
-		outByte = gmt_M_memory (GMT, NULL, n_cols*n_rows, unsigned char);
+		outByte = gmt_M_memory (GMT, NULL, imsize, unsigned char);
 	}
 	else if (!strcmp(prhs->type,"uint8")) {
 		typeCLASS = GDT_Byte;
@@ -369,8 +370,9 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				if (!strcmp(prhs->type, "byte")) {
 					/* This case arrives here from a separate path. It started in grdimage and an originally
 					   data was in uchar but padded and possibly 3D (RGB) */
+					uint64_t imsize = gmt_M_get_nm (GMT, n_cols, n_rows);
 					tmpByte = (unsigned char *)data;
-					for (nn = 0; nn < (uint64_t)n_cols*n_rows; nn++)
+					for (nn = 0; nn < imsize; nn++)
 						outByte[nn] = tmpByte[nn*n_bands + i];
 
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, outByte, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
@@ -378,7 +380,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				}
 				else {
 					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
-					ijk = i * n_cols * n_rows;
+					ijk = i * gmt_M_get_nm (GMT, n_cols, n_rows);
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, &img[ijk], n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 						GMT_Report(GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				}

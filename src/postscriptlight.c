@@ -245,7 +245,7 @@ struct PSL_COLOR {
 
 typedef struct
 {
-	int ncolors;
+	size_t ncolors;
 	unsigned char colors[PSL_MAX_COLORS][3];
 } *psl_colormap_t;
 
@@ -256,7 +256,7 @@ typedef struct
 } *psl_indexed_image_t;
 
 typedef struct {
-	int nbytes;
+	size_t nbytes;
 	int depth;
 	unsigned char *buffer;
 } *psl_byte_stream_t;
@@ -320,10 +320,10 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 
 /* This one is NOT static since needed in psimage, at least for now */
 
-unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input) {
+unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* Recode RGB stream as gray-scale stream */
 
-	int in, out, nout;
+	size_t in, out, nout;
 	unsigned char *output = NULL;
 
 	nout = *nbytes / 3;
@@ -654,10 +654,10 @@ static void psl_rgb_to_cmyk (double rgb[], double cmyk[]) {
 	}
 }
 
-static unsigned char *psl_cmyk_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input) {
+static unsigned char *psl_cmyk_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* Recode RGB stream as CMYK stream */
 
-	int in, out, nout;
+	size_t in, out, nout;
 	unsigned char *output = NULL;
 
 	nout = *nbytes / 3 * 4;
@@ -851,10 +851,10 @@ static void psl_rle_decode (struct PSL_CTRL *PSL, struct imageinfo *h, unsigned 
 	*in = out;
 }
 
-static unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input) {
+static unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* Run Length Encode a buffer of nbytes. */
 
-	int count = 0, out = 0, in = 0, i;
+	size_t count = 0, out = 0, in = 0, i;
 	unsigned char pixel, *output = NULL;
 
 	i = MAX (512, *nbytes) + 136;	/* Maximum output length */
@@ -917,11 +917,12 @@ static psl_byte_stream_t psl_lzw_putcode (psl_byte_stream_t stream, short int in
 	return (stream);
 }
 
-static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input) {
+static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* LZW compress a buffer of nbytes. */
 
 	static int ncode = 4096*256;
-	int i, index, in = 0;
+	int i, index;
+	size_t in = 0;
 	static short int clear = 256, eod = 257;
 	short int table = 4095;	/* Initial value forces clearing of table on first byte */
 	short int bmax = 0, pre, oldpre, ext, *code = NULL;
@@ -986,11 +987,11 @@ static unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, int *nbytes, unsigne
 	return (buffer);
 }
 
-static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input) {
+static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* DEFLATE a buffer of nbytes using ZLIB. */
 #ifdef HAVE_ZLIB
-	const unsigned int ilen = *nbytes;
-	unsigned int olen = *nbytes - 1; /* Output buffer is 1 smaller than input */
+	const size_t ilen = *nbytes;
+	size_t olen = *nbytes - 1; /* Output buffer is 1 smaller than input */
 	unsigned char *output;
 	int level = PSL->internal.deflate_level == 0 ? Z_DEFAULT_COMPRESSION : PSL->internal.deflate_level; /* Compression level */
 	int zstatus;
@@ -1024,7 +1025,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, uns
 
 	/* Return number of output bytes and output buffer */
 	olen = olen - strm.avail_out; /* initial size - size left */
-	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "DEFLATE compressed %u to %u bytes (%.1f%% savings at compression level %d)\n", ilen, olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
+	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "DEFLATE compressed %zu to %zu bytes (%.1f%% savings at compression level %d)\n", ilen, olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
 	*nbytes = olen;
 	return output;
 
@@ -1045,14 +1046,14 @@ static void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx
 	 * encode	= ascii85 (0) or hex (1)
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
-	int nbytes, i;
+	size_t nbytes, i;
 	unsigned line_length = 0;
 	unsigned char *buffer1 = NULL, *buffer2 = NULL;
 	const char *kind_compress[] = {"", "/RunLengthDecode filter", "/LZWDecode filter", "/FlateDecode filter"};
 	const char *kind_mask[] = {"image", "imagemask"};
 
 	nx = abs (nx);
-	nbytes = ((int)nbits * (int)nx + 7) / (int)8 * (int)ny;
+	nbytes = ((size_t)nbits * (size_t)nx + 7) / (size_t)8 * (size_t)ny;
 
 	/* Transform RGB stream to CMYK or Gray stream */
 	if (PSL->internal.color_mode == PSL_CMYK && nbits == 24)
@@ -2450,7 +2451,7 @@ static void psl_def_font_encoding (struct PSL_CTRL *PSL) {
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_command (PSL, "/F%d {/%s Y}!\n", i, PSL->internal.font[i].name);
 }
 
-static int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int ncolors) {
+static int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, size_t ncolors) {
 	/* Reduce an 8-bit stream to 1-, 2- or 4-bit stream */
 	int in, out, i, j, nout, nbits;
 
@@ -3047,13 +3048,13 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 	 * It is important that the first RGB tuple is mapped to index 0.
 	 * This is used for color masked images.
 	 */
-	int i, j, npixels;
+	size_t i, j, npixels;	/* Need 64-bit ints to avoid overflow of int */
 	psl_colormap_t colormap;
 	psl_indexed_image_t image;
 
 	if (abs (nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
 
-	npixels = abs (nx) * ny;
+	npixels = ((size_t)abs (nx)) * ((size_t)ny);
 
 	colormap = psl_memory (PSL, NULL, 1U, sizeof (*colormap));
 	colormap->ncolors = 0;
@@ -3104,7 +3105,7 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 		return (NULL);
 	}
 
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Colormap of %d colors created\n", colormap->ncolors);
+	PSL_message (PSL, PSL_MSG_VERBOSE, "Colormap of %zu colors created\n", colormap->ncolors);
 	return (image);
 }
 
@@ -3485,8 +3486,8 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 		nbits = psl_bitreduce (PSL, image->buffer, nx, ny, image->colormap->ncolors);
 
 		PSL_comment (PSL, "Start of indexed %s image [%d bit]\n", colorspace[id], nbits);
-		PSL_command (PSL, "V N %d %d T %d %d scale [/Indexed /Device%s %d <\n", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize), colorspace[id], image->colormap->ncolors - 1);
-		psl_stream_dump (PSL, &image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, PSL_HEX, 2);
+		PSL_command (PSL, "V N %d %d T %d %d scale [/Indexed /Device%s %zu <\n", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize), colorspace[id], image->colormap->ncolors - 1);
+		psl_stream_dump (PSL, &image->colormap->colors[0][0], (int)image->colormap->ncolors, 1, 24, 0, PSL_HEX, 2);
 		PSL_command (PSL, ">] setcolorspace\n<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
 		psl_stream_dump (PSL, image->buffer, nx, ny, nbits, PSL->internal.compress, PSL_ASCII85, 0);
 		PSL_command (PSL, "U\n");
