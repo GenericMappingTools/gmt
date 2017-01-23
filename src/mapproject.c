@@ -429,7 +429,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (!(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+v")))
 					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][/[+|-]units][+i][+a][+v] */
-					p = gmt_first_modifier (GMT, opt->arg, "aiv");
+					if ((p = gmt_first_modifier (GMT, opt->arg, "aiv")) == NULL) {	/* This cannot happen given the strstr checks, but Coverity prefers it */
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: No modifiers?\n");
+						n_errors++;
+						break;
+					}
 					pos = 0;	txt_a[0] = 0;
 					while (gmt_getmodopt (GMT, p, "aiv", &pos, txt_a)) {
 						switch (txt_a[0]) {
