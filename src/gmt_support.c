@@ -5982,7 +5982,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
 			last -= 2;
 		}
-		else if (p[last] == '=') {	/* Obsolete =: Let -I override -R */
+		else if (last && p[last] == '=') {	/* Obsolete =: Let -I override -R */
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
 			last--;
