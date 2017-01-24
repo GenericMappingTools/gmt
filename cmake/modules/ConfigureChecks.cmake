@@ -430,7 +430,7 @@ if (HAVE_SINCOS)
 		double s1, c1;
 		s1 = s; c1 = c;
 		sincos (0.5, &s, &c);
-		return (s == s1 || c == c1);} /* return TRUE if sincos fails */
+		return !(s == s1 || c == c1);} /* return TRUE if sincos fails */
 		"
 		HAVE_BUGGY_SINCOS)
 	if (HAVE_BUGGY_SINCOS)
