@@ -7363,7 +7363,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
-				if (D_obj->n_columns == 0) D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Last resort */
+				if (D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS) D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Last resort */
 				count = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
 				switch (mode) {
 					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
