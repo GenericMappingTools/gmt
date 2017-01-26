@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14419 [64-bit] Document from pscoast
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from pscoast
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font LinBiolinumO LinLibertineOB
-%%CreationDate: Mon Jun 29 14:12:17 2015
+%%CreationDate: Mon Jan 23 18:47:18 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -667,8 +664,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -Bx10g10 -By5g5 '-B+tEurope\072 Countries and Capital Cities' -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white -K
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscoast -Dl -R-7/31/64/66+r -JL15/50/40/60/16c -P -Bx10g10 -By5g5 '-B+tEurope\072 Countries and Capital Cities' -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white -K
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 1 setlinejoin
@@ -1229,13 +1226,12 @@ FO
 P
 FO
 {0.565 0.933 0.565 C} FS
--47 0 3 6 44 0 35 17 4 2165 7585 SP
--47 0 3 6 44 0 35 17 4 2165 7585 SP
-2200 7608 M
--35 -23 D
-35 17 D
-44 0 D
-3 6 D
+4 6 81 16 -39 -22 3 2202 7608 SP
+4 6 81 16 -39 -22 3 2202 7608 SP
+2202 7608 M
+-39 -22 D
+81 16 D
+4 6 D
 S
 {0.678 0.847 0.902 C} FS
 2897 5180 M
@@ -10156,8 +10152,8 @@ P
 FO
 -10 -14 2 -13 -6 11 -10 -12 8 -13 24 8 -2 -30 -57 50 -6 22 39 -9 10 3683 3924 SP
 12 -12 -19 -13 -48 32 -5 -18 -21 44 33 3 7 13 55 -36 0 -12 9 3349 4124 SP
--11 -40 -43 33 4 23 14 3 4 3798 4146 SP
 -16 -56 -17 -15 72 230 2 -80 -41 -78 5 3989 4538 SP
+-11 -40 -43 33 4 23 14 3 4 3798 4146 SP
 27 53 9 -24 -42 -61 7 32 4 3339 4159 SP
 14 38 21 -18 14 -5 3 3716 3937 SP
 {0.678 0.847 0.902 C} FS
@@ -10228,8 +10224,8 @@ FO
 33 -1 D
 P
 FO
-3 -10 40 52 26 63 20 69 -8 30 -53 -117 -32 -26 14 -13 -9 -47 9 3791 4893 SP
 9 -11 -17 91 4 -84 -32 68 -3 -20 29 -38 -11 -24 10 3 4 -17 9 3484 5027 SP
+3 -10 40 52 26 63 20 69 -8 30 -53 -117 -32 -26 14 -13 -9 -47 9 3791 4893 SP
 34 9 -33 2 -15 25 -73 -36 33 12 26 -10 3 10 24 -11 8 3856 4991 SP
 {0.565 0.933 0.565 C} FS
 4362 4084 M
@@ -10633,8 +10629,8 @@ P
 FO
 -10 -14 2 -13 -6 11 -10 -12 8 -13 24 8 -2 -30 -57 50 -6 22 39 -9 10 3683 3924 SP
 12 -12 -19 -13 -48 32 -5 -18 -21 44 33 3 7 13 55 -36 0 -12 9 3349 4124 SP
--11 -40 -43 33 4 23 14 3 4 3798 4146 SP
 -16 -56 -17 -15 72 230 2 -80 -41 -78 5 3989 4538 SP
+-11 -40 -43 33 4 23 14 3 4 3798 4146 SP
 27 53 9 -24 -42 -61 7 32 4 3339 4159 SP
 14 38 21 -18 14 -5 3 3716 3937 SP
 {0.678 0.847 0.902 C} FS
@@ -10705,8 +10701,8 @@ FO
 33 -1 D
 P
 FO
-3 -10 40 52 26 63 20 69 -8 30 -53 -117 -32 -26 14 -13 -9 -47 9 3791 4893 SP
 9 -11 -17 91 4 -84 -32 68 -3 -20 29 -38 -11 -24 10 3 4 -17 9 3484 5027 SP
+3 -10 40 52 26 63 20 69 -8 30 -53 -117 -32 -26 14 -13 -9 -47 9 3791 4893 SP
 34 9 -33 2 -15 25 -73 -36 33 12 26 -10 3 10 24 -11 8 3856 4991 SP
 3292 4949 M
 2 5 D
@@ -11105,17 +11101,17 @@ P S
 -19 -13 D
 12 -12 D
 P S
-3798 4146 M
-14 3 D
-4 23 D
--43 33 D
--11 -40 D
-P S
 3989 4538 M
 -41 -78 D
 2 -80 D
 72 230 D
 -17 -15 D
+P S
+3798 4146 M
+14 3 D
+4 23 D
+-43 33 D
+-11 -40 D
 P S
 3339 4159 M
 7 32 D
@@ -11211,17 +11207,6 @@ P S
 8 -17 D
 33 -1 D
 P S
-3791 4893 M
--9 -47 D
-14 -13 D
--32 -26 D
--53 -117 D
--8 30 D
-20 69 D
-26 63 D
-40 52 D
-3 -10 D
-P S
 3484 5027 M
 4 -17 D
 10 3 D
@@ -11232,6 +11217,17 @@ P S
 4 -84 D
 -17 91 D
 9 -11 D
+P S
+3791 4893 M
+-9 -47 D
+14 -13 D
+-32 -26 D
+-53 -117 D
+-8 30 D
+20 69 D
+26 63 D
+40 52 D
+3 -10 D
 P S
 3856 4991 M
 24 -11 D
@@ -20575,8 +20571,8 @@ S
 14 -6 D
 -23 -21 D
 S
-4008 2497 M
--34 8 D
+4013 2496 M
+-39 9 D
 -1 -25 D
 -24 -1 D
 -67 -41 D
@@ -21339,8 +21335,8 @@ N 0 6183 M -83 50 D S
 N 7559 6161 M 83 50 D S
 N 0 7382 M -83 62 D S
 N 7559 7355 M 83 61 D S
-/PSL_H_y 500 PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
-200 F35
+PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
+/PSL_H_y 500 200 F35
 (100\312) sh add def
 3780 7608 PSL_H_y add M
 PSL_font_encode 38 get 0 eq {ISO-8859-5_Encoding /LinLibertineOB /LinLibertineOB PSL_reencode PSL_font_encode 38 1 put} if
@@ -21389,8 +21385,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy europe-capitals-ru.csv -R-7/31/64/66/r -JL15/50/40/60/16c -i0,1 -Sc0.15c -G196/80/80 -O -K
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy europe-capitals-ru.csv -R-7/31/64/66+r -JL15/50/40/60/16c -i0,1 -Sc0.15c -G196/80/80 -O -K
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 1 setlinejoin
@@ -21452,8 +21448,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W0.25p -O -K
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-7/31/64/66+r -JL15/50/40/60/16c -Sc0.15c -W0.25p -O -K
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 1 setlinejoin
@@ -21490,8 +21486,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W1.25p -O -K
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R-7/31/64/66+r -JL15/50/40/60/16c -Sc0.15c -W1.25p -O -K
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 1 setlinejoin
@@ -21526,8 +21522,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-7/31/64/66/r -JL15/50/40/60/16c -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R-7/31/64/66+r -JL15/50/40/60/16c -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 1 setlinejoin
@@ -21538,9 +21534,9 @@ clipsave
 0 7608 D
 -7559 0 D
 PSL_clip N
+PSL_font_encode 36 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOI /LinBiolinumOI PSL_reencode PSL_font_encode 36 1 put} if
 4 W
 {1 A} FS
-PSL_font_encode 36 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOI /LinBiolinumOI PSL_reencode PSL_font_encode 36 1 put} if
 117 F36
 V
 (Берлин) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -21548,84 +21544,84 @@ V
 /PSL_dy 6 def
 3656 3710 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-3656 3710 M (Берлин) Z
+3656 3710 M (Берлин) bl Z
 V
 (Брюссель) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 2543 3482 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-2543 3482 M (Брюссель) Z
+2543 3482 M (Брюссель) bl Z
 V
 (Бухарест) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 5387 2259 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-5387 2259 M (Бухарест) Z
+5387 2259 M (Бухарест) bl Z
 V
 (Будапешт) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 4378 2748 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-4378 2748 M (Будапешт) Z
+4378 2748 M (Будапешт) bl Z
 V
 (Лондон) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 2028 3701 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-2028 3701 M (Лондон) Z
+2028 3701 M (Лондон) bl Z
 V
 (Мадрид) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 1072 1706 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-1072 1706 M (Мадрид) Z
+1072 1706 M (Мадрид) bl Z
 V
 (Париж) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 2236 3139 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-2236 3139 M (Париж) Z
+2236 3139 M (Париж) bl Z
 V
 (Прага) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 3773 3240 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-3773 3240 M (Прага) Z
+3773 3240 M (Прага) bl Z
 V
 (Рим) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 3480 1656 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-3480 1656 M (Рим) Z
+3480 1656 M (Рим) bl Z
 V
 (София) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 5042 1873 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-5042 1873 M (София) Z
+5042 1873 M (София) bl Z
 V
 (Вена) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 4023 2878 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-4023 2878 M (Вена) Z
+4023 2878 M (Вена) bl Z
 V
 (Варшава) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
 /PSL_dx 6 def
 /PSL_dy 6 def
 4560 3685 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
-4560 3685 M (Варшава) Z
+4560 3685 M (Варшава) bl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -21634,8 +21630,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pslegend -R-7/31/64/66/r -JL15/50/40/60/16c -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite -O legend.txt
-%%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pslegend -R-7/31/64/66+r -JL15/50/40/60/16c -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite -O legend.txt
+%@PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 1 setlinejoin
@@ -21653,8 +21649,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/6.29921/0/6.33998 -Jx1i -O -K -N -S @GMTAPI@-000002
-%%PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0/6.29921/0/6.33998 -Jx1i -O -K -N -S @GMTAPI@-000002
+%@PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 1 setlinejoin
@@ -21674,46 +21670,46 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6.29921/0/6.33998 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
-%%PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6.29921/0/6.33998 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
+%@PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
-1890 1332 M PSL_font_encode 37 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOB /LinBiolinumOB PSL_reencode PSL_font_encode 37 1 put} if
-167 F37
+PSL_font_encode 37 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOB /LinBiolinumOB PSL_reencode PSL_font_encode 37 1 put} if
+1890 1332 M 167 F37
 (Population of the European Union capital cities) bc Z
-378 1093 M PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
-133 F35
-(\< 1 Million inhabitants) Z
-2268 1093 M (\> 1 Million inhabitants) Z
+PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
+378 1093 M 133 F35
+(\< 1 Million inhabitants) bl Z
+2268 1093 M (\> 1 Million inhabitants) bl Z
 142 862 M 133 F37
-(Population in Millions) Z
+(Population in Millions) bl Z
 142 702 M 133 F35
-(Берлин:) Z
-772 702 M (3.44) Z
-1402 702 M (Брюссель:) Z
-2031 702 M (1.05) Z
-2661 702 M (Бухарест:) Z
-3291 702 M (1.94) Z
-142 542 M (Будапешт:) Z
-772 542 M (1.72) Z
-1402 542 M (Лондон:) Z
-2031 542 M (7.56) Z
-2661 542 M (Мадрид:) Z
-3291 542 M (3.26) Z
-142 382 M (Париж:) Z
-772 382 M (2.20) Z
-1402 382 M (Прага:) Z
-2031 382 M (1.29) Z
-2661 382 M (Рим:) Z
-3291 382 M (2.75) Z
-142 222 M (София:) Z
-772 222 M (1.40) Z
-1402 222 M (Вена:) Z
-2031 222 M (1.69) Z
-2661 222 M (Варшава:) Z
-3291 222 M (1.71) Z
+(Берлин:) bl Z
+772 702 M (3.44) bl Z
+1402 702 M (Брюссель:) bl Z
+2031 702 M (1.05) bl Z
+2661 702 M (Бухарест:) bl Z
+3291 702 M (1.94) bl Z
+142 542 M (Будапешт:) bl Z
+772 542 M (1.72) bl Z
+1402 542 M (Лондон:) bl Z
+2031 542 M (7.56) bl Z
+2661 542 M (Мадрид:) bl Z
+3291 542 M (3.26) bl Z
+142 382 M (Париж:) bl Z
+772 382 M (2.20) bl Z
+1402 382 M (Прага:) bl Z
+2031 382 M (1.29) bl Z
+2661 382 M (Рим:) bl Z
+3291 382 M (2.75) bl Z
+142 222 M (София:) bl Z
+772 222 M (1.40) bl Z
+1402 222 M (Вена:) bl Z
+2031 222 M (1.69) bl Z
+2661 222 M (Варшава:) bl Z
+3291 222 M (1.71) bl Z
 %%EndObject
 -3732 -5928 T
 %%EndObject

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14429 [64-bit] Document from grdimage
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from grdimage
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 29 14:57:37 2015
+%%CreationDate: Mon Jan 23 18:47:07 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K
-%%PROJ: xy 145.00000000 170.00000000 -57.93333333 -25.80000000 145.000 170.000 -57.933 -25.800 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdimage tasman_grav.nc=ns+s0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K
+%@PROJ: xy 145.00000000 170.00000000 -57.93333333 -25.80000000 145.000 170.000 -57.933 -25.800 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -23017,8 +23014,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF
-%%PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1389938.497 1389938.497 -6441901.619 -2868833.057 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +ellps=sphere
+%@GMT: pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF
+%@PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1389938.497 1389938.497 -6441901.619 -2868833.057 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -37161,8 +37158,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -DjTL+o1c+w2i/0.15i -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p
-%%PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1391493.635 1391493.635 -6416350.055 -2854011.234 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psscale -DjTL+o1c+w2i/0.15i -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p
+%@PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1391493.635 1391493.635 -6416350.055 -2854011.234 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin

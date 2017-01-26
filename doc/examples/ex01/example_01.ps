@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13683 [64-bit] Document from psbasemap
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from psbasemap
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Nov 12 06:50:39 2014
+%%CreationDate: Mon Jan 23 18:47:02 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0/6.5/0/7.5 -Jx1i -B0 -P -K
-%%PROJ: xy 0.00000000 6.50000000 0.00000000 7.50000000 0.000 6.500 0.000 7.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psbasemap -R0/6.5/0/7.5 -Jx1i -B0 -P -K
+%@PROJ: xy 0.00000000 6.50000000 0.00000000 7.50000000 0.000 6.500 0.000 7.500 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -702,8 +699,8 @@ O0
 300 240 TM
 
 % PostScript produced by:
-%%GMT: pscoast -Rg -JH0/6i -X0.25i -Y0.2i -O -K -Bg30 -Dc -Glightbrown -Slightblue
-%%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscoast -Rg -JH0/6i -X0.25i -Y0.2i -O -K -Bg30 -Dc -Glightbrown -Slightblue
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -2986,7 +2983,7 @@ FO
 0 1 10 4 2 3508 3454 SP
 {0.922 0.745 0.333 C} FS
 -2 7 10 0 2 3464 3351 SP
-11 6 1 3519 3274 SP
+-9 -6 1 3528 3280 SP
 4 4 1 3490 3397 SP
 2 13 1 3474 3368 SP
 -3 -5 -6 2 -11 -8 -15 3 14 14 27 4 -2 -3 -1 -3 -10 -5 0 1 10 4 11 3508 3454 SP
@@ -2998,7 +2995,7 @@ FO
 -3 -6 -4 2 7 10 2 -1 4 3457 3354 SP
 -1 -2 -7 1 7 5 2 -1 4 3449 3338 SP
 -2 7 10 0 2 3464 3351 SP
-11 6 1 3519 3274 SP
+-9 -6 1 3528 3280 SP
 4 4 1 3490 3397 SP
 2 13 1 3474 3368 SP
 {0.678 0.847 0.902 C} FS
@@ -3186,6 +3183,7 @@ FO
 -6 -6 0 8 2 3747 3234 SP
 4 23 -1 -16 2 3831 3015 SP
 -11 -7 6 18 2 3851 3015 SP
+-4 -4 1 3739 3228 SP
 -2 -6 1 3757 2974 SP
 -6 -3 1 3816 2955 SP
 -1 5 1 3664 3075 SP
@@ -3195,18 +3193,17 @@ FO
 4 -4 1 3833 3083 SP
 5 -2 1 3747 2973 SP
 6 2 1 3677 2941 SP
+-9 -3 1 3705 3141 SP
+-5 6 1 3816 2975 SP
 -7 -4 1 3749 3230 SP
 4 6 1 3750 3242 SP
--4 -4 1 3739 3228 SP
 -5 4 1 3744 2971 SP
 -5 -4 -2 6 2 3800 2960 SP
 -9 -1 1 3783 3261 SP
--9 -3 1 3705 3141 SP
--5 6 1 3816 2975 SP
 {0.678 0.847 0.902 C} FS
 -5 5 4 -7 -10 -3 13 -1 5 10 5 3719 3005 SP
 -3 9 11 -1 -1 12 -18 -7 -1 -12 5 3784 3059 SP
--6 3 1 3762 3186 SP
+8 -8 -4 7 23 -1 3 3808 3063 SP
 3 -6 1 3743 3071 SP
 3 -5 1 3773 3129 SP
 -11 5 1 3797 3231 SP
@@ -3261,6 +3258,7 @@ FO
 -7 6 1 3785 3166 SP
 4 -5 1 3758 3060 SP
 -5 3 1 3770 3177 SP
+-6 3 1 3762 3186 SP
 {0.922 0.745 0.333 C} FS
 3890 2966 M
 -7 -5 D
@@ -3439,6 +3437,7 @@ FO
 -6 -6 0 8 2 3747 3234 SP
 4 23 -1 -16 2 3831 3015 SP
 -11 -7 6 18 2 3851 3015 SP
+-4 -4 1 3739 3228 SP
 -2 -6 1 3757 2974 SP
 -6 -3 1 3816 2955 SP
 -1 5 1 3664 3075 SP
@@ -3448,18 +3447,17 @@ FO
 4 -4 1 3833 3083 SP
 5 -2 1 3747 2973 SP
 6 2 1 3677 2941 SP
+-9 -3 1 3705 3141 SP
+-5 6 1 3816 2975 SP
 -7 -4 1 3749 3230 SP
 4 6 1 3750 3242 SP
--4 -4 1 3739 3228 SP
 -5 4 1 3744 2971 SP
 -5 -4 -2 6 2 3800 2960 SP
 -9 -1 1 3783 3261 SP
--9 -3 1 3705 3141 SP
--5 6 1 3816 2975 SP
 {0.678 0.847 0.902 C} FS
 -5 5 4 -7 -10 -3 13 -1 5 10 5 3719 3005 SP
 -3 9 11 -1 -1 12 -18 -7 -1 -12 5 3784 3059 SP
--6 3 1 3762 3186 SP
+8 -8 -4 7 23 -1 3 3808 3063 SP
 3 -6 1 3743 3071 SP
 3 -5 1 3773 3129 SP
 -11 5 1 3797 3231 SP
@@ -3514,6 +3512,7 @@ FO
 -7 6 1 3785 3166 SP
 4 -5 1 3758 3060 SP
 -5 3 1 3770 3177 SP
+-6 3 1 3762 3186 SP
 0 2 -5 -4 6 1 3 3889 2969 SP
 3833 3141 M
 6 6 D
@@ -19093,7 +19092,9 @@ S
 -88 4 D
 S
 3600 0 M
--35 0 D
+-18 0 D
+-8 0 D
+-9 0 D
 -9 0 D
 -9 0 D
 -8 0 D
@@ -19231,7 +19232,8 @@ S
 8 0 D
 9 0 D
 9 0 D
-35 0 D
+9 0 D
+26 0 D
 3600 3600 M
 S
 3384 3540 M
@@ -19248,40 +19250,9 @@ S
 -55 14 D
 S
 3915 3593 M
--9 0 D
--8 1 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 0 D
--9 0 D
--8 0 D
--9 1 D
--9 0 D
--9 0 D
--8 0 D
--9 0 D
--9 0 D
--35 0 D
-3600 3600 M
+-113 4 D
+-184 3 D
+-18 0 D
 S
 3285 3593 M
 3 -8 D
@@ -19529,8 +19500,8 @@ P
 -175 13 D
 -186 9 D
 -108 3 D
--118 2 D
--39 0 D
+-147 2 D
+-10 0 D
 -138 -1 D
 -205 -7 D
 -176 -11 D
@@ -19624,8 +19595,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i
-%%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T+d0.1i/0.02i
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -19832,7 +19803,6 @@ N 1004 2266 M 23 -5 D S
 N 1051 2394 M 21 -11 D S
 N 1114 2495 M 19 -15 D S
 N 1196 2592 M 17 -18 D S
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -21900,8 +21870,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i
-%%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T+d0.1i/0.02i
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -22110,7 +22080,6 @@ N 6615 1450 M 0 -24 D S
 N 6512 1511 M -20 -13 D S
 N 6454 1640 M -23 -7 D S
 N 6422 1747 M -24 -6 D S
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -24422,8 +24391,8 @@ O0
 0 4080 TM
 
 % PostScript produced by:
-%%GMT: pscoast -Rg -JH6i -Y3.4i -O -K '-B+tLow Order Geoid' -Bg30 -Dc -Glightbrown -Slightblue
-%%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscoast -Rg -JH6i -Y3.4i -O -K '-B+tLow Order Geoid' -Bg30 -Dc -Glightbrown -Slightblue
+%@PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -26707,7 +26676,7 @@ FO
 -1 0 -16 4 2 4152 3554 SP
 {0.922 0.745 0.333 C} FS
 -25 3 2 3 2 4504 3502 SP
--16 6 1 4768 3478 SP
+16 -5 1 4752 3483 SP
 -14 3 1 4350 3529 SP
 -44 6 1 4447 3513 SP
 8 -1 9 -1 8 -1 -7 -1 28 -5 -15 -3 -50 8 -9 8 9 -1 10 -2 17 -4 -1 0 -16 4 13 4152 3554 SP
@@ -26719,7 +26688,7 @@ FO
 9 -1 8 -2 9 -1 -5 -1 -34 7 4 0 6 4491 3502 SP
 8 -2 -7 -1 -13 4 4 0 4 4542 3493 SP
 -25 3 2 3 2 4504 3502 SP
--16 6 1 4768 3478 SP
+16 -5 1 4752 3483 SP
 -14 3 1 4350 3529 SP
 -44 6 1 4447 3513 SP
 {0.678 0.847 0.902 C} FS
@@ -26918,6 +26887,7 @@ FO
 -21 -2 25 5 2 2322 3436 SP
 61 19 -41 -14 2 1727 3251 SP
 -24 -4 49 14 2 1737 3246 SP
+-13 -1 1 2301 3434 SP
 -14 -5 1 1592 3234 SP
 -9 -1 1 1570 3202 SP
 13 4 1 1827 3344 SP
@@ -26927,18 +26897,17 @@ FO
 9 4 -8 -4 2 1909 3307 SP
 -3 -3 1 1586 3235 SP
 7 0 1 1476 3223 SP
+-11 0 1 2028 3384 SP
+12 6 1 1620 3220 SP
 -14 0 1 2310 3433 SP
 -20 -3 21 3 2 2346 3440 SP
--13 -1 1 2301 3434 SP
 8 5 1 1580 3234 SP
 -13 -2 14 6 2 1576 3210 SP
 -8 1 1 2416 3443 SP
--11 0 1 2028 3384 SP
-12 6 1 1620 3220 SP
 {0.678 0.847 0.902 C} FS
 11 5 -17 -7 -11 0 1 -4 30 8 5 1656 3270 SP
 3 -4 23 9 2 -4 30 10 -26 -1 -31 -10 6 1825 3300 SP
-6 3 1 2179 3401 SP
+-20 -9 18 6 6 -6 3 1846 3297 SP
 -15 -6 1 1842 3320 SP
 -17 -6 1 1 2 2017 3357 SP
 11 6 1 2328 3421 SP
@@ -26993,6 +26962,7 @@ FO
 15 6 1 2127 3381 SP
 -12 -5 1 1817 3307 SP
 8 4 1 2154 3392 SP
+6 3 1 2179 3401 SP
 {0.922 0.745 0.333 C} FS
 1632 3194 M
 -17 -3 D
@@ -27184,6 +27154,7 @@ FO
 -21 -2 25 5 2 2322 3436 SP
 61 19 -41 -14 2 1727 3251 SP
 -24 -4 49 14 2 1737 3246 SP
+-13 -1 1 2301 3434 SP
 -14 -5 1 1592 3234 SP
 -9 -1 1 1570 3202 SP
 13 4 1 1827 3344 SP
@@ -27193,18 +27164,17 @@ FO
 9 4 -8 -4 2 1909 3307 SP
 -3 -3 1 1586 3235 SP
 7 0 1 1476 3223 SP
+-11 0 1 2028 3384 SP
+12 6 1 1620 3220 SP
 -14 0 1 2310 3433 SP
 -20 -3 21 3 2 2346 3440 SP
--13 -1 1 2301 3434 SP
 8 5 1 1580 3234 SP
 -13 -2 14 6 2 1576 3210 SP
 -8 1 1 2416 3443 SP
--11 0 1 2028 3384 SP
-12 6 1 1620 3220 SP
 {0.678 0.847 0.902 C} FS
 11 5 -17 -7 -11 0 1 -4 30 8 5 1656 3270 SP
 3 -4 23 9 2 -4 30 10 -26 -1 -31 -10 6 1825 3300 SP
-6 3 1 2179 3401 SP
+-20 -9 18 6 6 -6 3 1846 3297 SP
 -15 -6 1 1842 3320 SP
 -17 -6 1 1 2 2017 3357 SP
 11 6 1 2328 3421 SP
@@ -27259,6 +27229,7 @@ FO
 15 6 1 2127 3381 SP
 -12 -5 1 1817 3307 SP
 8 4 1 2154 3392 SP
+6 3 1 2179 3401 SP
 3 2 -11 -2 4 -1 3 1639 3197 SP
 2072 3351 M
 56 9 D
@@ -42744,7 +42715,9 @@ S
 -88 4 D
 S
 3600 0 M
--35 0 D
+-18 0 D
+-8 0 D
+-9 0 D
 -9 0 D
 -9 0 D
 -8 0 D
@@ -42882,7 +42855,8 @@ S
 8 0 D
 9 0 D
 9 0 D
-35 0 D
+9 0 D
+26 0 D
 3600 3600 M
 S
 3384 3540 M
@@ -42899,40 +42873,9 @@ S
 -55 14 D
 S
 3915 3593 M
--9 0 D
--8 1 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--9 0 D
--8 0 D
--9 0 D
--9 1 D
--9 0 D
--8 0 D
--9 0 D
--9 0 D
--9 0 D
--8 0 D
--9 1 D
--9 0 D
--9 0 D
--8 0 D
--9 0 D
--9 0 D
--35 0 D
-3600 3600 M
+-113 4 D
+-184 3 D
+-18 0 D
 S
 3285 3593 M
 3 -8 D
@@ -43186,8 +43129,8 @@ P
 -175 13 D
 -186 9 D
 -108 3 D
--118 2 D
--39 0 D
+-147 2 D
+-10 0 D
 -138 -1 D
 -205 -7 D
 -176 -11 D
@@ -43281,8 +43224,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i:-+
-%%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T+d0.1i/0.02i+l
+%@PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -43489,20 +43432,12 @@ N 4789 2095 M 15 19 D S
 N 4706 2184 M 20 14 D S
 N 4635 2317 M 22 9 D S
 N 4593 2427 M 23 8 D S
-12 W
-[100 50] 0 B
 1399 1897 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 (-) mc Z
-4 W
-[33 17] 0 B
 3624 289 M (-) mc Z
-12 W
-[100 50] 0 B
 2149 2824 M (-) mc Z
 5898 2380 M (-) mc Z
-4 W
-[33 17] 0 B
 4776 3095 M (-) mc Z
 4794 2298 M (-) mc Z
 /PSL_setboxpen {4 W 0 A [] 0 B} def
@@ -45567,8 +45502,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+
-%%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -T+d0.1i/0.02i+l
+%@PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin

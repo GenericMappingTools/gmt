@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14247M [64-bit] Document from pscontour
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from pscontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Apr 28 08:55:56 2015
+%%CreationDate: Mon Jan 23 18:45:55 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 6600 TM
 
 % PostScript produced by:
-%%GMT: pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1 -BWSne table_5.11 -Cex16.cpt -I
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1 -BWSne table_5.11 -Cex16.cpt -I
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1497,14 +1494,14 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1755 3888 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1755 3888 M 300 F4
 (pscontour \(triangulate\)) bc Z
 %%EndObject
 0 A
@@ -1513,8 +1510,8 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT: grdview raws0.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -X3.5i
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdview raws0.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -X3.5i
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -4508,14 +4505,14 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1755 3888 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1755 3888 M 300 F4
 (surface \(tension = 0\)) bc Z
 %%EndObject
 0 A
@@ -4524,8 +4521,8 @@ O0
 -4200 -4500 TM
 
 % PostScript produced by:
-%%GMT: grdview raws5.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdview raws5.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -7266,14 +7263,14 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1755 3888 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1755 3888 M 300 F4
 (surface \(tension = 0.5\)) bc Z
 %%EndObject
 0 A
@@ -7282,8 +7279,8 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT: grdview filtered.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -X3.5i
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdview filtered.nc -R0/6.5/-0.2/6.5 -Jx0.45i -Ba2f1 -BWSne -Cex16.cpt -Qs -O -K -X3.5i
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -9976,14 +9973,14 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
-%%PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6.5/-0.2/6.5 -Jx0.45i -O -K -N -F+f18p,Times-Roman+jCB
+%@PROJ: xy 0.00000000 6.50000000 -0.20000000 6.50000000 0.000 6.500 -0.200 6.500 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-1755 3888 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+1755 3888 M 300 F4
 V MU 0 0 M (triangulate ) FP 300 F12 (\256) FP 300 F4 ( grdfilter) FP pathbbox N pop exch pop add U -2 div 0 G
 (triangulate ) Z
 300 F12 (\256) Z
@@ -9995,14 +9992,14 @@ O0
 -4200 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/10/0/10 -Jx1i -O -K -N -F+f32p,Times-Roman+jCB -X-3.5i
-%%PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/10/0/10 -Jx1i -O -K -N -F+f32p,Times-Roman+jCB -X-3.5i
+%@PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3855 9000 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-533 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+3855 9000 M 533 F4
 (Gridding of Data) bc Z
 %%EndObject
 0 A
@@ -10011,8 +10008,8 @@ O0
 0 -900 TM
 
 % PostScript produced by:
-%%GMT: psscale -D3.25i/0.35i/5i/0.25ih -Cex16.cpt -O -Y-0.75i
-%%PROJ: xy 675.00000000 975.00000000 0.00000000 0.25000000 675.000 975.000 0.000 0.250 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psscale -Dx3.25i/0.35i -Cex16.cpt -O -Y-0.75i
+%@PROJ: xy 675.00000000 975.00000000 0.00000000 0.25000000 675.000 975.000 0.000 0.250 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin

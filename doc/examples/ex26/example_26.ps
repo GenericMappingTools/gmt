@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13658M [64-bit] Document from pscoast
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from pscoast
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Nov  7 05:56:55 2014
+%%CreationDate: Mon Jan 23 18:47:05 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -291,10 +290,10 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
@@ -307,6 +306,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +343,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +367,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +493,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -495,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -521,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -638,8 +663,8 @@ O0
 1200 6000 TM
 
 % PostScript produced by:
-%%GMT: pscoast -Rg -JG-74.0/41.5/160.0/0/0/0/0.0/0.0/4i -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i
-%%PROJ: nsper 0.00000000 360.00000000 -90.00000000 90.00000000 -709478.641 709478.641 -709478.641 709478.641 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: pscoast -Rg -JG-74.0/41.5/160.0/0/0/0/0.0/0.0/4i -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i
+%@PROJ: nsper 0.00000000 360.00000000 -90.00000000 90.00000000 -709478.641 709478.641 -709478.641 709478.641 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -2288,19 +2313,16 @@ P S
 -4 -7 D
 33 -10 D
 P S
-2970 4730 M
-2 0 D
-11 -2 D
--9 2 D
-18 -4 D
--17 4 D
-1 0 D
 2991 4726 M
 14 -4 D
 -23 6 D
 10 -3 D
--20 5 D
--2 0 D
+-22 5 D
+13 -2 D
+-9 2 D
+18 -4 D
+-17 4 D
+1 0 D
 S
 2993 4723 M
 -6 3 D
@@ -2382,12 +2404,9 @@ P S
 -17 8 D
 -32 11 D
 P S
-3585 4487 M
--5 3 D
 3604 4476 M
 6 -3 D
--24 14 D
--1 0 D
+-30 17 D
 S
 3215 4583 M
 -12 13 D
@@ -11232,8 +11251,8 @@ O0
 1200 -4800 TM
 
 % PostScript produced by:
-%%GMT: pscoast -Rg -JG-74.0/41.5/160.0/210/55/45/30.0/30.0/5i -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i
-%%PROJ: nsper 271.32455105 300.89093668 28.69138912 54.05523964 -74148.975 74148.975 -74148.975 74148.975 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: pscoast -Rg -JG-74.0/41.5/160.0/210/55/45/30.0/30.0/5i -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i
+%@PROJ: nsper 271.32455105 300.89093668 28.69138912 54.05523964 -74148.975 74148.975 -74148.975 74148.975 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -12359,7 +12378,18 @@ FO
 -12 67 D
 23 -67 D
 S
-3720 774 M
+3881 0 M
+-164 112 D
+87 6 D
+47 192 D
+-83 37 D
+74 18 D
+-18 61 D
+59 22 D
+-74 175 D
+-90 83 D
+3 66 D
+-2 2 D
 -29 66 D
 -40 -24 D
 -57 126 D
@@ -12386,18 +12416,6 @@ S
 44 -34 D
 -73 -87 D
 6 -46 D
-3881 0 M
--164 112 D
-87 6 D
-47 192 D
--83 37 D
-74 18 D
--18 61 D
-59 22 D
--74 175 D
--90 83 D
-3 66 D
--2 2 D
 S
 3475 1408 M
 22 -231 D
@@ -12434,18 +12452,16 @@ P S
 28 35 D
 -26 49 D
 P S
-3224 34 M
-84 341 D
--108 -375 D
 3208 0 M
 14 32 D
 2 2 D
+84 341 D
+-108 -375 D
 S
-3256 95 M
-4 -95 D
 3261 0 M
 2 90 D
 -7 5 D
+4 -95 D
 S
 3439 567 M
 -20 -42 D
@@ -12470,11 +12486,10 @@ P S
 -7 -22 D
 12 19 D
 P S
-3226 11 M
--5 -11 D
 3222 0 M
 6 10 D
 -2 1 D
+-5 -11 D
 S
 3472 605 M
 1 -47 D
@@ -12491,12 +12506,10 @@ P S
 3426 445 M
 3 -35 D
 P S
-3236 28 M
-17 -28 D
 3253 0 M
 -13 26 D
 -4 2 D
-S
+P S
 3419 593 M
 -10 -26 D
 15 23 D
@@ -24813,8 +24826,9 @@ S
 S
 25 W
 4 W
-2808 4899 M
-35 31 D
+2803 4895 M
+32 27 D
+8 8 D
 19 15 D
 71 60 D
 60 50 D
@@ -24844,8 +24858,9 @@ S
 23 15 D
 130 88 D
 S
-1657 3804 M
-13 12 D
+1654 3800 M
+11 12 D
+5 4 D
 12 14 D
 42 40 D
 4 5 D
@@ -24885,8 +24900,8 @@ S
 440 220 D
 102 50 D
 S
-667 2674 M
-5 6 D
+666 2673 M
+6 7 D
 8 7 D
 3 1 D
 8 6 D
@@ -24910,8 +24925,8 @@ S
 759 -77 D
 356 -37 D
 S
-1793 3944 M
--21 -22 D
+1795 3946 M
+-23 -24 D
 -6 -5 D
 -26 -28 D
 -6 -5 D
@@ -24952,7 +24967,8 @@ S
 -7 -11 D
 -31 -41 D
 S
-3855 5747 M
+3855 5748 M
+0 -1 D
 -20 -14 D
 -48 -38 D
 -149 -118 D

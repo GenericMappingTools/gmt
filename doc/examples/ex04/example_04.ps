@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14429 [64-bit] Document from grdcontour
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.0_r17486 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 29 17:30:37 2015
+%%CreationDate: Mon Jan 23 18:46:29 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1500 1500 TM
 
 % PostScript produced by:
-%%GMT: grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P -X1.25i -Y1.25i
-%%PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P -X1.25i -Y1.25i
+%@PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -679,7 +676,6 @@ clipsave
 0 4042 D
 -8100 0 D
 PSL_clip N
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
@@ -3754,8 +3750,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pscoast -R195/210/18/25 -Jm0.45i -p60/30 -B2 -BNEsw -Gblack -O -K -TdjBR+o0.1i+w1i+l
-%%PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pscoast -R195/210/18/25 -Jm0.45i -p60/30 -B2 -BNEsw -Gblack -O -K -TdjBR+o0.1i+w1i+l
+%@PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -3958,8 +3954,8 @@ O0
 0 2640 TM
 
 % PostScript produced by:
-%%GMT: grdview HI_topo4.nc -R195/210/18/25/-6/4 -Jm0.45i -Jz0.34i -p60/30 -Czero.cpt -O -K -N-6+glightgray -Qsm -B2 '-Bz2+lTopo (km)' -BneswZ -Y2.2i
-%%PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: grdview HI_topo4.nc -R195/210/18/25/-6/4 -Jm0.45i -Jz0.34i -p60/30 -Czero.cpt -O -K -N-6+glightgray -Qsm -B2 '-Bz2+lTopo (km)' -BneswZ -Y2.2i
+%@PROJ: merc 195.00000000 210.00000000 18.00000000 25.00000000 -834896.181 834896.181 2024351.426 2857692.611 +proj=merc +lon_0=202.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -20340,8 +20336,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/10/0/10 -Jx1i -F+f60p,ZapfChancery-MediumItalic+jCB -O
-%%PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/10/0/10 -Jx1i -F+f60p,ZapfChancery-MediumItalic+jCB -O
+%@PROJ: xy 0.00000000 10.00000000 0.00000000 10.00000000 0.000 10.000 0.000 10.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -20352,8 +20348,8 @@ clipsave
 0 12000 D
 -12000 0 D
 PSL_clip N
-3900 6900 M PSL_font_encode 33 get 0 eq {Standard+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
-1000 F33
+PSL_font_encode 33 get 0 eq {Standard+_Encoding /ZapfChancery-MediumItalic /ZapfChancery-MediumItalic PSL_reencode PSL_font_encode 33 1 put} if
+3900 6900 M 1000 F33
 V MU 0 0 M (H) FP 850 F33 (AWAIIAN) FP 1000 F33 ( R) FP 850 F33 (IDGE) FP pathbbox N pop exch pop add U -2 div 0 G
 (H) Z
 850 F33 (AWAIIAN) Z
