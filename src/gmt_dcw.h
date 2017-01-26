@@ -38,7 +38,8 @@ enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,
 	GMT_DCW_PLOT	= 2,
 	GMT_DCW_DUMP	= 4,
-	GMT_DCW_EXTRACT	= 8
+	GMT_DCW_EXTRACT	= 8,
+	GMT_DCW_LIST	= 16
 };
 
 struct GMT_DCW_ITEM {	/* One set of codes with their color/fill */

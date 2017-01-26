@@ -1073,7 +1073,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_shore_cleanup (GMT, &c);
 	}
 
-	(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+	if (Ctrl->E.info.mode > GMT_DCW_REGION) (void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
