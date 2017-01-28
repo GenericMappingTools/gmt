@@ -2700,7 +2700,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	bool append = false, hard_path;
 	char geo_path[GMT_BUFSIZ] = {""};
 
-	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 3 possible extensions */
+	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 4 possible extensions */
 		if (strchr (track, '.') && (strlen(track)-strlen(MGD77_suffix[fmt])) > 0 && !strncmp (&track[strlen(track)-strlen(MGD77_suffix[fmt])], MGD77_suffix[fmt], strlen(MGD77_suffix[fmt])))
 			has_suffix = fmt;
 	}
@@ -2820,7 +2820,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 			return (MGD77_ERROR_OPEN_FILE);
 		}
 		mode[0] = 'w';
-		for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given leg name contains one of the 3 possible extensions */
+		for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given leg name contains one of the 4 possible extensions */
 			if ((strlen(leg)-strlen(MGD77_suffix[k])) > 0 && !strncmp (&leg[strlen(leg)-strlen(MGD77_suffix[k])], MGD77_suffix[k], strlen(MGD77_suffix[k]))) has_suffix = k;
 		}
 		if (has_suffix == MGD77_NOT_SET)	/* file name given without extension */
