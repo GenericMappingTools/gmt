@@ -313,7 +313,6 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
 	
-		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		MGD77_Reset (GMT, &M);		/* Reset to start fresh for next file */
 
 		M.format = Ctrl->F.format;	/* Set input file's format and read everything into memory */
@@ -322,6 +321,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
 		for (i = 0; i < MGD77_N_FORMATS; i++) if (i != M.format) MGD77_Ignore_Format (GMT, i);		/* ...only allow the specified input format */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
+		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
