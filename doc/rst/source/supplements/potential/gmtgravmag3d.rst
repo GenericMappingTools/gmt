@@ -73,15 +73,13 @@ Required Arguments
 **-Tp**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
     Gives names of xyz (**-Tp**\ *xyz_file*\ [**+m**]) and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
-    The optional **+m** flag to **-Td** instructs the program that the xyzm file
+    The optional **+m** flag to **-Tp** instructs the program that the xyzm file
     has four columns and that the fourth column contains the magnetization intensity (plus signal),
     which needs not to be constant. In this case the third argument of the **-H** option is
-    ignored. A *raw* format (selected by the **-Tr** option) is a file with N
-    rows (one per triangle) and 9 columns corresponding to the x,y,x
-    coordinates of each of the three vertex of each triangle.
-    Alternatively, the **-Ts** option indicates that the surface file is in
-    the ASCII STL (Stereo Lithographic) format. These two type of files
-    are used to provide a closed surface.
+    ignored. A *raw* format (selected by the **-Tr** option) is a file with N rows (one per triangle)
+    and 9 columns corresponding to the x,y,x coordinates of each of the three vertex of each triangle.
+    Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL (Stereo Lithographic) format.
+    These two type of files are used to provide a closed surface.
 
 Optional Arguments
 ------------------
