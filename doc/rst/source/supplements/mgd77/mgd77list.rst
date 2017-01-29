@@ -40,8 +40,8 @@ Synopsis
 Description
 -----------
 
-**mgd77list** reads <NGDC-id>.[mgd77\|nc] files and produces an ASCII
-[or binary] table. The <NGDC-id>.[mgd77\|nc] files contain track
+**mgd77list** reads MGD77 files and produces an ASCII
+[or binary] table. The MGD77 files contain track
 information such as leg-id, time and position, geophysical observables
 such as gravity, magnetics, and bathymetry, and control codes and
 corrections such as Eotvos and diurnal corrections. The MGD77+ extended
@@ -387,7 +387,7 @@ Optional Arguments
 
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
-    **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77 t ASCII, or plain
+    **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
 
