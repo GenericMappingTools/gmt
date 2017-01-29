@@ -40,7 +40,7 @@ Required Arguments
     Specifies the format of the input (From) files. Choose from **a**
     for standard MGD77 ASCII table (with extension .mgd77), **c** for
     the new MGD77+ netCDF format (with extension .nc), **m** for the
-    new MGD77 t format (extension .m77t) and **t** for a
+    new MGD77T format (extension .m77t) and **t** for a
     plain ASCII tab-separated table dump (with extension .dat). Use
     **-FC** to recover the original MGD77 setting from the MGD77+ file
     [Default will apply any E77 corrections encoded in the file].
@@ -51,7 +51,7 @@ Required Arguments
     Specifies the format of the output (To) files. Choose from **a** for
     standard MGD77 ASCII table (with extension .mgd77), **c** for the
     new MGD77+ netCDF format (with extension .nc), **m** for the
-    new MGD77 t format (extension .m77t) and **t** for a plain
+    new MGD77T format (extension .m77t) and **t** for a plain
     ASCII tab-separated table dump (with extension .dat). We will refuse
     to create the file(s) if they already exist in the current
     directory. Prepend **+** to override this policy.
@@ -134,20 +134,23 @@ E77 corrections, use
 File Formats
 ------------
 
-**mgd77convert** handles three different formats. (1) The MGD77 ASCII
-tables are the established standard for distribution of underway
-geophysical data to and from the NGDC data center. Normally, only the
-ship-operations people and the cruise PI might be involved in *making*
-an MGD77 ASCII file for transmission to NGDC; users are more interested
-in *reading* such files. (2) The MGD77+ netCDF format was developed to
+**mgd77convert** handles four different formats.
+(1) NGDC has now started to use the new tab-delimited version of the
+MGD77 data format, called MGD77T.  In addition to all the info in old
+MGD77 files it contains a few more quality flags for grav, mag,
+and bathymetry.  (2) The MGD77+ netCDF format was developed to
 facilitate the use of MGD77 data by scientists. It contains all the
 information of the original MGD77 file and if you convert back and forth
 you end up with the original. However, file sizes are typically ~30% of
-the original ASCII format and is much faster to operate on. (3) The
-plain ASCII tab-separated dump is available for users who need to
-manually edit the content of a MGD77 file. This is usually easier to do
-when the columns are tab-separated than when they are all crunched
-together in the MGD77 punch-card format.
+the original ASCII format and is much faster to operate on. (3) The MGD77 ASCII
+tables are the traditional standard for distribution of underway
+geophysical data to and from the NGDC data center, now superseded by MGD77T.
+Normally, only the ship-operations people and the cruise PI might be involved
+in *making* an MGD77 ASCII file for transmission to NGDC; users are more interested
+in *reading* such files. (4) The plain ASCII tab-separated dump is available
+for users who need to manually edit the content of a MGD77 file.
+This is usually easier to do when the columns are tab-separated than when
+they are all crunched together in the MGD77 punch-card format.
 
 Other Tools
 -----------
