@@ -659,12 +659,6 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if ((GridA->header->z_scale_factor != GridS->header->z_scale_factor) ||
-		    (GridA->header->z_add_offset != GridS->header->z_add_offset)) {
-			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid scale/offset not compatible!\n");
-			Return(GMT_RUNTIME_ERROR);
-		}
-
 		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
 		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
 			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid increments do not match!\n");
