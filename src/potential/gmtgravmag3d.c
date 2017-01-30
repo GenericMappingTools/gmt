@@ -286,6 +286,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 						else if (pch && pch[0] == '3') Ctrl->T.m_var3 = true;
 						else if (pch && pch[0] == '4') Ctrl->T.m_var4 = true;
 						else Ctrl->T.m_var1 = true;
+						Ctrl->T.xyz_file[strlen(Ctrl->T.xyz_file)-2] = '\0';	/* In any case the "+m" must go out of fname */
 					}
 				}
 				else if (opt->arg[0] == 'v') {
