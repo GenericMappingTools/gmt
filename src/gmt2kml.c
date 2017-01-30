@@ -739,6 +739,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, Ctrl->F.geometry) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error);
+	}
 
 	/* Now we are ready to take on some input values */
 

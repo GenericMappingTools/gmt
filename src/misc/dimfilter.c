@@ -973,6 +973,9 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 
 		/* Check the crucial condition to run the program*/

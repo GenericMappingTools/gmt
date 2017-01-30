@@ -861,6 +861,9 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+				Return (API->error);
+			}
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
 			if (Ctrl->F.active) strcat (format, " -F");
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;

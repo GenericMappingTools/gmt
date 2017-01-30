@@ -395,6 +395,9 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+				Return (API->error);
+			}
 		}
 		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active)) != 0) Return (GMT_RUNTIME_ERROR);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was true */

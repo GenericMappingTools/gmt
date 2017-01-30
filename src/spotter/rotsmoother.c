@@ -397,6 +397,10 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, D);
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, D);
+		Return (API->error);
+	}
 
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* The local z unit vector */
 	n_minimum = (Ctrl->C.active) ? 2 : 1;	/* Need at least two rotations to compute covariance, at least one to report the mean */

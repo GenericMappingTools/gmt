@@ -831,6 +831,8 @@ any of them to see the full syntax of each function.
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Columns_         | Specify how many output columns to use for rec-by-rec |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Set_Geometry_        | Specify data geometry for rec-by-rec i/o              |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Set_Index_           | Convert row, col into a grid or image index           |
     +--------------------------+-------------------------------------------------------+
     | GMT_Status_IO_           | Check status of record-by-record i/o                  |
@@ -1654,6 +1656,22 @@ will discuss GMT_End_IO_ once we are done with the data import. The final
 written during initialization; choose between ``GMT_HEADER_ON`` and
 ``GMT_HEADER_OFF``. The function returns 1 if there is an
 error; otherwise it returns 0.
+
+Set data geometry
+~~~~~~~~~~~~~~~~~
+
+Typically only done for output data written record by record, we designate
+the data set's geometry by calling
+
+.. _GMT_Set_Geometry:
+
+  ::
+
+    int _GMT_Set_Geometry (void *API,  unsigned int direction, unsigned int geometry);
+
+where ``direction`` is either ``GMT_IN`` or ``GMT_OUT`` and :ref:`geometry <tbl-geometry>`
+sets the geometry that will be produced (or read).
+
 
 Importing a data record
 ~~~~~~~~~~~~~~~~~~~~~~~

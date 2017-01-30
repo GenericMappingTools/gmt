@@ -352,6 +352,10 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, R);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, R);
+		Return (API->error);
+	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	
 	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);

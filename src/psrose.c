@@ -584,6 +584,14 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, length);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+				gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, azimuth);
+				gmt_M_free (GMT, length);
+				Return (API->error);
+			}
 			sprintf (format, "n\tmean_az\tmean_r\tmean_resultant_length\tmax\tscaled_mean_r\tlinear_length_sum");
 			out[0] = n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
 			out[4] = max;	out[5] = mean_radius;	out[6] = total;

@@ -396,6 +396,9 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	}
