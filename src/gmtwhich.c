@@ -156,6 +156,9 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error);
+	}
 	
 	if (Ctrl->D.active && (getcwd (cwd, GMT_BUFSIZ) == NULL)) {	/* Get full path, even for current dir */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");

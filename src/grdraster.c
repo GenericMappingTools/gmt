@@ -998,6 +998,10 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, x);
+			Return (API->error);
+		}
 	} else {	/* Need an entire (padded) grid */
 		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, float);
 	}

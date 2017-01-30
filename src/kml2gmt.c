@@ -203,6 +203,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, Ctrl->F.geometry) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error);
+	}
 
 	/* We read the input from stdin or file via fscanf and fgets. We cannot easily
 	 * switch this over to using GMT_Get_Record since the kml file may have multiple

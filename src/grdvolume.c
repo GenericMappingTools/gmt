@@ -693,6 +693,10 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
+		Return (API->error);
+	}
 
 	gmt_set_cartesian (GMT, GMT_OUT);	/* Since no coordinates are written */
 

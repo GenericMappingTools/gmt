@@ -456,6 +456,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error);
+	}
 
 	if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */
 		gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], GMT_MAX_COLUMNS, int);	/* Save previous output col types */

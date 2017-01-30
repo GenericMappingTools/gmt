@@ -443,6 +443,11 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		x2sys_end (GMT, s);
+		x2sys_free_list (GMT, trk_name, n_tracks);
+		Return (API->error);
+	}
 	
 	out = gmt_M_memory (GMT, NULL, s->n_fields, double);
 

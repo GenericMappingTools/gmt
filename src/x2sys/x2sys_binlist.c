@@ -292,6 +292,12 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, X);
+		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
+		x2sys_free_list (GMT, trk_name, n_tracks);
+		Return (API->error);
+	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	sprintf (record, " %s", Ctrl->T.TAG);	/* Preserve the leading space for backwards compatibility */

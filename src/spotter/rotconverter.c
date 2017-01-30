@@ -441,6 +441,10 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, a);
 		Return (API->error);
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, a);
+		Return (API->error);
+	}
 
 	if (Ctrl->G.active)		/* GPlates header */
 		sprintf (record, "#plateid%stime%slatitude%slongitude%sangle%sfixedplateid\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, \

@@ -9931,6 +9931,9 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		return (GMT->parent->error);	/* Enables data output and sets access mode */
 	}
+	if (GMT_Set_Geometry (GMT->parent, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		return (GMT->parent->error);
+	}
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg)
 			continue;		/* Skip other and empty options */

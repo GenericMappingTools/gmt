@@ -998,6 +998,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 
 	int error = 0;
 	
+	unsigned geometry = GMT_IS_NONE;
+	
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
 	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[9], *t = NULL;
 	
@@ -1062,6 +1064,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		}
 		if (bad) Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->T.n) t = gmt_M_memory (GMT, NULL, Ctrl->T.n, double);	/* Allocate space for output x-values (unless when -T0 is given) */
+		geometry = GMT_IS_LINE;
 	}
 
 	/* Allocate memory and read in all the files; each file can have many records */
@@ -1082,6 +1085,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_columns)) != 0) Return (error);

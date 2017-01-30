@@ -1000,6 +1000,11 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
+			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
+			Return (API->error);
+		}
 
 		/* Now do bootstrap sampling of flowlines */
 	

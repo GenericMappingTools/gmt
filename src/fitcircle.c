@@ -449,6 +449,9 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error);
+	}
 
 	if (n_data < n_alloc) data = gmt_M_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
 	if (Ctrl->S.active && Ctrl->L.norm%2) work = gmt_M_memory (GMT, NULL, n_data, double);

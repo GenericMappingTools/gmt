@@ -372,6 +372,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	uint64_t i, j;
 	uint64_t n_out, n_expected_fields, col;
 	unsigned int n_stages = 0;	/* Number of stage poles */
+	unsigned int geometry;
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */
@@ -452,6 +453,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 
 	n_out = (Ctrl->S.active) ? 4 : 3;	/* Append smt id number as 4th column when individual files are requested */
 	if (Ctrl->W.active) n_out = 5 + !(Ctrl->W.mode == 0);
+	geometry = (make_path) ? GMT_IS_LINE : GMT_IS_POINT;
 
 	/* Specify input and output expected columns */
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_NOERROR) {
@@ -475,6 +477,9 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 

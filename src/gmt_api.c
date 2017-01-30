@@ -7016,6 +7016,46 @@ static inline int api_wind_to_next_textrecord (int64_t *count, struct GMT_TEXTSE
 }
 
 /*! . */
+int GMT_Set_Geometry (void *V_API, unsigned int direction, unsigned int geometry) {
+	/* Sets the geometry of direction resource for record-by-record i/o.
+	 * This currently only applies to external interfaces receiving data via rec-by-rc writing.
+	 */
+	unsigned int method;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	if (!API->io_enabled[GMT_OUT]) return_error (API, GMT_ACCESS_NOT_ENABLED);
+	API->error = GMT_NOERROR;
+
+	S_obj = API->object[API->current_item[direction]];	/* Shorthand for the data source we are working on */
+	if (S_obj == NULL) return_error (API, GMT_OBJECT_NOT_FOUND);	/* No such object */
+	method = api_set_method (S_obj);	/* Get the actual method to use */
+	switch (method) {	/* File, array, stream etc ? */
+		case GMT_IS_DUPLICATE:
+		case GMT_IS_REFERENCE:
+			if (S_obj->family == GMT_IS_DATASET) {
+				struct GMT_DATASET *D_obj = S_obj->resource;
+				if (!D_obj)	/* Not allocated yet?*/
+					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Warning: GMT_Set_Geometry called but no object availble\n");
+				else
+					D_obj->geometry = geometry;
+			}
+			break;
+		default:	/* For all others there is no geometry requirement, so quietly skip */
+			break;
+	}
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Geometry_ (unsigned int *direction, unsigned int *geometry) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Geometry (GMT_FORTRAN, *direction, *geometry));
+}
+#endif
+
+/*! . */
 void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	/* Retrieves the next data record from the virtual input source and
 	 * returns the number of columns found via *retval (unless retval == NULL).

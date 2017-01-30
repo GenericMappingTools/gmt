@@ -1105,6 +1105,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
+			Return (API->error);
+		}
 		if (Ctrl->A.mode) {	/* Need to combine close neighbors until minimum distance >= min_dist, then output revised dataset */
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;

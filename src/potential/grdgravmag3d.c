@@ -968,6 +968,8 @@ L1:
 
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) 	/* Enables data output and sets access mode */
 			Return (API->error);
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR)	/* Sets output geometry */
+			Return (API->error);
 
 		for (k = 0; k < ndata; k++) {
 			out[GMT_X] = point->segment[0]->data[GMT_X][k];

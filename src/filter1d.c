@@ -924,6 +924,9 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error, "Error in Begin_IO\n");
 	}
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
+		Return (API->error, "Error in GMT_Set_Geometry\n");
+	}
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 	

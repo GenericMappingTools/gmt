@@ -440,6 +440,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+				gmt_M_free (GMT, Sun);
+				Return (API->error);
+			}
 			out[0] = -Sun->HourAngle;		out[1] = Sun->SolarDec;		out[2] = Sun->SolarAzim;
 			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
@@ -456,6 +460,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+				gmt_M_free (GMT, Sun);
+				Return (API->error);
+			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -495,6 +503,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, Sun);
+			Return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 			gmt_M_free (GMT, Sun);
 			Return (API->error);
 		}
