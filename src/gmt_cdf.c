@@ -58,7 +58,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 
 	if (job == 'w') {
 		if (header->nm > limit) {	/* Print error message and let things crash */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your grid contains more than 2^31 - 1 nodes (%zu) and cannot be stored with the deprecated GMT netCDF format.\n", header->nm);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your grid contains more than 2^31 - 1 nodes (%" PRIu64 ") and cannot be stored with the deprecated GMT netCDF format.\n", header->nm);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
 			return (GMT_DIM_TOO_LARGE);
 		}
