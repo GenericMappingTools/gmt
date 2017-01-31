@@ -1105,7 +1105,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
-		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
@@ -1223,6 +1223,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
@@ -1311,6 +1314,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 				Return (API->error);
 			}
 		}
@@ -1442,6 +1448,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, wtype, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
 		wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
@@ -1636,6 +1645,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);				/* Enables data output and sets access mode */
 		}
+		if (GMT_Set_Geometry (API, GMT_OUT, C->geometry) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
 
 		Info = gmt_M_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = gmt_M_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
@@ -1769,9 +1781,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+				Return (API->error);
+			}
 		}
 		else {	/* Regular data output */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+				Return (API->error);
+			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 				Return (API->error);
 			}
 		}

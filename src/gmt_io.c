@@ -6205,7 +6205,7 @@ void gmt_set_seg_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 			}
 		}
 	}
-	if (geometry & GMT_IS_POLY)
+	if (geometry == GMT_IS_POLY)
 		gmt_set_seg_polar (GMT, S);
 }
 
