@@ -301,6 +301,10 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		} while (node_new != node_stop);
 
 		if (!get_arcs) {	/* Finalize the polygon information */
+			/* Explicitly close the polygon */
+			plon[vertex] = plon[0];
+			plat[vertex] = plat[0];
+			vertex++;
 			S[0] = Dout[0]->table[0]->segment[node];	/* Local shorthand to current output segment */
 			if (get_area) {
 				area_km2 = area_polygon * R2;	/* Get correct area units */
