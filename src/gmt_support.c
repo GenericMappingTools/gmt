@@ -325,7 +325,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	if (!gmt_M_is_pattern (line)) return NULL;	/* Not an image specification */
 	err = gmtsupport_parse_pattern (GMT, line, &fill);	/* See if this returns an error or not */
 	if (err) return NULL;	/* Not a valid image specification */
-	if (fill.pattern_no) return NULL;	/* Not a user image */
+	if (fill.pattern_no > 0) return NULL;	/* Not a user image */
 	
 	/* Here we do have a pattern specification */
 	/* Try the user's default directories */
@@ -806,14 +806,49 @@ GMT_LOCAL bool support_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 }
 
 /*! . */
-GMT_LOCAL bool support_is_pattern (char *word) {
-	/* Returns true if the word is a pattern specification P|p<dpi>/<pattern>[:B<color>[F<color>]] */
+GMT_LOCAL bool support_is_pattern_old (char *word) {
+	/* Returns true if the word is a pattern specification
+	 * Old style:   P|p<dpi>/<pattern>[:B<color>[F<color>]]
+	 */
 
 	if (strchr (word, ':')) return (true);			/* Only patterns may have a colon */
 	if (!(word[0] == 'P' || word[0] == 'p')) return false;	/* Patterns must start with P or p */
 	if (!strchr (word, '/')) return (false);		/* Patterns separate dpi and pattern with a slash */
 	/* Here we know we start with P|p and there is a slash - this can only be a pattern specification */
 	return (true);
+}
+
+/*! . */
+GMT_LOCAL bool support_is_pattern_new (struct GMT_CTRL *GMT, char *word) {
+	/* Returns true if the word is a pattern specification
+	 * New style:   P|p<pattern>[+b<color>][+f<color>][+r<dpi>]
+	 */
+	char *c = NULL;
+	int n;
+	if ((c = strchr (word, '+')) && strchr ("bfr", c[1])) return (true);		/* Found +b, +f or +r */
+	/* Here we have no modifiers at all */
+	if (!(word[0] == 'P' || word[0] == 'p')) return false;	/* Patterns must start with P or p */
+	/* Pattern without modifier must be an integer OR a valid file */
+	if ((n = atoi (&word[1])) > 0 && n < PSL_N_PATTERNS) return (true);	/* Got a valid integer */
+	/* Se if we can access the file */
+	if (!gmt_access (GMT, &word[1], F_OK)) return (true);	/* Got a file that exists */
+	return (false);	/* Not a pattern */
+}
+
+/*! . */
+GMT_LOCAL bool support_is_pattern (struct GMT_CTRL *GMT, char *word) {
+	/* Returns true if the word is a pattern specification
+	 * Old style:   P|p<dpi>/<pattern>[:B<color>[F<color>]]
+	 * New style:   P|p<pattern>[+b<color>][+f<color>][+r<dpi>]
+	 */
+
+	bool val;
+	/* New syntax may have a modifier or no slash AND no colon */
+	if ((strstr(word, "+r") || strstr(word, "+f") || strstr(word, "+b") || !strchr(word, '/')) && !strchr (word,':'))
+		val = support_is_pattern_new (GMT, word);
+	else
+		val = support_is_pattern_old (word);
+	return (val);
 }
 
 /*! . */
@@ -5184,7 +5219,7 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 }
 
 /*! . */
-#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || support_is_pattern (word) || gmtlib_is_color (GMT, word))
+#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || support_is_pattern (GMT,word) || gmtlib_is_color (GMT, word))
 
 /* The two flip_angle functions are needed when vectors given by angle/length is to be plotted
  * using Cartesian projections in which the direction of positive x and/or y-axis might have
@@ -6571,7 +6606,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			if ((nread = sscanf (&line[2], "%s %s %s %s", T1, T2, T3, T4)) < 1) error = true;
 			if (T1[0] == '-')	/* Skip this slice */
 				X->bfn[id].skip = true;
-			else if (support_is_pattern (T1)) {	/* Gave a pattern */
+			else if (support_is_pattern (GMT, T1)) {	/* Gave a pattern */
 				X->bfn[id].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 				if (gmt_getfill (GMT, T1, X->bfn[id].fill)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
@@ -6661,7 +6696,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			gmt_M_rgb_copy (X->data[n].rgb_low,  GMT->current.setting.ps_page_rgb);	/* If we must paint, use page color */
 			gmt_M_rgb_copy (X->data[n].rgb_high, GMT->current.setting.ps_page_rgb);
 		}
-		else if (support_is_pattern (T1)) {	/* Gave pattern fill */
+		else if (support_is_pattern (GMT, T1)) {	/* Gave pattern fill */
 			X->data[n].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 			if (gmt_getfill (GMT, T1, X->data[n].fill)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);

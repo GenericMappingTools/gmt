@@ -4002,7 +4002,7 @@ symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
 
-**-Gp**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**-r**\ *dpi*]
+**-Gp**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
 
 fill:
     In the first case we may specify a *gray* shade (0--255), RGB color
