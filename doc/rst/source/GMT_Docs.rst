@@ -4021,7 +4021,7 @@ pattern:
     reproduced in Chapter `Predefined Bit and Hachure Patterns in GMT`_.
     The latter allows the user to create
     customized, repeating images using image raster files.
-    The optional *dpi* parameter sets the resolution of this image on the page;
+    The optional **+r**\ *dpi* modifier sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".  The
     default resolution is 1200.  By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
