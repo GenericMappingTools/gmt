@@ -2993,7 +2993,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = I->header->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.active = to_gdalread->p.pad = (int)GMT->current.io.pad[0];	/* Only 'square' padding allowed */
+	to_gdalread->p.active = to_gdalread->p.pad = (int)pad[0];	/* Only 'square' padding allowed */
 	to_gdalread->I.active = true; 			/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
