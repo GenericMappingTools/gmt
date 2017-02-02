@@ -2380,7 +2380,7 @@ void gmt_grd_pad_zero (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	gmt_M_memset (G->header->BC, 4U, int);	/* BCs no longer set for this grid */
 }
 
-struct GMT_GRID * gmt_create_grid (struct GMT_CTRL *GMT) {
+struct GMT_GRID *gmt_create_grid (struct GMT_CTRL *GMT) {
 	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID *G = NULL;
 
@@ -3009,6 +3009,9 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
+
+	if (to_gdalread->O.mem_layout[0])	/* If a different mem_layout request was applyied in gmt_gdalread than we must update */
+		strncpy(I->header->mem_layout, to_gdalread->O.mem_layout, 4);
 
 	if (to_gdalread->B.active) gmt_M_str_free (I->header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
 
