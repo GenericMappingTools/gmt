@@ -55,6 +55,7 @@
 #define GMT_PROG_OPTIONS "-V"
 
 EXTERN_MSC void gmt_str_toupper (char *string);
+EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
@@ -297,6 +298,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ-1);
+	gmt_handle5_plussign (GMT, txt, "agklnt", 0);	/* Hide any plus signs unless a recognized modifier */
 	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -340,6 +342,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 			case 'n':	/* Set KML document layer name */
 				gmt_M_str_free (C->W.overlayname);	/* Already set, free then reset */
 				C->W.overlayname = strdup (&p[1]);
+				gmt_handle5_plussign (GMT, C->W.overlayname, NULL, 1);	/* Recover any non-modifier plus signs */
 				break;
 			case 'o':	/* Produce a KML overlay as a folder subset */
 				C->W.folder = true;
@@ -348,6 +351,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 			case 't':	/* Set KML document title */
 				gmt_M_str_free (C->W.doctitle);	/* Already set, free then reset */
 				C->W.doctitle = strdup (&p[1]);
+				gmt_handle5_plussign (GMT, C->W.doctitle, NULL, 1);	/* Recover any non-modifier plus signs */
 				break;
 			case 'u':	/* Specify a remote address for image */
 				gmt_M_str_free (C->W.URL);	/* Already set, free then reset */
