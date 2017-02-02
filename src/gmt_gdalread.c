@@ -745,6 +745,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			do_BIP = false;
 		if (topdown && rowmajor) just_copy = true;		/* Means we will send out the data as it came from gdal */
 		if (!topdown && rowmajor) copy_flipud = true;	/* Means we will send out the data as it came from gdal */
+		/* Send back the info that I->header->mem_layout must be updated */
+		strncpy(prhs->O.mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
