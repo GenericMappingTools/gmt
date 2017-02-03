@@ -398,7 +398,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	}
 	else if (adfGeoTransform[1] != 1 && adfGeoTransform[5] != 1) {	/* Patch a possible GDAL bug. Raised after issue #1030 */
 		adfGeoTransform[1] = adfGeoTransform[5] = 1;
-		GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: GDAL seamed to have returned garbage in adfGeoTransform. Arbitarily setting inc = 1.\n");
+		GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Warning: GDAL seamed to have returned garbage in adfGeoTransform. Arbitarily setting inc = 1.\n");
 	}
 
 	/* ------------------------------------------------------------------------- */
