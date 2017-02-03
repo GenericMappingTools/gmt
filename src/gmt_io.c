@@ -7531,7 +7531,6 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	gmt_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
 	strncpy (I->header->mem_layout, "TRPa", 4);	/* Set the default array memory layout */
-	I->header->pad[0] = I->header->pad[1] = I->header->pad[2] = I->header->pad[3] = 0;	/* Images born with no padding */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 	return (I);
 }
