@@ -3313,7 +3313,11 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
-	if ((ms->refpoint = gmt_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
+	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Scale reference point was not accepted\n");
+		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
+		return (1);	/* Failed basic parsing */
+	}
 
 	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->origin[GMT_Y]), txt_sy);
 	if (fabs (ms->origin[GMT_Y]) > 90.0) {
@@ -3518,7 +3522,11 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
-	if ((ms->refpoint = gmt_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
+	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map rose reference point was not accepted\n");
+		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
+		return (1);	/* Failed basic parsing */
+	}
 	ms->justify = PSL_MC;	/* Center it is */
 	ms->size = gmt_M_to_inch (GMT, txt_c);
 	if (ms->size <= 0.0) {
@@ -10592,38 +10600,62 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
-		if ((B->refpoint = gmt_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
+		if ((B->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map insert reference point was not accepted\n");
+			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
+			return (1);	/* Failed basic parsing */
+		}
 
 		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "josw")) return (1);
 
 		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]. */
 		/* Required modifier +w */
 		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
-			n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
-			/* First deal with insert dimensions and horizontal vs vertical */
-			/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
-			q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
-			last = (n == 1) ? GMT_X : GMT_Y;
-			for (k = GMT_X; k <= last; k++) {
-				len = strlen (q[k]) - 1;
-				if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
-					B->unit = q[k][len];
-					q[k][len] = 0;
-				}
-				B->dim[k] = (B->unit) ? atof (q[k]) : gmt_M_to_inch (GMT, q[k]);
+			if (string[0] == '\0') {	/* Got nutin' */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No dimensions given to +w modifier\n", option);
+				error++;
 			}
-			if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
+			else {	/* Gave some arguments */
+				n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
+				/* First deal with insert dimensions and horizontal vs vertical */
+				/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
+				q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
+				last = (n == 1) ? GMT_X : GMT_Y;
+				for (k = GMT_X; k <= last; k++) {
+					len = strlen (q[k]) - 1;
+					if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
+						B->unit = q[k][len];
+						q[k][len] = 0;
+					}
+					B->dim[k] = (B->unit) ? atof (q[k]) : gmt_M_to_inch (GMT, q[k]);
+				}
+				if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
+			}
 		}
 		/* Optional modifiers +j, +o, +s */
-		if (gmt_get_modifier (B->refpoint->args, 'j', string))
-			B->justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
+		if (gmt_get_modifier (B->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
+			if (string[0] == '\0') {	/* Got nutin' */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+				error++;
+			}
+			else
+				B->justify = gmt_just_decode (GMT, string, PSL_BL);
+		}
 		else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 			B->justify = gmt_M_just_default (GMT, B->refpoint, PSL_BL);
-		if (gmt_get_modifier (B->refpoint->args, 'o', string)) {
-			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) error++;
+		if (gmt_get_modifier (B->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
+			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+				error++;
+			}
 		}
 		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
-			B->file = strdup (string);
+			if (string[0] == '\0') {	/* Got nutin' */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No filename given to +s modifier\n", option);
+				error++;
+			}
+			else
+				B->file = strdup (string);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
@@ -10700,7 +10732,11 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->alignment = 't';	/* Default label placement is on top */
 
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) return (1);	/* Failed basic parsing */
+	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Scale reference point was not accepted\n");
+		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
+		return (1);	/* Failed basic parsing */
+	}
 
 	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u]. */
 
@@ -10708,19 +10744,29 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	/* Required modifiers +c, +w */
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
-		if (strchr (string, '/')) {	/* Got both lon and lat for scale */
-			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) error++;
-			if (fabs (ms->origin[GMT_X]) > 360.0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale longitude is out of range\n", option);
+		if (string[0] == '\0') {	/* Got nutin' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No scale [<longitude>/]<latitude> argument given to +c modifier\n", option);
+			error++;
+		}
+		else if (strchr (string, '/')) {	/* Got both lon and lat for scale */
+			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse scale <longitude>/<latitude> for +c modifier\n", option);
+				error++;
+			}
+			else if (fabs (ms->origin[GMT_X]) > 360.0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale longitude is out of range for +c modifier\n", option);
 				error++;
 			}
 		}
 		else {	/* Just got latitude scale */
-			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, string, GMT_IS_LON, &(ms->origin[GMT_Y])), string);
+			if (gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, string, GMT_IS_LON, &(ms->origin[GMT_Y])), string)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse scale latitude for +c modifier\n", option);
+				error++;
+			}
 			ms->origin[GMT_X] = GMT->session.d_NaN;	/* Must be set after gmt_map_setup is called */
 		}
 		if (fabs (ms->origin[GMT_Y]) > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range for +c modifier\n", option);
 			error++;
 		}
 	}
@@ -10729,8 +10775,11 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		error++;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
-		n = (int)strlen (string) - 1;
-		if (isalpha ((int)string[n])) {	/* Letter at end of distance value */
+		if (string[0] == '\0') {	/* Got nutin' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No length argument given to +w modifier\n", option);
+			error++;
+		}
+		else if (isalpha ((int)string[n = (int)strlen (string) - 1])) {	/* Letter at end of distance value */
 			ms->measure = string[n];
 			if (gmt_M_compat_check (GMT, 4) && ms->measure == 'm') {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
@@ -10756,15 +10805,21 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Optional modifiers +a, +f, +j, +l, +o, +u */
 	if (gmt_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
 		ms->alignment = string[0];
-		if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) {
+		if (!strchr ("lrtb", ms->alignment)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
 			error++;
 		}
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
 		ms->fancy = true;
-	if (gmt_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
-		ms->justify = gmt_just_decode (GMT, string, PSL_MC);
+	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
+		if (string[0] == '\0') {	/* Got nutin' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+			error++;
+		}
+		else
+			ms->justify = gmt_just_decode (GMT, string, PSL_MC);
+	}
 	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
 	if (gmt_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
@@ -10772,7 +10827,10 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		ms->do_label = true;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
-		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
+		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+			error++;
+		}
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
 		ms->unit = true;
@@ -10818,13 +10876,23 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			return (-1);
 			break;
 	}
-	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1])) == NULL) return (1);	/* Failed basic parsing */
+	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map rose reference point was not accepted\n");
+		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
+		return (1);	/* Failed basic parsing */
+	}
 
 	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw")) return (1);
 
 	/* Get required +w modifier */
-	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	/* Get rose dimensions */
-		ms->size = gmt_M_to_inch (GMT, string);
+	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	{	/* Get rose dimensions */
+		if (string[0] == '\0') {	/* Got nutin' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No width argument given to +w modifier\n", option);
+			error++;
+		}
+		else
+			ms->size = gmt_M_to_inch (GMT, string);
+	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Rose dimension modifier +w<length>[unit] is required\n", option);
 		error++;
@@ -10862,8 +10930,14 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		if (string[0] && gmt_getpen (GMT, string, &ms->pen[GMT_ROSE_PRIMARY])) error++;
 		ms->draw_circle[GMT_ROSE_PRIMARY] = true;
 	}
-	if (gmt_get_modifier (ms->refpoint->args, 'j', string))
-		ms->justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
+	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
+		if (string[0] == '\0') {	/* Got nutin' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
+			error++;
+		}
+		else
+			ms->justify = gmt_just_decode (GMT, string, PSL_MC);
+	}
 	else	/* With -Dj or -DJ, set default to reference (mirriored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
 	if (gmt_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
@@ -10891,8 +10965,12 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			}
 		}
 	}
-	if (gmt_get_modifier (ms->refpoint->args, 'o', string))
-		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
+	if (gmt_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
+		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
+			error++;
+		}
+	}
 	if (gmt_get_modifier (ms->refpoint->args, 'p', string)) {
 		if (string[0] && gmt_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
 		ms->draw_circle[GMT_ROSE_SECONDARY] = true;

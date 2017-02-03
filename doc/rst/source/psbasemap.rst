@@ -21,7 +21,7 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-K| ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-L|\ *ruler* ]
+[ |-L|\ *scalebar* ]
 [ |-O| ]
 [ |-P| ]
 [ |SYN_OPT-U| ]
