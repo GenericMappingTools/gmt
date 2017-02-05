@@ -388,6 +388,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	                                   "Syntax error -A option: Must provide an output filename for image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
 								       "Syntax error -A, -> options: Cannot provide two output files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active,
+								       "Syntax error -C and -D options are mutually exclusive\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
