@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13760 [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.2_r17527 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Dec  1 17:41:09 2014
+%%CreationDate: Sat Feb  4 19:04:57 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 5100 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -Bafg30 box.d -Glightgreen -W0.5p -P -K -Xc -Y4.25i
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -Bafg30 box.d -Glightgreen -W0.5p -P -K -Xc -Y4.25i
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -2603,8 +2600,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -Rg -JG-30/30/6i -Bafg30 -B+o-47.192123734/-28.8790940174 -O -K --MAP_GRID_PEN_PRIMARY=0.25p,.
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psbasemap -Rg -JG-30/30/6i -Bafg30 -B+o-47.192123734/-28.8790940174 -O -K --MAP_GRID_PEN_PRIMARY=0.25p,.
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -3907,8 +3904,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblack
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblack
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -4091,25 +4088,29 @@ V
 {0 A} FS
 /FO {P}!
 3600 5449 M
--19 -3 D
--17 -9 D
--10 -9 D
--9 -16 D
--2 -12 D
-2 -13 D
-6 -12 D
-9 -10 D
-16 -10 D
-24 -4 D
-24 4 D
-16 10 D
-9 10 D
-7 16 D
-1 9 D
--4 17 D
--7 11 D
--14 12 D
--17 7 D
+-25 -5 D
+-10 -6 D
+-9 -8 D
+-7 -9 D
+-4 -10 D
+-2 -11 D
+2 -11 D
+4 -10 D
+7 -10 D
+19 -13 D
+12 -4 D
+13 -1 D
+13 1 D
+12 4 D
+19 13 D
+7 10 D
+4 10 D
+2 11 D
+-2 11 D
+-4 10 D
+-7 9 D
+-9 8 D
+-10 6 D
 P
 FO
 /FO {fs os}!
@@ -4123,8 +4124,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -W0.5p,blue
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -W0.5p,blue
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -4227,8 +4228,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -W0.5p,blue
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -W0.5p,blue
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -4249,26 +4250,602 @@ O0
 -20 -24 D
 -5 -7 D
 -34 -47 D
--17 -25 D
--8 -14 D
--46 -77 D
--48 -91 D
--37 -76 D
--19 -41 D
--39 -86 D
--40 -93 D
--68 -168 D
--56 -147 D
--82 -229 D
--65 -192 D
--73 -225 D
--84 -274 D
--91 -313 D
--93 -338 D
--97 -376 D
--90 -369 D
--76 -330 D
--72 -329 D
+-3 -5 D
+-1 0 D
+-4 -8 D
+-1 0 D
+-3 -6 D
+-1 0 D
+-1 -3 D
+-1 0 D
+-1 -3 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -1 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-2 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-2 -7 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-2 -8 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+0 -3 D
+-1 0 D
+0 -2 D
+-1 0 D
+0 -3 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-2 -8 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-2 -8 D
+-1 0 D
+-1 -5 D
+-1 0 D
+-70 -192 D
+-72 -207 D
+-80 -243 D
+-88 -283 D
+-80 -271 D
+-97 -348 D
+-91 -346 D
+-58 -231 D
+-66 -274 D
+-51 -220 D
+-49 -220 D
+-45 -205 D
 -69 -339 D
 -58 -306 D
 -48 -271 D
@@ -4305,8 +4882,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -4537,8 +5114,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -4766,8 +5343,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gred
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gred
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -4950,24 +5527,26 @@ V
 {1 0 0 C} FS
 /FO {P}!
 2660 619 M
--18 1 D
--18 -4 D
--8 -7 D
--2 -7 D
-1 -7 D
-5 -8 D
-12 -11 D
-21 -11 D
-28 -7 D
-21 1 D
-13 4 D
-7 8 D
+-12 1 D
+-21 -3 D
+-7 -4 D
+-4 -5 D
+-2 -6 D
+1 -6 D
+4 -8 D
+7 -7 D
+19 -12 D
+25 -9 D
+24 -2 D
+11 1 D
+8 3 D
+6 5 D
+3 5 D
 1 7 D
--5 11 D
--7 8 D
--10 7 D
--13 7 D
--18 6 D
+-3 7 D
+-5 7 D
+-8 7 D
+-22 12 D
 P
 FO
 /FO {fs os}!
@@ -4981,8 +5560,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -Rg -JG-30/30/6i -O -K -F+f12p+j -Dj0.1i
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: pstext -Rg -JG-30/30/6i -O -K -F+f12p+j -Dj0.1i
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -5164,7 +5743,7 @@ PSL_clip N
 200 F0
 (x) mc Z
 3638 5007 M (y) mc Z
-2788 709 M (P) Z
+2788 709 M (P) bl Z
 2487 5125 M (LL) br Z
 5493 5125 M (UR) tl Z
 PSL_cliprestore
@@ -5175,8 +5754,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblue
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblue
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -5359,22 +5938,25 @@ V
 {0 0 1 C} FS
 /FO {P}!
 2621 5043 M
--10 1 D
--18 -4 D
--15 -11 D
--9 -15 D
--3 -14 D
-2 -13 D
-7 -11 D
-11 -7 D
-13 -3 D
-14 1 D
-14 6 D
-11 10 D
-7 12 D
-3 17 D
--6 16 D
--8 9 D
+-12 1 D
+-13 -3 D
+-11 -7 D
+-10 -9 D
+-6 -11 D
+-3 -12 D
+2 -12 D
+5 -11 D
+8 -8 D
+11 -4 D
+13 -1 D
+13 3 D
+11 6 D
+10 9 D
+6 11 D
+3 13 D
+-2 11 D
+-5 11 D
+-9 8 D
 P
 FO
 /FO {fs os}!
@@ -5388,8 +5970,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblue
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-30/30/6i -O -K -SE -Gblue
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -5571,26 +6153,7 @@ PSL_clip N
 V
 {0 0 1 C} FS
 /FO {P}!
-5348 5278 M
--5 -3 D
--6 -9 D
--1 -15 D
-2 -10 D
-7 -13 D
-16 -15 D
-19 -6 D
-12 1 D
-8 4 D
-7 8 D
-2 9 D
--1 16 D
--6 13 D
--4 6 D
--14 12 D
--19 6 D
--12 -1 D
-P
-FO
+-14 2 -14 8 -12 11 -7 15 -2 14 3 13 9 9 12 3 14 -2 14 -7 12 -12 7 -14 2 -15 -3 -13 -9 -8 15 5348 5278 SP
 /FO {fs os}!
 FO
 U
@@ -5602,8 +6165,8 @@ O0
 0 -4200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -Bafg -BWS+glightgreen -Y-3.5i
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psbasemap -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -Bafg -BWS+glightgreen -Y-3.5i
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -5835,8 +6398,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -W0.5p,blue
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -W0.5p,blue
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -5853,8 +6416,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -W0.5p,blue
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -W0.5p,blue
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -5871,8 +6434,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblack
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblack
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
@@ -5888,30 +6451,34 @@ V
 {0 A} FS
 /FO {P}!
 2450 1790 M
--19 -7 D
--16 -13 D
--9 -10 D
--7 -12 D
--7 -27 D
-1 -20 D
-6 -20 D
-11 -17 D
-10 -10 D
-17 -11 D
-13 -5 D
-21 -2 D
-20 2 D
-19 8 D
-16 13 D
-13 16 D
-8 19 D
-2 27 D
--4 20 D
--10 19 D
--14 15 D
--17 11 D
--26 7 D
--21 -1 D
+-11 -4 D
+-21 -13 D
+-15 -19 D
+-6 -11 D
+-5 -25 D
+0 -12 D
+7 -24 D
+6 -11 D
+7 -9 D
+9 -9 D
+10 -7 D
+23 -9 D
+25 -1 D
+12 2 D
+12 4 D
+11 6 D
+18 17 D
+7 10 D
+9 23 D
+1 25 D
+-2 12 D
+-4 11 D
+-6 11 D
+-17 19 D
+-10 7 D
+-11 5 D
+-24 5 D
+-12 0 D
 P
 FO
 /FO {fs os}!
@@ -5925,8 +6492,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
@@ -5991,8 +6558,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
@@ -6051,8 +6618,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblue
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblue
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
@@ -6067,18 +6634,7 @@ PSL_clip N
 V
 {0 0 1 C} FS
 /FO {P}!
-16 119 M
--16 1 D
-0 -120 D
-120 0 D
--3 25 D
--10 30 D
--18 25 D
--16 15 D
--17 11 D
--29 11 D
-P
-FO
+-12 3 -11 5 -11 6 -10 7 -10 9 -8 9 -8 10 -7 10 -5 12 -4 12 -3 12 -2 12 0 9 120 0 0 -120 -4 0 -12 1 17 16 119 SP
 /FO {fs os}!
 FO
 U
@@ -6090,8 +6646,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblue
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -SE -Gblue
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
@@ -6106,19 +6662,7 @@ PSL_clip N
 V
 {0 0 1 C} FS
 /FO {P}!
-7313 3249 M
-0 -10 D
-7 -30 D
-9 -19 D
-11 -17 D
-7 -8 D
-25 -19 D
-19 -9 D
-30 -7 D
-11 0 D
-0 119 D
-P
-FO
+0 119 11 0 12 -2 12 -3 12 -4 11 -6 11 -7 9 -7 9 -9 8 -10 7 -10 6 -11 5 -12 3 -12 2 -12 1 -12 0 -2 17 7313 3249 SP
 /FO {fs os}!
 FO
 U
@@ -6130,8 +6674,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -F+f12p+j -Dj0.1i -N
-%%PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: pstext -R-56/51/20/50r -Joa-30/60/-75/1:30000000 -O -K -F+f12p+j -Dj0.1i -N
+%@PROJ: omerc -63.06354112 20.10000000 37.41859534 69.95134494 -1568930.148 3150538.770 -1088622.109 974561.652 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
@@ -6149,8 +6693,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-1568.93014766/-1088.62210863/3150.5387701/974.561652479r -Jx1:30000 -O -K -Bafg -BNE --MAP_GRID_PEN_PRIMARY=0.25p,.
-%%PROJ: xy -1568.93014766 3150.53877010 -1088.62210863 974.56165248 -1568.930 3150.539 -1088.622 974.562 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psbasemap -R-1568.93014766/-1088.62210863/3150.5387701/974.561652479r -Jx1:30000 -O -K -Bafg -BNE --MAP_GRID_PEN_PRIMARY=0.25p,.
+%@PROJ: xy -1568.93014766 3150.53877010 -1088.62210863 974.56165248 -1568.930 3150.539 -1088.622 974.562 +xy
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
@@ -6292,8 +6836,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/8/0/10 -Jx1i -O -K -F+f24p+jTL
-%%PROJ: xy 0.00000000 8.00000000 0.00000000 10.00000000 0.000 8.000 0.000 10.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: pstext -R0/8/0/10 -Jx1i -O -K -F+f24p+jTL
+%@PROJ: xy 0.00000000 8.00000000 0.00000000 10.00000000 0.000 8.000 0.000 10.000 +xy
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
@@ -6315,8 +6859,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/8/0/10 -Jx1i -O -T
-%%PROJ: xy 0.00000000 8.00000000 0.00000000 10.00000000 0.000 8.000 0.000 10.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: psxy -R0/8/0/10 -Jx1i -O -T
+%@PROJ: xy 0.00000000 8.00000000 0.00000000 10.00000000 0.000 8.000 0.000 10.000 +xy
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin

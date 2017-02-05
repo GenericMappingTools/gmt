@@ -10876,7 +10876,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			return (-1);
 			break;
 	}
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1])) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map rose reference point was not accepted\n");
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */

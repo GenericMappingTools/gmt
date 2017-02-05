@@ -81,7 +81,7 @@
 #define GMT_PROJ_IS_ZERO(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
 
 GMT_LOCAL double proj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
-	/* Compute the interpolated values from the Robinson coefficients */
+	/* Returns the interpolated value y(xp) from the Robinson coefficients */
 
 	int j = 0, j1;
 	double yp, a, b, h, ih, dx;
@@ -2479,14 +2479,16 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 	GMT->current.proj.n_phi[17] = 85;	GMT->current.proj.n_X[17] = 0.5722;	GMT->current.proj.n_Y[17] = 0.9761;
 	GMT->current.proj.n_phi[18] = 90;	GMT->current.proj.n_X[18] = 0.5322;	GMT->current.proj.n_Y[18] = 1.0000;
 	if (GMT->current.setting.interpolant == GMT_SPLINE_CUBIC) {	/* Natural cubic spline */
-		err_flag  = gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
-		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
-		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
+		err_flag  = gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
+		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y,   GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
+		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_yx_coeff);
+		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
 	else {	/* Akimas spline */
-		err_flag  = gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
-		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
-		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
+		err_flag  = gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
+		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y,   GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
+		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_yx_coeff);
+		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
 	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in gmt_vrobinson?\n");
 }
@@ -2526,6 +2528,29 @@ double gmt_left_robinson (struct GMT_CTRL *GMT, double y) {
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
+	X = proj_robinson_spline (GMT, Y, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT->current.proj.n_yx_coeff);
+	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian);
+	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
+}
+
+double gmt_right_robinson (struct GMT_CTRL *GMT, double y) {
+	double x, X, Y;
+
+	y -= GMT->current.proj.origin[GMT_Y];
+	y *= GMT->current.proj.i_scale[GMT_Y];
+	Y = fabs (y * GMT->current.proj.n_i_cy);
+	X = proj_robinson_spline (GMT, Y, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT->current.proj.n_yx_coeff);
+	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian);
+	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
+}
+
+#if 0
+double gmt_left_robinson (struct GMT_CTRL *GMT, double y) {
+	double x, X, Y;
+
+	y -= GMT->current.proj.origin[GMT_Y];
+	y *= GMT->current.proj.i_scale[GMT_Y];
+	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
 		gmt_message (GMT, "GMT Internal error in gmt_left_robinson!\n");
 		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT->session.d_NaN;
@@ -2549,6 +2574,7 @@ double gmt_right_robinson (struct GMT_CTRL *GMT, double y) {
 	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian);
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
+#endif
 
 /* -JI SINUSOIDAL EQUAL AREA PROJECTION */
 

@@ -5598,8 +5598,8 @@ void gmt_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
 }
 
 uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, double **lon, double **lat) {
-	/* Special treatment for polar caps since they must add int parts of possibly curved periodic boundaries
-	 * from the pole up to the intersection with the cap perimeter.  We handle this case separately here.
+	/* Special treatment for polar caps since they must add in parts of possibly curved periodic boundaries
+	 * from the pole up or down to the intersection with the cap perimeter.  We handle this case separately here.
 	 * This is in response to issue # 852. P. Wessel */
 	uint64_t k0, perim_n, n_new, m, n = S->n_rows, k;
 	double start_lon, stop_lon, yc = 0.0, dx, pole_lat = 90.0 * S->pole;
@@ -5627,12 +5627,13 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 		if (S->data[GMT_X][k] >= 180.0) S->data[GMT_X][k] -= 360.0;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
-		if (k && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
+		if ((GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
 	}
 	/* Determine the latitude of that crossing */
 	if (k0) {	/* Occurred somewhere along the perimeter between points k0 and k0-1 */
+		double x_dist = S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO];
 		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], S->data[GMT_X][k0], dx);	/* Handles the 360 jump cases */
-		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * (S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
+		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * x_dist / dx;
 	}
 	else	/* Very first point is at the right longitude */
 		yc = S->data[GMT_Y][k0];
