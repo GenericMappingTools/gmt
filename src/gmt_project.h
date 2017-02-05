@@ -344,7 +344,7 @@ struct GMT_PROJ {
 	double n_cx, n_cy;	/* = = 0.8487R, 1.3523R */
 	double n_i_cy;
 	double n_phi[GMT_N_ROBINSON], n_X[GMT_N_ROBINSON], n_Y[GMT_N_ROBINSON];
-	double n_x_coeff[3*GMT_N_ROBINSON], n_y_coeff[3*GMT_N_ROBINSON], n_iy_coeff[3*GMT_N_ROBINSON];
+	double n_x_coeff[3*GMT_N_ROBINSON], n_y_coeff[3*GMT_N_ROBINSON], n_yx_coeff[3*GMT_N_ROBINSON], n_iy_coeff[3*GMT_N_ROBINSON];
 
 	/* Eckert IV Projection */
 
