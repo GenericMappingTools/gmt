@@ -651,7 +651,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
-	bool geodetic_calc = false, datum_conv_only = false;
+	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
 
 	enum GMT_enum_family family;
 	enum GMT_enum_geometry geometry;
@@ -1019,6 +1019,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 	}
 
+	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
+	
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
@@ -1210,7 +1212,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						extra[MP_COL_DS] = gmt_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
 					else	/* Distance from fixed point via -G OR the last track point */
 						extra[MP_COL_DS] = gmt_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
-					if (Ctrl->G.mode & GMT_MP_CUMUL_DIST) {	/* Along-track calculation */
+					if (along_track) {	/* Along-track calculation */
 						if (line_start && (Ctrl->G.mode & GMT_MP_VAR_POINT))
 							extra[MP_COL_CS] = extra[MP_COL_DS] = 0.0;
 						else
