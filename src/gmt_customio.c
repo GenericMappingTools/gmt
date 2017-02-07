@@ -1921,16 +1921,26 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		   the same test to search for nodata values other than NaN. Note that gmt_galread sets
 		   unknown nodata return by GDAL as NaN, so in those cases this block of code is not executed */
 
-		/* Pointer arithmetic solution that should be parallelizable */
-		grid += (header->pad[YHI] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
-		for (row = 0; row < header->n_rows; row++) {
-			for (col = 0; col < header->n_columns; col++, grid++) {
-				if (*grid == (float)from_gdalread->nodata) {
-					*grid = GMT->session.f_NaN;
-					header->has_NaNs = GMT_GRID_HAS_NANS;
+		/* Pointer arithmetic solution that should be parallelizable (but those IFs ...) */
+		if (subset) {	/* We had a Sub-region demand so n_rows * n_columns == grid's allocated size */
+			for (row = 0; row < header->n_rows; row++) {
+				for (col = 0; col < header->n_columns; col++, grid++) {
+					if (*grid == (float)from_gdalread->nodata) {
+						*grid = GMT->session.f_NaN;
+						header->has_NaNs = GMT_GRID_HAS_NANS;
+					}
 				}
 			}
-			grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
+		}
+		else {			/* Full region. We are scaning also the padding zone which is known to have only 0's but never mind */
+			for (row = 0; row < header->my; row++) {
+				for (col = 0; col < header->mx; col++, grid++) {
+					if (*grid == (float)from_gdalread->nodata) {
+						*grid = GMT->session.f_NaN;
+						header->has_NaNs = GMT_GRID_HAS_NANS;
+					}
+				}
+			}
 		}
 		grid = &grid[0];	/* Put the pointer pointing back to first element in array */
 	}
