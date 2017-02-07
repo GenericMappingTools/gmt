@@ -143,35 +143,41 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-void trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, unsigned int hole_number, unsigned int *ID, unsigned int *xlow, unsigned int *xhigh, unsigned int *ylow, unsigned int *yhigh) {
-	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively */
+unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int *xlow, unsigned int *xhigh, unsigned int *ylow, unsigned int *yhigh) {
+	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively.
+	 * This is a limited form of Moore neighborhood called Von Neumann neighborhoold since we only do the
+	 * four cardinal directions and ignore the diagonals.  Ignoring the diagonal means two holes that
+	 * touch at a diagonal will be encoded as two separate holes whereas a full Moore neighborhood
+	 * calculation would find a single hole.  For our purposes (filling in the hole), smaller holes
+	 * are less computationally intensive, hence we limit ourselves to good old Von Neumann. */
 	static int drow[4] = {1, 0, -1, 0}, dcol[4] = {0, 1, 0, -1};	/* Change in row,col per cardinal direction */
-	unsigned int side, next_row, next_rcol;
+	unsigned int side, next_row, next_rcol, n_nodes = 0;
 	int64_t ij;
 	
 	for (side = 0; side < 4; side++) {	/* For each of the 4 cardinal directions */
 		ij = node + step[side];	/* This is the grid node (and ID node) of this cardinal point */
-		if (ID[ij] == UINT_MAX) continue;	/* Outside the proper grid bounedary */
 		if (ID[ij] == 0 && gmt_M_is_fnan (G->data[ij])) {	/* Hole extends in this direction, follow it to its next neighbor */
-			next_row = (unsigned int)(row + drow[side]);	/* Set col and row of next point */
+			next_row  = (unsigned int)(row + drow[side]);	/* Set col and row of next point */
 			next_rcol = (unsigned int)(col + dcol[side]);
-			ID[ij] = hole_number;	/* Mark this node as part of the current hole */
+			ID[ij] = 1;	/* Mark this node as part of the current hole */
 			if (next_rcol < *xlow) *xlow = next_rcol;	/* Update min/max row and col values */
 			else if (next_rcol > *xhigh) *xhigh = next_rcol;
 			if (next_row < *ylow) *ylow = next_row;
 			else if (next_row > *yhigh) *yhigh = next_row;
 			/* Recursively trace this nodes next neighbors as well */
-			trace_the_hole (G, ij, next_row, next_rcol, step, hole_number, ID, xlow, xhigh, ylow, yhigh);
+			n_nodes = n_nodes + 1 + trace_the_hole (G, ij, next_row, next_rcol, step, ID, xlow, xhigh, ylow, yhigh);
 		}
 	}
+	return (n_nodes);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdfill (void *V_API, int mode, void *args) {
+	char *ID = NULL;
 	int error = 0;
-	unsigned int hole_number = 0, row, col, xlow, xhigh, ylow, yhigh, *ID = NULL;
+	unsigned int hole_number = 0, row, col, xlow, xhigh, ylow, yhigh, n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
 	double wesn[4];
@@ -222,19 +228,19 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 
 	/* To avoid having to check every row,col for being inside the grid we set
-	 * the boundary row/cols in the ID grid to UINT_MAX and check for that. */
+	 * the boundary row/cols in the ID grid to 1. */
 	
-	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, unsigned int);
+	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
 	/* Set the top and bottom boundary rows to UINT_MAX */
 	offset = (Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;
-	for (node = 0; node < Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = UINT_MAX;
+	for (node = 0; node < Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
 	/* Set the left and right boundary columnss to UINT_MAX */
 	offset = Grid->header->pad[XLO] + Grid->header->n_columns;
 	for (row = 0; row < Grid->header->my; row++) {
 		for (col = 0; col < Grid->header->pad[XLO]; col++)
-			ID[row*Grid->header->mx+col] = UINT_MAX;
+			ID[row*Grid->header->mx+col] = 1;
 		for (col = 0; col < Grid->header->pad[XHI]; col++)
-			ID[row*Grid->header->mx+offset+col] = UINT_MAX;
+			ID[row*Grid->header->mx+offset+col] = 1;
 	}
 	/* Initiate the node offsets in the cardinal directions */
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
@@ -259,15 +265,16 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (gmt_M_is_fnan (Grid->data[node])) {	/* Node is part of a new hole */
 			xlow = xhigh = col;	/* Initiate min/max col to this single node */
 			ylow = yhigh = row;	/* Initiate min/max row to this single node */
-			ID[node] = ++hole_number;	/* Increase the current hole number and assign to this ID node */
+			ID[node] = 1;	/* Flag this node as part of a hole */
+			++hole_number;	/* Increase the current hole number */
 			/* Trace all the contiguous neighbors, updating the bounding box as we go along */
-			trace_the_hole (Grid, node, row, col, off, hole_number, ID, &xlow, &xhigh, &ylow, &yhigh);
+			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, &xlow, &xhigh, &ylow, &yhigh);
 			xhigh++;	yhigh++;	/* Allow for the other side of the last pixel */
 			wesn[XLO] = gmt_M_col_to_x (GMT, xlow,  Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
 			wesn[XHI] = gmt_M_col_to_x (GMT, xhigh, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
 			wesn[YLO] = gmt_M_row_to_y (GMT, yhigh, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
 			wesn[YHI] = gmt_M_row_to_y (GMT, ylow,  Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, wesn);
 			}
