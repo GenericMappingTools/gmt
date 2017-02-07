@@ -445,6 +445,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			/* LL (repeat to close polygon) */
+			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		} else if (Ctrl->C.active && !Ctrl->I.active) {
 			if (API->mode) {	/* External interface, return as data with no leading text */
 				/* w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan] */
