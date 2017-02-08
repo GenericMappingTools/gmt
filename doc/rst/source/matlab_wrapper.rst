@@ -191,6 +191,7 @@ documentation, has many (not so trivial) examples on usage of the MEX GMT API.
   x_unit          % Units of XX axis (Optional)
   y_unit          % Units of YY axis (Optional)
   z_unit          % Units of ZZ axis (Optional)
+  layout          % A three character string describing the image memory layout
 
 Definition of the *grid structure* that holds a grid and its metadata.
 
