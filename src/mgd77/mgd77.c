@@ -1996,7 +1996,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 			values = MGD77_Read_Column (GMT, F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 #if 0
 		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
-		 * so we dont do anything here but let that happen naturally later. */
+		 * so we don't do anything here but let that happen naturally later. */
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
 				for (rec = 0; rec < count[0]; rec++) values[rec] = MGD77_utime2time (GMT, F, values[rec]);
 			}
@@ -2227,7 +2227,7 @@ static int MGD77_Read_Data_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 		/* Would have been helpful with a comment here as to why this is excluded. */
 #if 0
 		/* Only mgd77list reports times that may need to be modified (e..g, to get hours from start)
- 		* so we dont do anything here but let that happen naturally later. */
+ 		* so we don't do anything here but let that happen naturally later. */
 		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (GMT, F, dvals[n_val]);
 #endif
 	}
@@ -2969,7 +2969,7 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *fi
 #ifdef WIN32
 		/* Count number of records by counting number of new line characters. The non-Windows solution does not work here
 		   because the '\r' characters which are present on Win terminated EOLs are apparently stripped by the stdio and
-		   so if we cant find their traces (!!!) */
+		   so if we can't find their traces (!!!) */
 		while ( (c = fgetc( F->fp )) != EOF ) {
 			if (c == '\n') n++;
 		}

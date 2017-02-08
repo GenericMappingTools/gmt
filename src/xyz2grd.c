@@ -545,7 +545,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
-	/* For Amode = 'd' or 'S' we need a second grid, and also require a minumum of 2 points per grid */
+	/* For Amode = 'd' or 'S' we need a second grid, and also require a minimum of 2 points per grid */
 	if (Amode == 'd' || Amode == 'S') {
 		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
 		n_min = 2;

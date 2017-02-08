@@ -60,8 +60,8 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
     |_______________________________________________________________|
     _____________________________________________________________________
     |                                                                   |
-    |  Ifac descibes the body (ATTN : Integer*2) :                      |
-    |   - There are Nff facets that are decribed clockwise when seen    |
+    |  Ifac describes the body (ATTN : Integer*2) :                      |
+    |   - There are Nff facets that are described clockwise when seen    |
     |          from outside. Mxsomf = Max corners / facet               |
     |   - First number indicates the number of facets. Than follow      |
     |      groups of numbers, the first of each group is the number     |

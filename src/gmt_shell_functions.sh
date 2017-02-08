@@ -150,7 +150,7 @@ gmt_build_gif - Process stills to animated gif with convert
 usage: gmt_build_gif [-d <directory>] [-l <loop>] [-r <delay>] <prefix>
 	<prefix> is the prefix of the still images and the resulting movie
 	-d Specify path to of directory with the stills [current directory]
-	-l Specify number of times to loop, 0 for continous [0]
+	-l Specify number of times to loop, 0 for continuous [0]
 	-r Set delay time between images in millisecond [10]
 	-n Dry-run.  Do not run convert command, just print it
 EOF
@@ -310,7 +310,7 @@ EOF
 	done
 	rm -f /tmp/$$.sh
 	if [ $do_wait -eq 1 ] && [ $dryrun -eq 0 ]; then
-		wait	# Wait until all jobs lauched by this script completes
+		wait	# Wait until all jobs launched by this script have completed
 		if [ $blabber -eq 1 ]; then
 			echo "gmt_launch_jobs: All $n_cpu jobs completed" >&2
 		fi
