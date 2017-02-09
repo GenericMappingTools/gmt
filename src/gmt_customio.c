@@ -1932,7 +1932,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 				}
 			}
 		}
-		else {			/* Full region. We are scaning also the padding zone which is known to have only 0's but never mind */
+		else {			/* Full region. We are scanning also the padding zone which is known to have only 0's but never mind */
 			for (row = 0; row < header->my; row++) {
 				for (col = 0; col < header->mx; col++, grid++) {
 					if (*grid == (float)from_gdalread->nodata) {

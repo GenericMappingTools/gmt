@@ -1696,7 +1696,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 				lon[i] -= 360.0;
 		}
 	}
-	else {	/* Dont let points be > 180 from center longitude */
+	else {	/* Don't let points be > 180 from center longitude */
 		double mid_lon = 0.5 * (border[GMT_LEFT] + border[GMT_RIGHT]), diff;
 		for (i = 0; i < n; i++) {
 			diff = lon[i] - mid_lon;

@@ -7035,7 +7035,7 @@ int GMT_Set_Geometry (void *V_API, unsigned int direction, unsigned int geometry
 			if (S_obj->family == GMT_IS_DATASET) {
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				if (!D_obj)	/* Not allocated yet?*/
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Warning: GMT_Set_Geometry called but no object availble\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Warning: GMT_Set_Geometry called but no object available\n");
 				else
 					D_obj->geometry = geometry;
 			}

@@ -7,7 +7,7 @@
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
  * DATE:	JAN 1, 2015
- * PURPOSE:	To extract ASCII data from the binary GSHHG geography databas
+ * PURPOSE:	To extract ASCII data from the binary GSHHG geography database
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
  * VERSION:	1-JAN-2015.  For use with GSHHG version 2.3.4
  *

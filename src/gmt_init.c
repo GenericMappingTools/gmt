@@ -5948,9 +5948,9 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
 	gmt_message (GMT, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
 	gmt_message (GMT, "\t   4) any valid color name;\n");
-	gmt_message (GMT, "\t   5) P|p<dpi>/<pattern>[:F<color>B<color>], with <dpi> of the pattern.\n");
-	gmt_message (GMT, "\t      Give <pattern> number from 1-90 or a filename, optionally add\n");
-	gmt_message (GMT, "\t      replacement fore- or background colors (set - for transparency).\n");
+	gmt_message (GMT, "\t   5) P|p<pattern>[+b<color>][+f<color>][+r<dpi>];\n");
+	gmt_message (GMT, "\t      Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [300].\n");
+	gmt_message (GMT, "\t      Optionally, use +f,+b to change fore- or background colors (set - for transparency).\n");
 	gmt_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].\n");
 }
 

@@ -60,15 +60,13 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
     |_______________________________________________________________|
     _____________________________________________________________________
     |                                                                   |
-    |  Ifac decrit le corps (ATTN : Integer*2) :                        |
-    |   - Il y a Nff facettes qui sont decrites dans le sens des        |
-    |          aiguilles d'une montre si on regarde le corps de         |
-    |          l'exterieur. Mxsomf = Max de sommets / face              |
-    |   - Le premier nombre indique le nombre de factettes. Suivent     |
-    |       alors des groupes de nombres dont le premier de chaque      |
-    |       groupe est le nombre de sommets de la facette, suivi par    |
-    |       les indices (pointeurs) des sommets (rang dans Xx,Yy,Zz)    |
-    |       correspondant a la facette.                                 |
+    |  Ifac describes the body (ATTN : Integer*2) :                     |
+    |   - There are Nff facets that are described clockwise when seen   |
+    |          from outside. Mxsomf = Max corners / facet               |
+    |   - First number indicates the number of facets. Than follow      |
+    |      groups of numbers, the first of each group is the number     |
+    |      of vertices of the facet, followed by the indices (pointers) |
+    |      vertices (stored in Xx, Yy, Zz) corresponding to the facet.  |
     |                                                                   |
     |  Par exemple pour un cube                _________________        |
     |  (Nff=6; 4 sommets /face)              /|         X (Nord)        |
