@@ -64,8 +64,9 @@ struct TRIANGULATE_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct Q {	/* -Q[c] */
 		bool active;
+		unsigned int mode;
 	} Q;
 	struct S {	/* -S */
 		bool active;
@@ -200,6 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
+				if (opt->arg[0] == 'c') Ctrl->Q.mode = 1;
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -374,11 +376,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on projected coordinates\n");
 
-		if (Ctrl->Q.active) {
-			double we[2];
-			we[0] = GMT->current.proj.rect[XLO];	we[1] = GMT->current.proj.rect[XHI];
-			np = gmt_voronoi (GMT, xxp, yyp, n, we, &xe, &ye);
-		}
+		if (Ctrl->Q.active)
+			np = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, &xe, &ye);
 		else
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
@@ -388,11 +387,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	else {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on given coordinates\n");
 
-		if (Ctrl->Q.active) {
-			double we[2];
-			we[0] = GMT->common.R.wesn[XLO];	we[1] = GMT->common.R.wesn[XHI];
-			np = gmt_voronoi (GMT, xx, yy, n, we, &xe, &ye);
-		}
+		if (Ctrl->Q.active)
+			np = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, &xe, &ye);
 		else
 			np = gmt_delaunay (GMT, xx, yy, n, &link);
 	}

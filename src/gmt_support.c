@@ -3122,12 +3122,12 @@ GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
+GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
 	 * main triangulate routine.  Here we return Voronoi information
 	 * and package the coordinates of the edges in the output arrays.
-	 * The we[] array contains the min/max x (or lon) coordinates.
+	 * The wesn[] array contains the min/max x (or lon) and y (or lat) coordinates.
 	 */
 
 	/* Currently we only write the edges of a Voronoi cell but we want polygons later.
@@ -3137,9 +3137,9 @@ GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in,
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
-	uint64_t i, j, k, j2, n_edges;
+	uint64_t i, j, k, km1, j2, n_edges;
 	struct triangulateio In, Out, vorOut;
-	double *x_edge = NULL, *y_edge = NULL, dy;
+	double *x_edge = NULL, *y_edge = NULL, dy, new_x;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
@@ -3179,9 +3179,20 @@ GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in,
 		y_edge[k++] = vorOut.pointlist[j2];
 		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calc intersection with region boundary */
 			j2--;	/* Previous point */
-			x_edge[k] = (vorOut.normlist[k-1] < 0.0) ? we[0] : we[1];
-			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[k-1]) * (x_edge[k] - vorOut.pointlist[j2++]));
+			km1 = k - 1;	/* Previous edge point */
+			x_edge[k] = (vorOut.normlist[km1] < 0.0) ? wesn[XLO] : wesn[XHI];
+			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (x_edge[k] - vorOut.pointlist[j2++]));
 			y_edge[k] = vorOut.pointlist[j2] + dy * copysign (1.0, vorOut.normlist[k]);
+			if (y_edge[k] < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set y_edge to ymin */
+				new_x = x_edge[km1] + (wesn[YLO] - y_edge[km1]) * (x_edge[k] - x_edge[km1]) / (y_edge[k] - y_edge[km1]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", x_edge[k], y_edge[k], new_x, wesn[YLO]);
+				x_edge[k] = new_x;	y_edge[k] = wesn[YLO];
+			}
+			else if (y_edge[k] > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set y_edge to ymax */
+				new_x = x_edge[km1] + (wesn[YHI] - y_edge[km1]) * (x_edge[k] - x_edge[km1]) / (y_edge[k] - y_edge[km1]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", x_edge[k], y_edge[k], new_x, wesn[YHI]);
+				x_edge[k] = new_x;	y_edge[k] = wesn[YHI];
+			}
 		}
 		else {
 			j2 = 2*vorOut.edgelist[k];
@@ -3211,7 +3222,7 @@ GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
+GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
@@ -3393,8 +3404,8 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
-	gmt_M_unused(x_in); gmt_M_unused(y_in); gmt_M_unused(n); gmt_M_unused(we); gmt_M_unused(x_out); gmt_M_unused(y_out);
+GMT_LOCAL uint64_t support_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
+	gmt_M_unused(x_in); gmt_M_unused(y_in); gmt_M_unused(n); gmt_M_unused(wesn); gmt_M_unused(x_out); gmt_M_unused(y_out);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation\n");
 	return (0);
 }
@@ -9598,9 +9609,9 @@ int64_t gmt_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t
 }
 
 /*! . */
-int64_t gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
-	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (support_voronoi_shewchuk (GMT, x_in, y_in, n, we, x_out, y_out));
-	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (support_voronoi_watson    (GMT, x_in, y_in, n, we, x_out, y_out));
+int64_t gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (support_voronoi_shewchuk (GMT, x_in, y_in, n, wesn, x_out, y_out));
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (support_voronoi_watson    (GMT, x_in, y_in, n, wesn, x_out, y_out));
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_TRIANGULATE outside possible range! %d\n", GMT->current.setting.triangulate);
 	return (-1);
 

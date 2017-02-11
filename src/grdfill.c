@@ -33,11 +33,19 @@
 
 #define GMT_PROG_OPTIONS "-RVf"
 
+#define	ALG_CONSTANT	1
+#define ALG_SPLINE		2
+
 struct GRDFILL_CTRL {
 	struct In {
 		bool active;
 		char *file;
 	} In;
+	struct A {	/* -A<algo>[<options>] */
+		bool active;
+		unsigned int mode;
+		double value;
+	} A;
 	struct G {	/* -G<outgrid> */
 		bool active;
 		char *file;
@@ -67,13 +75,15 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdfill <ingrid> [-G<outgrid>] [-L]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdfill <ingrid> [-A<mode><options>] [-G<outgrid>] [-L]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file with NaN-holes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -117,6 +127,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
+			case 'A':
+				Ctrl->A.active = true;
+				switch (opt->arg[0]) {
+					case 'c':	/* COnstant fill */
+						Ctrl->A.value = atof (&opt->arg[1]);
+						break;
+				}
+				break;
+
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
@@ -143,7 +162,93 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int *xlow, unsigned int *xhigh, unsigned int *ylow, unsigned int *yhigh) {
+GMT_LOCAL void do_constant_fill (struct GMT_GRID *G, unsigned int limit[], float value) {
+	/* Algorithm 1: Replace NaNs with a constant value */
+	unsigned int row, col;
+	uint64_t node;
+	
+	for (row = limit[YLO]; row < limit[YHI]; row++) {
+		for (col = limit[XLO]; col < limit[XHI]; col++) {
+			node = gmt_M_ijp (G->header, row, col);
+			if (gmt_M_is_fnan (G->data[node]))
+				G->data[node] = value;
+		}
+	}
+}
+
+#if 0
+GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
+	/* Algorithm 2: Replace NaNs with a spline */
+	unsigned int row, col, row_hole, col_hole, mode, d_limit[4];
+	uint64_t node, node_hole, dim[2] = {0, 0};
+	double *x = NULL, *y = NULL;
+	float *z = NULL;
+	struct GMT_VECTOR *V = NULL;
+	struct GMT_GRID *G_hole = NULL;
+	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""};
+	
+	/* Allocate a vector container for input to greenspline */
+	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
+	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
+	/* Create a virtual file to hold the resampled grid */
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
+		Return (API->error);
+	}
+	/* Add up to 2 rows/cols around hole, but watch for grid edges */
+	gmt_M_memcpy (d_limit, limit, 4, unsigned int);	/* d_limit will be used to set the grid domain */
+	for (k = 1; k <= 2; k++) {
+		if (d_limit[XLO]) d_limit[XLO]--, wesn[XLO] -= G->header->inc[GMT_X];	/* Move one column westward */
+		if (d_limit[XHI] < (G->header->n_columns-1)) d_limit[XHI]++, wesn[XHI] += G->header->inc[GMT_X];	/* Move one column eastward */
+		if (d_limit[YLO]) d_limit[YLO]--, wesn[YLO] -= G->header->inc[GMT_Y];	/* Move one row northward */
+		if (d_limit[YHI] < (G->header->n_rows-1)) d_limit[YHI]++, wesn[YHI] += G->header->inc[GMT_Y];	/* Move one row southward */
+	}
+	n_constraints = (d_limit[YHI] - d_limit[YLO] - 1) * (d_limit[XHI] - d_limit[XLO] - 1) - n_in_hole;
+	x = gmt_M_memory (GMT, NULL, n_constraints, double);
+	y = gmt_M_memory (GMT, NULL, n_constraints, double);
+	z = gmt_M_memory (GMT, NULL, n_constraints, float);
+	for (row = d_limit[YLO]; row < d_limit[YHI]; row++) {
+		for (col = d_limit[XLO]; col < d_limit[XHI]; col++) {
+			node = gmt_M_ijp (G->header, row, col);
+			if (gmt_M_is_fnan (G->data[node])) continue;
+			x[k] = gmt_M_grd_col_to_x (GMT, col, G->header);
+			y[k] = gmt_M_grd_row_to_y (GMT, row, G->header);
+			z[k] = G->data[node];
+		}
+	}
+	GMT_Put_Vector (API, V, GMT_X, GMT_DOUBLE, x);
+	GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, y);
+	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
+	V->n_rows = n_constraints;	/* Must specify how many input points we have */
+   /* Associate our input data vectors with a virtual input file */
+    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_IN, V, input);
+	/* Prepare the greenspline command-line arguments */
+	mode = (gmt_M_geographic (GMT, GMT_IN)) ? 2 : 1;
+    sprintf (args, "%s -G%s -Sc -R%g/%g/%g/%g -I%g/%g -D%d", input, output, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
+	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r";)
+   	/* Run the greenspline module */
+   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
+	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
+		Return (API->error);
+	}
+	/* Use 0-nx,0-ny for the hold index and the large grid G nodes for the holes */
+	for (row_hole = 0, row = d_limit[YLO]; row_hole < G_hole->header->n_rows; row_hole++, row++) {
+		for (col_hole = 0, col = d_limit[XLO]; col_hole < G_hole->header->n_columns; col_hole++, col++) {
+			node = gmt_M_ijp (G->header, row, col);
+			if (!gmt_M_is_fnan (G->data[node])) continue;
+			node_hole = gmt_M_ijp (G_hole->header, row_hole, col_hole);
+			G->data[node] = G_hole->data[node_hole];
+		}
+	}
+
+	/* Close the two virtual files */
+	GMT_Close_VirtualFile (API, output);
+	GMT_Close_VirtualFile (API, input);
+	/* Free our custom vectors */
+	gmt_m_free (GMT, x);	gmt_m_free (GMT, y);	gmt_m_free (GMT, z);
+}
+#endif
+
+GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
 	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively.
 	 * This is a limited form of Moore neighborhood called Von Neumann neighborhoold since we only do the
 	 * four cardinal directions and ignore the diagonals.  Ignoring the diagonal means two holes that
@@ -160,12 +265,12 @@ unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row
 			next_row  = (unsigned int)(row + drow[side]);	/* Set col and row of next point */
 			next_rcol = (unsigned int)(col + dcol[side]);
 			ID[ij] = 1;	/* Mark this node as part of the current hole */
-			if (next_rcol < *xlow) *xlow = next_rcol;	/* Update min/max row and col values */
-			else if (next_rcol > *xhigh) *xhigh = next_rcol;
-			if (next_row < *ylow) *ylow = next_row;
-			else if (next_row > *yhigh) *yhigh = next_row;
+			if (next_rcol < limit[XLO]) limit[XLO] = next_rcol;	/* Update min/max row and col values */
+			else if (next_rcol > limit[XHI]) limit[XHI] = next_rcol;
+			if (next_row < limit[YLO]) limit[YLO] = next_row;
+			else if (next_row > limit[YHI]) limit[YHI] = next_row;
 			/* Recursively trace this nodes next neighbors as well */
-			n_nodes = n_nodes + 1 + trace_the_hole (G, ij, next_row, next_rcol, step, ID, xlow, xhigh, ylow, yhigh);
+			n_nodes = n_nodes + 1 + trace_the_hole (G, ij, next_row, next_rcol, step, ID, limit);
 		}
 	}
 	return (n_nodes);
@@ -177,7 +282,7 @@ unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row
 int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL;
 	int error = 0;
-	unsigned int hole_number = 0, row, col, xlow, xhigh, ylow, yhigh, n_nodes;
+	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
 	double wesn[4];
@@ -263,38 +368,50 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Loop over all grid nodes */
 		if (ID[node]) continue;	/* Already identified as part of a hole */
 		if (gmt_M_is_fnan (Grid->data[node])) {	/* Node is part of a new hole */
-			xlow = xhigh = col;	/* Initiate min/max col to this single node */
-			ylow = yhigh = row;	/* Initiate min/max row to this single node */
+			limit[XLO] = limit[XHI] = col;	/* Initiate min/max col to this single node */
+			limit[YLO] = limit[YHI] = row;	/* Initiate min/max row to this single node */
 			ID[node] = 1;	/* Flag this node as part of a hole */
 			++hole_number;	/* Increase the current hole number */
 			/* Trace all the contiguous neighbors, updating the bounding box as we go along */
-			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, &xlow, &xhigh, &ylow, &yhigh);
-			xhigh++;	yhigh++;	/* Allow for the other side of the last pixel */
-			wesn[XLO] = gmt_M_col_to_x (GMT, xlow,  Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
-			wesn[XHI] = gmt_M_col_to_x (GMT, xhigh, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
-			wesn[YLO] = gmt_M_row_to_y (GMT, yhigh, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
-			wesn[YHI] = gmt_M_row_to_y (GMT, ylow,  Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
+			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, limit);
+			limit[XHI]++;	limit[YHI]++;	/* Allow for the other side of the last pixel */
+			wesn[XLO] = gmt_M_col_to_x (GMT, limit[XLO], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
+			wesn[XHI] = gmt_M_col_to_x (GMT, limit[XHI], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
+			wesn[YLO] = gmt_M_row_to_y (GMT, limit[YHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
+			wesn[YHI] = gmt_M_row_to_y (GMT, limit[YLO], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, wesn);
 			}
+			else {
+				switch (Ctrl->A.mode) {
+					case ALG_CONSTANT:	/* Fill in using a constant value */
+						do_constant_fill (Grid, limit, (float)Ctrl->A.value);
+						break;
+					case ALG_SPLINE:	/* Fill in using a spline */
+						//do_splinefill (Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						break;
+				}
+			}
 		}
 	}
+	if (hole_number) GMT_Report (API, GMT_MSG_VERBOSE, "Found %u holes\n", hole_number);
+	gmt_M_free_aligned (GMT, ID);
 
 	if (Ctrl->L.active) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %u holes\n", hole_number);
-	gmt_M_free_aligned (GMT, ID);
+	else if (hole_number) {	/* Must write the revised grid if there were any holes*/
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+			Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
+			Return (API->error);
+	}
+	else {
+		GMT_Report (API, GMT_MSG_NORMAL, "No holes detected in grid - grid was not updated\n");
+	}
 	
-#if 0
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
-		Return (API->error);
-
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
-		Return (API->error);
-#endif
 	Return (GMT_NOERROR);
 }
