@@ -464,7 +464,7 @@ EXTERN_MSC int gmt_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *fil
 EXTERN_MSC int64_t gmt_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link);
 EXTERN_MSC void gmt_delaunay_free (struct GMT_CTRL *GMT, int **link);
 EXTERN_MSC unsigned int gmt_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f);
-EXTERN_MSC int64_t gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out);
+EXTERN_MSC struct GMT_DATASET * gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode);
 
 /* gmt_vector.c: */
 

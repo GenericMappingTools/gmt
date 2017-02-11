@@ -3122,11 +3122,11 @@ GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
+GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
 	 * main triangulate routine.  Here we return Voronoi information
-	 * and package the coordinates of the edges in the output arrays.
+	 * and package the coordinates of the edges in the output dataset.
 	 * The wesn[] array contains the min/max x (or lon) and y (or lat) coordinates.
 	 */
 
@@ -3137,9 +3137,12 @@ GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in,
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
-	uint64_t i, j, k, km1, j2, n_edges;
+	uint64_t i, j, k, km1, j2, n_edges, n_extra = 0, dim[4] = {1, 0, 2, 2};
+	char header[GMT_LEN32] = {""};
 	struct triangulateio In, Out, vorOut;
-	double *x_edge = NULL, *y_edge = NULL, dy, new_x;
+	struct GMT_DATASET *P = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+	double dy, new_x;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
@@ -3167,42 +3170,65 @@ GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in,
 	triangulate ("zIQBv", &In, &Out, &vorOut);
 
 	/* Determine output size for all edges */
-
+	
 	n_edges = vorOut.numberofedges;
-	x_edge = gmt_M_memory (GMT, NULL, 2*n_edges, double);
-	y_edge = gmt_M_memory (GMT, NULL, 2*n_edges, double);
+#if 0
+	if (mode & 2) {
+		for (i = 0, k = 1; i < n_edges; i++, k += 2) {
+			if (vorOut.edgelist[k] == -1) n_extra++;	/* Infinite ray */
+		}
+		n_extra += 4;	/* The corner pieces */
+	}
+#endif
+	dim[GMT_SEG] = n_edges;
+	/* Create dataset with a single table with one segment per edge */
+	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for support_voronoi_shewchuk\n");
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
+	}
+	P->geometry = GMT_IS_LINE;
 
 	for (i = k = 0; i < n_edges; i++, k++) {
-		/* Always start at a Voronoi vertex so j is never -1 */
-		j2 = 2*vorOut.edgelist[k];
-		x_edge[k] = vorOut.pointlist[j2++];
-		y_edge[k++] = vorOut.pointlist[j2];
-		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calc intersection with region boundary */
-			j2--;	/* Previous point */
-			km1 = k - 1;	/* Previous edge point */
-			x_edge[k] = (vorOut.normlist[km1] < 0.0) ? wesn[XLO] : wesn[XHI];
-			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (x_edge[k] - vorOut.pointlist[j2++]));
-			y_edge[k] = vorOut.pointlist[j2] + dy * copysign (1.0, vorOut.normlist[k]);
-			if (y_edge[k] < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set y_edge to ymin */
-				new_x = x_edge[km1] + (wesn[YLO] - y_edge[km1]) * (x_edge[k] - x_edge[km1]) / (y_edge[k] - y_edge[km1]);
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", x_edge[k], y_edge[k], new_x, wesn[YLO]);
-				x_edge[k] = new_x;	y_edge[k] = wesn[YLO];
+		/* Each edge always start at a Voronoi vertex so j2 is never -1 */
+		j2 = 2 * vorOut.edgelist[k++];
+		S = P->table[0]->segment[i];	/* Current output edge segment */
+		S->coord[GMT_X][0] = vorOut.pointlist[j2++];
+		S->coord[GMT_Y][0] = vorOut.pointlist[j2];
+		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calculate intersection with region boundary */
+			km1 = k - 1;	/* Previous edge list entry */
+			S->coord[GMT_X][1] = (vorOut.normlist[km1] < 0.0) ? wesn[XLO] : wesn[XHI];
+			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (S->coord[GMT_X][1] - S->coord[GMT_X][0]));
+			S->coord[GMT_Y][1] = S->coord[GMT_Y][0] + dy * copysign (1.0, vorOut.normlist[k]);
+			if (S->coord[GMT_Y][1] < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set y_edge to ymin */
+				new_x = S->coord[GMT_X][0] + (wesn[YLO] - S->coord[GMT_Y][0]) * (S->coord[GMT_X][1] - S->coord[GMT_X][0]) / (S->coord[GMT_Y][1] - S->coord[GMT_Y][0]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", S->coord[GMT_X][1], S->coord[GMT_Y][1], new_x, wesn[YLO]);
+				S->coord[GMT_X][1] = new_x;	S->coord[GMT_Y][1] = wesn[YLO];
 			}
-			else if (y_edge[k] > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set y_edge to ymax */
-				new_x = x_edge[km1] + (wesn[YHI] - y_edge[km1]) * (x_edge[k] - x_edge[km1]) / (y_edge[k] - y_edge[km1]);
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", x_edge[k], y_edge[k], new_x, wesn[YHI]);
-				x_edge[k] = new_x;	y_edge[k] = wesn[YHI];
+			else if (S->coord[GMT_Y][1] > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set y_edge to ymax */
+				new_x = S->coord[GMT_X][0] + (wesn[YHI] - S->coord[GMT_Y][0]) * (S->coord[GMT_X][1] - S->coord[GMT_X][0]) / (S->coord[GMT_Y][1] - S->coord[GMT_Y][0]);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", S->coord[GMT_X][1], S->coord[GMT_Y][1], new_x, wesn[YHI]);
+				S->coord[GMT_X][1] = new_x;	S->coord[GMT_Y][1] = wesn[YHI];
 			}
 		}
-		else {
+		else {	/* Regular edge endpoint */
 			j2 = 2*vorOut.edgelist[k];
-			x_edge[k] = vorOut.pointlist[j2++];
-			y_edge[k] = vorOut.pointlist[j2];
+			S->coord[GMT_X][1] = vorOut.pointlist[j2++];
+			S->coord[GMT_Y][1] = vorOut.pointlist[j2];
 		}
+		sprintf (header, "Voronoi edge %" PRIu64, i);
+		S->header = strdup (header);
 	}
-
-	*x_out = x_edge;	/* List of x-coordinates for all edges */
-	*y_out = y_edge;	/* List of x-coordinates for all edges */
+#if 0
+	if (mode & 2) {
+		for (i = 0, k = 1; i < n_edges; i++, k += 2) {
+			if (vorOut.edgelist[k] != -1) continue;	/* Regular edge already done */
+			
+		}
+		n_extra += 4;	/* The corner pieces */
+	}
+#endif
+	
+	gmtlib_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
 
 	gmt_M_str_free (Out.pointlist);
 	gmt_M_str_free (Out.trianglelist);
@@ -3212,7 +3238,7 @@ GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in,
 	gmt_M_str_free (vorOut.normlist);
 	gmt_M_free (GMT, In.pointlist);
 
-	return (n_edges);
+	return (P);
 }
 #else
 /*! Dummy functions since not installed */
@@ -3222,9 +3248,9 @@ GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
+GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
-	return (0);
+	return (NULL);
 }
 #endif
 
@@ -3404,8 +3430,8 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 }
 
 /*! . */
-GMT_LOCAL uint64_t support_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
-	gmt_M_unused(x_in); gmt_M_unused(y_in); gmt_M_unused(n); gmt_M_unused(wesn); gmt_M_unused(x_out); gmt_M_unused(y_out);
+GMT_LOCAL struct GMT_DATASET * support_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
+	gmt_M_unused(x_in); gmt_M_unused(y_in); gmt_M_unused(n); gmt_M_unused(wesn); gmt_M_unused(mode);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation\n");
 	return (0);
 }
@@ -9609,12 +9635,11 @@ int64_t gmt_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t
 }
 
 /*! . */
-int64_t gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, double **x_out, double **y_out) {
-	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (support_voronoi_shewchuk (GMT, x_in, y_in, n, wesn, x_out, y_out));
-	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (support_voronoi_watson    (GMT, x_in, y_in, n, wesn, x_out, y_out));
+struct GMT_DATASET * gmt_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (support_voronoi_shewchuk (GMT, x_in, y_in, n, wesn, mode));
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (support_voronoi_watson    (GMT, x_in, y_in, n, wesn, mode));
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_TRIANGULATE outside possible range! %d\n", GMT->current.setting.triangulate);
-	return (-1);
-
+	return (NULL);
 }
 
 /*! . */
