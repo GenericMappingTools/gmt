@@ -497,7 +497,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			if (Ctrl->Q.active) {	/* Voronoi edges */
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, V->io_mode, NULL, Ctrl->Out.file, V) != GMT_NOERROR) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, V->geometry, V->io_mode, NULL, Ctrl->Out.file, V) != GMT_NOERROR) {
 					Return (API->error);
 				}
 			}

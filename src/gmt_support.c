@@ -3067,6 +3067,12 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 
 #ifdef TRIANGLE_D
 
+GMT_LOCAL int signum (double x) {
+	if (x < 0.0) return -1;
+	if (x > 0.0) return +1;
+	return 0;
+}
+
 /*
  * New gmt_delaunay interface routine that calls the triangulate function
  * developed by Jonathan Richard Shewchuk, University of California at Berkeley.
@@ -3122,12 +3128,14 @@ GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n64, double *wesn, unsigned int mode) {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
 	 * main triangulate routine.  Here we return Voronoi information
 	 * and package the coordinates of the edges in the output dataset.
 	 * The wesn[] array contains the min/max x (or lon) and y (or lat) coordinates.
+	 * Since the internal variables in triangle are ints (e.g., edgelist) we use
+	 * ints here as well
 	 */
 
 	/* Currently we only write the edges of a Voronoi cell but we want polygons later.
@@ -3137,9 +3145,11 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
-	uint64_t i, j, k, km1, j2, seg, n_edges, n_extra = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, dim[4] = {1, 0, 2, 2};
+	uint64_t dim[4] = {1, 0, 2, 2};
+	int i, j, k, n, km1, j2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex;
 	unsigned int geometry, side, corner;
-	char header[GMT_LEN32] = {""}, *point_type = NULL;
+	char header[GMT_LEN32] = {""};
+	unsigned char *point_type = NULL;
 	struct triangulateio In, Out, vorOut;
 	struct GMT_DATASET *P = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -3155,7 +3165,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 	/* Allocate memory for input points */
 
-	In.numberofpoints = (int)n;
+	In.numberofpoints = n = (int)n64;
 	In.pointlist = gmt_M_memory (GMT, NULL, 2 * n, double);
 
 	/* Copy x,y points to In structure array */
@@ -3172,16 +3182,16 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 	/* Determine output size for all edges */
 	
-	n_edges = vorOut.numberofedges;
+	n_int_edges = vorOut.numberofedges;
 	/* Count Voronoi vertices and number of infinite rays */
-	for (i = 0, k = 1; i < n_edges; i++, k += 2) {
+	for (i = 0, k = 1; i < n_int_edges; i++, k += 2) {
 		if (vorOut.edgelist[k] == -1) n_extra++;	/* Infinite rays */
 		else if (vorOut.edgelist[k] > n_int_vertex) n_int_vertex = vorOut.edgelist[k];
 		else if (vorOut.edgelist[k-1] > n_int_vertex) n_int_vertex = vorOut.edgelist[k-1];
 	}
-	n_int_vertex++;	/* The next one */
+	n_int_vertex++;	/* The next edge number */
 	p = 2 * n_int_vertex;	/* Index of next point to be added along boundary */
-	n_vertex = n_int_vertex;
+	n_vertex = n_int_vertex;	/* Number of all vertices */
 
 	if (mode) {	/* Want closed Voronoi polygons, must allocate more space to hold boundary rays and corners */
 		corners = 4;		/* Need to add this many boundingbox corner coordinates */
@@ -3190,10 +3200,10 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		geometry = GMT_IS_POLY;	/* Since we will be closing the polygons */
 		/* Allocate array for point type.  This holds which side we exited.  Normally 0-3, here we add 1
 		 * to use 1-4 since 0 means interior point.  1 is south and then we go CCW to 2 (east), 3 (north) and 4 (west) */
-		point_type = gmt_M_memory (GMT, NULL, n_edges + n_extra + corners, char);
+		point_type = gmt_M_memory (GMT, NULL, n_int_edges + n_extra + corners, char);
 	}
-	else {	/* Want line edges only */
-		dim[GMT_SEG] = n_edges;	/* All dimension are known since just 1 line per segment */
+	else {	/* Want line edges only, all dimensions are known */
+		dim[GMT_SEG] = n_int_edges;	/* All dimension are known since just 1 line per segment */
 		geometry = GMT_IS_LINE;	/* Since we just report edges */
 	}
 	/* Create dataset with a single table with one segment per edge or polygon */
@@ -3202,12 +3212,13 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
 	}
 	
-	/* Reallocate the triangle arrays to hold the extra vertices we will need */
+	/* Reallocate the triangle arrays to hold the extra vertices we will need to add */
 	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_vertex + n_extra + corners) * sizeof (double));
-	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_edges  + n_extra + corners) * sizeof (int));
+	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_int_edges  + n_extra + corners) * sizeof (int));
+
 	/* First replace infinite rays with finite points where they intersect the border (i.e., we clip the rays to w/e/s/n) */
 	
-	for (i = k = 0; i < n_edges; i++, k++) {
+	for (i = k = 0; i < n_int_edges; i++, k++) {
 		if (vorOut.edgelist[k+1] != -1) {k++; continue;}	/* Finite edge, skip to next edge */
 		/* Infinite ray; calculate intersection with region boundary */
 		/* Each edgelist always has a Voronoi vertex as the first point so j2 is never 2 * (-1) */
@@ -3248,8 +3259,12 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	/* Now edgelist only contains actual point IDs and pointlist has been updated to hold all added border points */
 	
 	if (mode) {	/* Also add the 4 corners so we can determine edges along the border */
-		double xstart, xstop, xend, ystart, ystop, yend;
-		int64_t edge, pstart, pstop;
+		bool first_turn, go_i, go_j;
+		char *edge_use = NULL;
+		int expected_sign, prev_sign, next_sign, *start_vertex = NULL, *stop_vertex = NULL;
+		int64_t edge, pstart, pstop, i2, start_point, next_point, prev_point, np;
+		double xstart, xstop, xend, ystart, ystop, yend, cross_product;
+		double *xcoord = NULL, *ycoord = NULL, *dx = NULL, *dy = NULL, *x_pos = NULL, *y_pos = NULL;
 		/* Add the 4 border corners to the point list as well and mark them as corners with special side = 5-8.
 		   We need different sides for corners since xmax,ymax is the end for two separate axes. */
 		vorOut.pointlist[p++] = wesn[XHI];	vorOut.pointlist[p++] = wesn[YLO];	point_type[n_vertex++] = 5;
@@ -3259,7 +3274,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 #if DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before border edges are added:\n");
-		for (i = k = 0; i < n_edges; i++, k += 2)
+		for (i = k = 0; i < n_int_edges; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8" PRIu64 " to %8" PRIu64 " normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 		fprintf (stderr, "\n");
 		for (i = k = 0; i < n_vertex; i++, k += 2)
@@ -3267,7 +3282,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 #endif
 		/* Finally add the new edges between ray-intersections with border and with the corners */
 		/* Do the y = ymin and y = ymax sides first (side 1 and 3) */
-		edge = 2 * n_edges;	/* Start index of next added edge in edgelist */
+		edge = 2 * n_int_edges;	/* Start index of next added edge in edgelist */
 		for (side = 1; side <= 3; side += 2) {	/* Since almost the same logic for the two sides */
 			corner = (side == 1) ? 5 : 6;	/* The corner at the end of this x-axis */
 			xstart = wesn[XLO];	pstart = (side == 1) ? n_vertex - 1 : n_vertex - 2;	/* Initialize the start of the edge at beginning of x-axis */
@@ -3308,9 +3323,10 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			}
 		}
 #if DEBUG
+		n_edges = edge;	/* Total number of all edges */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter border edges are added:\n");
-		for (i = k = 0; k < edge; i++, k += 2) {
-			if (i < n_edges)
+		for (i = k = 0; k < n_edges; i++, k += 2) {
+			if (i < n_int_edges)
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8" PRIu64 " to %8" PRIu64 " normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8" PRIu64 " to %8" PRIu64 "\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
@@ -3319,18 +3335,113 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		for (i = k = 0; i < n_vertex; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
+		gmt_M_free (GMT, point_type);
+		
+		/* Precalculate dx, dy for each edge and store in normlist which we need to reallocate first */
+		vorOut.normlist = realloc (vorOut.normlist, 2 * n_edges * sizeof (double));
+		edge_use = gmt_M_memory (GMT, NULL, n_int_edges/2, char);	/* 0 = unused, 1 = used once, 2 = used twice and done with */
+		dx = vorOut.normlist;	dy = &vorOut.normlist[1];	/* So we can use dx[index] and dy[index] */
+		start_vertex = vorOut.edgelist;	stop_vertex = &vorOut.edgelist[1];
+		x_pos = vorOut.pointlist;	y_pos = &vorOut.pointlist[1];
+		for (i = k = 0; k < n_edges; i++, k += 2) {	/* For all the edges */
+			i2 = 2 * start_vertex[k];	/* Location of x and y coordinates for start of edge */
+			j2 = 2 * stop_vertex[k];	/* Location of x and y coordinates for end of edge */
+			dx[k] = x_pos[j2] - x_pos[i2];	/* dx = end_x - start_x */
+			dy[k] = y_pos[j2] - y_pos[i2];	/* dy = end_y - start_y */
+			if (i >= n_int_edges) edge_use[i] = 1;	/* These edges will only be used once */
+		}
+		/* Need temp array to hold the coordinates of a single polygon */
+		xcoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
+		ycoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
+		
 		/* Now stitch together the closed polygons */
+		seg = 0;
+		while (seg < n) {
+			/* Find the first edge of the interior polygons that has not already been used twice */
+			first_turn = true;	/* When we find the first 3 points in a polygon we can compute the cross-product */
+			for (i = first_edge, go_i = true; go_i && i < n_int_edges; i++) {
+				if (edge_use[i] == 2) {	/* Done with this edge */
+					first_edge++;	/* Might as well skip this one from now on */
+					continue;
+				}
+				else if (edge_use[i] == 1) {	/* Reverse direction the 2nd time we start with this edge */
+					i2 = 2 * i;
+					start_point = prev_point = stop_vertex[i2];
+					next_point = start_vertex[i2];
+					prev_sign = -1;	/* Since we are reversing this edge */
+				}
+				else {	/* Go in the forward direction the first time */
+					i2 = 2 * i;
+					start_point = prev_point = start_vertex[i2];
+					next_point = stop_vertex[i2];
+					prev_sign = +1;	/* Since we are NOT reversing this edge */
+				}
+				/* Here, i2 = 2*i is the index into the edgelist and normlist arrays for the previous edge */
+				/* Add this edge as the first line in the polygon */
+				xcoord[0] = x_pos[2*start_point];	ycoord[0] = y_pos[2*start_point];
+				xcoord[1] = x_pos[2*next_point];	ycoord[1] = y_pos[2*next_point];
+				edge_use[i]++;	/* Flag we have used this edge one more time */
+				np = 2;	/* Total points in polygon so far */
+				while (next_point != start_point) {	/* When this is false we have automatically closed the polygon */
+					/* Find first edge of all edges not equal the current that has next_point as first or 2nd vertex and the other vertex is not our prev_point */
+					for (j = first_edge, go_j = true; go_j && j < n_edges; j++) {
+						if (j == i || edge_use[j] == 2) continue;	/* Done with this edge */
+						/* Here, j2 = 2*j is the index into the edgelist and normlist arrays for the next edge */
+						j2 = 2 * j;
+						if (start_vertex[j2] == next_point && stop_vertex[j2] != prev_point)	/* Normal order */
+							next_sign = 1;
+						else if (stop_vertex[j2] == next_point && start_vertex[j2] != prev_point)	/* Reverse order */
+							next_sign = -1;
+						else	/* Not a desired edge */
+							continue;
+
+						/* Here we found an edge candidate */
+						cross_product = dx[i2] * dy[j2] - dx[j2] * dy[i2];	/* This should be negative for right turns */
+						if (first_turn) {	/* First pair of edges defines the sign of all the cross-products in the polygon we seek */
+							expected_sign = prev_sign * next_sign * signum (cross_product);	/* sign may flip if any edge was reversed */
+							first_turn = false;
+						}
+						else if ((prev_sign * next_sign * signum (cross_product)) != expected_sign)	/* Not making a convex polygon */
+							continue;
+						
+						/* Here we are going in a convex direction */
+						prev_point = next_point;
+						next_point = (next_sign == 1) ? stop_vertex[j2] : start_vertex[j2];
+						prev_sign = next_sign;
+						i2 = j2;
+						/* Here we want to add next_point to our polygon */
+						xcoord[np] = x_pos[2*next_point];
+						ycoord[np] = y_pos[2*next_point];
+						edge_use[j]++;	/* Flag we have used this edge one more time */
+						np++;	/* Increase polygon length counter */
+                        go_j = false;	/* Exit this loop and search for next edge */
+					}
+				}
+				/* Finalize the polygon */
+				sprintf (header, "Voronoi polygon # %d", seg);
+				S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np, 2U, header, P->table[0]->segment[seg]);
+				gmt_M_memcpy (S->data[GMT_X], xcoord, np, double);
+				gmt_M_memcpy (S->data[GMT_Y], ycoord, np, double);
+				P->table[0]->n_records += np;	/* Update counts */
+				P->n_records += np;
+				seg++;
+				go_i = false;	/* Exit loop and move to the next polygon */
+			}
+		}
+		gmt_M_free (GMT, xcoord);
+		gmt_M_free (GMT, ycoord);
+		gmt_M_free (GMT, edge_use);
 	}
 	else {	/* Only want line edges */
-		for (seg = k = 0; seg < n_edges; seg++, k++) {
+		for (seg = k = 0; seg < n_int_edges; seg++) {
 			j2 = 2 * vorOut.edgelist[k++];
 			S = P->table[0]->segment[seg];	/* Current output edge segment */
 			S->coord[GMT_X][0] = vorOut.pointlist[j2++];
 			S->coord[GMT_Y][0] = vorOut.pointlist[j2];
-			j2 = 2*vorOut.edgelist[k];
+			j2 = 2 * vorOut.edgelist[k++];
 			S->coord[GMT_X][1] = vorOut.pointlist[j2++];
 			S->coord[GMT_Y][1] = vorOut.pointlist[j2];
-			sprintf (header, "Voronoi edge # %" PRIu64, seg);
+			sprintf (header, "Voronoi edge # %d", seg);
 			S->header = strdup (header);
 		}
 	}
@@ -3344,7 +3455,6 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	gmt_M_str_free (vorOut.edgelist);
 	gmt_M_str_free (vorOut.normlist);
 	gmt_M_free (GMT, In.pointlist);
-	if (mode) gmt_M_free (GMT, point_type);
 
 	return (P);
 }
