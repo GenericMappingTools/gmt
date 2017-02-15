@@ -543,12 +543,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
-	/* For Amode = 'd' or 'S' we need a second grid, and also require a minimum of 2 points per grid */
-	if (Amode == 'd' || Amode == 'S') {
-		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
-		n_min = 2;
-	}
-
 	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
