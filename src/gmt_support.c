@@ -3184,10 +3184,10 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	
 	n_int_edges = vorOut.numberofedges;
 	/* Count Voronoi vertices and number of infinite rays */
-	for (i = 0, k = 1; i < n_int_edges; i++, k += 2) {
-		if (vorOut.edgelist[k] == -1) n_extra++;	/* Infinite rays */
-		else if (vorOut.edgelist[k] > n_int_vertex) n_int_vertex = vorOut.edgelist[k];
-		else if (vorOut.edgelist[k-1] > n_int_vertex) n_int_vertex = vorOut.edgelist[k-1];
+	for (i = 0, k = 0; i < n_int_edges; i++, k += 2) {
+		if (vorOut.edgelist[k+1] == -1) n_extra++;	/* Infinite rays */
+		if (vorOut.edgelist[k] > n_int_vertex) n_int_vertex = vorOut.edgelist[k];
+		if (vorOut.edgelist[k+1] > n_int_vertex) n_int_vertex = vorOut.edgelist[k+1];
 	}
 	n_int_vertex++;	/* The next edge number */
 	p = 2 * n_int_vertex;	/* Index of next point to be added along boundary */
@@ -3276,7 +3276,6 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before border edges are added:\n");
 		for (i = k = 0; i < n_int_edges; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8" PRIu64 " to %8" PRIu64 " normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
-		fprintf (stderr, "\n");
 		for (i = k = 0; i < n_vertex; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
@@ -3331,7 +3330,6 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8" PRIu64 " to %8" PRIu64 "\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
 		}
-		fprintf (stderr, "\n");
 		for (i = k = 0; i < n_vertex; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
@@ -3339,7 +3337,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		
 		/* Precalculate dx, dy for each edge and store in normlist which we need to reallocate first */
 		vorOut.normlist = realloc (vorOut.normlist, 2 * n_edges * sizeof (double));
-		edge_use = gmt_M_memory (GMT, NULL, n_int_edges/2, char);	/* 0 = unused, 1 = used once, 2 = used twice and done with */
+		edge_use = gmt_M_memory (GMT, NULL, n_edges/2, char);	/* 0 = unused, 1 = used once, 2 = used twice and done with */
 		dx = vorOut.normlist;	dy = &vorOut.normlist[1];	/* So we can use dx[index] and dy[index] */
 		start_vertex = vorOut.edgelist;	stop_vertex = &vorOut.edgelist[1];
 		x_pos = vorOut.pointlist;	y_pos = &vorOut.pointlist[1];
@@ -3364,19 +3362,18 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 					first_edge++;	/* Might as well skip this one from now on */
 					continue;
 				}
-				else if (edge_use[i] == 1) {	/* Reverse direction the 2nd time we start with this edge */
-					i2 = 2 * i;
+				/* Here, i2 = 2*i is the index into the edgelist and normlist arrays for the previous edge */
+				i2 = 2 * i;
+				if (edge_use[i] == 1) {	/* Reverse direction the 2nd time we start with this edge */
 					start_point = prev_point = stop_vertex[i2];
 					next_point = start_vertex[i2];
 					prev_sign = -1;	/* Since we are reversing this edge */
 				}
 				else {	/* Go in the forward direction the first time */
-					i2 = 2 * i;
 					start_point = prev_point = start_vertex[i2];
 					next_point = stop_vertex[i2];
 					prev_sign = +1;	/* Since we are NOT reversing this edge */
 				}
-				/* Here, i2 = 2*i is the index into the edgelist and normlist arrays for the previous edge */
 				/* Add this edge as the first line in the polygon */
 				xcoord[0] = x_pos[2*start_point];	ycoord[0] = y_pos[2*start_point];
 				xcoord[1] = x_pos[2*next_point];	ycoord[1] = y_pos[2*next_point];

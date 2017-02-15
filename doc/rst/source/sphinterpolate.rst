@@ -32,7 +32,7 @@ Description
 -----------
 
 **sphinterpolate** reads one or more ASCII [or binary] files (or
-standard input) containing lon, lat, f and performs a Delaunay
+standard input) containing *lon, lat, z* and performs a Delaunay
 triangulation to set up a spherical interpolation in tension. The final
 grid is saved to the specified file. Several options may be used to
 affect the outcome, such as choosing local versus global gradient

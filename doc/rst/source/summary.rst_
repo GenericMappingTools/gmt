@@ -141,7 +141,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sph2grd`        | Compute grid from spherical harmonic coefficients                   |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`sphdistance`    | Create grid of distances to nearest points on a sphere              |
+| :doc:`sphdistance`    | Create grid of NN or distances to nearest points on a sphere        |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sphinterpolate` | Spherical gridding in tension of data on a sphere                   |
 +-----------------------+---------------------------------------------------------------------+

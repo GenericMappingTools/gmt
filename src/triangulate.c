@@ -403,8 +403,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			np = gmt_delaunay (GMT, xx, yy, n, &link);
 	}
 
-	if (Ctrl->Q.active)
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Voronoi edges found\n", np);
+	if (Ctrl->Q.active) {
+		char *feature[2] = {"edges", "polygons"};
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Voronoi %s found\n", V->n_segments, feature[Ctrl->Q.mode]);
+	}
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Delaunay triangles found\n", np);
 	

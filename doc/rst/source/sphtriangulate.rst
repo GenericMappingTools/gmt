@@ -29,11 +29,11 @@ Description
 
 **sphtriangulate** reads one or more ASCII [or binary] files (or
 standard input) containing lon, lat and performs a spherical Delaunay
-triangulation, i.e., it find how the points should be connected to give
+triangulation, i.e., it determines how the points should be connected to give
 the most equilateral triangulation possible on the sphere. Optionally,
 you may choose **-Qv** which will do further processing to obtain the
 Voronoi polygons. Normally, either set of polygons will be written as
-fillable segment output; use **-T** to write unique arcs instead. As an
+closed fillable segment output; use **-T** to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
 is STRIPACK.
 

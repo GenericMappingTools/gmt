@@ -559,6 +559,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
 				Return (API->error);
 			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
+				Return (API->error);
+			}
 			sprintf (record, "> Bounding box for %s", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			/* LL */

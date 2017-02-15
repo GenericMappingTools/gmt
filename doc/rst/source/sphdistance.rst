@@ -6,7 +6,7 @@ sphdistance
 
 .. only:: not man
 
-    sphdistance - Create Voronoi distance, node, or nearest-neighbor grid on a sphere
+    sphdistance - Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
 
 Synopsis
 --------
@@ -72,7 +72,7 @@ Optional Arguments
     Specify the quantity that should be assigned to the grid nodes.  By
     default we compute distances to the nearest data point [**-Ed**].
     Use **-En** to assign the ID numbers of the Voronoi polygons that each
-    grid node is inside, or use **-Ez** for a nearest-neighbor grid where
+    grid node is inside, or use **-Ez** for a natural nearest-neighbor grid where
     we assign all nodes inside the polygon the z-value of the center node.
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
