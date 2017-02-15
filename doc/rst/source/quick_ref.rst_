@@ -103,7 +103,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sph2grd`        | Compute grid from spherical harmonic coefficients                   |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`sphdistance`    | Create grid of distances to nearest points on a sphere              |
+| :doc:`sphdistance`    | Create grid of NN or distances to nearest points on a sphere        |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical lon,lat data          |
 +-----------------------+---------------------------------------------------------------------+
