@@ -68,13 +68,16 @@ struct TRIANGULATE_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q[c] */
+	struct Q {	/* -Q[n] */
 		bool active;
 		unsigned int mode;
 	} Q;
 	struct S {	/* -S */
 		bool active;
 	} S;
+	struct T {	/* -T */
+		bool active;
+	} T;
 	struct Z {	/* -Z */
 		bool active;
 	} Z;
@@ -114,8 +117,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q]\n", GMT_I_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q[n]]\n", GMT_I_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [-T] [%s] [-Z] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -125,14 +128,18 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -N, -Q, -S.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Qn for natural nearest neighbors [Default is linear triangulation]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be combined with -N.\n");
 	GMT_Option (API, "I,J-");   
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Write indices of vertices to stdout when -G is used [only write the grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shewchuk algorithm) [Delaunay triangulation].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to produce closed Voronoi polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Output triangle polygons as multiple segments separated by segment headers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Q.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Output triangles or polygons even if gridding has been selected with -G.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default behavior is to produce a grid based on the triangles or polygons only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
 	GMT_Option (API, "R,V,bi2");
 	GMT_Message (API, GMT_TIME_NONE, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
@@ -211,10 +218,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
-				if (strchr (opt->arg, 'c')) Ctrl->Q.mode |= 1;
+				if (strchr (opt->arg, 'n')) Ctrl->Q.mode |= 1;
 				break;
 			case 'S':
 				Ctrl->S.active = true;
+				break;
+			case 'T':
+				Ctrl->T.active = true;
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -234,7 +244,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
 	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && Ctrl->I.active, "Warning: -I not needed when -G is not set\n");
 	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active, "Warning: -R not needed when -G or -Q are not set\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Syntax error -S option: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
@@ -250,22 +259,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 int GMT_triangulate (void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
-	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
-	unsigned int n_input, n_output;
+	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, node, seg, n = 0;
+	unsigned int n_input, n_output, side;
 	int row, col, col_min, col_max, row_min, row_max, error = 0;
-	bool triplets[2] = {false, false}, map_them = false;
+	bool triplets[2] = {false, false}, map_them = false, do_output = true;
 	
 	size_t n_alloc;
 	
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
-	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
+	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL, *zpol = NULL;
 
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 	char record[GMT_BUFSIZ];
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *V = NULL;
+	struct GMT_DATASEGMENT *P = NULL;
 
 	struct TRIANGULATE_EDGE *edge = NULL;
 	struct TRIANGULATE_CTRL *Ctrl = NULL;
@@ -302,6 +312,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	n_output = (Ctrl->N.active) ? 3 : 2;
 	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
+	if (Ctrl->G.active && !Ctrl->T.active) do_output = false;	/* If gridding then we require -T to also output the spatial files */
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
@@ -391,7 +402,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
-		gmt_M_free (GMT, xxp);
+		gmt_M_free (GMT, xxp);	/* Cannot do this if we are doing NN gridding since we need xxp, yyp */
 		gmt_M_free (GMT, yyp);
 	}
 	else {
@@ -404,15 +415,99 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Q.active) {
+		char header[GMT_LEN64] = {""};
 		char *feature[2] = {"edges", "polygons"};
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Voronoi %s found\n", V->n_segments, feature[Ctrl->Q.mode]);
+		V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode);
+		zpol = gmt_M_memory (GMT, NULL, V->n_segments, double);
+		if (triplets[GMT_IN] && Ctrl->Q.mode) {
+			for (seg = 0; seg < V->n_segments; seg++) {
+				P = V->table[0]->segment[seg];
+				/* Annoyingly, must first identify the input data point that is inside this polygon */
+				for (k = side = 0; !side && k < n; k++) {
+					if (yy[k] < P->min[GMT_Y] || yy[k] > P->max[GMT_Y]) continue;
+					if (xx[k] < P->min[GMT_X] || xx[k] > P->max[GMT_X]) continue;
+					side = gmt_inonout (GMT, xx[k], yy[k], P);
+					if (side) node = k;	/* Found the data node */
+				}
+				zpol[seg] = zz[node];
+				sprintf (header, "%s -Z%g", P->header, zpol[seg]);
+				gmt_M_str_free (P->header);
+				P->header = strdup (header);
+			}
+		}
 	}
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Delaunay triangles found\n", np);
 	
+	if (Ctrl->G.active && Ctrl->Q.active) {	/* Grid via natural nearest neighbor using Voronoi polygons */
+		bool periodic, duplicate_col;
+		int s_row, south_row, north_row, w_col, e_col;
+		unsigned int row, col, p_col, west_col, east_col, nx1;
+		uint64_t n_set = 0;
+		double *grid_lon = NULL, *grid_lat = NULL;
+		GMT_Report (API, GMT_MSG_VERBOSE, "Perform natural nearest neighbor gridding\n");
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			Return (API->error);
+		}
+		
+		nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
+		periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+		duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+		grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
+		grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
-	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
+		for (seg = 0; seg < V->n_segments; seg++) {
+			P = V->table[0]->segment[seg];
+			/* Find bounding row/cols over which to loop for this polygon */
+			south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+			north_row = (int)gmt_M_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+			w_col  = (int)gmt_M_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+			while (w_col < 0) w_col += nx1;
+			west_col = w_col;
+			e_col = (int)gmt_M_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
+			while (e_col < w_col) e_col += nx1;
+			east_col = e_col;
+			/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */
+			for (s_row = north_row; s_row <= south_row; s_row++) {	/* For each scanline intersecting this polygon */
+				if (s_row < 0) continue;	/* North of region */
+				row = s_row; if (row >= Grid->header->n_rows) continue;	/* South of region */
+				for (p_col = west_col; p_col <= east_col; p_col++) {	/* March along the scanline using col >= 0 */
+					if (p_col >= Grid->header->n_columns) {	/* Off the east end of the grid */
+						if (periodic)	/* Just shuffle to the corresponding point inside the global grid */
+							col = p_col - nx1;
+						else		/* Sorry, really outside the region */
+							continue;
+					}
+					else
+						col = p_col;
+					side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
+					if (side == 0) continue;	/* Outside polygon */
+					p = gmt_M_ijp (Grid->header, row, col);
+					Grid->data[p] = zpol[seg];
+					n_set++;
+					if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
+						if (col == 0) Grid->data[p+nx1] = Grid->data[p], n_set++;
+						else if (col == nx1) Grid->data[p-nx1] = Grid->data[p], n_set++;
+					}
+				}
+			}
+		}
+		gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			Return (API->error);
+		}
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
+			Return (API->error);
+		}
+		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	}
+	else if (Ctrl->G.active && !Ctrl->Q.active) {	/* Grid via planar triangle segments */
 		int n_columns = Grid->header->n_columns, n_rows = Grid->header->n_rows;	/* Signed versions */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Perform Delaunay triangle gridding\n");
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
@@ -485,7 +580,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 	}
 	
-	if (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active) {	/* Requires output to stdout */
+	if (do_output && (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) {	/* Requires output to stdout */
 		if (!Ctrl->Q.active) {	/* Still record-by-record output */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
@@ -571,6 +666,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, xx);
 	gmt_M_free (GMT, yy);
+	if (zpol) gmt_M_free (GMT, zpol);
 	if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 	if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");

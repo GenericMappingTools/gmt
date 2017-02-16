@@ -3415,7 +3415,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 					}
 				}
 				/* Finalize the polygon */
-				sprintf (header, "Voronoi polygon # %d", seg);
+				sprintf (header, "Voronoi polygon # %d -L%d", seg, seg);
 				S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np, 2U, header, P->table[0]->segment[seg]);
 				gmt_M_memcpy (S->data[GMT_X], xcoord, np, double);
 				gmt_M_memcpy (S->data[GMT_Y], ycoord, np, double);
@@ -3438,7 +3438,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			j2 = 2 * vorOut.edgelist[k++];
 			S->coord[GMT_X][1] = vorOut.pointlist[j2++];
 			S->coord[GMT_Y][1] = vorOut.pointlist[j2];
-			sprintf (header, "Voronoi edge # %d", seg);
+			sprintf (header, "Voronoi edge # %d -L%d", seg, seg);
 			S->header = strdup (header);
 		}
 	}

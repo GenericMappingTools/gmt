@@ -49,7 +49,8 @@ Required Arguments
 .. _-G:
 
 **-G**\ *grdfile*
-    Name of the output grid to hold the computed distances.
+    Name of the output grid to hold the computed distances (but see **-E**
+    for other node value options).
 
 Optional Arguments
 ------------------
