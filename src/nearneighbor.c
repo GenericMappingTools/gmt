@@ -56,9 +56,10 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[<sectors>[/<min_sectors>]] */
+	struct N {	/* -N[<sectors>[/<min_sectors>]] | -Nn */
 		bool active;
 		unsigned int sectors, min_sectors;
+		unsigned int mode;
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
@@ -220,12 +221,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
-			case 'N':	/* -N[sectors[/minsectors]] */
+			case 'N':	/* -N[sectors[/minsectors]] or -Nn */
 				Ctrl->N.active = true;
-				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
-				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;	/* Just gave -N with no args means -N4/4 */
-				if (n < 2) Ctrl->N.min_sectors = irint (Ctrl->N.sectors / 2.0);	/* Giving just -N<sectors> means -N<sectors>/(<sectors>/2) */
-				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
+				if (opt->arg[0] == 'n')
+					Ctrl->N.mode = 1;
+				else {
+					n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
+					if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;	/* Just gave -N with no args means -N4/4 */
+					if (n < 2) Ctrl->N.min_sectors = irint (Ctrl->N.sectors / 2.0);	/* Giving just -N<sectors> means -N<sectors>/(<sectors>/2) */
+					if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
+				}
 				break;
 			case 'S':	/* Search radius */
 				Ctrl->S.active = true;
@@ -241,16 +246,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 		}
 	}
 
-
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	if (Ctrl->N.mode == 0) {	/* For Natural NN gridding we cannot have stray options */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Syntax error -Nn: Cannot specify -E option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Syntax error -Nn: Cannot specify -S option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error -Nn: Cannot specify -W option\n");
+	}
+	else {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	}
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -297,6 +307,21 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
+
+	if (Ctrl->N.mode == 1) {	/* Pass over to triangulate -Qn -G */
+		/* All the arguments are the same except -Nn needs to become -Qn */
+		struct GMT_OPTION *n_ptr = GMT_Find_Option (API, 'N', options);
+		int status = GMT_NOERROR;
+		n_ptr->option = 'Q';	/* Switch to -Qn */
+		/* Call triangulate with the given option list */
+		GMT_Report (API, GMT_MSG_DEBUG, "Passing all arguments over to triangulate\n");
+		status = GMT_Call_Module (API, "triangulate", GMT_MODULE_OPT, options);
+		if (status) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_triangulate returned error %d.\n", status);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		Return (GMT_NOERROR);
+	}
 
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
