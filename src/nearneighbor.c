@@ -250,7 +250,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	if (Ctrl->N.mode == 0) {	/* For Natural NN gridding we cannot have stray options */
+	if (Ctrl->N.active && Ctrl->N.mode) {	/* For Natural NN gridding we cannot have stray options */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Syntax error -Nn: Cannot specify -E option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Syntax error -Nn: Cannot specify -S option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error -Nn: Cannot specify -W option\n");
@@ -308,21 +308,43 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	if (Ctrl->N.mode == 1) {	/* Pass over to triangulate -Qn -G */
-		/* All the arguments are the same except -Nn needs to become -Qn */
-		struct GMT_OPTION *n_ptr = GMT_Find_Option (API, 'N', options);
+	if (Ctrl->N.mode) {	/* Pass over to triangulate -Qn */
+		/* All the arguments are the same except -Nn needs to become -Qn and -Gfile needs to be a
+		 * virtual file so that we can write it from hear and set correct command history for the grid.
+		 */
+		struct GMT_OPTION *n_ptr = NULL, *g_ptr = NULL;
 		int status = GMT_NOERROR;
+		char string[GMT_STR16] = {""}, *name = NULL;
+		n_ptr = GMT_Find_Option (API, 'N', options);	/* No need to check for NULL since we know -N was given */
 		n_ptr->option = 'Q';	/* Switch to -Qn */
+		/* Create a virtual file name to hold the resulting grid */
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, string) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		g_ptr = GMT_Find_Option (API, 'G', options);	/* No need to check for NULL since we know -G was given */
+		name = g_ptr->arg;	/* Temporarily replace the name with the virtual name */
+		g_ptr->arg = string;
 		/* Call triangulate with the given option list */
-		GMT_Report (API, GMT_MSG_DEBUG, "Passing all arguments over to triangulate\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Letting triangulate perform the natural nearest neighbor gridding\n");
 		status = GMT_Call_Module (API, "triangulate", GMT_MODULE_OPT, options);
 		if (status) {
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_triangulate returned error %d.\n", status);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		if ((Grid = GMT_Read_VirtualFile (API, string)) == NULL) {	/* Load in the resampled grid */
+			Return (API->error);
+		}
+		n_ptr->option = 'N';	/* Switch back to -Nn */
+		g_ptr->arg = name;		/* Reset file name to original output name */
+		gmt_grd_init (GMT, Grid->header, options, true);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+			Return (API->error);
+		}
 		Return (GMT_NOERROR);
 	}
 
+	/* Regular nearest neighbor moving average operation */
+	
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
