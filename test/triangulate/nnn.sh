@@ -19,7 +19,7 @@ cat << EOF > tridata.txt
 EOF
 
 gmt makecpt -Ccategorical -T0/10/1 > t.cpt
-gmt triangulate tridata.txt -Qn -R0/10/0/10 -Gjunk.nc -I0.05 > t.txt
+gmt triangulate tridata.txt -Qn -R0/10/0/10 -Gjunk.nc -I0.05 -T > t.txt
 gmt grdimage junk.nc -JX4i -P -Baf -BWSnE+t"Natural Nearest Neighbor Gridding" -Ct.cpt -K -Xc > $ps
 gmt psxy -R -J -O -K -W0.25p t.txt >> $ps
 gmt psxy -R -J -O -Sc0.25c -Gwhite -W0.25p tridata.txt -K >> $ps
