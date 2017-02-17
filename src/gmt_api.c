@@ -9366,6 +9366,8 @@ GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, in
 			else
 				strcpy (argument, optarg);
 		}
+		else
+			strcpy (argument, optarg);
 	}
 	else
 		strcpy (argument, optarg);
