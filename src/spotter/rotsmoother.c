@@ -310,7 +310,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	D = (struct AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct AGEROT);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, D);
 				Return (GMT_RUNTIME_ERROR);
@@ -478,7 +478,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		n_out++;
 
 		if (!Ctrl->C.active) {	/* No covariance requested, print this rotation and continue */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			continue;
 		}
 
@@ -573,7 +573,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		out[16] = EigenValue[0];
 		out[17] = EigenValue[1];
 		out[18] = EigenValue[2];
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

@@ -1101,7 +1101,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DATA;
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
@@ -1155,7 +1155,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->Z.active)	/* Simply print out values */
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, value);
+				GMT_Put_Record (API, GMT_WRITE_DATA, value);
 			else if (pure_ascii && n_fields >= 2) {
 				/* Special case: ASCII i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
@@ -1186,7 +1186,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
 					out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
 				}
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 
 			n_points++;

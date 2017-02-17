@@ -448,7 +448,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
 			out[9] = Sun->EQ_time;
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
@@ -523,7 +523,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 			for (j = 0; j < n_pts; j++) {
 				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 			gmt_free_segment (GMT, &S);
 		}

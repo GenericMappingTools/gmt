@@ -704,7 +704,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, data);
 				Return (GMT_RUNTIME_ERROR);
@@ -868,7 +868,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			if (Ctrl->F.active) strcat (format, " -F");
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);

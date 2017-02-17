@@ -269,7 +269,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
@@ -400,7 +400,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			out[4] = slhg[node].a[BLK_L];	/* Minimum value in block */
 			out[5] = slhg[node].a[BLK_H];	/* Maximum value in block */
 		}
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);

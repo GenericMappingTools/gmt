@@ -685,7 +685,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	else {	/* Here we can process data records (ASCII or binary) */
 		set_type = GMT_IS_DATASET;
-		read_mode = GMT_READ_DOUBLE;
+		read_mode = GMT_READ_DATA;
 	}
 	in = GMT->current.io.curr_rec;
 

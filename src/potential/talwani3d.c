@@ -757,7 +757,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, cake);
 				Return (GMT_RUNTIME_ERROR);
@@ -951,7 +951,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 					out[GMT_Y] = S->data[GMT_Y][row];
 					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->data[GMT_Z][row];
 					out[3] = GMT->hidden.mem_coord[GMT_X][row];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 			}
 		}

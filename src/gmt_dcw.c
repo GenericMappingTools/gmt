@@ -447,7 +447,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
 					out[GMT_Y] = P->data[GMT_Y][kk];
-					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
 				}
 				seg++;
 			}

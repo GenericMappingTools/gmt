@@ -1070,7 +1070,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[0] = x[col];
 					out[2] = Grid->data[col];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 			}
 		}
@@ -1149,7 +1149,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[GMT_X] = x[col];
 					out[GMT_Z] = Grid->data[col];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 			}
 		}

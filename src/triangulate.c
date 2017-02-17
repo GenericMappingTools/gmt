@@ -320,7 +320,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	n = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);		gmt_M_free (GMT, zz);
 				Return (GMT_RUNTIME_ERROR);
@@ -497,9 +497,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					sprintf (record, "Edge %" PRIu64, i);
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 					out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 				gmt_M_free (GMT, xe);
 				gmt_M_free (GMT, ye);
@@ -527,9 +527,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					sprintf (record, "Edge %d-%d", edge[i].begin, edge[i].end);
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 					out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 				gmt_M_free (GMT, edge);
 			}
@@ -541,7 +541,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				for (k = 0; k < 3; k++) {	/* Three vertices */
 					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 			}
 		}
@@ -551,7 +551,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 			for (i = ij = 0; i < np; i++, ij += 3) {
 				for (k = 0; k < 3; k++) out[k] = (double)link[ij+k];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

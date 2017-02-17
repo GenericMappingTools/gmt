@@ -352,7 +352,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
@@ -484,7 +484,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / weight : weight;
 		if (emode) out[i_col] = extra[3];
 
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

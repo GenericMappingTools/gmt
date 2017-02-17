@@ -427,7 +427,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, processed_node);
 				Return (GMT_RUNTIME_ERROR);

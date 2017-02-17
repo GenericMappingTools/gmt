@@ -1050,7 +1050,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, out);
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
@@ -1113,7 +1113,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, out);
 					}
 				}
 				else {
@@ -1174,7 +1174,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, out);
 					}
 				}
 				else {

@@ -1020,7 +1020,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
 
 			/* print out the results */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 
 			GMT_Report (API, GMT_MSG_DEBUG, "line %d passed\n", err_l);
 			err_l++;

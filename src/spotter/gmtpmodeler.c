@@ -336,7 +336,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_table_header (GMT)) {	/* Skip all table headers */
@@ -448,7 +448,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			}
 			out[k+3] = value;
 		}
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */

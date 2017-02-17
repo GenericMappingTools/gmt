@@ -7058,7 +7058,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	 * returns the number of columns found via *retval (unless retval == NULL).
 	 * If current record is a segment header then we return 0.
 	 * If we reach EOF then we return EOF.
-	 * mode is either GMT_READ_DOUBLE (data columns), GMT_READ_TEXT (text string) or
+	 * mode is either GMT_READ_DATA (data columns), GMT_READ_TEXT (text string) or
 	 *	GMT_READ_MIXED (expect data but tolerate read errors).
 	 * Also, if (mode | GMT_READ_FILEBREAK) is true then we will return empty-handed
 	 *	when we get to the end of a file except the final file (which is EOF).
@@ -7334,7 +7334,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER: Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
-	 *   GMT_WRITE_DOUBLE:    Write an ASCII or binary data record
+	 *   GMT_WRITE_DATA:    Write an ASCII or binary data record
 	 *   GMT_WRITE_TEXT:      Write an ASCII data record
 	 * For text: If record == NULL use internal current record or header.
 	 * Returns 0 if a record was written successfully (See what -s[r] can do).
@@ -7374,7 +7374,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ-1);	/* Default to last segment record if NULL */
 					gmt_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);	error = 1;	/* Write one item */
 					break;
-				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */
+				case GMT_WRITE_DATA:		/* Export either a formatted ASCII data record or a binary record */
 					if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					error = API->GMT->current.io.output (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT], record);
 					break;
@@ -7406,7 +7406,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
-				if ((D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS || D_obj->n_columns < API->GMT->common.b.ncol[GMT_OUT]) && mode == GMT_WRITE_DOUBLE) {	/* Number of columns not set or set incorrectly, see if -b has it */
+				if ((D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS || D_obj->n_columns < API->GMT->common.b.ncol[GMT_OUT]) && mode == GMT_WRITE_DATA) {	/* Number of columns not set or set incorrectly, see if -b has it */
 					if (API->GMT->common.b.ncol[GMT_OUT])
 						D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 					else {
@@ -7443,7 +7443,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 							T_obj->segment[count[GMT_SEG]]->header = strdup (s);
 						}
 						break;
-					case GMT_WRITE_DOUBLE:		/* Export a segment row */
+					case GMT_WRITE_DATA:		/* Export a segment row */
 						if (gmt_skip_output (API->GMT, record, T_obj->n_columns))	/* Record was skipped via -s[a|r] */
 							break;
 						if (count[GMT_SEG] == -1) {	/* Most likely a file with one segment but no segment header */
@@ -7566,7 +7566,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				API->current_rec[GMT_OUT]++;	/* Since the NaN-record becomes an actual data record that encodes a segment break */
 				M_obj->n_rows++;		/* Same */
 			}
-			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
+			else if (mode == GMT_WRITE_DATA) {	/* Data record */
 				if (!record)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
 				else {
@@ -7618,7 +7618,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 				S_obj->rec++;					/* Since the NaN-record is an actual data record that encodes a segment break */
 				V_obj->n_rows++;		/* Same */
 			}
-			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
+			else if (mode == GMT_WRITE_DATA) {	/* Data record */
 				if (!record)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 				else {
@@ -7643,7 +7643,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 			break;
 	}
 
-	if (!error && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT))	{	/* Only increment if we placed a data record on the output */
+	if (!error && (mode == GMT_WRITE_DATA || mode == GMT_WRITE_TEXT))	{	/* Only increment if we placed a data record on the output */
 		API->current_rec[GMT_OUT]++;
 		S_obj->rec++;
 	}

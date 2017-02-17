@@ -1151,7 +1151,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include result in segment header */
 				for (row = 0; row < n_try; row++) {	/* Write the saved results of the experiment */
 					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) out[k] = Sa->data[k][row];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
 				}
 			}
 			else {	/* Here we are solving for the best regression */
@@ -1167,7 +1167,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[6] = par[GMTREGRESS_ICEPT];
 					out[7] = par[GMTREGRESS_SIGSL];
 					out[8] = par[GMTREGRESS_SIGIC];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
 				}
 				else {
 					/* Make segment header with the findings for best regression */
@@ -1227,7 +1227,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 									break;
 							}
 						}
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
+						GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
 					}
 				}
 				gmt_M_free (GMT, z_score);	/* Done with this array */

@@ -447,7 +447,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
@@ -596,7 +596,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			out[0] = n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
 			out[4] = max;	out[5] = mean_radius;	out[6] = total;
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);

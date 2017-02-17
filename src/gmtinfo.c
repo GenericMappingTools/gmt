@@ -382,7 +382,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	first_data_record = true;
 	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_READ_FILEBREAK, NULL);
+		in = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, NULL);
 		do_report = false;
 
 		if (gmt_M_rec_is_error (GMT)) Return (GMT_RUNTIME_ERROR);
@@ -574,7 +574,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (do_report) {
 				if (Ctrl->C.active) {	/* Plain data record */
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, GMT->current.io.curr_rec);	/* Write data record to output destination */
+					GMT_Put_Record (API, GMT_WRITE_DATA, GMT->current.io.curr_rec);	/* Write data record to output destination */
 				}
 				else {
 					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */

@@ -980,7 +980,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		else {	/* Here we can process data records (ASCII or binary) */
 			set_type  = GMT_IS_DATASET;
-			read_mode = GMT_READ_DOUBLE;
+			read_mode = GMT_READ_DATA;
 		}
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);

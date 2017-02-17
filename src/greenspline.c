@@ -1506,7 +1506,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	n = m = n_read = 0;
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
 				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
@@ -2228,7 +2228,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					out[dimension] += alpha[p] * part;
 				}
 				out[dimension] = undo_normalization (out, out[dimension], normalize, norm, dimension);
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -2312,7 +2312,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->n_columns; col++) {
 					V[GMT_X] = xp[col];
 					V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
+					GMT_Put_Record (API, GMT_WRITE_DATA, V);
 				}
 			}
 			else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
@@ -2323,7 +2323,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 						V[GMT_X] = xp[col];
 						ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
 						V[dimension] = Out->data[ij];
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, V);
+						GMT_Put_Record (API, GMT_WRITE_DATA, V);
 					}
 				}
 			}
