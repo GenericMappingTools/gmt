@@ -10,7 +10,7 @@
 # 1. Initialization
 # 1a) Assign movie parameters
 . gmt_shell_functions.sh
-n_eigen=`gmt_get_ndatarecords table_5.11`
+n_eigen=`gmt_get_ndatarecords ${src:-.}/table_5.11`
 dpi=100
 name=anim_05
 ps=${name}.ps
@@ -20,7 +20,7 @@ frame=0
 let k=1
 while [ $k -le $n_eigen ]; do
 	file=`gmt_set_framename ${name} ${frame}`
-	gmt greenspline table_5.11 -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -D1 -Cn${k} -Emisfit.txt 2> /dev/null
+	gmt greenspline ${src:-.}/table_5.11 -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -D1 -Cn${k} -Emisfit.txt 2> /dev/null
 	gmt grdcontour t.nc -C25 -A50 -Baf -BWSnE -JX4i -P -K -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.8i --PS_MEDIA=4.5ix5.0i > $$.ps
 	gmt psxy misfit.txt -R -J -O -K -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 >> $$.ps
 	echo $k | gmt pstext -R -J -O -K -F+cTR+jTR+f18p -Dj0.1i >> $$.ps

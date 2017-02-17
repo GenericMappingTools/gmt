@@ -7412,7 +7412,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
-				if ((D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS) && mode == GMT_WRITE_DOUBLE) {	/* Number of columns not set, see if -b has it */
+				if ((D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS || D_obj->n_columns < API->GMT->common.b.ncol[GMT_OUT]) && mode == GMT_WRITE_DOUBLE) {	/* Number of columns not set or set incorrectly, see if -b has it */
 					if (API->GMT->common.b.ncol[GMT_OUT])
 						D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 					else {
