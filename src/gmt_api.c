@@ -1144,12 +1144,15 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has now served its purpose */
 		}
 		else if (s[k][K_FAMILY] == '-') {	/* Key letter Y missing: Means that -X, if given, changes primary input|output set by -Z to secondary (i.e., not required) */
-			if (GMT_Find_Option (API, s[k][K_OPT], head)) {	/* Got the option that removes the requirement of an input or output dataset */
-				for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
-					if (!s[kk]) continue;		/* A previously processed/freed key */
-					if (s[kk][K_OPT] != s[k][K_DIR]) continue;		/* Not the "-Z "option */
-					if (s[kk][K_DIR] == API_PRIMARY_INPUT) s[kk][K_DIR] = API_SECONDARY_INPUT;		/* No longer an implicit input */
-					else if (s[kk][K_DIR] == API_PRIMARY_OUTPUT) s[kk][K_DIR] = API_SECONDARY_OUTPUT;	/* No longer an implicit output */
+			/* However, if +<mod> is appended then the primary input setting is left as is */
+			if ((opt = GMT_Find_Option (API, s[k][K_OPT], head))) {	/* Got the option that removes the requirement of an input or output dataset */
+				if (!(s[k][3] == '+' && strstr (opt->arg, &s[k][3]))) {	/* Got the option and no modifier to turn it off */
+					for (kk = 0; kk < n; kk++) {	/* Change all primary input|output flags to secondary, depending on Z */
+						if (!s[kk]) continue;		/* A previously processed/freed key */
+						if (s[kk][K_OPT] != s[k][K_DIR]) continue;		/* Not the "-Z "option */
+						if (s[kk][K_DIR] == API_PRIMARY_INPUT) s[kk][K_DIR] = API_SECONDARY_INPUT;		/* No longer an implicit input */
+						else if (s[kk][K_DIR] == API_PRIMARY_OUTPUT) s[kk][K_DIR] = API_SECONDARY_OUTPUT;	/* No longer an implicit output */
+					}
 				}
 			}
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has served its purpose */
@@ -9457,7 +9460,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   be one of the options with required input (or output) and we change that option to option input (or output).
 	 *   Example: grdtrack has two required inputs (the grid(s) and the track/point file.  However, if -E is set then
 	 *   the track/point file is not expected so we need to change it to secondary.  We thus add E-< which then will
-	 *   change <D{ to <D(.
+	 *   change <D{ to <D(.  A modifier is also possible.  For instance -F<grid>[+d] is used by several modules, such
+	 *   as triangulate, to use the non-NaN nodes in a grid as the input data instead of reading the primary input
+	 *   source.  So F-( would turn of primary input.  However, if +d is present then we want to combine the grid with
+	 *   the primary input and hence we read that as well.
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
