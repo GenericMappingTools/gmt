@@ -403,14 +403,20 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.active) {	/* Use non-NaN nodes in a previous grid as input data, possibly in addition to input records */
 		double *wesn = (Ctrl->G.active) ? Grid->header->wesn : NULL;
+		double xnoise, ynoise, rx, ry, percent = 5.0, fraction = 0.01 * percent;
 		if ((F = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);	/* Get subset if exceeding desired grid */
 		}
 		xf = gmt_grd_coord (GMT, F->header, GMT_X);
 		yf = gmt_grd_coord (GMT, F->header, GMT_Y);
+		xnoise = fraction * F->header->inc[GMT_X];
+		ynoise = fraction * F->header->inc[GMT_Y];
 		gmt_M_grd_loop (GMT, F, row, col, ij) {
 			if (gmt_M_is_fnan (F->data[ij]))	continue;	/* Only add real data to the input list */
-			xx[n] = xf[col];	yy[n] = yf[row];
+			rx = xnoise * gmt_nrand (GMT);
+			ry = ynoise * gmt_nrand (GMT);
+			xx[n] = xf[col] + rx;	yy[n] = yf[row] + ry;
+			GMT_Report (API, GMT_MSG_DEBUG, "Adding grid point with %g noise: %d\t	%g\t%g\n", percent, (int)n, xx[n], yy[n]);
 			if (triplets[GMT_IN]) zz[n] = F->data[ij];
 			n++;
 			if (n == n_alloc) {	/* Get more memory */
