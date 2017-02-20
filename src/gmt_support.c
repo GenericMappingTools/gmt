@@ -3152,15 +3152,15 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
 	uint64_t dim[4] = {1, 0, 2, 2};
-	int i, j, k, n, km1, j2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
-	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex;
+	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
+	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, change;
 	unsigned int geometry, side, corner;
 	char header[GMT_LEN32] = {""};
 	unsigned char *point_type = NULL;
 	struct triangulateio In, Out, vorOut;
 	struct GMT_DATASET *P = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	double dy, new_x, xe, ye, xp, yp;
+	double dy, new_x, xe, ye, xp, yp, x0, y0;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
@@ -3204,11 +3204,10 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		if (vorOut.edgelist[k] > n_int_vertex) n_int_vertex = vorOut.edgelist[k];
 		if (vorOut.edgelist[k+1] > n_int_vertex) n_int_vertex = vorOut.edgelist[k+1];
 	}
-	/* Count Voronoi vertices and number of infinite rays */
-	for (i = k = 0; i < n_int_vertex; i++, k += 2) {
+	/* Count Voronoi vertices outside w/e/s/n region */
+	for (i = k = 0; i < n_int_vertex; i++, k += 2)
 		if (vorOut.pointlist[k] < wesn[XLO] || vorOut.pointlist[k] > wesn[XHI] || vorOut.pointlist[k+1] < wesn[YLO] || vorOut.pointlist[k+1] > wesn[YHI])
 			n_to_clip++;
-	}
 
 #if DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Output from triangulate:\n");
@@ -3243,18 +3242,18 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	}
 	
 	/* Reallocate the triangle arrays to hold the extra vertices we will need to add */
-	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_vertex + n_extra + corners) * sizeof (double));
+	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_vertex + n_extra + corners + 2*n_to_clip) * sizeof (double));
 	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_int_edges  + n_extra + corners) * sizeof (int));
 
 	/* First replace infinite rays with finite points where they intersect the border (i.e., we clip the rays to w/e/s/n) */
-	
+
 	for (i = k = 0; i < n_int_edges; i++, k++) {
 		if (vorOut.edgelist[k+1] != -1) {k++; continue;}	/* Finite edge, skip to next edge */
 		/* Infinite ray; calculate intersection with region boundary */
 		/* Each edgelist always has a Voronoi vertex as the first point so j2 is never 2 * (-1) */
 		km1 = k++;	/* Remember edge list first entry */
 		j2 = 2 * vorOut.edgelist[km1];	/* Index into pointlist with x-coordinate */
-		/* Get the coordinates of the point P; this is an interior Voronoi vertex */
+		/* Get the coordinates of the point P; this could be an interior or exterior Voronoi vertex [to be skipped] */
 		xp = vorOut.pointlist[j2++];
 		yp = vorOut.pointlist[j2];
 		/* Determine (xe, ye), the intersection of the ray and the bounding box */
@@ -3286,10 +3285,103 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		vorOut.pointlist[p++] = ye;
 	}
 
+#if 0	
+	for (i = k = 0; i < n_int_edges; i++, k++) {
+		km1 = k++;	/* Remember edge list first entry */
+		j2 = 2 * vorOut.edgelist[km1];	/* Index into pointlist with x-coordinate */
+		/* Get the coordinates of the point P; this could be an interior or exterior Voronoi vertex [to be skipped] */
+		xp = vorOut.pointlist[j2++];
+		yp = vorOut.pointlist[j2];
+		if (vorOut.edgelist[k+1] == -1) {	/* Infinite ray; calculate intersection with region boundary */
+			/* Each edgelist always has a Voronoi vertex as the first point so j2 is never 2 * (-1) */
+			/* Determine (xe, ye), the intersection of the ray and the bounding box */
+			if (vorOut.normlist[km1] < 0.0) {	/* Ray will intersect x = xmin, called side = 4 */
+				xe = wesn[XLO];	side = 4;
+			}
+			else {	/* Ray will intersect x = xmax, called side = 2 */
+				xe = wesn[XHI];	side = 2;
+			}
+			/* Compute y-value at the intersection or ray and border */
+			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (xe - xp));
+			ye = yp + dy * copysign (1.0, vorOut.normlist[k]);
+			if (ye < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set ye to ymin */
+				side = 1;	/* South */
+				new_x = xp + (wesn[YLO] - yp) * (xe - xp) / (ye - yp);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YLO]);
+				xe = new_x;	ye = wesn[YLO];
+			}
+			else if (ye > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set ye to ymax */
+				side = 3;	/* North */
+				new_x = xp + (wesn[YHI] - yp) * (xe - xp) / (ye - yp);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YHI]);
+				xe = new_x;	ye = wesn[YHI];
+			}
+			/* Update the truncated ray (-1) in the edge list with a new vertex and add the vertex coordinates to pointlist */
+			if (mode) point_type[n_vertex] = side;	/* Mark as a border point 1-4 */
+			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the actual point on the boundary */
+			vorOut.pointlist[p++] = xe;				/* Add the ray intersection point to the pointlist */
+			vorOut.pointlist[p++] = ye;
+		}
+		else {
+			i2 = 2 * vorOut.edgelist[k++];	/* 2nd index into pointlist with x-coordinate */
+			/* Get the coordinates of the second Voronoi vertex */
+			x0 = vorOut.pointlist[i2++];
+			y0 = vorOut.pointlist[i2];
+			if (xp < wesn[XLO]) {	/* Crossing at xmin */
+				xe = wesn[XLO];
+				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
+				change = k - 2;	side = 4;
+			}
+			else if (xp > wesn[XHI]) {	/* Crossing at xmax */
+				xe = wesn[XHI];
+				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
+				change = k - 2;	side = 2;
+			}
+			else if (yp < wesn[YLO]) {	/* Crossing at ymin */
+				ye = wesn[YLO];
+				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
+				change = k - 2;	side = 1;
+			}
+			else if (yp > wesn[YHI]) {	/* Crossing at ymax */
+				ye = wesn[YHI];
+				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
+				change = k - 2;	side = 3;
+			}
+			else if (x0 < wesn[XLO]) {	/* Crossing at xmin */
+				xe = wesn[XLO];
+				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
+				change = k - 1;	side = 4;
+			}
+			else if (xp > wesn[XHI]) {	/* Crossing at xmax */
+				xe = wesn[XHI];
+				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
+				change = k - 1;	side = 2;
+			}
+			else if (yp < wesn[YLO]) {	/* Crossing at ymin */
+				ye = wesn[YLO];
+				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
+				change = k - 1;	side = 1;
+			}
+			else if (yp > wesn[YHI]) {	/* Crossing at ymax */
+				ye = wesn[YHI];
+				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
+				change = k - 1;	side = 3;
+			}
+			else	/* Normal edge */
+				continue;
+			/* Here update edge vertex and add new point */
+			if (mode) point_type[n_vertex] = side;	/* Mark as a border point 1-4 */
+			vorOut.edgelist[change] = n_vertex++;
+			vorOut.pointlist[p++] = xe;	
+			vorOut.pointlist[p++] = ye;
+		}
+	}
+#endif
+
 	/* Now edgelist only contains actual point IDs and pointlist has been updated to hold all added border points */
 
 #if DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After infinite ray replacements:\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After infinite ray and exterior vertex crossing replacements:\n");
 		for (i = k = 0; i < n_int_edges; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 		for (i = k = 0; i < n_vertex; i++, k += 2)
@@ -3300,7 +3392,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		bool first_turn, go_i, go_j;
 		char *edge_use = NULL;
 		int expected_sign, prev_sign, next_sign, *start_vertex = NULL, *stop_vertex = NULL;
-		int64_t edge, pstart, pstop, i2, start_point, next_point, prev_point, np;
+		int64_t edge, pstart, pstop, start_point, next_point, prev_point, np;
 		double xstart, xstop, xend, ystart, ystop, yend, cross_product;
 		double *xcoord = NULL, *ycoord = NULL, *dx = NULL, *dy = NULL, *x_pos = NULL, *y_pos = NULL;
 		/* Add the 4 border corners to the point list as well and mark them as corners with special side = 5-8.
