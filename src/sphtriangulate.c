@@ -592,7 +592,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);

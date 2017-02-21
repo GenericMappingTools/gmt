@@ -510,7 +510,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			else
 				out[k+3] = value;
 		}
-		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, out);
 	}
 
 	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);

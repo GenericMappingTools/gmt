@@ -617,7 +617,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 				else
 					out[k++] = p_data[rec].a[P->output_choice[col]];
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);	/* Write this to output */
 		}
 	}
 	gmt_M_free (GMT, out);
@@ -923,7 +923,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 		}
 	}
 	else {	/* Must read input file */
@@ -946,7 +946,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		pure_ascii = gmt_is_ascii_record (GMT, options);
 
-		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DATA;
 		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
 		

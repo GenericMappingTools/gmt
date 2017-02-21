@@ -800,7 +800,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	just_copy_record = (gmt_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
-	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DATA;
 	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
 	
 	do {	/* Keep returning records until we reach EOF */
@@ -982,7 +982,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
 		}
 		else
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
+			GMT_Put_Record (API, GMT_WRITE_DATA, in);
 		n_pass++;
 	} while (true);
 	

@@ -703,17 +703,17 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 	}
 	else {			/* Return information for all contours (possibly one if -C<val> was used) */
 		if (Ctrl->C.reverse) {
 			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];	out[3] = out[2] / out[1];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 		}
 		else {
 			for (c = 0; c < n_contours; c++) {
 				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 			}
 		}
 	}

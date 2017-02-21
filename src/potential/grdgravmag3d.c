@@ -975,7 +975,7 @@ L1:
 			out[GMT_X] = point->segment[0]->data[GMT_X][k];
 			out[GMT_Y] = point->segment[0]->data[GMT_Y][k];
 			out[GMT_Z] = g[k];
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 		}
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data input */

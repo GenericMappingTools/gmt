@@ -265,7 +265,7 @@ GMT_LOCAL void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint6
 	uint64_t c;
 	double out[GMT_MAX_COLUMNS];
 	for (c = 0; c < n; c++) out[c] = R[c][p];
-	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
+	GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
 }
 
 GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
@@ -1181,7 +1181,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			out[col++] = NN_dist[k].distance;
 			out[col++] = (double)NN_dist[k].ID;
 			out[col++] = (double)NN_dist[k].neighbor;
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write area or length to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write area or length to output */
 		}
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			d_bar /= n_points;
@@ -1373,7 +1373,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					handedness = Ctrl->E.mode;
 				}
 				if (!new_data)	/* Just write centroid and area|length to output */
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 		}
 		if (Ctrl->Q.header || Ctrl->E.active) {		/* Must write out a revised dataset */
@@ -1510,7 +1510,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 											GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 											first = false;
 										}
-										GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+										GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 									}
 									/* Always output crossover point */
 									if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
@@ -1523,7 +1523,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									}
 									for (col = 2; col < S2->n_columns; col++) out[col] = 0.0;
 									out[GMT_X] = xx[px];	out[GMT_Y] = yy[px];
-									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 									px++;
 									in = !in;	/* Go from out to in or vice versa */
 									if (!in) first = true;	/* Since we went outside */
@@ -1540,7 +1540,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 												GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 												first = false;
 											}
-											GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+											GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 										}
 										go = false;
 									}
@@ -1577,7 +1577,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								}
 								for (row = 0; row < S2->n_rows; row++) {
 									for (col = 0; col < S2->n_columns; col++) out[col] = S2->data[col][row];
-									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 								}
 							}
 						}

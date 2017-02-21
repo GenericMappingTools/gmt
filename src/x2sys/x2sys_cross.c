@@ -637,7 +637,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 				gmt_x_free (GMT, &XC);
 			}
@@ -841,7 +841,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					}
 
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 
 				gmt_x_free (GMT, &XC);

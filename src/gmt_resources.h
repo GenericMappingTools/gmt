@@ -162,14 +162,16 @@ enum GMT_enum_ioset {
 	GMT_IO_UNREG = 16384};		/* Tell GMT_End_IO to unregister all accessed resources. */
 
 enum GMT_enum_read {
-	GMT_READ_DOUBLE = 0,		/* Read ASCII data record and return double array */
+	GMT_READ_DATA = 0,		/* Read ASCII data record and return double array */
+	GMT_READ_DOUBLE = 0,		/* Read ASCII data record and return double array [obsolete, replaced by GMT_READ_DATA for clarity] */
 	GMT_READ_NORMAL = 0,		/* Normal read mode [Default] */
 	GMT_READ_TEXT = 1,		/* Read ASCII data record and return text string */
 	GMT_READ_MIXED = 2,		/* Read ASCII data record and return double array but tolerate conversion errors */
 	GMT_READ_FILEBREAK = 4};	/* Add to mode to indicate we want to know when each file end is reached [continuous] */
 
 enum GMT_enum_write {
-	GMT_WRITE_DOUBLE = 0,		/* Write double array to output */
+	GMT_WRITE_DATA = 0,		/* Write double array to output */
+	GMT_WRITE_DOUBLE = 0,		/* Write double array to output [obsolete, replaced by GMT_WRITE_DATA for clarity] */
 	GMT_WRITE_TEXT = 1,		/* Write ASCII current record to output */
 	GMT_WRITE_SEGMENT_HEADER = 2,	/* Write segment header record to output */
 	GMT_WRITE_TABLE_HEADER = 3,	/* Write current record as table header to output */

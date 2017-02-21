@@ -744,7 +744,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			if (mixed)
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			else
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

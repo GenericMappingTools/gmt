@@ -828,7 +828,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, w_out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, w_out);	/* Write this to output */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -997,9 +997,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	rmode = (gmt_is_ascii_record (GMT, options) && gmt_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
-	family = (rmode == GMT_READ_DOUBLE) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
-	geometry = (rmode == GMT_READ_DOUBLE) ? GMT_IS_POINT : GMT_IS_NONE;
+	rmode = (gmt_is_ascii_record (GMT, options) && gmt_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DATA;
+	family = (rmode == GMT_READ_DATA) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
+	geometry = (rmode == GMT_READ_DATA) ? GMT_IS_POINT : GMT_IS_NONE;
 	if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
@@ -1142,7 +1142,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 			}
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
@@ -1302,7 +1302,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 					for (col = 0; col < MP_COL_N; col++)
 						if (Ctrl->used[col]) out[ks++] = extra[col];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 			}
 			else {
@@ -1340,7 +1340,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						n_output = gmt_get_cols (GMT, GMT_OUT);
 					}
 					for (k = two; k < n_output; k++) out[k] = in[k];
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 			}
 			n++;

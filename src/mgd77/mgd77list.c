@@ -1552,7 +1552,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						out[pos] = dvalue[kk][rec] - correction;
 					}
 				}
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 			}
 			n_out++;
 		}

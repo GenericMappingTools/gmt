@@ -643,7 +643,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
 			}
-			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DOUBLE, data_sum);
+			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DATA, data_sum);
 		}
 		else {
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
@@ -707,7 +707,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
-				GMT_Put_Record (C, GMT_WRITE_DOUBLE, outval);
+				GMT_Put_Record (C, GMT_WRITE_DATA, outval);
 			}
 		}
 

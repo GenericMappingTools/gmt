@@ -1696,7 +1696,7 @@ identify segment headers we instead return a NULL pointer. The ``nfields``
 integer pointer will return the number of fields returned; pass NULL if your
 program should ignore this information.
 
-Normally (i.e., ``mode`` = ``GMT_READ_DOUBLE``), we return a pointer to
+Normally (i.e., ``mode`` = ``GMT_READ_DATA``), we return a pointer to
 a double array. To read text records, supply instead ``mode`` =
 ``GMT_READ_TEXT`` and we will return a pointer to the text
 record. However, if you have input records that mixes organized
@@ -2303,8 +2303,8 @@ initialize the destination with GMT_Init_IO_. Note that for families
 :ref:`GMT_DATASET <struct-dataset>` structure directly. As mentioned, ``mode`` affects what is
 actually written:
 
-**GMT_WRITE_DOUBLE**.
-    Normal operation that builds the current output record from the values in ``rec``.
+**GMT_WRITE_DATA**.
+    Normal operation that builds the current output record from the numerical values in ``rec``.
 
 **GMT_WRITE_TEXT**.
     For ASCII output mode we write the text string ``rec``. If ``rec``

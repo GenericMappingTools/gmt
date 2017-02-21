@@ -654,7 +654,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 			}
 			else {					/* DID CM4 and IGRF */
@@ -673,7 +673,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 							out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*3+j] + igrf_xyz[i*3+j];
 					}
 
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);
 				}
 			}
 

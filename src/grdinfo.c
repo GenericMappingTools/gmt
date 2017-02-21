@@ -605,7 +605,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->M.active) {
 					out[col++] = (double)n_nan;
 				}
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 			else {	/* Command-line usage */
 				sprintf (record, "%s%s", G->header->name, sep);
@@ -829,7 +829,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
 			out[YLO] = global_ymin;		out[YHI] = global_ymax;
 			out[ZLO] = global_zmin;		out[ZHI] = global_zmax;
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 		}
 		else {	/* Command-line usage */
 			sprintf (record, "%d%s", n_grds, sep);

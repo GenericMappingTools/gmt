@@ -251,7 +251,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
 		}
 
 		i = j;

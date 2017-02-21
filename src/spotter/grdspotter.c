@@ -1048,7 +1048,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			out[1] = gmt_M_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;
 			
-			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

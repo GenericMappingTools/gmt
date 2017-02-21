@@ -661,7 +661,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					out[col++] = area;
 					out[col++] = volume;
 					out[col++] = height;
-					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
 				GMT_Report (API, GMT_MSG_VERBOSE, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
 			}

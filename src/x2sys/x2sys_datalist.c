@@ -537,7 +537,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_TEXT, fmt_record);
 			}
 			else {
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			}
 		}
 

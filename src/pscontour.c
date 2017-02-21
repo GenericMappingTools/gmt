@@ -816,7 +816,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	skip_triangles = (Ctrl->S.active && Ctrl->S.mode == 1);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);

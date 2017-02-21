@@ -86,7 +86,7 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 
 	i = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
@@ -166,7 +166,7 @@ GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *da
 					break;
 			}
 		}
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);	/* Write this to output */
 	}
 }
 

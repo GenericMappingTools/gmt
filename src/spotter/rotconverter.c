@@ -494,7 +494,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			spotter_covar_to_record (GMT, &a[stage], K);
 			for (k = 0; k < 9; k++) out[col++] = K[k];
 		}
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, out);
 	}
 	
 	gmt_M_free (GMT, a);
