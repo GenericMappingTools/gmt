@@ -475,7 +475,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		char header[GMT_LEN64] = {""};
 		char *feature[2] = {"edges", "polygons"};
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " Voronoi %s found\n", V->n_segments, feature[Ctrl->Q.mode]);
-		V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode);
 		zpol = gmt_M_memory (GMT, NULL, V->n_segments, double);
 		if (triplets[GMT_IN] && Ctrl->Q.mode) {
 			for (seg = 0; seg < V->n_segments; seg++) {
