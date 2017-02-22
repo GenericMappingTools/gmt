@@ -822,6 +822,12 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
+		if (first_slice) {	/* Did not have the recquired header record */
+			GMT_Report (API, GMT_MSG_VERBOSE, "No segment header with depth [and optional densithy contrast] - must quit\n");
+			gmt_M_free (GMT, cake);
+			Return (API->error);
+		}
+		
 		/* Clean data record to process */
 
 		if (n && (x[n-1] == x[n] && y[n-1] == y[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
