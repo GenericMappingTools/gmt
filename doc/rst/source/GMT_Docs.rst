@@ -448,9 +448,12 @@ We have added two new lower-case GMT common options:
    available cores (only available if compiled with OpenMP support).
    Those modules will offer the new option **-x**\ [[-]\ *n*] to reduce
    how many cores to assign to the task.  The modules that currently
-   have this option are greenspline, grdmask, grdmath, grdfilter,
-   grdsample, sph2grd, the potential supplement's grdgravmag3d,
-   talwani2d and talwani3d, and the x2sys supplement's x2sys_solve.
+   have this option are :doc:`greenspline`, :doc:`grdmask`, :doc:`grdmath`,
+   :doc:`grdfilter`, :doc:`grdsample`, :doc:`sph2grd`, the potential supplement's
+   :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>`,
+   :doc:`talwani2d <supplements/potential/talwani2d>` and
+   :doc:`talwani3d <supplements/potential/talwani3d>`, and the x2sys
+   supplement's :doc:`x2sys_solve <supplements/x2sys/x2sys_solve>`.
    This list will grow longer with time.
 
 New default parameters
@@ -502,8 +505,10 @@ General improvements
 Several changes have affects across GMT; these are:
 
 *  Added optional multi-threading capabilities to several modules, such as
-   greenspline, grdfilter, grdmask, grdsample, the potential supplement's
-   grdgravmag3d, talwani2d and talwani3d and x2sys's x2sys_solve.
+   :doc:`greenspline`, :doc:`grdfilter`, :doc:`grdmask`, :doc:`grdsample`,
+   the potential supplement's :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>`,
+   :doc:`talwani2d <supplements/potential/talwani2d>` and
+   :doc:`talwani3d <supplements/potential/talwani2d>` and x2sys's :doc:`x2sys_solve <supplements/x2sys/x2sys_solve>`.
 
 *  Optional prerequisite LAPACK means SVD decomposition in greenspline is
    now very fast, as is true for the regular Gauss-Jordan solution via a
@@ -8403,6 +8408,7 @@ codes, e.g., \\265 instead of μ. Note, that *PostScript* fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
+.. _Color Space:
 
 Color Space: The Final Frontier
 ===============================

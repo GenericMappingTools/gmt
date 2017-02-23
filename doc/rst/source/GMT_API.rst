@@ -2887,11 +2887,11 @@ as other languages (Python, Java, Julia, etc.) or tools (MATLAB, Octave,
 etc.) need to manipulate linked options in a special way.  For instance,
 a GMT call in the MATLAB or Octave application might look like
 
-  ::
+.. code-block:: none
 
-    table = gmt ('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
-    grid  = gmt ('surface -R -I2m -Lu', table, high_limit_grid);
-    grid2 = gmt ('grdmath ? LOG10 ? MUL', grid, grid);
+    table = gmt('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
+    grid  = gmt('surface -R -I2m -Lu', table, high_limit_grid);
+    grid2 = gmt('grdmath ? LOG10 ? MUL', grid, grid);
 
 Most of the time our implicit rules will take care of the ordering.  The
 rule says that all required input data items must be listed before any
@@ -2913,7 +2913,7 @@ The prototype is
   ::
 
     struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in,
-    	struct GMT_OPTION **head, int *n_items);
+    	                                       struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
 pointed to by ``*head``, ``n_in`` contains the number of *input*
@@ -2986,7 +2986,7 @@ your program needs to present the FFT option usage you can call
   ::
 
     unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim,
-    	const char *string);
+    	                           const char *string);
 
 Here, ``option`` is the unique character used for this particular
 program option (most GMT programs have standardized on using 'N' but
@@ -3020,7 +3020,7 @@ conveniently performed for you by
   ::
 
     void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
-    	unsigned int mode, void *F);
+    	                    unsigned int mode, void *F);
 
 Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
 dimension of the transform (1 or 2 only), ``mode`` passes various flags to the setup, such as whether
@@ -3086,7 +3086,7 @@ A lower-level 2-D FFT is also available via
   ::
 
     int GMT_FFT_2D (void *API, float *data, unsigned int n_columns,
-    	unsigned int n_rows, int direction, unsigned int mode);
+    	              unsigned int n_rows, int direction, unsigned int mode);
 
 which takes as ``direction`` either ``GMT_FFT_FWD`` or ``GMT_FFT_INV``. The
 ``mode`` is used to specify if we pass a real (``GMT_FFT_REAL``) or complex
@@ -3191,7 +3191,7 @@ To inquire about the range of information in a grid, use
   ::
 
     int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
-    	char *title, char *remark, const char *file)
+    	                       char *title, char *remark, const char *file)
 
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
 as three consecutive pairs, ``inc`` returns the x and y increments, while the ``title`` and ``remark``
@@ -3206,7 +3206,7 @@ To actually read the grid, we use
   ::
 
     int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[],
-    	double inc[], char *title, char *remark, const char *file)
+    	                   double inc[], char *title, char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
 ``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments, and
@@ -3222,8 +3222,8 @@ Finally, to write a grid to file you can use
 
   ::
 
-    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[],
-    	double inc[], const char *title, const char *remark, const char *file)
+    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[],
+    	                    const char *title, const char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,
