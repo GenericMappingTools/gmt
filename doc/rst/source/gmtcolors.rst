@@ -1066,9 +1066,7 @@ and their equivalent color codes.
 Further Information
 -------------------
 
-For more information on the use of color, read Chapter
-`Color Space: The Final Frontier`_ of the **GMT
-TECHNICAL REFERENCE AND COOKBOOK**.
+For more information on the use of color, read Chapter :ref:`Color Space` of the **CookBook**.
 
 See Also
 --------

@@ -8425,6 +8425,7 @@ codes, e.g., \\265 instead of μ. Note, that *PostScript* fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
+.. _Color Space:
 
 Color Space: The Final Frontier
 ===============================
