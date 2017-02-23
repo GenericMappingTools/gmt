@@ -697,6 +697,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 	}
 
+	/* Defeat the auto-repeat of axis info */
+	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 	if (Ctrl->F.active) {	/* Place rectangle behind the color bar */
 		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -782,8 +784,6 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
 	unit[0] = label[0] = 0;
-	/* Defeat the auto-repeat of axis info */
-	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
 	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
 	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
