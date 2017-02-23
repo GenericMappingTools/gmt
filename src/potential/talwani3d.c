@@ -35,7 +35,9 @@
  * M. Talwani and M. Ewing, Rapid Computation of gravitational
  *    attraction of three-dimensional bodies of arbitrary shape,
  *    Geophysics, 25, 203-225, 1960. [for gravity]
- * Kim, S.-S. and P. Wessel, 2015, in prep. [for VGG and geoid]
+ * Kim, S.-S., and P. Wessel, New analytic solutions for modeling
+ *    vertical gravity gradient anomalies, Geochem. Geophys. Geosyst.,
+ *    17, 2016, doi:10.1002/2016GC006263. [for VGG and geoid]
  *
  * Accelerated with OpenMP; see -x.
  */
@@ -43,7 +45,7 @@
 #define THIS_MODULE_NAME	"talwani3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
-#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,GG),G-<,>D}"
+#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,GG),G->,>D}"
 
 #include "gmt_dev.h"
 
