@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2012-2016
+ * Copyright (c) 2012-2017
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -47,10 +47,10 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"pscoupe", "meca", "Plot cross-sections of focal mechanisms", "<T{,>X}"},
 	{"psmeca", "meca", "Plot focal mechanisms on maps", "<T{,>X}"},
 	{"pspolar", "meca", "Plot polarities on the inferior focal half-sphere on maps", "<T{,>X}"},
-	{"pssac", "meca", "Plot seismograms in SAC format on maps", "<DI,CCi,T-i,>XO,RG-"},
+	{"pssac", "meca", "Plot seismograms in SAC format on maps", ">XO,RG-"},
 	{"psvelo", "meca", "Plot velocity vectors, crosses, and wedges on maps", "<T{,>X}"},
 	{"mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
-	{"mgd77info", "mgd77", "Extract information about MGD77 files", ">T}"},
+	{"mgd77info", "mgd77", "Extract information about MGD77 files", ""},
 	{"mgd77list", "mgd77", "Extract data from MGD77 files", ">?}"},
 	{"mgd77magref", "mgd77", "Evaluate the IGRF or CM4 magnetic field models", "<D{,>D}"},
 	{"mgd77manage", "mgd77", "Manage the content of MGD77+ files", ""},
@@ -67,7 +67,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG},ZG)"},
 	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<T{,GG},MT),TD("},
 	{"talwani2d", "potential", "Compute geopotential anomalies over 2-D bodies by the method of Talwani", "<D{,ND(,>D}"},
-	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),G-<,>D}"},
+	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),G->,>D}"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X}"},
 	{"pssegy", "segy", "Plot a SEGY file on a map", ">X}"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", "GG}"},
