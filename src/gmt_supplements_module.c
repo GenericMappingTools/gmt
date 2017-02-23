@@ -68,7 +68,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG},ZG)"},
 	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<T{,GG},MT),TD("},
 	{"talwani2d", "potential", "Compute geopotential anomalies over 2-D bodies by the method of Talwani", "<D{,ND(,>D}"},
-	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),G->,>D}"},
+	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,G?},GDN"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X}"},
 	{"pssegy", "segy", "Plot a SEGY file on a map", ">X}"},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", "GG}"},

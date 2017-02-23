@@ -9590,6 +9590,11 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (strip_colon)
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
 	}
+	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
+	else if (!strncmp (module, "talwani3d", 9U)) {
+		/* Found the -N option; set type to D */
+		type = ((opt = GMT_Find_Option (API, 'N', *head))) ? 'D' : 'G';
+	}
 
 	gmt_M_str_free (module);
 

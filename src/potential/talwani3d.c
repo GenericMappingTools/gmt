@@ -32,12 +32,12 @@
  *
  * Based on methods by
  *
- * M. Talwani and M. Ewing, Rapid Computation of gravitational
- *    attraction of three-dimensional bodies of arbitrary shape,
- *    Geophysics, 25, 203-225, 1960. [for gravity]
  * Kim, S.-S., and P. Wessel, New analytic solutions for modeling
  *    vertical gravity gradient anomalies, Geochem. Geophys. Geosyst.,
  *    17, 2016, doi:10.1002/2016GC006263. [for VGG and geoid]
+ * M. Talwani and M. Ewing, Rapid Computation of gravitational
+ *    attraction of three-dimensional bodies of arbitrary shape,
+ *    Geophysics, 25, 203-225, 1960. [for gravity]
  *
  * Accelerated with OpenMP; see -x.
  */
@@ -45,7 +45,7 @@
 #define THIS_MODULE_NAME	"talwani3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
-#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,GG),G->,>D}"
+#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,G?},GDN"
 
 #include "gmt_dev.h"
 
@@ -216,12 +216,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				break;
 		}
 	}
-	if (GMT->common.R.active && Ctrl->I.active)
-		gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	if (GMT->common.R.active) {
+		gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active,
+		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active && Ctrl->I.active) && Ctrl->Z.mode == 1,
 	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active + Ctrl->I.active) == 1,
-	                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Syntax error -G option: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
@@ -249,7 +250,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient anomalies (VGG; 1 Eovtos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output grid file name (i.e., when -N is not specified).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Output data. Give name of output file.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x/y-distances are in km [meters]\n");
@@ -872,7 +873,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 
 	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations */
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, G) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
@@ -884,7 +885,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* Got a dataset with output locations */
+	else {	/* Got a dataset with output locations via -N */
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			gmt_M_free (GMT, cake);
@@ -917,13 +918,21 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	depths = gmt_M_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
+		unsigned int wmode = GMT_ADD_DEFAULT;
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? METERS_IN_A_MILE : 1.0;	/* Perhaps convert to km */
 		double out[4];
+		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
+		if (Ctrl->G.active) {
+			int out_ID;
+			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
+				Return (API->error);
+			wmode = GMT_ADD_EXISTING;
+		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
 			gmt_M_free (GMT, depths);
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			gmt_M_free (GMT, depths);
 			Return (API->error);
 		}
