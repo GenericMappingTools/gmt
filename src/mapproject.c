@@ -313,7 +313,7 @@ GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPP
 		Ctrl->G.mode |= ((arg[last] == '-') ? GMT_MP_INCR_DIST : GMT_MP_CUMUL_DIST);
 	}
 	else if (arg[last] == '+') {	/* Got -G[[+|-]units]+ */
-		Ctrl->G.mode = GMT_MP_PAIR_DIST;
+		Ctrl->G.mode = GMT_MP_PAIR_DIST | GMT_MP_INCR_DIST;
 		Ctrl->G.sph = (arg[0] == '-') ? GMT_FLATEARTH : ((arg[0] == '+') ? GMT_GEODESIC : GMT_GREATCIRCLE);
 		Ctrl->G.unit = (arg[0] == '-' || arg[0] == '+') ? arg[1] : arg[0];
 	}
