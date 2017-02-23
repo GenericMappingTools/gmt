@@ -382,7 +382,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 }
 
 GMT_LOCAL double linear_interpolate_x (double x0, double y0, double x1, double y1, double y) {
-	if (y<y0 || y>y1) return x1;  // no extrapolation
 	if (doubleAlmostEqualZero(y0, y1)) return x0;
 	return (x1-x0)/(y1-y0)*(y-y0) + x0;
 }
@@ -436,7 +435,7 @@ GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct
 
 			/* last point of polygon */
 			yy[ii] = zero;
-			if (i == n)
+			if (i == n || x[i] > t1)
 				xx[ii] = x[i-1];
 			else
 				xx[ii] = linear_interpolate_x(x[i], y[i], x[i-1], y[i-1], yy[ii]);
@@ -849,19 +848,29 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 				if (!Ctrl->Q.active) zero = Ctrl->G.zero[i]*yscale + y0;
 				else                 zero = Ctrl->G.zero[i]*yscale + x0;
 
-				if (!Ctrl->G.cut[i]) {
-					if (!Ctrl->Q.active) {
-						Ctrl->G.t0[i] = (float)x[0];
-						Ctrl->G.t1[i] = (float)x[hd.npts-1];
+ 				if (!Ctrl->G.cut[i]) {
+ 					if (!Ctrl->Q.active) {
+						if (gmt_M_is_linear(GMT)) {
+							Ctrl->G.t0[i] = MAX((float)x[0], (float)GMT->common.R.wesn[XLO]);
+							Ctrl->G.t1[i] = MIN((float)x[hd.npts-1], (float)GMT->common.R.wesn[XHI]);
+						} else {
+ 							Ctrl->G.t0[i] = (float)x[0];
+ 							Ctrl->G.t1[i] = (float)x[hd.npts-1];
+ 						}
 					}
-					else {
-						Ctrl->G.t0[i] = (float)y[0];
-						Ctrl->G.t1[i] = (float)y[hd.npts-1];
-					}
+ 					else {
+						if (gmt_M_is_linear(GMT)) {
+							Ctrl->G.t0[i] = MAX((float)y[0], (float)GMT->common.R.wesn[YLO]);
+							Ctrl->G.t1[i] = MIN((float)y[hd.npts-1], (float)GMT->common.R.wesn[YHI]);
+						} else {
+ 							Ctrl->G.t0[i] = (float)y[0];
+ 							Ctrl->G.t1[i] = (float)y[hd.npts-1];
+ 						}
+ 					}
 				}
 				GMT_Report (API, GMT_MSG_VERBOSE, "=> %s: Painting traces: zero=%g t0=%g t1=%g\n",
 				                                  L[n].file, zero, Ctrl->G.t0[i], Ctrl->G.t1[i]);
-				paint_phase(GMT, Ctrl, PSL, x, y, npts, zero, Ctrl->G.t0[i], Ctrl->G.t1[i], i);
+				paint_phase(GMT, Ctrl, PSL, x, y, hd.npts, zero, Ctrl->G.t0[i], Ctrl->G.t1[i], i);
 			}
 		}
 		gmt_M_free(GMT, x);
