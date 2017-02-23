@@ -792,7 +792,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 	uint64_t i, n_out, col_pos;
 	double val;
 
-	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT])		/* Write lat/lon instead of lon/lat */
 		gmt_M_double_swap (ptr[GMT_X], ptr[GMT_Y]);
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
@@ -805,7 +805,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 		k += GMT->current.io.fmt[GMT_OUT][i].io (GMT, fp, 1, &val);
 		if (GMT->current.io.fmt[GMT_OUT][i].skip > 0) gmtio_x_write (GMT, fp, GMT->current.io.fmt[GMT_OUT][i].skip);	/* Post-fill */
 	}
-	return (k);
+	return (0);
 }
 
 /*! . */
@@ -814,7 +814,7 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 	int e = 0, wn = 0;
 	double val;
 
-	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
 
 	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
@@ -839,7 +839,7 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 
 		wn += e;
 	}
-	return ((e < 0) ? e : wn);
+	return ((e < 0) ? -1 : 0);
 }
 
 /*! . */
@@ -3932,10 +3932,10 @@ void gmt_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false) 
 /*! . */
 int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data) {
 	int err;
-	if (gmt_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (gmt_skip_output (GMT, data, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	err = GMT->current.io.write_item (GMT, fp, n, data);
 	/* Cast below since the output functions are declared with uint64_t but cannot really exceed 4096... SHould change uint64_t to uint32_t */
-	return (err ? -1 : (int)n);	/* Return -1 if failed, else n items written */
+	return (err ? -1 : 0);	/* Return -1 if failed, else n items written */
 }
 
 /* gmt_z_input and gmt_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
