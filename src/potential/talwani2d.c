@@ -29,12 +29,14 @@
  *
  * Chapman, M. E. (1979), Techniques for interpretation of geoid
  *    anomalies, J. Geophys. Res., 84(B8), 3793–3801.
+ * Kim, S.-S., and P. Wessel, New analytic solutions for modeling
+ *    vertical gravity gradient anomalies, Geochem. Geophys. Geosyst.,
+ *    17, 2016, doi:10.1002/2016GC006263. [for VGG]
  * Rasmussen, R., and L. B. Pedersen (1979), End corrections in
  *   potential field modeling, Geophys. Prospect., 27, 749–760.
  * Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity
  *    computations for two-dimensional bodies with application to
  *    the Mendocino submarine fracture zone, J. Geophys. Res., 64, 49–59.
- * Kim, S.-S., and P. Wessel, 2015, in prep.
  *
  * Accelerated with OpenMP; see -x.
  */

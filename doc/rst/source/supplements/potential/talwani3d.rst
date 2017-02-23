@@ -16,7 +16,7 @@ Synopsis
 **talwani3d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
 [ |-F|\ **f**\ \|\ **n**\ \|\ **v** ]
-[ |-G|\ *grdfile* ]
+[ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
@@ -84,10 +84,10 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Specify the name of the output grid file; see GRID FILE FORMATS below).
+**-G**\ *outfile*
+    Specify the name of the output data (for grids, see GRID FILE FORMATS below).
     Required when an equidistant grid is implied for output.  If **-N** is used
-    then the output is written to stdout.
+    then output is written to stdout unless **G** specifies an output file.
 
 .. _-M:
 
@@ -157,11 +157,11 @@ for the same model, try
 
 
 Finally, the geoid anomaly along the same track in crossing.txt
-for the same model is returned by
+for the same model is written to n_crossing.txt by
 
 ::
 
-    gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fn > n_crossing.txt
+    gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fn -Gn_crossing.txt
 
 
 References
