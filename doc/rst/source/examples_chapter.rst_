@@ -926,7 +926,7 @@ Creating GMT Graphics
     *D* to a smaller increment (try 5 and wait a few minutes).
 
     The call to :doc:`grdimage` includes the
-    ``-Sn`` to suspend interpolation and only return the value of the
+    ``-nn`` to suspend interpolation and only return the value of the
     nearest neighbor. This option is particularly practical for plotting
     categorical data, like these, that should not be interpolated.
 

@@ -80,7 +80,7 @@ all **GMT** options are put in a single text string that is passed, plus the dat
 to the ``gmt()`` command. For example to reproduce the CookBook example of an Hemisphere map using a
 Azimuthal projection
 
-  ::
+.. code-block:: none
 
    gmt('pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps')
 
@@ -88,7 +88,7 @@ but that is not particularly interesting as after all we could do the exact same
 command line. Things start to get interesting when we can send data *in* and *out* from MATLAB to
 **GMT**. So, consider the following example
 
-  ::
+.. code-block:: none
 
     t = rand(100,3) * 150;
     G = gmt('surface -R0/150/0/150 -I1', t);
@@ -101,14 +101,14 @@ got the *G* variable that is a structure holding the grid and it's metadata. See
 
 Imagining that we want to plot that random data art, we can do it with a call to *grdimage*\ , like
 
-  ::
+.. code-block:: none
 
    gmt('grdimage -JX8c -Ba -P -Cblue,red > crap_img.ps', G)
 
 Note that we now sent the *G grid* as argument instead of the **-G**\ *gridname* that we would have
 used in the command line. But for readability we could well had left the **-G** option in command string. E.g:
 
-  ::
+.. code-block:: none
 
    gmt('grdimage -JX8c -Ba -P -Cblue,red -G > crap_img.ps', G)
 
@@ -116,7 +116,7 @@ While for this particular case it makes no difference to use or not the **-G**, 
 one input, the same does not hold true when we have more than one. For example, we can run the same example
 but compute the CPT separately.
 
-  ::
+.. code-block:: none
 
    cpt = gmt('grd2cpt -Cblue,red', G);
    gmt('grdimage -JX8c -Ba -P -C -G > crap_img.ps', G, cpt)
@@ -130,7 +130,7 @@ return more than one item: List the required output object first followed by opt
 To illustrate another aspect on the importance of the order of input data let us see how to plot a sine curve
 made of colored filled circles.
 
-  ::
+.. code-block:: none
 
    x = linspace(-pi, pi)';            % The *xx* var
    seno = sin(x);                     % *yy*
@@ -143,21 +143,21 @@ associated with an option letter **always comes after the required input**.
 
 To plot text strings we send in the input data wrapped in a cell array. Example:
 
-  ::
+.. code-block:: none
 
    lines = {'5 6 Some label', '6 7 Another label'};
    gmt('pstext -R0/10/0/10 -JM6i -Bafg -F+f18p -P > text.ps', lines)
 
 and we get back text info in cell arrays as well. Using the *G* grid computed above we can run *gmtinfo* on it
 
-  ::
+.. code-block:: none
 
     info = gmt('info', G)
 
 At the end of an **GMT** session work we call the internal functions that will do the house keeping of
 freeing no longer needed memory. We do that with this command:
 
-  ::
+.. code-block:: none
 
    gmt('destroy')
 
@@ -173,7 +173,7 @@ documentation, has many (not so trivial) examples on usage of the MEX GMT API.
 
 .. _grid-struct:
 
-.. code-block:: c
+.. code-block:: none
 
   proj4           % Projection string in PROJ4 syntax (Optional)
   wkt             % Projection string in WKT syntax (Optional)
@@ -197,7 +197,7 @@ Definition of the *grid structure* that holds a grid and its metadata.
 
 .. _img-struct:
 
-.. code-block:: c
+.. code-block:: none
 
   proj4           % Projection string in PROJ4 syntax (Optional)
   wkt             % Projection string in WKT syntax (Optional)
@@ -223,7 +223,7 @@ Definition of the *image structure* that holds a image and its metadata.
 
 .. _cpt-struct:
 
-.. code-block:: c
+.. code-block:: none
 
   colormap        % A [ncolors x 3] matrix with colorvalues in [0-1] range
   alpha           % A [ncolors x 1] vector with transparency (alpha) values in [0-1] range (optional)

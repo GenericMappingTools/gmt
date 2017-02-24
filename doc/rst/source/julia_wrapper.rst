@@ -111,7 +111,7 @@ It is crucial that they are used in the **exact** same order as the options in t
 To illustrate another aspect on the importance of the order of input data let us see how to plot a sinus curve
 made of colored filled circles.
 
-  ::
+.. code-block:: none
 
    x = linspace(-pi, pi)';            # The *xx* var
    seno = sin(x);                     # *yy*
@@ -168,7 +168,7 @@ just call them with
 
 .. _grid-type:
 
-.. code-block:: c
+.. code-block:: none
 
     type GMTJL_GRID               # The type holding a local header and data of a GMT grid
        proj4::String              # Projection string in PROJ4 syntax (Optional)
@@ -195,7 +195,7 @@ Definition of the *grid type* that holds a grid and its metadata.
 
 .. _img-type:
 
-.. code-block:: c
+.. code-block:: none
 
     type GMTimage                 # The type holding a local header and data of a GMT image
        proj4::String              # Projection string in PROJ4 syntax (Optional)

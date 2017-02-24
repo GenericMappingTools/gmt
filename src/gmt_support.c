@@ -12463,6 +12463,7 @@ void gmtlib_free_custom_symbols (struct GMT_CTRL *GMT) {
 bool gmt_polygon_is_open (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n) {
 	/* Returns true if the first and last point is not identical */
 	if (n < 2) return false;	/*	A single point is by definition closed */
+	if (y == NULL) return true;	/*	A single vector is by definition open */
 	if (!doubleAlmostEqualZero (y[0], y[n-1]))
 		return true;	/* y difference exceeds threshold: polygon is OPEN */
 	if (!doubleAlmostEqualZero (x[0], x[n-1])) {	/* The x values exceeds threshold, check further if by 360 under geo */

@@ -29,12 +29,14 @@
  *
  * Chapman, M. E. (1979), Techniques for interpretation of geoid
  *    anomalies, J. Geophys. Res., 84(B8), 3793–3801.
+ * Kim, S.-S., and P. Wessel, New analytic solutions for modeling
+ *    vertical gravity gradient anomalies, Geochem. Geophys. Geosyst.,
+ *    17, 2016, doi:10.1002/2016GC006263. [for VGG]
  * Rasmussen, R., and L. B. Pedersen (1979), End corrections in
  *   potential field modeling, Geophys. Prospect., 27, 749–760.
  * Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity
  *    computations for two-dimensional bodies with application to
  *    the Mendocino submarine fracture zone, J. Geophys. Res., 64, 49–59.
- * Kim, S.-S., and P. Wessel, 2015, in prep.
  *
  * Accelerated with OpenMP; see -x.
  */
@@ -589,9 +591,9 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Out->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Out->n_columns);
-			Return (GMT_DIM_TOO_SMALL);
+		if (Out->n_columns < 2) {	/* Only got x, must allocate output space for prediction in the 2nd column */
+			gmt_adjust_dataset (GMT, Out, 2U);
+			geometry = GMT_IS_LINE;	/* Since we are making from scratch */
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	}
@@ -672,6 +674,24 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			dup_node = n;
 		}
 		else {
+			if (first) {	/* Had no header record at all */
+				if (!Ctrl->D.active) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Found no segment header and -D not set - must quit\n");
+					gmt_M_free (GMT, body);
+					Return (API->error);
+				}
+				first = false;
+				if (Ctrl->D.active) rho = Ctrl->D.rho;
+				/* Allocate array for this body */
+				n_alloc = GMT_CHUNK;
+				x = gmt_M_memory (GMT, NULL, n_alloc, double);
+				z = gmt_M_memory (GMT, NULL, n_alloc, double);
+				n = 0;
+				if (n_bodies == n_alloc1) {
+					n_alloc1 <<= 1;
+					body = gmt_M_memory (GMT, body, n_alloc1, struct BODY2D);
+				}
+			}
 			x[n] = in[GMT_X];	z[n] = in[GMT_Y];
 			if (Ctrl->M.active[TALWANI2D_HOR]) x[n] *= METERS_IN_A_KM;	/* Change distances to m */
 			if (Ctrl->M.active[TALWANI2D_VER]) z[n] *= METERS_IN_A_KM;	/* Change distances to m */
