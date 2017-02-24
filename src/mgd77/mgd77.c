@@ -3747,14 +3747,14 @@ void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format) {
 	 	MGD77_format_allowed[MGD77_FORMAT_M7T] = true;
 	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = true;
 	}
-	else if (format >= MGD77_FORMAT_M77 && format <= MGD77_FORMAT_TBL)
+	else if (format >= MGD77_FORMAT_CDF && format <= MGD77_FORMAT_TBL)
 		MGD77_format_allowed[format] = false;
 }
 
 int MGD77_Select_Format (struct GMT_CTRL *GMT, int format) {
 	/* Allow user to select just one format and turn off all others */
 
-	if (format >= MGD77_FORMAT_M77 && format <= MGD77_FORMAT_TBL) {
+	if (format >= MGD77_FORMAT_CDF && format <= MGD77_FORMAT_TBL) {
 	 	MGD77_format_allowed[MGD77_FORMAT_M77] = false;
 	 	MGD77_format_allowed[MGD77_FORMAT_CDF] = false;
 	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = false;
