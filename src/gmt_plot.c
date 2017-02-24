@@ -2073,7 +2073,7 @@ GMT_LOCAL bool plot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 		case GMT_AZ_EQDIST:
 		case GMT_GNOMONIC:
 		case GMT_VANGRINTEN:
-			return (GMT->current.proj.polar);
+			return (GMT->current.proj.polar && !GMT->common.R.oblique);
 			break;
 		case GMT_POLAR:
 		case GMT_OBLIQUE_MERC:
