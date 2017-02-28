@@ -5467,7 +5467,7 @@ that is stored in the HDF "format". We need to run the GDAL program
 **gdalinfo** on the file because we first
 must extract the necessary metadata from the file:
 
-   ::
+.. code-block:: none
 
     gdalinfo A20030012003365.L3m_YR_NSST_9
     Driver: HDF4/Hierarchical Data Format Release 4
