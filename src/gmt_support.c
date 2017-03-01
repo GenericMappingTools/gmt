@@ -326,7 +326,7 @@ GMT_LOCAL char *support_get_userimagename (struct GMT_CTRL *GMT, char *line, cha
 	err = gmtsupport_parse_pattern (GMT, line, &fill);	/* See if this returns an error or not */
 	if (err) return NULL;	/* Not a valid image specification */
 	if (fill.pattern_no > 0) return NULL;	/* Not a user image */
-	
+
 	/* Here we do have a pattern specification */
 	/* Try the user's default directories */
 	if (gmtlib_getuserpath (GMT, fill.pattern, path))
@@ -3196,7 +3196,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	triangulate ("zIQBvDj", &In, &Out, &vorOut);
 
 	/* Determine output size for all edges */
-	
+
 	n_int_edges = vorOut.numberofedges;
 	/* Count Voronoi vertices and number of infinite rays */
 	for (i = 0, k = 0; i < n_int_edges; i++, k += 2) {
@@ -3240,7 +3240,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for support_voronoi_shewchuk\n");
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
 	}
-	
+
 	/* Reallocate the triangle arrays to hold the extra vertices we will need to add */
 	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_vertex + n_extra + corners + 2*n_to_clip) * sizeof (double));
 	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_int_edges  + n_extra + corners + n_to_clip) * sizeof (int));
@@ -3352,7 +3352,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		for (i = k = 0; i < n_vertex; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
-	
+
 	if (mode) {	/* Need to make closed polygons from edges */
 		bool first_turn, go_i, go_j;
 		signed char *edge_use = NULL;
@@ -3416,8 +3416,8 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				pstart = pstop;	ystart = ystop;	ystop = yend;	/* Let the end of this edge become start of the next edge */
 			}
 		}
-#if DEBUG
 		n_edges = edge;	/* Total number of all edges times 2 */
+#if DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter border edges are added:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
 			if (i < n_int_edges)
@@ -3429,7 +3429,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " [%d] at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
 		gmt_M_free (GMT, point_type);
-	
+
 		vorOut.normlist = realloc (vorOut.normlist, n_edges * sizeof (double));
 		/* Remove the unneeded external edges flagged by two -1 signs in the edgelist */
 		for (j2 = i2 = 0; j2 < n_edges; j2 += 2) {	/* For all the edges */
@@ -3441,7 +3441,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			}
 			if (!(vorOut.edgelist[j2] == -1 && vorOut.edgelist[j2+1] == -1)) i2 += 2;	/* Only increment output index when not a dummy edge */
 		}
-		/* UPdate the count of edges.  All the unneeded edges will lie within the original n_int_edges section */
+		/* Update the count of edges.  All the unneeded edges will lie within the original n_int_edges section */
 		n_edges -= (j2 - i2);
 		n_int_edges -= ((j2 - i2)/2);
 #if DEBUG
@@ -3453,9 +3453,9 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
 		}
 #endif
-		
+
 		/* Precalculate dx, dy for each edge and store these in normlist (which we need to reallocate first) */
-		n_edges_2 = n_edges / 2;	
+		n_edges_2 = n_edges / 2;
 		edge_use = gmt_M_memory (GMT, NULL, n_edges_2, signed char);	/* 0 = unused, +/-1 = used once in normal or reverse direction, 2 = used twice and done with */
 		dx = vorOut.normlist;	dy = &vorOut.normlist[1];	/* So we can use dx[index] and dy[index] */
 		start_vertex = vorOut.edgelist;	stop_vertex = &vorOut.edgelist[1];
@@ -3470,7 +3470,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - dont know yet] */
 		xcoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
 		ycoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
-		
+
 		/* Now stitch together the closed polygons */
 		seg = 0;
 		first_turn = true;	/* When we find the first 3 points in a polygon we can compute the cross-product and determine sign for all polygons */
@@ -3526,7 +3526,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 						}
 						else if ((prev_sign * next_sign * signum (cross_product)) != expected_sign)	/* Not making a convex polygon */
 							continue;
-						
+
 						/* Here we are going in a convex direction, so we add this new edge to the polygon */
 						prev_point = next_point;
 						next_point = (next_sign == 1) ? stop_vertex[j2] : start_vertex[j2];
@@ -7904,7 +7904,7 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 
 	/* If this CPT has a natural range then its z-values are either 0 to 1 or -1 to +1.  We must first
 	 * expand it to its natural z-range before we can truncate since z_low/z_high are in user units */
-	
+
 	if (P->has_range) {
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Stretch to its natural range first */
 		P->has_range = 0;
@@ -9696,7 +9696,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	int i, j, ndec = 0;
 	bool general = false;
 	char text[GMT_BUFSIZ];
-	size_t s_length; 
+	size_t s_length;
 
 	if (!strcmp (GMT->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
@@ -9720,7 +9720,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 		if (!strchr (unit, '%'))	/* No percent signs */
 			strncpy (text, unit, 80U);
 		else {
-			s_length = strlen(unit); 
+			s_length = strlen(unit);
 			for (i = j = 0; i < (int)s_length; i++) {
 				text[j++] = unit[i];
 				if (unit[i] == '%') text[j++] = unit[i];
@@ -11764,7 +11764,7 @@ void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode) {
 
 char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 	/* Return pointer to the first modifier +<char>, with three conditions:
-	 * 1. <char> must be one of the letters in sep, 
+	 * 1. <char> must be one of the letters in sep,
 	 * 2. We must not be inside quoted text, i.e., "my +shit title",
 	 * 3. The + must not be escaped, i.e., +t"My \+shit text"
 	 */
@@ -11774,7 +11774,7 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_first_modifier: No separation codes given\n");
 		return NULL;
 	}
-	
+
 	if (string == NULL) return NULL;
 	len = strlen (string);
 	inside_quote = (string[0] == '\"' || string[0] == '\'');
@@ -11792,7 +11792,7 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 
 #if 0
 /* Was used to test the tokenizing of +<code>[<args] in cases
- * where <args> may contain an escaped or quoted +, etc. 
+ * where <args> may contain an escaped or quoted +, etc.
  * To test, just add option case -N in psbasemap and call
  * psbasemap -N<combination of +a+b+c+d with/without args. */
 void gmt_testing (struct GMT_CTRL *GMT, char *string) {
@@ -11895,7 +11895,7 @@ int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 	 */
 	int i, j;
 	size_t k;
-	const size_t s_length = strlen(key); 
+	const size_t s_length = strlen(key);
 
 	if (isdigit ((int)key[0])) {	/* Apparently got one of the 1-11 codes */
 		i = atoi(key);
