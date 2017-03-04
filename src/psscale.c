@@ -534,9 +534,9 @@ void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	vdim[9] = (double)PSL_VEC_ARROW;
 	gmt_setfill (GMT, &black, false);
 	gmt_setpen (GMT, &pen);
-	PSL_plotsymbol (GMT->PSL, x, y, vdim, GMT_SYMBOL_MARC);
+	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 	vdim[1] = 230.0;	vdim[2] = 390.0;
-	PSL_plotsymbol (GMT->PSL, x, y, vdim, GMT_SYMBOL_MARC);
+	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 }
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)

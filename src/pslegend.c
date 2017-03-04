@@ -277,7 +277,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 		}
 		gmt_setfill (GMT, &F, false);
 		dim[0] = xoff[col+1] - xoff[col];
-		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, GMT_SYMBOL_RECT);
+		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, PSL_RECT);
 	}
 	*d_gap = 0.0;	/* Reset any "gap after D operator" once we use it */
 }

@@ -28,39 +28,19 @@
 
 #define GMT_ZW	3
 
-/* GMT symbol identifiers. Mostly the same as PSL_<symbol> but with
-   extensions for custom symbols, psxy and psxyz */
+/* GMT symbol identifiers. In addition to those in PSL we have
+   extensions for custom symbols in psxy and psxyz and 3-D symbols
+   as well as special line symbols (fronts, decorated or quoted lines) */
 
-#define GMT_SYMBOL_STAR		((int)'a')
-#define GMT_SYMBOL_BARX		((int)'B')
-#define GMT_SYMBOL_BARY		((int)'b')
-#define GMT_SYMBOL_CIRCLE	((int)'c')
-#define GMT_SYMBOL_DIAMOND	((int)'d')
-#define GMT_SYMBOL_ELLIPSE	((int)'e')
-#define GMT_SYMBOL_FRONT	((int)'f')
-#define GMT_SYMBOL_OCTAGON	((int)'g')
-#define GMT_SYMBOL_HEXAGON	((int)'h')
-#define GMT_SYMBOL_INVTRIANGLE	((int)'i')
-#define GMT_SYMBOL_ROTRECT	((int)'j')
-#define GMT_SYMBOL_CUSTOM	((int)'k')
-#define GMT_SYMBOL_TEXT		((int)'l')
-#define GMT_SYMBOL_MARC		((int)'m')
-#define GMT_SYMBOL_PENTAGON	((int)'n')
-#define GMT_SYMBOL_COLUMN	((int)'o')
-#define GMT_SYMBOL_DOT		((int)'p')
-#define GMT_SYMBOL_QUOTED_LINE	((int)'q')
-#define GMT_SYMBOL_RECT		((int)'r')
-#define GMT_SYMBOL_RNDRECT	((int)'R')
-#define GMT_SYMBOL_SQUARE	((int)'s')
-#define GMT_SYMBOL_TRIANGLE	((int)'t')
-#define GMT_SYMBOL_CUBE		((int)'u')
-#define GMT_SYMBOL_VECTOR	((int)'v')
-#define GMT_SYMBOL_WEDGE	((int)'w')
-#define GMT_SYMBOL_CROSS	((int)'x')
-#define GMT_SYMBOL_YDASH	((int)'y')
-#define GMT_SYMBOL_ZDASH	((int)'z')
-#define GMT_SYMBOL_PLUS		((int)'+')
-#define GMT_SYMBOL_XDASH	((int)'-')
+#define GMT_SYMBOL_BARX			((int)'B')
+#define GMT_SYMBOL_BARY			((int)'b')
+#define GMT_SYMBOL_FRONT		((int)'f')
+#define GMT_SYMBOL_CUSTOM		((int)'k')
+#define GMT_SYMBOL_TEXT			((int)'l')
+#define GMT_SYMBOL_COLUMN		((int)'o')
+#define GMT_SYMBOL_QUOTED_LINE		((int)'q')
+#define GMT_SYMBOL_CUBE			((int)'u')
+#define GMT_SYMBOL_ZDASH		((int)'z')
 #define GMT_SYMBOL_DECORATED_LINE	((int)'~')
 
 #define GMT_SYMBOL_MOVE		((int)'M')

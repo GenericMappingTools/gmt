@@ -5018,7 +5018,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case (int)'C':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
-					action = s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
+					action = s->action = PSL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
@@ -5026,19 +5026,19 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 				}
-			case GMT_SYMBOL_CROSS:
-			case GMT_SYMBOL_CIRCLE:
-			case GMT_SYMBOL_SQUARE:
-			case GMT_SYMBOL_TRIANGLE:
-			case GMT_SYMBOL_DIAMOND:
-			case GMT_SYMBOL_STAR:
-			case GMT_SYMBOL_HEXAGON:
-			case GMT_SYMBOL_OCTAGON:
-			case GMT_SYMBOL_PENTAGON:
-			case GMT_SYMBOL_INVTRIANGLE:
-			case GMT_SYMBOL_RECT:
-			case GMT_SYMBOL_XDASH:
-			case GMT_SYMBOL_YDASH:
+			case PSL_CROSS:
+			case PSL_CIRCLE:
+			case PSL_SQUARE:
+			case PSL_TRIANGLE:
+			case PSL_DIAMOND:
+			case PSL_STAR:
+			case PSL_HEXAGON:
+			case PSL_OCTAGON:
+			case PSL_PENTAGON:
+			case PSL_INVTRIANGLE:
+			case PSL_RECT:
+			case PSL_XDASH:
+			case PSL_YDASH:
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
 				p = (s->pen)  ? s->pen  : current_pen;
@@ -5048,8 +5048,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				PSL_plotsymbol (PSL, x, y, dim, action);
 				break;
 
-			case GMT_SYMBOL_ELLIPSE:
-			case GMT_SYMBOL_ROTRECT:
+			case PSL_ELLIPSE:
+			case PSL_ROTRECT:
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
 				p = (s->pen)  ? s->pen  : current_pen;
@@ -5060,7 +5060,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				PSL_plotsymbol (PSL, x, y, dim, PSL_ELLIPSE);
 				break;
 
-			case GMT_SYMBOL_MARC:
+			case PSL_MARC:
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
 				p = (s->pen)  ? s->pen  : current_pen;
@@ -5072,7 +5072,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				PSL_plotsymbol (PSL, x, y, dim, PSL_MARC);
 				break;
 
-			case GMT_SYMBOL_WEDGE:
+			case PSL_WEDGE:
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
 				p = (s->pen)  ? s->pen  : current_pen;

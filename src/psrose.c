@@ -700,11 +700,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			PSL_beginclipping (PSL, xc, yc, 4, GMT->session.no_rgb, 3);
 		}
 		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
-		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, PSL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
 	if (GMT->common.B.active[0]) {	/* Draw frame */
-		int symbol = (half_only) ? GMT_SYMBOL_WEDGE : GMT_SYMBOL_CIRCLE;
+		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE;
 		double dim[3];
 		struct GMT_FILL no_fill;
 

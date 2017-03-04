@@ -11031,13 +11031,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_NOT_SET;
 			break;
 		case '-':
-			p->symbol = GMT_SYMBOL_XDASH;
+			p->symbol = PSL_XDASH;
 			break;
 		case 'A':
 			p->factor = 1.67289326141;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'a':
-			p->symbol = GMT_SYMBOL_STAR;
+			p->symbol = PSL_STAR;
 			break;
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
@@ -11070,16 +11070,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'C':
 		case 'c':
-			p->symbol = GMT_SYMBOL_CIRCLE;
+			p->symbol = PSL_CIRCLE;
 			break;
 		case 'D':
 			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'd':
-			p->symbol = GMT_SYMBOL_DIAMOND;
+			p->symbol = PSL_DIAMOND;
 			break;
 		case 'E':	/* Expect axis in km to be scaled based on -J */
-			p->symbol = GMT_SYMBOL_ELLIPSE;
+			p->symbol = PSL_ELLIPSE;
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
@@ -11100,7 +11100,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			check = false;
 			break;
 		case 'e':
-			p->symbol = GMT_SYMBOL_ELLIPSE;
+			p->symbol = PSL_ELLIPSE;
 			/* Expect angle in degrees, then major and major axes in plot units */
 			p->n_required = 3;
 			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
@@ -11193,22 +11193,22 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->factor = 1.05390736526;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'g':
-			p->symbol = GMT_SYMBOL_OCTAGON;
+			p->symbol = PSL_OCTAGON;
 			break;
 		case 'H':
 			p->factor = 1.09963611079;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'h':
-			p->symbol = GMT_SYMBOL_HEXAGON;
+			p->symbol = PSL_HEXAGON;
 			break;
 		case 'I':
 			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'i':
-			p->symbol = GMT_SYMBOL_INVTRIANGLE;
+			p->symbol = PSL_INVTRIANGLE;
 			break;
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
-			p->symbol = GMT_SYMBOL_ROTRECT;
+			p->symbol = PSL_ROTRECT;
 			p->convert_angles = 1;
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
@@ -11228,7 +11228,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			check = false;
 			break;
 		case 'j':
-			p->symbol = GMT_SYMBOL_ROTRECT;
+			p->symbol = PSL_ROTRECT;
 			p->n_required = 3;
 			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 			check = false;
@@ -11239,7 +11239,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'M':
 		case 'm':
-			p->symbol = GMT_SYMBOL_MARC;
+			p->symbol = PSL_MARC;
 			p->n_required = 3;	/* Need radius, angle1 and angle2 */
 			if (gmt_parse_vector (GMT, symbol_type, text, p)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
@@ -11253,7 +11253,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->factor = 1.14948092619;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 'n':
-			p->symbol = GMT_SYMBOL_PENTAGON;
+			p->symbol = PSL_PENTAGON;
 			break;
 		case 'o':	/*3-D symbol */
 			p->shade3D = true;
@@ -11277,7 +11277,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'P':
 		case 'p':
-			p->symbol = GMT_SYMBOL_DOT;
+			p->symbol = PSL_DOT;
 			if (p->size_x == 0.0 && !p->read_size) {	/* User forgot to set size */
 				p->size_x = GMT_DOT_SIZE;
 				check = false;
@@ -11303,12 +11303,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		case 'r':
-			p->symbol = GMT_SYMBOL_RECT;
+			p->symbol = PSL_RECT;
 			p->n_required = 2;
 			check = false;
 			break;
 		case 'R':
-			p->symbol = GMT_SYMBOL_RNDRECT;
+			p->symbol = PSL_RNDRECT;
 			p->n_required = 3;
 			check = false;
 			break;
@@ -11316,13 +11316,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 's':
-			p->symbol = GMT_SYMBOL_SQUARE;
+			p->symbol = PSL_SQUARE;
 			break;
 		case 'T':
 			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
 		case 't':
-			p->symbol = GMT_SYMBOL_TRIANGLE;
+			p->symbol = PSL_TRIANGLE;
 			break;
 		case 'u':	/*3-D symbol */
 			p->shade3D = true;
@@ -11336,7 +11336,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'V':
 			p->convert_angles = 1;
 		case 'v':
-			p->symbol = GMT_SYMBOL_VECTOR;
+			p->symbol = PSL_VECTOR;
 			if (!gmt_M_compat_check (GMT, 4) || (strchr (text, '+') || !p->v.parsed_v4)) {	/* Check if new syntax before decoding */
 				if (gmt_parse_vector (GMT, symbol_type, text, p)) {	/* Error decoding new vector syntax */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
@@ -11414,20 +11414,20 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'W':
 			p->convert_angles = 1;
 		case 'w':
-			p->symbol = GMT_SYMBOL_WEDGE;
+			p->symbol = PSL_WEDGE;
 			p->n_required = 2;
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
 			if (p->w_active) p->convert_angles = 0;	/* Expect azimuths directly */
 			break;
 		case '+':
-			p->symbol = GMT_SYMBOL_PLUS;
+			p->symbol =  PSL_PLUS;
 			break;
 		case 'x':
-			p->symbol = GMT_SYMBOL_CROSS;
+			p->symbol = PSL_CROSS;
 			break;
 		case 'y':
-			p->symbol = GMT_SYMBOL_YDASH;
+			p->symbol = PSL_YDASH;
 			break;
 		case 'z':
 			p->symbol = GMT_SYMBOL_ZDASH;

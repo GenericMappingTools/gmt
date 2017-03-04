@@ -357,31 +357,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->S.active = true;
 				switch (Ctrl->S.type) {
 					case 'a':
-						Ctrl->S.symbol = GMT_SYMBOL_STAR;
+						Ctrl->S.symbol = PSL_STAR;
 						break;
 					case 'c':
-						Ctrl->S.symbol = GMT_SYMBOL_CIRCLE;
+						Ctrl->S.symbol = PSL_CIRCLE;
 						break;
 					case 'd':
-						Ctrl->S.symbol = GMT_SYMBOL_DIAMOND;
+						Ctrl->S.symbol = PSL_DIAMOND;
 						break;
 					case 'h':
-						Ctrl->S.symbol = GMT_SYMBOL_HEXAGON;
+						Ctrl->S.symbol = PSL_HEXAGON;
 						break;
 					case 'i':
-						Ctrl->S.symbol = GMT_SYMBOL_INVTRIANGLE;
+						Ctrl->S.symbol = PSL_INVTRIANGLE;
 						break;
 					case 'p':
-						Ctrl->S.symbol = GMT_SYMBOL_DOT;
+						Ctrl->S.symbol = PSL_DOT;
 						break;
 					case 's':
-						Ctrl->S.symbol = GMT_SYMBOL_SQUARE;
+						Ctrl->S.symbol = PSL_SQUARE;
 						break;
 					case 't':
-						Ctrl->S.symbol = GMT_SYMBOL_TRIANGLE;
+						Ctrl->S.symbol = PSL_TRIANGLE;
 						break;
 					case 'x':
-						Ctrl->S.symbol = GMT_SYMBOL_CROSS;
+						Ctrl->S.symbol = PSL_CROSS;
 						break;
 					default:
 						n_errors++;
@@ -471,7 +471,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {
 		gmt_setpen (GMT, &Ctrl->C.pen);
 		gmt_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
-		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->C.size), GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->C.size), PSL_CIRCLE);
 		PSL_plotsegment (PSL, plot_x0, plot_y0, new_plot_x0, new_plot_y0);
 		plot_x0 = new_plot_x0;
 		plot_y0 = new_plot_y0;
@@ -486,7 +486,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	gmt_setpen (GMT, &Ctrl->F.pen);
 	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
-	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), GMT_SYMBOL_CIRCLE);
+	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), PSL_CIRCLE);
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -546,7 +546,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 		sincosd (azimut, &si, &co);
 		plot_x = radius * si * Ctrl->M.ech / 2.0 + plot_x0;
 		plot_y = radius * co * Ctrl->M.ech / 2.0 + plot_y0;
-		if (Ctrl->S.symbol == GMT_SYMBOL_CROSS || Ctrl->S.symbol == GMT_SYMBOL_DOT) PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
+		if (Ctrl->S.symbol == PSL_CROSS || Ctrl->S.symbol == PSL_DOT) PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
 
 		if (Ctrl->T.active) {
 			gmt_setpen (GMT, &Ctrl->T.pen);
@@ -580,7 +580,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 					break;
 			}
 		}
-		if (Ctrl->S.symbol == GMT_SYMBOL_DOT) symbol_size2 = GMT_DOT_SIZE;
+		if (Ctrl->S.symbol == PSL_DOT) symbol_size2 = GMT_DOT_SIZE;
 
 		if (pol == 'u' || pol == 'U' || pol == 'c' || pol == 'C' || pol == '+') {
 			gmt_setpen (GMT, &Ctrl->G.pen);

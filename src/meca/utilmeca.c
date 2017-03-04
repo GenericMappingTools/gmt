@@ -146,7 +146,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	/*  argument is DIAMETER!!*/
 	ssize[0] = size;
 	gmt_setfill (GMT, E, outline);
-	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
 	if (fabs (pos_NP1_NP2) < EPSIL) {
@@ -337,7 +337,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 	/*  argument is DIAMETER!!*/
 	ssize[0] = size;
 	PSL_setfill (PSL, GMT->session.no_rgb, true);
-	PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	if (num_of_plane != 2) {
 		for (i = 0; i <= 180; i++) {
@@ -613,12 +613,12 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		if (vi > 0.) {
 			ssize[0] = radius_size*2.0;
 			gmt_setfill (GMT, C, true);
-			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		if (vi < 0.) {
 			ssize[0] = radius_size*2.0;
 			gmt_setfill (GMT, E, true);
-			PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		}
 		return (radius_size*2.);
 	}
@@ -641,12 +641,12 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 
 	if (iso < -1) {
 		gmt_setfill (GMT, E, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		return (size);
 	}
 	else if (iso > 1 - f) {
 		gmt_setfill (GMT, C, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		return (size);
 	}
 
@@ -748,18 +748,18 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 
 	if (!big_iso) {
 		gmt_setfill (GMT, F2, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 	}
 	else if (d == 2) {
 		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		gmt_setfill (GMT, F1, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		F1 = E, F2 = C;
 	}
 	else if (d == 0) {
 		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		gmt_setfill (GMT, F1, true);
-		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
+		PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 		F2 = E, F1 = C;
 	}
 
