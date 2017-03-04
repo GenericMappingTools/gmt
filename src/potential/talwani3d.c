@@ -51,8 +51,8 @@
 
 #define GMT_PROG_OPTIONS "-VRfhior" GMT_ADD_x_OPT
 
-#define TOL		1.0e-7
-#define DEG_TO_KM	111.319490793	/* For flat-Earth scaling of degrees to km */
+#define TOL		1.0e-7	/* Gotta leave a bit slack for these calculations */
+#define DEG_TO_KM	111.319490793	/* For flat-Earth scaling of degrees to km on WGS-84 Equator */
 #define GAMMA 		6.673		/* Gravitational constant for distances in km and mass in kg/m^3 */
 #define G0 		9.81		/* Normal gravity */
 
@@ -238,7 +238,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|n|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-fg] [%s]\n\t[%s] [%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -749,15 +749,44 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	/* Set up cake slice array and pointers */
+	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations; it could also set -fg so do this first */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, NULL)) == NULL)
+			Return (API->error);
+	}
+	else if (GMT->common.R.active) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
+			Return (API->error);
+	}
+	else {	/* Got a dataset with output locations via -N */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from the -N file */
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
+			Return (API->error);
+		if (D->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+	}
 	
-	n_alloc1 = GMT_CHUNK;
-	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct CAKE);
+	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);		/* If true then input is in degrees and we must convert to km later on */
+	
+	if (flat_earth && Ctrl->M.active[TALWANI3D_HOR]) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	
+	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
 	
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
 	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n",   uname[Ctrl->M.active[TALWANI3D_VER]]);
 	
+	/* Set up cake slice array and pointers */
+	
+	n_alloc1 = GMT_CHUNK;
+	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct CAKE);
+
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -865,6 +894,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cake);
 		Return (GMT_RUNTIME_ERROR);
 	}
+
 	/* Finish allocation and sort on layers */
 	
 	cake = gmt_M_memory (GMT, cake, ndepths, struct CAKE);
@@ -872,40 +902,10 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 
-	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, NULL)) == NULL) {
-			gmt_M_free (GMT, cake);
-			Return (API->error);
-		}
-	}
-	else if (GMT->common.R.active) {	/* Gave -R -I [-r] */
-		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
-			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
-			gmt_M_free (GMT, cake);
-			Return (API->error);
-		}
-	}
-	else {	/* Got a dataset with output locations via -N */
-		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
-			gmt_M_free (GMT, cake);
-			Return (API->error);
-		}
-		if (D->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
-			Return (GMT_DIM_TOO_SMALL);
-		}
-		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
-	}
-	
-	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);
-	
-	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
-	
 	/* Now we can write (if -V) to the screen the user's polygon model characteristics. */
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "# of depths: %d\n", ndepths);
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give a listing of layers found */
 	 	for (k = 0; k < ndepths; k++) {
 	 		for (sl = cake[k].first_slice; sl; sl = sl->next)
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Depth: %lg Rho: %lg N-vertx: %4d\n",
@@ -919,7 +919,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		unsigned int wmode = GMT_ADD_DEFAULT;
-		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? METERS_IN_A_MILE : 1.0;	/* Perhaps convert to km */
+		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? (1.0 / METERS_IN_A_KM) : 1.0;	/* Perhaps convert to km */
 		double out[4];
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
@@ -959,7 +959,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
-					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->data[GMT_X][row]/ scl, S->data[GMT_Y][row]/ scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
+					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->data[GMT_X][row] * scl, S->data[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 				}
 				/* This loop is not under OpenMP */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
