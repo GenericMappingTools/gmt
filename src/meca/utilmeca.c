@@ -1188,7 +1188,7 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 
 	dim[0] = x2, dim[1] = y2;
 	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = GMT_VEC_END | GMT_VEC_FILL;
+	dim[5] = vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, extensional arrow in opposite direction */
@@ -1219,7 +1219,7 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	/* compression component */
 	dx = eps2 * s;
 	dy = eps2 * c;
-	dim[6] = GMT_VEC_BEGIN | GMT_VEC_FILL;
+	dim[6] = PSL_VEC_BEGIN | PSL_VEC_FILL;
 	meca_trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {

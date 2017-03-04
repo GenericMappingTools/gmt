@@ -6222,18 +6222,18 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error parsing vector specifications %s\n", T[END]);
 							return false;
 						}
-						if (P->end[n].V->v.status & GMT_VEC_BEGIN) P->end[n].V->v.status -= GMT_VEC_BEGIN;	/* Always at end in this context */
-						P->end[n].V->v.status |= GMT_VEC_END;	/* Always at end in this context */
+						if (P->end[n].V->v.status & PSL_VEC_BEGIN) P->end[n].V->v.status -= PSL_VEC_BEGIN;	/* Always at end in this context */
+						P->end[n].V->v.status |= PSL_VEC_END;	/* Always at end in this context */
 						gmt_init_vector_param (GMT, P->end[n].V, false, false, NULL, false, NULL);	/* Update vector head parameters */
 						if (may_differ)	/* Must allow different symbols at the two ends */
 							P->end[n].V->v.v_kind[END] = P->end[n].V->v.v_kind[n];
 						else
 							P->end[n].V->v.v_kind[END] = MAX (P->end[n].V->v.v_kind[BEG], P->end[n].V->v.v_kind[END]);
 						switch (P->end[n].V->v.v_kind[END]) {
-							case GMT_VEC_ARROW:
+							case PSL_VEC_ARROW:
 								P->end[n].length = 0.5 * P->end[n].V->size_x * (2.0 - P->end[n].V->v.v_shape);
 								break;
-							case GMT_VEC_CIRCLE:
+							case PSL_VEC_CIRCLE:
 								P->end[n].length = sqrt (P->end[n].V->size_x * 0.5 * P->end[n].V->v.h_width / M_PI);	/* Same circle area as vector head */
 								break;
 							case PSL_VEC_SQUARE:

@@ -349,7 +349,7 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		PSL_comment (GMT->PSL, "Add vector head to %s of line\n", end[k]);
 		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
 		sincosd (angle, &s, &c); 
-		L = (P->end[k].V->v.v_kind[1] == GMT_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
+		L = (P->end[k].V->v.v_kind[1] == PSL_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
 		P->end[k].V->v.v_width = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
 		dim[0] = x[current[k]] + c * L; dim[1] = y[current[k]] + s * L;
 		dim[2] = P->end[k].V->v.v_width, dim[3] = P->end[k].V->v.h_length, dim[4] = P->end[k].V->v.h_width;
@@ -357,8 +357,8 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		dim[6] = (double)P->end[k].V->v.status;
 		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
 		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
-		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & GMT_VEC_OUTLINE2) == GMT_VEC_OUTLINE2);
-		if (P->end[k].V->v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
+		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & PSL_VEC_OUTLINE2) == PSL_VEC_OUTLINE2);
+		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
@@ -968,22 +968,22 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);	/* Set the required font */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
-	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
+	if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
 		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
-	if (S.symbol == GMT_SYMBOL_VECTOR && S.v.status & GMT_VEC_COMPONENTS)
+	if (S.symbol == GMT_SYMBOL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT_IS_FLOAT;	/* Just the users dy component, not length */
 	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
-		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
-		if (S.v.status & GMT_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
+		if ((S.v.status & PSL_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
+		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
 	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
-	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & GMT_VEC_JUST_S) == 0)
+	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		GMT->current.io.col_type[GMT_IN][ex2] = GMT_IS_GEODIMENSION;
 	else if ((S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) && S.convert_angles) {
 		if (S.n_required == 1) 
@@ -1087,7 +1087,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
-				if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & GMT_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
+				if ((S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 					/* Reading 2nd point coordinates so must set column types to be the same as for x,y */
 					col_reset = true;
 					save[GMT_X] = GMT->current.io.col_type[GMT_IN][pos2x];
@@ -1101,17 +1101,17 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					continue;
 				}
 				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
-					if (S.v.status & GMT_VEC_OUTLINE2) {
+					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
 					}
-					else if (S.v.status & GMT_VEC_OUTLINE) {
+					else if (S.v.status & PSL_VEC_OUTLINE) {
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 					}
-					if (S.v.status & GMT_VEC_FILL2) {
+					if (S.v.status & PSL_VEC_FILL2) {
 						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
-						if (S.v.status & GMT_VEC_FILL) Ctrl->G.active = true;
+						if (S.v.status & PSL_VEC_FILL) Ctrl->G.active = true;
 					}
-					else if (S.v.status & GMT_VEC_FILL) {
+					else if (S.v.status & PSL_VEC_FILL) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
 					}
 				}
@@ -1350,7 +1350,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case GMT_SYMBOL_VECTOR:
 					gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
+					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
 						length = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
 					else
 						length = in[ex2+S.read_size];
@@ -1358,7 +1358,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (S.v.status & GMT_VEC_COMPONENTS)	/* Read dx, dy in user units */
+					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
 						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 					else
 						d = in[ex1+S.read_size];
@@ -1374,7 +1374,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
+					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
@@ -1393,7 +1393,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						sincosd (direction, &s, &c);
 						x_2 = xpos[item] + length * c;
 						y_2 = plot_y + length * s;
-						justify = gmt_M_vec_justify (S.v.status);	/* Return justification as 0-2 */
+						justify = PSL_vec_justify (S.v.status);	/* Return justification as 0-2 */
 						if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
 							dx = justify * 0.5 * (x_2 - xpos[item]);	dy = justify * 0.5 * (y_2 - plot_y);
 							xpos[item] -= dx;		plot_y -= dy;
@@ -1419,7 +1419,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
-					if (S.v.status & GMT_VEC_OUTLINE2)
+					if (S.v.status & PSL_VEC_OUTLINE2)
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);

@@ -293,7 +293,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						Ctrl->M.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 						Ctrl->M.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 						Ctrl->M.S.v.v_angle = (float)atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
-						Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL);
+						Ctrl->M.S.v.status |= (PSL_VEC_OUTLINE + PSL_VEC_FILL);
 					}
 				}
 				else {
@@ -306,7 +306,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						Ctrl->M.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, 'v', txt_b, &Ctrl->M.S);
 					}
-					Ctrl->M.S.v.status |= GMT_VEC_OUTLINE;
+					Ctrl->M.S.v.status |= PSL_VEC_OUTLINE;
 				}
 				break;
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
@@ -725,8 +725,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			dim[5] = Ctrl->M.S.v.v_shape;
 			dim[6] = (double)Ctrl->M.S.v.status;
 			dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
-			if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
-			if (Ctrl->M.S.v.status & GMT_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+			if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+			if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
 		}
 		for (i = 0; i < n; i++) {
 			sincosd (start_angle - azimuth[i], &s, &c);
@@ -851,7 +851,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 			Ctrl->M.S.v.v_width  = (float)(VECTOR_LINE_WIDTH * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* 9p */
 			Ctrl->M.S.v.v_angle  = 30.0f;
-			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_OUTLINE2 + GMT_VEC_FILL + GMT_VEC_FILL2 + GMT_VEC_END);
+			Ctrl->M.S.v.status |= (PSL_VEC_OUTLINE + PSL_VEC_OUTLINE2 + PSL_VEC_FILL + PSL_VEC_FILL2 + PSL_VEC_END);
 			gmt_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
 			gmt_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
@@ -861,8 +861,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		dim[5] = Ctrl->M.S.v.v_shape;
 		dim[6] = (double)Ctrl->M.S.v.status;
 		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
-		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
-		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+		if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {
 			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
 			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;

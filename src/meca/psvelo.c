@@ -102,7 +102,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	C->A.S.v.h_length = (float)C->A.S.size_x;	/* 9p */
 	C->A.S.v.v_angle = 30.0f;
-	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
+	C->A.S.v.status = PSL_VEC_END + PSL_VEC_FILL + PSL_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 	if (gmt_M_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
 	C->A.S.v.v_shape = (float)GMT->current.setting.map_vector_shape;
@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 					Ctrl->A.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 					Ctrl->A.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 					Ctrl->A.S.v.v_angle = (float)atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
-					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
+					Ctrl->A.S.v.status |= PSL_VEC_OUTLINE2;
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
@@ -300,7 +300,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
 
 	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
-	if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
+	if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -485,13 +485,13 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					dim[5] = Ctrl->A.S.v.v_shape;
 					dim[6] = (double)Ctrl->A.S.v.status;
 					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
-					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
+					if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
 						gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 					else if (Ctrl->G.active)
 						gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
-					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
+					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
-					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
+					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */

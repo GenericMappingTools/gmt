@@ -10535,13 +10535,13 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill) {
 	bool no_outline = false, no_fill = false;
 	if (set) {	/* Determine proper settings for head fill or outline */
-		if (outline && (S->v.status & GMT_VEC_OUTLINE2) == 0) S->v.pen = *pen;	/* If no +p<pen> but -W<pen> was used, use same pen for vector heads */
-		else if (!outline && S->v.status & GMT_VEC_OUTLINE2) *pen = S->v.pen;	/* If no -W<pen> was set but +p<pen> given, use same pen for vector tails */
-		else if (!outline && (S->v.status & GMT_VEC_OUTLINE2) == 0) no_outline = true;
-		if (do_fill && (S->v.status & GMT_VEC_FILL2) == 0) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
-		else if (!do_fill && S->v.status & GMT_VEC_FILL2) no_fill = false;		/* If no -G<fill> was set but +g<fill> given, we do nothing here */
-		else if (!do_fill && (S->v.status & GMT_VEC_FILL2) == 0) no_fill = true;	/* Neither -G<fill> nor +g<fill> were set */
-		if (no_outline && no_fill && (S->v.status & GMT_VEC_HEADS)) {
+		if (outline && (S->v.status & PSL_VEC_OUTLINE2) == 0) S->v.pen = *pen;	/* If no +p<pen> but -W<pen> was used, use same pen for vector heads */
+		else if (!outline && S->v.status & PSL_VEC_OUTLINE2) *pen = S->v.pen;	/* If no -W<pen> was set but +p<pen> given, use same pen for vector tails */
+		else if (!outline && (S->v.status & PSL_VEC_OUTLINE2) == 0) no_outline = true;
+		if (do_fill && (S->v.status & PSL_VEC_FILL2) == 0) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
+		else if (!do_fill && S->v.status & PSL_VEC_FILL2) no_fill = false;		/* If no -G<fill> was set but +g<fill> given, we do nothing here */
+		else if (!do_fill && (S->v.status & PSL_VEC_FILL2) == 0) no_fill = true;	/* Neither -G<fill> nor +g<fill> were set */
+		if (no_outline && no_fill && (S->v.status & PSL_VEC_HEADS)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot draw vector heads without specifying at least one of head outline or head fill.\n");
 			return 1;
 		}
@@ -10566,7 +10566,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	gmt_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
 	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;	S->v.v_stem = 0.1f;
-	S->v.v_kind[0] = S->v.v_kind[1] = GMT_VEC_ARROW;
+	S->v.v_kind[0] = S->v.v_kind[1] = PSL_VEC_ARROW;
 	S->v.v_shape = (float)GMT->current.setting.map_vector_shape;	/* Can be overridden with +h<shape> */
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
@@ -10575,53 +10575,53 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 		switch (p[0]) {
 			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
 			case 'b':	/* Vector head at beginning point */
-				S->v.status |= GMT_VEC_BEGIN;
+				S->v.status |= PSL_VEC_BEGIN;
 				switch (p[1]) {
-					case 'a': S->v.v_kind[0] = GMT_VEC_ARROW;	break; /* Explicitly selected arrow head */
-					case 'A': S->v.v_kind[0] = GMT_VEC_ARROW_PLAIN;	break;
-					case 'i': S->v.v_kind[0] = GMT_VEC_TAIL;	break;
-					case 'I': S->v.v_kind[0] = GMT_VEC_TAIL_PLAIN;	break;
-					case 'c': S->v.v_kind[0] = GMT_VEC_CIRCLE;	break;
-					case 's': S->v.v_kind[0] = GMT_VEC_SQUARE;	break;
-					case 't': S->v.v_kind[0] = GMT_VEC_TERMINAL;	break;
-			  	 	case 'l': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_L;	break;	/* Only left  half of head requested */
-			  	  	case 'r': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_R;	break;	/* Only right half of head requested */
-					default:  S->v.v_kind[0] = GMT_VEC_ARROW;	break;
+					case 'a': S->v.v_kind[0] = PSL_VEC_ARROW;	break; /* Explicitly selected arrow head */
+					case 'A': S->v.v_kind[0] = PSL_VEC_ARROW_PLAIN;	break;
+					case 'i': S->v.v_kind[0] = PSL_VEC_TAIL;	break;
+					case 'I': S->v.v_kind[0] = PSL_VEC_TAIL_PLAIN;	break;
+					case 'c': S->v.v_kind[0] = PSL_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[0] = PSL_VEC_SQUARE;	break;
+					case 't': S->v.v_kind[0] = PSL_VEC_TERMINAL;	break;
+			  	 	case 'l': S->v.v_kind[0] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_BEGIN_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[0] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_BEGIN_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[0] = PSL_VEC_ARROW;	break;
 				}
 				if (p[1] && p[2]) {
-					if (p[2] == 'l') S->v.status |= GMT_VEC_BEGIN_L;	/* Only left  half of head requested */
-	  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_BEGIN_R;	/* Only right half of head requested */
+					if (p[2] == 'l') S->v.status |= PSL_VEC_BEGIN_L;	/* Only left  half of head requested */
+	  	  			else if (p[2] == 'r') S->v.status |= PSL_VEC_BEGIN_R;	/* Only right half of head requested */
 				}
 				break;
 			case 'e':	/* Vector head at end point */
-				S->v.status |= GMT_VEC_END;
+				S->v.status |= PSL_VEC_END;
 				switch (p[1]) {
-					case 'a': S->v.v_kind[1] = GMT_VEC_ARROW;	break;	/* Explicitly selected arrow head */
-					case 'A': S->v.v_kind[1] = GMT_VEC_ARROW_PLAIN;	break;
-					case 'i': S->v.v_kind[1] = GMT_VEC_TAIL;	break;
-					case 'I': S->v.v_kind[1] = GMT_VEC_TAIL_PLAIN;	break;
-					case 'c': S->v.v_kind[1] = GMT_VEC_CIRCLE;	break;
-					case 's': S->v.v_kind[1] = GMT_VEC_SQUARE;	break;
-					case 't': S->v.v_kind[1] = GMT_VEC_TERMINAL;	break;
-			  	 	case 'l': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
-			  	  	case 'r': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
-					default:  S->v.v_kind[1] = GMT_VEC_ARROW;	break;
+					case 'a': S->v.v_kind[1] = PSL_VEC_ARROW;	break;	/* Explicitly selected arrow head */
+					case 'A': S->v.v_kind[1] = PSL_VEC_ARROW_PLAIN;	break;
+					case 'i': S->v.v_kind[1] = PSL_VEC_TAIL;	break;
+					case 'I': S->v.v_kind[1] = PSL_VEC_TAIL_PLAIN;	break;
+					case 'c': S->v.v_kind[1] = PSL_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[1] = PSL_VEC_SQUARE;	break;
+					case 't': S->v.v_kind[1] = PSL_VEC_TERMINAL;	break;
+			  	 	case 'l': S->v.v_kind[1] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_END_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[1] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_END_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[1] = PSL_VEC_ARROW;	break;
 				}
 				if (p[1] && p[2]) {
-					if (p[2] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left half of head requested */
-	  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
+					if (p[2] == 'l') S->v.status |= PSL_VEC_END_L;	/* Only left half of head requested */
+	  	  			else if (p[2] == 'r') S->v.status |= PSL_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
 			case 'g':	/* Vector head fill +g[-|<fill>]*/
 				g_opt = true;	/* Marks that +g was used */
 				if (p[1] == '-') break; /* Do NOT turn on fill */
-				S->v.status |= GMT_VEC_FILL;
+				S->v.status |= PSL_VEC_FILL;
 				if (p[1]) {
 					if (gmt_getfill (GMT, &p[1], &S->v.fill)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
 						error++;
 					}
-					S->v.status |= GMT_VEC_FILL2;
+					S->v.status |= PSL_VEC_FILL2;
 				}
 				break;
 			case 'h':	/* Vector shape [MAP_VECTOR_SHAPE] */
@@ -10638,9 +10638,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				else {
 					switch (p[1]) {
-						case 'b': S->v.status |= GMT_VEC_JUST_B;	break;	/* Input (x,y) refers to vector beginning point */
-						case 'c': S->v.status |= GMT_VEC_JUST_C;	break;	/* Input (x,y) refers to vector center point */
-						case 'e': S->v.status |= GMT_VEC_JUST_E;	break;	/* Input (x,y) refers to vector end point */
+						case 'b': S->v.status |= PSL_VEC_JUST_B;	break;	/* Input (x,y) refers to vector beginning point */
+						case 'c': S->v.status |= PSL_VEC_JUST_C;	break;	/* Input (x,y) refers to vector center point */
+						case 'e': S->v.status |= PSL_VEC_JUST_E;	break;	/* Input (x,y) refers to vector end point */
 						default:  /* Bad justifier code */
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +j<just> modifier %c\n", p[1]);
 							error++;
@@ -10648,7 +10648,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 				}
 				break;
-			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halves at active heads */
+			case 'l': S->v.status |= (PSL_VEC_BEGIN_L + PSL_VEC_END_L);	break;	/* Obsolete modifier for left halves at active heads */
 			case 'm':	/* Vector head at midpoint of segment */
 				switch (p[1]) {
 					case '\0':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
@@ -10662,20 +10662,20 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				end = (S->v.status & PSL_VEC_MID_FWD) ? PSL_END : PSL_BEGIN;	/* Which head-type to use at center */
 				switch (p[f]) {	/* Optional types */
-					case 'a': S->v.v_kind[end] = GMT_VEC_ARROW;	break;	/* Explicitly selected arrow head */
-					case 'A': S->v.v_kind[end] = GMT_VEC_ARROW_PLAIN;	break;
-					case 'i': S->v.v_kind[end] = GMT_VEC_TAIL;	break;
-					case 'I': S->v.v_kind[end] = GMT_VEC_TAIL_PLAIN;	break;
-					case 'c': S->v.v_kind[end] = GMT_VEC_CIRCLE;	break;
-					case 's': S->v.v_kind[end] = GMT_VEC_SQUARE;	break;
-					case 't': S->v.v_kind[end] = GMT_VEC_TERMINAL;	break;
-			  	 	case 'l': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
-			  	  	case 'r': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
-					default:  S->v.v_kind[end] = GMT_VEC_ARROW;	break;	/* Default is arrow */
+					case 'a': S->v.v_kind[end] = PSL_VEC_ARROW;	break;	/* Explicitly selected arrow head */
+					case 'A': S->v.v_kind[end] = PSL_VEC_ARROW_PLAIN;	break;
+					case 'i': S->v.v_kind[end] = PSL_VEC_TAIL;	break;
+					case 'I': S->v.v_kind[end] = PSL_VEC_TAIL_PLAIN;	break;
+					case 'c': S->v.v_kind[end] = PSL_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[end] = PSL_VEC_SQUARE;	break;
+					case 't': S->v.v_kind[end] = PSL_VEC_TERMINAL;	break;
+			  	 	case 'l': S->v.v_kind[end] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_END_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[end] = PSL_VEC_ARROW;	S->v.status |= PSL_VEC_END_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[end] = PSL_VEC_ARROW;	break;	/* Default is arrow */
 				}
 				if (p[f] && p[f+1]) {
-	  	  			if (p[f+1] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left  half of head requested */
-	  	  			else if (p[f+1] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
+	  	  			if (p[f+1] == 'l') S->v.status |= PSL_VEC_END_L;	/* Only left  half of head requested */
+	  	  			else if (p[f+1] == 'r') S->v.status |= PSL_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
@@ -10686,7 +10686,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
-				S->v.status |= GMT_VEC_POLE;
+				S->v.status |= PSL_VEC_POLE;
 				if (!p[1]) {	/* Gave no pole, use North pole */
 					S->v.pole[GMT_X] = 0.0f;	S->v.pole[GMT_Y] = 90.0f;
 				}
@@ -10703,19 +10703,19 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					j = 2;
 				else {
 					j = 1;
-					S->v.status |= GMT_VEC_OUTLINE;
+					S->v.status |= PSL_VEC_OUTLINE;
 				}
 				if (p[j]) {	/* Change default vector pen */
 					if (gmt_getpen (GMT, &p[j], &S->v.pen)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
 						error++;
 					}
-					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
+					S->v.status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
 				break;
-			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
-			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halves at active heads */
-			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
+			case 'q': S->v.status |= PSL_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
+			case 'r': S->v.status |= (PSL_VEC_BEGIN_R + PSL_VEC_END_R);	break;	/* Obsolete modifier for right halves at active heads */
+			case 's': S->v.status |= PSL_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 't':	/* Get endpoint trim(s) */
 				switch (p[1]) {
 					case 'b':	f = 2;	S->v.status |= PSL_VEC_OFF_BEGIN;	break;	/* Shift begin point by some trim amount */
@@ -10732,7 +10732,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
-				S->v.status |= GMT_VEC_COMPONENTS;
+				S->v.status |= PSL_VEC_COMPONENTS;
 				S->v.comp_scale = (float)gmt_convert_units (GMT, &p[1], GMT->current.setting.proj_length_unit, GMT_INCH);
 				break;
 			default:
@@ -10741,12 +10741,12 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 		}
 	}
-	if ((S->v.status & PSL_VEC_MID_FWD || S->v.status & PSL_VEC_MID_BWD) && (S->v.status & GMT_VEC_BEGIN || S->v.status & GMT_VEC_END)) {
+	if ((S->v.status & PSL_VEC_MID_FWD || S->v.status & PSL_VEC_MID_BWD) && (S->v.status & PSL_VEC_BEGIN || S->v.status & PSL_VEC_END)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine mid-point vector head (+m) with end-point heads (+b | +e)\n");
 		error++;
 	}
-	if (!g_opt) S->v.status |= GMT_VEC_FILL;	/* Default is to fill vector head with current fill unless (a) no fill given or (b) turned off with +g- */
-	if (!p_opt) S->v.status |= GMT_VEC_OUTLINE;	/* Default is to draw vector head outline with current pen unless explicitly turned off with +p- */
+	if (!g_opt) S->v.status |= PSL_VEC_FILL;	/* Default is to fill vector head with current fill unless (a) no fill given or (b) turned off with +g- */
+	if (!p_opt) S->v.status |= PSL_VEC_OUTLINE;	/* Default is to draw vector head outline with current pen unless explicitly turned off with +p- */
 
 	/* Set head parameters */
 	gmt_init_vector_param (GMT, S, false, false, NULL, false, NULL);
@@ -10870,7 +10870,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->v.parsed_v4 = false;
 			if (strchr (text, '/') && !strchr (text, '+')) {
 				/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
-				p->v.status |= GMT_VEC_END;		/* Default is head at end */
+				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
 				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
@@ -10885,7 +10885,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
-				p->v.status |= GMT_VEC_END;		/* Default is head at end */
+				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				k = 2;
 				strncpy (arg, &text[2], GMT_LEN64-1);
 			}
@@ -11245,7 +11245,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 				decode_error++;
 			}
-			if (symbol_type == 'M') p->v.status |= GMT_VEC_MARC90;	/* Flag means we will plot right angle symbol if angles extend 90 exactly */
+			if (symbol_type == 'M') p->v.status |= PSL_VEC_MARC90;	/* Flag means we will plot right angle symbol if angles extend 90 exactly */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
 			p->nondim_col[p->n_nondim++] = 4 + col_off;	/* Angle */
 			break;
@@ -11342,36 +11342,36 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 					decode_error++;
 				}
-				if (!(p->v.status & GMT_VEC_JUST_S)) p->nondim_col[p->n_nondim++] = 2 + col_off;
+				if (!(p->v.status & PSL_VEC_JUST_S)) p->nondim_col[p->n_nondim++] = 2 + col_off;
 			}
 			else {	/* Parse old-style vector specs */
 				int one = 2;
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v.status |= GMT_VEC_BEGIN;
+						p->v.status |= PSL_VEC_BEGIN;
 					case 's':	/* Input (x,y) refers to vector head (the tip), head  at end */
-						p->v.status |= (GMT_VEC_JUST_S + GMT_VEC_END);
+						p->v.status |= (PSL_VEC_JUST_S + PSL_VEC_END);
 						break;
 					case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
-						p->v.status |= GMT_VEC_BEGIN;
+						p->v.status |= PSL_VEC_BEGIN;
 					case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
-						p->v.status |= (GMT_VEC_JUST_E + GMT_VEC_END);
+						p->v.status |= (PSL_VEC_JUST_E + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
-						p->v.status |= GMT_VEC_BEGIN;
+						p->v.status |= PSL_VEC_BEGIN;
 					case 'b':	/* Input (x,y) refers to balance point of vector, single head */
-						p->v.status |= (GMT_VEC_JUST_C + GMT_VEC_END);
+						p->v.status |= (PSL_VEC_JUST_C + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'T':	/* Input (x,y) refers to tail of vector, double heads */
-						p->v.status |= GMT_VEC_BEGIN;
+						p->v.status |= PSL_VEC_BEGIN;
 					case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
-						p->v.status |= (GMT_VEC_JUST_B + GMT_VEC_END);
+						p->v.status |= (PSL_VEC_JUST_B + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					default:	/* No modifier given, default to tail, single head */
-						p->v.status |= (GMT_VEC_JUST_B + GMT_VEC_END);
+						p->v.status |= (PSL_VEC_JUST_B + PSL_VEC_END);
 						one = 1;
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
@@ -11456,8 +11456,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}
-			if (p->v.status & GMT_VEC_POLE) {	/* Small circle vector */
-				if (p->v.status & GMT_VEC_ANGLES) {
+			if (p->v.status & PSL_VEC_POLE) {	/* Small circle vector */
+				if (p->v.status & PSL_VEC_ANGLES) {
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
 					p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
 				}

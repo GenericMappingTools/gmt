@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
-					Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
+					Ctrl->Q.S.v.status |= PSL_VEC_JUST_C;
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 						}
 					}
 					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
-					Ctrl->Q.S.v.status |= (GMT_VEC_JUST_B + GMT_VEC_FILL);	/* Start filled vector at node location */
+					Ctrl->Q.S.v.status |= (PSL_VEC_JUST_B + PSL_VEC_FILL);	/* Start filled vector at node location */
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
@@ -545,7 +545,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				x2 = plot_x + scaled_vec_length * c;
 				y2 = plot_y + scaled_vec_length * s;
 
-				justify = gmt_M_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
+				justify = PSL_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
 				if (justify) {	/* Justify vector at center, or tip [beginning] */
 					x_off = justify * 0.5 * (x2 - plot_x);	y_off = justify * 0.5 * (y2 - plot_y);
 					plot_x -= x_off;	plot_y -= y_off;

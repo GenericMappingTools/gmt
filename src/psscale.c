@@ -530,8 +530,8 @@ void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	vdim[1] = 50.0;	vdim[2] = 210.0;
 	vdim[3] = s * width, vdim[4] = s * width * tand (20.0), vdim[5] = p_width;
 	vdim[6] = 0.75;
-	vdim[7] = (double)(GMT_VEC_END|GMT_VEC_FILL);
-	vdim[9] = (double)GMT_VEC_ARROW;
+	vdim[7] = (double)(PSL_VEC_END|PSL_VEC_FILL);
+	vdim[9] = (double)PSL_VEC_ARROW;
 	gmt_setfill (GMT, &black, false);
 	gmt_setpen (GMT, &pen);
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, GMT_SYMBOL_MARC);
