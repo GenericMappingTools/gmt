@@ -47,14 +47,10 @@
 #define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 
 #include "gmt_dev.h"
+#include "talwani.h"
 
 #define GMT_PROG_OPTIONS "-Vhio" GMT_ADD_x_OPT
 
-#define TOL		1.0e-7
-#define GAMMA 		6.673e-11	/* Gravitational constant */
-#define G               9.81            /* Normal gravity */
-#define SI_TO_MGAL	1.0e5		/* Convert m/s^2 to mGal */
-#define SI_TO_EOTVOS	1.0e9		/* Convert (m/s^2)/m to Eotvos */
 
 struct TALWANI2D_CTRL {
 	struct Out {	/* -> */
@@ -68,9 +64,10 @@ struct TALWANI2D_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|n|v] */
+	struct F {	/* -F[f|n[<lat>]|v] */
 		bool active;
 		unsigned int mode;
+		double lat;
 	} F;
 	struct M {	/* -Mh|z  */
 		bool active[2];	/* True if km, else m */
@@ -115,6 +112,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->F.lat = 45.0;	/* So we compute normal gravity at 45 */
+	
 	return (C);
 }
 
@@ -154,7 +153,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI2D_VGG;		break;
-					case 'n': Ctrl->F.mode = TALWANI2D_GEOID;	break;
+					case 'n': Ctrl->F.mode = TALWANI2D_GEOID;
+						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]);
+						break;
 					default:  Ctrl->F.mode = TALWANI2D_FAA; 	break;
 				}
 				break;
@@ -200,6 +201,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				break;
 		}
 	}
+	n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->F.lat) > 90.0,
+	                                 "Syntax error -Fn option: Latitude out of range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->N.active,
 	                                 "Syntax error -N option: Cannot also specify -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->Z.ymin >= Ctrl->Z.ymax,
@@ -214,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n|v]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
@@ -226,7 +229,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file (in kg/m^3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = FAA Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).  Optionally append <lat> for evaluation of normal gravity [45].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are given in km [meters]\n");
@@ -318,7 +321,7 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 		xx0 = xx1;
 		zz0 = zz1;
 	}
-	sum *= GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -358,7 +361,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 		ri = ri1;
 		phi_i = phi_i1;
 	}
-	sum *= 2.0 * GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= 2.0 * SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -399,11 +402,11 @@ GMT_LOCAL double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned
 		}
 	}
 
-	sum *= (-GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	sum *= (-SI_GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
 	return (sum);
 }
 
-GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho) {
+GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho, double G0) {
 	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
 	 *  y0;		Y-coordinate of observation point, in m
 	 *  z0;		Z-coordinate of observation point, in m
@@ -411,6 +414,7 @@ GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsi
 	 *  z[];	Z-coordinates of vertices, in m
 	 *  n;	Number of vertices, with 1st == last point
 	 *  rho;	Density contrast, in kg/m3
+	 *   G0;	Normal gravity at suitable latitude
 	 */
 	int i1, i2;
 	double dy1, dy2, dz1, dz2, hyp1, hyp2, mi, mi2, a2, bi, ci, ci2, di, di2;
@@ -486,11 +490,11 @@ GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsi
 		}
 		N = N + ni;
 	}
-	N *= (-GAMMA * rho / G);
+	N *= (-SI_GAMMA * rho / G0);
 	return (N);
 }
 
-GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax) {
+GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax, double G0) {
 	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -506,7 +510,7 @@ GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_
 		else if (mode == TALWANI2D_VGG) /* VGG */
 			v += get_vgg2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else /* GEOID*/
-			v += get_geoid2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += get_geoid2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, G0);
 		if (area < 0.0) v = -v;	/* Polygon went counter-clockwise */
 		v_sum += v;
 	}
@@ -521,7 +525,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	uint64_t dim[4] = {1, 1, 0, 2}, row;
-	double scl, rho = 0.0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
+	double scl, rho = 0.0, G0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
 	
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
@@ -719,6 +723,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 	
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
+	G0 = g_normal (Ctrl->F.lat);
 	
 	/* Now we can write to the screen the user's polygon model characteristics. */
 	
@@ -734,11 +739,11 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			S = Out->table[tbl]->segment[seg];	/* Current segment */
 #ifdef _OPENMP
 			/* Spread calculation over selected cores */
-#pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies)
+#pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies, G0)
 #endif
 			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
-				answer = get_one_output2D (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax);
+				answer = get_one_output2D (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
 				S->data[GMT_Y][srow] = answer;
 				if (answer < min_answer) min_answer = answer;
 				if (answer > max_answer) max_answer = answer;

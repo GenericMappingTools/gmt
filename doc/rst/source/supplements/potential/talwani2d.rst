@@ -15,7 +15,7 @@ Synopsis
 
 **talwani2d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
-[ |-F|\ **f**\ \|\ **n**\ \|\ **v** ] 
+[ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ] 
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |-T|\ *min*\ *max*\ /*inc* ]
@@ -65,9 +65,10 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **f**\ \|\ **n**\ \|\ **v**
+**-F**\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
-    **n** (geoid) or **v** (vertical gravity gradient).
+    **n** (geoid, and optionally append average latitude for normal gravity reference value [45])
+    or **v** (vertical gravity gradient).
 
 .. _-M:
 
