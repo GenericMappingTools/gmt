@@ -261,8 +261,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
 
 # libpslib
-set (GMT_PSL_SRCS postscriptlight.c common_string.c common_string.h common_runpath.c
-	common_runpath.h declspec.h gmt_config.h gmt_notposix.h)
+set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
@@ -371,6 +370,7 @@ add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS})
 
 # Configure header files to pass some of the CMake settings to the source code
 configure_file (gmt_config.h.in gmt_config.h)
+configure_file (psl_config.h.in psl_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)

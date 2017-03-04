@@ -20,7 +20,7 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, Altimetrics
  *			   remko@altimetrics.com
- * Version:	5.2 [64-bit enabled API edition]
+ * Version:	5.3 [64-bit enabled API edition, decoupled from GMT]
  * Date:	13-NOV-2015
  */
 
@@ -37,7 +37,7 @@ extern "C" {
 #endif
 
 /* CMake definitions: This must be first! */
-#include "gmt_config.h"
+#include "psl_config.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"

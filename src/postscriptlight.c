@@ -91,14 +91,14 @@
  * PSL_deftextdim	: Sets variables for text height and width in the PS output
  * PSL_defunits:	: Encodes a dimension by name in the PS output
  *
- * For information about usage, syntax etc, see the PSL.l manual pages
+ * For information about usage, syntax etc, see the postscriptlight documentation
  *
  * Authors:	Paul Wessel, Dept. of Geology and Geophysics, SOEST, U Hawaii
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
  *			   Remko.Scharroo@eumetsat.int
  * Date:	15-OCT-2009
- * Version:	5.0 [64-bit enabled API edition]
+ * Version:	5.3 [64-bit enabled API edition, decoupled from GMT]
  *
  * Thanks to J. Goff and L. Parkes for their contributions to an earlier version.
  *
@@ -116,10 +116,17 @@
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
-#include "gmt_notposix.h"
-#include "common_string.h"
-#include "common_byteswap.h"
+#include <stdbool.h>
+#include <inttypes.h>         /* Exact-width integer types */
 #include "postscriptlight.h"
+#ifdef HAVE_CTYPE_H_
+#	include <ctype.h>
+#endif
+#ifdef HAVE_ASSERT_H_
+#	include <assert.h>
+#else
+#	define assert(e) ((void)0)
+#endif
 
 #ifdef HAVE_ZLIB
 #	include <zlib.h>
@@ -131,6 +138,45 @@
 #ifndef PATH_MAX
 #	define PATH_MAX 1024
 #endif
+/* Size prefixes for printf/scanf for size_t and ptrdiff_t */
+#ifdef _MSC_VER
+#	define PRIuS "Iu"  /* printf size_t */
+#else
+#	define PRIuS "zu"  /* printf size_t */
+#endif
+
+/* Define bswap32 */
+#undef bswap32
+#ifdef HAVE___BUILTIN_BSWAP32
+#	define bswap32 __builtin_bswap32
+#elif defined __GNUC__ && (defined __i386__ || defined __x86_64__)
+#	define bswap32 gnuc_bswap32
+static inline uint32_t inline_bswap32 (uint32_t x) {
+	return
+		(((x & 0xFF000000U) >> 24) |
+		 ((x & 0x00FF0000U) >>  8) |
+		 ((x & 0x0000FF00U) <<  8) |
+		 ((x & 0x000000FFU) << 24));
+}
+	static inline uint32_t gnuc_bswap32(uint32_t x) {
+		if (__builtin_constant_p(x))
+			x = inline_bswap32(x);
+		else
+			__asm__("bswap %0" : "+r" (x));
+		return x;
+	}
+#elif defined HAVE__BYTESWAP_ULONG /* HAVE___BUILTIN_BSWAP32 */
+#	define bswap32 _byteswap_ulong
+#else /* HAVE___BUILTIN_BSWAP32 */
+	static inline uint32_t inline_bswap32 (uint32_t x) {
+		return
+			(((x & 0xFF000000U) >> 24) |
+			 ((x & 0x00FF0000U) >>  8) |
+			 ((x & 0x0000FF00U) <<  8) |
+			 ((x & 0x000000FFU) << 24));
+	}
+#	define bswap32 inline_bswap32
+#endif /* HAVE___BUILTIN_BSWAP32 */
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT
@@ -271,6 +317,85 @@ static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 	"Overlay", "Saturation", "SoftLight", "Screen"
 };
 
+#ifdef WIN32
+/* SUpport for differences between UNIX and DOS paths */
+
+static void psl_strlshift (char *string, size_t n) {
+	/* Left shift a string by n characters */
+	size_t len;
+	assert (string != NULL); /* NULL pointer */
+
+	if ((len = strlen(string)) <= n ) {
+		/* String shorter than shift width */
+		*string = '\0'; /* Truncate entire string */
+		return;
+	}
+
+	/* Move entire string back */
+	memmove(string, string + n, len + 1);
+}
+
+static void psl_strrepc (char *string, int c, int r) {
+	/* Replaces all occurrences of c in the string with r */
+	assert (string != NULL); /* NULL pointer */
+	do {
+		if (*string == c)
+			*string = (char)r;
+	} while (*(++string)); /* repeat until \0 reached */
+}
+
+/* Turn '/c/dir/...' paths into 'c:/dir/...'
+ * Must do it in a loop since dir may be several ';'-separated dirs */
+static void psl_dos_path_fix (char *dir) {
+	size_t n, k;
+
+	if (!dir || (n = strlen (dir)) < 2U)
+		/* Given NULL or too short dir to work */
+		return;
+
+	if (!strncmp (dir, "/cygdrive/", 10U))
+		/* May happen for example when Cygwin sets GMT_SHAREDIR */
+		psl_strlshift (dir, 9); /* Chop '/cygdrive' */
+
+	/* Replace dumb backslashes with slashes */
+	psl_strrepc (dir, '\\', '/');
+
+	/* If dir begins with '/' and is 2 long, as in '/c', replace with 'c:' */
+	if (n == 2U && dir[0] == '/') {
+		dir[0] = dir[1];
+		dir[1] = ':';
+		return;
+	}
+
+	/* If dir is longer than 2 and, e.g., '/c/', replace with 'c:/' */
+	if (n > 2U && dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
+		dir[0] = dir[1];
+		dir[1] = ':';
+	}
+
+	/* Do the same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
+	for (k = 4; k < n-2; k++) {
+		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
+	}
+
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	for (k = 4; k < n-2; k++) {
+		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
+			dir[k-1] = ';';
+		else if ((dir[k-1] == ':' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
+			/* The form ...:/C/... will become ...;C:/... */
+			dir[k-1] = ';';
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
+	}
+}
+#else
+# define psl_dos_path_fix(e) ((void)0) /* dummy function */
+#endif
 
 /* ----------------------------------------------------------------------
  * Support functions used in PSL_* functions.
@@ -3212,7 +3337,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 	if ((this_c = sharedir) == NULL && search) this_c = getenv ("PSL_SHAREDIR");
 	if (this_c) {	/* Did find a sharedir */
 		PSL->internal.SHAREDIR = strdup (this_c);
-		gmt_dos_path_fix (PSL->internal.SHAREDIR);
+		psl_dos_path_fix (PSL->internal.SHAREDIR);
 		if (access(PSL->internal.SHAREDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 			PSL_exit (EXIT_FAILURE);
@@ -3228,7 +3353,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 	if ((this_c = userdir) == NULL && search) this_c = getenv ("PSL_USERDIR");
 	if (this_c) {	/* Did find a userdir */
 		PSL->internal.USERDIR = strdup (this_c);
-		gmt_dos_path_fix (PSL->internal.USERDIR);
+		psl_dos_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
 			PSL_free (PSL->internal.USERDIR);
