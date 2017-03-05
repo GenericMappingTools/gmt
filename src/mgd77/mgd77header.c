@@ -321,9 +321,9 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			ymax = MAX (this_lat, ymax);
 
             /* Determine 10x10 degree boxes crossed */
-            teny = floor ((this_lat/10)+9);
-            if (this_lon > 180) tenx = ceil (((this_lon-360)/10)+18);
-            else tenx = floor (this_lon/10)+18;
+            teny = (int)(floor ((this_lat/10)+9));
+            if (this_lon > 180) tenx = (int)(ceil (((this_lon-360)/10)+18));
+            else tenx = (int)(floor (this_lon/10)+18);
 			if (!tendeg[tenx][teny]) {
 				tendeg[tenx][teny] = 1;
 #if 0
