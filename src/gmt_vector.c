@@ -1368,7 +1368,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	 */
 
 	unsigned int k = 1;
-	bool meridian;
+	bool meridian, boostable;
 	uint64_t i, j, n_new, n_step = 0;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -1400,14 +1400,14 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	 * longitude that can later confuse us as to when we cross a periodic boundary.
 	 * We try to mitigate that by scaling up the number of steps by a boost factor that is 1
 	 * away from poles and from |lat| = 75 increases to 100 very close to the pole. */
-
+	boostable = !gmt_M_pole_is_point (GMT);	/* Only boost for projections where poles are lines */
 	f_lat_a = fabs (lat[0]);
 	for (i = 1; i < n; i++) {
 		f_lat_b = fabs (lat[i]);
 
 		gmt_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
 		boost = (MIN(f_lat_a, f_lat_b) > 75.0) ? 100.0 : 1.0;	/* Enforce closer sampling close to poles */
-		if (MIN(f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
+		if (boostable && MIN(f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
 			boost = 1.0 + 10.0 * (MAX(f_lat_a, f_lat_b) - 75.0);	/* Crude way to get a boost from 1 at 80 to ~101 at the pole */
 		else
 			boost = 1.0;
