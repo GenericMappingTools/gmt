@@ -1400,7 +1400,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	 * longitude that can later confuse us as to when we cross a periodic boundary.
 	 * We try to mitigate that by scaling up the number of steps by a boost factor that is 1
 	 * away from poles and from |lat| = 75 increases to 100 very close to the pole. */
-	boostable = !gmt_M_pole_is_point (GMT);	/* Only boost for projections where poles are lines */
+	boostable = !(gmt_M_is_linear (GMT) || gmt_M_pole_is_point (GMT));	/* Only boost for projections where poles are lines */
 	f_lat_a = fabs (lat[0]);
 	for (i = 1; i < n; i++) {
 		f_lat_b = fabs (lat[i]);

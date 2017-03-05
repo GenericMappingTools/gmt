@@ -2629,7 +2629,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			}
 			gmtio_alloc_ogr_seg (GMT, T->segment[seg], T->ogr->n_aspatial);	/* Copy over any feature-specific values */
 			T->segment[seg]->ogr->pol_mode = GMT_IS_PERIMETER;
-			gmt_set_seg_minmax (GMT, T->ogr->geometry, T->segment[seg]);	/* Make sure min/max are set per polygon */
+			gmt_set_seg_minmax (GMT, T->ogr->geometry, 0, T->segment[seg]);	/* Make sure min/max are set per polygon */
 
 		}
 		/* OK, they are all polygons.  Determine any polygon holes: if a point is fully inside another polygon (not on the edge) */
@@ -6258,15 +6258,17 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 }
 
 /*! . */
-void gmt_set_seg_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT_DATASEGMENT *S) {
-	/* Determine the min/max values for each column in the segment */
+void gmt_set_seg_minmax (struct GMT_CTRL *GMT, unsigned int geometry, unsigned int n_cols, struct GMT_DATASEGMENT *S) {
+	/* Determine the min/max values for each column in the segment.
+	 * If n_cols > 0 then we only update the first n_cols */
 	uint64_t row, col;
 
 	/* In case the creation of the segment did not allocate min/max do it now */
 	if (!S->min) S->min = gmt_M_memory (GMT, NULL, S->n_columns, double);
 	if (!S->max) S->max = gmt_M_memory (GMT, NULL, S->n_columns, double);
 	if (S->n_rows == 0) return;	/* Nothing more we can do */
-	for (col = 0; col < S->n_columns; col++) {
+	if (n_cols == 0) n_cols = S->n_columns;	/* Set number of columns to work on */
+	for (col = 0; col < n_cols; col++) {
 		if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
 			gmtlib_get_lon_minmax (GMT, S->data[col], S->n_rows, &(S->min[col]), &(S->max[col]));
 		else {	/* Simple Cartesian-like arrangement */
@@ -6298,7 +6300,7 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 	T->n_records = 0;
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
-		gmt_set_seg_minmax (GMT, geometry, S);
+		gmt_set_seg_minmax (GMT, geometry, 0, S);
 		if (S->n_rows == 0) continue;
 		for (col = 0; col < T->n_columns; col++) {
 			if (S->min[col] < T->min[col]) T->min[col] = S->min[col];
@@ -7196,7 +7198,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		}
 		else {	/* OK to populate segment and increment counters */
 			gmtlib_assign_segment (GMT, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
-			gmt_set_seg_minmax (GMT, *geometry, T->segment[seg]);	/* Set min/max */
+			gmt_set_seg_minmax (GMT, *geometry, 0, T->segment[seg]);	/* Set min/max */
 			T->n_records += row;		/* Total number of records so far */
 			T->segment[seg]->id = seg;	/* Internal segment number */
 		}

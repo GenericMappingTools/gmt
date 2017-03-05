@@ -1569,7 +1569,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							Return (GMT_RUNTIME_ERROR);
 						}
 						L->n_rows = n_new;
-						gmt_set_seg_minmax (GMT, D->geometry, L);	/* Update min/max */
+						gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 						resampled = true;	/* To avoid doing it twice */
 					}
 					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
@@ -1650,7 +1650,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						Return (GMT_RUNTIME_ERROR);
 					}
 					L->n_rows = n_new;
-					gmt_set_seg_minmax (GMT, D->geometry, L);	/* Update min/max */
+					gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 				}
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */

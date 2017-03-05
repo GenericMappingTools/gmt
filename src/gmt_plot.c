@@ -5906,7 +5906,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		return;
 	}
 	S->n_rows = n_new;
-	gmt_set_seg_minmax (GMT, (mode == 3) ? GMT_IS_POLY : GMT_IS_LINE, S);	/* Update min/max */
+	gmt_set_seg_minmax (GMT, (mode == 3) ? GMT_IS_POLY : GMT_IS_LINE, 2, S);	/* Update min/max of x/y only */
 
 	gmt_geo_polygons (GMT, S);
 

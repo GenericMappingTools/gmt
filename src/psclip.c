@@ -283,7 +283,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 							Return (GMT_RUNTIME_ERROR);
 						}
 						S->n_rows = n_new;
-						gmt_set_seg_minmax (GMT, D->geometry, S);	/* Update min/max */
+						gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max of x/y only */
 						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
 
