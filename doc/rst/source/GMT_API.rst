@@ -3231,6 +3231,124 @@ If ``dim[3]`` is set to 1 we will in-place transpose
 the array from Fortran column-major array order to C-style row-major array order before writing. Note
 this means ``array`` will have been transposed when the function returns.
 
+External interfaces
+===================
+
+Developers may want to access GMT modules from external programming environments, such as MATLAB,
+Octave, Julia, Python, R, IDL, etc., etc.  These all face similar challenges and hence this section
+will speak in somewhat abstract terms.  Specific language addressing the challenges for some of
+the above-mentioned environments will follow below.
+
+The C/C++ API for GMT makes it possible to call any of the 100 core modules, the 40 or so supplemental
+modules, and any number of custom modules provided via shared libraries (e.g., the gsfml modules).  Many
+of the external interfaces come equipped with methods to call C functions.
+The key challenges pertain to specifying the input to use in the module and to receive
+what is produced by the module.
+As we know from GMT command line usage, all GMT modules expect input to be given via input files (or stdin if
+not given except for things like grids and images).  Similarly, output will be written to specified
+output file (or stdout if no file was given and the data type supports it).  Clearly, external interfaces 
+could do the same thing.  The problem is that most of the time we already will have the input data in
+memory and would prefer the output to be returned back to memory, thus avoiding using temporary files.
+Here, we will outline the general approach for using the API.  We will describe a relatively low-level approach
+to calling GMT modules.  Once such an interface exists it is simpler to build a more complicated and user-friendly
+layer on top that can handle argument parsing in a way that makes the interface seem more of a natural
+extension of your external environment than a forced fit to GMT's command-line heritage.
+
+Plain interface
+---------------
+
+While the syntax of your external environment will dictate details of the implementation, we will in general
+need to build a function (or class, or method) that allows you to issue a call like this
+
+[*results*] = gmt (*module*, *options*, *inputs*)
+
+where *results* (i.e., objects returned back to memory) is optional and may be one or more items grouped 
+together, depending on allowable syntax.  If no output is expected or required then no left-hand side
+and assignment will be present.  Likewise, *inputs* is optional and may be one or more comma-separated
+objects present in memory.  In most cases, *options* will be required and is a string with
+options very similar to arguments given on the GMT command line.  Finally, *module* is required since you
+must specify which one you want. The coding of the "gmt" method or function above may be written entirely in
+C, partly in C and the external scripting language, or entirely in the scripting language, depending on
+restrictions on what needs to be done and where this is most easily accomplished; these may vary
+from environment to environment.
+
+Data containers
+---------------
+
+The external interface developer will need to create native data classes or structures that are capable of
+containing the information associated with the 6 GMT objects: data tables, grids, images, color palette tables,
+PostScript documents, and text tables.  In other words, how will your external environment represent these
+data.  Some of these may already exist, while others you may need to design.  Most likely, you will end up with
+a set of six "containers" that can hold the various data objects and related metadata.  In addition, it may
+be convenient to also consider the two GMT objects MATRIX and VECTOR which may be closer to the native
+representation of your data than, for instance, GMT_DATASET.
+
+Input from memory
+-----------------
+
+Whether input comes from memory or from external files, the call to GMT is the same: we have to specify
+filenames for the input data.  Thus, the game is to provide *virtual* file names that represent our in-memory
+data.  The process is relatively simple and probably needs to be done in a snippet of C
+code that can be called by a function written in your environments scripting language. Steps go like this:
+
+#. Create a GMT C container marked for input and copy or reference your data provided by
+   your external environment into this container.
+#. Open a virtual file using this container to represent the input source.
+#. Insert this file name in the appropriate location in the GMT option string.  If the
+   module imports data from stdin we we can use the hidden option -<filename.
+
+When the GMT module is run it will know how to make the connections between the virtual file names and
+the actual data via information inside the C API.  When the module completes you should close any
+open virtual files that were used by the module.
+
+Output to memory
+----------------
+
+As the case for getting inputs, GMT only knows about writing to files (or stdout).  Hence, we must do the same as for input
+and identify virtual files to represent the output destinations.  The steps are:
+
+#. Create an empty C container of the right type marked for output.
+#. Create a virtual file name to represent this output destination.
+#. Place this file name in the appropriate location in the GMT option string.  If the
+   module exports data to stdin the we can use the hidden option ->filename.
+
+When the GMT module is run it will know how to make the connections between the memory allocated by the
+module and the virtual file names inside the C API.  Once the module has completed you can access the
+results in the external environment using GMT_Read_VirtualFile on the virtual filename you created earlier.
+You can then populate you external data containers with data produced by the module.
+
+The magic of knowing
+--------------------
+
+External developers have access to the two extra API functions GMT_Encode_Options_ and GMT_Expand_Option_.
+Your gmt function will need to call GMT_Encode_Options_ to obtain information about what the selected
+module expects, what its options are, which were selected, and what data types are expected.  It may
+possibly modify the options, such as adding the filename "?" to options that set
+*required* input and output files.  The fact they were missing from your *options* string simply means you wanted to associate these sources and destinations
+with memory locations rather than actual files.  The second function GMT_Expand_Option_ is then
+used to replace these place-holder names with the virtual filenames created earlier.
+
+The MATLAB interface
+~~~~~~~~~~~~~~~~~~~~
+
+We have built a MATLAB/OCTAVE interface to GMT.  It was our first attempt to use the C API from an
+external environment and it influenced
+how we designed the C API.  MATLAB represents most data as matrices but there are also structures that
+can hold many different items, including several matrices and text strings.  Thus, we designed several native structures
+to represent the 6 GMT objects.  The main gmt prompt offered in MATLAB comes from a small MATLAB script
+(gmt.m) which handles basic argument testing and then passes the arguments to our C function gmtmex.c.
+Most of the high-level parsing of options and arguments is done in this function, but we also rely on
+a C library (gmtmex_parser.c) that hides the details of the implementation.  It is this library that
+does most of the work in translating between the GMT and MATLAB object layouts.
+
+The Julia interface
+~~~~~~~~~~~~~~~~~~~
+
+Unlike the MATLAB interface, the Julia interface is written entirely in the Julia language.
+
+The Python interface
+~~~~~~~~~~~~~~~~~~~~
+
 Appendix A: GMT resources
 -------------------------
 
