@@ -567,7 +567,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
 					if (side == 0) continue;	/* Outside polygon */
 					p = gmt_M_ijp (Grid->header, row, col);
-					Grid->data[p] = zpol[seg];
+					Grid->data[p] = (float)zpol[seg];
 					n_set++;
 					if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
 						if (col == 0) Grid->data[p+nx1] = Grid->data[p], n_set++;
