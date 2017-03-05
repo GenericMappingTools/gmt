@@ -128,6 +128,19 @@
 #	define assert(e) ((void)0)
 #endif
 
+/*
+ * Windows headers
+ */
+
+#ifdef HAVE_IO_H_
+#	include <io.h>
+#endif
+
+#ifdef HAVE_PROCESS_H_
+#	include <process.h>
+#endif
+
+
 #ifdef HAVE_ZLIB
 #	include <zlib.h>
 #endif
@@ -212,6 +225,38 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 #endif
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+
+/* GMT normally gets these macros from unistd.h */
+#ifndef HAVE_UNISTD_H_
+#	define R_OK 4
+#	define W_OK 2
+#	ifdef WIN32
+#		define X_OK R_OK /* X_OK == 1 crashes on Windows */
+#	else
+#		define X_OK 1
+#	endif
+#	define F_OK 0
+#endif /* !HAVE_UNISTD_H_ */
+
+/* access is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
+#if defined HAVE__ACCESS && !defined HAVE_ACCESS
+#	define access _access
+#endif
+
+#if defined HAVE_STRTOK_S && !defined HAVE_STRTOK_R
+#	define strtok_r strtok_s
+#elif !defined HAVE_STRTOK_R
+/* define custom function */
+#endif
+
+/* getpid is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in process.h */
+#if defined HAVE__GETPID && !defined HAVE_GETPID
+#	define getpid _getpid
 #endif
 
 /*--------------------------------------------------------------------

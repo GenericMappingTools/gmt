@@ -56,13 +56,22 @@
 #cmakedefine HAVE__ACCESS
 #cmakedefine HAVE_FSEEKO
 #cmakedefine HAVE__FSEEKI64
+#cmakedefine HAVE_GETPID
+#cmakedefine HAVE__GETPID
 #cmakedefine HAVE_VSNPRINTF_
 #cmakedefine HAVE__VSNPRINTF_
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRTOK_R
+#cmakedefine HAVE_STRTOK_S
 #cmakedefine DECLARED_STRDUP
 
 /* C types; C99 exact-width integer types <inttypes.h>, <stdint.h>; etc */
+
+/* windows specific */
+
+#cmakedefine HAVE_DIRECT_H_
+#cmakedefine HAVE_IO_H_
+#cmakedefine HAVE_PROCESS_H_
 
 #cmakedefine HAVE_CTYPE_H_
 

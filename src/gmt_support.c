@@ -3282,7 +3282,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				xe = new_x;	ye = wesn[YHI];
 			}
 			/* Update the truncated ray (-1) in the edge list with a new vertex and add the vertex coordinates to pointlist */
-			if (mode) point_type[n_vertex] = side;	/* Mark as a border point 1-4 */
+			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark as a border point 1-4 */
 			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the actual point on the boundary */
 			vorOut.pointlist[p++] = xe;				/* Add the ray intersection point to the pointlist */
 			vorOut.pointlist[p++] = ye;
@@ -3336,7 +3336,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			else	/* Normal edge - nothing to do for now */
 				continue;
 			/* Here we replace the edge vertex point with the intersection point and add that point as a new point */
-			if (mode) point_type[n_vertex] = side;	/* Mark new point as a border point 1-4 */
+			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark new point as a border point 1-4 */
 			vorOut.edgelist[change] = n_vertex++;	/* Update edgelist with new point on the border, then increase point count */
 			vorOut.pointlist[p++] = xe;		/* Place the new coordinates into the pointlist array */
 			vorOut.pointlist[p++] = ye;
@@ -3392,7 +3392,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				}
 				/* Here, xstop is the point closest to xstart and pstop is its index. */
 				/* Add this edge to edgelist */
-				vorOut.edgelist[edge++] = pstart;	vorOut.edgelist[edge++] = pstop;
+				vorOut.edgelist[edge++] = (int)pstart;	vorOut.edgelist[edge++] = (int)pstop;
 				pstart = pstop;	xstart = xstop;	xstop = xend;	/* Let the end of this edge become start of the next edge */
 			}
 		}
@@ -3412,11 +3412,11 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				}
 				/* Here, ystop is the point closest to xstart and pstop is its index. */
 				/* Add this edge to edgelist */
-				vorOut.edgelist[edge++] = pstart;			vorOut.edgelist[edge++] = pstop;
+				vorOut.edgelist[edge++] = (int)pstart;			vorOut.edgelist[edge++] = (int)pstop;
 				pstart = pstop;	ystart = ystop;	ystop = yend;	/* Let the end of this edge become start of the next edge */
 			}
 		}
-		n_edges = edge;	/* Total number of all edges times 2 */
+		n_edges = (int)edge;	/* Total number of all edges times 2 */
 #if DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter border edges are added:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
@@ -3538,7 +3538,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 						if (edge_use[j])	/* Now used twice */
 							edge_use[j] = 2;
 						else	/* Flag acording to which direction we used it */
-							edge_use[j] = next_sign;
+							edge_use[j] = (char)next_sign;
 						np++;	/* Increase polygon length counter */
                         go_j = false;	/* Exit this loop and search for next edge */
 					}
