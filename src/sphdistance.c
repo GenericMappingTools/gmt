@@ -92,7 +92,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 
-	gmt_set_seg_minmax (GMT, GMT_IS_POLY, P);	/* Set the domain of the segment */
+	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 0, P);	/* Set the domain of the segment */
 
 	/* Then loop over points to accumulate sums */
 

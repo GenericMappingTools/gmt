@@ -361,7 +361,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 				S->n_rows = n_new;
-				gmt_set_seg_minmax (GMT, D->geometry, S);	/* Update min/max */
+				gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max or x/y only */
 			}
 		}
 	}
