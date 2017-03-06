@@ -558,9 +558,13 @@ GMT_LOCAL void plot_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double s
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < nx; i++) {
-		gmt_geo_to_xy (GMT, x[i], s, &x1, &y1);
-		gmt_geo_to_xy (GMT, x[i], n, &x2, &y2);
-		PSL_plotsegment (PSL, x1, y1, x2, y2);
+		if (gmt_M_is_geographic (GMT, GMT_IN))
+			plot_map_lonline (GMT, PSL, x[i], s, n);
+		else {
+			gmt_geo_to_xy (GMT, x[i], s, &x1, &y1);
+			gmt_geo_to_xy (GMT, x[i], n, &x2, &y2);
+			PSL_plotsegment (PSL, x1, y1, x2, y2);
+		}
 	}
 }
 
@@ -617,9 +621,13 @@ GMT_LOCAL void plot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < ny; i++) {
-		gmt_geo_to_xy (GMT, w, y[i], &x1, &y1);
-		gmt_geo_to_xy (GMT, e, y[i], &x2, &y2);
-		PSL_plotsegment (PSL, x1, y1, x2, y2);
+		if (gmt_M_is_geographic (GMT, GMT_IN))
+			plot_map_latline (GMT, PSL, y[i], w, e);
+		else {
+			gmt_geo_to_xy (GMT, w, y[i], &x1, &y1);
+			gmt_geo_to_xy (GMT, e, y[i], &x2, &y2);
+			PSL_plotsegment (PSL, x1, y1, x2, y2);
+		}
 	}
 }
 
