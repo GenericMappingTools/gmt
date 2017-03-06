@@ -563,7 +563,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval, "Syntax error -S option: smooth value must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot */
