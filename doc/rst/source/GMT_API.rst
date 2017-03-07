@@ -3253,6 +3253,14 @@ to calling GMT modules.  Once such an interface exists it is simpler to build a 
 layer on top that can handle argument parsing in a form that makes the interface seem more of a natural
 extension of your external environment than a forced fit to GMT's command-line heritage.
 
+.. figure:: /_images/GMT_API_use.*
+   :width: 500 px
+   :align: center
+
+   GMT Modules and read and write information in may ways.  The GMT command line modules
+   can only access the methods in white, while all methods are available via the C API.
+   External interfaces will preferentially want the orange methods.
+
 Plain interface
 ---------------
 
