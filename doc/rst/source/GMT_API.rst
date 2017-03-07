@@ -3257,9 +3257,9 @@ extension of your external environment than a forced fit to GMT's command-line h
    :width: 500 px
    :align: center
 
-   GMT Modules and read and write information in may ways.  The GMT command line modules
+   GMT Modules can read and write information in may ways.  The GMT command line modules
    can only access the methods in white, while all methods are available via the C API.
-   External interfaces will preferentially want the orange methods.
+   External interfaces will preferentially want the methods in orange.
 
 Plain interface
 ---------------
