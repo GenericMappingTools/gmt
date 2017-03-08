@@ -5589,6 +5589,7 @@ int PSL_command (struct PSL_CTRL *C, const char *format, ...) {
 		char tmp_buffer[PSL_BUFSIZ] = {""};
 		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
 		psl_prepare_buffer (C, len);
+		C->internal.buffer[C->internal.n] = '\0';	/* Play safe before the strcat of next line. Otherwise trash in the middle may occur */
 		strncat (&(C->internal.buffer[C->internal.n]), tmp_buffer, len);
 		C->internal.n += len;
 	}
