@@ -337,8 +337,9 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			/* Count the number of non-NaN observations */
 			for (i = 1; i < (int)M.n_out_columns; i++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
-				if ((length = D->H.info[M.order[i].set].col[M.order[i].item].text)) {
-					if (strncmp (&tvalue[i][rec*length], ALL_NINES, (size_t)length)) counter[i]++;
+				if ((length = (int)D->H.info[M.order[i].set].col[M.order[i].item].text)) {
+					if (strncmp(&tvalue[i][rec * length], ALL_NINES, (size_t)length))
+						counter[i]++;
 				}
 				else
 					if (!gmt_M_is_dnan (dvalue[i][rec])) counter[i]++;
