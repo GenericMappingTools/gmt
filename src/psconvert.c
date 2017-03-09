@@ -69,6 +69,11 @@ EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods
 #else
 	static char quote = '\'';
 	static char *squote = "\'";
+	struct popen2 {
+		int fd[2];		/* The input [0] and output [1] file descriptors */
+		int n_closed;	/* Number of times we have called gmt_pclose */
+	    pid_t child_pid;	/* Pid of child */
+	};
 #endif
 
 enum GMT_GS_Devices {
@@ -183,6 +188,51 @@ struct PS2RASTER_CTRL {
 
 #ifdef WIN32	/* Special for Windows */
 	GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
+#else
+	/* Abstraction to get popen to do bidirectional read/write */
+struct popen2 * gmt_popen2 (const char *cmdline) {
+	struct popen2 *F = NULL;
+	/* Must implement a bidirectional popen instead */
+    pid_t p;
+    int pipe_stdin[2] = {0, 0}, pipe_stdout[2] = {0, 0};
+
+    if (pipe(pipe_stdin))  return NULL;
+    if (pipe(pipe_stdout)) return NULL;
+
+    printf("pipe_stdin[0] = %d,  pipe_stdin[1]  = %d\n", pipe_stdin[0], pipe_stdin[1]);
+    printf("pipe_stdout[0] = %d, pipe_stdout[1] = %d\n", pipe_stdout[0], pipe_stdout[1]);
+
+    if ((p = fork()) < 0) return NULL; /* Fork failed */
+
+    if(p == 0) { /* child */
+        close (pipe_stdin[1]);
+        dup2 (pipe_stdin[0], 0);
+        close (pipe_stdout[0]);
+        dup2 (pipe_stdout[1], 1);
+        execl ("/bin/sh", "sh", "-c", cmdline, 0);
+        perror ("execl"); exit (99);
+    }
+	/* Return the file handles back via structure */
+	F = calloc (1, sizeof (struct popen2));
+    F->child_pid = p;
+    F->fd[1] = pipe_stdin[1];
+    F->fd[0] = pipe_stdout[0];
+    return F; 
+}
+
+void gmt_pclose2 (struct popen2 **Faddr, int dir) {
+	struct popen2 *F = *Faddr;
+	F->n_closed++;
+	close (F->fd[dir]);	/* Close this pipe */
+	if (F->n_closed == 2) {	/* Done so free object */
+		/* Done, kill child */
+    	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0)); 
+    	printf("waitpid() -> %d\n", waitpid(F->child_pid, NULL, 0));
+    	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0));
+		free (F);
+		*Faddr = NULL;
+	}
+}
 #endif
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
@@ -825,24 +875,25 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128], t[32] = {""}, *pch, c;
-	int       fd[2] = { 0, 0 }, r, c_begin = 0;
+	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
-	FILE     *fp = NULL;
 	struct GMT_POSTSCRIPT *PS = NULL;
+#ifdef _WIN32
+	int       fd[2] = { 0, 0 };
+	FILE     *fp = NULL;
+#else
+	struct popen2 *H = NULL;
+#endif
+
+	sprintf (cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);	/* Set up gs command */
 
 #ifdef _WIN32
 	if (_pipe(fd, 512, O_BINARY) == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 		return GMT_RUNTIME_ERROR;
 	}
-#else
-	if (pipe (fd) == -1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-		return GMT_RUNTIME_ERROR;
-	}
-#endif
 	if (dup2 (fd[1], fileno (stderr)) < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
 		return GMT_RUNTIME_ERROR;
@@ -851,39 +902,54 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
 		return GMT_RUNTIME_ERROR;
 	}
+	if ((fp = popen (cmd, "w")) == NULL) {	/* Failed popen-job, exit */
+		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		return GMT_RUNTIME_ERROR;
+	}
+#else
+	if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
+		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		return GMT_RUNTIME_ERROR;
+	}
+#endif
 
 	/* Allocate GMT_POSTSCRIPT struct to hold the string that lives inside GMT->PSL */
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_POSTSCRIPT);
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the internal plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
-	sprintf (cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);	/* Set up gs command */
-
-	if ((fp = popen (cmd, "w")) != NULL) {	/* Successful pipe-job, now shove PS into it */
-		fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
-		fflush (fp);
-		if (pclose (fp) == -1)
-			GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
-	}
-	else {
-		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
-		gmt_M_free (API->GMT, PS);
-		return GMT_RUNTIME_ERROR;
-	}
+	/* Send the PS down ghostscripts throat */
+#ifdef _WIN32
+	fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
+	fflush (fp);
+	if (pclose (fp) == -1)
+		GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
+	fh = fd[0];	/* File handle for reading */
+#else
+ 	write (H->fd[1], PS->data, PS->n_bytes);
+	/* Now closed for writing */
+    gmt_pclose2 (&H, 1);
+	fh = H->fd[0];	/* File handle for reading */
+#endif
 
 	/* Now read the image from input pipe fd[0] */
-	while (read(fd[0], t, 1U) && t[0] != '\n'); 	/* Consume first line that has the BoundingBox */
+	while (read(fh, t, 1U) && t[0] != '\n'); 	/* Consume first line that has the BoundingBox */
 	n = 0;
-	while (read(fd[0], t, 1U) && t[0] != '\n')		/* Read secod line which has the HiResBoundingBox */
+	while (read(fh, t, 1U) && t[0] != '\n')		/* Read second line which has the HiResBoundingBox */
 		buf[n++] = t[0];
 	buf[n] = '\0';
+#ifdef _WIN32
 	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close read end of pipe.\n");
 		gmt_M_free (API->GMT, PS);
 		return GMT_RUNTIME_ERROR;
 	}
+#else
+	/* Now closed for reading */
+ 	gmt_pclose2 (&H, 0);
+#endif
 
-	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
+	sscanf (buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
 	c = PS->data[500];
 	PS->data[500] = '\0';			/* Temporary cut the string to not search the whole file */
 	pch = strstr(PS->data, "Landscape");
@@ -956,13 +1022,18 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fd[2] = {0, 0}, n, pix_w, pix_h;
+	int       fh, n, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
-	FILE     *fp = NULL;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_POSTSCRIPT *PS = NULL;
+#ifdef _WIN32
+	int       fd[2] = {0, 0};
+#else
+	struct popen2 *H = NULL;
+#endif
+	FILE     *fp = NULL;
 
 	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
 	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
@@ -974,13 +1045,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 		if (_pipe(fd, 145227600, O_BINARY) == -1) {
-#else
-		if (pipe (fd) == -1) {
-#endif
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 			return GMT_RUNTIME_ERROR;
 		}
-	
 		if (dup2 (fd[1], fileno (stdout)) < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
 			return GMT_RUNTIME_ERROR;
@@ -989,14 +1056,41 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
 			return GMT_RUNTIME_ERROR;
 		}
+		if ((fp = popen (cmd, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			gmt_M_free (API->GMT, PS);
+			return GMT_RUNTIME_ERROR;
+		}
+#else
+		if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
+			GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			return GMT_RUNTIME_ERROR;
+		}
+#endif
 	}
-	else
+	else {	/* Only need a unidirectional pipe as supported by all since gs output is written to a file */
 		strncat (cmd, out_file, 1023);
-
+		if ((fp = popen (cmd, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+			return GMT_RUNTIME_ERROR;
+		}
+	}
+	
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_POSTSCRIPT);
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
-	if ((fp = popen (cmd, "w")) != NULL) {
+
+	/* Send the PS down ghostscript's throat */
+#ifdef _WIN32
+	if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
+		GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
+	if (fflush (fp) == EOF)
+		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
+	if (pclose (fp) == -1)
+		GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
+		fh = fd[0];	/* File handle for reading */
+#else
+	if (fp) {	/* Did popen after all since we have an output filename */
 		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
 		if (fflush (fp) == EOF)
@@ -1004,32 +1098,34 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		if (pclose (fp) == -1)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
 	}
-	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
-		gmt_M_free (API->GMT, PS);
-		return GMT_RUNTIME_ERROR;
+	else {	/* On non-Windows and want a raster back */
+ 		write (H->fd[1], PS->data, PS->n_bytes);
+		/* Now closed for writing */
+    	gmt_pclose2 (&H, 1);
+		fh = H->fd[0];	/* File handle for reading */
 	}
+#endif
 
 	/* And now restore the original BB & HiResBB so that the PS data can be reused if wanted */
 	gmt_M_free (API->GMT, PS);
 
-	/* ----------- IF WE WROTE A FILE THAN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
+	/* ----------- IF WE WROTE A FILE THEN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
 	if (out_file[0] != '\0')
 		return GMT_NOERROR;
 	/* ---------------------------------------------------------------------------------------- */
 
-	n = read (fd[0], buf, 3U);				/* Consume first header line */
-	while (read (fd[0], buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
+	n = read (fh, buf, 3U);				/* Consume first header line */
+	while (read (fh, buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
 	n = 0;
-	while (read(fd[0], buf, 1U) && buf[0] != ' ') 		/* Get string with number of columns from 3rd header line */
+	while (read(fh, buf, 1U) && buf[0] != ' ') 		/* Get string with number of columns from 3rd header line */
 		t[n++] = buf[0];
 	dim[GMT_X] = atoi (t);
 	n = 0;
-	while (read(fd[0], buf, 1U) && buf[0] != '\n') 		/* Get string with number of rows from 3rd header line */
+	while (read(fh, buf, 1U) && buf[0] != '\n') 		/* Get string with number of rows from 3rd header line */
 		t[n++] = buf[0];
 	t[n] = '\0';						/* Make sure no character is left from previous usage */
 
-	while (read(fd[0], buf, 1U) && buf[0] != '\n');		/* Consume fourth header line */
+	while (read(fh, buf, 1U) && buf[0] != '\n');		/* Consume fourth header line */
 
 	dim[GMT_Y] = atoi (t);
 	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
@@ -1044,7 +1140,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
 	for (row = 0; row < nRows; row++) {
 		int ios;
-		ios = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+		ios = read (fh, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 		for (col = 0; col < nCols; col++) {
 			for (band = 0; band < nBands; band++) {
 				I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];	/* This is Band interleaved. The best for MEX. */
@@ -1053,8 +1149,13 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	}
 	gmt_M_free (API->GMT, tmp);
 
-	if (close (fd[0]) == -1) 		/* Close read end of pipe */
+#ifdef _WIN32
+	if (close (fh) == -1) 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to close read end of pipe.\n");
+#else
+	/* Now closed for reading */
+ 	gmt_pclose2 (&H, 0);
+#endif
 
 	I->type = GMT_CHAR;
 	I->header->n_columns = (uint32_t)dim[GMT_X];	I->header->n_rows = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
