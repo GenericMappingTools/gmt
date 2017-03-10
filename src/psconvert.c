@@ -780,47 +780,9 @@ GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size
 	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
 }
 
-#if 0
-GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *notused, char *all_PS, uint64_t *pos) {
-	/* mem_line_reader gets the next logical record from all_PS (starting at pos) and passes it back via L.
-	 * We use this function since PS files may be shitty and contain a mixture of \r or \n
-	 * to indicate end of a logical record.
-	 * fp is not used.
-	 * Empty lines are suppressed.
-	 * If the last end-of-line is missing, the last line is still produced with an end-of-line.
-	 */
-	int c;
-	int64_t out = 0;
-	char *line = *L;
-	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	while ((c = all_PS[(*pos)++]) > 0) {	/* Keep reading until End-Of-File */
-		if (c == '\r' || c == '\n') {	/* Got logical end of record */
-			if (!out) continue; /* Nothing in buffer ... skip */
-			line[out] = '\0';	/* Terminate output string */
-			return out;	/* Return number of characters in L */
-		}
-		/* Got a valid character in current record */
-		if ((size_t)out == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed to end a string */
-			(*size) <<= 1;	/* Double the current buffer space */
-			line = *L = gmt_M_memory (GMT, *L, *size, char);
-		}
-		line[out++] = (char)c;	/* Add this char to our buffer */
-	}
-	if (!out) return EOF;	/* Nothing in buffer ... exit with EOF */
-	(*pos)--;	/* Because we are at EOF we need to skip back one to produce another EOF at next entry of the routine */
-	line[out] = '\0';	/* Terminate output string */
-	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
-}
-#endif
-
 void file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
 	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
 	rewind (fp);
-}
-
-void mem_rewind (FILE *notused, uint64_t *pos) {	/* Resets to start of memory */
-	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	*pos = 0;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1231,9 +1193,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct { int major, minor; } gsVersion = {0, 0};
 	struct GMT_POSTSCRIPT *PS = NULL;
 
-	int64_t (*read_source) (struct GMT_CTRL *, char **, size_t *, FILE *, char *, uint64_t *);	/* Pointer to source reader function */
-	void (*rewind_source) (FILE *, uint64_t *);	/* Pointer to source rewind function */
-
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -1392,10 +1351,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 	/* -------------------------------------------------------------------------------------- */
 
-	/* Standard file processing */
-	read_source = &file_line_reader;
-	rewind_source = &file_rewind;
-
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
 		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
@@ -1476,7 +1431,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, PS);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
+			while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
 					dump = false;
 				if (dump)
@@ -1490,8 +1445,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			rewind (fp2);	/* Rewind new file without timestamp */
 			fp = fp2;	/* Set original file pointer to this file instead */
 			file_processing = true;			/* Since we now are reading a temporary file */
-			read_source = &file_line_reader;	/* Since we now are reading a temporary file */
-			rewind_source = &file_rewind;		/* Since we now are reading a temporary file */
 		}
 
 		got_BB = got_HRBB = file_has_HRBB = got_end = landscape = landscape_orig = setup = false;
@@ -1564,7 +1517,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							gmt_M_free (GMT, PS);
 							Return (GMT_RUNTIME_ERROR);
 						}
-						/* must leave loop because fpb has been closed and read_source would
+						/* must leave loop because fpb has been closed and file_line_reader would
 						 * read from closed file: */
 						break;
 					}
@@ -1610,7 +1563,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		 * Since we prefer the HiResBB over BB we must continue to read until both are found or 20 lines have past */
 
 		i = 0;
-		while ((read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) && i < 20 && !(got_BB && got_HRBB && got_end)) {
+		while ((file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) && i < 20 && !(got_BB && got_HRBB && got_end)) {
 			i++;
 			if (!line[0] || line[0] != '%')
 				{ /* Skip empty and non-comment lines */ }
@@ -1684,14 +1637,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		/*         Rewind the input file and start copying and replacing      */
 		/* ****************************************************************** */
 
-		rewind_source (fp, &pos);
+		file_rewind (fp, &pos);
 
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		transparency = add_grestore = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
 
-		while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
+		while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
 				if (look_for_transparency && strstr (line, " PSL_transp")) {
 					transparency = true;		/* Yes, found transparency */
@@ -1804,10 +1757,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					size_t Lsize = 128U;
 					char *line_ = gmt_M_memory (GMT, NULL, Lsize, char);
 					BeginPageSetup_here = true;	/* Signal that on next line the job must be done */
-					read_source (GMT, &line_, &Lsize, fp, PS->data, &pos);   /* Read also next line which is to be overwritten (unless a comment) */
+					file_line_reader (GMT, &line_, &Lsize, fp, PS->data, &pos);   /* Read also next line which is to be overwritten (unless a comment) */
 					while (line_[0] == '%') {	/* Skip all comments until we get the first actionable line */
 						strncpy(t3, line_, 127);
-						read_source (GMT, &line_, &Lsize, fp, PS->data, &pos);
+						file_line_reader (GMT, &line_, &Lsize, fp, PS->data, &pos);
 					}
 
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
@@ -1889,7 +1842,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 #ifdef HAVE_GDAL
 			else if (found_proj && !strncmp (line, "%%PageTrailer", 13)) {
-				read_source (GMT, &line, &line_size, fp, PS->data, &pos);
+				file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
 
@@ -1958,7 +1911,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (fseek (fp, (off_t)-7, SEEK_END))
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Seeking to spot 7 bytes earlier failed\n");
 		/* Read until last line is encountered */
-		while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF);
+		while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF);
 		if (strncmp (line, "%%EOF", 5U))
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
