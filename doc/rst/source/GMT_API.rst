@@ -3279,6 +3279,15 @@ C, partly in C and the external scripting language, or entirely in the scripting
 restrictions on what needs to be done and where this is most easily accomplished.
 How this is accomplished may vary from environment to environment.
 
+.. figure:: /_images/GMT_API_flow.*
+   :width: 500 px
+   :align: center
+
+   Data pass in and out of the **gmt** interface which may be written in the scripting language used
+   by the external interface.  The native data will need to be encapsulated by GMT containers and this
+   step may be done by a C **parser** but could also be done by the **gmt** interface directly.  Either
+   of these communicate directly with the C functions in the GMT API.
+
 Data containers
 ---------------
 

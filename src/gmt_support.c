@@ -6247,7 +6247,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 						use[n] = false;	/* Done processing this one */
 					}
 					break;
-				case 'a': case 'b': case 'e': case 'g': case 'j': case 'l': case 'm': case 'n': case 'p': case 'q':
+				case 'a': case 'b': case 'e': case 'g': case 'h': case 'j': case 'l': case 'm': case 'n': case 'p': case 'q':
 					 case 'r': case 't': case 'z':	/* These are possible modifiers within +v vector specifications */
 					if (processed_vector) break;
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pen modifier (%s) not recognized.\n", p);

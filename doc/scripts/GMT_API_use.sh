@@ -1,6 +1,6 @@
 #!/bin/bash
 ps=GMT_API_use.ps
-gmt psxy -R-4.5/4.5/-2/2 -Jx0.8i -P -K -W2p+ve0.2i+gblack -Xc << EOF > $ps
+gmt psxy -R-4.5/4.5/-2/2 -Jx0.8i -P -K -W2p+ve0.2i+gblack+h0.5 -Xc << EOF > $ps
 >
 -2	0.75
 -0.65	0.4
@@ -11,7 +11,7 @@ gmt psxy -R-4.5/4.5/-2/2 -Jx0.8i -P -K -W2p+ve0.2i+gblack -Xc << EOF > $ps
 -1.9	-0.75
 -0.65	-0.4
 EOF
-gmt psxy -R -J -O -K -W2p+ve0.2i+gblack  << EOF >> $ps
+gmt psxy -R -J -O -K -W2p+ve0.2i+gblack+h0.5  << EOF >> $ps
 0.65	0.4
 1.9	0.75
 >
