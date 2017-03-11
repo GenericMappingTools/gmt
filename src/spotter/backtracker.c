@@ -454,6 +454,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	n_out = (Ctrl->S.active) ? 4 : 3;	/* Append smt id number as 4th column when individual files are requested */
 	if (Ctrl->W.active) n_out = 5 + !(Ctrl->W.mode == 0);
 	geometry = (make_path) ? GMT_IS_LINE : GMT_IS_POINT;
+	gmt_M_memset (out, 10, double);
 
 	/* Specify input and output expected columns */
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_NOERROR) {
