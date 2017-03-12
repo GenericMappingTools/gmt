@@ -34,6 +34,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a binary raster and save as a GMT grid"
 #define THIS_MODULE_KEYS	"GG},TD)"
+#define THIS_MODULE_NEEDS	"R"
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"
@@ -772,7 +773,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
 	/* Hardwire a -fg setting since this is geographic data */
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);

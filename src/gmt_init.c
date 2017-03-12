@@ -10365,7 +10365,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
+GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
 	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call gmt_begin_module
 	 * as their first call and call gmt_end_module as their last call.  This
 	 * allows us to capture the GMT control structure so we can reset all
@@ -10454,6 +10454,21 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	GMT->init.module_lib  = lib_name;
 
 	return (GMT);
+}
+
+/*! Prepare options if missing and initialize module */
+struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+	unsigned int k;
+	struct GMT_OPTION *opt = NULL;
+	
+	for (k = 0; API->GMT->current.setting.run_mode == GMT_MODERN && k < strlen (required); k++) {
+		if ((opt = GMT_Find_Option (API, required[k], *options))) continue;	/* Got this one already */
+		if ((opt = GMT_Make_Option (API, required[k], "")) == NULL) return NULL;	/* Failure to make option */
+		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+	}
+	/* OK, here we can call the rest of the initialization */
+	
+	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
 }
 
 /*! . */

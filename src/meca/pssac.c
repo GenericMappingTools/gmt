@@ -34,6 +34,7 @@ that copyright notice and this permission notice appear in supporting documentat
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot seismograms in SAC format on maps"
 #define THIS_MODULE_KEYS	">XO,RG-"
+#define THIS_MODULE_NEEDS	"RJ"
 
 #include "gmt_dev.h"
 #include "sacio.h"
@@ -582,7 +583,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

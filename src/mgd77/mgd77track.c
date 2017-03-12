@@ -25,6 +25,7 @@
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
 #define THIS_MODULE_KEYS	">X}"
+#define THIS_MODULE_NEEDS	"RJ"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -592,7 +593,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMT_OPT_USAGE) Return (usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) Return (usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
