@@ -376,6 +376,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */
+	bool E_first = true;
 
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
@@ -504,12 +505,18 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
+			if (E_first) {
+				if ((error = gmt_set_cols (GMT, GMT_OUT, n_fields)) != GMT_NOERROR) {
+					Return (error);
+				}
+				E_first = false;
+			}
 			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			gmt_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
 			gmt_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
 			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-			gmt_M_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
+			if (n_fields > 2) gmt_M_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
 			GMT_Put_Record (API, GMT_WRITE_DATA, out);
 			continue;
 		}
