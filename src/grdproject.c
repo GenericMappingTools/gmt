@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformation of grids"
 #define THIS_MODULE_KEYS	"<G{,GG}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"J"
 
 #include "gmt_dev.h"
 

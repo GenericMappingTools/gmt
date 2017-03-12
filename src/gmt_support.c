@@ -14169,9 +14169,12 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 	}
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
 
-	if (mode != GMT_REFPOINT_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c reference point coordinates require both -R -J to be specified\n", kind[mode]);
-		return NULL;
+	if (mode != GMT_REFPOINT_PLOT) {	/* Will need -R -J so check again */
+		gmt_set_missing_options (GMT, "RJ");	/* If they exist in the history and mode is modern */
+		if (GMT->common.J.active == false && GMT->common.R.active == false) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c reference point coordinates require both -R -J to be specified\n", kind[mode]);
+			return NULL;
+		}
 	}
 
 	/* Here we have something to return */

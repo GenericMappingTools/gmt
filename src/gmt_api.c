@@ -9985,7 +9985,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 		error = 1;
 	}
 	else	/* Must process as a GMT setting */
-		error = gmtlib_setparameter (API->GMT, keyword, value);
+		error = gmtlib_setparameter (API->GMT, keyword, value, false);
 	gmt_M_str_free (value);
 	return_error (V_API, (error) ? GMT_NOT_A_VALID_PARAMETER : GMT_NOERROR);
 }

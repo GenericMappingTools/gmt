@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	""
 
 #include "gmt_dev.h"
 

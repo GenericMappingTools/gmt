@@ -859,12 +859,12 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	if ((this_c = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
 		this_c[0] = '\0';	/* Temporarily remove the '=' character */
-		n = gmtlib_setparameter (GMT, text, &this_c[1]);
+		n = gmtlib_setparameter (GMT, text, &this_c[1], false);
 		this_c[0] = '=';	/* Put it back were it was */
 	}
 	else
 		/* Got --PAR */
-		n = gmtlib_setparameter (GMT, text, "true");
+		n = gmtlib_setparameter (GMT, text, "true", false);
 	return (n);
 }
 
@@ -7383,7 +7383,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		error += gmtlib_setparameter (GMT, keyword, value);
+		error += gmtlib_setparameter (GMT, keyword, value, true);
 	}
 
 	fclose (fp);
@@ -7407,13 +7407,13 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 			p = 0;
 			while (opt->arg[p] && opt->arg[p] != '=') p++;
 			opt->arg[p] = '\0';	/* Temporarily remove the equal sign */
-			n_errors += gmtlib_setparameter (GMT, opt->arg, &opt->arg[p+1]);
+			n_errors += gmtlib_setparameter (GMT, opt->arg, &opt->arg[p+1], true);
 			opt->arg[p] = '=';	/* Restore the equal sign */
 		}
 		else if (!param)			/* Keep parameter name */
 			param = opt->arg;
 		else {					/* This must be value */
-			n_errors += gmtlib_setparameter (GMT, param, opt->arg);
+			n_errors += gmtlib_setparameter (GMT, param, opt->arg, true);
 			param = NULL;	/* Get ready for next parameter */
 		}
 	}
@@ -7426,7 +7426,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 }
 
 /*! . */
-unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value) {
+unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core) {
 	unsigned int pos;
 	size_t len;
 	int i, ival, case_val, manual;
@@ -8745,12 +8745,20 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_GMT_RUNMODE:
-			if (!strcmp (lower_value, "classic"))
-				GMT->current.setting.run_mode = GMT_CLASSIC;
-			else if (!strcmp (lower_value, "modern"))
-				GMT->current.setting.run_mode = GMT_MODERN;
-			else
+			if (core) {
+				if (!strcmp (lower_value, "classic"))
+					GMT->current.setting.run_mode = GMT_CLASSIC;
+				else if (!strcmp (lower_value, "modern"))
+					GMT->current.setting.run_mode = GMT_MODERN;
+				else
+					error = true;
+			}
+			else {
+				static char *rmode[2] = {"classic", "modern"};
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Parameter %s can only be set via gmt.conf - ignored here.  Mode remain %s.\n",
+					GMT_keywords[case_val], rmode[GMT->current.setting.run_mode]);
 				error = true;
+			}
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
@@ -8922,7 +8930,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
 	if (len && case_val >= 0) GMT->current.setting.given_unit[case_val] = value[len-1];
 
-	if (error && case_val >= 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
+	if (error && case_val >= 0 && case_val != GMTCASE_GMT_RUNMODE) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 	return ((error) ? 1 : 0);
 }
 
@@ -10456,15 +10464,41 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	return (GMT);
 }
 
+/*! Add -R<grid> for those modules that implicitly obtain the region via a grid */
+GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
+	 */
+	struct GMT_OPTION *opt = NULL;
+
+	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set already, so do nothing */
+	if (strchr (args, 'r') == NULL) return GMT_NOERROR;	/* Not using a grid for -R in this module */
+	/* Here we know the module is using a grid to get -R implicitly */
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {	/* Got an argument, hopefully an input file */
+		if (!gmt_access (API->GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
+			GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -R%s to options.\n", opt->arg);
+			if ((opt = GMT_Make_Option (API, 'R', opt->arg)) == NULL) return API->error;	/* Failure to make option */
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append option */
+		}
+	}
+	return GMT_NOERROR;
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	unsigned int k;
 	struct GMT_OPTION *opt = NULL;
 	
-	for (k = 0; API->GMT->current.setting.run_mode == GMT_MODERN && k < strlen (required); k++) {
-		if ((opt = GMT_Find_Option (API, required[k], *options))) continue;	/* Got this one already */
-		if ((opt = GMT_Make_Option (API, required[k], "")) == NULL) return NULL;	/* Failure to make option */
-		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must ensure implicit options are set explicitly */
+		k = gmt_set_missing_R (API, required, options);	/* Maybe append a -R<grid> option if needed by this module */
+
+		/* Next add blank -R or -J options if these are needed and not provided on command line */
+		for (k = 0; k < strlen (required); k++) {
+			if (islower (required[k])) continue;	/* Skip if r */
+			if ((opt = GMT_Find_Option (API, required[k], *options))) continue;	/* Got this one already */
+			if ((opt = GMT_Make_Option (API, required[k], "")) == NULL) return NULL;	/* Failure to make option */
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+			GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -R%c to options.\n", required[k]);
+		}
 	}
 	/* OK, here we can call the rest of the initialization */
 	
@@ -12086,6 +12120,39 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "    An example of a correct format is:  2000-01-01T12:00:00\n");
 	}
 	return (error);
+}
+
+/*! Discover if a certain option was set in the past and re-set it */
+int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
+	/* When a module discovers it needs -R or -J and it maybe was not given
+	 * see if we can tease out the answer from the history and parse it.
+	 */
+	int id = 0, k, j, err = 0;
+	char str[3] = {""};
+
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOERROR;	/* Do nothing */
+	
+	for (j = 0; options[j]; j++) {	/* Do this for all required options listed */
+		if (options[j] == 'R' && GMT->common.R.active) continue;	/* Set already */
+		if (options[j] == 'J' && GMT->common.J.active) continue;	/* Set already */
+		gmt_M_memset (str, 3, char);
+		str[0] = toupper (options[j]);	/* In case it is -r */
+		for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+			if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Got entry index into history array for requested option */
+		if (id == -1) continue;	/* Not an option we have history for yet */
+		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		if (options[j] == 'J') {	/* Must now search for actual option since -J only has type (e.g., -JM) */
+			/* Continue looking for -J<code> */
+			str[1] = GMT->init.history[id][0];
+			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;
+			if (id == -1) continue;	/* Not an option we have history for */
+			if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		}
+		/* Here we should have a parsable command option */
+		err += gmt_parse_common_options (GMT, str, options[j], GMT->init.history[id]);
+	}
+	return ((err) ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 /*! Changes the 4 GMT default pad values to given isotropic pad */

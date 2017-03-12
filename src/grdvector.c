@@ -28,7 +28,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot vector field from two component grids"
 #define THIS_MODULE_KEYS	"<G{2,CC(,>X}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"rJ"
 
 #include "gmt_dev.h"
 

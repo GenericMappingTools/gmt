@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Place images or EPS files on maps"
 #define THIS_MODULE_KEYS	"<I{,>X}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	""
 
 #include "gmt_dev.h"
 
