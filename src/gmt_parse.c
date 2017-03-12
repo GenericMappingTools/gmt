@@ -59,6 +59,7 @@
  */
  
 #include "gmt_dev.h"
+#include "gmt_internals.h"
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
@@ -271,9 +272,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
-			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;	/* No -J found */
+			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* No -J found */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
@@ -288,9 +287,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 				str[1] = GMT->init.history[id][0];
 			}
 			/* Continue looking for -J<code> */
-			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;
+			if ((id = gmtlib_get_option_id (id + 1, str)) == -1) Return;	/* No -J<code> found */
 		}
 		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
 			if (B_replace) {                    /* Only -B is given and we want to use the history */
@@ -315,9 +312,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			}
 		}
 		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
-			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Find entry in history array */
-			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
+			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* Error: user gave shorthand option but there is no record in the history */
 			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
 		}
 		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */

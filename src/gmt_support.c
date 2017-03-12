@@ -3467,7 +3467,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			dy[k] = y_pos[j2] - y_pos[i2];	/* dy = end_y - start_y */
 			if (i >= n_int_edges) edge_use[i] = 1;	/* These edges will only be used once (sign is not important here) */
 		}
-		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - dont know yet] */
+		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - don't know yet] */
 		xcoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
 		ycoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
 
@@ -3518,7 +3518,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 						else	/* Not a desired edge since we could not match the vertex number */
 							continue;
 
-						/* Here we found an edge candidate, but we dont know if it leads to a convex angle */
+						/* Here we found an edge candidate, but we don't know if it leads to a convex angle */
 						cross_product = dx[i2] * dy[j2] - dx[j2] * dy[i2];	/* This should be negative for right turns */
 						if (first_turn) {	/* First pair of edges defines the desired sign of all the subsequent cross-products */
 							expected_sign = prev_sign * next_sign * signum (cross_product);	/* sign may flip if any edge was reversed */
@@ -3537,7 +3537,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 						ycoord[np] = y_pos[2*next_point];
 						if (edge_use[j])	/* Now used twice */
 							edge_use[j] = 2;
-						else	/* Flag acording to which direction we used it */
+						else	/* Flag according to which direction we used it */
 							edge_use[j] = (char)next_sign;
 						np++;	/* Increase polygon length counter */
                         go_j = false;	/* Exit this loop and search for next edge */

@@ -12122,12 +12122,20 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 	return (error);
 }
 
+int gmtlib_get_option_id (int start, char *this_option) {
+	/* Search the GMT_unique_option list starting at given position for this_option */
+	int k, id = -1;
+	for (k = start; k < GMT_N_UNIQUE && id == -1; k++)
+		if (!strcmp (GMT_unique_option[k], this_option)) id = k;	/* Got entry index into history array for requested option */
+	return (id);
+}
+
 /*! Discover if a certain option was set in the past and re-set it */
 int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 	/* When a module discovers it needs -R or -J and it maybe was not given
 	 * see if we can tease out the answer from the history and parse it.
 	 */
-	int id = 0, k, j, err = 0;
+	int id = 0, j, err = 0;
 	char str[3] = {""};
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOERROR;	/* Do nothing */
@@ -12137,16 +12145,12 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 		if (options[j] == 'J' && GMT->common.J.active) continue;	/* Set already */
 		gmt_M_memset (str, 3, char);
 		str[0] = toupper (options[j]);	/* In case it is -r */
-		for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-			if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Got entry index into history array for requested option */
-		if (id == -1) continue;	/* Not an option we have history for yet */
+		if ((id = gmtlib_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
 		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		if (options[j] == 'J') {	/* Must now search for actual option since -J only has type (e.g., -JM) */
 			/* Continue looking for -J<code> */
 			str[1] = GMT->init.history[id][0];
-			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id == -1) continue;	/* Not an option we have history for */
+			if ((id = gmtlib_get_option_id (id + 1, str)) == -1) continue;	/* Not an option we have history for yet */
 			if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		}
 		/* Here we should have a parsable command option */
