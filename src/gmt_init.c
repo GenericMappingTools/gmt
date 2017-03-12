@@ -4799,6 +4799,8 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.history = (k_history_read | k_history_write);
 	/* GMT_INTERPOLANT */
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
+	/* GMT_RUNMODE */
+	GMT->current.setting.run_mode = GMT_CLASSIC;
 	/* GMT_TRIANGULATE */
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
 	/* GMT_VERBOSE (compat) */
@@ -8742,6 +8744,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_RUNMODE:
+			if (!strcmp (lower_value, "classic"))
+				GMT->current.setting.run_mode = GMT_CLASSIC;
+			else if (!strcmp (lower_value, "modern"))
+				GMT->current.setting.run_mode = GMT_MODERN;
+			else
+				error = true;
+			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
 				GMT->current.setting.triangulate = GMT_TRIANGLE_WATSON;
@@ -9821,6 +9831,14 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "cubic");
 			else if (GMT->current.setting.interpolant == GMT_SPLINE_NONE)
 				strcpy (value, "none");
+			else
+				strcpy (value, "undefined");
+			break;
+		case GMTCASE_GMT_RUNMODE:
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)
+				strcpy (value, "classic");
+			else if (GMT->current.setting.run_mode == GMT_MODERN)
+				strcpy (value, "modern");
 			else
 				strcpy (value, "undefined");
 			break;

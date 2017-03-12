@@ -210,6 +210,11 @@ enum FFT_implementations {
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
 
+/*! Selections for run mode */
+enum GMT_enum_runmode {
+	GMT_CLASSIC = 0, /* Select Classic GMT behavior with -O -K -R -J */
+	GMT_MODERN};  /* Select Modern behavior where -O -K are disabled and -R -J optional if possible */
+
 /*! Various algorithms for triangulations */
 enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */

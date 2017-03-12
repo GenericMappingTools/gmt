@@ -73,6 +73,10 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <tlhelp32.h>
+#endif
 
 #define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LON) || ((axis) == GMT_Y && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LAT))
 
@@ -274,6 +278,30 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 };
 
 /* Local functions */
+
+GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
+	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
+	int ppid = -1;
+	if (GMT->parent->mode) return (getpid());	/* Return ID of the gmt application */
+	/* Here we are probably running from the command line and want the shell's PID */
+#ifdef _WIN32
+	int pid = GetCurrentProcessId ();
+	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
+	PROCESSENTRY32 pe = { 0 };
+	pe.dwSize = sizeof (PROCESSENTRY32);
+
+	if (Process32First(h, &pe)) {
+       do {
+           if (pe.th32ProcessID == pid)
+               ppid = pe.th32ParentProcessID);
+       } while (ppid == -1 && Process32Next(h, &pe));
+   }
+	CloseHandle (h);
+#else
+	ppid = getppid(); /* parent process id*/
+#endif
+	return ppid;
+}
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
@@ -5405,6 +5433,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
+	bool O_active = GMT->common.O.active;
 	unsigned int this_proj, write_to_mem = 0;
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -5418,9 +5447,19 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 	GMT->current.ps.memory = false;
 
-	if ((Out = GMT_Find_Option(GMT->parent, '>', options))) {	/* Want to use a specific output file */
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden PS0 file.  No -O -K allowed */
+		char *verb[2] = {"Create", "Append to"};
+		k = gmt_set_psfilename (GMT);	/* Get hidden file name for PS */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s hidden PS file %s\n", verb[k], GMT->current.ps.filename);
+		if ((fp = PSL_fopen (PSL, GMT->current.ps.filename, mode[k])) == NULL) {	/* Must open inside PSL DLL */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, mode[k]);
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+		}
+		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
+	}
+	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
-		if (GMT->common.O.active && k == 0) {
+		if (O_active && k == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
@@ -5428,9 +5467,12 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			GMT->current.ps.memory = true;
 			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16-1);
 		}
-		else if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+		else {
+			if ((fp = PSL_fopen (PSL, &(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
+				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+			}
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opened PS file %s\n", &(Out->arg[k]));
 		}
 	}
 
@@ -5440,8 +5482,8 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	/* Default for overlay plots is no shifting */
 
-	if (!GMT->common.X.active && GMT->common.O.active) GMT->current.setting.map_origin[GMT_X] = 0.0;
-	if (!GMT->common.Y.active && GMT->common.O.active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
+	if (!GMT->common.X.active && O_active) GMT->current.setting.map_origin[GMT_X] = 0.0;
+	if (!GMT->common.Y.active && O_active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
 	/* Adjust offset when centering plot on center of page (PS does the rest) */
 
@@ -5474,7 +5516,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
-	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, GMT->common.O.active, GMT->current.setting.ps_color_mode,
+	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, O_active, GMT->current.setting.ps_color_mode,
 	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, GMT->current.ps.title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
@@ -5520,7 +5562,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		gmt_M_str_free (pstr);
 	}
 
-	if (!GMT->common.O.active) GMT->current.ps.layer = 0;	/* New plot, reset layer counter */
+	if (!O_active) GMT->current.ps.layer = 0;	/* New plot, reset layer counter */
 	PSL_beginlayer (GMT->PSL, ++GMT->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (GMT->common.t.active) PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
@@ -5566,6 +5608,7 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 
 void gmt_plotend (struct GMT_CTRL *GMT) {
 	unsigned int i;
+	bool K_active = (GMT->current.setting.run_mode == GMT_MODERN) ? true : GMT->common.K.active;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	PSL_endlayer (GMT->PSL);
 	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
@@ -5581,7 +5624,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 		            "Module was expected to change clip level by %d, but clip level changed by %d\n", GMT->current.ps.nclip, PSL->current.nclip);
 
-	if (!GMT->common.K.active) {
+	if (!K_active) {
 		if (GMT->current.ps.clip_level > 0)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
 		if (GMT->current.ps.clip_level < 0)
@@ -5589,9 +5632,13 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
-	PSL_endplot (PSL, !GMT->common.K.active);
+	PSL_endplot (PSL, !K_active);
 	
-	if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Reset file pointer and name */
+		GMT->current.ps.fp = NULL;
+		GMT->current.ps.filename[0] = '\0';
+	}
+	else if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
 		struct GMT_POSTSCRIPT *P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
 		if (GMT->current.ps.title[0]) {
 			P->header = gmt_M_memory (GMT, NULL, 1, char *);
@@ -6315,6 +6362,17 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 	/* Store value of plane */
 	GMT->current.proj.z_project.plane = plane;
+}
+
+/* Creation of hidden PS0 filename */
+
+/*! . */
+int gmt_set_psfilename (struct GMT_CTRL *GMT) {
+	/* Set hidden PS filename and return 0 if does not exist and 1 if does exist */
+	int k, ppid = gmt_get_ppid (GMT);	/* Parent process (or GMT app) ID */
+	sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps0", GMT->parent->tmp_dir, ppid);
+	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
+	return k;
 }
 
 /* All functions involved in reading, writing, duplicating GMT_POSTSCRIPT structs and their PostScript content */

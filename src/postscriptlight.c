@@ -5646,8 +5646,13 @@ int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...) {
 	return (0);
 }
 
-FILE *PSL_fopen (char *file, char *mode) {
-	return (fopen (file, mode));
+FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode) {
+	C->internal.fp = fopen (file, mode);
+	return (C->internal.fp);
+}
+
+int PSL_fclose (struct PSL_CTRL *C) {
+	return (fclose (C->internal.fp));
 }
 #ifndef HAVE_RINT
 #include "s_rint.c"

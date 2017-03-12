@@ -181,6 +181,7 @@ EXTERN_MSC unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
 EXTERN_MSC void gmt_plotend (struct GMT_CTRL *GMT);
 EXTERN_MSC struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, double **lon, double **lat);
+EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 #endif /* _POSTSCRIPTLIGHT_H */
 

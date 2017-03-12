@@ -62,6 +62,7 @@ GMT_LANGUAGE			# Language used for annotations
 GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
 GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
 GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
+GMT_RUNMODE			# GMT run mode
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level
 #-------------------------------------------------------

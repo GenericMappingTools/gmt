@@ -427,7 +427,8 @@ EXTERN_MSC int PSL_command (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...);
-EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
+EXTERN_MSC FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode);
+EXTERN_MSC int PSL_fclose (struct PSL_CTRL *C);
 
 /*! Macro for free that excplicitly checks for NULL pointer and sets freed pointer to NULL */
 #define PSL_free(ptr) (free((void *)(ptr)),(ptr)=NULL)

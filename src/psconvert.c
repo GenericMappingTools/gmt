@@ -165,6 +165,7 @@ struct PS2RASTER_CTRL {
 	struct PS2R_T {	/* -T */
 		bool active;
 		int eps;	/* 1 if we want to make EPS, -1 with setpagedevice (possibly in addition to another format) */
+		int ps;		/* 1 if we want to save the final PS under "modern" setting */
 		int device;	/* May be negative */
 	} T;
 	struct PS2R_W {	/* -W -- for world file production */
@@ -700,6 +701,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						case 'm':	/* PPM */
 							Ctrl->T.device = GS_DEV_PPM;
 							break;
+						case 'p':	/* PS */
+							Ctrl->T.ps = 1;
+							break;
 						case 's':	/* SVG */
 							Ctrl->T.device = GS_DEV_SVG;
 							break;
@@ -745,6 +749,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
 	                                   "Syntax error: Creation of Multipage PDF requires setting -F option\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (GMT->current.setting.run_mode == GMT_MODERN),
+	                                   "Error: Cannot use -L for list file when GMT_RUNMODE = modern\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && (GMT->current.setting.run_mode == GMT_MODERN),
+	                                   "Syntax error: No listed input files allowed when GMT_RUNMODE = modern\n");
+
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && (GMT->current.setting.run_mode == GMT_MODERN),
+	                                   "Syntax error: GMT_RUNMODE = modern requires the -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1211,7 +1224,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psconvert main code ----------------------------*/
 
-	if (!Ctrl->L.active && Ctrl->In.n_files == 0) {	/* No files given, bail */
+	if (!Ctrl->L.active && (GMT->current.setting.run_mode == GMT_CLASSIC) && (Ctrl->In.n_files == 0)) {	/* No files given, bail */
 		GMT_Report (API, GMT_MSG_NORMAL, "No PostScript files specified - exiting.\n");
 		Return (GMT_NOERROR);
 	}
@@ -1262,6 +1275,23 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->T.device = GS_DEV_PPM;
 #endif
 	}
+
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Finalize hidden PS file first */
+		if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for PS */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, "a")) == NULL) {	/* Must open inside PSL DLL */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", GMT->current.ps.filename);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
+		if (PSL_fclose (GMT->PSL)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	
 	/* Parameters for all the formats available */
 
 	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
@@ -1307,6 +1337,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (opt->option != '<') continue;
 			ps_names[j++] = strdup (opt->arg);
 		}
+	}
+	else if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Just that one hidden PS file */
+		ps_names = gmt_M_memory (GMT, NULL, 1, char *);
+		ps_names[0] = strdup (GMT->current.ps.filename);
+		Ctrl->In.n_files = 1;
 	}
 
 	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
@@ -2024,11 +2059,23 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (!Ctrl->S.active) remove (pdf_file);	/* The temporary PDF file is no longer needed */
 			}
-
 		}
 
-		/* Remove input file, if requested */
-		if (Ctrl->Z.active && !delete) {
+		if (GMT->current.setting.run_mode == GMT_MODERN) {
+			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
+				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
+				strcat (out_file, ".ps");
+				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", GMT->current.ps.filename, out_file);
+				if (rename (GMT->current.ps.filename, out_file)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Failed to rename %s -> %s!\n", GMT->current.ps.filename, out_file);
+				}
+			}
+			else {	/* Delete it, no -Z needed */
+				GMT_Report (API, GMT_MSG_DEBUG, "Delete %s\n", GMT->current.ps.filename);
+				remove (GMT->current.ps.filename);
+			}
+		}
+		else if (Ctrl->Z.active && !delete) {		/* Remove input file, if requested */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", ps_file);
 			remove (ps_file);
 		}

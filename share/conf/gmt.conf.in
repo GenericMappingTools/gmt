@@ -55,6 +55,7 @@ GMT_FFT				= auto
 GMT_HISTORY			= true
 GMT_INTERPOLANT			= akima
 GMT_LANGUAGE			= us
+GMT_RUNMODE			= classic
 GMT_TRIANGULATE			= @GMT_TRIANGULATE@
 GMT_VERBOSE			= compat
 #
