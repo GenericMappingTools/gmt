@@ -293,7 +293,7 @@ GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
 	if (Process32First(h, &pe)) {
        do {
            if (pe.th32ProcessID == pid)
-               ppid = pe.th32ParentProcessID);
+               ppid = pe.th32ParentProcessID;
        } while (ppid == -1 && Process32Next(h, &pe));
    }
 	CloseHandle (h);
