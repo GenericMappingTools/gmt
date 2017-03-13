@@ -1963,7 +1963,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* Build the converting ghostscript command and execute it */
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
-			char tag[16];
+			char tag[16] = {""};
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
