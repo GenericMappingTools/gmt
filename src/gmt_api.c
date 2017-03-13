@@ -9598,7 +9598,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
 		/* Found the -N option; set type to D */
-		type = ((opt = GMT_Find_Option (API, 'N', *head))) ? 'D' : 'G';
+		type = ((opt = GMT_Find_Option (API, 'N', *head)) != 0) ? 'D' : 'G';
 	}
 
 	gmt_M_str_free (module);
