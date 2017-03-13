@@ -857,6 +857,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_zmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, G->header->size);			/* "Left" quantile */
 			global_zmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, G->header->size);	/* "Right" quantile */
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to alpha trimming */
+				gmt_M_free (GMT, tmp_grid);
 				Return (API->error);
 			}
 			if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
