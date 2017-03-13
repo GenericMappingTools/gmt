@@ -1064,7 +1064,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
 	if (pclose (fp) == -1)
 		GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
-		fh = fd[0];	/* File handle for reading */
+	fh = fd[0];	/* File handle for reading */
 #else
 	if (fp) {	/* Did popen after all since we have an output filename */
 		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
