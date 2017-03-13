@@ -366,10 +366,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			Return (API->error);
 		}
 
