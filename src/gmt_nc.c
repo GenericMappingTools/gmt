@@ -339,7 +339,7 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 	/* here, chunk size is either k_netcdf_io_chunked_auto or the chunk size is
 	 * larger than grid size */
 
-	if ( (((size_t)header->n_rows) * ((size_t)header->n_columns)) < min_chunk_pixels ) {
+	if ( (header->n_rows * header->n_columns) < min_chunk_pixels ) {
 		/* the grid dimension is too small for chunking to make sense. switch to
 		 * classic model */
 		GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
@@ -531,14 +531,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			char *pch;
 			gmt_M_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
 			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
+			pch = gmt_M_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
 			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
-			header->ProjRefWKT = strdup (pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, pch);
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
-		xy = gmt_M_memory (GMT, NULL, MAX(header->n_columns, header->n_rows), double);
+		xy = gmt_M_memory (GMT, NULL, MAX(header->n_columns,header->n_rows), double);
 
 		/* Get information about x variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
@@ -792,8 +792,8 @@ L100:
 
 /* Shift columns in a grid to the right (n_shift < 0) or to the left (n_shift < 0) */
 GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
-	char *tmp = NULL, *grid = (char*)gridp;
-	size_t row, n_shift_abs = abs(n_shift);
+	char *tmp, *grid = (char*)gridp;
+	unsigned row, n_shift_abs = abs(n_shift);
 
 	assert (n_shift_abs != 0 && n_cols > n_shift_abs && n_cols > 0 && n_rows > 0);
 
@@ -831,7 +831,7 @@ GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const
 GMT_LOCAL void gmtnc_padding_copy (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size, bool periodic_cols) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
-	size_t row, cell;
+	unsigned row, cell;
 
 	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
 		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
@@ -894,7 +894,7 @@ GMT_LOCAL void gmtnc_padding_copy (void *gridp, const unsigned n_cols, const uns
 GMT_LOCAL void gmtnc_padding_zero (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
-	size_t row;
+	unsigned row;
 
 	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
 		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
@@ -928,10 +928,10 @@ GMT_LOCAL void gmtnc_pad_grid (void *gridp, const unsigned n_cols, const unsigne
 	 *
 	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
-	size_t new_row;
-	size_t old_row = n_rows-1;
-	size_t n_new_cols = n_cols + n_pad[XLO] + n_pad[XHI];
-	size_t n_new_rows = n_rows + n_pad[YLO] + n_pad[YHI];
+	unsigned new_row;
+	unsigned old_row = n_rows-1;
+	unsigned n_new_cols = n_cols + n_pad[XLO] + n_pad[XHI];
+	unsigned n_new_rows = n_rows + n_pad[YLO] + n_pad[YHI];
 
 #ifdef NC4_DEBUG
 	fprintf (stderr, "pad grid w:%u e:%u s:%u n:%u\n",
@@ -978,8 +978,8 @@ GMT_LOCAL void gmtnc_unpad_grid (void *gridp, const unsigned n_cols, const unsig
 	 *
 	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
-	size_t n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
-	size_t row;
+	unsigned n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
+	unsigned row;
 
 #ifdef NC4_DEBUG
 	fprintf (stderr, "unpad grid w:%u e:%u s:%u n:%u\n",
@@ -1008,12 +1008,11 @@ GMT_LOCAL void gmtnc_unpad_grid (void *gridp, const unsigned n_cols, const unsig
 GMT_LOCAL void gmtnc_grid_fix_repeat_col (struct GMT_CTRL *GMT, void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	char *grid = (char*)gridp;
-	unsigned n_conflicts = 0;
-	size_t row;
+	unsigned row, n_conflicts = 0;
 
 	for (row = 0; row < n_rows; ++row) {
-		char *first = grid + row * (size_t)n_cols * (size_t)cell_size;                /* first element in row */
-		char *last =  grid + (row * (size_t)n_cols + n_cols - 1) * (size_t)cell_size; /* last element in row */
+		char *first = grid + row * n_cols * cell_size;                /* first element in row */
+		char *last =  grid + (row * n_cols + n_cols - 1) * cell_size; /* last element in row */
 		if ( memcmp(last, first, cell_size) ) {
 			/* elements differ: replace value of last element in row with value of first */
 			memcpy (last, first, cell_size);
@@ -1048,7 +1047,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 
 	*n_shift = 0;
 	memset (origin2, 0, 2 * sizeof(unsigned));
-	memset (dim2,    0, 2 * sizeof(unsigned));
+	memset (dim2, 0, 2 * sizeof(unsigned));
 
 	is_global = gmt_M_grd_is_global (GMT, header);
 	is_global_repeat = header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT;
@@ -1239,8 +1238,8 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	int err;            /* netcdf errors */
 	int n_shift;
 	unsigned dim[2], dim2[2], origin[2], origin2[2]; /* dimension and origin {y,x} of subset to read from netcdf */
-	unsigned width = 0, height = 0;
-	uint64_t imag_offset, row;
+	unsigned width = 0, height = 0, row;
+	uint64_t imag_offset;
 	float *pgrid = NULL;
 
 	/* Check type: is file in old NetCDF format or not at all? */
@@ -1310,7 +1309,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	adj_nan_value = !isnan (header->nan_value);
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (row = 0; row < height; ++row) {
-		float *p_data = pgrid + row * (size_t)(header->stride ? header->stride : width);
+		float *p_data = pgrid + row * (header->stride ? header->stride : width);
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == header->nan_value) {
@@ -1389,10 +1388,10 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	int status = NC_NOERR;
 	bool adj_nan_value;   /* if we need to change the fill value */
 	bool do_round = true; /* if we need to round to integral */
-	unsigned width, height, *actual_col = NULL;
+	unsigned n, width, height, *actual_col = NULL;
 	unsigned dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
 	int first_col, last_col, first_row, last_row;
-	uint64_t imag_offset, n, nm;
+	uint64_t imag_offset;
 	double limit[2];      /* minmax of z variable */
 	float *pgrid = NULL;
 
@@ -1455,8 +1454,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
 	n = 0;
-	nm = ((uint64_t)width) * ((size_t)height);
-	while (n < nm) {
+	while (n < width * height) {
 		if (adj_nan_value && isnan (pgrid[n]))
 			pgrid[n] = header->nan_value;
 		else if (!isnan (pgrid[n])) {
