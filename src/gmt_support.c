@@ -3238,6 +3238,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	/* Create dataset with a single table with one segment per edge or polygon */
 	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for support_voronoi_shewchuk\n");
+		gmt_M_free (GMT, point_type);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
 	}
 
