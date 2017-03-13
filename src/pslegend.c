@@ -339,11 +339,6 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
-#ifdef WIN32
-	char *tmp_dir = getenv ("TEMP");
-#else
-	char *tmp_dir = "/tmp";
-#endif
 	char *dname[N_DAT] = {"front", "qline"};
 	char *tname[N_TXT] = {"symtext", "textline", "partext"};
 #endif
@@ -1417,7 +1412,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 #ifdef DEBUG
 			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 				char file[GMT_LEN64] = {""};
-				sprintf (file, "%s/%s", tmp_dir, dname[id]);
+				if (API->tmp_dir)	/* Use the established temp directory */
+					sprintf (file, "%s/%s", API->tmp_dir, dname[id]);
+				else	/* Must dump it in current directory */
+					sprintf (file, "%s", dname[id]);
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[id]) != GMT_NOERROR) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Dumping data to %s failed\n", file);
 				}
@@ -1433,7 +1431,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 #ifdef DEBUG
 			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 				char file[GMT_LEN64] = {""};
-				sprintf (file, "%s/%s", tmp_dir, tname[id]);
+				if (API->tmp_dir)	/* Use the established temp directory */
+					sprintf (file, "%s/%s", API->tmp_dir, tname[id]);
+				else	/* Must dump it in current directory */
+					sprintf (file, "%s", tname[id]);
 				if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[id]) != GMT_NOERROR) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Dumping data to %s failed\n", file);
 				}

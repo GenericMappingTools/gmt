@@ -332,9 +332,9 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
-				if (GMT->parent->tmp_dir)
+				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
-				else
+				else	/* Must dump it in current directory */
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT->common.n.active) {	/* User changed BC/method via -n */
@@ -349,9 +349,9 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
-				if (GMT->parent->tmp_dir)
+				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
-				else
+				else	/* Must dump it in current directory */
 					sprintf (buffer, "grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -725,9 +725,9 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	else {
 		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			if (API->tmp_dir)
+			if (API->tmp_dir)	/* Use the established temp directory */
 				sprintf (outtemp, "%s/grdblend_temp_%d.nc", API->tmp_dir, (int)getpid());	/* Get temporary file name */
-			else
+			else	/* Must dump it in current directory */
 				sprintf (outtemp, "grdblend_temp_%d.nc", (int)getpid());	/* Get temporary file name */
 			outfile = outtemp;
 		}

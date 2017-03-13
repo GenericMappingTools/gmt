@@ -1369,11 +1369,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 
-		if (Ctrl->T.active) {			/* Than write the converted file into a file instead of storing it into a Image struct */
+		if (Ctrl->T.active) {			/* Then write the converted file into a file instead of storing it into a Image struct */
 			char t[GMT_LEN256] = {""};
 			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 			strcat (out_file, t);
-			sprintf(t, "%s/psconvert_test", API->tmp_dir);
+			if (API->tmp_dir)	/* Use the established temp directory */
+				sprintf (t, "%s/psconvert_test", API->tmp_dir);
+			else	/* Must dump it in current directory */
+				sprintf (t, "psconvert_test");
 			strcat (t, ext[Ctrl->T.device]);
 			strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);	strcat (out_file, " -");
 		}

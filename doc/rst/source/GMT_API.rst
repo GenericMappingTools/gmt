@@ -915,11 +915,13 @@ is a sum of bit flags and the various bits control the following settings:
    matrices (e.g., MATLAB, Fortran).  If not set we default to row-major
    format (C/C++, Python, etc.).
 
-Finally, the ``print_func`` argument is a pointer to a function that is used to print
+The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the
 standard printf function (this is the case for the GMT/MATLAB toolbox, for instance).
 For all other uses you should simply pass NULL for this argument.
 Should something go wrong during the API initialization then ``API`` will be returned as ``NULL``.
+Finally, GMT_Create_Session_ will examine the environmental parameter TMPDIR (TEMP on Windows)
+to set the GMT temporary directory [/tmp on Unix, current directory on Windows].
 
 Below is a bare-bones minimalistic GMT program hello.c that initializes and destroys
 a GMT session:

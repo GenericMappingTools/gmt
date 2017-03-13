@@ -5664,9 +5664,8 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 
 	struct GMTAPI_CTRL *API = NULL;
 	static char *unknown = "unknown";
-#ifdef WIN32
-	char *dir = getenv ("TEMP");
-#endif
+	char *dir = NULL;
+
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 10);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
@@ -5675,17 +5674,23 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	API->mode  = mode & GMT_SESSION_EXTERNAL;		/* if false|0 then we don't list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we save some CPU */
-	if (session) {
+	if (session) {	/* Pick up a tag for this session */
 		char *tmptag = strdup (session);
 		API->session_tag = strdup (basename (tmptag));	/* Only used in reporting and error messages */
 		gmt_M_str_free (tmptag);
 	}
 
+	/* Set temp directory used by GMT */
+	
 #ifdef WIN32
-	if (dir)
+	if ((dir = getenv ("TEMP")))	/* Standard Windows temp directory designation */
 		API->tmp_dir = strdup (dir);
+	/* If not found we leave it NULL */
 #else
-	API->tmp_dir = strdup ("/tmp");
+	if ((dir = getenv ("TMPDIR")))	/* Alternate tmp dir for *nix */
+		API->tmp_dir = strdup (dir);
+	else	/* Set standard temporary directory under *nix */
+		API->tmp_dir = strdup ("/tmp");
 #endif
 
 	/* gmt_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */

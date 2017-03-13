@@ -6364,13 +6364,16 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	GMT->current.proj.z_project.plane = plane;
 }
 
-/* Creation of hidden PS0 filename */
+/* Creation of hidden PS0 filename used under GMT_RUNMODE modern */
 
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	/* Set hidden PS filename and return 0 if does not exist and 1 if does exist */
 	int k, ppid = gmt_get_ppid (GMT);	/* Parent process (or GMT app) ID */
-	sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps0", GMT->parent->tmp_dir, ppid);
+	if (GMT->parent->tmp_dir)	/* Use the established temp directory */
+		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps0", GMT->parent->tmp_dir, ppid);
+	else	/* Must dump it in current directory */
+		sprintf (GMT->current.ps.filename, "gmt_%d.ps0", ppid);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
 	return k;
 }
