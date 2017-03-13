@@ -253,13 +253,13 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	int first_col, last_col, j, col;		/* First and last column to deal with */
 	int first_row, last_row, j_gmt, colend;		/* First and last row to deal with */
 	unsigned int width_in;			/* Number of items in one row of the subregion */
-	unsigned int width_out;			/* Width of row as return (may include padding) */
+	/* width_out is width of row as return (may include padding) */
 	unsigned int height_in;			/* Number of columns in subregion */
 	unsigned int i;				/* Misc. counters */
 	unsigned int *k = NULL;			/* Array with indices */
 	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	unsigned int datablockcol, datablockrow, rowstart, rowend, colstart, row;
-	uint64_t ij, imag_offset;
+	uint64_t ij, imag_offset, width_out;
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
 	
@@ -307,7 +307,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			colend = MIN (colstart + ZBLOCKWIDTH, header->n_columns);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
-				ij = imag_offset + (((j_gmt - first_row) + pad[YHI]) * width_out + col - first_col) + pad[XLO];
+				ij = imag_offset + ((uint64_t)(((j_gmt - first_row) + pad[YHI])) * width_out + col - first_col) + pad[XLO];
 				grid[ij] = (z[j][i] == 0.0) ? GMT->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
 				if (gmt_M_is_fnan (grid[ij])) {
 					header->has_NaNs = GMT_GRID_HAS_NANS;
@@ -345,14 +345,14 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	int first_col, last_col, col, colend = 0;		/* First and last column to deal with */
 	int j_gmt, i, j, first_row, last_row;		/* First and last row to deal with */
-	unsigned int width_in;			/* Number of items in one row of the subregion */
+	/* width_in is number of items in one row of the subregion */
 	unsigned int width_out;			/* Width of row as return (may include padding) */
 	unsigned int height_out;			/* Number of columns in subregion */
 	unsigned int i2, j2;			/* Misc. counters */
 	unsigned int *k = NULL;			/* Array with indices */
 	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	unsigned int row, rowstart, rowend, colstart, datablockcol, datablockrow;
-	uint64_t kk, ij, imag_offset;
+	uint64_t kk, ij, imag_offset, width_in;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
@@ -416,7 +416,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			colend = MIN (colstart + ZBLOCKWIDTH, header->n_columns);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
-				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
+				ij = imag_offset + ((uint64_t)((j_gmt - first_row) + pad[YHI])) * width_in + (col - first_col) + pad[XLO];
 				outz[j][i] = grid[ij];
 			}
 		}
