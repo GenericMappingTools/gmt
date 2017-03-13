@@ -906,6 +906,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
+				gmt_M_free (GMT, p_data);
 				Return (API->error);
 			}
 			for (rec = 0; rec < P.n_used; rec++) {
