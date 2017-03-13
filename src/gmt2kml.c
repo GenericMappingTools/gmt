@@ -445,7 +445,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'i': Ctrl->Q.mode = 1; Ctrl->Q.value[1] = atof (&opt->arg[1]); break;
 					case 'q': Ctrl->Q.mode = 0; Ctrl->Q.value[0] = atof (&opt->arg[1]); break;
-					case 's': strcpy (p, &opt->arg[1]); k = (unsigned int)strlen (p) - 1;
+					case 's': strncpy (p, &opt->arg[1],GMT_LEN256-1); k = (unsigned int)strlen (p) - 1;
 						if (!strchr (GMT_LEN_UNITS, p[k])) strcat (p, "e");	/* Force meters as default unit */
 						Ctrl->Q.dmode = gmt_get_distance (GMT, p, &(Ctrl->Q.scale), &(Ctrl->Q.unit)); break;
 				}
