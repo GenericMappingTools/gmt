@@ -123,8 +123,9 @@ static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
 
 /* Get number of chunked rows that fit into cache (32MiB) */
 GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned width, unsigned height, size_t *n_contiguous_chunk_rows, size_t *chunksize) {
-	nc_type z_type;      /* type of z variable */
-	size_t z_size;       /* size of z variable */
+	nc_type z_type;		/* type of z variable */
+	size_t z_size;		/* size of z variable */
+	size_t z_bytes;		/* Number of bytes */
 	unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* because xy_dim not row major */
 	int err, storage_in;
 
@@ -137,7 +138,8 @@ GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GR
 		chunksize[yx_dim[1]] = width; /* all columns */
 	}
 
-	if (height * width * z_size > NC_CACHE_SIZE) {
+	z_bytes = ((size_t)height) * ((size_t)width) * ((size_t)z_size);
+	if (z_bytes > NC_CACHE_SIZE) {
 		/* memory needed for subset exceeds the cache size */
 		unsigned int level;
 		size_t chunks_per_row = (size_t) ceil ((double)width / chunksize[yx_dim[1]]);
@@ -196,7 +198,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 
 	if (n_contiguous_chunk_rows) {
 		/* read/write grid in chunks to keep memory footprint low */
-		unsigned remainder;
+		size_t remainder;
 #ifdef NC4_DEBUG
 		unsigned row_num = 0;
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "stride: %u width: %u\n",
@@ -205,11 +207,11 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
 		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-		remainder = (unsigned int)(start[yx_dim[0]] % chunksize[yx_dim[0]]);
+		remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
 		count[yx_dim[0]] -= remainder;
 
 		count[yx_dim[1]] = width;
-		while ( start[yx_dim[0]] + count[yx_dim[0]] <= height && status == NC_NOERR) {
+		while ( (start[yx_dim[0]] + count[yx_dim[0]]) <= height && status == NC_NOERR) {
 #ifdef NC4_DEBUG
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
@@ -221,7 +223,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 
 			/* advance grid location and set new origin */
-			grid += count[yx_dim[0]] * (stride == 0 ? width : stride);
+			grid += count[yx_dim[0]] * ((size_t)(stride == 0 ? width : stride));
 			start[yx_dim[0]] += count[yx_dim[0]];
 			if (remainder) {
 				/* reset count to full chunk height */
@@ -339,7 +341,7 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 	/* here, chunk size is either k_netcdf_io_chunked_auto or the chunk size is
 	 * larger than grid size */
 
-	if ( (header->n_rows * header->n_columns) < min_chunk_pixels ) {
+	if ( header->nm < min_chunk_pixels ) {
 		/* the grid dimension is too small for chunking to make sense. switch to
 		 * classic model */
 		GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
@@ -531,14 +533,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			char *pch;
 			gmt_M_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
 			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = gmt_M_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
+			pch = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
 			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
-			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			header->ProjRefWKT = strdup (pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, pch);
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
-		xy = gmt_M_memory (GMT, NULL, MAX(header->n_columns,header->n_rows), double);
+		xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns, header->n_rows), double);
 
 		/* Get information about x variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
@@ -793,34 +795,36 @@ L100:
 /* Shift columns in a grid to the right (n_shift < 0) or to the left (n_shift < 0) */
 GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
 	char *tmp, *grid = (char*)gridp;
-	unsigned row, n_shift_abs = abs(n_shift);
+	size_t row, n_shift_abs = abs (n_shift), nm;
 
 	assert (n_shift_abs != 0 && n_cols > n_shift_abs && n_cols > 0 && n_rows > 0);
 
 	tmp = malloc (n_shift_abs * cell_size);
 
 	if (n_shift > 0) { /* right shift */
-		for (row = 0; row < n_rows; ++row) {
+		for (row = 0; row < (size_t)n_rows; ++row) {
+			nm = row * ((size_t)n_cols);
 			/* copy last n_shift_abs cols into tmp buffer */
-			memcpy (tmp, grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, n_shift_abs * cell_size);
+			memcpy (tmp, grid + (nm + n_cols - n_shift_abs) * cell_size, n_shift_abs * cell_size);
 			/* right shift row */
-			memmove (grid + (row * n_cols + n_shift_abs) * cell_size,
-							 grid + row * n_cols * cell_size,
+			memmove (grid + (nm + n_shift_abs) * cell_size,
+							 grid + nm * cell_size,
 							 (n_cols - n_shift_abs) * cell_size);
 			/* prepend tmp buffer */
-			memcpy (grid + row * n_cols * cell_size, tmp, n_shift_abs * cell_size);
+			memcpy (grid + nm * cell_size, tmp, n_shift_abs * cell_size);
 		}
 	}
 	else { /* n_shift_abs < 0 */
 		for (row = 0; row < n_rows; ++row) {
+			nm = row * ((size_t)n_cols);
 			/* copy first n_shift_abs cols into tmp buffer */
-			memcpy (tmp, grid + row * n_cols * cell_size, n_shift_abs * cell_size);
+			memcpy (tmp, grid + nm * cell_size, n_shift_abs * cell_size);
 			/* left shift row */
-			memmove (grid + row * n_cols * cell_size,
-							 grid + (row * n_cols + n_shift_abs) * cell_size,
+			memmove (grid + nm * cell_size,
+							 grid + (nm + n_shift_abs) * cell_size,
 							 (n_cols - n_shift_abs) * cell_size);
 			/* append tmp buffer */
-			memcpy (grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, tmp, n_shift_abs * cell_size);
+			memcpy (grid + (nm + n_cols - n_shift_abs) * cell_size, tmp, n_shift_abs * cell_size);
 		}
 	}
 	gmt_M_str_free (tmp);
@@ -831,62 +835,67 @@ GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const
 GMT_LOCAL void gmtnc_padding_copy (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size, bool periodic_cols) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
-	unsigned row, cell;
+	size_t row, cell, nm, nm2;
 
 	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
 		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
 
 	if (periodic_cols) {
 		/* A periodic grid wraps around */
-		for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+		for (row = (size_t)n_pad[YHI]; (row + n_pad[YLO]) < (size_t)n_rows; ++row) {
+			nm = row * ((size_t)n_cols);
 			/* Iterate over rows that contain data */
-			for (cell = 0; cell < n_pad[XLO]; ++cell) {
+			for (cell = 0; cell < (size_t)n_pad[XLO]; ++cell) {
 				/* Copy end of this row into first n_pad[XLO] columns:
 				 * X X 0 1 2 3 4 5 X X -> 4 5 0 1 2 3 4 5 X X */
-				memcpy (grid + (row * n_cols + cell) * cell_size,
-								grid + (row * n_cols + n_cols + cell - n_pad[XLO] - n_pad[XHI]) * cell_size,
+				memcpy (grid + (nm + cell) * cell_size,
+								grid + (nm + (size_t)n_cols + cell - (size_t)n_pad[XLO] - (size_t)n_pad[XHI]) * cell_size,
 								cell_size);
 			}
-			for (cell = 0; cell < n_pad[XHI]; ++cell) {
+			for (cell = 0; cell < (size_t)n_pad[XHI]; ++cell) {
 				/* Copy start of this row into last n_pad[XHI] columns:
 				 * 4 5 0 1 2 3 4 5 X X -> 4 5 0 1 2 3 4 5 0 1 */
-				memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
-								grid + (row * n_cols + n_pad[XLO] + n_pad[XHI] - cell - 1) * cell_size,
+				memcpy (grid + (nm + (size_t)n_cols - cell - 1) * cell_size,
+								grid + (nm + (size_t)n_pad[XLO] + (size_t)n_pad[XHI] - cell - 1) * cell_size,
 								cell_size);
 			}
 		}
 	}
 	else { /* !periodic_cols */
-		for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+		for (row = (size_t)n_pad[YHI]; (row + n_pad[YLO]) < (size_t)n_rows; ++row) {
+			nm = row * ((size_t)n_cols);
 			/* Iterate over rows that contain data */
-			for (cell = 0; cell < n_pad[XLO]; ++cell) {
+			for (cell = 0; cell < (size_t)n_pad[XLO]; ++cell) {
 				/* Duplicate first n_pad[XLO] columns in this row:
 				 * 4 5 0 1 2 3 4 5 X X -> 0 0 0 1 2 3 4 5 X X */
-				memcpy (grid + (row * n_cols + cell) * cell_size,
-								grid + (row * n_cols + n_pad[XLO]) * cell_size,
+				memcpy (grid + (nm + cell) * cell_size,
+								grid + (nm + (size_t)n_pad[XLO]) * cell_size,
 								cell_size);
 			}
-			for (cell = 0; cell < n_pad[XHI]; ++cell) {
+			for (cell = 0; cell < (size_t)n_pad[XHI]; ++cell) {
 				/* Duplicate last n_pad[XHI] columns in this row:
 				 * 0 0 0 1 2 3 4 5 X X -> 0 0 0 1 2 3 4 5 5 5 */
-				memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
-								grid + (row * n_cols + n_cols - n_pad[XHI] - 1) * cell_size,
+				memcpy (grid + (nm + (size_t)n_cols - cell - 1) * cell_size,
+								grid + (nm + (size_t)n_cols - (size_t)n_pad[XHI] - 1) * cell_size,
 								cell_size);
 			}
 		}
 	}
 
-	for (cell = 0; cell < n_pad[YHI]; ++cell) {
+	for (cell = 0; cell < (size_t)n_pad[YHI]; ++cell) {
+		nm = cell * ((size_t)n_cols);
 		/* Duplicate n_pad[YHI] rows in the beginning */
-		memcpy(grid + cell * n_cols * cell_size,
-					 grid + n_pad[YHI] * n_cols * cell_size,
-					 n_cols * cell_size);
+		memcpy(grid + nm * cell_size,
+					 grid + ((size_t)n_pad[YHI]) * ((size_t)n_cols) * cell_size,
+					 ((size_t)n_cols) * cell_size);
 	}
-	for (cell = 0; cell < n_pad[YLO]; ++cell) {
+	nm2 = ((size_t)(n_rows - n_pad[YLO] - 1)) * ((size_t)n_cols);
+	for (cell = 0; cell < (size_t)n_pad[YLO]; ++cell) {
+		nm = ((size_t)(n_rows - cell - 1)) * ((size_t)n_cols);
 		/* Duplicate last n_pad[YLO] rows */
-		memcpy(grid + (n_rows - cell - 1) * n_cols * cell_size,
-					 grid + (n_rows - n_pad[YLO] - 1) * n_cols * cell_size,
-					 n_cols * cell_size);
+		memcpy(grid + nm * cell_size,
+					 grid + nm2 * cell_size,
+					 ((size_t)n_cols) * cell_size);
 	}
 }
 
@@ -894,22 +903,23 @@ GMT_LOCAL void gmtnc_padding_copy (void *gridp, const unsigned n_cols, const uns
 GMT_LOCAL void gmtnc_padding_zero (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
-	unsigned row;
+	size_t row, nm;
 
 	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
 		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
 
 	/* Iterate over rows that contain data */
-	for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+	for (row = (size_t)n_pad[YHI]; (row + n_pad[YLO]) < (size_t)n_rows; ++row) {
+		nm = row * ((size_t)n_cols);
 		/* Zero n cells at beginning of row */
-		memset (grid + row * n_cols * cell_size, 0, n_pad[XLO] * cell_size);
+		memset (grid + nm * cell_size, 0, ((size_t)n_pad[XLO]) * cell_size);
 		/* Zero n cells at end of row */
-		memset (grid + (row * n_cols + n_cols - n_pad[XHI]) * cell_size, 0, n_pad[XHI] * cell_size);
+		memset (grid + (nm + (size_t)n_cols - (size_t)n_pad[XHI]) * cell_size, 0, ((size_t)n_pad[XHI]) * cell_size);
 	}
 	/* Zero n_pad[YHI] rows in the beginning */
-	memset(grid, 0, n_pad[YHI] * n_cols * cell_size);
+	memset (grid, 0, ((size_t)n_pad[YHI]) * ((size_t)n_cols) * cell_size);
 	/* Zero last n_pad[YLO] rows */
-	memset(grid + (n_rows-n_pad[YLO]) * n_cols * cell_size, 0, n_pad[YLO] * n_cols * cell_size);
+	memset(grid + ((size_t)(n_rows-n_pad[YLO])) * ((size_t)n_cols) * cell_size, 0, ((size_t)n_pad[YLO]) * ((size_t)n_cols) * cell_size);
 }
 
 /* Fill mode for grid padding */
@@ -928,10 +938,10 @@ GMT_LOCAL void gmtnc_pad_grid (void *gridp, const unsigned n_cols, const unsigne
 	 *
 	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
-	unsigned new_row;
-	unsigned old_row = n_rows-1;
-	unsigned n_new_cols = n_cols + n_pad[XLO] + n_pad[XHI];
-	unsigned n_new_rows = n_rows + n_pad[YLO] + n_pad[YHI];
+	size_t new_row;
+	size_t old_row = n_rows-1;
+	size_t n_new_cols = n_cols + n_pad[XLO] + n_pad[XHI];
+	size_t n_new_rows = n_rows + n_pad[YLO] + n_pad[YHI];
 
 #ifdef NC4_DEBUG
 	fprintf (stderr, "pad grid w:%u e:%u s:%u n:%u\n",
@@ -947,12 +957,12 @@ GMT_LOCAL void gmtnc_pad_grid (void *gridp, const unsigned n_cols, const unsigne
 		/* When padding W, E, and N (not necessary when padding S only). */
 		for (new_row = n_new_rows - n_pad[YLO] - 1; new_row + 1 > n_pad[YHI]; --new_row, --old_row) {
 			/* Copy original row to new row, bottom upwards */
-			void *from = grid + old_row * n_cols * cell_size;
-			void *to   = grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size;
+			void *from = grid + old_row * ((size_t)n_cols) * cell_size;
+			void *to   = grid + (new_row * n_new_cols + ((size_t)n_pad[XLO])) * cell_size;
 			if (n_pad[YHI] == 0) /* rows overlap! */
-				memmove (to, from, n_cols * cell_size);
+				memmove (to, from, ((size_t)n_cols) * cell_size);
 			else /* no overlap, memcpy is safe */
-				memcpy  (to, from, n_cols * cell_size);
+				memcpy  (to, from, ((size_t)n_cols) * cell_size);
 		}
 	}
 
@@ -978,8 +988,8 @@ GMT_LOCAL void gmtnc_unpad_grid (void *gridp, const unsigned n_cols, const unsig
 	 *
 	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
-	unsigned n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
-	unsigned row;
+	size_t n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
+	size_t row;
 
 #ifdef NC4_DEBUG
 	fprintf (stderr, "unpad grid w:%u e:%u s:%u n:%u\n",
@@ -991,15 +1001,15 @@ GMT_LOCAL void gmtnc_unpad_grid (void *gridp, const unsigned n_cols, const unsig
 	assert (n_cols > 0 && n_rows > 0 && cell_size > 0);
 
 	/* Reshape matrix */
-	for (row = 0; row < n_rows; ++row) {
-		unsigned old_row = row + n_pad[YHI];
-		void *from = grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size;
-		void *to   = grid + row * n_cols * cell_size;
+	for (row = 0; row < (size_t)n_rows; ++row) {
+		size_t old_row = row + n_pad[YHI];
+		void *from = grid + (old_row * n_old_cols + ((size_t)n_pad[XLO])) * cell_size;
+		void *to   = grid + row * ((size_t)n_cols) * cell_size;
 		/* Copy original row to new row */
 		if (n_pad[YHI] == 0) /* rows overlap! */
-			memmove (to, from, n_cols * cell_size);
+			memmove (to, from, ((size_t)n_cols) * cell_size);
 		else /* no overlap, memcpy is safe */
-			memcpy  (to, from, n_cols * cell_size);
+			memcpy  (to, from, ((size_t)n_cols) * cell_size);
 	}
 }
 
@@ -1008,11 +1018,12 @@ GMT_LOCAL void gmtnc_unpad_grid (void *gridp, const unsigned n_cols, const unsig
 GMT_LOCAL void gmtnc_grid_fix_repeat_col (struct GMT_CTRL *GMT, void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	char *grid = (char*)gridp;
-	unsigned row, n_conflicts = 0;
+	unsigned n_conflicts = 0;
+	size_t row;
 
-	for (row = 0; row < n_rows; ++row) {
-		char *first = grid + row * n_cols * cell_size;                /* first element in row */
-		char *last =  grid + (row * n_cols + n_cols - 1) * cell_size; /* last element in row */
+	for (row = 0; row < (size_t)n_rows; ++row) {
+		char *first = grid + row * ((size_t)n_cols) * cell_size;                /* first element in row */
+		char *last =  grid + (row * (size_t)(n_cols) + ((size_t)n_cols) - 1) * cell_size; /* last element in row */
 		if ( memcmp(last, first, cell_size) ) {
 			/* elements differ: replace value of last element in row with value of first */
 			memcpy (last, first, cell_size);
@@ -1309,7 +1320,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	adj_nan_value = !isnan (header->nan_value);
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (row = 0; row < height; ++row) {
-		float *p_data = pgrid + row * (header->stride ? header->stride : width);
+		float *p_data = pgrid + ((size_t)row) * ((size_t)(header->stride ? header->stride : width));
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == header->nan_value) {
@@ -1388,10 +1399,11 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	int status = NC_NOERR;
 	bool adj_nan_value;   /* if we need to change the fill value */
 	bool do_round = true; /* if we need to round to integral */
-	unsigned n, width, height, *actual_col = NULL;
+	unsigned width, height, *actual_col = NULL;
 	unsigned dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
 	int first_col, last_col, first_row, last_row;
 	uint64_t imag_offset;
+	size_t n;
 	double limit[2];      /* minmax of z variable */
 	float *pgrid = NULL;
 
@@ -1454,7 +1466,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
 	n = 0;
-	while (n < width * height) {
+	while (n < (((size_t)width) * ((size_t)height))) {
 		if (adj_nan_value && isnan (pgrid[n]))
 			pgrid[n] = header->nan_value;
 		else if (!isnan (pgrid[n])) {
