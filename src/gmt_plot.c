@@ -291,11 +291,11 @@ GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
 	pe.dwSize = sizeof (PROCESSENTRY32);
 
 	if (Process32First(h, &pe)) {
-       do {
-           if (pe.th32ProcessID == pid)
-               ppid = pe.th32ParentProcessID;
-       } while (ppid == -1 && Process32Next(h, &pe));
-   }
+		do {
+			if (pe.th32ProcessID == pid)
+				ppid = pe.th32ParentProcessID;
+		} while (ppid == -1 && Process32Next(h, &pe));
+	}
 	CloseHandle (h);
 #else
 	ppid = getppid(); /* parent process id*/
@@ -6369,7 +6369,16 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	/* Set hidden PS filename and return 0 if does not exist and 1 if does exist */
+#ifdef WIN32
+	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
+	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
+	   using the PPID (parent PID) to create unique file names. 
+	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
+	   we are forcing PPID = 0 in all Windows variants. */
+	int k, ppid = 0;
+#else
 	int k, ppid = gmt_get_ppid (GMT);	/* Parent process (or GMT app) ID */
+#endif
 	if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps0", GMT->parent->tmp_dir, ppid);
 	else	/* Must dump it in current directory */
