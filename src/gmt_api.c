@@ -6640,7 +6640,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				return_null (API, API->error);
 			}
 			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET)
-				return_null (API, GMT_NOTSET);	/* Some internal error... */
+				return_null (API, API->error);	/* Some internal error... */
 			API->object[item]->selected = true;
 		}
 		gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */

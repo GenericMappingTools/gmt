@@ -7501,7 +7501,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	 * We write the new CPT to stdout. */
 
 	unsigned int i = 0, j, k, upper, lower, nz;
-	uint64_t dim_nz[1];
+	uint64_t dim_nz[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	bool even = false;	/* even is true when nz is passed as negative */
 	bool set_z_only = false;
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
