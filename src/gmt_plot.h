@@ -42,6 +42,7 @@
 #define GMT_SYMBOL_CUBE			((int)'u')
 #define GMT_SYMBOL_ZDASH		((int)'z')
 #define GMT_SYMBOL_DECORATED_LINE	((int)'~')
+#define GMT_SYMBOL_VECTOR_V4		999
 
 #define GMT_SYMBOL_MOVE		((int)'M')
 #define GMT_SYMBOL_DRAW		((int)'D')
