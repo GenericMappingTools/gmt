@@ -2066,7 +2066,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, nm, double);
-			uint64_t e_dim[4] = {1, 1, nm, 2};
+			uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, 2};
 			unsigned int col_type[3];
 			struct GMT_DATASET *E = NULL;
 			for (i = 0; i < nm; i++) eig[i] = fabs (s[i]);
@@ -2139,7 +2139,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0, dev;
-		uint64_t e_dim[4] = {1, 1, nm, dimension+3};
+		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3};
 		unsigned int m = 0;
 		struct GMT_DATASET *E = NULL;
 		struct GMT_DATASEGMENT *S = NULL;

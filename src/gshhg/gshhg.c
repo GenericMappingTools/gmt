@@ -196,7 +196,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	static const bool must_swab = true;
 #endif
 
-	uint64_t dim[4] = {1, 0, 0, 2};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 2};
 
 	size_t n_alloc = 0;
 

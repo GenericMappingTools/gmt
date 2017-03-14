@@ -1298,7 +1298,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		if (new_data) {	/* Must create an output dataset */
 			enum GMT_enum_geometry gmtry;
-			uint64_t dim[4] = {1, 0, 0, 0};	/* One table, no rows yet to avoid allocations */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* One table, no rows yet to avoid allocations */
 			dim[GMT_COL] = D->n_columns;	/* Same number of columns as the input */
 			switch (Ctrl->Q.mode) {	/* Set geometry */
 				case GMT_IS_LINE:	gmtry = GMT_IS_LINE;	break;
@@ -1428,7 +1428,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				uint64_t dim[4] = {1, 1, 5, 2};
+				uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};
 				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->data[GMT_X][0] = S1->data[GMT_X][3] = S1->data[GMT_X][4] = GMT->common.R.wesn[XLO];
@@ -1876,7 +1876,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active && Ctrl->S.mode == POL_SPLIT) {	/* Split polygons at dateline */
 		bool crossing;
 		uint64_t n_split = 0, tbl, seg_out, seg, n_segs, kseg, n_split_tot = 0;
-		uint64_t dim[4] = {0, 0, 0, 0};
+		uint64_t dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT **L = NULL;

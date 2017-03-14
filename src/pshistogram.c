@@ -790,7 +790,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
 			uint64_t n_boxes = 0;
-			uint64_t dim[4] = {1, 1, 0, 2}, ibox, row;
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, ibox, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_DATASEGMENT *S = NULL;

@@ -746,7 +746,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	alloc_arrays (GMT, &C);
 
 	if (!Ctrl->T.active) {	/* Write single data file with 17 columns to stdout (or specified name) */
-		uint64_t dim[4];
+		uint64_t dim[GMT_DIM_SIZE];
 		n_cols_tot = 1 + 2 * n_outputs;
 		dim[GMT_TBL] = Din->n_tables;	/* Same number of tables as input */
 		dim[GMT_SEG] = 0;		/* Don't know about segments yet */

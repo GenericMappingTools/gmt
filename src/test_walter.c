@@ -14,7 +14,7 @@
 
 int main (int argc, char **argv) {
 	void *API = NULL;
-	uint64_t dim[2] = {0, 0}, p, k;
+	uint64_t dim[4] = {0, 0, 0, 0}, p, k;
 	double *x = NULL, *y = NULL;	/* User x,y arrays */
 	int *z = NULL;	/* Just do demonstrate mixed types we use an integer user z array */
 	struct GMT_GRID *G_in = NULL;

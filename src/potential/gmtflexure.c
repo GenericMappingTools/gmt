@@ -1338,7 +1338,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* No input files given, create single equidistant profile */
-			uint64_t dim[4] = {1, 1, 0, 2};
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 			dim[2] = urint ((Ctrl->Q.max - Ctrl->Q.min)/Ctrl->Q.inc) + 1;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Create empty load table data\n");
 			if ((Q = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

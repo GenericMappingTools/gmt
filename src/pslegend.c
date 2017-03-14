@@ -285,7 +285,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 }
 
 GMT_LOCAL struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry) {
-	uint64_t dim[3] = {1, 1, GMT_SMALL_CHUNK};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, GMT_SMALL_CHUNK, 0};
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
 	if ((D = GMT_Create_Data (API, GMT_IS_TEXTSET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -296,7 +296,7 @@ GMT_LOCAL struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, stru
 }
 
 GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry) {
-	uint64_t dim[4] = {1, GMT_SMALL_CHUNK, 2, 2};	/* We will a 2-row data set for up to 64 lines; allocate just once */
+	uint64_t dim[GMT_DIM_SIZE] = {1, GMT_SMALL_CHUNK, 2, 2};	/* We will a 2-row data set for up to 64 lines; allocate just once */
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
 	if (D == NULL && (D = GMT_Create_Data (API, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

@@ -310,7 +310,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
 	int error = 0;
 	bool ok, first = true, no_z_column;
-	uint64_t dim[4] = {1, 0, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
 	uint64_t tbl, col, n_out = 0, k, n, row, seg, seg2 = 0, begin, end, n_total = 0, n_columns = 0, nprofiles = 0, *rec = NULL;

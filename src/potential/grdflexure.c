@@ -895,7 +895,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	/* Here, Load[] contains all the input load grids and their load times, ready to go as H(kx,ky) */
 
 	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
-		uint64_t dim[3] = {1, 1, Ctrl->T.n_eval_times};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);

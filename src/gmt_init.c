@@ -356,7 +356,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	 * get_R is true when this is done to obtain the -R setting.  */
 
 	int proj_class;
-	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
 	char buffer[GMT_LEN256] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};

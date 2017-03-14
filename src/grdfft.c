@@ -314,7 +314,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	 * then just XPower[f] and its 1-std dev error estimate are returned, hence just 3 columns.
 	 * Equations based on spectrum1d.c */
 
-	uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
 	uint64_t k, nk, ifreq, *nused = NULL;
 	unsigned int col;
 	float *X = GridX->data, *Y = NULL;	/* Short-hands */

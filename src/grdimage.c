@@ -462,7 +462,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
 	unsigned int colormask_offset = 0, try, row, actual_row, col;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
-	uint64_t node, k, kk, byte, dim[3] = {0, 0, 3};
+	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int index = 0, ks, error = 0;
 	
 	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"};

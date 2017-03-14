@@ -181,7 +181,7 @@ GMT_LOCAL void do_constant_fill (struct GMT_GRID *G, unsigned int limit[], float
 GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4];
-	uint64_t node, node_hole, dim[2] = {0, 0};
+	uint64_t node, node_hole, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;
 	float *z = NULL;
 	struct GMT_VECTOR *V = NULL;

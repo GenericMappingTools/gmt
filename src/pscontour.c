@@ -1072,7 +1072,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	cont = gmt_M_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
-		uint64_t dim[4] = {0, 0, 0, 3};
+		uint64_t dim[GMT_DIM_SIZE] = {0, 0, 0, 3};
 		if (!Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 			n_tables = 1;

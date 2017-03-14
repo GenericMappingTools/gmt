@@ -521,7 +521,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	/* -------------------- Compute only a theoretical model and exit -------------------- */
 	if (Ctrl->C.active) {
-		uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment */
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};	/* One table and one segment */
 		double *z_top_or_bot = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
@@ -956,7 +956,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 	 */
 
 	int      error = 0, n_col_out = 3, col;
-	uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
 	uint64_t k, k_0 = 0, nk, ifreq;
 	unsigned int *nused = NULL;
 	size_t   n_alloc;

@@ -3055,7 +3055,7 @@ GMT_LOCAL struct GMT_VECTOR *api_read_vector (struct GMT_CTRL *GMT, void *source
 	 */
 
 	bool close_file = false, first = true, add_first_segheader = false;
-	uint64_t row = 0, col, dim[3] = {0, 0, GMT->current.setting.export_type};
+	uint64_t row = 0, col, dim[GMT_DIM_SIZE] = {0, 0, GMT->current.setting.export_type, 0};
 	char V_file[GMT_BUFSIZ] = {""};
 	char line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
@@ -9597,8 +9597,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	}
 	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
-		/* Found the -N option; set type to D */
-		type = ((opt = GMT_Find_Option (API, 'N', *head)) != 0) ? 'D' : 'G';
+		/* If we find the -N option, we set type to D, else G */
+		type = (GMT_Find_Option (API, 'N', *head)) ? 'D' : 'G';
 	}
 
 	gmt_M_str_free (module);

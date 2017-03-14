@@ -488,7 +488,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	n_in = (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->C.active[GMT_IN]) ? 3 : 2;
 	
 	if (Ctrl->A.active) {	/* Want a single primary vector */
-		uint64_t dim[4] = {1, 1, 1, 3};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 1, 3};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */

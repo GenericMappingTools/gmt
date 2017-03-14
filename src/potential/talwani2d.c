@@ -525,7 +525,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int srow, error = 0, ns;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
-	uint64_t dim[4] = {1, 1, 0, 2}, row;
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
 	double scl, rho = 0.0, G0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
 	

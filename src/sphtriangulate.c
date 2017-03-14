@@ -90,7 +90,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
 	bool do_authalic;
-	uint64_t dim[4] = {1, 0, 0, 0}, k;
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0}, k;
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
@@ -207,7 +207,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	unsigned int geometry;
 
 	uint64_t i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
-	uint64_t dim[4] = {1, 0, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, p_alloc = GMT_TINY_CHUNK;
 
 	char segment_header[GMT_BUFSIZ];

@@ -804,7 +804,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {
 		unsigned int this_mode;
 		if (Ctrl->C.mode == GMT_OUT) {	/* Write mean vector and statistics to file */
-			uint64_t dim[4] = {1, 1, 1, 8};	/* One record with 8 columns */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 1, 8};	/* One record with 8 columns */
 			struct GMT_DATASET *V = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
 			if ((V = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

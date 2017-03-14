@@ -3151,7 +3151,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
-	uint64_t dim[4] = {1, 0, 2, 2};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 2};
 	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
 	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, change, n_edges_2;
 	unsigned int geometry, side, corner;
@@ -4985,7 +4985,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 
 	unsigned int ii, np_cross;
 
-	uint64_t dim[4] = {0, 0, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 
 	uint64_t tbl, row, left, right, seg, seg_no, n_tot_cols;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
@@ -5133,7 +5133,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 
 	uint64_t tbl, row, seg, seg_no, n_tot_cols;
 
-	uint64_t dim[4] = {0, 0, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
@@ -8928,7 +8928,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	 */
 	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
-	uint64_t dim[4] = {1, 1, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
@@ -13382,7 +13382,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
 	 *   honor the segment headers [Default is -Fvs if -Fv is given].
 	 */
-	uint64_t dim[4] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
+	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
 	uint64_t tbl, seg, row, col, new_seg;
 	double *data = NULL;
 	struct GMT_DATASET *D = NULL;

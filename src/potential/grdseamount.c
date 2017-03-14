@@ -613,7 +613,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->M.active) {	/* Must create textset to hold names of all output grids */
-		uint64_t dim[3] = {1, 1, Ctrl->T.n_times};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);

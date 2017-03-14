@@ -1545,7 +1545,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 2 columns */
-			uint64_t dim[3] = {1, 0, 0};	/* Put everything in one table */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* Put everything in one table */
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
 			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		}

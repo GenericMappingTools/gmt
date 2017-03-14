@@ -812,7 +812,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, n_params, double);
-			uint64_t e_dim[4] = {1, 1, n_params, 2};
+			uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_params, 2};
 			unsigned int col_type[2];
 			struct GMT_DATASET *E = NULL;
 			for (i = 0; i < n_params; i++) eig[i] = fabs (s[i]);
@@ -897,7 +897,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0;
 		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, dev_u;
 		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, dev_v;
-		uint64_t e_dim[4] = {1, 1, n_uv, 8};
+		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_uv, 8};
 		unsigned int m = 0, m2 = 0;
 		struct GMT_DATASET *E = NULL;
 		struct GMT_DATASEGMENT *S = NULL;

@@ -927,7 +927,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active) {	/* Compute the stacked profiles */
 			struct GMT_DATASET *Stack = NULL;
 			struct GMT_DATASEGMENT *M = NULL;
-			uint64_t dim[4], n_rows, *stacked_n = NULL;
+			uint64_t dim[GMT_DIM_SIZE], n_rows, *stacked_n = NULL;
 			uint64_t colx, col_s, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
 			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
 			unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0, n_added_cols = 0;

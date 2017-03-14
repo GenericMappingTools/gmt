@@ -247,7 +247,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
 		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */
-		uint64_t nx, ny, k = 0, i, dim[4] = {1, 1, 0, 2};
+		uint64_t nx, ny, k = 0, i, dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 		char msg[GMT_BUFSIZ] = {""}, *kind[2] = {"regular", "oblique"};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;

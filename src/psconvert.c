@@ -2093,7 +2093,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 #else			/* Here we have already set device to PPM which we can read ourselves. */
-			uint64_t dim[3] = {0U, 0U, 3U}; 	/* 3 bands. This might change if we do monochrome at some point */
+			uint64_t dim[GMT_DIM_SIZE] = {0U, 0U, 3U, 0U}; 	/* 3 bands. This might change if we do monochrome at some point */
 			uint64_t row, col, band, nCols, nRows, nBands, nXY;
 			FILE *fp_raw = NULL;
 			unsigned char *tmp;

@@ -374,7 +374,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	}
 
 	if (info->fit_mode == GMTMATH_COEFFICIENTS) {	/* Return coefficients only as a single vector */
-		uint64_t dim[4] = {1, 1, 0, 1};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 1};
 		dim[GMT_ROW] = n;
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 			return (GMT->parent->error);
@@ -4906,7 +4906,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
 
-	uint64_t dim[4] = {1, 1, 0, 0};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 
 	double t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
@@ -5424,7 +5424,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_DATASEGMENT *S = stack[0]->D->table[0]->segment[0];
-		uint64_t dim[4] = {1, 1, 0, 1};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 1};
 
 		dim[GMT_ROW] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
@@ -5453,7 +5453,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_OUT, R->n_columns)) != 0) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */
 			uint64_t row, c;
-			uint64_t dim[4] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */
 			struct GMT_DATASET *N = NULL;
 			dim[GMT_SEG] = R->table[0]->n_segments;
 			dim[GMT_COL] = n_columns;

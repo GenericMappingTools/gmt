@@ -274,7 +274,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	 */
 
 	unsigned int np = 0, add, col, row;
-	uint64_t dim[4] = {1, 1, 0, 2};
+	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
