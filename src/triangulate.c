@@ -378,7 +378,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
-					gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);		gmt_M_free (GMT, zz);
+					if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+					gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
@@ -402,6 +403,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		} while (true);
 	
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
 			Return (API->error);
 		}
 	}
@@ -410,6 +413,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		double *wesn = (Ctrl->G.active) ? Grid->header->wesn : NULL;
 		double xnoise, ynoise, rx, ry, percent = 5.0, fraction = 0.01 * percent;
 		if ((F = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, Ctrl->F.file, NULL)) == NULL) {
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
 			Return (API->error);	/* Get subset if exceeding desired grid */
 		}
 		xf = gmt_grd_coord (GMT, F->header, GMT_X);
@@ -435,8 +440,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	if (n >= INT_MAX) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
-		gmt_M_free (GMT, xx);
-		gmt_M_free (GMT, yy);
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -447,6 +451,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -508,9 +514,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		else if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-			gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		if (Ctrl->F.active && F->data) {	/* Not the same area, must copy over pregrid node values */
@@ -587,10 +592,14 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
@@ -660,16 +669,14 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-			gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-			gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
@@ -680,15 +687,13 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-				gmt_M_free (GMT, xx);
-				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-				gmt_M_free (GMT, xx);
-				gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				Return (API->error);
 			}
 		}
@@ -696,12 +701,16 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			if (Ctrl->Q.active) {	/* Voronoi edges */
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, V->geometry, V->io_mode, NULL, Ctrl->Out.file, V) != GMT_NOERROR) {
+					gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+					if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 					Return (API->error);
 				}
 			}
 			else {	/* Triangle edges */
 				if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 					if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+					gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+					if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 					Return (API->error);
 				}
 				n_edge = 3 * np;
@@ -736,6 +745,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				gmt_M_free (GMT, xx);
 				gmt_M_free (GMT, yy);
 				Return (API->error);
@@ -763,6 +774,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 		}
 		if (!Ctrl->Q.active && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 			Return (API->error);
