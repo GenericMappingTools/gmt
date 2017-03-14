@@ -40,7 +40,9 @@ with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
 mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
-of formats, see **-Z** below.) 
+of formats, see **-Z** below.)  Note: **xyz2grd** does not grid the data,
+it simply reformats existing data to a grid structure.  For gridding,
+see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
 
 Required Arguments
 ------------------
@@ -220,4 +222,11 @@ See Also
 :doc:`gmt`,
 :doc:`grd2xyz`,
 :doc:`grdedit`,
-:doc:`grdconvert`
+:doc:`grdconvert`,
+:doc:`greenspline`,
+:doc:`nearneighbor`,
+:doc:`surface`,
+:doc:`triangulate`
+
+
+

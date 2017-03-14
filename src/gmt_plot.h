@@ -55,6 +55,7 @@
 #define GMT_SYMBOL_TRIANGLE	((int)'t')
 #define GMT_SYMBOL_CUBE		((int)'u')
 #define GMT_SYMBOL_VECTOR	((int)'v')
+#define GMT_SYMBOL_VECTOR_V4	999
 #define GMT_SYMBOL_WEDGE	((int)'w')
 #define GMT_SYMBOL_CROSS	((int)'x')
 #define GMT_SYMBOL_YDASH	((int)'y')

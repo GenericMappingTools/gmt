@@ -6303,6 +6303,21 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	GMT->current.proj.z_project.plane = plane;
 }
 
+#if 0
+void gmt_vector_v4 (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1, double tailwidth, double headlength, double headwidth, double shape, struct GMT_FILL *fill, int outline)
+{
+	/* Plots the GMT4 vector symbol */
+
+	if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		psl_vector_v4 (PSL, x0, y0, param, rgb, outline);
+	}
+	else	/* Just draw as we please */
+		psl_vector_v4 (PSL, x0, y0, param, fill->rgb, outline);
+}
+#endif
+
 /* All functions involved in reading, writing, duplicating GMT_POSTSCRIPT structs and their PostScript content */
 
 /*! . */
