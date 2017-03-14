@@ -345,7 +345,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
 	triplets[GMT_IN] = (n_input == 3);
 	
-	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
+	if (Ctrl->G.active && GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
