@@ -508,6 +508,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		else if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		if (Ctrl->F.active && F->data) {	/* Not the same area, must copy over pregrid node values */
@@ -657,10 +658,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
+			gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
@@ -670,10 +673,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if (!Ctrl->Q.active) {	/* Still record-by-record output */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				Return (API->error);
 			}
 		}
