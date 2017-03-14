@@ -1364,6 +1364,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (error) {	/* Return in error state */
 			if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
 			gmt_M_free (GMT, ps_names);
+			gmt_M_free (GMT, line);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
@@ -1386,6 +1387,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
 		gmt_M_free (GMT, ps_names);
+		gmt_M_free (GMT, line);
 		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
 	}
 	/* -------------------------------------------------------------------------------------- */
@@ -1468,6 +1470,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				gmt_M_free (GMT, PS);
+				gmt_M_free (GMT, line);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
