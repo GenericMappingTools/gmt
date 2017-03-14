@@ -7010,7 +7010,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				}
 				X->has_pattern = true;
 				if ((name = support_get_userimagename (GMT, T1, cpt_file))) {	/* Must replace fill->pattern with this full path */
-					strcpy (X->bfn[id].fill->pattern, name);
+					strncpy (X->bfn[id].fill->pattern, name, GMT_BUFSIZ-1);
 					gmt_M_str_free (name);
 				}
 			}
