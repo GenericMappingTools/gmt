@@ -227,6 +227,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 	if (n_paths == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		if (fp) gmt_fclose (GMT, fp);
 		Return (GMT_NO_INPUT);
 	}
 
