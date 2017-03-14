@@ -406,6 +406,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 			if (nz != (int)(Pin->n_colors + 1)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Mistmatch between number of entries in color list and z list\n");
+				gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
