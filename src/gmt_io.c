@@ -2548,7 +2548,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
-	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
+	sprintf (buffer, "-C -fg -<%s ->%s --GMT_HISTORY=false", in_string, out_string);
 	if (GMT_Call_Module (GMT->parent, "gmtinfo", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the extent via gmtinfo */
 		return (GMT->parent->error);
 	}

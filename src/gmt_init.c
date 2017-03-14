@@ -427,7 +427,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No map projection specified to auto-determine geographic region\n");
 			break;
 	}
-	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s",
+	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=false",
 	         wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
@@ -10464,13 +10464,14 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	return (GMT);
 }
 
-/*! Add -R<grid> for those modules that implicitly obtain the region via a grid */
+/*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
 GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
+	 * Modules with this issue have "r" in their THIS_MODULE_NEEDS string.
 	 */
 	struct GMT_OPTION *opt = NULL;
 
-	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set already, so do nothing */
+	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set explicitly, so do nothing */
 	if (strchr (args, 'r') == NULL) return GMT_NOERROR;	/* Not using a grid for -R in this module */
 	/* Here we know the module is using a grid to get -R implicitly */
 	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {	/* Got an argument, hopefully an input file */
@@ -10485,30 +10486,55 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
-	unsigned int k;
-	struct GMT_OPTION *opt = NULL;
-	
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must ensure implicit options are set explicitly */
-		k = gmt_set_missing_R (API, required, options);	/* Maybe append a -R<grid> option if needed by this module */
+	API->error = GMT_NOERROR;
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode */
+		unsigned int k, n_errors = 0;
+		struct GMT_OPTION *opt = NULL;
+		
+		/* 1. No -O -K are allowed */
+		if ((opt = GMT_Find_Option (API, 'O', *options))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for GMT_RUNMODE = modern.\n");
+			n_errors++;
+		}
+		if ((opt = GMT_Find_Option (API, 'K', *options))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for GMT_RUNMODE = modern.\n");
+			n_errors++;
+		}
+		/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if needed) */
+		if (API->GMT->hidden.func_level == 1 && (opt = GMT_Find_Option (API, 'R', *options)) && opt->arg[0] == '\0') {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
+			n_errors++;
+		}
+		if (API->GMT->hidden.func_level == 1 && (opt = GMT_Find_Option (API, 'J', *options)) && opt->arg[0] == '\0') {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
+			n_errors++;
+		}
+		if (n_errors) {	/* Oh, well */
+			API->error = GMT_OPTION_NOT_ALLOWED;
+			return NULL;
+		}
+		
+		/* 3. Must ensure implicit options are set explicitly */
+		k = gmt_set_missing_R (API, required, options);	/* May append a -R<grid> option if the input grid implicitly sets -R in this module */
 
-		/* Next add blank -R or -J options if these are needed and not provided on command line */
+		/* Next we add blank -R or -J options if these are needed but not provided on command line */
 		for (k = 0; k < strlen (required); k++) {
-			if (islower (required[k])) continue;	/* Skip if r */
+			if (islower (required[k])) continue;	/* Skip if r which is conditional and handled later */
 			if ((opt = GMT_Find_Option (API, required[k], *options))) continue;	/* Got this one already */
 			if ((opt = GMT_Make_Option (API, required[k], "")) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -R%c to options.\n", required[k]);
 		}
 	}
-	/* OK, here we can call the rest of the initialization */
+
+	/* Here we can call the rest of the initialization */
 	
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
 }
 
 /*! . */
 void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
-	unsigned int i;
-	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
+	unsigned int i, V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
 

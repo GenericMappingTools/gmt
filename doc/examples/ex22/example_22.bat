@@ -45,7 +45,7 @@ gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
 gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue -Dc -A1000 -K -Y2.75i > %ps%
-gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.txt | gmt psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> %ps%
+gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wthin -h -i3,2,5,4+s0.02 neic_quakes.txt >> %ps%
 
 REM Create legend input file for NEIS quake plot
 

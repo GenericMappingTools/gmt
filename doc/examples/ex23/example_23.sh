@@ -4,7 +4,7 @@
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT modules:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
-# Unix progs:	echo, cat, awk
+# Unix progs:	echo, cat
 #
 ps=example_23.ps
 
@@ -20,12 +20,12 @@ gmt grdmath -Rg -I1 $lon $lat SDIST = dist.nc
 
 # Location info for 5 other cities + label justification
 
-cat << END > cities.d
-105.87	21.02	HANOI		LM
-282.95	-12.1	LIMA		LM
-178.42	-18.13	SUVA		LM
-237.67	47.58	SEATTLE		RM
-28.20	-25.75	PRETORIA	LM
+cat << END > cities.txt
+105.87	21.02	LM	HANOI
+282.95	-12.1	LM	LIMA
+178.42	-18.13	LM	SUVA
+237.67	47.58	RM	SEATTLE
+28.20	-25.75	LM	PRETORIA
 END
 
 gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Dc -Bg30 \
@@ -35,21 +35,19 @@ gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
 	-Wathin,white -Wcthinnest,white,- >> $ps
 
 # For each of the cities, plot great circle arc to Rome with gmt psxy
-gmt psxy -R -J -O -K -Wthickest,red -Fr$lon/$lat cities.d >> $ps
+gmt psxy -R -J -O -K -Wthickest,red -Fr$lon/$lat cities.txt >> $ps
 
 # Plot red squares at cities and plot names:
-gmt psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
-$AWK '{print $1, $2, $4, $3}' cities.d | gmt pstext -R -J -O -K -Dj0.15/0 \
-	-F+f12p,Courier-Bold,red+j -N >> $ps
+gmt psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.txt >> $ps
+gmt pstext -R -J -O -K -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt >> $ps
 # Place a yellow star at Rome
 echo "$lon $lat" | gmt psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
 # Sample the distance grid at the cities and use the distance in km for labels
 
-gmt grdtrack -Gdist.nc cities.d \
-	| $AWK '{printf "%s %s %d\n", $1, $2, int($NF+0.5)}' \
+gmt grdtrack -Gdist.nc cities.txt -o0,1,4 --FORMAT_FLOAT_OUT=%.0f \
 	| gmt pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
 
 # Clean up after ourselves:
 
-rm -f cities.d dist.nc
+rm -f cities.txt dist.nc

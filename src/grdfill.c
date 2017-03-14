@@ -226,6 +226,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	mode = (gmt_M_geographic (GMT, GMT_IN)) ? 2 : 1;
     sprintf (args, "%s -G%s -Sc -R%g/%g/%g/%g -I%g/%g -D%d", input, output, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r";)
+	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
    	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
 	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
@@ -305,7 +306,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

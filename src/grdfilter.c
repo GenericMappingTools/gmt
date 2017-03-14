@@ -855,7 +855,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -1242,6 +1242,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
+			strcat (cmd, " --GMT_HISTORY=false");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
 			if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */

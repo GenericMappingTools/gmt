@@ -303,7 +303,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
 	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
-	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
+	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
 		return (GMT->parent->error);
@@ -832,7 +832,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 
 	/* Initialize GMT_SYMBOL structure */

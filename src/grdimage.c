@@ -498,7 +498,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -512,7 +512,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using default -A-45 -Nt1 */
-		sprintf (l_args, "%s -G%s -A-45 -Nt1", Ctrl->In.file[0], int_grd);
+		sprintf (l_args, "%s -G%s -A-45 -Nt1 --GMT_HISTORY=false", Ctrl->In.file[0], int_grd);
 		/* Call the grdgradient module */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
@@ -693,7 +693,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string);
 			/* Create the command to do the resampling via the grdsample module */
-			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, n_columns, n_rows);
+			sprintf (cmd, "%s -G%s -I%d+/%d+ --GMT_HISTORY=false", in_string, out_string, n_columns, n_rows);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR)	/* Do the resampling */
 				return (API->error);
    			/* Obtain the resmapled intensity grid from the virtual file */

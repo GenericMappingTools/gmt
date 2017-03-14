@@ -120,7 +120,7 @@ S 0.1i c 0.07i blue - 0.3i Satellite
 EOF
 #
 # Now we wonder if removing that large feature at 250 km would make any difference.
-# We could throw away a section of data with $AWK or sed or head and tail, but we
+# We could throw away a section of data with awk or sed or head and tail, but we
 # demonstrate the use of "gmt trend1d" to identify outliers instead.  We will fit a
 # straight line to the samp_ship.pg data by an iteratively-reweighted method and
 # save the weights on output.  Then we will plot the weights and see how things

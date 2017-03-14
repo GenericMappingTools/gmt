@@ -55,7 +55,7 @@ REM Then report the volume and area of these seamounts only
 REM by masking out data outside the 200 km-radius circle
 REM and then evaluate area/volume for the 50 mGal contour
 
-gmt grdmath -R -142.65 56.25 SDIST = mask.nc
+gmt grdmath -R pratt.txt POINT SDIST = mask.nc
 gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 gmt grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
 echo "> -149 52.5 14p 2.6i j" > tmp

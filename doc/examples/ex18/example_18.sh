@@ -6,7 +6,7 @@
 #		selection of data
 # GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdgradient, grdimage
 # GMT modules:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
-# Unix progs:	$AWK, cat, rm
+# Unix progs:	rm
 #
 ps=example_18.ps
 
@@ -55,7 +55,7 @@ gmt psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.txt >> $ps
 # by masking out data outside the 200 km-radius circle
 # and then evaluate area/volume for the 50 mGal contour
 
-gmt grdmath -R `$AWK '{print $1, $2}' pratt.txt` SDIST = mask.nc
+gmt grdmath -R pratt.txt POINT SDIST = mask.nc
 gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 gmt grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
 area=`gmt grdvolume tmp.nc -C50 -Sk | cut -f2`

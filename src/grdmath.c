@@ -3345,23 +3345,30 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	/* Read a table and compute mean location */
 	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "POINT")) == NULL) return;
 	T = D->table[0];	/* Only one table in a single file */
-	if (T->n_segments > 1) {	/* Must build a single table for gmt_centroid */
-		uint64_t seg;
-		size_t n_alloc = 0;
-		gmt_M_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
-		for (seg = 0; seg < T->n_segments; seg++) {
-			gmt_M_memcpy (&x[n], T->segment[seg]->data[GMT_X], T->segment[seg]->n_rows, double);
-			gmt_M_memcpy (&y[n], T->segment[seg]->data[GMT_Y], T->segment[seg]->n_rows, double);
-			n += T->segment[seg]->n_rows;
+	if (T->n_records == 1) {	/* Got a single point record; no need to average etc */
+		pos[GMT_X] = T->segment[0]->data[GMT_X][0];
+		pos[GMT_Y] = T->segment[0]->data[GMT_Y][0];
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "[Single point reported as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
+	}
+	else {	/* Must compute averate point */
+		if (T->n_segments > 1) {	/* Must build a single table for gmt_centroid */
+			uint64_t seg;
+			size_t n_alloc = 0;
+			gmt_M_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
+			for (seg = 0; seg < T->n_segments; seg++) {
+				gmt_M_memcpy (&x[n], T->segment[seg]->data[GMT_X], T->segment[seg]->n_rows, double);
+				gmt_M_memcpy (&y[n], T->segment[seg]->data[GMT_Y], T->segment[seg]->n_rows, double);
+				n += T->segment[seg]->n_rows;
+			}
 		}
+		else {	/* Just a single segment, use pointers */
+			x = T->segment[0]->data[GMT_X];
+			y = T->segment[0]->data[GMT_Y];
+			n = T->segment[0]->n_rows;
+		}
+		gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
-	else {	/* Just a single segment, use pointers */
-		x = T->segment[0]->data[GMT_X];
-		y = T->segment[0]->data[GMT_Y];
-		n = T->segment[0]->n_rows;
-	}
-	gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	/* Place mean x and y on the stack */
 	stack[last]->constant = true;
 	stack[last]->factor = pos[GMT_X];
@@ -4911,7 +4918,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);

@@ -186,7 +186,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -246,22 +246,22 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */
 
-	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s", c_grid, scale * 0.3, c_grid);
+	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", c_grid, scale * 0.3, c_grid);
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, scale * 0.220, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s", scale * 1.55, c_water, c_land, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, c_water, c_land, pars);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none", scale * 1.55, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=false", scale * 1.55, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
 
 	gmt_getsharepath (GMT, "conf", "gmtlogo_letters", ".txt", file, R_OK);
 
-	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40",
+	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi",
+	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi --GMT_HISTORY=false",
 		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 
