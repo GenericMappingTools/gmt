@@ -10014,7 +10014,7 @@ int GMT_Option (void *V_API, const char *options) {
 	API = api_get_api_ptr (V_API);
 
 	/* The following does the translation between the rules for the option string and the convoluted items gmtlib_explain_options expects. */
-	while (gmt_strtok (options, ",", &pos, p) && k < GMT_LEN64) {
+	while (gmt_strtok (options, ",", &pos, p) && k < (GMT_LEN64-1)) {
 		switch (p[0]) {
 			case 'B':	/* Let B be B and B- be b */
 				arg[k++] = (p[1] == '-') ? 'b' : 'B';
