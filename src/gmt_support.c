@@ -3956,8 +3956,8 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 				case 'f':	/* Fill specification */
 					if (ms->old_style && gmt_M_compat_check (GMT, 4)) {	/*  Warn about old GMT 4 syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+f<fill> in map scale is deprecated, use -F panel settings instead\n");
-						strcat (oldshit, "+g");
-						strcat (oldshit, &p[1]);
+						strncat (oldshit, "+g", GMT_LEN128-1);
+						strncat (oldshit, &p[1], GMT_LEN128-3);
 					}
 					else
 						bad++;
@@ -3965,8 +3965,8 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 				case 'g':	/* Fill specification */
 					if (ms->old_style && gmt_M_compat_check (GMT, 5)) {	/* Warn about old GMT 5 syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+g<fill> in map scale is deprecated, use -F panel settings instead\n");
-						strcat (oldshit, "+");
-						strcat (oldshit, p);
+						strncat (oldshit, "+", GMT_LEN128-1);
+						strncat (oldshit, p, GMT_LEN128-2);
 					}
 					else
 						bad++;
@@ -3980,8 +3980,8 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 				case 'p':	/* Pen specification */
 					if (ms->old_style && gmt_M_compat_check (GMT, 5)) {	/* Warn about old syntax */
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+p<pen> in map scale is deprecated, use -F panel settings instead\n");
-						strcat (oldshit, "+");
-						strcat (oldshit, p);
+						strncat (oldshit, "+", GMT_LEN128-1);
+						strncat (oldshit, p, GMT_LEN128-2);
 					}
 					else
 						bad++;
