@@ -1965,7 +1965,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 }
 
 int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
-	uint64_t node = 0, ij, imag_offset, imsize;
+	uint64_t node = 0, ij, imag_offset;
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_out;	/* Width of row as return (may include padding) */
@@ -2015,12 +2015,11 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
 	if (!isnan (header->nan_value)) {
-		for (ij = 0; ij < header->size; ij++)
+		for (ij = 0; ij < (uint64_t)header->mx * header->my; ij++)
 			if (isnan (grid[ij]))
 				grid[ij] = header->nan_value;
 	}
 
-	imsize = gmt_M_get_nm (GMT, width_out, height_out);
 	if (!type[0] || gmt_strlcmp(type, "float32")) {
 		/* We have to shift the grid pointer in order to use the GDALRasterIO ability to extract a subregion. */
 		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
@@ -2034,7 +2033,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		return (GMT_NOERROR);
 	}
 	else if (gmt_strlcmp(type,"u8") || gmt_strlcmp(type,"u08")) {
-		zu8 = gmt_M_memory(GMT, NULL, imsize, unsigned char);
+		zu8 = gmt_M_memory(GMT, NULL, width_out * height_out, unsigned char);
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu8[node++] = (unsigned char)grid[ij];
@@ -2043,7 +2042,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->type = strdup("uint8");
 	}
 	else if (gmt_strlcmp(type,"i16")) {
-		zi16 = gmt_M_memory(GMT, NULL, imsize, short int);
+		zi16 = gmt_M_memory(GMT, NULL, width_out * height_out, short int);
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi16[node++] = (short int)grid[ij];
@@ -2052,7 +2051,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->type = strdup("int16");
 	}
 	else if (gmt_strlcmp(type,"u16")) {
-		zu16 = gmt_M_memory(GMT, NULL, imsize, unsigned short int);
+		zu16 = gmt_M_memory(GMT, NULL, width_out * height_out, unsigned short int);
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu16[node++] = (unsigned short int)grid[ij];
@@ -2061,7 +2060,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->type = strdup("uint16");
 	}
 	else if (gmt_strlcmp(type,"i32")) {
-		zi32 = gmt_M_memory(GMT, NULL, imsize, int);
+		zi32 = gmt_M_memory(GMT, NULL, width_out * height_out, int);
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi32[node++] = (int)grid[ij];
@@ -2070,7 +2069,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->type = strdup("int32");
 	}
 	else if (gmt_strlcmp(type,"u32")) {
-		zu32 = gmt_M_memory(GMT, NULL, imsize, unsigned int);
+		zu32 = gmt_M_memory(GMT, NULL, width_out * height_out, unsigned int);
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu32[node++] = (unsigned int)grid[ij];
