@@ -7163,6 +7163,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 					if (Z) gmt_M_free (GMT, Z);
 					gmt_M_free (GMT, X->data);
 					gmt_M_free (GMT, X);
+					if (close_file) fclose (fp);
 					return (NULL);
 				}
 				X->data[n].i_dz = 1.0 / dz;
