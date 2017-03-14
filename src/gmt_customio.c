@@ -1965,7 +1965,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 }
 
 int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
-	uint64_t node = 0, ij, imag_offset, imsize
+	uint64_t node = 0, ij, imag_offset, imsize;
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_out;	/* Width of row as return (may include padding) */
