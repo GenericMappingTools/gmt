@@ -999,7 +999,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fh, n, pix_w, pix_h;
-	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
+	uint64_t  dim[GMT_DIM_SIZE], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;

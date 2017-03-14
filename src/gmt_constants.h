@@ -76,6 +76,7 @@
 
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
+	GMT_DIM_SIZE	= 4U,	/* Length of dim array used in Read|Creat Data */
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
