@@ -1969,7 +1969,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			char tag[16] = {""};
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 
-			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
+			strncpy (tag, &ext[Ctrl->T.device][1], 15U);
 			gmt_str_toupper (tag);
 
 			if (transparency) {	/* Get here when PDF is _NOT_ the final output format but an intermediate format */
