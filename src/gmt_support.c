@@ -7081,6 +7081,10 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: z-slice to skip not in [z0 - z1 -] format!\n");
+				if (close_file) fclose (fp);
+				if (Z) gmt_M_free (GMT, Z);
+				gmt_M_free (GMT, X->data);
+				gmt_M_free (GMT, X);
 				return (NULL);
 			}
 			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->data[n].z_high);
@@ -7092,6 +7096,10 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->data[n].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 			if (gmt_getfill (GMT, T1, X->data[n].fill)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
+				if (close_file) fclose (fp);
+				if (Z) gmt_M_free (GMT, Z);
+				gmt_M_free (GMT, X->data);
+				gmt_M_free (GMT, X);
 				return (NULL);
 			}
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
@@ -7104,6 +7112,10 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
+				if (close_file) fclose (fp);
+				if (Z) gmt_M_free (GMT, Z);
+				gmt_M_free (GMT, X->data);
+				gmt_M_free (GMT, X);
 				return (NULL);
 			}
 			X->has_pattern = true;
@@ -8955,7 +8967,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			k++;
 		}
 		if (s) {
-			strcpy (modifiers, &p[s]);
+			strncpy (modifiers, &p[s], GMT_BUFSIZ-1);
 			pos2 = 0;
 			while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {	/* fabs is used for lengths since -<length> might have been given to indicate Flat Earth Distances */
@@ -9333,10 +9345,8 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
-				if (n_col == 3) {	/* The label part if asked for */
-					G->f_label[k] = gmt_M_memory (GMT, NULL, strlen(txt_c)+1, char);
-					strcpy (G->f_label[k], txt_c);
-				}
+				if (n_col == 3)	/* The label part if asked for */
+					G->f_label[k] = strdup (txt_c);
 				k++;
 			}
 		}
@@ -9378,7 +9388,7 @@ void gmt_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
 		gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		if (G->f_label) {
-			for (j = 0; j < G->f_n; j++) gmt_M_free (GMT, G->f_label[j]);
+			for (j = 0; j < G->f_n; j++) gmt_M_str_free (G->f_label[j]);
 			gmt_M_free (GMT, G->f_label);
 		}
 	}
