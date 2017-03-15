@@ -6422,7 +6422,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		else if (p[last] == '+' || p[last] == '!') {	/* Obsolete + (! added since documentation mentioned this once...) */
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
-			last--;
+			if (last) last--;	/* Coverity rightly points out that if last == 0 it would become 4294967295 */
 		}
 		switch (p[last]) {
 			case 'd':	/* Gave arc degree */
