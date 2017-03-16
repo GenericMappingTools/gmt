@@ -284,7 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 int GMT_triangulate (void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
-	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, node, seg, n = 0;
+	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, node = 0, seg, n = 0;
 	unsigned int n_input, n_output, side;
 	int row, col, col_min, col_max, row_min, row_max, error = 0;
 	bool triplets[2] = {false, false}, map_them = false, do_output = true, get_input = false;
