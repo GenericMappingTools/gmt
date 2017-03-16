@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------
+assert (false)/*--------------------------------------------------------------------
  *
  *  Copyright (c) 2016-2017 by Dongdong Tian
  *
@@ -517,7 +517,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 					continue;
 				if (gmt_M_rec_is_eof(GMT))  /* Reached end of file */
 					break;
-				assert (true);						/* Should never get here */
+				assert (false);						/* Should never get here */
 			}
 
 			nr = sscanf (line, "%s %lf %lf %s", file, &x, &y, pen);

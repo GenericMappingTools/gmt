@@ -875,7 +875,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (true);						/* Should never get here */
+			assert (false);						/* Should never get here */
 		}
 
 		/* Data record to process */

@@ -92,7 +92,7 @@ int main (int argc, char *argv[]) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "A gap found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "G: ");
 			}
-			assert (true);						/* Should never get here */
+			assert (false);						/* Should never get here */
 		}
 		if (gmt_M_rec_is_data (GMT)) {	/* Found a data record */
 			if ((error = gmt_set_cols (GMT, GMT_IN, n_fields)) != 0) exit (EXIT_FAILURE);

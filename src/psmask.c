@@ -745,7 +745,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (true);						/* Should never get here */
+				assert (false);						/* Should never get here */
 			}
 
 			if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */

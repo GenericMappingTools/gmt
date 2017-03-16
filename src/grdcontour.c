@@ -1053,7 +1053,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (true);						/* Should never get here */
+				assert (false);						/* Should never get here */
 			}
 			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
 

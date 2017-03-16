@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------
+assert (false)/*--------------------------------------------------------------------
  *	$Id$
  *
  *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
@@ -671,7 +671,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-			assert (true);						/* Should never get here */
+			assert (false);						/* Should never get here */
 		}
 		/* Clean data record to process.  Add point unless duplicate */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];

@@ -819,7 +819,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 				continue;
 			}
-			assert (true);						/* Should never get here */
+			assert (false);						/* Should never get here */
 		}
 		
 		/* Data record to process */

@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------
+assert (false)/*--------------------------------------------------------------------
  *	$Id$
  *
  *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
@@ -854,7 +854,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				n = 0;
 				continue;
 			}
-			assert (true);						/* Should never get here */
+			assert (false);						/* Should never get here */
 		}
 		if (first_slice) {	/* Did not have the required header record */
 			GMT_Report (API, GMT_MSG_VERBOSE, "No segment header with depth [and optional densithy contrast] - must quit\n");
