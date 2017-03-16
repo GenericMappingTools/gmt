@@ -608,6 +608,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 				first = true;
 				continue;
 			}
+			assert (true);						/* Should never get here */
 		}
 
 		/* Data record to process */

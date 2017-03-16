@@ -2619,7 +2619,7 @@ how the options are passed to the module:
         how API functions can help prepare and maintain such lists.
 
     *mode* = ``GMT_MODULE_CMD``.
-        Expects ``args`` to be a single text string with all required options.
+        Expects ``args`` to be a single text string with all needed options.
 
     *mode > 0*.
         Expects ``args`` to be an array of text strings and ``mode`` to be a count of how many

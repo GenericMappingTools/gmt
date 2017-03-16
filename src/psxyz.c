@@ -758,6 +758,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					continue;
 				}
+				assert (true);						/* Should never get here */
 			}
 
 			/* Data record to process */

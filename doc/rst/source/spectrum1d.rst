@@ -119,7 +119,8 @@ Optional Arguments
 
 **-N**\ [*name\_stem*]
     Supply an alternate name stem to be used for output files [Default = "spectrum"].
-    Giving no argument will disable the writing of individual output files.
+    If **-N** is given with no argument then we disable the writing of individual
+    output files and instead write a single table to standard output.
 
 .. _-V:
 

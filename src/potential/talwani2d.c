@@ -671,6 +671,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
+			assert (true);						/* Should never get here */
 		}
 		/* Clean data record to process.  Add point unless duplicate */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];

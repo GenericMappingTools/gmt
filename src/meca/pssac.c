@@ -517,10 +517,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 					continue;
 				if (gmt_M_rec_is_eof(GMT))  /* Reached end of file */
 					break;
-			}
-			if (line == NULL) {
-				GMT_Report (GMT, GMT_MSG_NORMAL, "line == NULL where code does not account for it. Unknown consequence.\n");
-				break;
+				assert (true);						/* Should never get here */
 			}
 
 			nr = sscanf (line, "%s %lf %lf %s", file, &x, &y, pen);

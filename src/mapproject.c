@@ -1042,6 +1042,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			assert (true);						/* Should never get here */
 		}
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);

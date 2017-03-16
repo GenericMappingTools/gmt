@@ -407,6 +407,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			assert (true);						/* Should never get here */
 		}
 		
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */

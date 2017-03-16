@@ -410,6 +410,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			assert (true);						/* Should never get here */
 		}
 
 		/* Data record to process */

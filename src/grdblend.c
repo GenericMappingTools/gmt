@@ -223,8 +223,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				if (line == NULL)	/* As a precaution for sscanf below */
-					continue;
+				assert (true);						/* Should never get here */
 			}
 			
 			/* Data record to process.  We permint this kind of records:
