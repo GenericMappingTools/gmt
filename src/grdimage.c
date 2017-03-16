@@ -81,7 +81,9 @@ struct GRDIMAGE_CTRL {
 		bool constant;
 		bool derive;
 		double value;
+		double azimuth;	/* Default azimuth for shading */
 		char *file;
+		char *method;	/* Default scaling method */
 	} I;
 	struct GRDIMG_M {	/* -M */
 		bool active;
@@ -102,6 +104,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->G.b_rgb[0] = C->G.b_rgb[1] = C->G.b_rgb[2] = 1.0;
+	C->I.azimuth = -45.0;	/* Default azimuth for shading when -I is used */
+	C->I.method = strdup ("t1");	/* Default normalization for shading when -I is used */
 
 	return (C);
 }
@@ -113,6 +117,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* De
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->I.method);
 	gmt_M_str_free (C->Out.file);
 	gmt_M_free (GMT, C);
 }
@@ -122,17 +127,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->mode) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 	}
 	else {
 #ifdef HAVE_GDAL
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
 		             GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 #else
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
 		             GMT_J_OPT, GMT_B_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 #endif
 	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -178,7 +183,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   With no argument we automatically derive intensities from <grd_z>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (see grdgradient for details).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome image.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not clip image at the map boundary.\n");
@@ -199,6 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	size_t n;
@@ -325,7 +332,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Use intensity from grid or constant */
 				Ctrl->I.active = true;
-				if (!opt->arg[0])	/* No argument, so derive intensities from input grid */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
+					unsigned int pos = 0;
+					char p[GMT_BUFSIZ] = {""};
+					Ctrl->I.derive = true;
+					while (gmt_getmodopt (GMT, c, "an", &pos, p)) {
+						switch (p[0]) {
+							case 'a': Ctrl->I.azimuth  = atof (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method); Ctrl->I.method  = strdup (&p[1]); break;
+							default: n_errors++;
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -I: Unrecognized modifier +%s\n", p);
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+				}
+				else if (!opt->arg[0])	/* No argument, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
@@ -511,8 +533,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
-		/* Prepare the grdgradient arguments using default -A-45 -Nt1 */
-		sprintf (l_args, "%s -G%s -A-45 -Nt1 --GMT_HISTORY=false", Ctrl->In.file[0], int_grd);
+		/* Prepare the grdgradient arguments using selected -A -N */
+		sprintf (l_args, "%s -G%s -A%g -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
