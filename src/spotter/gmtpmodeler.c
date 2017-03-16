@@ -325,8 +325,8 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (GMT->current.setting.io_header[GMT_OUT]) {
 		char header[GMT_BUFSIZ] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
-			strcat (header, tag[k]);
-			if (k < (Ctrl->S.n_items-1)) strcat (header, GMT->current.setting.io_col_separator);
+			strncat (header, tag[k], GMT_BUFSIZ-1);
+			if (k < (Ctrl->S.n_items-1)) strncat (header, GMT->current.setting.io_col_separator, GMT_BUFSIZ-1);
 		}
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 	}

@@ -1,4 +1,4 @@
-assert (false)/*--------------------------------------------------------------------
+/*--------------------------------------------------------------------
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
@@ -1143,7 +1143,12 @@ Definition of scalar moment.
 				Ctrl->S.justify, form);
 		}
 	} while (true);
-
+	
+	if (!Ctrl->Q.active) {
+		fclose (pnew);
+		fclose (pext);
+	}
+	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}

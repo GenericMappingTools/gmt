@@ -689,7 +689,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					flag[ij]++;
 					break;
 				case 'S': 	/* Add up squares and means to compute standard deviation */
-					data[ij] += (float)in[zcol];
+					data[ij] += (float)in[zcol];	/* This adds up the means; we fall through to next case to also add up squares */
 				case 'r': 	/* Add up squares in case we must rms */
 					Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
 					flag[ij]++;

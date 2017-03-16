@@ -1206,6 +1206,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		n_seg = gmt_M_memory (GMT, NULL, n_tables, uint64_t);
 	}
 
+	gmt_M_memset (rgb, 4, double);
+	
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);

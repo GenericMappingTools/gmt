@@ -1,4 +1,4 @@
-assert (false)/*--------------------------------------------------------------------
+/*--------------------------------------------------------------------
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
@@ -534,6 +534,9 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (event_title, GMT_BUFSIZ, char);
 	gmt_M_memset (&meca, 1, st_me);
+	gmt_M_memset (&T, 1, struct AXIS);
+	gmt_M_memset (&N, 1, struct AXIS);
+	gmt_M_memset (&P, 1, struct AXIS);
 	gmt_M_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
