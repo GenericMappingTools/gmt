@@ -1010,7 +1010,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-	gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+	if ((error = gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN)) != 0) Return (error);
 	if (geodetic_calc && rmode == GMT_READ_MIXED) {
 		for (col = 0, k = GMT_Z; col < MP_COL_N; col++) {
 			if (Ctrl->used[col]) {
