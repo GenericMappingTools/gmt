@@ -675,7 +675,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	sprintf (header, "# sphtriangulate %s output via STRPACK", tmode[Ctrl->Q.mode]);
 	if (Ctrl->A.active) {
 		strcat (header, (Ctrl->T.active) ? ".  Arc lengths in " : ".  Areas in ");
-		strcat (header, unit_name (Ctrl->L.unit, Ctrl->T.active));
+		strncat (header, unit_name (Ctrl->L.unit, Ctrl->T.active), GMT_BUFSIZ]-1);
 	}
 	strcat (header, ".");
 	Dout[0]->table[0]->n_headers = 1;
