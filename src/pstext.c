@@ -742,10 +742,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (false);						/* Should never get here */
 		}
 
-		/* Data record or segment header to process */
+		/* Data record or segment header (line == NULL) to process */
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (gmt_M_rec_is_segment_header (GMT)) {
@@ -835,6 +834,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				master_record = true;
 			}
 			else {	/* Text block record */
+				assert (line != NULL);	/* Sanity check */
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
@@ -871,7 +871,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			n_read++;
 		}
 		else {	/* Plain style pstext input */
-			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers */
+			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers (line == NULL) */
+			assert (line != NULL);
 			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
 			strncpy (cp_line, line, GMT_BUFSIZ);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
