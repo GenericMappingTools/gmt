@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make two color images based gridded data
-# GMT modules:	gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
+# GMT modules:	gmtset, grd2cpt, grdimage, makecpt, psscale, pstext
 # Unix progs:	rm
 #
 ps=example_02.ps

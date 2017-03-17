@@ -228,7 +228,8 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r";)
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
-   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Calling greenspline with args %s\n", args);
+  	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
 	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
 		Return (API->error);
 	}

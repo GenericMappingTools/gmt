@@ -83,7 +83,7 @@ struct GRDVIEW_CTRL {
 		bool constant;
 		bool derive;
 		double value;
-		double azimuth;	/* Default azimuth for shading */
+		char *azimuth;	/* Default azimuth(s) for shading */
 		char *file;
 		char *method;	/* Default scaling method */
 	} I;
@@ -306,8 +306,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
-	C->I.azimuth = -45.0;	/* Default azimuth for shading when -I is used */
-	C->I.method = strdup ("t1");	/* Default normalization for shading when -I is used */
+	C->I.azimuth = strdup ("-45.0");		/* Default azimuth for shading when -I is used */
+	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
@@ -323,6 +323,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->C.file);
 	for (i = 0; i < 3; i++) gmt_M_str_free (C->G.file[i]);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.method);
 	gmt_M_free (GMT, C);
 }
@@ -467,8 +468,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					Ctrl->I.derive = true;
 					while (gmt_getmodopt (GMT, c, "an", &pos, p)) {
 						switch (p[0]) {
-							case 'a': Ctrl->I.azimuth  = atof (&p[1]); break;
-							case 'n': gmt_M_str_free (Ctrl->I.method); Ctrl->I.method  = strdup (&p[1]); break;
+							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth = strdup (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method  = strdup (&p[1]); break;
 							default: n_errors++;
 								GMT_Report (API, GMT_MSG_NORMAL, "Error -I: Unrecognized modifier +%s\n", p);
 								break;
@@ -650,8 +651,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		}
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file,
-	                                 "Syntax error -I option: Must specify intensity file or value\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
+	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
 	                                       !Ctrl->C.file && Ctrl->G.n != 3, "Syntax error: Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
@@ -738,13 +739,15 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using selected -A -N */
-		sprintf (l_args, "%s -G%s -A%g -N%s --GMT_HISTORY=false", Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method);
+		sprintf (l_args, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", l_args);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
+		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 	}
 	else if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
@@ -913,7 +916,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		gmt_change_grdreg (GMT, Z->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration, again */
 	}
 
-	if (use_intensity_grid) {	/* Illumination wanted */
+	if (use_intensity_grid && !Ctrl->I.derive) {	/* Illumination wanted from external file */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing illumination grid\n");
 

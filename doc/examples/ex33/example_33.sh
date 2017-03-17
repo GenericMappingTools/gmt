@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate grdtrack's new cross-track and stacking options
-# GMT modules:  makecpt, gmtconvert, grdimage, grdgradient, grdtrack, pstext, psxy
+# GMT modules:  makecpt, gmtconvert, grdimage, grdtrack, pstext, psxy
 # Unix progs:   cat, rm
 #
 ps=example_33.ps
@@ -11,8 +11,7 @@ ps=example_33.ps
 # Extract a subset of ETOPO1m for the East Pacific Rise
 # gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
 gmt makecpt -Crainbow -T-5000/-2000 > z.cpt
-gmt grdgradient spac.nc -A15 -Ne0.75 -Gspac_int.nc
-gmt grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > $ps
+gmt grdimage spac.nc -I+a15+ne0.75 -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > $ps
 # Select two points along the ridge
 cat << EOF > ridge.txt
 -111.6	-43.0
@@ -34,4 +33,4 @@ gmt psxy -R -J -O -K -W3p stack.txt >> $ps
 echo "0 -2000 MEDIAN STACKED PROFILE" | gmt pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> $ps
 gmt psxy -R -J -O -T >> $ps
 # cleanup
-rm -f z.cpt spac_int.nc ridge.txt table.txt env.txt stack.txt
+rm -f z.cpt ridge.txt table.txt env.txt stack.txt

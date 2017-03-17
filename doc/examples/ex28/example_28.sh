@@ -3,16 +3,15 @@
 #		$Id$
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
-# GMT modules:	makecpt, grdgradient, grdimage, grdmath, pscoast, pstext, mapproject
+# GMT modules:	makecpt, grdimage, grdmath, pscoast, pstext, mapproject
 # Unix progs:	rm, echo
 #
 ps=example_28.ps
 
-# Get intensity grid and set up a color table
-gmt grdgradient Kilauea.utm.nc -Nt1 -A45 -GKilauea.utm_i.nc
+# Set up a color table
 gmt makecpt -Ccopper -T0/1500 > Kilauea.cpt
 # Lay down the UTM topo grid using a 1:16,000 scale
-gmt grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:160000 -P -K \
+gmt grdimage Kilauea.utm.nc -I+a45+nt1 -CKilauea.cpt -Jx1:160000 -P -K \
 	--FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p > $ps
 # Overlay geographic data and coregister by using correct region and gmt projection with the same scale
 gmt pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5m -BNE \
@@ -24,4 +23,4 @@ gmt psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY=9p -LjRB+c19:23N+f+w5k+l1:16,000+
 gmt psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5+u"@:8:000m@::" -BWSne -O --FONT_ANNOT_PRIMARY=10p \
 	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
 # Clean up
-rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
+rm -f Kilauea.cpt tmp.txt

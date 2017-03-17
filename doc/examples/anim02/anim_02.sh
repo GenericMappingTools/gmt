@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
-# GMT modules   gmtmath, grdgradient, makecpt, grdimage psxy, psconvert
+# GMT modules   gmtmath, makecpt, grdimage psxy, psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
@@ -27,8 +27,7 @@ while [ ${frame} -lt ${n_frames} ]; do
 	file=`gmt_set_framename ${name} ${frame}`
 	angle=`gmt math -Q ${frame} ${del_angle} MUL =`
 	dir=`gmt math -Q ${angle} 180 ADD =`
-	gmt grdgradient us.nc -A${angle} -Nt2 -fg -G$$.us_int.nc
-	gmt grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
+	gmt grdimage us.nc -I+a${angle}+nt2 -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
 	gmt psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
 	gmt psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"

@@ -1029,6 +1029,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			strcat (cmd, " --GMT_HISTORY=false");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Calling grdsample with args %s\n", cmd);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);

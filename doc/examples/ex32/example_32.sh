@@ -27,7 +27,6 @@ Rflag=-R3/9/50/54
 # We make a gradient grid as well, which we will use to "illuminate" the flag.
 
 # gmt grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
-gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 # "Yellow" to the upper half.
@@ -38,7 +37,7 @@ gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N > euflag.cpt
 # the shading.
 
 Rplot=$Rflag/-10/790
-gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K > $ps
+gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30 -P -K > $ps
 
 # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 # So we write out the borders, pipe them through grdtack and then plot them with psxyz.
@@ -61,4 +60,4 @@ gmt pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0 -O cities.t
 
 # cleanup
 
-rm -f gmt.conf euflag.cpt illum.nc cities.txt
+rm -f gmt.conf euflag.cpt cities.txt

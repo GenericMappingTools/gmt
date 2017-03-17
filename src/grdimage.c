@@ -81,7 +81,7 @@ struct GRDIMAGE_CTRL {
 		bool constant;
 		bool derive;
 		double value;
-		double azimuth;	/* Default azimuth for shading */
+		char *azimuth;	/* Default azimuth(s) for shading */
 		char *file;
 		char *method;	/* Default scaling method */
 	} I;
@@ -104,8 +104,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->G.b_rgb[0] = C->G.b_rgb[1] = C->G.b_rgb[2] = 1.0;
-	C->I.azimuth = -45.0;	/* Default azimuth for shading when -I is used */
-	C->I.method = strdup ("t1");	/* Default normalization for shading when -I is used */
+	C->I.azimuth = strdup ("-45.0");		/* Default azimuth for shading when -I is used */
+	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 
 	return (C);
 }
@@ -117,6 +117,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* De
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.method);
 	gmt_M_str_free (C->Out.file);
 	gmt_M_free (GMT, C);
@@ -338,8 +339,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					Ctrl->I.derive = true;
 					while (gmt_getmodopt (GMT, c, "an", &pos, p)) {
 						switch (p[0]) {
-							case 'a': Ctrl->I.azimuth  = atof (&p[1]); break;
-							case 'n': gmt_M_str_free (Ctrl->I.method); Ctrl->I.method  = strdup (&p[1]); break;
+							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth = strdup (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method  = strdup (&p[1]); break;
 							default: n_errors++;
 								GMT_Report (API, GMT_MSG_NORMAL, "Error -I: Unrecognized modifier +%s\n", p);
 								break;
@@ -395,6 +396,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 		                                   "Syntax error: Must specify one (or three) input file(s)\n");
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
+	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && n_files == 3, 
 	                                   "Syntax error -I option: Cannot derive intensities when r,g,b grids are given as data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && Ctrl->D.active, 
@@ -534,8 +537,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using selected -A -N */
-		sprintf (l_args, "%s -G%s -A%g -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
+		sprintf (l_args, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", l_args);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
@@ -716,6 +720,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string);
 			/* Create the command to do the resampling via the grdsample module */
 			sprintf (cmd, "%s -G%s -I%d+/%d+ --GMT_HISTORY=false", in_string, out_string, n_columns, n_rows);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdsample with args %s\n", cmd);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR)	/* Do the resampling */
 				return (API->error);
    			/* Obtain the resmapled intensity grid from the virtual file */

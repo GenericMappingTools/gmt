@@ -4,7 +4,7 @@
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
-# GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdgradient, grdimage
+# GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdimage
 # GMT modules:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
 # Unix progs:	rm
 #
@@ -20,8 +20,7 @@ echo "-142.65 56.25 400" > pratt.txt
 # of radius = 200 km centered on Pratt.
 
 gmt makecpt -Crainbow -T-60/60 > grav.cpt
-gmt grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
-gmt grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i \
+gmt grdimage AK_gulf_grav.nc -I+a45+nt1 -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i \
 	-Y5.85i > $ps
 gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
 gmt psscale -DJBC+o0/0.4i+w4i/0.15i+h -R -J -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> $ps
@@ -69,4 +68,4 @@ END
 
 # Clean up
 
-rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.txt center* gmt.conf
+rm -f grav.cpt sm_*.txt tmp.nc mask.nc pratt.txt center* gmt.conf

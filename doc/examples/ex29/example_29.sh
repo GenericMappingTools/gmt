@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
-# GMT modules:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
+# GMT modules:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext
 # Unix progs:	rm, echo
 #
 ps=example_29.ps
@@ -26,14 +26,12 @@ gmt greenspline -RPROJ_ELLIPSOID.nc mars370.txt -D4 -Sq0.9975 -Gmars2.nc
 gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 gmt makecpt -Crainbow -T-7/15 > mars.cpt
-gmt grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
-gmt grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 \
+gmt grdimage mars2.nc -I+ne0.75+a45 -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 \
 	--FONT_ANNOT_PRIMARY=12p -X0.75i > $ps
 gmt grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  >> $ps
 echo "0 90 b)" | gmt pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
-gmt grdgradient mars.nc -fg -Ne0.75 -A45 -Gmars_i.nc
-gmt grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200 \
+gmt grdimage mars.nc -I+ne0.75+a45 -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200 \
 	--FONT_ANNOT_PRIMARY=12p >> $ps
 gmt grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  >> $ps

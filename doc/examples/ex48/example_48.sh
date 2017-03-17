@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs
-# GMT modules:  makecpt, pscoast, psxy, sphtriangulate, grdgradient, grdimate, gmtmath, pstext
+# GMT modules:  makecpt, pscoast, psxy, sphtriangulate, grdimate, gmtmath, pstext
 #
 
 ps=example_48.ps
@@ -19,8 +19,7 @@ EOF
 gmt makecpt -Ccategorical -T0/6/1 -N > t.cpt
 gmt makecpt -Clightgray -T-12000,12000 -N > g.cpt
 gmt sphtriangulate airports.txt -Qv > near_area.txt
-gmt grdgradient etopo10m.nc -Nt2 -A45 -Gint.nc
-gmt grdimage etopo10m.nc -Iint.nc -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps
+gmt grdimage etopo10m.nc -I+a45+nt2 -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps
 gmt psxy -R -J -O -K near_area.txt -L -Ct.cpt -t65 >> $ps
 gmt psxy -R -J -O -K -SW2000k -Gwhite@40 airports.txt >> $ps
 gmt pscoast -R -J -Gblack -A500 -O -K -Bafg >> $ps
@@ -46,4 +45,4 @@ gmt psxy airports.txt -R -J -O -K -SE-500 -Gorange -W0.25p >> $ps
 gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca 4.5 MUL = path.txt
 # Move up 3.5 inches so origin is at the map center
 gmt psxy -R-3.5/3.5/0/6 -Jx1i -O -Y3.5i path.txt -Sqn1:+l"IMPORTANT PACIFIC AIRPORTS"+v+f32p -Wfaint,white -N >> $ps
-rm -f airports.txt g.cpt t.cpt int.nc near_area.txt path.txt tmp
+rm -f airports.txt g.cpt t.cpt near_area.txt path.txt tmp

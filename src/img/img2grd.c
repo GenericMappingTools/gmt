@@ -788,6 +788,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg --GMT_HISTORY=false", west, east, south, north, Ctrl->I.value, input, Ctrl->G.file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdsample with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the grid or fail */
 			Return (API->error);
 		}
