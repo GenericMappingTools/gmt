@@ -1295,7 +1295,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	
 	/* Parameters for all the formats available */
 
-	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode ";
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
 	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
@@ -1537,8 +1537,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
-						fclose (fpb);
-						fpb = NULL;                      /* so we don't accidentally close twice */
+						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
 						if (!Ctrl->S.active) remove (BB_file);                /* Remove the file */
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
@@ -1571,8 +1570,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					            API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 				}
 			}
-			if (fpb != NULL) /* don't close twice */
-				fclose (fpb);
+			if (fpb != NULL) { /* don't close twice */
+				fclose (fpb);	fpb = NULL;
+			}
 			if (!Ctrl->S.active) remove (BB_file);	/* Remove the file with BB info */
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
@@ -1958,9 +1958,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
 
-		fclose (fpo);
-		fclose (fp);
-		fp = NULL;
+		fclose (fpo);	fpo = NULL;
+		fclose (fp);	fp  = NULL;
 		if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 
 		/* Build the converting ghostscript command and execute it */
@@ -2132,7 +2131,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 			}
 			gmt_M_free (GMT, tmp);
-			fclose (fp_raw);
+			fclose (fp_raw);	fp_raw = NULL;
 #endif
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 				Return (API->error);
@@ -2192,7 +2191,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			else {
 				fprintf (fpw, "%.12f\n0.0\n0.0\n%.12f\n%.12f\n%.12f", x_inc, -y_inc, west, north);
-				fclose (fpw);
+				fclose (fpw);	fpw = NULL;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wrote world file %s\n", world_file);
 				if (proj4_cmd)
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
@@ -2307,7 +2306,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpw, "</Folder>\n");
 				else
 					fprintf (fpw, "</Document>\n</kml>\n");
-				fclose (fpw);
+				fclose (fpw);	fpw = NULL;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wrote KML file %s\n", kml_file);
 			}
 		}
@@ -2325,6 +2324,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, ps_names);
 	gmt_M_free (GMT, line);
 	gmt_M_free (GMT, PS);
+	/* Acording to Coverity there are still paths that may reach here with the files not closed */
+	if (fp != NULL) fclose (fp);
+	if (fpo != NULL) fclose (fpo);	if (fpb != NULL) fclose (fpb);
+	if (fp2 != NULL) fclose (fp2);	if (fpw != NULL) fclose (fpw);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
 	Return (GMT_NOERROR);
