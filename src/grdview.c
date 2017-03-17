@@ -78,11 +78,14 @@ struct GRDVIEW_CTRL {
 		unsigned int n;
 		char *file[3];
 	} G;
-	struct GRDVIEW_I {	/* -I<intensfile>|<value> */
+	struct GRDVIEW_I {	/* -I<intensfile>|<value>|<modifiers> */
 		bool active;
 		bool constant;
+		bool derive;
 		double value;
+		double azimuth;	/* Default azimuth for shading */
 		char *file;
+		char *method;	/* Default scaling method */
 	} I;
 	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
@@ -303,6 +306,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
+	C->I.azimuth = -45.0;	/* Default azimuth for shading when -I is used */
+	C->I.method = strdup ("t1");	/* Default normalization for shading when -I is used */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
@@ -318,6 +323,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->C.file);
 	for (i = 0; i < 3; i++) gmt_M_str_free (C->G.file[i]);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->I.method);
 	gmt_M_free (GMT, C);
 }
 
@@ -328,7 +334,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r> -G<grd_g> -G<grd_b>]\n",
 	             GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>|<modifiers>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT);
@@ -349,8 +355,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, repeat -G for three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If so, you must also choose -Qi.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (see grdgradient for details).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. Append +g<fill> to paint\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
@@ -451,9 +459,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
-			case 'I':	/* Use intensity from grid or constant */
+			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
-				if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
+					unsigned int pos = 0;
+					char p[GMT_BUFSIZ] = {""};
+					Ctrl->I.derive = true;
+					while (gmt_getmodopt (GMT, c, "an", &pos, p)) {
+						switch (p[0]) {
+							case 'a': Ctrl->I.azimuth  = atof (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method); Ctrl->I.method  = strdup (&p[1]); break;
+							default: n_errors++;
+								GMT_Report (API, GMT_MSG_NORMAL, "Error -I: Unrecognized modifier +%s\n", p);
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+				}
+				else if (!opt->arg[0])	/* No argument, so derive intensities from input grid using default settings */
+					Ctrl->I.derive = true;
+				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
 				else if (opt->arg[0] && !gmt_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
@@ -706,7 +731,22 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
-	if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
+		char int_grd[GMT_LEN16] = {""}, l_args[GMT_LEN256] = {""};
+		GMT_Report (API, GMT_MSG_VERBOSE, "Derive intensity grid from data grid\n");
+		/* Create a virtual file to hold the intensity grid */
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
+			Return (API->error);
+		/* Prepare the grdgradient arguments using selected -A -N */
+		sprintf (l_args, "%s -G%s -A%g -N%s --GMT_HISTORY=false", Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method);
+		/* Call the grdgradient module */
+		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
+			Return (API->error);
+		/* Obtain the data from the virtual file */
+		if ((Intens = GMT_Read_VirtualFile (API, int_grd)) == NULL)
+			Return (API->error);
+	}
+	else if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 

@@ -76,7 +76,7 @@ struct GRDIMAGE_CTRL {
 		double f_rgb[4];
 		double b_rgb[4];
 	} G;
-	struct GRDIMG_I {	/* -I[<intensfile>|<value>] */
+	struct GRDIMG_I {	/* -I[<intensfile>|<value>|<modifiers>] */
 		bool active;
 		bool constant;
 		bool derive;
@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->mode) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 	}
 	else {
 #ifdef HAVE_GDAL
@@ -330,7 +330,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						break;
 				}
 				break;
-			case 'I':	/* Use intensity from grid or constant */
+			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
