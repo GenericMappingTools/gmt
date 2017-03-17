@@ -10374,7 +10374,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
-	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call gmt_begin_module
+	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call gmt_init_module
 	 * as their first call and call gmt_end_module as their last call.  This
 	 * allows us to capture the GMT control structure so we can reset all
 	 * parameters to what they were before exiting the module. Note:
@@ -10485,7 +10485,7 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	API->error = GMT_NOERROR;
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode */
 		unsigned int k, n_errors = 0;
@@ -10530,6 +10530,12 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	/* Here we can call the rest of the initialization */
 	
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
+}
+
+/*! Backwards compatible gmt_begin_module function for external modules built with GMT 5.3 or learlier */
+struct GMT_CTRL * gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
+	API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Since gmt_begin_module is 5.3 or earlier */
+	return (gmt_init_module (API, lib_name, mod_name, "", NULL, Ccopy));
 }
 
 /*! . */
@@ -10586,7 +10592,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	gmt_fft_cleanup (GMT); /* Clean FFT resources */
 
-	/* Overwrite GMT with what we saved in gmt_begin_module */
+	/* Overwrite GMT with what we saved in gmt_init_module */
 	gmt_M_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
@@ -12202,7 +12208,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 * does not require the use of any GMT modules.  However,
 	 * most GMT applications will call various GMT modules and these
 	 * may need to process additional --PAR=value arguments. This will
-	 * require renewed processing of defaults and takes place in gmt_begin_module
+	 * require renewed processing of defaults and takes place in gmt_init_module
 	 * which is called at the start of all GMT modules.  This basically
 	 * performs a save/restore operation so that when the GMT module
 	 * returns the GMT structure is restored to its original values.

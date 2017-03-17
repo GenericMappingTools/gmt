@@ -675,6 +675,7 @@ if (BUILD_DEVELOPER)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
 		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
+		${PROJECT_BINARY_DIR}/src/psl_config.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
 endif (BUILD_DEVELOPER)
