@@ -223,8 +223,12 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (false);						/* Should never get here */
 			}
+			if (line == NULL) {	/* Crazy safety valve but it should never get here*/
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
+				return (GMT_PTR_IS_NULL);
+			}
+			/* Data record to process */
 			
 			/* Data record to process.  We permint this kind of records:
 			 * file [-Rinner_region ] [weight]
