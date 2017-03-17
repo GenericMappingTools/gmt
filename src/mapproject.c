@@ -1042,8 +1042,12 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (in != NULL);						/* Should never get here */
 		}
+		if (in == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
+			Return (GMT_PTR_IS_NULL);
+		}
+
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			GMT->current.io.status = 0;	/* Done with gap */
@@ -1134,7 +1138,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
 					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
 				}
-				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
+				if (line[pos]) strncat (record, &line[pos],GMT_BUFSIZ-1);	/* Append the remainder of the user text */
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 
 			}
