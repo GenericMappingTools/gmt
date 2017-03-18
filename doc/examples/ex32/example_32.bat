@@ -2,7 +2,7 @@ REM		GMT EXAMPLE 32
 REM		$Id$
 REM
 REM Purpose:	Illustrate draping of an image over topography
-REM GMT progs:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview
+REM GMT progs:	grdcut, grdedit, grdconvert, grdtrack, grdview
 REM GMT progs:	pscoast, pstext, psxyz
 REM DOS calls:	del, echo
 REM Credits:	Original by Stephan Eickschen
@@ -26,7 +26,6 @@ REM The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_A
 REM We make a gradient grid as well, which we will use to "illuminate" the flag.
 
 REM gmt grdcut W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
-gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 REM The color map assigns "Reflex Blue" to the lower half of the 0-255 range and "Yellow" to the upper half.
 gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N > euflag.cpt
@@ -35,7 +34,7 @@ REM The next step is the plotting of the image.
 REM We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give the shading.
 
 set Rplot=%Rflag%/-10/790
-gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K > %ps%
+gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30 -P -K > %ps%
 
 REM We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 REM So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
@@ -54,4 +53,4 @@ gmt pstext %Rplot% -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O citi
 
 REM Cleanup
 
-del gmt.conf euflag.cpt illum.nc cities.txt
+del gmt.conf euflag.cpt cities.txt

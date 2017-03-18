@@ -3,7 +3,7 @@ REM		GMT EXAMPLE 27
 REM		$Id$
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
-REM GMT progs:	makecpt, grdgradient, grdimage, pscoast
+REM GMT progs:	makecpt, grdimage, pscoast
 REM GMT supplement: img2grd (to read Sandwell/Smith img files)
 REM DOS calls:	del, grep
 REM
@@ -12,9 +12,6 @@ set ps=example_27.ps
 
 REM Gravity in tasman_grav.nc is in 0.1 mGal increments and the grid
 REM is already in projected Mercator x/y units.
-REM First get gradients.
-
-gmt grdgradient tasman_grav.nc -Nt1 -A45 -Gtasman_grav_i.nc
 
 REM Make a suitable cpt file for mGal
 
@@ -22,7 +19,7 @@ gmt makecpt -T-120/120 -Crainbow > grav.cpt
 
 REM Since this is a Mercator grid we use a linear gmt projection
 
-gmt grdimage tasman_grav.nc=ns+s0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K > %ps%
+gmt grdimage tasman_grav.nc=ns+s0.1 -I+a45+nt1 -Jx0.25i -Cgrav.cpt -P -K > %ps%
 
 REM Then use gmt pscoast to plot land; get original -R from grid info
 REM and use Mercator gmt projection with same scale as above on a spherical Earth
@@ -36,5 +33,4 @@ gmt psscale -DjTL+o1c+w2i/0.15i -R -J -Cgrav.cpt -Bx50f10 -By+lmGal  -F+gwhite+p
 REM Clean up
 
 del grav.cpt
-del *_i.nc
 del .gmt*

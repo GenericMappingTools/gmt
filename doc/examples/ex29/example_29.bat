@@ -2,7 +2,7 @@ REM             GMT EXAMPLE 29
 REM             $Id$
 REM
 REM Purpose:	Illustrates spherical surface gridding with Green's function of splines
-REM GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
+REM GMT progs:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext
 REM DOS calls:	del, echo
 REM
 
@@ -26,13 +26,11 @@ REM Scale to km and remove PROJ_ELLIPSOID
 gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 gmt makecpt -Crainbow -T-7/15 > mars.cpt
-gmt grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
-gmt grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -X0.75i -E200 --FONT_ANNOT_PRIMARY=12p > %ps%
+gmt grdimage mars2.nc -I+a45+ne0.75 -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -X0.75i -E200 --FONT_ANNOT_PRIMARY=12p > %ps%
 gmt grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> %ps%
 gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  >> %ps%
 echo 0 90 b) | gmt pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> %ps%
-gmt grdgradient mars.nc -fg -Ne0.75 -A45 -Gmars_i.nc
-gmt grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30 -BWsne -J -O -K -E200 -Y4.2i --FONT_ANNOT_PRIMARY=12p >> %ps%
+gmt grdimage mars.nc -I+a45+ne0.75 -Cmars.cpt -B30g30 -BWsne -J -O -K -E200 -Y4.2i --FONT_ANNOT_PRIMARY=12p >> %ps%
 gmt grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> %ps%
 gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  >> %ps%
 gmt psscale -Cmars.cpt -O -K -Dx3.5i/-0.15i+jTC+w6i/0.1i+h -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm >> %ps%

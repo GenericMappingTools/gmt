@@ -3,7 +3,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	3-D mesh plot of Hawaiian topography and geoid
-REM GMT progs:	grdcontour, grdgradient, grdimage, grdview, psbasemap, pscoast, pstext
+REM GMT progs:	grdcontour, grdimage, grdview, psbasemap, pscoast, pstext
 REM DOS calls:	echo, del
 REM
 REM CPS: topo.cpt
@@ -19,14 +19,11 @@ del zero.cpt
 REM
 echo GMT EXAMPLE 4 (color)
 set ps=example_04c.ps
-gmt grdgradient HI_geoid4.nc -A0 -Gg_intens.nc -Nt0.75 -fg
-gmt grdgradient HI_topo4.nc -A0 -Gt_intens.nc -Nt0.75 -fg
 REM
-gmt grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -X1.5i -Y1.25i -P -UL/-1.25i/-1i/"Example 04c in Cookbook" > %ps%
+gmt grdimage HI_geoid4.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -X1.5i -Y1.25i -P -UL/-1.25i/-1i/"Example 04c in Cookbook" > %ps%
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K >> %ps%
 gmt psscale -R -J -p -DjBC+o0/0.5i+jTC+w5i/0.3i+h -Cgeoid.cpt -I -O -K -Bx2+l"Geoid (m)" >> %ps%
 gmt psbasemap -R -J -p -O -K -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND=red --MAP_TICK_PEN_PRIMARY=thinner,red --FONT=red >> %ps%
-gmt grdview HI_topo4.nc -It_intens.nc -R195/210/18/25/-6/4 -J -JZ3.4i -p -Ctopo.cpt -N-6+glightgray -Qc100 -O -K -Y2.2i -B2 -Bz2+l"Topo (km)" -BneswZ >> %ps%
+gmt grdview HI_topo4.nc -I+a0+nt0.75 -R195/210/18/25/-6/4 -J -JZ3.4i -p -Ctopo.cpt -N-6+glightgray -Qc100 -O -K -Y2.2i -B2 -Bz2+l"Topo (km)" -BneswZ >> %ps%
 echo 3.25 5.75 H@#awaiian@# R@#idge@# | gmt pstext -R0/10/0/10 -Jx1i -F+f60p,ZapfChancery-MediumItalic+jCB -O >> %ps%
-del *_intens.nc
 del .gmt*

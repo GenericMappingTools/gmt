@@ -4,7 +4,7 @@ REM
 REM		$Id$
 REM
 REM Purpose:	Illustrates clipping of images using coastlines
-REM GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
+REM GMT progs:	grd2cpt, grdimage, pscoast, pstext
 REM DOS calls:	del, echo
 REM
 echo GMT EXAMPLE 17
@@ -13,8 +13,7 @@ set ps=example_17.ps
 REM First generate geoid image w/ shading
 
 gmt grd2cpt india_geoid.nc -Crainbow > geoid.cpt
-gmt grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.nc
-gmt grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K > %ps%
+gmt grdimage india_geoid.nc -I+a45+nt1 -JM6.5i -Cgeoid.cpt -P -K > %ps%
 
 REM Then use gmt pscoast to initiate clip path for land
 
@@ -23,8 +22,7 @@ gmt pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> %ps%
 REM Now generate topography image w/shading
 
 gmt makecpt -C150 -T-10000,10000 -N > shade.cpt
-gmt grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.nc
-gmt grdimage india_topo.nc -Iindia_topo_i.nc -J -Cshade.cpt -O -K >> %ps%
+gmt grdimage india_topo.nc -I+a45+nt1 -J -Cshade.cpt -O -K >> %ps%
 
 REM Finally undo clipping and overlay basemap
 
@@ -45,6 +43,5 @@ gmt pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i tmp -F+f12,Times-Roman
 REM Clean up
 
 del *.cpt
-del *_i.nc
 del tmp
 del .gmt*
