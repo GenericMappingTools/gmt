@@ -14,7 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
-[ |-A|\ *out_img*\ [**=**\ *driver*] ] [ |-C|\ *cpt* ]
+[ |-A|\ *out_img*\ [**=**\ *driver*] ]
+[ |SYN_OPT-B| ]
+[ |-C|\ *cpt* ]
 [ |-D|\ [**r**\ ] ] [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*] ]
