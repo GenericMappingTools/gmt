@@ -1246,7 +1246,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	gmt_set_grddim (GMT, header);	/* Set all integer dimensions and xy_off */
 
 	/* Sanity check for grid that may have been created oddly.  Inspired by
-	 * Geomapapp output where -R was set to outside of pixel boundaries insteda
+	 * Geomapapp output where -R was set to outside of pixel boundaries instead
 	 * of standard -R settings, yet with node_offset = gridline... */
 
 	if (abs((int)(header->n_columns - n_columns)) == 1 && abs((int)(header->n_rows - n_rows)) == 1) {
@@ -1433,7 +1433,6 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 	 * Date:	20 April 1998
 	 */
 
-
 	unsigned int error = 0;
 
 	if (!strcmp (GMT->init.module_name, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
@@ -1476,6 +1475,23 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 	}
 	if (error) return ((mode == 0) ? GMT_GRDIO_RI_OLDBAD : GMT_GRDIO_RI_NEWBAD);
+	
+	/* Final polish for geo grids that are global to ensure clean -R settings for the cases -Rg and -Rd */
+	
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
+		if (fabs (h->wesn[XLO]) < GMT_CONV12_LIMIT) h->wesn[XLO] = 0.0;
+		else if (fabs (180.0+h->wesn[XLO]) < GMT_CONV12_LIMIT) h->wesn[XLO] = -180.0;
+		else if (fabs (h->wesn[XLO]-180.0) < GMT_CONV12_LIMIT) h->wesn[XLO] = +180.0;
+		else if (fabs (h->wesn[XLO]-360.0) < GMT_CONV12_LIMIT) h->wesn[XLO] = +360.0;
+		if (fabs (h->wesn[XHI]) < GMT_CONV12_LIMIT) h->wesn[XHI] = 0.0;
+		else if (fabs (180.0+h->wesn[XHI]) < GMT_CONV12_LIMIT) h->wesn[XHI] = -180.0;
+		else if (fabs (h->wesn[XHI]-180.0) < GMT_CONV12_LIMIT) h->wesn[XHI] = +180.0;
+		else if (fabs (h->wesn[XHI]-360.0) < GMT_CONV12_LIMIT) h->wesn[XHI] = +360.0;
+	}
+	if (gmt_M_y_is_lat (GMT, GMT_IN)) {
+		if (fabs (90.0+h->wesn[YLO]) < GMT_CONV12_LIMIT) h->wesn[YLO] = -90.0;
+		if (fabs (h->wesn[YLO]-90.0) < GMT_CONV12_LIMIT) h->wesn[YLO] = +90.0;
+	}
 	return (GMT_NOERROR);
 }
 
