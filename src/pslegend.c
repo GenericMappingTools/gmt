@@ -608,6 +608,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
 	gmt_M_memset (GMT->current.setting.map_origin, 2, double);
 

@@ -652,6 +652,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	diameter = 2.0 * Ctrl->S.scale;
 	PSL_setorigin (PSL, x_origin, y_origin, 0.0, PSL_FWD);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+
 	if (!Ctrl->S.normalize) Ctrl->S.scale /= max_radius;
 
 	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
