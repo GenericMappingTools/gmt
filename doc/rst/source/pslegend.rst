@@ -15,6 +15,7 @@ Synopsis
 
 **pslegend** [ *specfile* ]
 |-D|\ *refpoint* ]
+[ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]

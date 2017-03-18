@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units]
-[ |-A|\ [*azimuth*] ]
+[ |-A|\ [\ *azimuth*\ ] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
