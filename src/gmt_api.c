@@ -10004,7 +10004,7 @@ int GMT_Set_Default_ (char *keyword, char *value, int len1, int len2) {
 
 /*! . */
 int GMT_Option (void *V_API, const char *options) {
-	/* Take comma-separated GMT options and print the usage message(s). */
+	/* Take comma-separated GMT options and print the corresponding usage message(s). */
 	unsigned int pos = 0, k = 0, n = 0;
 	char p[GMT_LEN64] = {""}, arg[GMT_LEN64] = {""};
 	struct GMTAPI_CTRL *API = NULL;
@@ -10082,7 +10082,7 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
-	API = api_get_api_ptr (V_API);
+	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
 	if (mode) stamp = api_tictoc_string (API, mode);	/* Pointer to a timestamp string */
 	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 	source_info_len = strlen (message);
@@ -10112,9 +10112,9 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	struct GMT_CTRL *GMT = NULL;
 	va_list args;
 	/* GMT_Report may be called before GMT is set so take precautions */
-	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here */
-	API = api_get_api_ptr (V_API);
-	GMT = API->GMT;
+	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here but we cannot report anything */
+	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
+	GMT = API->GMT;	/* Short-hand for the GMT sub-structure */
 	g_level = (GMT) ? GMT->current.setting.verbose : 0;
 	if (level > MAX(API->verbose, g_level))
 		return 0;
@@ -10205,17 +10205,8 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	return (npar);
 }
 
-int GMT_Get_Value (void *V_API, const char *arg, double *par) {
-
-	return (GMT_Get_Values (V_API, arg, par, 999));
-}
-
 #ifdef FORTRAN_API
 int GMT_Get_Values_ (char *arg, double par[], int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
-}
-int GMT_Get_Value_ (char *arg, double par[], int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
 }
@@ -10423,7 +10414,7 @@ int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size
 		GMT_Report(V_API, GMT_MSG_NORMAL, "GMT/Julia Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
 		return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
 	}
-	return 0;
+	return GMT_NOERROR;
 }
 
 /* Sub-functions to perform specific conversions */
@@ -11322,7 +11313,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint
 	 * header, if not NULL or blank, sets the segment header. */
 	void *X = NULL;
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-	switch (family) {
+	switch (family) {	/* Only two supported families */
 		case GMT_IS_DATASET:
 			X = api_alloc_datasegment (V_API, n_rows, n_columns, header, S);
 			break;
@@ -11366,7 +11357,7 @@ int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
 			error = gmt_set_cols (API->GMT, GMT_OUT, n_cols);
 			break;
-		case GMT_COL_ADD:	/* Add to the input columns */
+		case GMT_COL_ADD:	/* Add to the number of input columns */
 			error = gmt_set_cols (API->GMT, GMT_OUT, n_in + n_cols);
 			break;
 		case GMT_COL_SUB:	/* Subtract from the number of input columns */
@@ -11411,22 +11402,22 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 	if (old_layout == 0 && new_layout == 2) { /* Change from TR to TC */
 		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
 			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[col * G->header->n_rows + row] = G->data[in_node];
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + row] = G->data[in_node];
 	}
 	else if (old_layout == 0 && new_layout == 3) {	/* Change from TR to BC */
 		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
 			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[col * G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[in_node];
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[in_node];
 	}
 	else if (old_layout == 2 && new_layout == 0) {	/* Change from TC to TR */
 		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
 			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[col * G->header->n_rows + row];
+				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + row];
 	}
 	else if (old_layout == 3 && new_layout == 0) {	/* Change from BC to TR */
 		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
 			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[col * G->header->n_rows + (G->header->n_rows - row - 1)];
+				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_NORMAL, "api_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
@@ -11530,7 +11521,8 @@ int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned in
 /* Deal with assignments of custom vectors and matrices to GMT containers */
 
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
-	/* Hooks a users custom vector onto V's column array and sets the type */
+	/* Hooks a users custom vector onto V's column array and sets the type.
+	 * It is the user's respondibility to pass correct type for the given vector. */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
 	switch (type) {
@@ -11552,7 +11544,8 @@ int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned 
 }
 
 void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
-	/* Returns a pointer to the specified column array */
+	/* Returns a pointer to the specified column array. Users can consult
+	 * V->type[col] to know what data type is pointed to.  */
 	void *vector = NULL;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	if (col >= V->n_columns) return_null (API, GMT_DIM_TOO_LARGE);
@@ -11575,7 +11568,8 @@ void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 }
 
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
-	/* Hooks a users custom matrix onto M's data array and sets the type */
+	/* Hooks a user's custom matrix onto M's data array and sets the type.
+	 * It is the user's respondibility to pass correct type for the given matrix. */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	switch (type) {
 		case GMT_DOUBLE:	M->type = GMT_DOUBLE;	M->data.f8  = matrix;	break;
@@ -11596,7 +11590,8 @@ int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *ma
 }
 
 void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
-	/* Returns a pointer to the matrix  */
+	/* Returns a pointer to the matrix.  Users can consult
+	 * M->type to know what data type is pointed to.  */
 	void *matrix = NULL;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	switch (M->type) {
@@ -11617,7 +11612,20 @@ void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	return matrix;
 }
 
-/* Backwards compatibility for old API functions no longer in favor */
+/* Backwards compatibility for old API functions from 5.1-2 no longer in favor
+ * as the Virtual File concept is much easier to understand and use. */
+
+/*! . */
+int GMT_Get_Value (void *V_API, const char *arg, double *par) {
+
+	return (GMT_Get_Values (V_API, arg, par, 999));
+}
+#ifdef FORTRAN_API
+int GMT_Get_Value_ (char *arg, double par[], int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
+}
+#endif
 
 /*! . */
 void *GMT_Retrieve_Data (void *API, int object_ID) {
