@@ -3254,6 +3254,11 @@ Here, we will outline the general approach for using the GMT API.  We will descr
 to calling GMT modules.  Once such an interface exists it is simpler to build a more flexible and user-friendly
 layer on top that can handle argument parsing in a form that makes the interface seem more of a natural
 extension of your external environment than a forced fit to GMT's command-line heritage.
+Before we describe the interface it is important to understand that the GMT modules, since the beginning
+or time, have done the i/o inside the modules.  While these steps are helped by i/o library functions, the
+i/o activities all take place *inside* the modules.  This means that external environments in which the desired
+input data already reside in memory and the desired results should be returned back to memory pose a
+trickier challenge.  We will see the solution to this involves the concept of *virtual* files.
 
 .. figure:: /_images/GMT_API_use.*
    :width: 500 px
