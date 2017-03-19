@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14414 [64-bit] Document from pslegend
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.3_r17717 [64-bit] Document from pslegend
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Jun 27 22:36:24 2015
+%%CreationDate: Sat Mar 18 14:37:45 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,12 +663,35 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pslegend -Dx0/0/5.6i/BL -C0.05i -L1.2 -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p --FONT_LABEL=12p
-%%PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pslegend -Dx0/0 -C0.05i -L1.2 -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p --FONT_LABEL=12p
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+25 W
+2 setlinecap
+N 0 4320 M 0 -4320 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+6720 0 T
+N 0 4320 M 0 -4320 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+-6720 0 T
+N 0 0 M 6720 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 4320 T
+N 0 0 M 6720 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -4320 T
+0 setlinecap
 {1 0.98 0.98 C} FS
 4320 6720 3360 2160 Sr
 17 W
@@ -733,8 +753,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/5.6/0/3.6 -Jx1i -O -K -N -S @GMTAPI@-000002
-%%PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0/5.6/0/3.6 -Jx1i -O -K -N -S @GMTAPI@-000002
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -768,17 +788,17 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
-%%PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-3360 3885 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-400 F4
+PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+3360 3885 M 400 F4
 (Eight Largest Cities in North America) bc Z
-1142 3470 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
+PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+1142 3470 M 200 F0
 (City Name) bc Z
 2419 3470 M (Country) bc Z
 3629 3470 M (Population) bc Z
@@ -842,8 +862,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000003
-%%PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000003
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1144,29 +1164,6 @@ PSL_x0 PSL_y0 T
 0 0 M
 1 PSL_textjustifier U
 %%EndObject
-25 W
-2 setlinecap
-N 0 4320 M 0 -4320 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-6720 0 T
-N 0 4320 M 0 -4320 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
--6720 0 T
-N 0 0 M 6720 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 4320 T
-N 0 0 M 6720 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 -4320 T
-0 setlinecap
 %%EndObject
 %%PageTrailer
 U
