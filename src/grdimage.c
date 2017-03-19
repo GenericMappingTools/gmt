@@ -490,7 +490,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int index = 0, ks, error = 0;
 	
-	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"};
+	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN64] = {""};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
@@ -531,16 +531,16 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
-		char int_grd[GMT_LEN16] = {""}, l_args[GMT_LEN256] = {""};
+		char int_grd[GMT_LEN16] = {""};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using selected -A -N */
-		sprintf (l_args, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
+		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", l_args);
-		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", cmd);
+		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
@@ -713,7 +713,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active && (I->header->n_columns != Intens_orig->header->n_columns || I->header->n_rows != Intens_orig->header->n_rows)) {
 			/* Resize illumination grid to match the dimensions of the image */
 
-			char in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""}, cmd[GMT_LEN64] = {""};
+			char in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
     		/* Associate the intensity grid with an open virtual file - in_string will then hold the name of this input "file" */
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Intens_orig, in_string);
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
