@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+w")) {	/* New syntax: 	*/
-					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) {
+					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL) {
 						n_errors++;	/* Failed basic parsing */
 						break;
 					}
