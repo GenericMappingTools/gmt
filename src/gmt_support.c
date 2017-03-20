@@ -14188,6 +14188,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 			return NULL;
 		}
+	}
 	if (mode != GMT_REFPOINT_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 		return NULL;
