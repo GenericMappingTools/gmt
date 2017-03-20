@@ -164,7 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 			case 'D':
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
-				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p)) == NULL) {	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -D: Basic parsing of reference point in %s failed\n", opt->arg);
 					p_fail = true;
 					n_errors++;
@@ -284,7 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
 
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
-		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
+		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0", 'D');	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
 	/* Check that the options selected are mutually consistent */

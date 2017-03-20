@@ -3917,11 +3917,11 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	}
 	ms->length = atof (txt_len);
 
-	if (gave_xy)	/* Set up ancher in plot units */
+	if (gave_xy)	/* Set up anchor in plot units */
 		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT, string, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Scale reference point was not accepted\n");
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
@@ -4130,7 +4130,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT, string, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map rose reference point was not accepted\n");
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */
@@ -11189,7 +11189,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
-		if ((B->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+		if ((B->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map insert reference point was not accepted\n");
 			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
 			return (1);	/* Failed basic parsing */
@@ -11332,7 +11332,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->alignment = 't';	/* Default label placement is on top */
 
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text)) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Scale reference point was not accepted\n");
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
@@ -11476,7 +11476,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			return (-1);
 			break;
 	}
-	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1])) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1], option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map rose reference point was not accepted\n");
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */
@@ -14113,7 +14113,7 @@ void gmt_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap) {
 }
 
 /*! . */
-struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
+struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char option) {
 	/* Used to decipher option -D in psscale, pslegend, and psimage:
 	 * -D[g|j|n|x]<refpoint>[/<remainder]
 	 * where g means map coordinates, n means normalized coordinates, and x means plot coordinates.
@@ -14121,6 +14121,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 	 * plot box coordinates; the <refpoint> point is the coordinate pair <x0>/<y0>.
 	 * All -D flavors except -Dx require -R -J.
 	 * Remaining arguments are returned as well via the string A->args.
+	 * also used to parse refpoint in scales -L and -T hence the option argument.
 	 */
 	unsigned int n_errors = 0, k = 1;	/* Assume 1st character tells us the mode */
 	int n, justify = 0;
@@ -14176,7 +14177,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			mode = GMT_REFPOINT_JUST;
 		else {	/* Must assume the user gave map coordinates */
 			mode = GMT_REFPOINT_MAP;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -D option was interpreted to mean -D%c\n", kind[mode]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -%c option was interpreted to mean -D%c\n", option, kind[mode]);
 		}
 	}
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
@@ -14184,9 +14185,12 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 	if (mode != GMT_REFPOINT_PLOT) {	/* Will need -R -J so check again */
 		gmt_set_missing_options (GMT, "RJ");	/* If they exist in the history and mode is modern */
 		if (GMT->common.J.active == false && GMT->common.R.active == false) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -D%c reference point coordinates require both -R -J to be specified\n", kind[mode]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 			return NULL;
 		}
+	if (mode != GMT_REFPOINT_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
+		return NULL;
 	}
 
 	/* Here we have something to return */
@@ -14211,7 +14215,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &A->x), txt_x);
 			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &A->y), txt_y);
 			if (n_errors)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not parse geographic coordinates %s and/or %s\n", txt_x, txt_y);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Could not parse geographic coordinates %s and/or %s\n", option, txt_x, txt_y);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via map coordinates: %g, %g\n", A->x, A->y);
 			break;
