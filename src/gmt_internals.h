@@ -252,7 +252,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 #define gmt_M_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
 
 #define gmt_M_is_perspective(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
-#define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN))
+#define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
 #define gmt_M_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
 
 #endif /* _GMT_INTERNALS_H */

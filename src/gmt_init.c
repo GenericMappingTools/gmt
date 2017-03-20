@@ -283,13 +283,16 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header[GMT_OUT] = true;
 		return (GMT_NOERROR);
 	}
-	if (item[0] == 'i')	/* Apply to input only */
+	if (item[0] == 'i')	{/* Apply to input only */
 		col = GMT_IN;
+		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
+	}
 	else if (item[0] == 'o')	/* Apply to output only */
 		col = GMT_OUT;
-	else			/* Apply to both input and output columns */
+	else {			/* Apply to both input and output columns */
 		k = 0;
-
+		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
+	}
 	if (item[k]) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Can only set the number of input header records; %s ignored\n", &item[k]);
@@ -718,7 +721,11 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 		GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
 		GMT->common.b.type[GMT_OUT] = GMT->common.b.type[GMT_IN];
 		if (GMT->common.b.swab[GMT_IN] == k_swap_in) GMT->common.b.swab[GMT_OUT] = k_swap_out;
+		strncpy (GMT->common.b.string, text, GMT_LEN256-1);
 	}
+	else if (id == GMT_IN)
+		strncpy (GMT->common.b.string, text, GMT_LEN256-1);
+	
 
 	gmtlib_set_bin_io (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
 
@@ -751,13 +758,16 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
 
-	if (arg[0] == 'i')	/* Apply to input columns only */
+	if (arg[0] == 'i') {	/* Apply to input columns only */
 		col = GMT->current.io.col_type[GMT_IN];
+		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
+	}
 	else if (arg[0] == 'o')	/* Apply to output columns only */
 		col = GMT->current.io.col_type[GMT_OUT];
 	else {			/* Apply to both input and output columns */
 		both_i_and_o = true;
 		k = 0;
+		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	}
 
 	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* arg should NOT have a leading i|o part */
@@ -1698,6 +1708,7 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.io.io_nan_ncols = 1;		/* Default is that single z column */
 	GMT->current.setting.io_nan_mode = GMT_IO_NAN_SKIP;	/* Plain -s */
 	if (!item || !item[0]) return (false);	/* Nothing more to do */
+	strncpy (GMT->common.s.string, item, GMT_LEN64-1);	/* Make copy of -n argument verbatim */
 	n = (int)strlen (item);
 	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Set -sa */
 	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Set -sr */
@@ -4377,6 +4388,22 @@ GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 #endif
 
 /*! . */
+int gmt_get_V (char arg) {
+	int mode = GMT_MSG_QUIET;
+	switch (arg) {
+		case 'q': case '0': mode = GMT_MSG_QUIET;   break;
+		case 'n':           mode = GMT_MSG_NORMAL;  break;
+		case 't':           mode = GMT_MSG_TICTOC;  break;
+		case 'c': case '1': mode = GMT_MSG_COMPAT;  break;
+		case 'v': case '2': case '\0': mode = GMT_MSG_VERBOSE; break;
+		case 'l': case '3': mode = GMT_MSG_LONG_VERBOSE; break;
+		case 'd': case '4': mode = GMT_MSG_DEBUG;   break;
+		default: mode = -1;
+	}
+	return mode;
+}
+
+/*! . */
 GMT_LOCAL int gmtinit_parse_V_option (struct GMT_CTRL *GMT, char arg) {
 	int mode = gmt_get_V (arg);
 	if (mode < 0) return true;	/* Error in parsing */
@@ -6906,6 +6933,7 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.d.nan_proxy[dir] = atof (c);
 		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
 	}
+	if (first == GMT_IN) strncpy (GMT->common.d.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	return (GMT_NOERROR);
 }
 
@@ -6936,6 +6964,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 
 	strncpy (copy, arg, GMT_BUFSIZ-1);
+	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process the comma-separated sections */
@@ -7184,6 +7213,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
 		return (1);
 	}
+	strncpy (GMT->common.g.string, txt, GMT_LEN64-1);	/* Verbatim copy */
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
 
@@ -7335,19 +7365,19 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 }
 
 /*! . */
-int gmt_get_V (char arg) {
-	int mode = GMT_MSG_QUIET;
-	switch (arg) {
-		case 'q': case '0': mode = GMT_MSG_QUIET;   break;
-		case 'n':           mode = GMT_MSG_NORMAL;  break;
-		case 't':           mode = GMT_MSG_TICTOC;  break;
-		case 'c': case '1': mode = GMT_MSG_COMPAT;  break;
-		case 'v': case '2': case '\0': mode = GMT_MSG_VERBOSE; break;
-		case 'l': case '3': mode = GMT_MSG_LONG_VERBOSE; break;
-		case 'd': case '4': mode = GMT_MSG_DEBUG;   break;
-		default: mode = -1;
+char gmt_set_V (int mode) {
+	char val = 0;
+	switch (mode) {
+		case GMT_MSG_QUIET:			val = 'q'; break;
+		case GMT_MSG_NORMAL:		val = 'n'; break;
+		case GMT_MSG_TICTOC:		val = 't'; break;
+		case GMT_MSG_COMPAT:		val = 'c'; break;
+		case GMT_MSG_VERBOSE:		val = 'v'; break;
+		case GMT_MSG_LONG_VERBOSE:	val = 'l'; break;
+		case GMT_MSG_DEBUG:			val = 'd'; break;
+		default: break;
 	}
-	return mode;
+	return val;
 }
 
 EXTERN_MSC int GMT_get_V (char arg);		/* For backward compatibility in MEX for 5.2 */

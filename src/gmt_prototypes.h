@@ -42,7 +42,9 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC int get_V (char arg);
 EXTERN_MSC int gmt_get_V (char arg);
+EXTERN_MSC char gmt_set_V (int mode);
 EXTERN_MSC bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family);
 EXTERN_MSC int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M);
 EXTERN_MSC struct GMT_CTRL * gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsigned int pad);
@@ -264,6 +266,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC char * gmt_add_options (struct GMT_CTRL *GMT, const char *list);
 EXTERN_MSC char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep);
 EXTERN_MSC unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token);
 EXTERN_MSC void gmt_init_pen (struct GMT_CTRL *GMT, struct GMT_PEN *pen, double width);

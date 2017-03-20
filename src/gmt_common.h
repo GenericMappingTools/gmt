@@ -127,6 +127,7 @@ struct GMT_COMMON {
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
 		char varnames[GMT_BUFSIZ];	/* List of variable names to be input/output in netCDF mode [GMT4 COMPATIBILITY ONLY] */
+		char string[GMT_LEN256];
 	} b;
 	struct c {	/* -c */
 		bool active;
@@ -136,9 +137,11 @@ struct GMT_COMMON {
 		bool active[2];
 		bool is_zero[2];
 		double nan_proxy[2];
+		char string[GMT_LEN64];
 	} d;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;
@@ -149,6 +152,7 @@ struct GMT_COMMON {
 		int64_t col[GMT_N_GAP_METHODS];		/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, uint64_t);	/* Pointers to functions that compute those distances */
+		char string[GMT_LEN64];
 	} g;
 	struct h {	/* -h[i|o][<nrecs>][+d][+c][+m[<text>]][+r<remark>][+t<title>] */
 		bool active;
@@ -159,11 +163,13 @@ struct GMT_COMMON {
 		char *remark;
 		char *colnames;         /* Not set by -h but maintained here */
 		char *multi_segment;    /* To hold a multi-segment string */
+		char string[GMT_LEN256];
 	} h;
 	struct i {	/* -i<col>|<colrange>,... */
 		bool active, orig;
 		uint64_t n_cols;
 		uint64_t n_actual_cols;
+		char string[GMT_LEN64];
 	} i;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
@@ -190,6 +196,7 @@ struct GMT_COMMON {
 	} r;
 	struct s {	/* -s[r] */
 		bool active;
+		char string[GMT_LEN64];
 	} s;
 	struct t {	/* -t<transparency> */
 		bool active;
@@ -202,6 +209,7 @@ struct GMT_COMMON {
 	struct colon {	/* -:[i|o] */
 		bool active;
 		bool toggle[2];
+		char string[2][GMT_LEN16];
 	} colon;
 };
 

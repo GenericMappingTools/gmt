@@ -490,7 +490,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int index = 0, ks, error = 0;
 	
-	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN64] = {""};
+	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_BUFSIZ] = {""};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
