@@ -540,11 +540,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", cmd);
+		if (GMT->common.R.oblique) GMT->common.R.active = false;	/* Must turn -R off temporarily */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
+		if (GMT->common.R.oblique) GMT->common.R.active = true;	/* Reset -R */
 	}
 	
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
