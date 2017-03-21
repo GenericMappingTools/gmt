@@ -18,7 +18,7 @@ echo '3.25 5.75 H@#awaiian@# R@#idge@#' | gmt pstext -R0/10/0/10 -Jx1i \
 rm -f zero.cpt
 #
 ps=example_04c.ps
-gmt grdimage HI_geoid4.nc -I+a0+nt0.7 -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 \
+gmt grdimage HI_geoid4.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 \
 	-K -P -X1.25i -Y1.25i > $ps
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K >> $ps
 gmt psbasemap -R -J -p -O -K -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND=red --FONT=red \
