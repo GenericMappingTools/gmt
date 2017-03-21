@@ -769,7 +769,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				text_rec = (char *)record;
 				/* First establish the symbol type given at the end of the record */
 				gmt_chop (text_rec);	/* Get rid of \n \r */
-				i = strlen (text_rec) - 1;
+				i = (unsigned int)strlen (text_rec);
+				if (i == 0) continue;	/* A blank line snuck through */
+				i--;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 1, false);
 				for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */

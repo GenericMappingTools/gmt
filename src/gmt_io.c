@@ -4591,7 +4591,6 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 			return (NULL);
 		}
 		/* Here we are done with any header records implied by -h */
-		while (gmt_is_a_blank_line (line) && (p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp))) GMT->current.io.rec_no++, GMT->current.io.rec_in_tbl_no++;
 		if (!p) {	/* Ran out of records */
 			GMT->current.io.status = GMT_IO_EOF;
 			*n = 0ULL;
