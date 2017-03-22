@@ -742,11 +742,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		sprintf (l_args, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", l_args);
+		if (GMT->common.R.oblique) GMT->common.R.active = false;	/* Must turn -R off temporarily */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
+		if (GMT->common.R.oblique) GMT->common.R.active = true;	/* Reset -R */
 		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 	}
 	else if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
