@@ -3111,16 +3111,21 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				/* If OGR input the also read next 1-2 records to pick up metadata */
 				if (GMT->current.io.ogr == GMT_OGR_TRUE) {
 					int c;
-					p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
-					gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
-					gmtio_build_text_from_ogr (GMT, NULL, GMT->current.io.segment_header);	/* Fill in the buffer for -D, -G, Z etc */
-					if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Sometimes a @P or @H record instead */
-					/* May also have a second comment record with just @P or @ H so check for this case */
 					if ((c = fgetc (fp)) == '#') {	/* Possibly, this record starts with a comment character # */
 						line[0] = c;	/* Since we ate the # already we place it here manually */
 						p = gmt_fgets (GMT, &line[1], GMT_BUFSIZ-1, fp);	/* Start at position 1 since # placed already and required for gmtio_ogr_parser to work */
-						gmtio_ogr_parser (GMT, line);	/* Parse a possible GMT/OGR record (just returns if no OGR data there) */
-						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Add the hole designation to the polygon option */
+						gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
+						gmtio_build_text_from_ogr (GMT, NULL, GMT->current.io.segment_header);	/* Fill in the buffer for -D, -G, Z etc */
+						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Sometimes a @P or @H record instead */
+						/* May also have a second comment record with just @P or @ H so check for this case */
+						if ((c = fgetc (fp)) == '#') {	/* Possibly, this record starts with a comment character # */
+							line[0] = c;	/* Since we ate the # already we place it here manually */
+							p = gmt_fgets (GMT, &line[1], GMT_BUFSIZ-1, fp);	/* Start at position 1 since # placed already and required for gmtio_ogr_parser to work */
+							gmtio_ogr_parser (GMT, line);	/* Parse a possible GMT/OGR record (just returns if no OGR data there) */
+							if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Add the hole designation to the polygon option */
+						}
+						else	/* Not a comment record; put that character back on the stream and move on */
+							ungetc (c, fp);
 					}
 					else	/* Not a comment record; put that character back on the stream and move on */
 						ungetc (c, fp);
