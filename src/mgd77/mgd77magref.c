@@ -548,11 +548,11 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Din->n_columns < 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 4 are needed\n", (int)Din->n_columns);
+	if (Din->n_columns < n_in) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, n_in);
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)Din->n_columns : 0);
+	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)(Din->n_columns + (Ctrl->A.fixed_alt + Ctrl->A.fixed_time)) : 0);
 	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_NOERROR) {
 		Return (error);
