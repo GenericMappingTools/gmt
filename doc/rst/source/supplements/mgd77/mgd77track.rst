@@ -35,7 +35,6 @@ Synopsis
 [ |-W|\ [**-**\ \|\ **+**][*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -186,8 +185,6 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
  
-.. include:: ../../explain_-c.rst_
-
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_perspective.rst_
  

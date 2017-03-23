@@ -39,7 +39,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -295,8 +294,6 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
-
-.. include:: explain_-c.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

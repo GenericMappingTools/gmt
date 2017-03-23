@@ -14464,14 +14464,16 @@ char * gmt_memory_use (size_t bytes) {
 	return mem_report;
 }
 
+#if 0	/* Probably not needed after alll */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */
-	static char opts[GMT_BUFSIZ] = {""}, string[4] = {"-V"};
+	static char opts[GMT_BUFSIZ] = {""}, string[4] = {" - "};
 	size_t k;
 	opts[0] = '\0';
 	if (list == NULL) return (opts);
 	for (k = 0; k < strlen (list); k++) {
-		strcat (opts, " ");
+		string[2] = list[k];
+		strncat (opts, string, 3U);
 		switch (list[k]) {
 			case 'a': strcat (opts, GMT->common.a.string); break;
 			case 'b': strcat (opts, GMT->common.b.string); break;
@@ -14482,8 +14484,8 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 			case 'i': strcat (opts, GMT->common.i.string); break;
 			case 'n': strcat (opts, GMT->common.n.string); break;
 			case 's': strcat (opts, GMT->common.s.string); break;
-			case 'V': string[2] = gmt_set_V (GMT->current.setting.verbose);
-				strcat (opts, string); break;
+			case 'V': string[0] = gmt_set_V (GMT->current.setting.verbose);
+				strncat (opts, string, 1U); break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unrecognized option %c\n", list[k]);
 				return NULL;
@@ -14491,3 +14493,4 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	}
 	return (opts);
 }
+#endif

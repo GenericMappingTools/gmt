@@ -30,7 +30,6 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -160,8 +159,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: explain_-XY.rst_
-
-.. include:: explain_-c.rst_
 
 .. |Add_-f| replace:: This applies only to the coordinates specified in the **-R** option.
 .. include:: explain_-f.rst_

@@ -150,8 +150,6 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-bo_full.rst_
 
-.. include:: explain_-c_full.rst_
-
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d_full.rst_
 

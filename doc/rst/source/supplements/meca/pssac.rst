@@ -33,7 +33,6 @@ Synopsis
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-t| ]
 
@@ -211,7 +210,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
-.. include:: ../../explain_-c.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

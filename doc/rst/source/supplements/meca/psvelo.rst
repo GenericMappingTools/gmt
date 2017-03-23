@@ -29,7 +29,6 @@ Synopsis
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -244,7 +243,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
-.. include:: ../../explain_-c.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_

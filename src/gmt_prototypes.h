@@ -266,7 +266,6 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
-EXTERN_MSC char * gmt_add_options (struct GMT_CTRL *GMT, const char *list);
 EXTERN_MSC char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep);
 EXTERN_MSC unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token);
 EXTERN_MSC void gmt_init_pen (struct GMT_CTRL *GMT, struct GMT_PEN *pen, double width);

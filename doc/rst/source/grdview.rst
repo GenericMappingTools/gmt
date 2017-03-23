@@ -28,7 +28,6 @@ Synopsis
 [ |-W|\ **type**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -196,8 +195,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: explain_-XY.rst_
-
-.. include:: explain_-c.rst_
 
 .. include:: explain_-n.rst_
 

@@ -22,7 +22,6 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-t| ]
 
 |No-spaces|
@@ -105,8 +104,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: explain_-XY.rst_
-
-.. include:: explain_-c.rst_
 
 .. include:: explain_-t.rst_
 

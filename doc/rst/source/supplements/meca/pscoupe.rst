@@ -32,7 +32,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ *cpt* ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -385,8 +384,6 @@ Optional Arguments
 **-Z**\ *cpt*
     Give a CPT and let compressive part color be
     determined by the z-value in the third column.
-
-.. include:: ../../explain_-c.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_

@@ -29,7 +29,6 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -156,9 +155,7 @@ Optional Arguments
 
 .. include:: explain_-XY.rst_
 
-.. include:: explain_-c.rst_
-
-These options are for 1-bit images only. They have no effect when
+The following options are for 1-bit images only. They have no effect when
 plotting other images or PostScript files.
 
 .. _-G:

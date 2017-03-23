@@ -2385,7 +2385,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 26 switches in
+to setting the data region, the map projection, etc. The 25 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -2419,8 +2419,6 @@ importance (some are used a lot more than others).
 | **-a**   | Associate aspatial data from OGR/GMT files with data columns       |
 +----------+--------------------------------------------------------------------+
 | **-b**   | Select binary input and/or output                                  |
-+----------+--------------------------------------------------------------------+
-| **-c**   | Specify the number of plot copies                                  |
 +----------+--------------------------------------------------------------------+
 | **-d**   | Replace user *nodata* values with IEEE NaNs                        |
 +----------+--------------------------------------------------------------------+
@@ -3321,13 +3319,6 @@ processed. No **-bi** option is needed in this case.
 
 Currently, netCDF tables can only be input, not output. For more
 information, see Chapter `GMT file formats`_.
-
-Number of Copies: The **-c** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The **-c** option specifies the number of plot copies [Default is 1].
-This value is embedded in the *PostScript* file and will make a printer
-issue the chosen number of copies without respooling.
 
 Missing data conversion: The **-d** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

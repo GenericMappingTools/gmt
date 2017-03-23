@@ -29,7 +29,6 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-U| ]
 [ |-Z| ] [ **-a**\ *col*\ =\ *name*\ [...] ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -255,8 +254,6 @@ Optional Arguments
     paragraph mode). 
 
 .. include:: explain_-aspatial.rst_
-
-.. include:: explain_-c.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

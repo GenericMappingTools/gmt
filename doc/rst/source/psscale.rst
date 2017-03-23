@@ -35,7 +35,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ *zfile* ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -247,8 +246,6 @@ Optional Arguments
     File with colorbar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
     = 100-150 (Also see **-L**).
-
-.. include:: explain_-c.rst_
 
 .. |Add_perspective| replace:: (Required **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_

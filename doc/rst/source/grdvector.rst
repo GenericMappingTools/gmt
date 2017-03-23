@@ -27,7 +27,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -165,8 +164,6 @@ Optional Arguments
 
 **-Z**
     The theta grid provided contains azimuths rather than directions (requires **-A**). 
-
-.. include:: explain_-c.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

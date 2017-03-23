@@ -39,7 +39,7 @@ that copyright notice and this permission notice appear in supporting documentat
 #include "gmt_dev.h"
 #include "sacio.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYcht"
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYht" GMT_OPT("c")
 
 /* Control structure for pssac */
 
@@ -138,7 +138,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] [-K] [-M<size>[<unit>]/<alpha>] [-O] [-P] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<sec_per_measure>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] \n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -196,7 +196,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +s<shift> shift all traces by <shift> seconds.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "X,c,h,t");
+	GMT_Option (API, "X,h,t");
 	GMT_Option (API, ".");
 
 	return (EXIT_FAILURE);

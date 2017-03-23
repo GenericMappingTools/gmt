@@ -31,7 +31,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->KJOPRUVXYctxy"
+#define GMT_PROG_OPTIONS "->KJOPRUVXYtxy" GMT_OPT("c")
 
 /* Specific colors for fonts, land, water, text etc */
 
@@ -80,7 +80,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtlogo [-D%s[+w<width>]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t%s] [%s] [-K] [-O] [-P] [%s]\n", GMT_PANEL, GMT_J_OPT, GMT_Jz_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -91,7 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Option (API, "U,V");
-	GMT_Option (API, "X,c,f,t,.");
+	GMT_Option (API, "X,f,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

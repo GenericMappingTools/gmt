@@ -31,7 +31,6 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
@@ -142,8 +141,6 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
-
-.. include:: explain_-c.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

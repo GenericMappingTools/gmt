@@ -5671,11 +5671,6 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
 			break;
 
-		case 'c':	/* -c option to set number of plot copies option */
-
-			gmt_message (GMT, "\t-c Specify the number of copies [%d].\n", GMT->PSL->init.copies);
-			break;
-
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
 
 			gmt_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");
@@ -11955,7 +11950,14 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			error += gmtinit_parse_b_option (GMT, item);
 			break;
 
-		case 'c':
+		case 'c':	/* Backwards compatibility */
+			if (gmt_M_compat_check (GMT, 5)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated.\n", option);
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c is not a recognized common option\n", option);
+				return (1);
+			}
 			error += (GMT_more_than_once (GMT, GMT->common.c.active) || gmtinit_parse_c_option (GMT, item));
 			GMT->common.c.active = true;
 			break;

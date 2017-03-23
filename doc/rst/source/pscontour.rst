@@ -30,7 +30,6 @@ Synopsis
 [ |SYN_OPT-X| ] 
 [ |SYN_OPT-Y| ] 
 [ |SYN_OPT-b| ]
-[ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ] 
 [ |SYN_OPT-p| ] 
@@ -232,8 +231,6 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 3 output columns]. 
 .. include:: explain_-bo.rst_
-
-.. include:: explain_-c.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

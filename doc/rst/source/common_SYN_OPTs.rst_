@@ -40,8 +40,6 @@
 
 .. |SYN_OPT-bo| replace:: **-bo**\ :ref:`binary <-bo_full>`
 
-.. |SYN_OPT-c| replace:: **-c**\ *copies*
-
 .. .. |SYN_OPT-d| replace:: **-d**\ [**i**\ \|\ **o**]\ *nodata*
 
 .. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`
