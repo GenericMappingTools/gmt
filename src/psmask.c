@@ -43,7 +43,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcdhipstxy" GMT_OPT("E")
+#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcdhiprstxy" GMT_OPT("E")
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */
