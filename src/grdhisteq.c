@@ -59,12 +59,12 @@ struct GRDHISTEQ_CTRL {
 	} Q;
 };
 
-struct	INDEXED_DATA {
+struct INDEXED_DATA {
 	float x;
 	uint64_t i;
 };
 
-struct	CELL {
+struct CELL {
 	float low;
 	float high;
 };
@@ -151,7 +151,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 				break;
 			case 'N':	/* Get normalized scores */
 				Ctrl->N.active = true;
-				Ctrl->N.norm = atof (opt->arg);
+				if (opt->arg[0]) Ctrl->N.norm = atof (opt->arg);
 				break;
 			case 'Q':	/* Use quadratic scaling */
 				Ctrl->Q.active = true;
