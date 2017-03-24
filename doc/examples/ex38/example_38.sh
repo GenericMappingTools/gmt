@@ -21,7 +21,7 @@ gmt grdhisteq topo.nc -Gout.nc -N
 gmt makecpt -Crainbow -T-3/3 > c.cpt
 gmt grdimage out.nc -Cc.cpt -J -X-3.5i -Y-3.3i -K -O -B5 -BWSne >> $ps
 echo "315 -10 Normalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
-gmt grdhisteq topo.nc -Gout.nc -N
+gmt grdhisteq topo.nc -Gout.nc -Q
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
 echo "315 -10 Quadratic" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
 gmt psscale -Dx0i/-0.4i+w5i/0.15i+h+jTC+e+n -O -Cc.cpt -Bx1 -By+lz >> $ps
