@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use with -G for quadratic intensity scaling [Default is linear].\n");
 	GMT_Option (API, "R,V,h,.");
 
 	return (GMT_MODULE_USAGE);
@@ -167,6 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Must also specify output grid file with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Syntax error -N option: Cannot be combined with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
 	n_errors += gmt_M_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");

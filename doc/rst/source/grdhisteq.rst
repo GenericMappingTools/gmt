@@ -90,7 +90,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Use quadratic intensity scaling. [Default is linear]. 
+    Quadratic output. Use with **-G** for quadratic intensity scaling. [Default is linear]. 
 
 .. _-R:
 
