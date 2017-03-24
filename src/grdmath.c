@@ -5082,6 +5082,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
+		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
 			if (nstack <= 0) {

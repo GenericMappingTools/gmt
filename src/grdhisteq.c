@@ -60,12 +60,12 @@ struct GRDHISTEQ_CTRL {
 	} Q;
 };
 
-struct	INDEXED_DATA {
+struct INDEXED_DATA {
 	float x;
 	uint64_t i;
 };
 
-struct	CELL {
+struct CELL {
 	float low;
 	float high;
 };
@@ -152,7 +152,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 				break;
 			case 'N':	/* Get normalized scores */
 				Ctrl->N.active = true;
-				Ctrl->N.norm = atof (opt->arg);
+				if (opt->arg[0]) Ctrl->N.norm = atof (opt->arg);
 				break;
 			case 'Q':	/* Use quadratic scaling */
 				Ctrl->Q.active = true;
@@ -170,7 +170,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Syntax error -N option: Cannot be combined with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
-	n_errors += gmt_M_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
