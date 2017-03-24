@@ -43,9 +43,9 @@ gmt pstext -R -J -O -K -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt >> $ps
 # Place a yellow star at Rome
 echo "$lon $lat" | gmt psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
-# Sample the distance grid at the cities and use the distance in km for labels
+# Sample the distance grid at the cities and use the distance in integer km for labels
 
-gmt grdtrack -Gdist.nc cities.txt -o0,1,4 --FORMAT_FLOAT_OUT=%.0f \
+gmt grdtrack -Gdist.nc cities.txt -o0,1,4 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f \
 	| gmt pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
 
 # Clean up after ourselves:
