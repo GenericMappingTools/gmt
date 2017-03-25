@@ -10639,7 +10639,7 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 	 * Modules that read datasets may have "d" in their THIS_MODULE_NEEDS which forces us to determine the region.
 	 */
 
-	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set explicitly, so do nothing */
+	if (GMT_Find_Option (API, 'R', *options)) return GMT_NOERROR;	/* Set explicitly, so do nothing */
 	if (strchr (args, 'g'))	/* Use the input grid to add a valid -R into the options */
 		return (gmt_set_missing_R_from_grid (API, args, options));
 	else if (strchr (args, 'd'))	/* Use input dataset(s) to find and add -R in this module */

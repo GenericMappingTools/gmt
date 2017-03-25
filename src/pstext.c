@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot or typeset text on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"RJ"
 
 #include "gmt_dev.h"
 
