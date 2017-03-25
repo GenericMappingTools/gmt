@@ -26,15 +26,14 @@
  * Version:	5 API
  */
  
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"grdmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:RVabdfghirs" GMT_ADD_x_OPT GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:RVabdfghirs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 
@@ -268,7 +267,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

@@ -36,15 +36,14 @@
  *    	June, 1967.
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"spectrum1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute auto- [and cross-] spectra from one [or two] time series"
 #define THIS_MODULE_KEYS	"<D{,>D},T-)"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-Vbdfghis"
+#define THIS_MODULE_OPTIONS "-Vbdfghis"
 
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
@@ -709,7 +708,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

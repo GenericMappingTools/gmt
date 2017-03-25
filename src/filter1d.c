@@ -38,15 +38,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"filter1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Time domain filtering of 1-D data tables"
 #define THIS_MODULE_KEYS	"<D{,>D},FD(1"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>Vabdfghio" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vabdfghio" GMT_OPT("HMm")
 
 /* Control structure for filter1d */
 
@@ -829,7 +828,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
 

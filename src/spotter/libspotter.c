@@ -49,6 +49,7 @@
  * latitudes are usually implied to be geocentric.
  */
 
+#include "gmt_dev.h"
 #include "spotter.h"
 
 EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);

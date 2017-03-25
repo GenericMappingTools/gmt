@@ -26,15 +26,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"pstext"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot or typeset text on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
 #define THIS_MODULE_NEEDS	"RJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYafhptxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYafhptxy" GMT_OPT("Ec")
 
 EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 
@@ -674,7 +673,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	if (Ctrl->L.active) Return (usage (API, GMT_SYNOPSIS, true));	/* Return the synopsis with font listing */

@@ -46,16 +46,15 @@ maybe you don't need the above if cmake is able to find glib in your system.
 Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all available
 */
 
+#include "gmt_dev.h"
+#include "gmt_glib.h"
+
 #define THIS_MODULE_NAME	"grdfilter"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
 #define THIS_MODULE_KEYS	"<G{,FG(=1,GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-#include "gmt_glib.h"
-
-#define GMT_PROG_OPTIONS "-RVf" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-RVf" GMT_ADD_x_OPT
 
 struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
@@ -857,7 +856,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

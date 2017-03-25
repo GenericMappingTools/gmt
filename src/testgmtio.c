@@ -26,7 +26,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->Vghi"
+#define THIS_MODULE_OPTIONS "->Vghi"
 
 int main (int argc, char *argv[]) {
 	int n_fields = 0, mode = 0,  error = 0;
@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
 	if ((options = GMT_Create_Options (API, argc-1, (argv+1))) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. Parse the common GMT options (e.g., -h -V) */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) exit (EXIT_FAILURE);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) exit (EXIT_FAILURE);
 
 	/* 4. Initializing data input via stdin */
 	

@@ -21,16 +21,15 @@
  *
  */
  
+#include "gmt_dev.h"
+#include "mgd77.h"
+
 #define THIS_MODULE_NAME	"mgd77track"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"RJ"
-
-#include "gmt_dev.h"
-#include "mgd77.h"
-
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
 #define MGD77TRACK_ANSIZE 0.125
 #define MGD77TRACK_MARK_NEWDAY	0
@@ -600,7 +599,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/

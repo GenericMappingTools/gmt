@@ -25,15 +25,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>RVabdfghinos" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVabdfghinos" GMT_OPT("HMmQ")
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
@@ -748,7 +747,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

@@ -25,16 +25,15 @@
  * Version:	3.4.1, ported to GMT5 by P. Wessel
  */
  
+#include "gmt_dev.h"
+#include "segy_io.h"
+
 #define THIS_MODULE_NAME	"segy2grd"
 #define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Converting SEGY data to a GMT grid"
 #define THIS_MODULE_KEYS	"GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-#include "segy_io.h"
-
-#define GMT_PROG_OPTIONS "-VRr" GMT_OPT("F")
+#define THIS_MODULE_OPTIONS "-VRr" GMT_OPT("F")
 
 #define COUNT	1
 #define AVERAGE	2
@@ -312,7 +311,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

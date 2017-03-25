@@ -32,15 +32,14 @@
  * Version:	5 API
  */
  
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"triangulate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
 #define THIS_MODULE_KEYS	"<D{,>D},GG)"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>JRVbdfhirs" GMT_OPT("Hm")
+#define THIS_MODULE_OPTIONS "-:>JRVbdfhirs" GMT_OPT("Hm")
 
 struct TRIANGULATE_CTRL {
 	struct Out {	/* -> */
@@ -321,7 +320,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

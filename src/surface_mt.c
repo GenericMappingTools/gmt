@@ -43,15 +43,14 @@
  * 4. TESTING: It enables multiple threads via OpenMP [if compiled that way].
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"surface_mt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 #define THIS_MODULE_KEYS	"<D{,DD(,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:RVabdfhirs" GMT_ADD_x_OPT GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdfhirs" GMT_ADD_x_OPT GMT_OPT("FH")
 
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
@@ -2157,7 +2156,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	

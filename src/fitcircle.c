@@ -72,15 +72,14 @@
 	  2) New option to only output pole and ave, i.e., not text messages
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"fitcircle"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find mean position and great [or small] circle fit to points on sphere"
 #define THIS_MODULE_KEYS	"<D{,>T},>DF"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>Vabdfghio" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>Vabdfghio" GMT_OPT("H")
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -380,7 +379,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

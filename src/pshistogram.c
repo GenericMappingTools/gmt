@@ -23,15 +23,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"pshistogram"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"RJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYbfhipstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbfhipstxy" GMT_OPT("Ec")
 
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
 
@@ -669,7 +668,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				opt->option = '@';	/* Temporary turn -E[l|h] into -Q[l|h] */
 		}
 	}
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

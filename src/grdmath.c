@@ -26,15 +26,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"grdmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
@@ -4921,7 +4920,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return1 (API->error);
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/

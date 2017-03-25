@@ -30,21 +30,19 @@
  *
  */
 
+#include "gmt_dev.h"
+#include "okbfuns.h"
+#include "../mgd77/mgd77.h"
+#ifdef HAVE_GLIB_GTHREAD
+#include <glib.h>
+#endif
+
 #define THIS_MODULE_NAME	"grdgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-#include "okbfuns.h"
-#include "../mgd77/mgd77.h"
-
-#ifdef HAVE_GLIB_GTHREAD
-#include <glib.h>
-#endif
-
-#define GMT_PROG_OPTIONS "-:RVfx"
+#define THIS_MODULE_OPTIONS "-:RVfx"
 
 typedef void (*PFV) ();		/* pointer to a function returning void */
 typedef double (*PFD) ();		/* pointer to a function returning double */
@@ -486,7 +484,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

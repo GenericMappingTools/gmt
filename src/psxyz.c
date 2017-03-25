@@ -24,15 +24,14 @@
  * or polygons in a 3-D perspective view.
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"psxyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
 #define THIS_MODULE_NEEDS	"RJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYabdfghiptxy" GMT_OPT("EZHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdfghiptxy" GMT_OPT("EZHMmc")
 
 /* Control structure for psxyz */
 
@@ -537,7 +536,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
 	gmt_M_memset (&S, 1, struct GMT_SYMBOL);

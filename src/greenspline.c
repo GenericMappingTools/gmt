@@ -46,15 +46,14 @@
  * support in greenspline and the matrix solvers in gmt_vector.c.  Requires open MP support and use of -x.
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"greenspline"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
 #define THIS_MODULE_KEYS	"<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
@@ -1423,7 +1422,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

@@ -25,18 +25,17 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"psscale"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("
 #define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
-
-void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
@@ -1354,7 +1353,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

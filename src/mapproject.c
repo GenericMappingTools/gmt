@@ -37,15 +37,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"mapproject"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformations, datum conversions and geodesy"
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>JRVbdfghiops" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>JRVbdfghiops" GMT_OPT("HMm")
 
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */
@@ -693,7 +692,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	if (!GMT->common.J.active && !gmt_M_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */

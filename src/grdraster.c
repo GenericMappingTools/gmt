@@ -30,16 +30,15 @@
  * grids using metadata from the grdraster.info table.
  */
 
+#include "gmt_dev.h"
+#include "common_byteswap.h"
+
 #define THIS_MODULE_NAME	"grdraster"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a binary raster and save as a GMT grid"
 #define THIS_MODULE_KEYS	"GG},TD)"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-#include "common_byteswap.h"
-
-#define GMT_PROG_OPTIONS "-JRVbdh"
+#define THIS_MODULE_OPTIONS "-JRVbdh"
 
 EXTERN_MSC void gmt_str_toupper (char *string);
 
@@ -777,7 +776,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Hardwire a -fg setting since this is geographic data */
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

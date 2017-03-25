@@ -68,9 +68,6 @@
  * \brief Declaration for the X2SYS and XOVER structures.
  */
 
-#include "mgd77/mgd77.h"
-#include "gmt_dev.h"
-
 /* Here are legacy functions for old GMT MGG supplement needed in x2sys */
 
 struct GMTMGG_REC {	/* Format of old *.gmt file records */

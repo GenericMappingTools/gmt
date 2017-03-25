@@ -29,15 +29,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"gmtmath"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
 #define THIS_MODULE_KEYS	"<D{,AD(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
@@ -4941,7 +4940,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (GMT_DATA_READ_ERROR);
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, list)) Return1 (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, list)) != 0) Return1 (error);
 

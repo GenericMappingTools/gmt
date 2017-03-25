@@ -33,16 +33,15 @@
  * Version:	5 API
  */
  
+#include "gmt_dev.h"
+#include "gmt_sph.h"
+
 #define THIS_MODULE_NAME	"sphinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Spherical gridding in tension of data on a sphere"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-#include "gmt_sph.h"
-
-#define GMT_PROG_OPTIONS "-:RVbdhirs" GMT_OPT("F")
+#define THIS_MODULE_OPTIONS "-:RVbdhirs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
@@ -245,7 +244,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	gmt_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/

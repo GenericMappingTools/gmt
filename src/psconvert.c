@@ -32,13 +32,15 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
 #define THIS_MODULE_KEYS	"<X{+,FI)"
 #define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_OPTIONS "-V"
 
-#include "gmt_dev.h"
 #ifdef _WIN32
 #	define dup2 _dup2
 	/* Various shared-library functions declared in gmt_sharedlibs.c */
@@ -52,8 +54,6 @@
 #else	/* Standard Unix things */
 #	include <dlfcn.h>
 #endif
-
-#define GMT_PROG_OPTIONS "-V"
 
 EXTERN_MSC void gmt_str_toupper (char *string);
 EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way);
@@ -1219,7 +1219,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

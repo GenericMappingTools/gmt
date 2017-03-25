@@ -25,15 +25,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"x2sys_merge"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Merge an updated COEs table (smaller) into the main table (bigger)"
 #define THIS_MODULE_KEYS	">T}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "->V"
+#define THIS_MODULE_OPTIONS "->V"
 
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */
@@ -153,7 +152,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

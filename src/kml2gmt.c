@@ -24,15 +24,14 @@
  * Version:	5 API
  */
  
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
 #define THIS_MODULE_KEYS	"<T{,>D}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:Vbdh" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 
 #define POINT			0
 #define LINE			1
@@ -184,7 +183,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

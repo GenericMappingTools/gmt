@@ -28,8 +28,6 @@
  * \brief Include file for programs that link with libspotter.
  */
 
-#include "gmt_dev.h" /* Requires GMT to compile and link */
-
 #define EQ_RAD 6371.0087714
 #define KM_PR_DEG (EQ_RAD * M_PI / 180.0)
 #define BIG_CHUNK 65536

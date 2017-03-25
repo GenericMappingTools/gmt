@@ -20,15 +20,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"pspolar"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYdhit" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdhit" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 
@@ -448,7 +447,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

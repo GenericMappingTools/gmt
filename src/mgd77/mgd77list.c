@@ -32,16 +32,15 @@
  *
  */
  
+#include "gmt_dev.h"
+#include "mgd77.h"
+
 #define THIS_MODULE_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
 #define THIS_MODULE_KEYS	">?}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-#include "mgd77.h"
-
-#define GMT_PROG_OPTIONS "-:RVbdh"
+#define THIS_MODULE_OPTIONS "-:RVbdh"
 
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
 #define MGD77_ALL  "drt,id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
@@ -814,7 +813,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	

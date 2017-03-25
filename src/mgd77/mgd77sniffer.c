@@ -21,12 +21,6 @@
  *
  * ------------------------------------------------------------------*/
 
-#define THIS_MODULE_NAME	"mgd77sniffer"
-#define THIS_MODULE_LIB		"mgd77"
-#define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
-#define THIS_MODULE_KEYS	""
-#define THIS_MODULE_NEEDS	""
-
 #include "mgd77.h"
 #include "gmt_dev.h"
 #include "mgd77sniffer.h"
@@ -35,7 +29,12 @@ static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
 #include "mgd77defaults.h"
 };
 
-#define GMT_PROG_OPTIONS "-VRbdn" GMT_OPT("Q")
+#define THIS_MODULE_NAME	"mgd77sniffer"
+#define THIS_MODULE_LIB		"mgd77"
+#define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
+#define THIS_MODULE_KEYS	""
+#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_OPTIONS "-VRbdn" GMT_OPT("Q")
 
 /*
 #define HISTOGRAM_MODE 0
@@ -614,7 +613,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
 	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);

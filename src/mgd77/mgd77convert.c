@@ -21,18 +21,17 @@
  *
  */
  
+#include "gmt_dev.h"
+#include "mgd77.h"
+
 #define THIS_MODULE_NAME	"mgd77convert"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Convert MGD77 data to other file formats"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_OPTIONS "-V"
 
-#include "gmt_dev.h"
-#include "mgd77.h"
-
-#define GMT_PROG_OPTIONS "-V"
-
-void MGD77_select_high_resolution (struct GMT_CTRL *GMT);
+EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *GMT);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -234,7 +233,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	

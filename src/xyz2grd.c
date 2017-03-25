@@ -25,15 +25,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"xyz2grd"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert data table to a grid file"
 #define THIS_MODULE_KEYS	"<D{,SD),GG}"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:JRVbdfhirs" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:JRVbdfhirs" GMT_OPT("FH")
 
 EXTERN_MSC void gmtlib_str_tolower (char *string);
 
@@ -352,7 +351,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
 

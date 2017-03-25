@@ -24,15 +24,15 @@
  * Ver:		5
  */
 
+#include "gmt_dev.h"
+#include "spotter.h"
+
 #define THIS_MODULE_NAME	"grdpmodeler"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate motion model on a geographic grid"
 #define THIS_MODULE_KEYS	"<G{,FD(,GG),>DG"
 #define THIS_MODULE_NEEDS	"R"
-
-#include "spotter.h"
-
-#define GMT_PROG_OPTIONS "-:RVbdhor"
+#define THIS_MODULE_OPTIONS "-:RVbdhor"
 
 #define N_PM_ITEMS	9
 #define PM_AZIM		0
@@ -292,7 +292,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

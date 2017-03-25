@@ -24,15 +24,14 @@
  * or polygons on maps.
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"psxy"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
 #define THIS_MODULE_NEEDS	"dJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYabdfghipt" GMT_OPT("HMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdfghipt" GMT_OPT("HMmc")
 
 /* Control structure for psxy */
 
@@ -835,7 +834,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	/* Initialize GMT_SYMBOL structure */
 

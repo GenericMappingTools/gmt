@@ -24,15 +24,14 @@
  *
  * */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"gmtflexure"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads, forces, and bending moments"
 #define THIS_MODULE_KEYS	"ED(,QD(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-Vfhio"
+#define THIS_MODULE_OPTIONS "-Vfhio"
 
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
@@ -1256,7 +1255,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

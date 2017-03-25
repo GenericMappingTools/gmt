@@ -14,16 +14,15 @@
  *
  */
 
+#include "gmt_dev.h"
+#include "mgd77.h"
+
 #define THIS_MODULE_NAME	"mgd77magref"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Evaluate the IGRF or CM4 magnetic field models"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-#include "mgd77.h"
-
-#define GMT_PROG_OPTIONS "-Vbdh" GMT_OPT("Hm")
+#define THIS_MODULE_OPTIONS "-Vbdh" GMT_OPT("Hm")
 
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -440,7 +439,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */

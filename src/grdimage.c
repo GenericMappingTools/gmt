@@ -26,15 +26,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"grdimage"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
 #define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
 #define THIS_MODULE_NEEDS	"gJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc")
 
 #ifdef HAVE_GDAL
 #define N_IMG_EXTENSIONS 6
@@ -524,7 +523,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

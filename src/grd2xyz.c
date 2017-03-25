@@ -24,15 +24,14 @@
  * Version:	5 API
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"grd2xyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert grid file to data table"
 #define THIS_MODULE_KEYS	"<G{+,>D}"
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>RVbdfhos" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>RVbdfhos" GMT_OPT("H")
 
 struct GRD2XYZ_CTRL {
 	struct GRD2XYZ_C {	/* -C[f|i] */
@@ -243,7 +242,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
 	

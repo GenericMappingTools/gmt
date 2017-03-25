@@ -51,16 +51,14 @@
  *
  */
 
+#include "gmt_dev.h"
+
 #define THIS_MODULE_NAME	"pscoast"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot continents, countries, shorelines, rivers, and borders on maps"
 #define THIS_MODULE_KEYS	">X},>DM,>TE+w-rR"
 #define THIS_MODULE_NEEDS	"RJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
-
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
 
 #define LAKE	0
 #define RIVER	1
@@ -713,7 +711,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
 		if (error == NOT_REALLY_AN_ERROR) Return (0);

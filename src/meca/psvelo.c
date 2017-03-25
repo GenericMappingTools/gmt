@@ -24,18 +24,16 @@ PostScript code is written to stdout.
 
 */
 
+#include "gmt_dev.h"
+#include "meca.h"
+#include "utilmeca.h"
+
 #define THIS_MODULE_NAME	"psvelo"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
-
-#include "gmt_dev.h"
-
-#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYdhit" GMT_OPT("c")
-
-#include "meca.h"
-#include "utilmeca.h"
+#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdhit" GMT_OPT("c")
 
 #define CINE 1
 #define ANISO 2
@@ -338,7 +336,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 

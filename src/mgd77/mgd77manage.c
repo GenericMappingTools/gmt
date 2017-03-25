@@ -18,17 +18,16 @@
  *
  */
 
+#include "gmt_dev.h"
+#include "mgd77.h"
+#include "mgd77_e77.h"	/* E77 Header Errata Codes */
+
 #define THIS_MODULE_NAME	"mgd77manage"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-
-#include "gmt_dev.h"
-#include "mgd77.h"
-#include "mgd77_e77.h"	/* E77 Header Errata Codes */
-
-#define GMT_PROG_OPTIONS "-RVbn"
+#define THIS_MODULE_OPTIONS "-RVbn"
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -544,7 +543,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	

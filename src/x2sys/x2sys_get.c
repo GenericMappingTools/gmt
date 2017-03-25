@@ -27,15 +27,16 @@
  *
  */
 
+#include "gmt_dev.h"
+#include "mgd77/mgd77.h"
+#include "x2sys.h"
+
 #define THIS_MODULE_NAME	"x2sys_get"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Get track listing from track index database"
 #define THIS_MODULE_KEYS	">T}"
 #define THIS_MODULE_NEEDS	""
-
-#include "x2sys.h"
-
-#define GMT_PROG_OPTIONS "->RV"
+#define THIS_MODULE_OPTIONS "->RV"
 
 struct X2SYS_GET_CTRL {
 	struct S2S_GET_C {	/* -C */
@@ -233,7 +234,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
+	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
