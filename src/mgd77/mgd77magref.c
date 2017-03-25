@@ -456,7 +456,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	if (Ctrl->A.fixed_alt) t_col = 2;	/* Since we are missing the altitude column */
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
-	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
+	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
+		GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;
 
 	/* Shorthand for these */
 	nval = Ctrl->CM4->CM4_F.n_field_components;
@@ -479,7 +480,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				for (i = 0; i < 3; i++) Ctrl->CM4->CM4_F.field_components[i] = (int)i+2;	/* Force the x,y,z request */
 				cm4_igrf_T = true;
 			}
-			else if ( !((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
+			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;
@@ -576,7 +577,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 		if (T->n_columns < n_in) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Table %d has %d columns, but from the used options we expect %d\n",
-				tbl + 1, T->n_columns, n_in);
+			            tbl + 1, T->n_columns, n_in);
 			continue;
 		}
 
@@ -612,7 +613,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
 				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
 				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
-							"\n\tcase you really should use the IGRF to estimate the core contribution\n");
+				                                 "\n\tcase you really should use the IGRF to estimate the core contribution\n");
 			}
 
 			Ctrl->CM4->CM4_DATA.n_pts = (int)T->segment[s]->n_rows;
@@ -642,8 +643,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->data[GMT_X],
 							T->segment[s]->data[GMT_Y], alt_array, time_array)) != 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating an error.\n"
-						"Unfortunately, this means all other eventually good\n"
-						"records are also ignored. Fix the bad record and rerun the command.\n");
+					                                 "Unfortunately, this means all other eventually good\n"
+					                                 "records are also ignored. Fix the bad record and rerun the command.\n");
 					continue;
 				}
 			}
@@ -651,7 +652,9 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			if ((Ctrl->do_CM4 || Ctrl->do_IGRF) && !Ctrl->joint_IGRF_CM4) {	/* DID CM4 or (exclusive) IGRF only. */
 				for (i = 0; i < T->segment[s]->n_rows; i++) {	/* Output the requested columns */
 					n_out = 0;
-					if (Ctrl->copy_input) for (j = 0; j < T->segment[s]->n_columns; j++) out[n_out++] = T->segment[s]->data[j][i];
+					if (Ctrl->copy_input)
+						for (j = 0; j < T->segment[s]->n_columns; j++)
+							out[n_out++] = T->segment[s]->data[j][i];
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
