@@ -28,7 +28,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"dJ"
 
 #include "gmt_dev.h"
 

@@ -773,6 +773,7 @@ struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, s
 	/* Append new_opt to end the list */
 	current->next = new_opt;
 	new_opt->previous = current;
+	new_opt->next = NULL;	/* Since at end of the list and may have had junk */
 
 	return (head);		/* Return head of list */
 }

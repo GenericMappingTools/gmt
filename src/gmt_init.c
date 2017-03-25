@@ -10512,18 +10512,18 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 	/* When a module uses -R indirectly via input data then we need to set that explicitly in the options.
 	 * Modules with this issue have "d" in their THIS_MODULE_NEEDS string.
 	 */
-	char region[GMT_LEN256] = {""}, virt_file[GMT_STR16] = {""}, tmpfile[GMT_LEN64] = {""}, *file = NULL;
-	bool set[2] = {false, false};
+	char region[GMT_LEN256] = {""}, virt_file[GMT_STR16] = {""}, tmpfile[GMT_LEN64] = {""};
+	char *file = NULL, *list = "bfi:";
+	bool set[2] = {false, false}, geo = false;
 	unsigned int side, item;
 	double mag, inc, wesn[4] = {0.0, 0.0, 0.0, 0.0}, range[2] = {0.0, 0.0};
-	struct GMT_OPTION *opt = NULL, *head = NULL;
+	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
 
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		if (opt->option == GMT_OPT_INFILE) {	/* Found an input file, append to new list */
-			if ((head = GMT_Append_Option (API, opt, head)) == NULL)
-				return API->error;	/* Failure to append option */
-		}
+		if (opt->option != GMT_OPT_INFILE) continue;	/* Look for input files we can append to new list */
+		if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, opt->arg)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+			return API->error;	/* Failure to make new option and append to list */
 	}
 	
 	if (head == NULL) {	/* User gave no input so we must process stdin */
@@ -10532,6 +10532,7 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 		void *content = NULL;
 		size_t n_read = 0;
 	    
+		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Must send stdin to temporary file.\n");
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			sprintf (tmpfile, "%s/", API->tmp_dir);
 		strcat (tmpfile, "gmt_saved_stdin.XXXXXX");
@@ -10545,40 +10546,45 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 		}
 	  
 		/* Dump stdin to that temp file */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Send stdin to %s.\n", file);
 		content = malloc (GMT_BUFSIZ);
 		while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
 	        fwrite (content, 1, n_read, fp);
 	    }		
 	    fclose (fp);
 		free (content);
-		if ((opt = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL) return API->error;	/* Failure to make new option */
-		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append option to new list */
-		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append option to calling module option list */
+		if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+			return API->error;	/* Failure to make new option or append to list */
+		if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL || (*options = GMT_Append_Option (API, tmp, *options)) == NULL)
+			return API->error;	/* Failure to append option to calling module option list */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Replace stdin input with -<%s.\n", file);
 	}
 	
 	/* Here we have all the input options OR a single tempfile input option.  Now look for special modifiers and add those too */
-	if ((opt = GMT_Find_Option (API, 'b', *options))) {	/* Got -b */
-		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	for (item = 0; item < strlen (list); item++) {
+		if ((opt = GMT_Find_Option (API, list[item], *options)) == NULL) continue;
+		if ((tmp = GMT_Make_Option (API, list[item], opt->arg)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+			return API->error;	/* Failure to make new option or append to list */
 	}
-	if ((opt = GMT_Find_Option (API, 'f', *options))) {	/* Got -f */
-		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	opt = GMT_Find_Option (API, 'f', head);	/* See if we have -f */
+	geo = (opt && (opt->arg[0] == 'g' || strchr (opt->arg, 'x')));	/* Geographic data (could still fail with some odd -f I guess) */
+	if (!geo && (opt = GMT_Find_Option (API, 'J', *options))) {	/* Passed -J but no geo via -fg */
+		if (strchr ("xXpP", opt->arg[0]) == NULL || (toupper (opt->arg[0]) == 'X' && opt->arg[strlen(opt->arg)-1] == 'd')) {	/* Geographic projection of some sort */ 
+			if ((tmp = GMT_Make_Option (API, 'f', "g")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+				return API->error;	/* Failure to make new option or append to list */
+			geo = true;
+		}
 	}
-	if ((opt = GMT_Find_Option (API, ':', *options))) {	/* Got -: */
-		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
-	}
-	if ((opt = GMT_Find_Option (API, 'i', *options))) {	/* Got -i */
-		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
-	}
-	if ((opt = GMT_Make_Option (API, 'C', NULL)) == NULL) return API->error;	/* Failure to make new option -C */
-	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append -C option to new list */
-	if ((opt = GMT_Make_Option (API, '-', "GMT_HISTORY=false")) == NULL) return API->error;	/* Failure to make new option -- */
-	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append -- option to new list */
+	if ((tmp = GMT_Make_Option (API, 'C', NULL)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+		return API->error;	/* Failure to make new option -C or append to list */
+	if ((tmp = GMT_Make_Option (API, '-', "GMT_HISTORY=false")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+		return API->error;	/* Failure to make new option -- or append to list */
 
 	/* Set up virtual file to hold the result of gmt info */
 	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, virt_file) == GMT_NOTSET)
 		return (API->error);
-	if ((opt = GMT_Make_Option (API, GMT_OPT_OUTFILE, virt_file)) == NULL) return API->error;	/* Failure to make new option */
-	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append the output option to new list */
+	if ((tmp = GMT_Make_Option (API, GMT_OPT_OUTFILE, virt_file)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+        return API->error;	/* Failure to make new output option or append to the list */
 
 	if (GMT_Call_Module (API, "gmtinfo", GMT_MODULE_OPT, head) != GMT_OK)	/* Get the data domain via gmtinfo */
 		return (API->error);
@@ -10601,7 +10607,7 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 	/* Use data range to round to nearest reasonable decadal multiples */
 	range[GMT_X] = wesn[XHI] - wesn[XLO];
 	range[GMT_Y] = wesn[YHI] - wesn[YLO];
-	if (gmt_M_is_geographic (API->GMT, GMT_IN)) {	/* Special checks due to periodicity */
+	if (geo) {	/* Special checks due to periodicity */
 		if (range[GMT_X] > 306.0) {	/* If within 85% of a full 360 we promote to 360 */
 			wesn[XLO] = 0.0;	wesn[XHI] = 360.0;
 			set[GMT_X] = true;
@@ -10613,15 +10619,15 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 	}
 	for (side = GMT_X, item = XLO; side <= GMT_Y; side++) {
 		if (set[side]) continue;	/* Done above */
-		mag = floor (log10 (range[side])) - 1.0;
+		mag = rint (log10 (range[side])) - 1.0;
 		inc = pow (10.0, mag);
 		wesn[item] = floor (wesn[item] / inc) * inc;	item++;
 		wesn[item] = ceil  (wesn[item] / inc) * inc;	item++;
 	}
 	sprintf (region, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmt_set_missing_R_from_datasets: Determined the region %s.\n", region);
-	if ((opt = GMT_Make_Option (API, 'R', region)) == NULL) return API->error;	/* Failure to make new -R option */
-	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append -R option to calling module option list */
+	if ((tmp = GMT_Make_Option (API, 'R', region)) == NULL || (*options = GMT_Append_Option (API, tmp, *options)) == NULL)
+		return API->error;	/* Failure to make new -R option or append to the option list */
 
 	return GMT_NOERROR;
 }
