@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ |-L| ]
 [ |-S|\ [**x**\ ][**y**] ]
-[ |-T|\ *dz*\ [/*col*] ]
+[ |-T|\ *dz*\ [\ **+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -141,10 +141,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *dz*\ [/*col*]
+**-T**\ *dz*\ [\ **+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest
-    multiple of *dz* and output this in the form **-T**\ *zmin/zmax/dz*.
-    To use another column, append /\ *col*. Only works when **-I** is selected. 
+    multiple of *dz* and output this as the string **-T**\ *zmin/zmax/dz*.
+    To use another column, append **+c**\ *col*. Only works when **-I** is selected. 
 
 .. _-V:
 

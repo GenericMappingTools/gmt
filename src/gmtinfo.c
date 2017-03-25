@@ -122,7 +122,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-Fi|d|t] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -157,7 +157,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
 	GMT_Option (API, "V,bi2,d,f,g,h,i,o,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -173,6 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	int j;
 	unsigned int n_errors = 0, k;
 	bool special = false;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -271,10 +272,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				}
 				if (j == 2) Ctrl->S.xbar = Ctrl->S.ybar = true;
 				break;
-			case 'T':	/* makecpt range/inc string */
+			case 'T':	/* makecpt inc string */
 				Ctrl->T.active = true;
-				j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
-				if (j == 1) Ctrl->T.col = 0;
+				if ((c = strchr (opt->arg, '/')) && gmt_M_compat_check (GMT, 5)) {	/* Let it slide for now */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[+c<col>] instead.\n");
+					j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
+					if (j == 1) Ctrl->T.col = 0;
+				}
+				else if (c || opt->arg[0] == '\0') {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -T: Syntax is -T<inc>[+c<col>].\n");
+					n_errors++;
+				}
+				else {	/* Modern syntax and parsing */
+					if ((c = strstr (opt->arg, "+c"))) {
+						Ctrl->T.col = atoi (&c[2]);
+						c[0] = '\0';	/* Temporarily hide the modifier */
+					}
+					Ctrl->T.inc = atof (opt->arg);
+					if (c) c[0] = '+';	/* Restore the modifier */
+				}
 				break;
 
 			case 'b':	/* -b[i]c will land here */
