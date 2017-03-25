@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
 #define THIS_MODULE_KEYS	"<G{,AT)=t,CC(,DDD,>X},G?(=1"
-#define THIS_MODULE_NEEDS	"rJ"
+#define THIS_MODULE_NEEDS	"gJ"
 
 #include "gmt_dev.h"
 

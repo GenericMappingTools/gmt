@@ -28,7 +28,7 @@
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads, forces, and bending moments"
 #define THIS_MODULE_KEYS	"ED(,QD(,TD(,>D}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	""
 
 #include "gmt_dev.h"
 

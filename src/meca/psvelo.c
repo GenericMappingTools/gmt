@@ -28,7 +28,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"dJ"
 
 #include "gmt_dev.h"
 

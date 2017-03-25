@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
 #define THIS_MODULE_KEYS	"<D{,>X},C-("
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"dJ"
 
 #include "gmt_dev.h"
 

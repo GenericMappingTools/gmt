@@ -33,7 +33,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L2 norm"
 #define THIS_MODULE_KEYS	"<D{,>D}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"d"
 
 #include "gmt_dev.h"
 #include "block_subs.h"
