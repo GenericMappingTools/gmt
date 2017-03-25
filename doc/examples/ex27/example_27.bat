@@ -5,7 +5,7 @@ REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdimage, pscoast
 REM GMT supplement: img2grd (to read Sandwell/Smith img files)
-REM DOS calls:	del, grep
+REM DOS calls:	del
 REM
 echo GMT EXAMPLE 27
 set ps=example_27.ps
