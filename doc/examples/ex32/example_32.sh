@@ -40,7 +40,7 @@ Rplot=$Rflag/-10/790
 gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30 -P -K > $ps
 
 # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
-# So we write out the borders, pipe them through grdtack and then plot them with psxyz.
+# So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
 
 gmt pscoast $Rflag -Df -M -N1 | gmt grdtrack -Gtopo.nc -sa | gmt psxyz $Rplot -J -JZ -p -W1p,white \
 	-O -K >> $ps

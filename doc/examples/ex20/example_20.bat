@@ -10,31 +10,31 @@ echo GMT EXAMPLE 20
 set ps=example_20.ps
 
 REM Plot a world-map with volcano symbols of different sizes
-REM on top given locations and sizes in hotspots.d
+REM on top given locations and sizes in hotspots.txt
 
 gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 -K > %ps%
 
-echo 55.5 -21.0 0.25 > hotspots.d
-echo 63.0 -49.0 0.25 >> hotspots.d
-echo -12.0 -37.0 0.25 >> hotspots.d
-echo -28.5 29.34 0.25 >> hotspots.d
-echo 48.4 -53.4 0.25 >> hotspots.d
-echo 155.5 -40.4 0.25 >> hotspots.d
-echo -155.5 19.6 0.5 >> hotspots.d
-echo -138.1 -50.9 0.25 >> hotspots.d
-echo -153.5 -21.0 0.25 >> hotspots.d
-echo -116.7 -26.3 0.25 >> hotspots.d
-echo -16.5 64.4 0.25 >> hotspots.d
+echo 55.5 -21.0 0.25 > hotspots.txt
+echo 63.0 -49.0 0.25 >> hotspots.txt
+echo -12.0 -37.0 0.25 >> hotspots.txt
+echo -28.5 29.34 0.25 >> hotspots.txt
+echo 48.4 -53.4 0.25 >> hotspots.txt
+echo 155.5 -40.4 0.25 >> hotspots.txt
+echo -155.5 19.6 0.5 >> hotspots.txt
+echo -138.1 -50.9 0.25 >> hotspots.txt
+echo -153.5 -21.0 0.25 >> hotspots.txt
+echo -116.7 -26.3 0.25 >> hotspots.txt
+echo -16.5 64.4 0.25 >> hotspots.txt
 
-gmt psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> %ps%
+gmt psxy -R -J hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> %ps%
 
 REM Overlay a few bullseyes at NY, Cairo, and Perth
 
-echo 286 40.45 0.8 > cities.d
-echo 31.15 30.03 0.8 >> cities.d
-echo 115.49 -31.58 0.8 >> cities.d
+echo 286 40.45 0.8 > cities.txt
+echo 31.15 30.03 0.8 >> cities.txt
+echo 115.49 -31.58 0.8 >> cities.txt
 
-gmt psxy -R -J cities.d -Skbullseye -O >> %ps%
+gmt psxy -R -J cities.txt -Skbullseye -O >> %ps%
 
 del *.d
 del .gmt*

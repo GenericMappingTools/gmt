@@ -15,10 +15,10 @@ REM curl http://www.antarctica.ac.uk//bas_research/data/access/bedmap/download/b
 REM gunzip bedelev.asc.gz
 REM grdconvert bedelev.asc BEDMAP_elevation.nc=ns -V
 
-gmt makecpt -Cearth -T-7000/4000 > t.cpt
-gmt grdimage -Ct.cpt BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > %ps%
+gmt makecpt -Cearth -T-7000/4000 > z.cpt
+gmt grdimage -Cz.cpt BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > %ps%
 gmt pscoast -R-180/180/-90/-60 -Js0/-90/-71/1:60000000 -Bafg -Di -W0.25p -O -K >> %ps%
-gmt psscale -Ct.cpt -DjRM+w2.5i/0.2i+o0.5i/0+jLM+mc -R -J -O -K -F+p+i -Bxa1000+lELEVATION -By+lm >> %ps%
+gmt psscale -Cz.cpt -DjRM+w2.5i/0.2i+o0.5i/0+jLM+mc -R -J -O -K -F+p+i -Bxa1000+lELEVATION -By+lm >> %ps%
 REM GSHHG
 gmt pscoast -R -J -Di -Glightblue -Sroyalblue2 -O -K -X2i -Y4.75i >> %ps%
 gmt pscoast -R -J -Di -Glightbrown -O -K -A+ag -Bafg >> %ps%

@@ -17,7 +17,7 @@ gmt spatial GSHHS_h_Australia.txt -fg -Qk | $AWK '{printf "Full area = %.0f km@+
 gmt spatial T500k.txt -fg -Qk | $AWK '{printf "Reduced area = %.0f km@+2@+\n", $3}' > area_T500k.txt
 gmt psxy -R -J -O -K -W1p,blue T500k.txt >> $ps
 gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> $ps
-echo 112 -10 T = 500 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTL+f18p >> $ps
+echo T = 500 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> $ps
 gmt pstext -R -J -O -K area.txt -F+14p+cCM >> $ps
 gmt pstext -R -J -O -K area_T500k.txt -F+14p+cLB -Dj0.2i >> $ps
 gmt psbasemap -R -J -O -K -B20+lightgray -BWsne+g240/255/240 -Y4.7i >> $ps
@@ -27,7 +27,7 @@ gmt simplify GSHHS_h_Australia.txt -T100k > T100k.txt
 gmt spatial T100k.txt -fg -Qk | $AWK '{printf "Reduced area = %.0f km@+2@+\n", $3}' > area_T100k.txt
 gmt psxy -R -J -O -K -W1p,blue T100k.txt >> $ps
 gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> $ps
-echo 112 -10 T = 100 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTL+f18p >> $ps
+echo T = 100 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> $ps
 gmt pstext -R -J -O -K area.txt -F+14p+cCM >> $ps
 gmt pstext -R -J -O -K area_T100k.txt -F+14p+cLB -Dj0.2i >> $ps
 gmt psxy -R -J -O -T >> $ps

@@ -7,10 +7,10 @@
 # Unix progs:	rm
 #
 # Plot a world-map with volcano symbols of different sizes
-# on top given locations and sizes in hotspots.d
+# on top given locations and sizes in hotspots.txt
 ps=example_20.ps
 
-cat > hotspots.d << END
+cat > hotspots.txt << END
 55.5	-21.0	0.25
 63.0	-49.0	0.25
 -12.0	-37.0	0.25
@@ -27,16 +27,16 @@ END
 gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue \
 	-Dc -A5000 -K > $ps
 
-gmt psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
+gmt psxy -R -J hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> $ps
 
 # Overlay a few bullseyes at NY, Cairo, and Perth
 
-cat > cities.d << END
+cat > cities.txt << END
 286	40.45	0.8
 31.15	30.03	0.8
 115.49	-31.58	0.8
 END
 
-gmt psxy -R -J cities.d -Skbullseye -O >> $ps
+gmt psxy -R -J cities.txt -Skbullseye -O >> $ps
 
-rm -f hotspots.d cities.d
+rm -f hotspots.txt cities.txt
