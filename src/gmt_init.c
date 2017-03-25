@@ -10490,14 +10490,12 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 }
 
 /*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
-GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+GMT_LOCAL int gmt_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
 	 * Modules with this issue have "r" in their THIS_MODULE_NEEDS string.
 	 */
 	struct GMT_OPTION *opt = NULL;
 
-	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set explicitly, so do nothing */
-	if (strchr (args, 'r') == NULL) return GMT_NOERROR;	/* Not using a grid for -R in this module */
 	/* Here we know the module is using a grid to get -R implicitly */
 	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {	/* Got an argument, hopefully an input file */
 		if (!gmt_access (API->GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
@@ -10506,6 +10504,141 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append option */
 		}
 	}
+	return GMT_NOERROR;
+}
+
+/*! Add -Rw/e/s/n for those modules that may implicitly obtain the region via datasets */
+GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+	/* When a module uses -R indirectly via input data then we need to set that explicitly in the options.
+	 * Modules with this issue have "d" in their THIS_MODULE_NEEDS string.
+	 */
+	char region[GMT_LEN256] = {""}, virt_file[GMT_STR16] = {""}, tmpfile[GMT_LEN64] = {""}, *file = NULL;
+	bool set[2] = {false, false};
+	unsigned int side, item;
+	double mag, inc, wesn[4] = {0.0, 0.0, 0.0, 0.0}, range[2] = {0.0, 0.0};
+	struct GMT_OPTION *opt = NULL, *head = NULL;
+	struct GMT_DATASET *Out = NULL;
+
+	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+		if (opt->option == GMT_OPT_INFILE) {	/* Found an input file, append to new list */
+			if ((head = GMT_Append_Option (API, opt, head)) == NULL)
+				return API->error;	/* Failure to append option */
+		}
+	}
+	
+	if (head == NULL) {	/* User gave no input so we must process stdin */
+		/* Make name for a temporary file */
+		FILE *fp = NULL;
+		void *content = NULL;
+		size_t n_read = 0;
+	    
+		if (API->tmp_dir)			/* Have a recognized temp directory */
+			sprintf (tmpfile, "%s/", API->tmp_dir);
+		strcat (tmpfile, "gmt_saved_stdin.XXXXXX");
+		if ((file = mktemp (tmpfile)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmt_set_missing_R_from_datasets: Could not create temporary file name.\n");
+			return GMT_RUNTIME_ERROR;
+		}
+		if ((fp = fopen (file, API->GMT->current.io.w_mode)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmt_set_missing_R_from_datasets: Could not open temporary file %s.\n", file);
+			return GMT_RUNTIME_ERROR;
+		}
+	  
+		/* Dump stdin to that temp file */
+		content = malloc (GMT_BUFSIZ);
+		while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
+	        fwrite (content, 1, n_read, fp);
+	    }		
+	    fclose (fp);
+		free (content);
+		if ((opt = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL) return API->error;	/* Failure to make new option */
+		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append option to new list */
+		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append option to calling module option list */
+	}
+	
+	/* Here we have all the input options OR a single tempfile input option.  Now look for special modifiers and add those too */
+	if ((opt = GMT_Find_Option (API, 'b', *options))) {	/* Got -b */
+		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	}
+	if ((opt = GMT_Find_Option (API, 'f', *options))) {	/* Got -f */
+		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	}
+	if ((opt = GMT_Find_Option (API, ':', *options))) {	/* Got -: */
+		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	}
+	if ((opt = GMT_Find_Option (API, 'i', *options))) {	/* Got -i */
+		if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append this option to new list */
+	}
+	if ((opt = GMT_Make_Option (API, 'C', NULL)) == NULL) return API->error;	/* Failure to make new option -C */
+	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append -C option to new list */
+	if ((opt = GMT_Make_Option (API, '-', "GMT_HISTORY=false")) == NULL) return API->error;	/* Failure to make new option -- */
+	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append -- option to new list */
+
+	/* Set up virtual file to hold the result of gmt info */
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, virt_file) == GMT_NOTSET)
+		return (API->error);
+	if ((opt = GMT_Make_Option (API, GMT_OPT_OUTFILE, virt_file)) == NULL) return API->error;	/* Failure to make new option */
+	if ((head = GMT_Append_Option (API, opt, head)) == NULL) return API->error;	/* Failure to append the output option to new list */
+
+	if (GMT_Call_Module (API, "gmtinfo", GMT_MODULE_OPT, head) != GMT_OK)	/* Get the data domain via gmtinfo */
+		return (API->error);
+
+	if (GMT_Destroy_Options (API, &head))	/* Free the temporary option list */
+		return (API->error);
+
+	if ((Out = GMT_Read_VirtualFile (API, virt_file)) == NULL)
+		return (API->error);
+	/* Close the virtual files */
+	if (GMT_Close_VirtualFile (API, virt_file) != GMT_NOERROR)
+		return (API->error);
+	/* Get the four values from the first and only output record */
+	wesn[XLO] = Out->table[0]->segment[0]->data[0][0];
+	wesn[XHI] = Out->table[0]->segment[0]->data[1][0];
+	wesn[YLO] = Out->table[0]->segment[0]->data[2][0];
+	wesn[YHI] = Out->table[0]->segment[0]->data[3][0];
+	if (GMT_Destroy_Data (API, &Out) != GMT_OK)
+		return (API->error);
+	/* Use data range to round to nearest reasonable decadal multiples */
+	range[GMT_X] = wesn[XHI] - wesn[XLO];
+	range[GMT_Y] = wesn[YHI] - wesn[YLO];
+	if (gmt_M_is_geographic (API->GMT, GMT_IN)) {	/* Special checks due to periodicity */
+		if (range[GMT_X] > 306.0) {	/* If within 85% of a full 360 we promote to 360 */
+			wesn[XLO] = 0.0;	wesn[XHI] = 360.0;
+			set[GMT_X] = true;
+		}
+		if (range[GMT_Y] > 153.0) {	/* If within 85% of a full 180 we promote to 180 */
+			wesn[YLO] = -90.0;	wesn[YHI] = 90.0;
+			set[GMT_Y] = true;
+		}
+	}
+	for (side = GMT_X, item = XLO; side <= GMT_Y; side++) {
+		if (set[side]) continue;	/* Done above */
+		mag = floor (log10 (range[side])) - 1.0;
+		inc = pow (10.0, mag);
+		wesn[item] = floor (wesn[item] / inc) * inc;	item++;
+		wesn[item] = ceil  (wesn[item] / inc) * inc;	item++;
+	}
+	sprintf (region, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmt_set_missing_R_from_datasets: Determined the region %s.\n", region);
+	if ((opt = GMT_Make_Option (API, 'R', region)) == NULL) return API->error;	/* Failure to make new -R option */
+	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return API->error;	/* Failure to append -R option to calling module option list */
+
+	return GMT_NOERROR;
+}
+
+/*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
+GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
+	 * Modules with this issue have "r" in their THIS_MODULE_NEEDS string.
+	 * Modules that read datasets may have "d" in their THIS_MODULE_NEEDS which forces us to determine the region.
+	 */
+
+	if (API->GMT->common.R.active) return GMT_NOERROR;	/* Set explicitly, so do nothing */
+	if (strchr (args, 'r'))	/* Use the input grid to add a valid -R into the options */
+		return (gmt_set_missing_R_from_grid (API, args, options));
+	else if (strchr (args, 'd'))	/* Use input dataset(s) to find and add -R in this module */
+		return (gmt_set_missing_R_from_datasets (API, args, options));
+	/* Nothing could be done */
 	return GMT_NOERROR;
 }
 
