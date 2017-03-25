@@ -3880,7 +3880,7 @@ bool gmt_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *head) {
 	if (GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT]) return (false);	/* Binary, so clearly false */
 	if (GMT->current.io.ndim > 0) return (false);						/* netCDF, so clearly false */
 	if (GMT->common.i.active || GMT->common.o.active) return (false);			/* Selected columns via -i and/or -o, so false */
-	if (GMT->parent->mode) {	/* External interface (e.g., mex, Python) so must check if writing files or memory */
+	if (GMT->parent->external) {	/* External interface (e.g., mex, Python) so must check if writing files or memory */
 		struct GMT_OPTION *current = head;
 		while (current) {	/* Look for file names */
 			if (current->option == GMT_OPT_INFILE || current->option == GMT_OPT_OUTFILE) {	/* File given, see if memory */

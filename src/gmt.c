@@ -52,11 +52,11 @@
 #endif
 
 int main (int argc, char *argv[]) {
-	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
-	int k, v_mode = GMT_MSG_COMPAT;		/* Default verbosity */
+	int k, status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
 	bool gmt_main = false;			/* Set to true if no module was specified */
 	unsigned int modulename_arg_n = 0;	/* Argument index in argv[] that contains module name */
 	unsigned int mode = GMT_SESSION_NORMAL;	/* Default API mode */
+	unsigned int v_mode = GMT_MSG_COMPAT;		/* Default verbosity */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
@@ -78,9 +78,9 @@ int main (int argc, char *argv[]) {
 #endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
-	 * Note: Because first 2 bits of mode is used for other things we must left-shift by 2 */
+	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
-	if (v_mode) mode = ((unsigned int)v_mode) << 2;	/* Left-shift the mode by 2 */
+	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;

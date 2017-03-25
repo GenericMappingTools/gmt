@@ -126,7 +126,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	if (API->mode) {	/* External interface */
+	if (API->external) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
 		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 	}
@@ -150,12 +150,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT.  Alternatively, give three separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
-	if (API->mode)	/* External interface */
+	if (API->external)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
 
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	if (API->mode)	/* External interface */
+	if (API->external)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t-A Return a GMT raster image instead of a PostScript plot.\n");
 	else {
 #ifdef HAVE_GDAL
@@ -172,7 +172,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
     GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
-	if (API->mode)	/* External interface */
+	if (API->external)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t-D <grd_z> is an image instead of a grid. Append r to equate image region to -R region.\n");
 #ifdef HAVE_GDAL
 	else
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				Ctrl->A.active = true;
-				if (API->mode) {	/* External interface only */
+				if (API->external) {	/* External interface only */
 					if ((n = strlen (opt->arg)) > 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: No output argument allowed\n");
 						n_errors++;
@@ -392,7 +392,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-	if (!API->mode) {	/* I.e, not an External interface */
+	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 		                                   "Syntax error: Must specify one (or three) input file(s)\n");
 	}

@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2012-2016
+ * Copyright (c) 2012-2017
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -78,6 +78,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdcut", "core", "Extract subregion from a grid", "<G{,GG}"},
 	{"grdedit", "core", "Modify header or content of a grid", "<G{,ND(,GG}"},
 	{"grdfft", "core", "Mathematical operations on grids in the wavenumber (or frequency) domain", "<G{+,GG},GDE"},
+	{"grdfill", "core", "Interpolate across holes in a grid", "<G{,>G}"},
 	{"grdfilter", "core", "Filter a grid in the space (or time) domain", "<G{,FG(=1,GG}"},
 	{"grdgradient", "core", "Compute directional gradients from a grid", "<G{,GG},SG)"},
 	{"grdhisteq", "core", "Perform histogram equalization for a grid", "<G{,GG},DT)"},
@@ -120,7 +121,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}"},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)"},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}"},
-	{"sphdistance", "core", "Create Voronoi distance, node, or nearest-neighbor grid on a sphere", "<D{,ND(,QD(,GG},Q-("},
+	{"sphdistance", "core", "Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere", "<D{,ND(,QD(,GG},Q-("},
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<D{,GG}"},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND)"},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}"},
@@ -146,7 +147,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D{,AD(=,TD(,>D}", &GMT_gmtmath},
 	{"gmtread", "core", "Read GMT objects into external API", "-T-,<?{,>?}", &GMT_gmtread},
 	{"gmtregress", "core", "Linear regression of 1-D data sets", "<D{,>D}", &GMT_gmtregress},
-	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D}", &GMT_gmtselect},
+	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D},GG(", &GMT_gmtselect},
 	{"gmtset", "core", "Change individual GMT default parameters", "", &GMT_gmtset},
 	{"gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}", &GMT_gmtsimplify},
 	{"gmtspatial", "core", "Geospatial operations on lines and polygons", "<D{,DD(=f,ND(=,TD(,>D},>TD,>TI,>TN+r", &GMT_gmtspatial},
@@ -163,6 +164,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdcut", "core", "Extract subregion from a grid", "<G{,GG}", &GMT_grdcut},
 	{"grdedit", "core", "Modify header or content of a grid", "<G{,ND(,GG}", &GMT_grdedit},
 	{"grdfft", "core", "Mathematical operations on grids in the wavenumber (or frequency) domain", "<G{+,GG},GDE", &GMT_grdfft},
+	{"grdfill", "core", "Interpolate across holes in a grid", "<G{,>G}", &GMT_grdfill},
 	{"grdfilter", "core", "Filter a grid in the space (or time) domain", "<G{,FG(=1,GG}", &GMT_grdfilter},
 	{"grdgradient", "core", "Compute directional gradients from a grid", "<G{,GG},SG)", &GMT_grdgradient},
 	{"grdhisteq", "core", "Perform histogram equalization for a grid", "<G{,GG},DT)", &GMT_grdhisteq},
@@ -205,7 +207,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}", &GMT_sample1d},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}", &GMT_sph2grd},
-	{"sphdistance", "core", "Create Voronoi distance, node, or nearest-neighbor grid on a sphere", "<D{,ND(,QD(,GG},Q-(", &GMT_sphdistance},
+	{"sphdistance", "core", "Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere", "<D{,ND(,QD(,GG},Q-(", &GMT_sphdistance},
 	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", "<D{,GG}", &GMT_sphinterpolate},
 	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND)", &GMT_sphtriangulate},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}", &GMT_splitxyz},
@@ -231,7 +233,7 @@ void gmt_core_module_show_all (void *V_API) {
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-		if (API->mode || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite"))) {
+		if (API->external || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite"))) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_core_module[module_id].name, g_core_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -245,7 +247,7 @@ void gmt_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].name != NULL) {
-		if (API->mode || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite")))
+		if (API->external || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite")))
 			printf ("%s\n", g_core_module[module_id].name);
 		++module_id;
 	}

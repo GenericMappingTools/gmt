@@ -466,7 +466,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\timage will have the size specified by the BoundingBox.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tAs an option, a tight BoundingBox may be computed.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<psfile(s)> PostScript file(s) to be converted.\n");
-	if (API->mode)
+	if (API->external)
 		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
@@ -596,7 +596,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files [Allow for file "=" under API calls] */
-				if (!(GMT->parent->mode && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
+				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
 					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				}
 				Ctrl->In.n_files++;
@@ -1353,7 +1353,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
-	if (API->mode && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
+	if (API->external && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
 		int    error = 0;
 		double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 

@@ -282,7 +282,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
 	int ppid = -1;
-	if (GMT->parent->mode) return (getpid());	/* Return ID of the gmt application */
+	if (GMT->parent->external) return (getpid());	/* Return ID of the gmt application */
 	/* Here we are probably running from the command line and want the shell's PID */
 #ifdef _WIN32
 	int pid = GetCurrentProcessId ();

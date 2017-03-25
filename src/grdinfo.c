@@ -316,7 +316,7 @@ L_use_it:		row = 0;	/* Get here by goto and use is still true */
 						out[XHI] = (out[XHI] < 0.0) ? +180.0 : 360.0;
 					}
 				}
-				if (GMT->parent->mode)	/* External interface */
+				if (GMT->parent->external)	/* External interface */
 					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 				else if (Ctrl->C.active) {
 					gmt_ascii_format_col (GMT, record, out[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
@@ -400,7 +400,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
 	
 	if (Ctrl->C.active) {
-		if (API->mode) o_type = GMT_IS_DATASET;	/* With external interface we are returning doubles */
+		if (API->external) o_type = GMT_IS_DATASET;	/* With external interface we are returning doubles */
 		n_cols = 6;	/* w e s n z0 z1 */
 		if (!Ctrl->I.active) {
 			n_cols += 4;				/* Add dx dy n_columns n_rows */
@@ -586,7 +586,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		} else if (Ctrl->C.active && !Ctrl->I.active) {
-			if (API->mode) {	/* External interface, return as data with no leading text */
+			if (API->external) {	/* External interface, return as data with no leading text */
 				/* w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan] */
 				gmt_M_memcpy (out, G->header->wesn, 4, double);	/* Place the w/e/s/n limits */
 				out[ZLO]   = G->header->z_min;		out[ZHI]   = G->header->z_max;
@@ -825,7 +825,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->D.active)
 			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
-		else if (API->mode) {	/* External interface, return as data with no leading text */
+		else if (API->external) {	/* External interface, return as data with no leading text */
 			/* w e s n z0 z1 */
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
 			out[YLO] = global_ymin;		out[YHI] = global_ymax;

@@ -259,7 +259,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->mode || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite"))) {
+		if (API->external || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite"))) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -295,7 +295,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->mode || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite")))
+		if (API->external || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite")))
 			printf ("%s\n", g_${L_TAG}_module[module_id].name);
 EOF
 else

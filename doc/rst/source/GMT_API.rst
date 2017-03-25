@@ -914,6 +914,9 @@ is a sum of bit flags and the various bits control the following settings:
 #. Bit 3 (4): If set, then it means the external API uses a column-major format for
    matrices (e.g., MATLAB, Fortran).  If not set we default to row-major
    format (C/C++, Python, etc.).
+#. Bit 4 (8): If set, the we enable GMT's modern run-mode (where -O -K are
+   not allowed and PostScript is written to hidden temp file).  Default
+   is the GMT classic run-mode.
 
 The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the

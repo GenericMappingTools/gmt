@@ -428,7 +428,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (API->mode && gmt_formatting) {
+	if (API->external && gmt_formatting) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Disabling text formatting for external interface\n");
 		gmt_formatting = false;
 	}

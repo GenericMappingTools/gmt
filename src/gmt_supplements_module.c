@@ -50,7 +50,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"pssac", "meca", "Plot seismograms in SAC format on maps", ">XO,RG-"},
 	{"psvelo", "meca", "Plot velocity vectors, crosses, and wedges on maps", "<T{,>X}"},
 	{"mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
-	{"mgd77header", "mgd77", "Create MGD77 headers from A77 files", ">T}"},
+	{"mgd77header", "mgd77", "Create MGD77 headers from A77 files", ""},
 	{"mgd77info", "mgd77", "Extract information about MGD77 files", ""},
 	{"mgd77list", "mgd77", "Extract data from MGD77 files", ">?}"},
 	{"mgd77magref", "mgd77", "Evaluate the IGRF or CM4 magnetic field models", "<D{,>D}"},

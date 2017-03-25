@@ -239,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 					Ctrl->C.mode = GMT_OUT;
 					c[0] = '\0';	/* Chop off temporarily */
 				}
-				if ((opt->arg[0] == 'm' && opt->arg[1] == '\0') || (API->mode == 0 && opt->arg[0] == '\0'))
+				if ((opt->arg[0] == 'm' && opt->arg[1] == '\0') || (API->external == 0 && opt->arg[0] == '\0'))
 					Ctrl->C.mean = true;
 				else if (Ctrl->C.mode == GMT_IN) {
 					gmt_M_str_free (Ctrl->C.file);
