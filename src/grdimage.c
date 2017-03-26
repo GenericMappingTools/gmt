@@ -509,13 +509,15 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		/* Prepare the grdgradient arguments using default -A-45 -Nt1 */
-		sprintf (l_args, "%s -G%s -A-45 -Nt1", Ctrl->In.file[0], int_grd);
+		sprintf (l_args, "%s -G%s -A-45 -Nt1 --GMT_HISTORY=false", Ctrl->In.file[0], int_grd);
 		/* Call the grdgradient module */
+		if (GMT->common.R.oblique) GMT->common.R.active = false;	/* Must turn -R off temporarily */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, l_args))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
+		if (GMT->common.R.oblique) GMT->common.R.active = true;	/* Reset -R */
 	}
 	
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
@@ -690,7 +692,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string);
 			/* Create the command to do the resampling via the grdsample module */
-			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, n_columns, n_rows);
+			sprintf (cmd, "%s -G%s -I%d+/%d+ --GMT_HISTORY=false", in_string, out_string, n_columns, n_rows);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR)	/* Do the resampling */
 				return (API->error);
    			/* Obtain the resmapled intensity grid from the virtual file */
