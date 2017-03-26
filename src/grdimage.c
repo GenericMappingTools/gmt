@@ -655,7 +655,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "No grid or image inside plot domain\n");
 		/* No grid to plot; just do an empty map and bail */
 		/* MISSING: Action to take if -A is in effect.  Need to create an empty image and return/save it */
-		if (Ctrl->A.active) {	/* Create an empty impage of the right dimensions */
+		if (Ctrl->A.active) {	/* Create an empty image of the right dimensions */
 		}
 		else {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -879,6 +879,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* We desire a raster image, not a PostScript plot */
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
+		char mem_layout[5] = {""};
 		if (Ctrl->M.active || gray_only) dim[GMT_Z] = 1;	/* Only one band */
 		if (!need_to_project) {	/* Stick with original -R */
 			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
@@ -897,13 +898,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 		}
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array */
+		strcmp (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");				/* This is the grdimage's mem layout */
 		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
-		
-		//strncpy (Out->header->mem_layout, "TRPa", 4);	/* Set the array memory layout */
-
+		if (!mem_layout[0])
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: The memory layout code is empty, but it shouldn't be.\n");
+		else
+			GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
+			
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
 		if (header_work->ProjRefWKT != NULL)
 			Out->header->ProjRefWKT = strdup(header_work->ProjRefWKT);
