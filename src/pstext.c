@@ -874,7 +874,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			assert (line != NULL);
 			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
-			strncpy (cp_line, line, GMT_BUFSIZ);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
+			strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
 			line = cp_line;
 
 			if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
