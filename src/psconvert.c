@@ -1122,6 +1122,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 					I->data[row*nBands + col*nBands*nRows + band] = tmp[n++];
 		}
 	}
+	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
+		read (fh, I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+	}
 	else {
 		for (row = 0; row < nRows; row++) {
 			k = read (fh, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
@@ -2104,7 +2107,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			struct GMT_IMAGE *I = NULL;
 #ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-			GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TCBa");	/* State how we wish to receive images from GDAL */
+			/* State how we wish to receive images from GDAL */
+			if (GMT->current.gdal_read_in.O.mem_layout[0])		/* At one point this should never be allowed to be empty */
+				GMT_Set_Default (API, "API_IMAGE_LAYOUT", GMT->current.gdal_read_in.O.mem_layout);
+			else
+				GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TCBa");
+	
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
