@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);

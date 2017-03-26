@@ -59,15 +59,22 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ [\ **+w**\ *length*\ [/\ *width*\ ]]\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**\ \|\ **v**\ ][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    Append **+w** followed by the *length* and *width* of the color bar.
+    For **-Dj** or **-DJ** with codes TC, BC, ML, MR (i.e., centered on one of the map sides) we
+    pre-calculate all further settings.  Specifically, the *length* is set to 80% of the map side,
+    horizontal or vertical depends on the side, the offset is MAP_LABEL_OFFSET for **Dj** with an
+    extra offset MAP_FRAME_WIDTH for **DJ**, and annotations are placed on the side of the scale facing
+    away from the map frame.
+    However, you can override any of these with these modifiers:
+    Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
+    specified then it is set to 4% of the given *length*.
     Give a negative *length* to reverse the scale bar. Append **+h** to get a
-    horizontal scale [Default is vertical].
+    horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
@@ -275,12 +282,12 @@ provide the reference point and select the left-mid anchor point via
 
     gmt psscale -Dx6.5i+jLM/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
 
-To overlay a horizontal color scale (4 inches long; 1 cm wide) above a
+To overlay a horizontal color scale (4 inches long and default width) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
    ::
 
-    gmt psscale -DjCT+w4i/1c+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
+    gmt psscale -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
 
 Notes
 -----

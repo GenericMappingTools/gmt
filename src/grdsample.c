@@ -35,7 +35,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample a grid onto a new lattice"
 #define THIS_MODULE_KEYS	"<G{,GG}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVfnr" GMT_ADD_x_OPT GMT_OPT("FQ")
 
 struct GRDSAMPLE_CTRL {

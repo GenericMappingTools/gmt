@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,>X},>D),>DI"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"J"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbfhipstxy" GMT_OPT("Ec")
 
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
