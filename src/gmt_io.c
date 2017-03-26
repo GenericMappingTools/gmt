@@ -7464,7 +7464,7 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 		strncpy (I->header->mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);	/* Set the current memory layout */
 	else
 		/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
-		strncpy (I->header->mem_layout, "TRPa", 4);	/* Set the default array memory layout */
+		strncpy (I->header->mem_layout, GMT_IMAGE_LAYOUT, 4);	/* Set the default array memory layout */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 	return (I);
 }
