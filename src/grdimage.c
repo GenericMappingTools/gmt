@@ -625,7 +625,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "No grid or image inside plot domain\n");
 		/* No grid to plot; just do an empty map and bail */
 		/* MISSING: Action to take if -A is in effect.  Need to create an empty image and return/save it */
-		if (Ctrl->A.active) {	/* Create an empty impage of the right dimensions */
+		if (Ctrl->A.active) {	/* Create an empty image of the right dimensions */
 		}
 		else {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
