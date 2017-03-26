@@ -1050,6 +1050,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 					I->data[row*nBands + col*nBands*nRows + band] = tmp[n++];
 		}
 	}
+	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
+		read (fh, I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+	}
 	else {
 		for (row = 0; row < nRows; row++) {
 			k = read (fh, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
