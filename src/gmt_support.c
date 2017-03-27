@@ -14156,7 +14156,11 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			int n2;
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 			arg[n] = 0;	/* Chop off modifiers temporarily */
-			if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) {
+			if (mode == GMT_REFPOINT_NOTSET && strlen (arg) == 2 && strchr ("LMRBCT", toupper(arg[GMT_X])) && strchr ("LMRBCT", toupper(arg[GMT_Y]))) {	/* Apparently a 2-char justification code */
+				mode = GMT_REFPOINT_JUST;
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -%c option was interpreted to mean -%c%c\n", option, option, kind[mode]);
+			}
+			else if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) {
 				arg[n] = '+';	/* Restore modifiers */
 				return NULL;	/* Not so good */
 			}

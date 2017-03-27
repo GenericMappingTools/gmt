@@ -9281,8 +9281,6 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 			char gmt_module[32] = "gmt";
 			strncat (gmt_module, module, 28);	/* Prepend "gmt" to module and try again */
 			status = GMT_Call_Module (V_API, gmt_module, mode, args);	/* Recursive call to try with the 'gmt' prefix */
-			if (status != GMT_NOERROR && mode != GMT_MODULE_EXIST)		/* If no error it means we got it */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s OR error while running it.\n", module);
 		}
 	}
 	else if (mode == GMT_MODULE_EXIST)	/* Just wanted to know it is there */
