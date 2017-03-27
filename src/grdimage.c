@@ -373,12 +373,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
-
+#if 0	/* Want this to be in modern mode only and done centrally instead */
 	if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
 		gmt_parse_common_options (GMT, "J", 'J', "X15c");
 		GMT->common.J.active = true;
 	}
-
+#endif
 	if (n_files == 3) Ctrl->In.do_rgb = true;
 	if (Ctrl->D.active) {	/* Only OK with memory input or GDAL support */
 		if (!gmt_M_file_is_memory (Ctrl->In.file[0])) {
@@ -387,7 +387,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 #endif
 		}	
 	}
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
+	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 

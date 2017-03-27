@@ -8535,8 +8535,19 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	bool search, double_auto[6];
 	double scale, i_scale;
 
-	if (!GMT->common.J.active) Return (GMT_MAP_NO_PROJECTION);
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
+
+	if (!GMT->common.J.active) {
+		char *def_args[2] = {"X15c", "Q15c"};
+		if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* This is a fatal error in classic mode */
+			Return (GMT_MAP_NO_PROJECTION);
+		if (!GMT->current.ps.active)
+			Return (GMT_MAP_NO_PROJECTION);	/* Only auto-setup a projection for mapping and plots */
+		/* Here we are in modern mode starting a new plot without a map projection.  The rules says use -JQ15c (geo) or -JX15c (Cartesian) */
+		i = gmt_M_is_geographic (GMT, GMT_IN);
+		gmt_parse_common_options (GMT, "J", 'J', def_args[i]);
+		GMT->common.J.active = true;
+	}
 
 	gmtlib_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
 

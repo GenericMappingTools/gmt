@@ -10724,7 +10724,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		/* Next we add blank -R or -J options if these are required but not provided on command line.
 		 * However, we cannot do this at the start of a plot since the history may not be relevant. */
 		
-		if (gmt_is_PS_module (API, mod_name, keys, *options))	/* true if module will produce PS */
+		API->GMT->current.ps.active = gmt_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+		if (API->GMT->current.ps.active)	/* true if module will produce PS */
 			(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.use_history=true if the expected (and hidden) PS plot file exists */
 		
 		if (API->GMT->current.ps.use_history) {	/* Not the start of a plot so the -R -J history is relevant to this plot */
@@ -10778,6 +10779,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	Ccopy->current.ps.clip_level = GMT->current.ps.clip_level;
 	Ccopy->current.ps.layer = GMT->current.ps.layer;
+	Ccopy->current.ps.active = GMT->current.ps.active;
+	Ccopy->current.ps.use_history = GMT->current.ps.use_history;
 
 	/* GMT_COMMON */
 
