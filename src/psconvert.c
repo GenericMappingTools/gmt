@@ -2091,6 +2091,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", GMT->current.ps.filename, out_file);
 				if (rename (GMT->current.ps.filename, out_file)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to rename %s -> %s!\n", GMT->current.ps.filename, out_file);
+					perror();
 				}
 			}
 			else {	/* Delete it, no -Z needed */
