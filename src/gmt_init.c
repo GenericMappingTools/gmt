@@ -12012,7 +12012,12 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				case 's': GMT->common.B.active[GMT_SECONDARY] = true; break;
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
-			if (!error) error = gmtinit_parse_B_option (GMT, item);
+			if (!error) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && item[0] == '\0')
+					error = gmtinit_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+				else
+					error = gmtinit_parse_B_option (GMT, item);
+			}
 			break;
 
 		case 'I':
