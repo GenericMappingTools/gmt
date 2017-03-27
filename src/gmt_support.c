@@ -14171,27 +14171,23 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			mode = GMT_REFPOINT_PLOT;
 		else if (strchr (GMT_DIM_UNITS, txt_y[strlen(txt_y)-1]))	/* y position included a unit */
 			mode = GMT_REFPOINT_PLOT;
-		else if (GMT->common.J.active == false && GMT->common.R.active == false)	/* No -R, -J were given so can only mean plot coordinates */
-			mode = GMT_REFPOINT_PLOT;
 		else if (strlen (txt_x) == 2 && strchr ("LMRBCT", toupper(txt_x[GMT_X])) && strchr ("LMRBCT", toupper(txt_x[GMT_Y])))	/* Apparently a 2-char justification code */
 			mode = GMT_REFPOINT_JUST;
+		else if (GMT->common.J.active == false && GMT->common.R.active == false)	/* No -R, -J were given so can only mean plot coordinates */
+			mode = GMT_REFPOINT_PLOT;
 		else {	/* Must assume the user gave map coordinates */
 			mode = GMT_REFPOINT_MAP;
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -%c option was interpreted to mean -D%c\n", option, kind[mode]);
 		}
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your -%c option was interpreted to mean -%c%c\n", option, option, kind[mode]);
 	}
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
 
-	if (mode != GMT_REFPOINT_PLOT) {	/* Will need -R -J so check again */
-		gmt_set_missing_options (GMT, "RJ");	/* If they exist in the history and mode is modern */
+	if (mode != GMT_REFPOINT_PLOT) {	/* Will need -R -J so check that these have been parsed */
+		gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, they exist in the history, and is an overlay we may add from history  */
 		if (GMT->common.J.active == false && GMT->common.R.active == false) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 			return NULL;
 		}
-	}
-	if (mode != GMT_REFPOINT_PLOT && GMT->common.J.active == false && GMT->common.R.active == false) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
-		return NULL;
 	}
 
 	/* Here we have something to return */

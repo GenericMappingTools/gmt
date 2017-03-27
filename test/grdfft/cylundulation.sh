@@ -20,7 +20,7 @@ gmt psxy -R"${src:-.}"/surf.nc -J -O -K -Sv0.21i+e -Wthick -Gblack << EOF >> $ps
 64 64 18 2i
 64 64 -60 2i
 EOF
-gmt psscale -DjRM+w4.5i/0.1i+jLM+o0.2i/0 -Ct.cpt -Baf -R -J -O -K >> $ps
+gmt psscale -DJRM+w4.5i/0.1i -Ct.cpt -Baf -R -J -O -K >> $ps
 gmt grdfft "${src:-.}"/surf.nc -Ex+w -N+zp --GMT_FFT=brenner > /dev/null
 gmt makecpt -Cwhite,gray -T0,0.5 -N -Z > t.cpt
 gmt makecpt -N -T0.5/3.5/1 -Crainbow >> t.cpt
@@ -43,5 +43,5 @@ gmt pstext -R -J -O -K -F+f12p << EOF >> $ps
 0.65 -0.35 60\232
 0.52 0.08 18\232
 EOF
-gmt psscale -DjRM+w4.5i/0.1i+jLM+o0.2i/0 -Ct.cpt -R -J -O -K >> $ps
+gmt psscale -DJRM+w4.5i/0.1i -Ct.cpt -R -J -O -K >> $ps
 gmt psxy -R -J -O -T >> $ps
