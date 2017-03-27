@@ -21,10 +21,10 @@ let k=1
 while [ $k -le $n_eigen ]; do
 	file=`gmt_set_framename ${name} ${frame}`
 	gmt greenspline ${src:-.}/table_5.11 -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -D1 -Cn${k} -Emisfit.txt 2> /dev/null
-	gmt grdcontour t.nc -C25 -A50 -Baf -BWSnE -JX4i -P -K -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.8i --PS_MEDIA=4.5ix5.0i > $$.ps
+	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -P -K -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.4i --PS_MEDIA=4.5ix5.0i > $$.ps
 	gmt psxy misfit.txt -R -J -O -K -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 >> $$.ps
 	echo $k | gmt pstext -R -J -O -K -F+cTR+jTR+f18p -Dj0.1i >> $$.ps
-	gmt psscale -R -J -O -Ct.cpt -DJBC+w3.4i/0.1i+h+jTC+o-0.2i/0.4i+e -Bxaf -By+l"misfit" >> $$.ps
+	gmt psscale -R -J -O -Ct.cpt -DJBC+e -Bxaf -By+l"misfit" >> $$.ps
 	[[ ${frame} -eq 0 ]] && cp $$.ps ${ps}
 	if [ $# -eq 0 ]; then
 		gmt_cleanup .gmt
