@@ -263,29 +263,34 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 					double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
 					double in_offset  = GMT->current.setting.map_label_offset;
-					switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m. +o may overrule this later */
-						case PSL_TC:
-							Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-							Ctrl->D.horizontal = true;
-							Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
-							break;
-						case PSL_BC:
-							Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-							Ctrl->D.horizontal = true;
-							Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
-							break;
-						case PSL_ML:
-							Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
-							Ctrl->D.horizontal = false;
-							Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
-							break;
-						case PSL_MR:
-							Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
-							Ctrl->D.horizontal = false;
-							Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
-							break;
-						default:
-							break;
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
+					else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
+						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+						switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m. +o may overrule this later */
+							case PSL_TC:
+								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+								Ctrl->D.horizontal = true;
+								Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+								break;
+							case PSL_BC:
+								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+								Ctrl->D.horizontal = true;
+								Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+								break;
+							case PSL_ML:
+								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+								Ctrl->D.horizontal = false;
+								Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+								break;
+							case PSL_MR:
+								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+								Ctrl->D.horizontal = false;
+								Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+								break;
+							default:
+								break;
+						}
 					}
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw")) n_errors++;
 					/* Required modifier +w */
@@ -312,10 +317,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						Ctrl->D.horizontal = true;
 					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'v', string))
 						Ctrl->D.horizontal = false;
-					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
-					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
-						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
