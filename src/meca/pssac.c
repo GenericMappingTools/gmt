@@ -269,7 +269,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				}
 				Ctrl->G.active[k] = true;
 				pos = j;
-				while (gmt_getmodopt (GMT, opt->arg, "gtz", &pos, p)) {
+				while (gmt_getmodopt (GMT, 'G', opt->arg, "gtz", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
 						case 'g':  /* fill */
 							if (gmt_getfill (GMT, &p[1], &Ctrl->G.fill[k])) {
@@ -287,9 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 								n_errors++;
 							}
 							break;
-						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: -G+g<fill>+z<zero>+t<t0>/<t1>\n");
-							break;
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
 				break;
@@ -338,7 +336,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				pos = 0;
 				Ctrl->T.active = true;
 				Ctrl->T.shift = 0.0;  /* default no shift */
-				while (gmt_getmodopt (GMT, opt->arg, "trs", &pos, p)) {
+				while (gmt_getmodopt (GMT, 'T', opt->arg, "trs", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
 						case 't':
 							Ctrl->T.align = true;
@@ -351,10 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 						case 's':
 							Ctrl->T.shift = atof (&p[1]);
 							break;
-						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: -T+t<align>+r<reduce_vel>+s<shift>");
-							n_errors++;
-							break;
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
 				break;

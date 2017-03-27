@@ -285,7 +285,7 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 
 GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONTOUR_CTRL *Ctrl) {
 	/* Parse the -Z option: -Z[+s<scale>][+o<offset>][+p] */
-	
+	unsigned int uerr = 0;
 	if (!txt || txt[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
     		"Syntax error -Z option: No arguments given\n");
@@ -294,15 +294,12 @@ GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDC
 	if (strstr (txt, "+s") || strstr (txt, "+o") || strstr (txt, "+p")) {
 		char p[GMT_LEN64] = {""};
 		unsigned int pos = 0;
-		while (gmt_getmodopt (GMT, txt, "sop", &pos, p)) {
+		while (gmt_getmodopt (GMT, 'Z', txt, "sop", &pos, p, &uerr) && uerr == 0) {
 			switch (p[0]) {
 				case 's':	Ctrl->Z.scale = atof (&p[1]);	break;
 				case 'o':	Ctrl->Z.offset = atof (&p[1]);	break;
 				case 'p':	Ctrl->Z.periodic = true;		break;
-				default: 
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-	            		"Syntax error -Z option: Modifier +%s not recognized.\n", p[0]);
-					return (GMT_PARSE_ERROR);
+				default: 	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					break;
 			}
 		}
@@ -311,7 +308,7 @@ GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDC
 		if (txt[0] && txt[0] != 'p') sscanf (txt, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset);
 		Ctrl->Z.periodic = (txt[strlen(txt)-1] == 'p');	/* Phase data */
 	}
-	return (GMT_NOERROR);
+	return (uerr ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {

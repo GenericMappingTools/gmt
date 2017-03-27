@@ -1635,6 +1635,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char p[GMT_LEN256] = {""}, *c = NULL;
 
+	/* -p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>] */
+	
 	if (!GMT->common.J.active) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
 	switch (item[0]) {
 		case 'x': GMT->current.proj.z_project.view_plane = GMT_X + GMT_ZW; l++; break;
@@ -1657,7 +1659,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 	if (c) {	/* Now process any modifiers */
 		pos = 0;
 		c[0] = '+';	/* Restore that character */
-		while (gmt_getmodopt (GMT, c, "vw", &pos, p)) {
+		while (gmt_getmodopt (GMT, 'p', c, "vw", &pos, p, &error) && error == 0) {
 			switch (p[0]) {
 				case 'v':	/* View point given in projected coordinates */
 					if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
@@ -1678,7 +1680,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 					if (k == 3) error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf (GMT, txt_c, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_project.world_z), txt_c);
 					GMT->current.proj.z_project.world_given = true;
 					break;
-				default: return (GMT_PARSE_ERROR); break;
+				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+					break;
 			}
 		}
 		c[0] = '\0';	/* Chop off all modifiers so az/el/z can be determined */
@@ -6949,7 +6952,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, *c = NULL;
 	bool new_style;
-	unsigned int k = 0, pos = 0, pos_p;
+	unsigned int k = 0, pos = 0, pos_p, uerr = 0;
 	int convert;
 	int64_t i, start = -1, stop = -1, inc;
 	double scale, offset;
@@ -6967,15 +6970,16 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		if (new_style) {	/* New format as of 5.4: -i<col>|<colrange>[+l][+s<scale>][+o<offset>],... */
 			if ((c = gmt_first_modifier (GMT, p, "los"))) {	/* Process modifiers */
 				pos_p = 0;	/* Reset to start of new word */
-				while (gmt_getmodopt (GMT, c, "los", &pos_p, word)) {
+				while (gmt_getmodopt (GMT, 'i', c, "los", &pos_p, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'l': convert |= 2; break;
 						case 'o': convert |= 1; offset = atof (&word[1]); break;
 						case 's': convert |= 1; scale  = atof (&word[1]); break;
-						default: return (GMT_PARSE_ERROR); break;
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
 				c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+				if (uerr) return (GMT_PARSE_ERROR);
 			}
 		}
 		else {	/* Old-style: -i<col>|<colrange>[l][s<scale>][o<offset>],... */

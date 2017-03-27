@@ -203,7 +203,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			case 'C':	/* record-count selection mode */
 				Ctrl->C.active = true;
 				pos = 0;
-				while (gmt_getmodopt (GMT, opt->arg, "ilu", &pos, p)) {	/* Looking for +i, +l, +u */
+				while (gmt_getmodopt (GMT, 'C', opt->arg, "ilu", &pos, p, &n_errors) && n_errors == 0) {	/* Looking for +i, +l, +u */
 					switch (p[0]) {
 						case 'i':	/* Invert selection */
 							Ctrl->C.invert = true;	break;
@@ -219,8 +219,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 							else
 								Ctrl->C.max = (uint64_t)value;
 							break;
-						default:
-							n_errors++;	break;
+						default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							break;
 					}
 				}
 				break;

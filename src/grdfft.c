@@ -705,11 +705,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				}
 				if ((c = gmt_first_modifier (GMT, opt->arg, "wn"))) {	/* Process new modifiers [+w[k]][+n] */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, c, "wn", &pos, p)) {
+					while (gmt_getmodopt (GMT, 'E', c, "wn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'w': Ctrl->E.give_wavelength = true; if (p[1] == 'k') Ctrl->E.km = true; break;
 							case 'n': Ctrl->E.normalize = true; break;
-							default: n_errors++; break;
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 				}

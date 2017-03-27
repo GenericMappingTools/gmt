@@ -646,7 +646,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 						j++;
 					}
 					if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_NORMAL;	/* Default is both x and y error bars */
-					while (gmt_getmodopt (GMT, &(opt->arg[j]), "acnpw", &pos, p)) {
+					while (gmt_getmodopt (GMT, 'E', &(opt->arg[j]), "acnpw", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a':	/* Asymmetrical error bars */
 								if (Ctrl->E.xbar == EBAR_NORMAL) Ctrl->E.xbar = EBAR_ASYMMETRICAL;
@@ -672,6 +672,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 							case 'w':	/* Error bar cap width */
 								Ctrl->E.size = gmt_M_to_inch (GMT, &p[1]);
 								break;
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 				}

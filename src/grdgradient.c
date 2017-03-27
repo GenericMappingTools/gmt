@@ -231,15 +231,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
 						if ((c = gmt_first_modifier (GMT, opt->arg, "adps"))) {	/* Process any modifiers */
 							pos = 0;	/* Reset to start of new word */
-							while (gmt_getmodopt (GMT, c, "adps", &pos, p)) {
+							while (gmt_getmodopt (GMT, 'E', c, "adps", &pos, p, &n_errors) && n_errors == 0) {
 								switch (p[0]) {
 									case 'a': Ctrl->E.ambient  = atof (&p[1]); break;
 									case 'd': Ctrl->E.diffuse  = atof (&p[1]); break;
 									case 'p': Ctrl->E.specular = atof (&p[1]); break;
 									case 's': Ctrl->E.shine    = atof (&p[1]); break;
-									default: n_errors++;
-										GMT_Report (API, GMT_MSG_NORMAL, "Error -E: Unrecognized modifier +%s\n", p);
-										break;
+									default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 								}
 							}
 							c[0] = '\0';	/* Chop off all modifiers so range can be determined */
@@ -309,13 +307,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				}
 				if ((c = gmt_first_modifier (GMT, opt->arg, "os"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, c, "os", &pos, p)) {
+					while (gmt_getmodopt (GMT, 'N', c, "os", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'o': Ctrl->N.offset = atof (&p[1]); break;
 							case 's': Ctrl->N.sigma  = atof (&p[1]); break;
-							default: n_errors++;
-								GMT_Report (API, GMT_MSG_NORMAL, "Error -N: Unrecognized modifier +%s\n", p);
-								break;
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */

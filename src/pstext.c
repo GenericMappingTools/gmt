@@ -421,7 +421,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				Ctrl->F.active = true;
 				pos = 0;
 
-				while (gmt_getmodopt (GMT, opt->arg, "Aafjclhrtz", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
+				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
 					switch (p[0]) {
 						case 'A':	/* orientation. Deliberate fall-through to next case */
 							Ctrl->F.orientation = true;
@@ -491,9 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 								Ctrl->F.text = (p[1]) ? strdup (&p[1]) : strdup (GMT->current.setting.format_float_map);
 							Ctrl->F.get_text = GET_CMD_FORMAT;
 							break;
-						default:
-							n_errors++;
-							break;
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
 				break;

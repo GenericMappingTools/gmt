@@ -435,15 +435,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 						break;
 					}
 					pos = 0;	txt_a[0] = 0;
-					while (gmt_getmodopt (GMT, p, "aiv", &pos, txt_a)) {
+					while (gmt_getmodopt (GMT, 'G', p, "aiv", &pos, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {
 							case 'a': Ctrl->G.mode |= GMT_MP_CUMUL_DIST; break;	/* Cumulative distance */
 							case 'i': Ctrl->G.mode |= GMT_MP_INCR_DIST;	 break;	/* Incremental distance */
 							case 'v': Ctrl->G.mode |= GMT_MP_PAIR_DIST;  break;	/* Variable coordinates */
-							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: Unrecognized modifier +%s\n", txt_a);
-								n_errors++;
-								break;
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					p[0] = '\0';	/* Chop off all modifiers */
@@ -561,7 +558,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if ((p = gmt_first_modifier (GMT, opt->arg, "aift"))) {
 					unsigned int pos = 0;
 					txt_a[0] = 0;
-					while (gmt_getmodopt (GMT, p, "aift", &pos, txt_a)) {
+					while (gmt_getmodopt (GMT, 'Z', p, "aift", &pos, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {
 							case 'a': Ctrl->Z.mode |= GMT_MP_Z_CUMT; break; /* Cumulative time */
 							case 'i': Ctrl->Z.mode |= GMT_MP_Z_DELT; break;/* Incremental time */
@@ -572,10 +569,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 									n_errors++;
 								}
 								break;
-							default:
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z: Unrecognized modifier +%s\n", txt_a);
-								n_errors++;
-								break;
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					p[0] = '\0';	/* Chop off all modifiers so range can be determined */

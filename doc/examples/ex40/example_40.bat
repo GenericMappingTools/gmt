@@ -19,8 +19,8 @@ gmt spatial T500k.txt -fg -Qk | awk '{printf "Reduced area = %.0f km@+2@+\n", $3
 gmt psxy -R -J -O -K -W1p,blue T500k.txt >> %ps%
 gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> %ps%
 echo T = 500 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> %ps%
-gmt pstext -R -J -O -K area.txt -F+14p+cCM >> %ps%
-gmt pstext -R -J -O -K area_T500k.txt -F+14p+cLB -Dj0.2i >> %ps%
+gmt pstext -R -J -O -K area.txt -F+f14p+cCM >> %ps%
+gmt pstext -R -J -O -K area_T500k.txt -F+f14p+cLB -Dj0.2i >> %ps%
 gmt psbasemap -R -J -O -K -B20+lightgray -BWsne+g240/255/240 -Y4.7i >> %ps%
 gmt psxy GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K >> %ps%
 gmt psxy GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K >> %ps%
@@ -29,8 +29,8 @@ gmt spatial T100k.txt -fg -Qk | gawk "{printf 'Reduced area = %.0f km@+2@+\n', $
 gmt psxy -R -J -O -K -W1p,blue T100k.txt >> %ps%
 gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt >> %ps%
 echo T = 100 km | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p >> %ps%
-gmt pstext -R -J -O -K area.txt -F+14p+cCM >> %ps%
-gmt pstext -R -J -O -K area_T100k.txt -F+14p+cLB -Dj0.2i >> %ps%
+gmt pstext -R -J -O -K area.txt -F+f14p+cCM >> %ps%
+gmt pstext -R -J -O -K area_T100k.txt -F+f14p+cLB -Dj0.2i >> %ps%
 gmt psxy -R -J -O -T >> %ps%
 REM Clean up
 del centroid.txt area*.txt T*.txt

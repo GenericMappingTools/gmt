@@ -389,7 +389,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 
 	char type_code[3];
 	char p[GMT_BUFSIZ] = {""};
-	unsigned int pos = 0;
+	unsigned int pos = 0, uerr = 0;
 	int err; /* gmt_M_err_trap */
 
 	/* decode grid type */
@@ -403,7 +403,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 			return err;
 	}
 
-	while (gmt_getmodopt (GMT, format, "bnos", &pos, p)) {	/* Looking for +b, +n, +o, +s */
+	while (gmt_getmodopt (GMT, 0, format, "bnos", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +n, +o, +s */
 		switch (p[0]) {
 			case 'b':	/* bands */
 				break;
@@ -433,13 +433,11 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 				else
 					header->z_scale_factor = atof (&p[1]);
 				break;
-			default:	/* Unrecognized modifier */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%s\n", p);
-				return GMT_NOT_A_VALID_MODIFIER;
+			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				break;
 		}
 	}
-	return GMT_NOERROR;
+	return (uerr) ? GMT_NOT_A_VALID_MODIFIER : GMT_NOERROR;
 }
 
 GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
@@ -1659,6 +1657,7 @@ GMT_LOCAL void gmt_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input, str
 
 int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
 	size_t k, n_slash = 0;
+	unsigned int uerr = 0;
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
 	if (n_slash > 4)	/* Pretty sure this is the old syntax */
 		/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
@@ -1667,7 +1666,7 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 		char word[GMT_LEN256] = {""};
 		unsigned int pos = 0;
 		double d;
-		while (gmt_getmodopt (GMT, input, "xyzsontr", &pos, word)) {
+		while (gmt_getmodopt (GMT, 'D', input, "xyzsontr", &pos, word, &uerr) && uerr == 0) {
 			switch (word[0]) {
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
@@ -1719,14 +1718,12 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 							GMT_GRID_REMARK_LEN160);
 					if (word[1]) strncpy (h->remark, &word[1], GMT_GRID_REMARK_LEN160-1);
 					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%s\n", word);
-					return 1;
+				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					break;
 			}
 		}
 	}
-	return 0;
+	return (int)uerr;
 }
 
 void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {

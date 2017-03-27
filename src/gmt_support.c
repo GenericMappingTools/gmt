@@ -168,9 +168,9 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 
 	fill->dpi = irint (PSL_DOTS_PER_INCH);
 	if ((c = strchr (line, '+'))) {	/* Got modifiers */
-		unsigned int pos = 0;
+		unsigned int pos = 0, uerr = 0;
 		char p[GMT_BUFSIZ] = {""};
-		while (gmt_getmodopt (GMT, c, "bfr", &pos, p)) {	/* Looking for +b, +f, +r */
+		while (gmt_getmodopt (GMT, 0, c, "bfr", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +f, +r */
 			switch (p[0]) {
 				case 'b':	/* Background color */
 					if (p[1] == '-') {	/* Transparent */
@@ -206,9 +206,12 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 					fill->dpi = atoi (&p[1]);
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern dpi set to %d\n", fill->dpi);
 					break;
+				default: break;
 			}
 		}
+		if (uerr) return (GMT_PARSE_ERROR);
 	}
+	
 	/* Copy name (or number) of pattern */
 	if (c) c[0] = '\0';	/* Chop off the modifiers */
 	strncpy (fill->pattern, &line[1], GMT_BUFSIZ-1);
@@ -1094,7 +1097,7 @@ GMT_LOCAL void support_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PALET
 #if 0
 /*! Decode the optional +w, +u|U<unit> and determine scales */
 GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
-	unsigned int pos = 0;
+	unsigned int pos = 0, uerr = 0;
 	int unit;
 	char *c = NULL, p[GMT_LEN32] = {""};
 	struct CPT_Z_SCALE *Z = NULL;
@@ -1103,7 +1106,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 	if ((c = gmt_first_modifier (GMT, file, "uUw")) == NULL) return NULL;	/* No modifiers found */
 	/* Found at least one modifier */
 	Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE);
-	while (gmt_getmodopt (GMT, c, "uUw", &pos, p)) {
+	while (gmt_getmodopt (GMT, 0, c, "uUw", &pos, p, &uerr) && uerr == 0) {
 		switch (p[0]) {
 			case 'U': Z->z_mode = 1;	/* Fall through on purpose */
 			case 'u':
@@ -1124,10 +1127,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 				else
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "support_cpt_parse: Modifier +w ignored for output.\n");
 				break;
-			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "support_cpt_parse: Modifier +%s was unrecognized (part of file name?) and is ignored.\n", p);
-				return NULL;
-				return NULL;
+			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				break;
 		}
 	}
@@ -11255,12 +11255,12 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		if ((c = gmt_first_modifier (GMT, text, "rsu"))) {
 			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>] */
 			pos = 0;	/* Reset to start of new word */
-			while (gmt_getmodopt (GMT, c, "rsu", &pos, p)) {
+			while (gmt_getmodopt (GMT, option, c, "rsu", &pos, p, &error) && error == 0) {
 				switch (p[0]) {
 					case 'r': B->oblique = true;	break;
 					case 's': B->file = strdup (&p[1]);	break;
 					case 'u': B->unit = p[1]; break;
-					default: return (GMT_PARSE_ERROR); break;
+					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				}
 			}
 			c[0] = '\0';	/* Chop off all modifiers so other items can be determined */
@@ -11618,8 +11618,8 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Gets the specifications for a rectangular panel w/optional reflection that is
 	 * used as background for legends, logos, images, and map scales. */
 
-	unsigned int pos = 0;
-	int n_errors = 0, n;
+	unsigned int pos = 0, n_errors = 0;
+	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_MAP_PANEL *P = NULL;
 
@@ -11647,7 +11647,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		return 0;
 	}
 	pos = 0;
-	while (gmt_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, [+d], +g, +i, +p, +r, +s */
+	while (gmt_getmodopt (GMT, option, text, "cidgprs", &pos, p, &n_errors) && n_errors == 0) {	/* Looking for +c, [+d], +g, +i, +p, +r, +s */
 		switch (p[0]) {
 			case 'c':	/* Clearance will expand the rectangle by specified amounts */
 				n = GMT_Get_Values (GMT->parent, &p[1], P->padding, 4);
@@ -11716,7 +11716,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		}
 	}
 	*Pptr = P;	/* Pass out the pointer to the panel attributes */
-	return (n_errors);
+	return ((int)n_errors);
 }
 
 /*! . */
@@ -11809,9 +11809,9 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
  * psbasemap -N<combination of +a+b+c+d with/without args. */
 void gmt_testing (struct GMT_CTRL *GMT, char *string) {
 	char *c = NULL, p[GMT_BUFSIZ] = {""}, *sep = "abcde";
-	unsigned int pos = 0;
+	unsigned int pos = 0, uerr = 0;
 	c = gmt_first_modifier (GMT, string, sep);
-	while (gmt_getmodopt (GMT, c, sep, &pos, p)) {
+	while (gmt_getmodopt (GMT, 'N', c, sep, &pos, p, &uerr) && uerr == 0) {
 		switch (p[0]) {
 			case 'a': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
 			case 'b': fprintf (stderr, "From +%c Got %s\n", p[0], (p[1]) ? &p[1] : "nothing");	break;
@@ -11824,7 +11824,7 @@ void gmt_testing (struct GMT_CTRL *GMT, char *string) {
 #endif
 
 /*! . */
-unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char *sep, unsigned int *pos, char *token) {
+unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char *string, const char *sep, unsigned int *pos, char *token, unsigned int *err) {
 	/* Breaks string into tokens separated by one of more modifier separator
 	 * characters (in sep) following a "+".  E.g., if you are looking for a
 	 * set of modifiers +a, +g<arg>, and +z, set sep = "agz" and any other
@@ -11858,11 +11858,20 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char *string, const char
 
 		(*pos)++;	/* Go and examine if next char is one of requested modifier options */
 		done = (strchr (sep, (int)string[*pos]) != NULL);	/* true if this is our guy */
+		if (!done && err) {	/* Unrecognized modifier is an error, unless err is NULL */
+			if (option)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%c\n", option, string[*pos]);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c\n", string[*pos]);
+			(*err)++;
+		}
 	}
 
 	/* Search for next +sep occurrence */
+	/* Search for next +char occurrence */
 	i = *pos; j = 0;
-	while (string[i] && (in_quote || string[i] != '+' || (i && string[i-1] == '\\') || !strchr (sep, (int)string[i+1]))) {
+	//while (string[i] && (in_quote || string[i] != '+' || (i && string[i-1] == '\\') || !strchr (sep, (int)string[i+1]))) {
+	while (string[i] && (in_quote || string[i] != '+' || (i && string[i-1] == '\\'))) {
 		if (string[i+1] != '+' || string[i] != '\\') token[j++] = string[i];	/* Do not return the escape char */
 		i++;	/* Go to next character */
 		if (string[i] == '\"' || string[i] == '\'') in_quote = !in_quote;	/* Check when we get past the quoted section */

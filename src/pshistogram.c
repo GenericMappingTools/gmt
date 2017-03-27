@@ -509,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				while (gmt_getmodopt (GMT, opt->arg, "bfor", &pos, p)) {	/* Looking for +b, +f, +o, +r */
+				while (gmt_getmodopt (GMT, 'D', opt->arg, "bfor", &pos, p, &n_errors) && n_errors == 0) {	/* Looking for +b, +f, +o, +r */
 					switch (p[0]) {
 						case 'b':	/* beneath */
 							Ctrl->D.just = 1;
@@ -523,10 +523,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 						case 'r':	/* rotate */
 							Ctrl->D.mode = 1;
 							break;
-						default:
-							n_errors++;
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D: modifier +%s unrecognized.\n", p);
-							break;
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
 				break;
