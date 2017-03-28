@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |-N|\ *sectors*\ [/*min_sectors*]
 |SYN_OPT-R|
-[ |-S|\ *search_radius*\ [*unit*\ ]
+|-S|\ *search_radius*\ [*unit*]
 [ |-E|\ *empty* ]
 [ |SYN_OPT-V| ]
 [ |-W| ]
