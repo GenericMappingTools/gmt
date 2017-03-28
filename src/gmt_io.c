@@ -8059,3 +8059,26 @@ void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	}
 	gmt_M_free (GMT, list);
 }
+
+/*! . */
+int gmt_remove_file (struct GMT_CTRL *GMT, const char *file) {
+	/* Try to remove a file - give error message if it fails.  Depends on extern int errno */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Delete %s\n", file);
+	if (remove (file)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove %s! [remove error: %s]\n", file, strerror (errno));
+		return errno;
+	}
+	return GMT_NOERROR;
+}
+
+
+/*! . */
+int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile) {
+	/* Try to rename a file - give error message if it fails.  Depends on extern int errno */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
+	if (rename (oldfile, newfile)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s -> ! [rename error: %s]\n", oldfile, newfile, strerror (errno));
+		return errno;
+	}
+	return GMT_NOERROR;
+}

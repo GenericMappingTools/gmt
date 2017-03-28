@@ -443,8 +443,8 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 				gmt_M_free (GMT, B[k].z);
 				gmt_M_free (GMT, B[k].RbR);
 				if (B[k].delete)	/* Delete the temporary resampled file */
-					if (remove (B[k].file))
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file %s\n", B[k].file); 
+					if (gmt_remove_file (GMT, B[k].file))	/* Oops, removal failed */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Failed to delete file %s\n", B[k].file); 
 			}
 			continue;
 		}
@@ -857,7 +857,8 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	for (k = 0; k < n_blend; k++) if (blend[k].open) {
 		gmt_M_free (GMT, blend[k].z);
 		gmt_M_free (GMT, blend[k].RbR);
-		if (blend[k].delete) remove (blend[k].file);	/* Delete the temporary resampled file */
+		if (blend[k].delete && gmt_remove_file (GMT, blend[k].file))	/* Delete the temporary resampled file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Failed to delete file %s\n", blend[k].file); 
 		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);
 	}
 
@@ -885,7 +886,8 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		if ((status = GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
 		}
-		remove (outfile);	/* Try half-heartedly to remove the temporary file */
+		if (gmt_remove_file (GMT, outfile))	/* Try half-heartedly to remove the temporary file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Failed to delete file %s\n", outfile); 
 	}
 
 	Return (GMT_NOERROR);

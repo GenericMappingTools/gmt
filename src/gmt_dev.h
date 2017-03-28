@@ -106,6 +106,9 @@ extern "C" {
 #include <float.h>
 #include <math.h>
 #include <limits.h>
+#include <errno.h>
+
+extern int errno;
 
 #include <time.h>
 

@@ -831,8 +831,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			/* Rename the old file for now */
 			
 			sprintf (oldfile, "%s.old", In.path);
-			if (rename (In.path, oldfile)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Unable to rename %s to %s\n", In.path, oldfile);
+			if (gmt_rename_file (GMT, In.path, oldfile)) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			
@@ -852,7 +851,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			/* Now we can safely remove the old file */
 			
-			if (remove (oldfile)) {
+			if (gmt_remove_file (GMT, oldfile))	{
 				GMT_Report (API, GMT_MSG_NORMAL, "Error removing the old version of %s\n", list[argno]);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}

@@ -1481,7 +1481,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
-				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+					Return (GMT_RUNTIME_ERROR);
 				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
@@ -1532,14 +1533,17 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				remove (BB_file);
-				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+				if (gmt_remove_file (GMT, BB_file))
+					Return (GMT_RUNTIME_ERROR);
+				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+					Return (GMT_RUNTIME_ERROR);
 				gmt_M_free (GMT, PS);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
-				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+					Return (GMT_RUNTIME_ERROR);
 				gmt_M_free (GMT, PS);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
@@ -1554,7 +1558,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
-						if (!Ctrl->S.active) remove (BB_file);                /* Remove the file */
+						if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file))	/* Remove the file */
+							Return (GMT_RUNTIME_ERROR);
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
@@ -1569,8 +1574,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-							remove (tmp_file);
-							if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+							if (gmt_remove_file (GMT, tmp_file))	/* Remove the file */
+								Return (GMT_RUNTIME_ERROR);
+							if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+								Return (GMT_RUNTIME_ERROR);
 							gmt_M_free (GMT, PS);
 							Return (GMT_RUNTIME_ERROR);
 						}
@@ -1589,7 +1596,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (fpb != NULL) { /* don't close twice */
 				fclose (fpb);	fpb = NULL;
 			}
-			if (!Ctrl->S.active) remove (BB_file);	/* Remove the file with BB info */
+			if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file))	/* Remove the file with BB info */
+				Return (GMT_RUNTIME_ERROR);
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
@@ -1675,7 +1683,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (!got_BB) {
 			GMT_Report (API, GMT_MSG_NORMAL,
 			            "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
-			if (!Ctrl->T.eps) remove (tmp_file);	/* Remove the temporary EPS file */
+			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))	/* Remove the temporary EPS file */
+				Return (GMT_RUNTIME_ERROR);
 			continue;
 		}
 
@@ -1976,7 +1985,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		fclose (fpo);	fpo = NULL;
 		fclose (fp);	fp  = NULL;
-		if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
+		if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+			Return (GMT_RUNTIME_ERROR);
 
 		/* Build the converting ghostscript command and execute it */
 
@@ -2029,7 +2039,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			sys_retval = system (cmd);
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				remove (tmp_file);
+				gmt_remove_file (GMT, tmp_file);	/* Since we created a temporary file from the memdata */
 				Return (GMT_RUNTIME_ERROR);
 			}
 
@@ -2079,7 +2089,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (!Ctrl->S.active) remove (pdf_file);	/* The temporary PDF file is no longer needed */
+				if (!Ctrl->S.active && gmt_remove_file (GMT, pdf_file))	/* The temporary PDF file is no longer needed */
+					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 
@@ -2088,19 +2099,17 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", GMT->current.ps.filename, out_file);
-				if (rename (GMT->current.ps.filename, out_file)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Failed to rename %s -> %s!\n", GMT->current.ps.filename, out_file);
-					//perror();
-				}
+				if (gmt_rename_file (GMT, GMT->current.ps.filename, out_file))
+					Return (GMT_RUNTIME_ERROR);
 			}
 			else {	/* Delete it, no -Z needed */
-				GMT_Report (API, GMT_MSG_DEBUG, "Delete %s\n", GMT->current.ps.filename);
-				remove (GMT->current.ps.filename);
+				if (gmt_remove_file (GMT, GMT->current.ps.filename))
+					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 		else if (Ctrl->Z.active && !delete) {		/* Remove input file, if requested */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", ps_file);
-			remove (ps_file);
+			if (gmt_remove_file (GMT, ps_file))
+				Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
@@ -2160,19 +2169,20 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
 			if (Ctrl->Z.active) {	/* Remove the image since it is returned to a calling program and -Z was given */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
-				remove (out_file);
+				if (gmt_remove_file (GMT, out_file))
+					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
 
 		if (!Ctrl->S.active) {
-			if (!Ctrl->T.eps)
-				remove (tmp_file);
-			if ( strlen (no_U_file) > 0 ) /* empty string == file was not created */
-				remove (no_U_file);
-			if ( strlen (clean_PS_file) > 0 )
-				remove (clean_PS_file);
+			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))
+				Return (GMT_RUNTIME_ERROR);
+			if (strlen (no_U_file) > 0 && gmt_remove_file (GMT, no_U_file)) /* empty string == file was not created */
+				Return (GMT_RUNTIME_ERROR);
+			if (strlen (clean_PS_file) > 0 && gmt_remove_file (GMT, clean_PS_file)) /* empty string == file was not created */
+				Return (GMT_RUNTIME_ERROR);
 		}
 
 		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file */

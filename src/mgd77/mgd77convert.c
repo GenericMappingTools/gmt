@@ -333,7 +333,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		}
 		if (!access (file, R_OK)) {	/* File exists */
 			if (Ctrl->T.mode) {	/* Must delete the file first */
-				if (remove (file)) {	/* Oops, removal failed */
+				if (gmt_remove_file (GMT, file)) {	/* Oops, removal failed */
 					GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove existing file %s - skipping the conversion\n", file);
 					MGD77_Close_File (GMT, &M);
 					MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */

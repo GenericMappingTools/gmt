@@ -351,7 +351,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "File exists: %s\n", tag_file);
 		x2sys_path (GMT, tag_file, path);
 		if (Ctrl->F.active) {
-			if (remove (path))
+			if (gmt_remove_file (GMT, path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
@@ -363,7 +363,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", def_file);
 		x2sys_path (GMT, def_file, path);
 		if (Ctrl->F.active) {
-			if (remove (path))
+			if (gmt_remove_file (GMT, path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
@@ -375,7 +375,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", track_file);
 		x2sys_path (GMT, track_file, path);
 		if (Ctrl->F.active) {
-			if (remove (path))
+			if (gmt_remove_file (GMT, path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
@@ -387,7 +387,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", path_file);
 		x2sys_path (GMT, path_file, path);
 		if (Ctrl->F.active) {
-			if (remove (path))
+			if (gmt_remove_file (GMT, path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
@@ -399,7 +399,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "File exists: %s\n", bin_file);
 		x2sys_path (GMT, bin_file, path);
 		if (Ctrl->F.active) {
-			if (remove (path))
+			if (gmt_remove_file (GMT, path))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Removed file %s\n", path);
