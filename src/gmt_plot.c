@@ -6369,7 +6369,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	/* Set hidden PS filename and return 0 if does not exist and 1 if does exist */
-#ifdef WIN32
+#if defined(WIN32) || defined(DEBUG_MODERN)
 	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
 	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
 	   using the PPID (parent PID) to create unique file names. 
