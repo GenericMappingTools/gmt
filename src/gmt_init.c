@@ -10687,6 +10687,20 @@ GMT_LOCAL int gmtinit_add_missing_R_option (struct GMTAPI_CTRL *API, const char 
 	return GMT_NOERROR;
 }
 
+/*! Search the list for the -J? option (? != 'z|Z) and return the pointer to the item. */
+GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION *head) {
+
+	struct GMT_OPTION *current = NULL, *ptr = NULL;
+
+	if (head == NULL) return (NULL);	/* Hard to find something in a non-existent list */
+	
+	for (current = head; ptr == NULL && current; current = current->next) {	/* Linearly search for the specified option */
+		if (current->option == 'J' && !(current->arg[0] == 'z' || current->arg[0] == 'Z'))
+			ptr = current;
+	}
+	return (ptr);	/* NULL if not found */
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	API->error = GMT_NOERROR;
@@ -10711,7 +10725,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
 				n_errors++;
 			}
-			if ((opt = GMT_Find_Option (API, 'J', *options)) && opt->arg[0] == '\0') {
+			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
 				n_errors++;
 			}
@@ -10738,7 +10752,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		
 			for (k = 0; k < strlen (required); k++) {
 				code = (required[k] == 'd' || required[k] == 'g') ? 'R' : required[k];
-				if ((opt = GMT_Find_Option (API, code, *options))) continue;	/* Got this one already */
+				opt = (code == 'J') ? gmt_find_J_option (API, *options) : GMT_Find_Option (API, code, *options);
+				if (opt) continue;	/* Got this one already */
 				if ((opt = GMT_Make_Option (API, code, "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -%c to options.\n", code);

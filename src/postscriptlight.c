@@ -4209,8 +4209,10 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		if (lastpage) PSL->internal.pmode |= 2;	/* We provided a trailer */
 	}
 	else {	/* Dealing with files or stdout */
-		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1)
+		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) {
 			fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
+			PSL->internal.fp = NULL;
+		}
 	}
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
@@ -5695,12 +5697,20 @@ int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...) {
 }
 
 FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode) {
-	C->internal.fp = fopen (file, mode);
+	if (C->internal.fp == NULL) {	/* Open the plot file unless fp already set */
+		if ((C->internal.fp = fopen (file, mode)) == NULL) {
+			PSL_message (C, PSL_MSG_NORMAL, "PSL_fopen error: Unable to open file %s with mode %s!\n", file, mode);
+		}
+	}
 	return (C->internal.fp);
 }
 
 int PSL_fclose (struct PSL_CTRL *C) {
-	return (fclose (C->internal.fp));
+	/* Close except if stdout */
+	if (C->internal.fp != stdout)
+		return (fclose (C->internal.fp));
+	else
+		return 0;
 }
 #ifndef HAVE_RINT
 #include "s_rint.c"
