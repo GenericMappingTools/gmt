@@ -285,8 +285,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 		n_errors++;
 	}
 	if (Ctrl->I.active && !GMT->common.R.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires the -R option\n");
-		n_errors++;
+		gmt_set_missing_options (GMT, "R");	/* If mode is modern and -R exist in the history, we may add these from history automatically */
+		if (!GMT->common.R.active) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires the -R option\n");
+			n_errors++;
+		}
 	}
 	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Must specify positive increment(s)\n");
