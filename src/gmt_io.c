@@ -8093,7 +8093,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			return errno;
 		}
 		/* Get memory for reading GMT_BUFSIZ characters at the time */
-		if ((chunk = calloc (GMT_BUFSIZ, sizeof (char)))) {
+		if ((chunk = calloc (GMT_BUFSIZ, sizeof (char))) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to allocate memory! [calloc error: %s]\n", strerror (errno));
 			return errno;
 		}
