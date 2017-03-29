@@ -354,7 +354,6 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
-	struct GMT_OPTION *r_ptr = NULL, *j_ptr = NULL;
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
 	struct GMT_TEXTSET *In = NULL, *T[N_TXT];
@@ -602,11 +601,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Disabling your -B option since -R -J was not set\n");
 		}
 	}
-	else {
-		r_ptr = GMT_Find_Option (API, 'R', options);
-		j_ptr = GMT_Find_Option (API, 'J', options);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-	}
+	else if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+		Return (GMT_PROJECTION_ERROR);
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
@@ -914,11 +911,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (r_options[0])	/* Gave specific -R -J on M line */
 							sprintf (buffer, "%s -O -K -L%s", r_options, mapscale);
 						else {	/* Must use -R -J as supplied to pslegend */
-							if (!r_ptr || !j_ptr) {
+							gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, -R -J exist in the history, and if an overlay we may add these from history automatically */
+							if (!GMT->common.R.active || !GMT->common.J.active) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
 								Return (GMT_RUNTIME_ERROR);
 							}
-							sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, mapscale);
+							sprintf (buffer, "-R%s -J%s -O -K -L%s", GMT->common.R.string, GMT->common.J.string, mapscale);
 						}
 						if (module_options[0]) strcat (buffer, module_options);
 						strcat (buffer, " --GMT_HISTORY=false");

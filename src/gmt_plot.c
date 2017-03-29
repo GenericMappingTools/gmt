@@ -6384,7 +6384,7 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	else	/* Must dump it in current directory */
 		sprintf (GMT->current.ps.filename, "gmt_%d.ps0", ppid);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
-	GMT->current.ps.use_history = (k == 1);	/* True means it is an overlay and -R -J may come from history */
+	GMT->current.ps.initialize = (k == 0);	/* False means it is an overlay and -R -J may come from history */
 	return k;
 }
 

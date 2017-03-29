@@ -10494,8 +10494,9 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 }
 
 /*! Determine if the current module is a PostScript-producing module that writes PostScript */
-GMT_LOCAL bool gmt_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
+GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
 	struct GMT_OPTION *opt = NULL;
+	
 	if (strstr (keys, ">X}") == NULL) return false;	/* Never produces PostScript */
 	
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
@@ -10528,7 +10529,7 @@ GMT_LOCAL bool gmt_is_PS_module (struct GMTAPI_CTRL *API, const char *name, cons
 }
 
 /*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
-GMT_LOCAL int gmt_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
 	 * Modules with this issue have "g" in their THIS_MODULE_NEEDS string.
 	 */
@@ -10546,7 +10547,7 @@ GMT_LOCAL int gmt_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const char *
 }
 
 /*! Add -Rw/e/s/n for those modules that may implicitly obtain the region via input dataset(s) */
-GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via input data then we need to set that explicitly in the options.
 	 * Modules with this issue have "d" in their THIS_MODULE_NEEDS string.
 	 */
@@ -10570,21 +10571,21 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 		void *content = NULL;
 		size_t n_read = 0;
 	    
-		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Must send stdin to temporary file.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_set_missing_R_from_datasets: Must send stdin to temporary file.\n");
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			sprintf (tmpfile, "%s/", API->tmp_dir);
 		strcat (tmpfile, "gmt_saved_stdin.XXXXXX");
 		if ((file = mktemp (tmpfile)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gmt_set_missing_R_from_datasets: Could not create temporary file name.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not create temporary file name.\n");
 			return GMT_RUNTIME_ERROR;
 		}
 		if ((fp = fopen (file, API->GMT->current.io.w_mode)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gmt_set_missing_R_from_datasets: Could not open temporary file %s.\n", file);
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not open temporary file %s.\n", file);
 			return GMT_RUNTIME_ERROR;
 		}
 	  
 		/* Dump stdin to that temp file */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Send stdin to %s.\n", file);
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_set_missing_R_from_datasets: Send stdin to %s.\n", file);
 		content = malloc (GMT_BUFSIZ);
 		while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
 	        fwrite (content, 1, n_read, fp);
@@ -10595,7 +10596,7 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 			return API->error;	/* Failure to make new option or append to list */
 		if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL || (*options = GMT_Append_Option (API, tmp, *options)) == NULL)
 			return API->error;	/* Failure to append option to calling module option list */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmt_set_missing_R_from_datasets: Replace stdin input with -<%s.\n", file);
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_set_missing_R_from_datasets: Replace stdin input with -<%s.\n", file);
 	}
 	
 	/* Here we have all the input options OR a single tempfile input option.  Now look for special modifiers and add those too */
@@ -10671,7 +10672,7 @@ GMT_LOCAL int gmt_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, const ch
 }
 
 /*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
-GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
+GMT_LOCAL int gmtinit_add_missing_R_option (struct GMTAPI_CTRL *API, const char *args, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
 	 * Modules with this issue have "g" in their THIS_MODULE_NEEDS string.
 	 * Modules that read datasets may have "d" in their THIS_MODULE_NEEDS which forces us to determine the region.
@@ -10679,9 +10680,9 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 
 	if (GMT_Find_Option (API, 'R', *options)) return GMT_NOERROR;	/* Set explicitly, so do nothing */
 	if (strchr (args, 'g'))	/* Use the input grid to add a valid -R into the options */
-		return (gmt_set_missing_R_from_grid (API, args, options));
+		return (gmtinit_set_missing_R_from_grid (API, args, options));
 	else if (strchr (args, 'd'))	/* Use input dataset(s) to find and add -R in this module */
-		return (gmt_set_missing_R_from_datasets (API, args, options));
+		return (gmtinit_set_missing_R_from_datasets (API, args, options));
 	/* Nothing could be done */
 	return GMT_NOERROR;
 }
@@ -10689,52 +10690,58 @@ GMT_LOCAL int gmt_set_missing_R (struct GMTAPI_CTRL *API, const char *args, stru
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	API->error = GMT_NOERROR;
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's rules: */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int k, n_errors = 0;
 		struct GMT_OPTION *opt = NULL;
+	
+		API->GMT->current.ps.initialize = false;	/* Start from scratch */
+			
+		if (API->GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
+			/* 1. No -O -K are allowed */
+			if ((opt = GMT_Find_Option (API, 'O', *options))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for GMT_RUNMODE = modern.\n");
+				n_errors++;
+			}
+			if ((opt = GMT_Find_Option (API, 'K', *options))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for GMT_RUNMODE = modern.\n");
+				n_errors++;
+			}
+			/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if history is needed) */
+			if ((opt = GMT_Find_Option (API, 'R', *options)) && opt->arg[0] == '\0') {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
+				n_errors++;
+			}
+			if ((opt = GMT_Find_Option (API, 'J', *options)) && opt->arg[0] == '\0') {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
+				n_errors++;
+			}
+			if (n_errors) {	/* Oh, well, live and learn */
+				API->error = GMT_OPTION_NOT_ALLOWED;
+				return NULL;
+			}
+	
+			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+			if (API->GMT->current.ps.active)	/* true if module will produce PS */
+				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
+		}
 		
-		/* 1. No -O -K are allowed */
-		if ((opt = GMT_Find_Option (API, 'O', *options))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for GMT_RUNMODE = modern.\n");
-			n_errors++;
+		if (API->GMT->current.ps.initialize) {	/* Start of a new plot so any -R -J history cannot be used */
+			/* 2. If -R is missing it may be derived from the data (grid or dataset) for some modules depending on required:
+			 *    g: May append a -R<grid> option if the input grid implicitly sets -R in this module
+			 *    d: May append a -R<region> option by obtaining <region> from the input datasets via gmt info. */
+			k = gmtinit_add_missing_R_option (API, required, options);
 		}
-		if ((opt = GMT_Find_Option (API, 'K', *options))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for GMT_RUNMODE = modern.\n");
-			n_errors++;
-		}
-		/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if history is needed) */
-		if (API->GMT->hidden.func_level == 1 && (opt = GMT_Find_Option (API, 'R', *options)) && opt->arg[0] == '\0') {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
-			n_errors++;
-		}
-		if (API->GMT->hidden.func_level == 1 && (opt = GMT_Find_Option (API, 'J', *options)) && opt->arg[0] == '\0') {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
-			n_errors++;
-		}
-		if (n_errors) {	/* Oh, well, live and learn */
-			API->error = GMT_OPTION_NOT_ALLOWED;
-			return NULL;
-		}
+		else {	/* Not the first plot so history contains -R -J that we can use, if needed */
+			char code;
+			/* 3. Next we add blank -R or -J options if these are required but not provided on command line.
+		 	 *    However, we cannot do this at the start of a plot since the history may not be relevant. */
 		
-		/* 3. If -R is missing it may be derived from the data (grid or dataset) for some modules depending on required:
-		 *    g: May append a -R<grid> option if the input grid implicitly sets -R in this module
-		 *    d: May append a -R<region> option by obtaining <region> from the input datasets via gmt info. */
-		k = gmt_set_missing_R (API, required, options);
-
-		/* Next we add blank -R or -J options if these are required but not provided on command line.
-		 * However, we cannot do this at the start of a plot since the history may not be relevant. */
-		
-		API->GMT->current.ps.active = gmt_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
-		if (API->GMT->current.ps.active)	/* true if module will produce PS */
-			(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.use_history=true if the expected (and hidden) PS plot file exists */
-		
-		if (API->GMT->current.ps.use_history) {	/* Not the start of a plot so the -R -J history is relevant to this plot */
 			for (k = 0; k < strlen (required); k++) {
-				if (islower (required[k])) continue;
-				if ((opt = GMT_Find_Option (API, required[k], *options))) continue;	/* Got this one already */
-				if ((opt = GMT_Make_Option (API, required[k], "")) == NULL) return NULL;	/* Failure to make option */
+				code = (required[k] == 'd' || required[k] == 'g') ? 'R' : required[k];
+				if ((opt = GMT_Find_Option (API, code, *options))) continue;	/* Got this one already */
+				if ((opt = GMT_Make_Option (API, code, "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -%c to options.\n", required[k]);
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -%c to options.\n", code);
 			}
 		}
 	}
@@ -10780,7 +10787,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	Ccopy->current.ps.clip_level = GMT->current.ps.clip_level;
 	Ccopy->current.ps.layer = GMT->current.ps.layer;
 	Ccopy->current.ps.active = GMT->current.ps.active;
-	Ccopy->current.ps.use_history = GMT->current.ps.use_history;
+	Ccopy->current.ps.initialize = GMT->current.ps.initialize;
 
 	/* GMT_COMMON */
 
@@ -12392,12 +12399,16 @@ int gmtlib_get_option_id (int start, char *this_option) {
 int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 	/* When a module discovers it needs -R or -J and it maybe was not given
 	 * see if we can tease out the answer from the history and parse it.
+	 * Currently used in gmt_get_refpoint where we may learn that -R -J will
+	 * indeed be required.  We then check if they have been given.  If not,
+	 * then under classic mode we abort, while under modern mode we add them,
+	 * if possible.
 	 */
 	int id = 0, j, err = 0;
 	char str[3] = {""};
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOERROR;	/* Do nothing */
-	if (!GMT->current.ps.use_history) return GMT_NOERROR;	/* Cannot use history unless overlay */
+	if (GMT->current.ps.initialize) return GMT_NOERROR;	/* Cannot use history unless overlay */
 	
 	assert (options);	/* Should never be NULL */
 	
