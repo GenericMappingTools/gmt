@@ -38,7 +38,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
 #define THIS_MODULE_KEYS	"<D{,>D},GG)"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-:>JRVbdfhirs" GMT_OPT("Hm")
 
 struct TRIANGULATE_CTRL {
@@ -258,6 +258,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 				break;
 		}
 	}
+
+	n_errors += gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, Ctrl->G.active || Ctrl->Q.active);
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 

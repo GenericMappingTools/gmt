@@ -1637,7 +1637,11 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 
 	/* -p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>] */
 	
-	if (!GMT->common.J.active) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
+	if (!GMT->common.J.active) {
+		gmt_set_missing_options (GMT, "J");	/* If mode is modern and -J exist in the history, and if an overlay we may add these from history automatically */
+		if (!GMT->common.J.active)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
+	}
 	switch (item[0]) {
 		case 'x': GMT->current.proj.z_project.view_plane = GMT_X + GMT_ZW; l++; break;
 		case 'y': GMT->current.proj.z_project.view_plane = GMT_Y + GMT_ZW; l++;	break;
@@ -12446,6 +12450,13 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 		err += gmt_parse_common_options (GMT, str, options[j], GMT->init.history[id]);
 	}
 	return ((err) ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+unsigned int gmt_add_R_if_modern_and_true (struct GMT_CTRL *GMT, const char *needs, bool do_it) {
+	if (strchr (needs, 'r') == NULL) return GMT_NOERROR;	/* -R is not a conditional option */
+	if (do_it)
+		return (gmt_set_missing_options (GMT, "R"));
+	return GMT_NOERROR;	
 }
 
 /*! Changes the 4 GMT default pad values to given isotropic pad */

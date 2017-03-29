@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
-#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
@@ -283,13 +283,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 	if (missing_equal) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
 		n_errors++;
-	}
-	if (Ctrl->I.active && !GMT->common.R.active) {
-		gmt_set_missing_options (GMT, "R");	/* If mode is modern and -R exist in the history, we may add these from history automatically */
-		if (!GMT->common.R.active) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires the -R option\n");
-			n_errors++;
-		}
 	}
 	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Must specify positive increment(s)\n");
@@ -4975,6 +4968,9 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	if (gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, G_in == NULL))
+		Return (API->error);
 
 	subset = GMT->common.R.active;
 
