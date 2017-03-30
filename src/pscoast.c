@@ -176,8 +176,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [-E%s] -G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s [%s] [%s]\n", GMT_J_OPT, GMT_A_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [-E%s] [-G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<feature>[/<pen>]] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);

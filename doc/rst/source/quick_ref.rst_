@@ -69,7 +69,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdsample`      | Resample a 2-D gridded data set onto a new grid                     |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (x,y) locations           |
+| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (*x*,\ *y*) locations     |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sample1d`       | Resampling of 1-D table data sets                                   |
 +-----------------------+---------------------------------------------------------------------+
@@ -105,7 +105,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sphdistance`    | Create grid of NN or distances to nearest points on a sphere        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical lon,lat data          |
+| :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical (*lon*,\ *lat*) data  |
 +-----------------------+---------------------------------------------------------------------+
 |                       | **Convert or Extract Subsets of Data**                              |
 +-----------------------+---------------------------------------------------------------------+
@@ -141,7 +141,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtregress`     | Linear regression of 1-D data sets                                  |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (x,y) locations           |
+| :doc:`grdtrack`       | Sample 2-D gridded data sets at specified (*x*,\ *y*) locations     |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`trend1d`        | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
 +-----------------------+---------------------------------------------------------------------+
