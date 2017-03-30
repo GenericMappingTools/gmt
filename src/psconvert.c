@@ -1044,18 +1044,18 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
 	if (!strncmp(I->header->mem_layout, "TCP", 3)) {		/* Images.jl in Julia wants this */
 		for (row = 0; row < nRows; row++) {
-			k = read (fh, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			k = read (fd, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row*nBands + col*nBands*nRows + band] = tmp[n++];
 		}
 	}
 	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
-		read (fh, I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		read (fd, I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
 	else {
 		for (row = 0; row < nRows; row++) {
-			k = read (fh, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			k = read (fd, tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
