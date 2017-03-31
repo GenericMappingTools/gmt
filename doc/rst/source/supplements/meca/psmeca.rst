@@ -355,7 +355,7 @@ Optional Arguments
     Set pen attributes for all lines and the outline of symbols
     [Defaults: width = default, color = black, style = solid]. This
     setting applies to **-C**, **-L**, **-T**, **-p**, **-t**, and
-    **-z**, unless overruled by options to those arguments.
+    **-Fz**, unless overruled by options to those arguments.
 
 .. _-X:
 

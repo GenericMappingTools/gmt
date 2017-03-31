@@ -22,7 +22,6 @@ Synopsis
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
-[ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\ \|\ **r**] ]
@@ -178,8 +177,6 @@ Optional Arguments
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
     modulate the fill color by simulating illumination [none].
-
-.. include:: explain_-Jz.rst_
 
 .. _-K:
 
