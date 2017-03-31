@@ -4972,10 +4972,10 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	if (gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, G_in == NULL))
 		Return (API->error);
 
-	subset = GMT->common.R.active;
+	subset = GMT->common.R.active[RSET];
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
-		if (GMT->common.R.active && Ctrl->I.active) {
+		if (GMT->common.R.active[RSET] && Ctrl->I.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -I together with -R<gridfile>\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -4994,7 +4994,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
+	else if (GMT->common.R.active[RSET] && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);

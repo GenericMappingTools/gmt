@@ -705,7 +705,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont), 
 	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or CPT\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
@@ -800,7 +800,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
-	convert = (make_plot || (GMT->common.R.active && GMT->common.J.active));
+	convert = (make_plot || (GMT->common.R.active[RSET] && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
 	if (GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);

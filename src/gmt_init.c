@@ -390,8 +390,8 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, out_string) == GMT_NOTSET)
 		return (GMT->parent->error);
 
-	was_R = GMT->common.R.active;	was_J = GMT->common.J.active;
-	GMT->common.R.active = GMT->common.J.active = false;	/* To allow new entries */
+	was_R = GMT->common.R.active[RSET];	was_J = GMT->common.J.active;
+	GMT->common.R.active[RSET] = GMT->common.J.active = false;	/* To allow new entries */
 
 	/* Determine suitable -R setting for this projection */
 
@@ -435,7 +435,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
-	GMT->common.R.active = was_R;	GMT->common.J.active = was_J;
+	GMT->common.R.active[RSET] = was_R;	GMT->common.J.active = was_J;
 	if ((Out = GMT_Read_VirtualFile (GMT->parent, out_string)) == NULL)
 		return (GMT->parent->error);
 	/* Close the virtual files */
@@ -6580,7 +6580,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'K': error += GMT->common.K.active == false; break;
 		case 'O': error += GMT->common.O.active == false; break;
 		case 'P': error += GMT->common.P.active == false; break;
-		case 'R': error += GMT->common.R.active == false; break;
+		case 'R': error += GMT->common.R.active[RSET] == false; break;
 		case 'U': error += GMT->common.U.active == false; break;
 		case 'V': error += GMT->common.V.active == false; break;
 		case 'X': error += GMT->common.X.active == false; break;
@@ -6693,8 +6693,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		/* Finally set up -R */
 		if (!GMT->common.r.active) n_columns--, n_rows--;	/* Needed to get correct dimensions */
-		xdim = n_columns * GMT->common.API_I.inc[GMT_X];
-		ydim = n_rows * GMT->common.API_I.inc[GMT_Y];
+		xdim = n_columns * GMT->common.R.inc[GMT_X];
+		ydim = n_rows * GMT->common.R.inc[GMT_Y];
 		part = just / 4;	/* Need any multiples of 4 in just */
 		GMT->common.R.wesn[XLO] = orig[GMT_X] - 0.5 * ((just%4)-1) * xdim;
 		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * part * ydim;
@@ -10483,7 +10483,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
 	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
 	GMT->common.X.active = GMT->common.Y.active = false;
-	GMT->common.R.active = GMT->common.J.active = false;
+	GMT->common.R.active[RSET] = GMT->common.J.active = false;
 	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = GMT->common.c.active = false;
 	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
 	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
@@ -12051,11 +12051,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'I':
 			if (GMT->hidden.func_level > 0) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
-			if (gmt_getinc (GMT, item, GMT->common.API_I.inc)) {
+			if (gmt_getinc (GMT, item, GMT->common.R.inc)) {
 				gmt_inc_syntax (GMT, 'I', 1);
 				error++;
 			}
-			GMT->common.API_I.active = true;
+			GMT->common.R.active[ISET] = true;
 			break;
 
 		case 'J':
@@ -12099,8 +12099,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'R':
-			error += (GMT_more_than_once (GMT, GMT->common.R.active) || gmt_parse_R_option (GMT, item));
-			GMT->common.R.active = true;
+			error += (GMT_more_than_once (GMT, GMT->common.R.active[RSET]) || gmt_parse_R_option (GMT, item));
+			GMT->common.R.active[RSET] = true;
 			break;
 
 		case 'U':
@@ -12433,7 +12433,7 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 	
 	for (j = 0; options[j]; j++) {	/* Do this for all required options listed */
 		assert (strchr ("RJ", options[j]));	/* Only R and/or J should be present in options */
-		if (options[j] == 'R' && GMT->common.R.active) continue;	/* Set already */
+		if (options[j] == 'R' && GMT->common.R.active[RSET]) continue;	/* Set already */
 		if (options[j] == 'J' && GMT->common.J.active) continue;	/* Set already */
 		/* Must dig around in the history array */
 		gmt_M_memset (str, 3, char);

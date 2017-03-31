@@ -450,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = GMT->common.R.active = true;
+				Ctrl->R2.active = GMT->common.R.active[RSET] = true;
 				if (opt->arg[0] == 'a')	/* Get args from data domain */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
@@ -1059,7 +1059,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		}
 		n_tables = Dt->n_tables;
 	}
-	if (GMT->common.R.active && first) {	/* Issue Region tag as given on command line */
+	if (GMT->common.R.active[RSET] && first) {	/* Issue Region tag as given on command line */
 		place_region_tag (API, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 		first = false;
 	}
@@ -1220,7 +1220,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						unsigned int col;
 						for (col = 0; col < n_coord; col++)
 							out[col] = Dd->table[tbl]->segment[seg]->data[col][row];
-						if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+						if (GMT->common.R.active[RSET] && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 						pos = 0;
 						if (get_z) {
 							if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
@@ -1255,7 +1255,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 							Return (GMT_RUNTIME_ERROR);
 						}
-						if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+						if (GMT->common.R.active[RSET] && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 						if (get_z) {
 							if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
 							                             gmt_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z],

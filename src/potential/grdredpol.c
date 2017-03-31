@@ -1236,7 +1236,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if (!GMT->common.R.active) 
+	if (!GMT->common.R.active[RSET]) 
 		gmt_M_memcpy (wesn_new, Gin->header->wesn, 4, double);
 	else
 		gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
@@ -1253,7 +1253,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT->common.R.active) {
+	if (GMT->common.R.active[RSET]) {
 		if (wesn_new[XLO] < Gin->header->wesn[XLO] || wesn_new[XHI] > Gin->header->wesn[XHI]) {
 			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (GMT_RUNTIME_ERROR);

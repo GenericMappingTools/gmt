@@ -415,7 +415,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
+		if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
@@ -425,7 +425,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
-		if (!GMT->common.R.active) global = gmt_M_grd_is_global (GMT, G->header);
+		if (!GMT->common.R.active[RSET]) global = gmt_M_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 
@@ -565,7 +565,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
 			if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 		}
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 
 		if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, G->header->inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);

@@ -2521,7 +2521,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	}
 	else {	/* Must infer dimension etc from wesn, inc, registration */
 		if (wesn == NULL) {	/* Must select -R setting */
-			if (!GMT->common.R.active) {
+			if (!GMT->common.R.active[RSET]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
@@ -2529,7 +2529,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
 			gmt_M_memcpy (wesn_dup, wesn, 4, double);
 		if (inc == NULL) {	/* Must select -I setting */
-			if (!GMT->common.API_I.active) {
+			if (!GMT->common.R.active[ISET]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
@@ -2549,7 +2549,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else
 		gmt_M_memcpy (header->wesn, wesn_dup, 4, double);
 	if (dim == NULL && inc == NULL)
-		gmt_M_memcpy (header->inc, GMT->common.API_I.inc, 2, double);
+		gmt_M_memcpy (header->inc, GMT->common.R.inc, 2, double);
 	else
 		gmt_M_memcpy (header->inc, inc_dup, 2, double);
 	header->registration = registration;
@@ -2994,7 +2994,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
-	if (GMT->common.R.active) {
+	if (GMT->common.R.active[RSET]) {
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
 		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;

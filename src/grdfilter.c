@@ -801,7 +801,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 				"Syntax error -F option: Rectangular y-width filter must be nonzero.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
 				"Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active && Ctrl->I.active && Ctrl->F.highpass,
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->I.active && Ctrl->F.highpass,
 				"Syntax error -F option: Highpass filtering requires original -R -I\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -893,7 +893,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	/* Check range of output area and set i,j offsets, etc.  */
 
 	/* Use the -R region for output (if set); otherwise match input grid domain */
-	gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 	/* Use the -I increments for output (if set); otherwise match input grid increments */
 	gmt_M_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 	if (!full_360) {	/* Sanity checks on x-domain if not geographic */
@@ -921,7 +921,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	   if output grid spacing is a multiple of input grid spacing */
 
 	fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_CONV4_LIMIT && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_CONV4_LIMIT);
-	same_grid = !(GMT->common.R.active || Ctrl->I.active || Gin->header->registration == one_or_zero);
+	same_grid = !(GMT->common.R.active[RSET] || Ctrl->I.active || Gin->header->registration == one_or_zero);
 	if (!fast_way) {	/* Not optimal... */
 		if (Ctrl->F.custom) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: For -Ff or -Fo the input and output grids must be coregistered.\n");
@@ -1228,7 +1228,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
-		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
+		if (GMT->common.R.active[RSET] || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_BUFSIZ];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */

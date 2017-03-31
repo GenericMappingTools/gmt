@@ -14186,7 +14186,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			mode = GMT_REFPOINT_PLOT;
 		else if (strlen (txt_x) == 2 && strchr ("LMRBCT", toupper(txt_x[GMT_X])) && strchr ("LMRBCT", toupper(txt_x[GMT_Y])))	/* Apparently a 2-char justification code */
 			mode = GMT_REFPOINT_JUST;
-		else if (GMT->common.J.active == false && GMT->common.R.active == false)	/* No -R, -J were given so can only mean plot coordinates */
+		else if (GMT->common.J.active == false && GMT->common.R.active[RSET] == false)	/* No -R, -J were given so can only mean plot coordinates */
 			mode = GMT_REFPOINT_PLOT;
 		else {	/* Must assume the user gave map coordinates */
 			mode = GMT_REFPOINT_MAP;
@@ -14197,7 +14197,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 
 	if (mode != GMT_REFPOINT_PLOT) {	/* Will require -R -J so check that these have been parsed */
 		gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, they exist in the history, and if an overlay we may add these from history automatically */
-		if (GMT->common.J.active == false && GMT->common.R.active == false) {
+		if (GMT->common.J.active == false && GMT->common.R.active[RSET] == false) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 			return NULL;
 		}

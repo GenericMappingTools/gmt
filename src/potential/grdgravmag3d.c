@@ -421,7 +421,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	                                "Syntax error: -S Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active,
 	                                "Error: Must specify either -G or -F options\n");
-	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active && Ctrl->Q.active && !Ctrl->Q.n_pad,
+	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active[RSET] && Ctrl->Q.active && !Ctrl->Q.n_pad,
 	                                "Error: Cannot specify -Q<pad>|<region> without -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
@@ -521,7 +521,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {
 		double wesn[4], inc[2];
 		/* Use the -R region for output if set; otherwise match grid domain */
-		gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : GridA->header->wesn), 4, double);
+		gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : GridA->header->wesn), 4, double);
 		gmt_M_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : GridA->header->inc), 2, double);
 		if (wesn[XLO] < GridA->header->wesn[XLO]) error = true;
 		if (wesn[XHI] > GridA->header->wesn[XHI]) error = true;
@@ -543,7 +543,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	GMT_Report(API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
-	if (!GMT->common.R.active)
+	if (!GMT->common.R.active[RSET])
 		gmt_M_memcpy(wesn_new, GridA->header->wesn, 4, double);
 	else
 		gmt_M_memcpy(wesn_new, GMT->common.R.wesn,  4, double);
@@ -555,11 +555,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			        wesn_new[XHI] + Ctrl->Q.pad_dist, wesn_new[YLO] - Ctrl->Q.pad_dist,
 			        wesn_new[YHI] + Ctrl->Q.pad_dist);
 
-		GMT->common.R.active = false;
+		GMT->common.R.active[RSET] = false;
 		gmt_parse_common_options(GMT, "R", 'R', Ctrl->Q.region);	/* Use the -R parsing machinery to handle this */
 		gmt_M_memcpy(wesn_padded, GMT->common.R.wesn, 4, double);
 		gmt_M_memcpy(GMT->common.R.wesn, wesn_new, 4, double);		/* Reset previous WESN */
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 
 		if (wesn_padded[XLO] < GridA->header->wesn[XLO]) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the West border exceed grid limit, trimming it\n");
@@ -587,7 +587,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	/* Check that Inner region request does not exceeds input grid limits */
-	if (GMT->common.R.active && Ctrl->G.active) {
+	if (GMT->common.R.active[RSET] && Ctrl->G.active) {
 		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO] ||
 		    Gout->header->wesn[XHI] > GridA->header->wesn[XHI]) {
 			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");

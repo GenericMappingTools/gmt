@@ -1087,8 +1087,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 			switch (p[1]) {
 				/* Common parameters */
 				case 'R':	/* Must be smart enough to deal with any command-line -R setting also given by user */
-					if (GMT->common.R.active) {	/* Have already parsed a command line setting */
-						parsed_command_R = true;	GMT->common.R.active = false;	/* Set to false so 2nd parse will work */
+					if (GMT->common.R.active[RSET]) {	/* Have already parsed a command line setting */
+						parsed_command_R = true;	GMT->common.R.active[RSET] = false;	/* Set to false so 2nd parse will work */
 						gmt_M_memcpy (save_R_wesn, GMT->common.R.wesn, 4, double);	/* Save command-line -R values */
 					}
 					if (gmt_parse_common_options (GMT, "R", 'R', &p[2])) {
@@ -1098,7 +1098,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					}
 					gmt_M_memcpy (B->wesn, GMT->common.R.wesn, 4, double);
 					if (parsed_command_R) gmt_M_memcpy (GMT->common.R.wesn, save_R_wesn, 4, double);	/* Restore command-line -R values */
-					GMT->common.R.active = parsed_command_R;	/* Only true if command-line -R was parsed, not this tag file */
+					GMT->common.R.active[RSET] = parsed_command_R;	/* Only true if command-line -R was parsed, not this tag file */
 					break;
 
 				case 'M':	/* GMT4 Backwards compatibility */

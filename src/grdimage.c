@@ -537,13 +537,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", cmd);
-		if (GMT->common.R.oblique) GMT->common.R.active = false;	/* Must turn -R off temporarily */
+		if (GMT->common.R.oblique) GMT->common.R.active[RSET] = false;	/* Must turn -R off temporarily */
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
 			Return (API->error);
 		/* Obtain the data from the virtual file */
 		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
-		if (GMT->common.R.oblique) GMT->common.R.active = true;	/* Reset -R */
+		if (GMT->common.R.oblique) GMT->common.R.active[RSET] = true;	/* Reset -R */
 	}
 	
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
@@ -560,12 +560,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 		/* One more test though */
-		if (Ctrl->D.mode && !GMT->common.R.active) {
+		if (Ctrl->D.mode && !GMT->common.R.active[RSET]) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Dr without -R makes no sense. Ignoring -Dr.\n");
 			Ctrl->D.mode = false;
 		}
 
-		if (use_intensity_grid && GMT->common.R.active) {
+		if (use_intensity_grid && GMT->common.R.active[RSET]) {
 			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
 			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Requested region exceeds illumination extent\n");
@@ -573,7 +573,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active)	/* Apply illumination to an image but no -R provided; use intensity domain */
+		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active[RSET])	/* Apply illumination to an image but no -R provided; use intensity domain */
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
 		
 		/* Read in the the entire image that is to be mapped */
@@ -581,10 +581,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active)	/* No -R or -I. Use image dimensions as -R */
+		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
 
-		if ( (Ctrl->D.mode && GMT->common.R.active) || (!Ctrl->D.mode && use_intensity_grid) ) {
+		if ( (Ctrl->D.mode && GMT->common.R.active[RSET]) || (!Ctrl->D.mode && use_intensity_grid) ) {
 			gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
 			/* Get actual size of each pixel */
 			dx = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
@@ -633,7 +633,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active && n_grids) gmt_M_memcpy (GMT->common.R.wesn, Grid_orig[0]->header->wesn, 4, double);
+	if (!GMT->common.R.active[RSET] && n_grids) gmt_M_memcpy (GMT->common.R.wesn, Grid_orig[0]->header->wesn, 4, double);
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	

@@ -504,13 +504,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-	if (!GMT->common.R.active && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
+	if (!GMT->common.R.active[RSET] && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
 	if (Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
-		if (GMT->common.R.active)
+		if (GMT->common.R.active[RSET])
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -E option: The -R option overrides the region found via -E.\n");
 		else {	/* Pick up region from chosen polygons */
 			(void) gmt_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
-			GMT->common.R.active = true;
+			GMT->common.R.active[RSET] = true;
 			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
 				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 				size_t i, j;
@@ -546,10 +546,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {

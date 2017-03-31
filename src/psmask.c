@@ -577,7 +577,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 		n_errors += gmt_M_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active, "Syntax error: Must specify -I option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !gmt_M_is_rect_graticule(GMT), "Syntax error -T option: Only available with Linear, Mercator, or basic cylindrical projections\n");

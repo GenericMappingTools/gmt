@@ -342,7 +342,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
 				buf[j-i]='\0';
 				reset_coltype (GMT, buf);	/* Make sure geo coordinates will be recognized */
-				GMT->common.R.active = false;	/* Forget that -R was used before */
+				GMT->common.R.active[RSET] = false;	/* Forget that -R was used before */
 				if (gmt_parse_common_options (GMT, "R", 'R', buf)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
 					continue;
@@ -716,7 +716,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 	/* Check that arguments were valid */
 	gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
 	if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
@@ -788,7 +788,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
 
 	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
-	GMT->common.R.active = false;	/* Forget that -R was used before */
+	GMT->common.R.active[RSET] = false;	/* Forget that -R was used before */
 	reset_coltype (GMT, r_opt->arg);	/* Make sure geo coordinates will be recognized */
 	if (gmt_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reprocessing -R?.\n");

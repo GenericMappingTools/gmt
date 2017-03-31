@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 		}
 	}
 	
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active + Ctrl->S.active + Ctrl->Z.active) != 1, "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->S.active + Ctrl->Z.active) != 1, "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify one input grid file\n");
 

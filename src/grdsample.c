@@ -281,7 +281,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 	gmt_M_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 
 	if (Ctrl->T.active)
@@ -291,7 +291,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	else
 		registration = Gin->header->registration;
 
-	if (GMT->common.R.active) {		/* Make sure input grid and output -R has an overlap */
+	if (GMT->common.R.active[RSET]) {		/* Make sure input grid and output -R has an overlap */
 		if ((wesn[YLO] < (Gin->header->wesn[YLO] - Gin->header->inc[GMT_Y]) ||
 		     wesn[YHI] > (Gin->header->wesn[YHI] + Gin->header->inc[GMT_Y]) ||
 		     wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) ||

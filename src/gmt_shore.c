@@ -438,7 +438,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 				else
 					base = 0;	/* full */
 			}
-			else if (GMT->common.R.active) {	/* No scale, based on region only */
+			else if (GMT->common.R.active[RSET]) {	/* No scale, based on region only */
 				double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
 				area = (GMT->common.R.wesn[GMT_XHI] - GMT->common.R.wesn[GMT_XLO]) * (GMT->common.R.wesn[GMT_YHI] - GMT->common.R.wesn[GMT_YLO]); /* Squared degrees */
 				if (area > (pow (0.6, 2.0) * earth_area))

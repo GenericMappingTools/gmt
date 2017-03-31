@@ -227,7 +227,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT->common.R.active) {	/* Specified a subset */
+	if (GMT->common.R.active[RSET]) {	/* Specified a subset */
 		bool global = false;
 		global = gmt_M_grd_is_global (GMT, Grid->header);
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
@@ -253,7 +253,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
-	if (!GMT->common.R.active && ((type[GMT_IN]  >= GMT_GRID_IS_CB && type[GMT_IN]  <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
+	if (!GMT->common.R.active[RSET] && ((type[GMT_IN]  >= GMT_GRID_IS_CB && type[GMT_IN]  <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
 	                              (type[GMT_IN]  >= GMT_GRID_IS_NB && type[GMT_IN]  <= GMT_GRID_IS_ND)) &&
 	                             ((type[GMT_OUT] >= GMT_GRID_IS_CB && type[GMT_OUT] <= GMT_GRID_IS_CD)  ||
 	                              (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND)) ) {

@@ -761,7 +761,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		got_R = true;
 		wesn[XLO] = GMT->common.R.wesn[XLO];		wesn[XHI] = GMT->common.R.wesn[XHI];
 		wesn[YLO] = GMT->common.R.wesn[YLO];		wesn[YHI] = GMT->common.R.wesn[YHI];
-		GMT->common.R.active = false;	/* Reset because -R was already parsed when reading header info */
+		GMT->common.R.active[RSET] = false;	/* Reset because -R was already parsed when reading header info */
 		error += gmt_parse_common_options (GMT, "R", 'R', prhs->R.region);
 		if (!error) {
 			double dx = 0, dy = 0;
@@ -784,7 +784,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (prhs->r.active) { 		/* Region is given in pixels */
 		got_r = true;
-		GMT->common.R.active = false;
+		GMT->common.R.active[RSET] = false;
 		error += gmt_parse_common_options (GMT, "R", 'R', prhs->r.region);
 		if (!error) {
 			dfULX = GMT->common.R.wesn[XLO];	dfLRX = GMT->common.R.wesn[XHI];

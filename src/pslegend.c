@@ -245,7 +245,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
 	if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
 
@@ -588,10 +588,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		            scl*Ctrl->D.dim[GMT_Y], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
+	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
 		gmt_M_memset (wesn, 4, double);
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.dim[GMT_X];	wesn[YHI] = Ctrl->D.dim[GMT_Y];
@@ -912,7 +912,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							sprintf (buffer, "%s -O -K -L%s", r_options, mapscale);
 						else {	/* Must use -R -J as supplied to pslegend */
 							gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, -R -J exist in the history, and if an overlay we may add these from history automatically */
-							if (!GMT->common.R.active || !GMT->common.J.active) {
+							if (!GMT->common.R.active[RSET] || !GMT->common.J.active) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
 								Return (GMT_RUNTIME_ERROR);
 							}

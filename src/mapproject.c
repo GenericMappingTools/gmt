@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	/* Must have -J */
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
 	                                 "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
-	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
+	if (!GMT->common.R.active[RSET] && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		if (GMT->current.proj.utm_hemisphere == 0)		/* Default to N hemisphere if nothing is known */
 			GMT->current.proj.utm_hemisphere = 1;
 		if (gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney,
@@ -617,11 +617,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			GMT_Report (API, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n",
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK),
 	                                 "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active ||
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active ||
 	                                 Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->D.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -D and -F\n");
@@ -629,7 +629,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	                                 GMT->common.b.active[GMT_IN] && gmt_get_cols (GMT, GMT_IN) < 3,
 	                                 "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
 
-	if (!(n_errors || GMT->common.R.active)) {
+	if (!(n_errors || GMT->common.R.active[RSET])) {
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
 		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 	}
@@ -750,7 +750,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.mode & GMT_MP_Z_ABST) extra[MP_COL_AT] = Ctrl->Z.epoch;	/* Need to initiate epoch time */
 	}
 		
-	if (Ctrl->T.active && GMT->current.proj.projection != GMT_LINEAR && GMT->common.R.active) {	/* Do datum shift & project coordinates */
+	if (Ctrl->T.active && GMT->current.proj.projection != GMT_LINEAR && GMT->common.R.active[RSET]) {	/* Do datum shift & project coordinates */
 		double_whammy = true;
 		if (Ctrl->I.active) {	/* Need to set the ellipsoid to that of the old datum */
 			if (GMT->current.proj.datum.from.ellipsoid_id < 0) {
@@ -789,7 +789,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 		else
 			gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
-		if (!GMT->common.R.active) {
+		if (!GMT->common.R.active[RSET]) {
 			GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 		}

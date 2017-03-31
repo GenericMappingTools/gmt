@@ -678,8 +678,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	F.cumulative = Ctrl->Q.active;
 	F.center_box = Ctrl->F.active;
 	F.extremes = Ctrl->W.mode;
-	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
-	if (GMT->common.R.active) gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
+	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
+	if (GMT->common.R.active[RSET]) gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {
 		Return (error);
@@ -879,7 +879,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 		F.wesn[YLO] = 0.0;
 		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, F.yy1)));

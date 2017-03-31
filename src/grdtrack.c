@@ -760,7 +760,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
 	gmt_M_memset (wesn, 4, double);
-	if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
+	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	GC = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
@@ -772,9 +772,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
-			if (GMT->common.R.active) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
+			if (GMT->common.R.active[RSET]) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
 
-			if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
+			if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
 			if (!gmt_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");

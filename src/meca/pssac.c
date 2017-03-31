@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.sec_per_measure), "Syntax error -S option: <sec_per_measure> must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Syntax error -T option: <reduce_vel> must be nonzero\n");

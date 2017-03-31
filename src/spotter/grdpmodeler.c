@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
 	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
 	}
 	else {	/* Must not have -I -r */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
@@ -304,14 +304,14 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
+		gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G_age) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		gmt_M_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
 		registration = G_age->header->registration;
 		gmt_M_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
-		GMT->common.R.active = true;
+		GMT->common.R.active[RSET] = true;
 	}
 	else {	/* Use the input options of -R -I [and -r] */
 		gmt_M_memcpy (inc, Ctrl->I.inc, 2, double);

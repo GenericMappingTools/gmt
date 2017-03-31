@@ -490,11 +490,11 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
 			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = true;
 		}
-		if (!GMT->common.R.active) {	/* R not given, provide default */
+		if (!GMT->common.R.active[RSET]) {	/* R not given, provide default */
 			GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
 			GMT->common.R.wesn[XHI] = header.width  - 1 + GMT->common.r.registration;
 			GMT->common.R.wesn[YHI] = header.height - 1 + GMT->common.r.registration;
-			GMT->common.R.active = true;
+			GMT->common.R.active[RSET] = true;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 

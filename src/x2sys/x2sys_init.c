@@ -435,7 +435,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	if (Ctrl->W.active[0]) fprintf (fp, " -W%s", Ctrl->W.string[0]);
 	if (Ctrl->W.active[1]) fprintf (fp, " -W%s", Ctrl->W.string[1]);
 	(Ctrl->I.active) ? fprintf (fp, " -I%s", Ctrl->I.string) : fprintf (fp, " -I1/1");
-	(GMT->common.R.active) ? fprintf (fp, " -R%g/%g/%g/%g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) : fprintf (fp, " -R0/360/-90/90");
+	(GMT->common.R.active[RSET]) ? fprintf (fp, " -R%g/%g/%g/%g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) : fprintf (fp, " -R0/360/-90/90");
 	fprintf (fp, "\n");
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 

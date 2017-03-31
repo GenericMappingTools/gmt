@@ -269,7 +269,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
 	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
-	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
+	if (GMT->common.R.active[RSET])	/* Load the w/e/s/n from -R */
 		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	else {	/* If -R was not given we infer the option via the input grid */
 		char opt_R[GMT_BUFSIZ];
@@ -316,7 +316,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
-			GMT->common.R.active = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
+			GMT->common.R.active[RSET] = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
@@ -342,7 +342,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), ySW, MAX(xNE, xSE), yNE);
 
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
-			GMT->common.R.active = false;
+			GMT->common.R.active[RSET] = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
 		}

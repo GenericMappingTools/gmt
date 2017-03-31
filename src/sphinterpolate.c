@@ -249,7 +249,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/
 
-	if (!GMT->common.R.active) {	/* Default is global region */
+	if (!GMT->common.R.active[RSET]) {	/* Default is global region */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 	}
 

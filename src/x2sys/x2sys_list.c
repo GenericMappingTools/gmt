@@ -369,7 +369,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 	
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
-	if (GMT->common.R.active) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
+	if (GMT->common.R.active[RSET]) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);

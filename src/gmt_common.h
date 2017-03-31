@@ -50,6 +50,10 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 #define GMT_SHORTHAND_OPTIONS	"BJRXYcp"	/* All of the shorthand options */
 #define GMT_CRITICAL_OPT_ORDER	"V-JfrRb"	/* If given options among these must be parsed first and in this order */
 
+#define RSET	0	/* Indices into R.active[] */
+#define ISET	1
+#define GSET	2
+
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
 	struct synopsis {	/* \0 (zero) or ^ */
@@ -61,10 +65,6 @@ struct GMT_COMMON {
 		int mode;	/* 5 = GMT 5 syntax, 4 = GMT 4 syntax, 1 = Either, -1 = mix (error), 0 = not set yet */
 		char string[2][GMT_LEN256];
 	} B;
-	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */
-		bool active;
-		double inc[2];
-	} API_I;
 	struct J {	/* -J<params> */
 		bool active, zactive;
 		unsigned int id;
@@ -80,11 +80,12 @@ struct GMT_COMMON {
 	struct P {	/* -P */
 		bool active;
 	} P;
-	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] */
-		bool active;
+	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
+		bool active[3];	/* 0 = -R, 1 = inc, 2 = -r */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
 		double wesn_orig[4];	/* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
+		double inc[2];	/* For grid increments set via -Idx/dy or implicitly via -Ggrid */
 		char string[GMT_LEN256];
 	} R;
 	struct U {	/* -U */

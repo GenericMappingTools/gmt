@@ -532,7 +532,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				break;
 		}
 	}
-	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active)) Ctrl->Z.max_col = 2;
+	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active[RSET])) Ctrl->Z.max_col = 2;
 	if (Ctrl->Z.n_tests) Ctrl->Z.limit = gmt_M_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
@@ -612,12 +612,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
 	
-	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didn't give -R we implicitly set -Rg */
-		GMT->common.R.active = true;
+	if (!GMT->common.R.active[RSET] && Ctrl->N.active) {	/* If we use coastline data or used -fg but didn't give -R we implicitly set -Rg */
+		GMT->common.R.active[RSET] = true;
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
 		gmt_set_geographic (GMT, GMT_IN);
 	}
-	if (GMT->common.R.active) {	/* -R was set directly or indirectly; hence must set -J if not supplied */
+	if (GMT->common.R.active[RSET]) {	/* -R was set directly or indirectly; hence must set -J if not supplied */
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */
 			GMT->current.proj.projection = GMT->current.proj.xyz_projection[GMT_X] = GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
@@ -854,7 +854,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		lon = in[GMT_X];	/* Use copy since we may have to wrap 360 */
-		if (GMT->common.R.active) {	/* Apply region test */
+		if (GMT->common.R.active[RSET]) {	/* Apply region test */
 			inside = !gmt_map_outside (GMT, lon, in[GMT_Y]);
 			if (inside != Ctrl->I.pass[GMT_SELECT_R]) { output_header = need_header; continue;}
 		}

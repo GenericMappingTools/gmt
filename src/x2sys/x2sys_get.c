@@ -249,7 +249,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	else	/* Cartesian data */
 		gmt_set_cartesian (GMT, GMT_OUT);
 		
-	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
+	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
 	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
 	for (ii = combo = 0; ii < s->n_out_columns; ii++) combo |= X2SYS_bit (s->out_order[ii]);

@@ -264,9 +264,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 			gmt_parse_common_options (GMT, "J", 'J', "X14cd/0d");
 			GMT->common.J.active = true;
 		}
-		if (!GMT->common.R.active) {	/*  */
+		if (!GMT->common.R.active[RSET]) {	/*  */
 			gmt_parse_common_options (GMT, "R", 'R', "-180/180/-90/90");
-			GMT->common.R.active = true;
+			GMT->common.R.active[RSET] = true;
 		}
 	}
 

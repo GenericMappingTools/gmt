@@ -212,12 +212,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				break;
 		}
 	}
-	if (GMT->common.R.active) {
+	if (GMT->common.R.active[RSET]) {
 		gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active,
 		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active && Ctrl->I.active) && Ctrl->Z.mode == 1,
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && Ctrl->I.active) && Ctrl->Z.mode == 1,
 	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Syntax error -G option: Must specify output gridfile name.\n");
@@ -750,7 +750,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
-	else if (GMT->common.R.active) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
+	else if (GMT->common.R.active[RSET]) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 			Return (API->error);

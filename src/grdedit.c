@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error -S option: Incompatible with -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active,
 	                                 "Syntax error -S option: Incompatible with -N\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active[RSET],
 	                                 "Syntax error -S option: Must also specify -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
 	                                 "Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
@@ -485,7 +485,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n",
 				out_file, G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
 		}
-		if (GMT->common.R.active) {
+		if (GMT->common.R.active[RSET]) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n",
 				out_file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 			gmt_M_memcpy (G->header->wesn, GMT->common.R.wesn, 4, double);

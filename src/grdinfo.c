@@ -244,7 +244,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active);
+	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
 	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK, "Syntax error: Must specify one or more input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1, "Syntax error -D: The +n modifier requires a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0, "Syntax error -T: The optional increment must be positive\n");
@@ -388,7 +388,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	
 	sep = GMT->current.setting.io_col_separator;
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active) {
+	if (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]) {
 		global_xmin = GMT->common.R.wesn[XLO]; global_ymin = GMT->common.R.wesn[YLO];
 		global_xmax = GMT->common.R.wesn[XHI] ; global_ymax = GMT->common.R.wesn[YHI];
 	}

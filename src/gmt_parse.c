@@ -217,12 +217,12 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	/* Now look for -Idx[/dy] option */
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == 'I' && opt->arg[0]) {
-			if (!gmt_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
-				GMT->common.API_I.active = true;
+			if (!gmt_getinc (GMT, opt->arg, GMT->common.R.inc)) {	/* Successful parsing */
+				GMT->common.R.active[ISET] = true;
 			}
 		}
 	}
-	if (GMT->common.API_I.active)
+	if (GMT->common.R.active[ISET])
 		return 0;
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;

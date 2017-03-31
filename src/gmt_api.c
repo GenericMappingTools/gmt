@@ -806,18 +806,18 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 				return (API->error);
 			break;
 		case GMT_IS_GRID:
-			wesn = (direction == GMT_IN && GMT->common.R.active) ? GMT->common.R.wesn : NULL;
+			wesn = (direction == GMT_IN && GMT->common.R.active[RSET]) ? GMT->common.R.wesn : NULL;
 			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
 				return (API->error);
-			wesn = (direction == GMT_OUT && GMT->common.R.active) ? GMT->common.R.wesn : NULL;
+			wesn = (direction == GMT_OUT && GMT->common.R.active[RSET]) ? GMT->common.R.wesn : NULL;
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, G) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_IMAGE:
-			wesn = (direction == GMT_IN && GMT->common.R.active) ? GMT->common.R.wesn : NULL;
+			wesn = (direction == GMT_IN && GMT->common.R.active[RSET]) ? GMT->common.R.wesn : NULL;
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
 				return (API->error);
-			wesn = (direction == GMT_OUT && GMT->common.R.active) ? GMT->common.R.wesn : NULL;
+			wesn = (direction == GMT_OUT && GMT->common.R.active[RSET]) ? GMT->common.R.wesn : NULL;
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, I) != GMT_OK)
 				return (API->error);
 			break;
@@ -3277,7 +3277,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	D_obj->alloc_level = GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);		/* false if we insist on ASCII reading */
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
-	if (GMT->common.R.active && GMT->common.R.wesn[XLO] < -180.0 && GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
+	if (GMT->common.R.active[RSET] && GMT->common.R.wesn[XLO] < -180.0 && GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
 
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* S_obj is the current data object */
@@ -5036,7 +5036,7 @@ GMT_LOCAL int api_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 		while (current) {	/* Loop over the list and look for input files */
 			if (current->option == GMT_OPT_INFILE && api_not_used (API, current->arg)) {	/* File given, register it if has not already been used */
 				if (geometry == GMT_IS_SURFACE) {	/* Grids and images may require a subset */
-					if (API->GMT->common.R.active) {	/* Global subset may have been specified (it might also match the grid/image domain) */
+					if (API->GMT->common.R.active[RSET]) {	/* Global subset may have been specified (it might also match the grid/image domain) */
 						wesn = gmt_M_memory (API->GMT, NULL, 4U, double);
 						gmt_M_memcpy (wesn, API->GMT->common.R.wesn, 4U, double);
 					}
@@ -9840,9 +9840,9 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 	switch (option) {
 		case 'B':	if (GMT->common.B.active[0] || GMT->common.B.active[1]) ret = 0; break;
 		case 'I':
-			if (GMT->common.API_I.active) {
+			if (GMT->common.R.active[ISET]) {
 				ret = 2;
-				if (par) gmt_M_memcpy (par, GMT->common.API_I.inc, 2, double);
+				if (par) gmt_M_memcpy (par, GMT->common.R.inc, 2, double);
 			}
 			break;
 		case 'J':	if (GMT->common.J.active) ret = 0; break;
@@ -9850,7 +9850,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 		case 'O':	if (GMT->common.O.active) ret = 0; break;
 		case 'P':	if (GMT->common.P.active) ret = 0; break;
 		case 'R':
-			if (GMT->common.R.active) {
+			if (GMT->common.R.active[RSET]) {
 				ret = 4;
 				if (par) gmt_M_memcpy (par, GMT->common.R.wesn, 4, double);
 			}

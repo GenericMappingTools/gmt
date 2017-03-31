@@ -486,7 +486,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
-	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
+	if (GMT->common.R.active[RSET] && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
@@ -523,7 +523,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			break;
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
-	wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+	wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active[RSET] && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 	
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
 		Return (error);

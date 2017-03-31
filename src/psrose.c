@@ -364,7 +364,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
 	if (!Ctrl->I.active) {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
@@ -436,7 +436,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	sector_plot = (Ctrl->A.inc > 0.0);
 	if (sector_plot) windrose = false;	/* Draw rose diagram instead of sector diagram */
 	if (!Ctrl->S.normalize) Ctrl->N.active = false;	/* Only do this if data is normalized for length also */
-	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
+	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
 	if (Ctrl->T.active) one_or_two = 2.0;
 	half_bin_width = Ctrl->D.active * Ctrl->A.inc * 0.5;
 	if (half_only == 1) {
@@ -670,7 +670,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
-	GMT->common.R.active = GMT->common.J.active = true;
+	GMT->common.R.active[RSET] = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 		gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);

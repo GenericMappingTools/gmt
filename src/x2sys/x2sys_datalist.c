@@ -286,7 +286,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	s->ascii_out = !GMT->common.b.active[1];
 
-	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
+	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (ocol = n_data_col_out = 0; ocol < s->n_out_columns; ocol++) {
@@ -408,7 +408,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;		/* The above lime might very well had set it to true */
 
-	if (GMT->common.R.active) {	/* Restrict output to given domain */
+	if (GMT->common.R.active[RSET]) {	/* Restrict output to given domain */
 		if (xpos == -1 || ypos == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
@@ -485,7 +485,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		cumulative_dist = 0.0;
 		for (row = 0; row < p.n_rows; row++) {	/* Process all records in this file */
-			if (GMT->common.R.active && gmt_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
+			if (GMT->common.R.active[RSET] && gmt_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
 			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering lon,lat,time) */
 				for (ocol = bad = 0; ocol < s->n_out_columns; ocol++) {
 					this_col = s->out_order[ocol];
