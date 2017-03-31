@@ -997,15 +997,13 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fh, n, k, pix_w, pix_h;
+	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_POSTSCRIPT *PS = NULL;
-#ifdef _WIN32
-	int       fd[2] = {0, 0};
-#else
+#ifndef _WIN32
 	struct popen2 *H = NULL;
 #endif
 	FILE     *fp = NULL;
