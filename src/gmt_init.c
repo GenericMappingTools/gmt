@@ -6720,29 +6720,27 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
 		}
-		gmt_M_memcpy (&(GMT->current.io.grd_info.grd), G->header, 1, struct GMT_GRID_HEADER);
-		if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK) {
-			return (GMT->parent->error);
-		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
-			if (gmt_M_is_Npole (GMT->current.io.grd_info.grd.wesn[YHI])) GMT->current.io.grd_info.grd.wesn[YHI] = +90.0;
-			if (gmt_M_is_Spole (GMT->current.io.grd_info.grd.wesn[YLO])) GMT->current.io.grd_info.grd.wesn[YLO] = -90.0;
+			if (gmt_M_is_Npole (G->header->wesn[YHI])) G->header->wesn[YHI] = +90.0;
+			if (gmt_M_is_Spole (G->header->wesn[YLO])) G->header->wesn[YLO] = -90.0;
 		}
 		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
-			if (fabs (GMT->current.io.grd_info.grd.wesn[XLO]) > 360.0 || fabs (GMT->current.io.grd_info.grd.wesn[XHI]) > 360.0 \
-			  || fabs (GMT->current.io.grd_info.grd.wesn[YLO]) > 90.0 || fabs (GMT->current.io.grd_info.grd.wesn[YHI]) > 90.0) {	/* Yes we probably did, but cannot be sure */
+			if (fabs (G->header->wesn[XLO]) > 360.0 || fabs (G->header->wesn[XHI]) > 360.0 \
+			  || fabs (G->header->wesn[YLO]) > 90.0 || fabs (G->header->wesn[YHI]) > 90.0) {	/* Yes we probably did, but cannot be sure */
 				inv_project = true;
 				r_unit = 'e';	/* Must specify the "missing" leading e for meter */
-				sprintf (string, "%.16g/%.16g/%.16g/%.16g", GMT->current.io.grd_info.grd.wesn[XLO], GMT->current.io.grd_info.grd.wesn[XHI], GMT->current.io.grd_info.grd.wesn[YLO], GMT->current.io.grd_info.grd.wesn[YHI]);
+				sprintf (string, "%.16g/%.16g/%.16g/%.16g", G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
 			}
 		}
-		if (!inv_project) {	/* Got grid with degrees */
-			gmt_M_memcpy (GMT->common.R.wesn, GMT->current.io.grd_info.grd.wesn, 4, double);
+		if (!inv_project) {	/* Got grid with degrees or regular Cartesian */
+			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
+			gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);
+			GMT->common.R.registration = G->header->registration;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG,
 			            "-R<grdfile> converted to -R%.16g/%.16g/%.16g/%.16g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 #if 0
 			/* Next bit removed because of issue #592. Should not change the boundaries of the grid */
-			if (GMT->current.io.grd_info.grd.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->current.io.grd_info.grd.inc[GMT_X], 360.0)) {
+			if (GMT->common.R.registration == GMT_GRID_NODE_REG && doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO] + GMT->common.R.inc[GMT_X], 360.0)) {
 				/* Geographic grid with gridline registration that does not contain the repeating column, but is still 360 range */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG,
 				            "-R<file> with gridline registration and non-repeating column detected; return full 360 degree range for -R\n");
@@ -6752,8 +6750,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 					GMT->common.R.wesn[XLO] = GMT->common.R.wesn[XHI] - 360.0;
 			}
 #endif
-			GMT->common.R.wesn[ZLO] = GMT->current.io.grd_info.grd.z_min;	GMT->common.R.wesn[ZHI] = GMT->current.io.grd_info.grd.z_max;
-			GMT->current.io.grd_info.active = true;
+			GMT->common.R.wesn[ZLO] = G->header->z_min;	GMT->common.R.wesn[ZHI] = G->header->z_max;
+			GMT->common.R.active[ISET] = true;
+			GMT->common.R.active[GSET] = true;
+			GMT->common.R.active[FSET] = true;
+			if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK)
+				return (GMT->parent->error);
 			return (GMT_NOERROR);
 		}
 	}
@@ -7147,16 +7149,15 @@ void gmt_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registr
 	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.
 	 */
-	if (!GMT->current.io.grd_info.active) return;	/* -R<grdfile> was not used; use existing settings */
+	if (!GMT->common.R.active[FSET]) return;	/* -R<grdfile> was not used; use existing settings */
 
 	/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
 	if (!active || *active == false) {	/* -I not set separately */
-		gmt_M_memcpy (inc, GMT->current.io.grd_info.grd.inc, 2, double);
-		inc[GMT_Y] = GMT->current.io.grd_info.grd.inc[GMT_Y];
+		gmt_M_memcpy (inc, GMT->common.R.inc, 2, double);
 	}
 	if (registration) {	/* An pointer not NULL was passed that indicates grid registration */
 		/* If a -r like option was set then toggle grid setting, else use grid setting */
-		*registration = (*registration) ? !GMT->current.io.grd_info.grd.registration : GMT->current.io.grd_info.grd.registration;
+		*registration = (*registration) ? !GMT->common.R.registration : GMT->common.R.registration;
 	}
 	if (active) *active = true;	/* When 4th arg is not NULL it is set to true (for Ctrl->active args) */
 }
@@ -12264,7 +12265,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'r':
-			if (GMT->current.io.grd_info.active) GMT->common.r.active = false;	/* OK to override registration given via -Rfile */
+			if (GMT->common.R.active[FSET]) GMT->common.r.active = false;	/* OK to override registration given via -Rfile */
 			error += GMT_more_than_once (GMT, GMT->common.r.active);
 			GMT->common.r.active = true;
 			GMT->common.r.registration = GMT_GRID_PIXEL_REG;

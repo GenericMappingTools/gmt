@@ -240,7 +240,6 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int inc_code[2];
 	double curr_rec[GMT_MAX_COLUMNS];	/* The most recently processed data record */
 	double prev_rec[GMT_MAX_COLUMNS];	/* The previous data record */
-	struct GMT_GRID_INFO grd_info;
 
 	bool multi_segments[2];	/* true if current ASCII input/output file has multiple segments */
 	bool skip_headers_on_outout;	/* true when gmtconvert -T is set [or possibly other similar actions in the future] */
