@@ -708,8 +708,10 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 					k = 0;
 					while (list[k]) {
 						snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
-						if (access (path, R_OK))
+						if (access (path, R_OK)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
+							GMT_Report (API, GMT_MSG_NORMAL, "Check that your GMT_CUSTOM_LIBS (in gmt.conf, perhaps) is correct\n");
+						}
 						else if ((API->lib[n_custom_libs].name = api_lib_tag (list[k]))) {
 							API->lib[n_custom_libs].path = strdup (path);
 							GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
@@ -731,8 +733,10 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			unsigned int pos = 0;
 			while (gmt_strtok (GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
 				libname = strdup (basename (text));		/* Last component from the pathname */
-				if (access (text, R_OK))
+				if (access (text, R_OK)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", text);
+					GMT_Report (API, GMT_MSG_NORMAL, "Check that your GMT_CUSTOM_LIBS (in gmt.conf, perhaps) is correct\n");
+				}
 				else if ((API->lib[n_custom_libs].name = api_lib_tag (libname))) {
 					API->lib[n_custom_libs].path = strdup (text);
 					GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
