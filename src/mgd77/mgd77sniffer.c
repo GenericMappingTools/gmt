@@ -372,8 +372,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file>] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N] [-Q]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -385,7 +385,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Apply scale factor and DC adjustment to specified data field. Allows adjustment of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   before applying these global data adjustments. May not be used for multiple cruises.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-B Adjust navigation on land threshold (meters inland) [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set maximum ship speed (10 m/s by default, use -N to indicate knots).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump cruise data such as sniffer limits, values, gradients and mgd77 records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Dd print out cruise-grid differences (requires -G option).\n");
@@ -426,10 +425,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Give one or more record numbers to specify ranges of data record that should be flagged as bad\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   prior to along-track analysis.  The flag information will be echoed out to E77 files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   May not be used for multiple cruises.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-K Reverse navigation quality flags (good to bad and vice versa). May be necessary when a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   first navigation fix is extremely erroneous. Caution! This will affect sniffer output and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   should only be attempted after careful manual navigation review.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override mgd77sniffer default error detection limits. Supply path and filename of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO.\n");
@@ -444,9 +439,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t\tfaa	-250	250	100	2500\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use a dash '-' to retain a default limit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Adjust navigation on land threshold (meters inland) [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use nautical units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-P Flag regression statistics that are outside the specified confidence level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%%.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Reverse navigation quality flags (good to bad and vice versa). May be necessary when a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   first navigation fix is extremely erroneous. Caution! This will affect sniffer output and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   should only be attempted after careful manual navigation review.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify gradient type for along-track excessive slope checking.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sd Calculate change in z values along track (dz).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Ss Calculate spatial gradients (dz/ds) [default].\n");
@@ -458,6 +456,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (s)peed out of range, (t)ime warnings, (v)alue out of range, (x) warning summaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-V Run in verbose mode.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Flag regression statistics that are outside the specified confidence level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (i.e., -Z5 flags coefficients m, b, rms, and r that fall outside 95%%.)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
 	GMT_Option (API, "do,n,.");
 	GMT_Message (API, GMT_TIME_NONE, "\tMGD77 FIELD INFO:\n");
@@ -685,9 +685,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				adjustData = true;
 				break;
-			case 'B':	/* set nav on land threshold */
-				nav_on_land_threshold =  atof (opt->arg);
-				break;
 			case 'C':	/* set max speed */
 				max_speed = atof (opt->arg);
 				custom_max_speed = true;
@@ -816,9 +813,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					error = true;
 				}
 				break;
-			case 'K':	/* Reverse navigation flags */
-				flip_flags = true;
-				break;
 			case 'L':	/* Overwrite default sniffer limits */
 				custom_limit_file = opt->arg;
 				break;
@@ -826,9 +820,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				nautical = true;
 				speed_units = "knots";
 				break;
-			case 'P':	/* Specify percent limits for all regression tests */
-				percent_limit = atof (opt->arg);
-				sprintf (fpercent_limit, GMT->current.setting.format_float_out, percent_limit);
+			case 'M':	/* set nav on land threshold */
+				nav_on_land_threshold =  atof (opt->arg);
+				break;
+			case 'Q':	/* Reverse navigation flags */
+				flip_flags = true;
 				break;
 			case 'S':	/* Specify spatial gradients, time gradients, or value differences along-track */
 				if (opt->arg[0] == 'd') {
@@ -880,6 +876,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					}
 				}
 				custom_warn = true;
+				break;
+			case 'Z':	/* Specify percent limits for all regression tests */
+				percent_limit = atof (opt->arg);
+				sprintf (fpercent_limit, GMT->current.setting.format_float_out, percent_limit);
 				break;
 			default:
 				error += gmt_default_error (GMT, opt->option);
@@ -1491,7 +1491,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					sprintf (buffer, "%s - Flagged %.2f %% of records with bad navigation", M.NGDC_id,n_bad*100.0/nvalues);
 					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					if ((n_bad*1.0)/nvalues > .25) gmt_M_fputs (", suggest manual navigation review", GMT->session.std[GMT_OUT]);
-					if ((n_bad*1.0)/nvalues > .5) gmt_M_fputs (", may need to flip flags (see -K option)", GMT->session.std[GMT_OUT]);
+					if ((n_bad*1.0)/nvalues > .5) gmt_M_fputs (", may need to flip flags (see -Q option)", GMT->session.std[GMT_OUT]);
 					gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 				}
 			}
