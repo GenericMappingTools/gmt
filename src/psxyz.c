@@ -1240,8 +1240,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					case GMT_SYMBOL_CUSTOM:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						dim[0] = data[i].dim[0];
-						for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
-							dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
+						for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Convert any azimuths to plot angles first */
+							if (S.custom->type[j] == GMT_IS_AZIMUTH) {	/* Make sure angles are 0-360 for macro conditionals */
+								dim[j+1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[i].dim[j]);
+								if (dim[j+1] < 0.0) dim[j+1] += 360.0;
+							}
+							else {	/* Angles (enforce 0-360), dimensions or other quantities */
+								dim[j+1] = data[i].dim[j];
+								if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
+							}
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
 						gmt_draw_custom_symbol (GMT, xpos[item], data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);

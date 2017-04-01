@@ -105,8 +105,8 @@ enum GMT_enum_segopt {
 
 /*! Types of possible column entries in a file: */
 enum gmt_M_col_enum {
-	GMT_IS_NAN   =   0,	/* Returned by gmt_scanf routines when read fails */
-	GMT_IS_FLOAT	=   1,	/* Generic (double) data type, no special format */
+	GMT_IS_NAN   		=   0,	/* Returned by gmt_scanf routines when read fails */
+	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=    2,
 	GMT_IS_LON		=    4,
 	GMT_IS_GEO		=    6,	/* data type is either Lat or Lon */
@@ -117,9 +117,10 @@ enum gmt_M_col_enum {
 	GMT_IS_DURATION		=   64,	/* For elapsed time */
 	GMT_IS_DIMENSION	=  128,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
 	GMT_IS_GEODIMENSION	=  256,	/* A float with [optional] geo-distance unit suffix, e.g., 7.5n, 0.4d; convert to km  */
-	GMT_IS_GEOANGLE		=  512,	/* An angle to be converted via map projection to angle on map  */
-	GMT_IS_STRING		= 1024,	/* An text argument [internally used, not via -f]  */
-	GMT_IS_UNKNOWN		= 2048};	/* Input type is not knowable without -f */
+	GMT_IS_AZIMUTH		=  512,	/* An angle to be converted via map projection to angle on map  */
+	GMT_IS_ANGLE		= 1024,	/* An angle to be used as is  */
+	GMT_IS_STRING		= 2048,	/* An text argument [internally used, not via -f]  */
+	GMT_IS_UNKNOWN		= 4096};	/* Input type is not knowable without -f */
 
 /*! Various ways to report longitudes */
 enum GMT_lon_enum {

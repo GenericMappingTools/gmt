@@ -6,8 +6,8 @@
 ps=windbarb.ps
 
 cat << EOF > tmp
-150	-40	25	9.0
-150	-30	50	90.0
+150	-40	25	81.0
+150	-30	50	0.0
 EOF
 
 ln -fs "${GMT_SRCDIR:-.}"/windbarb.def .

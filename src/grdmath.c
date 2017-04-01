@@ -321,7 +321,7 @@ GMT_LOCAL void grd_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	uint64_t node;
 	float a = 0.0f;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOS!\n");
 	if (stack[last]->constant) a = (float)d_acos (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (stack[last]->G->data[node]);
@@ -346,7 +346,7 @@ GMT_LOCAL void grd_ACOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	uint64_t node;
 	float a = 0.0f;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOT!\n");
 	if (stack[last]->constant) a = (float)atan (1.0 / stack[last]->factor);
@@ -371,7 +371,7 @@ GMT_LOCAL void grd_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	uint64_t node;
 	float a = 0.0f;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACSC!\n");
 	if (stack[last]->constant) a = (float)d_asin (1.0 / stack[last]->factor);
@@ -435,7 +435,7 @@ GMT_LOCAL void grd_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	double a, b;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	for (node = 0; node < info->size; node++) {
 
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
@@ -527,7 +527,7 @@ GMT_LOCAL void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	uint64_t node;
 	float a = 0.0f;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASEC!\n");
 	if (stack[last]->constant) a = (float)d_acos (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -552,7 +552,7 @@ GMT_LOCAL void grd_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	uint64_t node;
 	float a = 0.0f;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASIN!\n");
 	if (stack[last]->constant) a = (float)d_asin (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -577,7 +577,7 @@ GMT_LOCAL void grd_ATAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float a = 0.0f;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant) a = (float)atan (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (stack[last]->G->data[node]);
@@ -590,7 +590,7 @@ GMT_LOCAL void grd_ATAN2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	unsigned int prev = last - 1;
 	double a, b;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for ATAN2!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for ATAN2!\n");
 	for (node = 0; node < info->size; node++) {
@@ -927,7 +927,7 @@ GMT_LOCAL void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -946,7 +946,7 @@ GMT_LOCAL void grd_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -1413,7 +1413,7 @@ GMT_LOCAL void grd_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant) a = stack[last]->factor * D2R;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : (stack[last]->G->data[node] * D2R));
 }
@@ -3569,7 +3569,7 @@ GMT_LOCAL void grd_R2D (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_ANGLE;
 	if (stack[last]->constant) a = R2D * stack[last]->factor;
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : R2D * stack[last]->G->data[node]);
@@ -3823,7 +3823,7 @@ GMT_LOCAL void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
+	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_AZIMUTH;
 	gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
