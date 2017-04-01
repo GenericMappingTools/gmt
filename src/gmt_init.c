@@ -72,7 +72,6 @@
  *	gmt_parse_o_option
  *	gmt_parse_model
  *	gmt_parse_segmentize
- *	gmt_check_lattice
  *	gmt_check_binary_io
  *	gmt_parse_g_option
  *	gmt_get_V
@@ -7145,24 +7144,6 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 }
 
 /*! . */
-void gmt_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registration, bool *active) {
-	/* Uses provided settings to initialize the lattice settings from
-	 * the -R<grdfile> if it was given; else it does nothing.
-	 */
-	if (!GMT->common.R.active[FSET]) return;	/* -R<grdfile> was not used; use existing settings */
-
-	/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
-	if (!active || *active == false) {	/* -I not set separately */
-		gmt_M_memcpy (inc, GMT->common.R.inc, 2, double);
-	}
-	if (registration) {	/* An pointer not NULL was passed that indicates grid registration */
-		/* If a -r like option was set then toggle grid setting, else use grid setting */
-		*registration = (*registration) ? !GMT->common.R.registration : GMT->common.R.registration;
-	}
-	if (active) *active = true;	/* When 4th arg is not NULL it is set to true (for Ctrl->active args) */
-}
-
-/*! . */
 int gmt_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 	int n_errors = 0;
 
@@ -10577,11 +10558,15 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 		FILE *fp = NULL;
 		void *content = NULL;
 		size_t n_read = 0;
+#ifndef _WIN32
+		int fd = 0;
+#endif
 	    
 		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_set_missing_R_from_datasets: Must send stdin to temporary file.\n");
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			sprintf (tmpfile, "%s/", API->tmp_dir);
 		strcat (tmpfile, "gmt_saved_stdin.XXXXXX");
+#ifdef _WIN32
 		if ((file = mktemp (tmpfile)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not create temporary file name.\n");
 			return GMT_RUNTIME_ERROR;
@@ -10590,12 +10575,29 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not open temporary file %s.\n", file);
 			return GMT_RUNTIME_ERROR;
 		}
-	  
+#else
+		if ((fd = mkstemp (tmpfile)) == -1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not create and open temporary file %s.\n", tmpfile);
+			return GMT_RUNTIME_ERROR;
+		}
+		file = tmpfile;
+		if ((fp = fdopen (fd, API->GMT->current.io.w_mode)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Could not fdopen temporary file %s.\n", file);
+			return GMT_RUNTIME_ERROR;
+		}
+#endif
 		/* Dump stdin to that temp file */
 		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_set_missing_R_from_datasets: Send stdin to %s.\n", file);
-		content = malloc (GMT_BUFSIZ);
+		if ((content = malloc (GMT_BUFSIZ)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: Unable to allocate %d bytes for buffer.\n", GMT_BUFSIZ);
+			return GMT_RUNTIME_ERROR;
+		}
 		while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
-	        fwrite (content, 1, n_read, fp);
+	        if (fwrite (content, 1, n_read, fp) != n_read) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_missing_R_from_datasets: fwrite failure.\n");
+				free (content);
+				return GMT_RUNTIME_ERROR;
+			}
 	    }		
 	    fclose (fp);
 		free (content);

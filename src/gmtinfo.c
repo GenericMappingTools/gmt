@@ -301,7 +301,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	if (Ctrl->I.mode != ACTUAL_BOUNDS) gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 	if (Ctrl->I.active && special && Ctrl->I.ncol > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ip. Only a single increment is expected.\n");
 		n_errors++;

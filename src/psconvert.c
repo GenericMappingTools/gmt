@@ -210,7 +210,7 @@ struct popen2 * gmt_popen2 (const char *cmdline) {
         dup2 (pipe_stdin[0], 0);
         close (pipe_stdout[0]);
         dup2 (pipe_stdout[1], 1);
-        execl ("/bin/sh", "sh", "-c", cmdline, 0);
+        execl ("/bin/sh", "sh", "-c", cmdline, NULL);
         perror ("execl"); exit (99);
     }
 	/* Return the file handles back via structure */
@@ -221,15 +221,22 @@ struct popen2 * gmt_popen2 (const char *cmdline) {
     return F; 
 }
 
+#ifndef _WIN32
+#include <signal.h>
+#include <sys/wait.h>
+#endif
+
 void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 	struct popen2 *F = *Faddr;
 	F->n_closed++;
 	close (F->fd[dir]);	/* Close this pipe */
 	if (F->n_closed == 2) {	/* Done so free object */
 		/* Done, kill child */
+#ifndef _WIN32
     	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0)); 
     	printf("waitpid() -> %d\n", waitpid(F->child_pid, NULL, 0));
     	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0));
+#endif
 		free (F);
 		*Faddr = NULL;
 	}
