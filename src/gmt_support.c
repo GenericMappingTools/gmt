@@ -3944,7 +3944,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (s->conditional == 4) s->action = '}';	/* The {, }, E, and F are dummy actions */
 		if (s->conditional == 6) s->action = 'E';
 		if (s->conditional == 8) s->action = 'F';
-		if (last >= 2 && !s->conditional) {	/* OK to parse x,y coordinates */
+		if (last >= 2 && s->conditional < 2) {	/* OK to parse x,y coordinates */
 			s->x = atof (col[GMT_X]);
 			s->y = atof (col[GMT_Y]);
 		}
