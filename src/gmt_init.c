@@ -6616,7 +6616,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'm': if (!gmt_M_compat_check (GMT, 4)) error++; break;
 		case 'S': if (!gmt_M_compat_check (GMT, 4)) error++; break;
 		case 'F': if (!gmt_M_compat_check (GMT, 4)) error++; break;
-		case 'r': error += GMT->common.r.active == false; break;
+		case 'r': error += GMT->common.R.active[GSET] == false; break;
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 #ifdef GMT_MP_ENABLED
@@ -6692,7 +6692,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			return (GMT_PARSE_ERROR);
 		}
 		/* Finally set up -R */
-		if (!GMT->common.r.active) n_columns--, n_rows--;	/* Needed to get correct dimensions */
+		if (!GMT->common.R.active[GSET]) n_columns--, n_rows--;	/* Needed to get correct dimensions */
 		xdim = n_columns * GMT->common.R.inc[GMT_X];
 		ydim = n_rows * GMT->common.R.inc[GMT_Y];
 		part = just / 4;	/* Need any multiples of 4 in just */
@@ -6734,8 +6734,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		if (!inv_project) {	/* Got grid with degrees or regular Cartesian */
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
-			gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);
-			GMT->common.R.registration = G->header->registration;
+			if (GMT->common.R.active[ISET] == false) gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);	/* Do not override settings given via -I */
+			GMT->common.R.registration = (GMT->common.R.active[GSET]) ? !G->header->registration : G->header->registration;	/* Set, or toggle registration if -r was set */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG,
 			            "-R<grdfile> converted to -R%.16g/%.16g/%.16g/%.16g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 #if 0
@@ -10484,7 +10484,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
 	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
 	GMT->common.X.active = GMT->common.Y.active = false;
-	GMT->common.R.active[RSET] = GMT->common.J.active = false;
+	GMT->common.R.active[RSET] = GMT->common.R.active[ISET] = GMT->common.R.active[GSET] = GMT->common.R.active[FSET] = GMT->common.J.active = false;
 	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = GMT->common.c.active = false;
 	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
 	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
@@ -10539,6 +10539,7 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	 * Modules with this issue have "g" in their THIS_MODULE_NEEDS string.
 	 */
 	struct GMT_OPTION *opt = NULL;
+	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
 	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {	/* Got an argument, hopefully an input file */
@@ -10563,6 +10564,7 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 	double mag, inc, wesn[4] = {0.0, 0.0, 0.0, 0.0}, range[2] = {0.0, 0.0};
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
+	gmt_M_unused(args);
 
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 		if (opt->option != GMT_OPT_INFILE) continue;	/* Look for input files we can append to new list */
@@ -10694,6 +10696,7 @@ GMT_LOCAL int gmtinit_add_missing_R_option (struct GMTAPI_CTRL *API, const char 
 
 /*! Search the list for the -J? option (? != 'z|Z) and return the pointer to the item. */
 GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION *head) {
+	gmt_M_unused(V_API);
 
 	struct GMT_OPTION *current = NULL, *ptr = NULL;
 
@@ -12015,6 +12018,16 @@ int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item)
 	return (GMT_NOERROR);
 }
 
+unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item) {
+	/* Closest thing to parsing a global -I option we can get */
+	if (gmt_getinc (GMT, item, GMT->common.R.inc)) {
+		gmt_inc_syntax (GMT, option, 1);
+		return 1U;
+	}
+	GMT->common.R.active[ISET] = true;
+	return GMT_NOERROR;
+}
+
 /*! gmt_parse_common_options interprets the command line for the common, unique options
  * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
@@ -12052,10 +12065,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'I':
 			if (GMT->hidden.func_level > 0) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
-			if (gmt_getinc (GMT, item, GMT->common.R.inc)) {
-				gmt_inc_syntax (GMT, 'I', 1);
-				error++;
-			}
+			error = gmt_parse_inc_option (GMT, 'I', item);
 			GMT->common.R.active[ISET] = true;
 			break;
 
@@ -12265,10 +12275,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'r':
-			if (GMT->common.R.active[FSET]) GMT->common.r.active = false;	/* OK to override registration given via -Rfile */
-			error += GMT_more_than_once (GMT, GMT->common.r.active);
-			GMT->common.r.active = true;
-			GMT->common.r.registration = GMT_GRID_PIXEL_REG;
+			error += GMT_more_than_once (GMT, GMT->common.R.active[GSET]);
+			GMT->common.R.active[GSET] = true;
+			GMT->common.R.registration = GMT_GRID_PIXEL_REG;
 			break;
 
 		case 's':

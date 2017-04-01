@@ -85,7 +85,8 @@ enum GMT_enum_method {
 	GMT_IS_STREAM = 1,	/* Entity is an open stream */
 	GMT_IS_FDESC = 2,	/* Entity is an open file descriptor */
 	GMT_IS_DUPLICATE = 3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE = 4};	/* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_REFERENCE = 4,	/* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_OUTPUT = 1024};	/* When creating a resource as a container for output */
 
 /* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 

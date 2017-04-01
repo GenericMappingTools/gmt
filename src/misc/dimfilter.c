@@ -67,10 +67,6 @@ struct DIMFILTER_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
@@ -227,11 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'I':
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
 				Ctrl->N.active = true;
@@ -281,8 +273,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	if (!Ctrl->Q.active) {
-		gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+		//gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
@@ -448,8 +440,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && gmt_M_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
-		if (Ctrl->I.active)
-			gmt_M_memcpy (inc, Ctrl->I.inc, 2, double);
+		if (GMT->common.R.active[ISET])
+			gmt_M_memcpy (inc, GMT->common.R.inc, 2, double);
 		else
 			gmt_M_memcpy (inc, Gin->header->inc, 2, double);
 

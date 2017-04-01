@@ -279,6 +279,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 /* Local functions */
 
+#ifndef DEBUG_MODERN
 GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
 	int ppid = -1;
@@ -298,10 +299,11 @@ GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
 	}
 	CloseHandle (h);
 #else
-	ppid = getppid(); /* parent process id*/
+	ppid = getppid(); /* parent process id */
 #endif
 	return ppid;
 }
+#endif
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 

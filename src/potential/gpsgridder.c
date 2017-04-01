@@ -58,10 +58,6 @@ struct GPSGRIDDER_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct L {	/* -L */
 		bool active;
 	} L;
@@ -256,11 +252,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Grid spacings */
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Leave trend alone [Default removes LS plane] */
 				Ctrl->L.active = true;
@@ -282,8 +274,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 						return (API->error);
 					}
 					gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
-					gmt_M_memcpy (Ctrl->I.inc, G->header->inc, 2, double);
-					GMT->common.r.registration = G->header->registration;
+					gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);
+					GMT->common.R.registration = G->header->registration;
 					if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 						return (API->error);
 					}
@@ -310,7 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.nu < -1.0 || Ctrl->S.nu > 1.0, "Syntax error -S: Poisson\'s ratio must be in the -1 <= nu <= +1 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -677,11 +669,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid does not match your specified region\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (! (Grid->header->inc[GMT_X] == Ctrl->I.inc[GMT_X] && Grid->header->inc[GMT_Y] == Ctrl->I.inc[GMT_Y])) {
+		if (! (Grid->header->inc[GMT_X] == GMT->common.R.inc[GMT_X] && Grid->header->inc[GMT_Y] == GMT->common.R.inc[GMT_Y])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (! (Grid->header->registration == GMT->common.r.registration)) {
+		if (! (Grid->header->registration == GMT->common.R.registration)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -711,8 +703,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	else {	/* Fill in an equidistant output table or grid */
 		/* Need a full-fledged Grid creation since we are writing it to who knows where */
 		for (k = 0; k < 2; k++) {
-			if ((Out[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-				GMT->common.r.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if ((Out[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		}
 		n_ok = Out[GMT_X]->header->nm;
 	}

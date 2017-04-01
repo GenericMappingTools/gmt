@@ -212,7 +212,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				if (opt->arg[0]) {
 					Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
 					Ctrl->D.mode = 1;
-					gmt_check_lattice (GMT, Ctrl->D.inc, NULL, &Ctrl->D.active);
 				}
 				break;
 			case 'E':	/* Extrema reporting */
@@ -438,7 +437,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
 	delimiter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimiter[1] = '\0';
-	off = (GMT->common.r.active) ? 0.5 : 0.0;
+	off = (GMT->common.R.active[GSET]) ? 0.5 : 0.0;
 
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
@@ -517,7 +516,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
-					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
+					if (GMT->common.R.active[GSET]) strcpy (buffer, " (-r is ignored).");
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					            "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
@@ -574,8 +573,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting n_columns/n_rows */
 					unsigned int sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;
-					in_dim[GMT_X] = gmt_M_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);
-					in_dim[GMT_Y] = gmt_M_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.r.active);
+					in_dim[GMT_X] = gmt_M_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.R.active[GSET]);
+					in_dim[GMT_Y] = gmt_M_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.R.active[GSET]);
 					ww = west;	ee = east; ss = south;	nn = north;
 					gmt_best_dim_choice (GMT, Ctrl->I.mode, in_dim, out_dim);
 					sub = (out_dim[GMT_X] - in_dim[GMT_X]) / 2;	add = out_dim[GMT_X] - in_dim[GMT_X] - sub;

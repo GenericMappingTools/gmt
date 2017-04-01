@@ -172,11 +172,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Length units */
 				k = 0;
@@ -213,11 +209,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 		}
 	}
 	if (GMT->common.R.active[RSET]) {
-		gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active,
+		//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET],
 		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && Ctrl->I.active) && Ctrl->Z.mode == 1,
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) && Ctrl->Z.mode == 1,
 	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Syntax error -G option: Must specify output gridfile name.\n");
@@ -751,7 +747,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
 	else if (GMT->common.R.active[RSET]) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
-		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);

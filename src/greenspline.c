@@ -617,13 +617,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 			Ctrl->I.active = true;
 		}
 		/* Here, -r means toggle the grids registration */
-		if (GMT->common.r.active) {
-			GMT->common.r.active = !Ctrl->R3.offset;
-			GMT->common.r.registration = !Ctrl->R3.offset;
+		if (GMT->common.R.active[GSET]) {
+			GMT->common.R.active[GSET] = !Ctrl->R3.offset;
+			GMT->common.R.registration = !Ctrl->R3.offset;
 		}
 		else {
-			GMT->common.r.active = Ctrl->R3.offset;
-			GMT->common.r.registration = Ctrl->R3.offset;
+			GMT->common.R.active[GSET] = Ctrl->R3.offset;
+			GMT->common.R.registration = Ctrl->R3.offset;
 		}
 	}
 
@@ -1782,7 +1782,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (! (Grid->header->registration == GMT->common.r.registration)) {
+		if (! (Grid->header->registration == GMT->common.R.registration)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1810,7 +1810,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	else {	/* Fill in an equidistant output table or grid */
 		if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
 			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->R3.range, Ctrl->I.inc, \
-				GMT->common.r.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_ok = Grid->header->nm;
 			Z.nz = 1;	/* So that output logic will work for 1-D */
 		}
@@ -1818,7 +1818,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 			delete_grid = true;
 			Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
-			Grid->header->registration = GMT->common.r.registration;
+			Grid->header->registration = GMT->common.R.registration;
 			Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
 			Z.nz = Grid->header->n_rows = 1;	/* So that output logic will work for 1-D */
 			if (dimension == 3) {

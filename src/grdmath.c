@@ -103,10 +103,6 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct M {	/* -M */
 		bool active;
 	} M;
@@ -260,11 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
 				Ctrl->M.active = true;
@@ -278,13 +270,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
 
 	if (missing_equal) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
 		n_errors++;
 	}
-	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
+	if (GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors++;
 	}
@@ -4975,11 +4967,11 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	subset = GMT->common.R.active[RSET];
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
-		if (GMT->common.R.active[RSET] && Ctrl->I.active) {
+		if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -I together with -R<gridfile>\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		else if  (GMT->common.r.active) {
+		else if  (GMT->common.R.active[GSET]) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -r when grid files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -4994,11 +4986,11 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (GMT->common.R.active[RSET] && Ctrl->I.active) {	/* Must create from -R -I [-r] */
+	else if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
+		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-		GMT->current.io.inc_code[GMT_X]	= GMT->current.io.inc_code[GMT_Y] = 0;	/* Must reset this since later we don't use Ctrl->I.inc but G->header->inc */
+		GMT->current.io.inc_code[GMT_X]	= GMT->current.io.inc_code[GMT_Y] = 0;	/* Must reset this since later we don't use GMT->common.R.inc but G->header->inc */
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");

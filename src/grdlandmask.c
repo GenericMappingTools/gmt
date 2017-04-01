@@ -56,10 +56,6 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
-	struct GRDLNDM_I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct GRDLNDM_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
@@ -174,11 +170,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
-				Ctrl->I.active = true;
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Mask values */
 				Ctrl->N.active = true;
@@ -212,10 +204,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 		}
 	}
 
-	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify an output file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files, "Syntax error: No input files allowed.\n");
 
@@ -271,7 +263,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_IN);
 
 	/* Create the empty grid and allocate space */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] < 0.0) {	/* Shift longitudes */

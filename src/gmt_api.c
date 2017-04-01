@@ -6492,8 +6492,8 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		else {	/* New expanding output resource */
 			void *object = NULL;
 			/* GMT_Create_Data may return error code if there are issues with the values of family, or geometry */
-			/* Creating an empty object means it is intended to hold output [GMT_OUT] from a module */
-			if ((object = GMT_Create_Data (API, family, geometry, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
+			/* Creating an empty object with mode == GMT_IS_OUTPUT means it is intended to hold output [GMT_OUT] from a module */
+			if ((object = GMT_Create_Data (API, family, geometry, GMT_IS_OUTPUT, NULL, NULL, NULL, 0, 0, NULL)) == NULL)
 				return (API->error);
 			/* Obtain the object's ID */
 			if ((object_ID = api_get_id (API, family, GMT_OUT, object)) == GMT_NOTSET)
@@ -8103,9 +8103,11 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	if (dim == NULL && range == NULL && inc == NULL) {	/* If nothing is known then it must be output */
-		def_direction = (data) ? GMT_IN : GMT_OUT;	/* Set output as default direction unless 2nd time we call it*/
+	if (mode == GMT_IS_OUTPUT) {	/* Flagged to be an output container */
+		//def_direction = (data) ? GMT_IN : GMT_OUT;	/* Set output as default direction unless 2nd time we call it*/
+		def_direction = GMT_OUT;	/* Set output as default direction*/
 		this_dim = zero_dim;		/* Provide dimensions set to zero */
+		if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	}
 
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we creating a resource that is a module input? */
@@ -8115,7 +8117,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
-			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
+			if (mode == GMT_IS_OUTPUT || (mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	 			if ((new_obj = gmt_create_grid (API->GMT)) == NULL)
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
@@ -8138,7 +8140,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			}
 			break;
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
-			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
+			if (mode == GMT_IS_OUTPUT || (mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = gmtlib_create_image (API->GMT)) == NULL)
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
@@ -9879,7 +9881,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 		case 'n':	if (GMT->common.n.active) ret = 0; break;
 		case 'o':	if (GMT->common.o.active) ret = (int)GMT->common.o.n_cols; break;
 		case 'p':	if (GMT->common.p.active) ret = 0; break;
-		case 'r':	if (GMT->common.r.active) ret = GMT->common.r.registration; break;
+		case 'r':	if (GMT->common.R.active[GSET]) ret = GMT->common.R.registration; break;
 		case 's':	if (GMT->common.s.active) ret = 0; break;
 		case 't':
 			if (GMT->common.t.active) {

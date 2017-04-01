@@ -2507,7 +2507,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	unsigned int n_layers = 1;
 	char *regtype[2] = {"gridline", "pixel"};
 	gmt_M_unused(mode);
-	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.r.registration;	/* Set the default registration */
+	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.R.registration;	/* Set the default registration */
 	registration = (registration & 1);	/* Knock off any GMT_GRID_DEFAULT_REG bit */
 	if (dim && wesn == NULL && inc == NULL) {	/* Gave dimension instead, set range and inc (1/1) while considering registration */
 		gmt_M_memset (wesn_dup, 4, double);

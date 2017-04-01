@@ -54,10 +54,6 @@ struct BLOCK_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct N {	/* -N<empty> */
 		bool active;
 		double no_data;

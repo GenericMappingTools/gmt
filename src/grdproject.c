@@ -44,10 +44,6 @@ struct GRDPROJECT_CTRL {
 		bool active;
 		double easting, northing;
 	} C;
-	struct D {	/* -Ddx[/dy] */
-		bool active;
-		double inc[2];
-	} D;
 	struct E {	/* -E<dpi> */
 		bool active;
 		int dpi;
@@ -150,11 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 						 "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
-				Ctrl->D.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
-					gmt_inc_syntax (GMT, 'D', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'D', opt->arg);
 				break;
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = true;
@@ -192,14 +184,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
-					Ctrl->D.active = true;
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
 					if (jj == 0) jj = ii;
 					sprintf (format, "%d+/%d+", ii, jj);
-					if (gmt_getinc (GMT, format, Ctrl->D.inc)) {
-						gmt_inc_syntax (GMT, 'D', 1);
-						n_errors++;
-					}
+					n_errors += gmt_parse_inc_option (GMT, 'D', format);
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -210,14 +198,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 		}
 	}
 
-	gmt_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.registration, &Ctrl->D.active);
+	//gmt_check_lattice (GMT, Ctrl->D.inc, &GMT->common.R.registration, &Ctrl->D.active);
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -F and -M\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0),
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] < 0.0),
 	                                 "Syntax error -D option: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -262,7 +250,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
-	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = true;
+	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 	
@@ -419,12 +407,12 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		offset = Rect->header->registration;	/* Same as input */
-		if (GMT->common.r.active) offset = !offset;	/* Toggle */
+		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 		if (set_n) {
 			use_nx = Rect->header->n_columns;
 			use_ny = Rect->header->n_rows;
 		}
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
@@ -488,15 +476,15 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->F.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
-				Ctrl->D.inc[GMT_X] *= inv_scale;
-				Ctrl->D.inc[GMT_Y] *= inv_scale;
+				GMT->common.R.inc[GMT_X] *= inv_scale;
+				GMT->common.R.inc[GMT_Y] *= inv_scale;
 			}
-			Ctrl->D.inc[GMT_X] *= GMT->current.proj.scale[GMT_X];
-			Ctrl->D.inc[GMT_Y] *= GMT->current.proj.scale[GMT_Y];
+			GMT->common.R.inc[GMT_X] *= GMT->current.proj.scale[GMT_X];
+			GMT->common.R.inc[GMT_Y] *= GMT->current.proj.scale[GMT_Y];
 		}
 		else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Convert from inch to whatever */
-			Ctrl->D.inc[GMT_X] *= unit_to_inch;
-			Ctrl->D.inc[GMT_Y] *= unit_to_inch;
+			GMT->common.R.inc[GMT_X] *= unit_to_inch;
+			GMT->common.R.inc[GMT_Y] *= unit_to_inch;
 		}
 		if (set_n) {
 			use_nx = Geo->header->n_columns;
@@ -512,9 +500,9 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 
 		offset = Geo->header->registration;	/* Same as input */
-		if (GMT->common.r.active) offset = !offset;	/* Toggle */
+		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);

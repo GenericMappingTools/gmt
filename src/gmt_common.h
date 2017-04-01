@@ -193,10 +193,6 @@ struct GMT_COMMON {
 		bool do_z_rotation;	/* true if rotating plot about a vertical axis */
 		double z_rotation;	/* Rotation of <angle> about vertical axis */
 	} p;
-	struct r {	/* -r */
-		bool active;
-		unsigned int registration;
-	} r;
 	struct s {	/* -s[r] */
 		bool active;
 		char string[GMT_LEN64];

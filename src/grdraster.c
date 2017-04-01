@@ -51,10 +51,6 @@ struct GRDRASTER_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct T {	/* -T<output_table> */
 		bool active;
 		char *file;
@@ -697,11 +693,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -714,10 +706,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 	}
 
 	/* Check that arguments were valid */
-	gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+	//gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
 	if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
@@ -851,7 +843,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* OK, here we have a recognized dataset ID */
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc,
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL,
 	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 		free (tselect);
 		Return (API->error);
@@ -868,9 +860,9 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		gmt_set_cartesian (GMT, GMT_OUT);
 	}
 
-	/* Everything looks OK so far.  If (Ctrl->I.active) verify that it will work, else set it.  */
-	if (Ctrl->I.active) {
-		gmt_M_memcpy (Grid->header->inc, Ctrl->I.inc, 2, double);
+	/* Everything looks OK so far.  If (GMT->common.R.active[ISET]) verify that it will work, else set it.  */
+	if (GMT->common.R.active[ISET]) {
+		gmt_M_memcpy (Grid->header->inc, GMT->common.R.inc, 2, double);
 		tol = 0.01 * myras.h.inc[GMT_X];
 		imult = urint (Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
 		if (imult < 1 || fabs(Grid->header->inc[GMT_X] - imult * myras.h.inc[GMT_X]) > tol) error++;

@@ -48,10 +48,6 @@ struct GRD2RGB_CTRL {
 		bool active;
 		char *name;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct L {	/* -L<layer> */
 		bool active;
 		char layer;
@@ -315,11 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
-				Ctrl->I.active = true;
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Select one layer */
 				Ctrl->L.layer = opt->arg[0];
@@ -353,11 +345,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 
 	/* Check that the options selected are mutually consistent */
 
-	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] == 0.0 || Ctrl->I.inc[GMT_Y] == 0.0), "Syntax error: increments must be positive\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] == 0.0 || GMT->common.R.inc[GMT_Y] == 0.0), "Syntax error: increments must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.size != 3 && Ctrl->W.size != 4, "Syntax error: byte_per_pixel must be either 3 or 4\n");
 		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.n_columns, &Ctrl->W.n_rows);
 
@@ -369,7 +361,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file, "Syntax error: Must specify CPT\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, !strstr (Ctrl->G.name, "%c"), "Syntax error: output template must contain %%c\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !strchr ("rgb", Ctrl->L.layer), "Syntax error: -L layer must be one of r, g, or b\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && !strchr ("rgb", Ctrl->L.layer), "Syntax error: -L layer must be one of r, g, or b\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -486,25 +478,25 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
-		if (!Ctrl->I.active) {
+		if (!GMT->common.R.active[ISET]) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
-			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = true;
+			GMT->common.R.inc[GMT_X] = GMT->common.R.inc[GMT_Y] = 1.0;	GMT->common.R.active[ISET] = true;
 		}
 		if (!GMT->common.R.active[RSET]) {	/* R not given, provide default */
 			GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
-			GMT->common.R.wesn[XHI] = header.width  - 1 + GMT->common.r.registration;
-			GMT->common.R.wesn[YHI] = header.height - 1 + GMT->common.r.registration;
+			GMT->common.R.wesn[XHI] = header.width  - 1 + GMT->common.R.registration;
+			GMT->common.R.wesn[YHI] = header.height - 1 + GMT->common.R.registration;
 			GMT->common.R.active[RSET] = true;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		n_columns = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
-		n_rows = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
-		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
+		n_columns = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.inc[GMT_X], GMT->common.R.registration);
+		n_rows = (int)gmt_M_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], GMT->common.R.inc[GMT_Y], GMT->common.R.registration);
+		if (Ctrl->W.active && !GMT->common.R.active[ISET]) {		/* This isn't correct because it doesn't deal with -r */
 			n_columns = Ctrl->W.n_columns;
 			n_rows = Ctrl->W.n_rows;
-			Ctrl->I.inc[GMT_X] = gmt_M_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], n_columns, GMT->common.r.registration);
-			Ctrl->I.inc[GMT_Y] = gmt_M_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], n_rows, GMT->common.r.registration);
+			GMT->common.R.inc[GMT_X] = gmt_M_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], n_columns, GMT->common.R.registration);
+			GMT->common.R.inc[GMT_Y] = gmt_M_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], n_rows, GMT->common.R.registration);
 		}
 		if (header.width != n_columns) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, n_columns);
@@ -517,7 +509,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL,
 		                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 				PSL_free (picture);
 				Return (API->error);

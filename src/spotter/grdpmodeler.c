@@ -63,10 +63,6 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
-		bool active;
-		double inc[2];
-	} I;
 	struct N {	/* -N */
 		bool active;
 		double t_upper;
@@ -178,11 +174,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 					n_errors++;
 				break;
 			case 'I':
-				Ctrl->I.active = true;
-				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
-					n_errors++;
-				}
+				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
 				Ctrl->N.active = true;
@@ -234,10 +226,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
 	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !GMT->common.R.active[ISET], "Syntax error: Must specify input file or -R -I [-r]\n");
 	}
 	else {	/* Must not have -I -r */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] || GMT->common.R.active[GSET], "Syntax error: Cannot specify input file AND -R -r\n");
 	}
 	if (Ctrl->G.active) {	/* Specified output grid(s) */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
@@ -314,8 +306,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		GMT->common.R.active[RSET] = true;
 	}
 	else {	/* Use the input options of -R -I [and -r] */
-		gmt_M_memcpy (inc, Ctrl->I.inc, 2, double);
-		registration = GMT->common.r.registration;
+		gmt_M_memcpy (inc, GMT->common.R.inc, 2, double);
+		registration = GMT->common.R.registration;
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */

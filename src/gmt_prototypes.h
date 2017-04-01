@@ -60,6 +60,7 @@ EXTERN_MSC char * gmt_putrgb (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC double gmt_convert_units (struct GMT_CTRL *GMT, char *value, unsigned int from_default, unsigned int target_unit);
 EXTERN_MSC unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit, char *unit_name);
 EXTERN_MSC int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item);
+EXTERN_MSC unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item);
 EXTERN_MSC int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options);
 EXTERN_MSC unsigned int gmt_add_R_if_modern_and_true (struct GMT_CTRL *GMT, const char *needs, bool do_it);
 EXTERN_MSC int gmt_default_error (struct GMT_CTRL *GMT, char option);
