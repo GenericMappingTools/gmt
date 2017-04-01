@@ -1,5 +1,5 @@
 # $Id$
-# Macro for geologic strike/dip takes strike (geoangle) and dip (angle) from input file
+# Macro for geologic strike/dip takes strike (azimuth) and dip (angle) from input file
 N:	2	ao
 # First rotate so strike is horizontal
 $1	R

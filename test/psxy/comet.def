@@ -1,5 +1,5 @@
 # $Id$
-# Macro for comet takes strike (geoangle) and label (string) from input file
+# Macro for comet takes strike (azimuth) and label (string) from input file
 N:	2	as
 # First rotate so strike is horizontal
 $1	R
