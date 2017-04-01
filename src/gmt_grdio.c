@@ -444,7 +444,7 @@ GMT_LOCAL void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		node = gmt_M_ijp (header, 0, 0);		/* First node at S pole */
 	else
 		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at N pole */
-	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_GEOANGLE) {	/* Must average angle */
+	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_AZIMUTH || GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_ANGLE) {	/* Must average azimuths */
 		uint64_t orig = node;
 		double s, c, sum_s = 0.0, sum_c = 0.0;
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Average %d angles at the %s pole\n", header->n_columns, name[pole+1]);

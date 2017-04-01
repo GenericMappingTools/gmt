@@ -9279,7 +9279,7 @@ Background
 
 The GMT tools :doc:`psxy` and :doc:`psxyz` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
-like circles, triangles, and many others. One the command line, custom
+such as circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
 called ``symbolname.def`` that must be available via the standard GMT user paths. Several
@@ -9308,13 +9308,14 @@ The macro language
 To make your own custom plot symbol, you will need to design your own
 \*.def files. This section defines the language used to build custom
 symbols. You can place these definition files in your current directory
-or your .gmt user directory. When designing the symbol, you are doing so
+or in your ``~/.gmt`` user directory. When designing the symbol you are working
 in a relative coordinate system centered on (0,0). This point will be
 mapped to the actual location specified by your data coordinates.
 Furthermore, your symbol should be constructed within the domain
 :math:`{-\frac{1}{2},+\frac{1}{2},-\frac{1}{2},+\frac{1}{2}}`, resulting
 in a 1 by 1 relative canvas area. This 1 x 1 square will be scaled to your
-actual symbol size when plotted.
+actual symbol size when plotted.  However, there are no requirement that
+all your design fit inside this domain.
 
 Comment lines
 ~~~~~~~~~~~~~
@@ -9330,7 +9331,7 @@ Simple symbols, such as circles and triangles, only take a single
 parameter: the symbol size, which is either given on the command line
 (via **-Sk**) or as part of the input data. However, more complicated
 symbols, such as the ellipse or vector symbols, may require more
-parameters. If your custom symbol requires more than the single size
+parameters. If your custom symbol requires more than the implicit single size
 parameter you must include the line
 
     **N**: *n_extra_parameters* [*types*]
@@ -9339,21 +9340,28 @@ before any other macro commands. It is an optional statement in that
 *n_extra_parameters* will default to 0 unless explicitly set. By
 default the extra parameters are considered to be quantities that should
 be passed directly to the symbol machinery. However, you can use the
-*types* argument to specify different types of parameters. The available
-types are
+*types* argument to specify different types of parameters and thus single
+out parameters for pre-processing. The available types are
 
-  **a** Geographic angle, to be converted to map angle given the current
-  map projection.
+  **a** Geographic azimuth (positive clockwise from north toward east). Parameters
+  identified as azimuth will first be converted to map angle
+  (positive counter-clockwise from horizontal) given the current
+  map projection (or simply via 90-azimuth for Cartesian plots). 
+  We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
   per :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) in addition to the given symbol size.
 
-  **o** Other, i.e., a numerical quantity to be passed to the custom symbol as is.
+  **o** Other, i.e., a numerical quantity to be passed to the custom symbol unchanged.
+
+  **r** rotation angles (positive counter-clockwise from horizontal).
+  We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **s** String, i.e., a single column of text to be placed by the **l** command.
-  Use octal \\040 to include spaces while still remaining a single word.
+  Use octal \\040 to include spaces to ensure the text string remains a single word.
 
-To use the extra parameters in your macro you address them as $1, $2, etc.
+To use the extra parameters in your macro you address them as $1, $2, etc.  There
+is no limit on how many parameters your symbol may use.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -9419,7 +9427,9 @@ are listed in Table :ref:`custsymb <tbl-custsymb>`.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 
 Note for **R**\: if an **a** is appended then :math:`\alpha` is considered
-to be a map azimuth; otherwise it is a Cartesian angle.
+to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
+does not apply if the angle is given via a variable, in which case the type of angle
+has already been specified via **N:** above and already converged before seen by **R**.
 For **M**, **T**, and all the lower-case symbol codes you may optionally
 append specific pens (with **-W**\ *pen*) and fills (with
 **-G**\ *pen*). These settings will override the pens and fills you may
@@ -9440,17 +9450,17 @@ Text substitution
 
 Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
-variable that must be declared with type  **s** (string).  The string read
-from your input file must be a single word, so if you need spaces you must
-use the octal \\040 code.  Similarly, to place the dollar sign $ you must
+variable that must be declared with type **s** (string).  The string read
+from your input file must be a single word, so if you need to insert spaces you must
+use the octal \\040 code instead.  Similarly, to place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.
 The string itself, if obtained from the symbol definition file,
-may contain special codes that will be expanded given the current record.  You
-can embed %X or %Y to add the current longitude (or x) and latitude (or y) in
-your label string. You may also use $n to embed a numerical symbol variable as text.
+may contain special codes that will be expanded given information from the current record.  You
+can embed the codes %X or %Y to add the current longitude (or x) and latitude (or y) in
+your label string. You may also use $n (*n* is 1, 2, etc.) to embed a numerical symbol variable as text.
 It will be formatted according to :ref:`FORMAT_FLOAT_MAP <FORMAT_FLOAT_MAP>`,
-unless you append the modifiers **+X** (longitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`),
-**+Y** (latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (calendar time via
+unless you append the modifiers **+X** (format as longitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`),
+**+Y** (format as latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (format as calendar time via
 :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.
 
 Text alignment and font attributes
@@ -9505,7 +9515,7 @@ one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
 +----------------+----------------------------------------------------------+
 
 Above, *left* refers to one of your variable arguments (e.g., $1, $2) or any constant (e.g. 45) on the left hand side of the operator.
-On the right hand side of the operator *right* is either one of your other variables, or a constant, or a range indicated by
+On the right hand side of the operator, *right* is either one of your other variables, or a constant, or a range indicated by
 two colon-separated constants or variables (e.g., 10:50, $2:60, $3:$4, etc.).
 
 Simple conditional test
@@ -9558,7 +9568,8 @@ that the syntax is strictly enforced, meaning the opening brace must
 appear after **then** with nothing following it, and the closing brace
 must appear by itself with no other text, and that the **elseif** and
 **else** statements must have both closing and opening braces on the
-same line (and nothing else). You may nest tests as well (up to 10
+same line (and nothing else). If you need comments please add them as
+separate lines.  You may nest tests as well (up to 10
 levels deep), e.g.,
 
    ::

@@ -116,9 +116,10 @@ enum gmt_M_col_enum {
 	GMT_IS_ARGTIME		=  32,	/* To invoke gmt_scanf_argtime()  */
 	GMT_IS_DIMENSION	=  64,	/* A float with [optional] unit suffix, e.g., 7.5c, 0.4i; convert to inch  */
 	GMT_IS_GEODIMENSION	= 128,	/* A float with [optional] geo-distance unit suffix, e.g., 7.5n, 0.4d; convert to km  */
-	GMT_IS_GEOANGLE		= 256,	/* An angle to be converted via map projection to angle on map  */
-	GMT_IS_STRING		= 512,	/* An text argument [internally used, not via -f]  */
-	GMT_IS_UNKNOWN		= 1024};	/* Input type is not knowable without -f */
+	GMT_IS_AZIMUTH		= 256,	/* An azimuth to be converted via map projection to angle on map  */
+	GMT_IS_ANGLE		= 512,	/* An angle to be used as is  */
+	GMT_IS_STRING		= 1024,	/* An text argument [internally used, not via -f]  */
+	GMT_IS_UNKNOWN		= 2048};	/* Input type is not knowable without -f */
 
 /*! Various ways to report longitudes */
 enum GMT_lon_enum {

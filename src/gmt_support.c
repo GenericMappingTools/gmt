@@ -3852,7 +3852,8 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				}
 				for (k = 0; k < head->n_required; k++) {	/* Determine the argument types */
 					switch (flags[k]) {
-						case 'a':	head->type[k] = GMT_IS_GEOANGLE; break;		/* Angle that needs to be converted via the map projection */
+						case 'a':	head->type[k] = GMT_IS_AZIMUTH; break;		/* Azimuth that needs to be converted via the map projection */
+						case 'r':	head->type[k] = GMT_IS_ANGLE; break;		/* Angles, we enforce 0-360 range */
 						case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
 						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
 						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
@@ -3975,18 +3976,22 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			case 'R':		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
 				k = (unsigned int)strlen (col[0]) - 1;	/* Index of last character */
-				if (col[0][0] == '$') {	/* Got a variable as angle */
+				if (col[0][0] == '$') {	/* Got a variable as angle (azimuths has long been converted to plot angle by now) */
 					s->var[0] = atoi (&col[0][1]);
+					//if (s->var[0] < 0.0) s->var[0] += 360.0;
 					s->action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
 				}
-				else if (col[0][k] == 'a') {	/* Got a fixed azimuth */
+				else if (col[0][k] == 'a') {	/* Got a fixed azimuth and must flag via a different action */
 					col[0][k] = '\0';	/* Temporarily remove the trailing 'a' */
 					s->p[0] = atof (col[0]);	/* Get azimuth */
+					//if (s->p[0] < 0.0) s->p[0] += 360.0;
 					s->action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
 					col[0][k] = 'a';	/* Restore the trailing 'a' */
 				}
-				else	/* Got a fixed Cartesian angle */
+				else {	/* Got a fixed Cartesian plot angle */
 					s->p[0] = atof (col[0]);
+					//if (s->p[0] < 0.0) s->p[0] += 360.0;
+				}
 				break;
 
 			case 'T':		/* Texture changes only (modify pen, fill settings) */
@@ -4043,10 +4048,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				while (col[last][k] && col[last][k] != '+') k++;
 				if (col[last][k]) {	/* Gave modifiers */
 					unsigned int pos = 0;
-					char p[GMT_BUFSIZ];
+					char p[GMT_BUFSIZ] = {""};
 					while ((gmt_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 						switch (p[0]) {
-							case 'f':	/* Change font [Note: font size is ignore as the size argument take precedent] */
+							case 'f':	/* Change font [Note: font size is ignored as the size argument take precedent] */
 								if (gmt_getfont (GMT, &p[1], &s->font))
 									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Macro code l contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &s->font));
 								break;
