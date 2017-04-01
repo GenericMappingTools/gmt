@@ -540,10 +540,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		gmt_M_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
 		gmt_set_grddim (GMT, G->header);			/* Update dimensions given the change of wesn and pad */
 		gmt_M_memcpy (wesn_new, wesn_requested, 4, double);	/* So reporting below is accurate */
-		xlo = outside[XLO] ? gmt_M_grd_x_to_col (GMT, wesn_old[XLO], G->header) : 0;
-		xhi = outside[XHI] ? gmt_M_grd_x_to_col (GMT, wesn_old[XHI], G->header) : G->header->n_columns - 1;
-		ylo = outside[YLO] ? gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
-		yhi = outside[YHI] ? gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
+		xlo = outside[XLO] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO], G->header) : 0;
+		xhi = outside[XHI] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI], G->header) : G->header->n_columns - 1;
+		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
+		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
 		if (outside[XLO]) {
 			for (row = 0; row < G->header->n_rows; row++) for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}

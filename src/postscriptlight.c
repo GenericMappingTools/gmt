@@ -2250,7 +2250,7 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 	 * param[3] = headlength;
 	 * param[4] = headwidth;
 	 * param[5] = headshape;
-	/* Will make sure that arrow has a finite width in PS coordinates */
+	 * Will make sure that arrow has a finite width in PS coordinates */
 
 	double angle, xtail, ytail, tailwidth, headlength, headwidth, headshape;
 	int w2, length, hw, hl, hl2, hw2, l2;

@@ -10698,9 +10698,8 @@ GMT_LOCAL int gmtinit_add_missing_R_option (struct GMTAPI_CTRL *API, const char 
 
 /*! Search the list for the -J? option (? != 'z|Z) and return the pointer to the item. */
 GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION *head) {
-	gmt_M_unused(V_API);
-
 	struct GMT_OPTION *current = NULL, *ptr = NULL;
+	gmt_M_unused(V_API);
 
 	if (head == NULL) return (NULL);	/* Hard to find something in a non-existent list */
 	

@@ -22,7 +22,6 @@
 
 #include "gmt_dev.h"
 #include "mgd77.h"
-#include "mgd77_codes.h"
 
 #define THIS_MODULE_NAME	"mgd77header"
 #define THIS_MODULE_LIB		"mgd77"
@@ -166,7 +165,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 	
 	uint64_t rec;
 
-	bool error = false, greenwich = false;
+	bool error = false;
 	bool quad[4] = {false, false, false, false};
 
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
@@ -268,7 +267,6 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 		ymin = 180.0;
 		ymax = -180.0;
 		gmt_M_memset (quad, 4, bool);	/* Set all to false */
-		greenwich = false;
 		gmt_M_memset (counter, MGD77_MAX_COLS, int);
 
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
@@ -310,7 +308,6 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			if (rec > 0) {	/* Need a previous point to calculate distance, speed, and heading */
 				dlon = this_lon - last_lon;
 				if (fabs (dlon) > 180.0) {
-					greenwich = true;
 					dlon = copysign ((360.0 - fabs (dlon)), dlon);
 				}
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));

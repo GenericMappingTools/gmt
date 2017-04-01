@@ -342,8 +342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	size_t last;
-	bool geodetic_calc = false,  g_dist = false;
+	bool geodetic_calc = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, d, sign, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -446,7 +445,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					p[0] = '\0';	/* Chop off all modifiers */
 					/* Here, opt->arg = -G[<lon0/lat0>][/[+|-]units] */
 					for (n_slash = k = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
-					last = strlen (opt->arg) - 1;
 					if (n_slash == 2 || n_slash == 1) {	/* Got -G<lon0/lat0>/[+|-]unit or -G<lon0/lat0> */
 						Ctrl->G.mode |= GMT_MP_FIXED_POINT;
 						n = sscanf (opt->arg, "%[^/]/%[^/]/%c%c", txt_a, txt_b, &sign, &d);
@@ -595,10 +593,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                 "Syntax error: -T cannot work with -E, -G or -L\n");
-	/* Can only do one of -A, -G and -L */
-	g_dist = (Ctrl->G.mode > 0);
-	//n_errors += gmt_M_check_condition (GMT, (g_dist + Ctrl->A.active + Ctrl->L.active) > 1,
-	//                                 "Syntax error: Can only specify one of -A, -G and -L\n");
 	n_errors += gmt_M_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
 	n_errors += gmt_M_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");

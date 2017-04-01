@@ -1120,7 +1120,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
 	if (!strncmp(I->header->mem_layout, "TCP", 3)) {		/* Images.jl in Julia wants this */
 		for (row = 0; row < nRows; row++) {
-			k = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			if ((k = read (fd[0], tmp, (unsigned int)(nCols * nBands))) == 0) {	/* Read a row of nCols by nBands bytes of data */
+				GMT_Report (API, GMT_MSG_NORMAL, "Could not read row from pipe into Image structure\n");
+				return GMT_RUNTIME_ERROR;
+			}
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row*nBands + col*nBands*nRows + band] = tmp[n++];

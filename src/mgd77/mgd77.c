@@ -2978,7 +2978,10 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *fi
 #else
 
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
-		not_used = fgets (line, BUFSIZ, F->fp);
+		if ((not_used = fgets (line, BUFSIZ, F->fp)) == NULL) {		/* Skip the column header  */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read record from file %s\n\n", F->path);
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		}
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1;
 		H->n_records = irint ((double)(buf.st_size) / (double)(MGD77_RECORD_LENGTH + n_eols));
@@ -3014,10 +3017,8 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *fi
 GMT_LOCAL int MGD77_Read_Header_Record_m77t_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77T files */
 	char *MGD77_header, line[BUFSIZ], *not_used = NULL;
-	int i, err, n_eols, c, n;
+	int i, err;
 	gmt_M_unused(file);
-
-	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
 
 	/* argument file is generally ignored since file is already open */
 
@@ -3026,7 +3027,10 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77t_nohdr (struct GMT_CTRL *GMT, char *f
 	while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
 	rewind (F->fp);					/* Go back to beginning of file */
 
-	not_used = fgets (line, BUFSIZ, F->fp);		/* Skip the column header  */
+	if ((not_used = fgets (line, BUFSIZ, F->fp)) == NULL) {		/* Skip the column header  */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read column header from file %s\n\n", F->path);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+	}
 
 	MGD77_header = (char *)gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
 	// not_used = fgets (MGD77_header, BUFSIZ, F->fp);			/* Read the entire header record  */

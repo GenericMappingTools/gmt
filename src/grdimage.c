@@ -896,7 +896,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 		}
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array */
-		strcmp (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
+		strcpy (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");				/* This is the grdimage's mem layout */
 		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
