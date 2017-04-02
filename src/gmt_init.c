@@ -11060,6 +11060,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
+			p->f.f_angle = 20.0;			/* Default slip arrow angle */
 			check = false;
 			if (!text[1]) {	/* No args given, must parse segment header later */
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
