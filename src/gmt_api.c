@@ -9889,17 +9889,19 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 	if (value == NULL) return_error (V_API, GMT_NO_PARAMETERS);
 	API = api_get_api_ptr (V_API);
 	/* First intercept any API Keywords */
-	if (!strncmp (keyword, "API_PAD", 7U))	/* Change the grid padding setting */
+	if (!strncmp (keyword, "API_VERSION", 11U))	/* The API version */
+		sprintf (value, "%s", GMT_PACKAGE_VERSION);
+	else if (!strncmp (keyword, "API_PAD", 7U))	/* Change the grid padding setting */
 		sprintf (value, "%d", API->pad);
-	else if (!strncmp (keyword, "BINDIR", 6U))	/* Report binary directory */
+	else if (!strncmp (keyword, "API_BINDIR", 10U))	/* Report binary directory */
 		sprintf (value, "%s", API->GMT->init.runtime_bindir);
-	else if (!strncmp (keyword, "SHAREDIR", 8U))	/* Report share directory */
+	else if (!strncmp (keyword, "API_SHAREDIR", 12U))	/* Report share directory */
 		sprintf (value, "%s", API->GMT->session.SHAREDIR);
-	else if (!strncmp (keyword, "DATADIR", 8U))	/* Report data directory */
+	else if (!strncmp (keyword, "API_DATADIR", 12U))	/* Report data directory */
 		sprintf (value, "%s", API->GMT->session.DATADIR);
-	else if (!strncmp (keyword, "PLUGINDIR", 10U))	/* Report plugin directory */
+	else if (!strncmp (keyword, "API_PLUGINDIR", 14U))	/* Report plugin directory */
 		sprintf (value, "%s", API->GMT->init.runtime_plugindir);
-	else if (!strncmp (keyword, "CORES", 5U))	/* Report number of cores */
+	else if (!strncmp (keyword, "API_CORES", 9U))	/* Report number of cores */
 		sprintf (value, "%d", API->n_cores);
 #ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
