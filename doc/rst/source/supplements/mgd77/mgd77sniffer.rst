@@ -16,10 +16,10 @@ Synopsis
 **mgd77sniffer** *NGDC-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
 [ |-D|\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
+[ |-E| ]
 [ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
 [ |-H| ]
 [ |-I|\ *fieldabbrev*,\ *rec1*,\ *recN* ]
-[ |-Q| ]
 [ |-L|\ *custom-limits-file* ]
 [ |-M| ]
 [ |-N| ]
@@ -145,6 +145,15 @@ Optional Arguments
 
     See below for **MGD77 FIELD INFO**.
 
+.. _-E:
+
+**-E**
+    Reverse navigation quality flags (good to bad and vice versa). May
+    be necessary when a majority of navigation fixes are erroneously
+    flagged bad, which can happen when a cruise's first navigation fix
+    is extremely erroneous. Caution! This will affect sniffer output and
+    should only be attempted after careful manual navigation review.
+
 .. _-G:
 
 **-G**\ *information*
@@ -239,19 +248,11 @@ Optional Arguments
 
 **-M**
     Adjust navigation on land threshold (meters inland) [100].
+
 .. _-N:
 
 **-N**
     Use nautical units.
-
-.. _-Q:
-
-**-Q**
-    Reverse navigation quality flags (good to bad and vice versa). May
-    be necessary when a majority of navigation fixes are erroneously
-    flagged bad, which can happen when a cruise's first navigation fix
-    is extremely erroneous. Caution! This will affect sniffer output and
-    should only be attempted after careful manual navigation review.
 
 .. _-R:
 
@@ -292,7 +293,7 @@ Optional Arguments
 
 **-Z**
     Flag regression statistics that are outside the specified confidence
-    level. (i.e., -Z5 flags coefficients m, b, rms, and r that fall outside 95%.) 
+    level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.) 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

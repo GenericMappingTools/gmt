@@ -371,8 +371,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N] [-Q]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -395,6 +395,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Dm print out MGD77 format\n\t  -Ds print out gradients\n\t  -Dv print out values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Dn print out distance to coast for each record (requires -Gnav).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to include all records (default omits records where navigation errors were detected).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Reverse navigation quality flags (good to bad and vice versa). May be necessary when a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   first navigation fix is extremely erroneous. Caution! This will affect sniffer output and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   should only be attempted after careful manual navigation review.\n");
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Test regression analysis. A simulated grid is created from the ship data using slope\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and intercept passed through the -G option (i.e., -Gfield,m/b no grid name is passed).\n");
@@ -441,10 +445,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Adjust navigation on land threshold (meters inland) [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use nautical units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Reverse navigation quality flags (good to bad and vice versa). May be necessary when a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   first navigation fix is extremely erroneous. Caution! This will affect sniffer output and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   should only be attempted after careful manual navigation review.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify gradient type for along-track excessive slope checking.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sd Calculate change in z values along track (dz).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Ss Calculate spatial gradients (dz/ds) [default].\n");
@@ -739,6 +739,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = false;
 				M.verbose_dest = 2;		/* 1 = stdout, 2 = stderr */
 				break;
+			case 'E':	/* Reverse navigation flags */
+				flip_flags = true;
+				break;
 #ifdef DEBUG
 			case 'F':	/* fake mode (specify field and constant z value in -G - no grid reading */
 				simulate = true;
@@ -822,9 +825,6 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				break;
 			case 'M':	/* set nav on land threshold */
 				nav_on_land_threshold =  atof (opt->arg);
-				break;
-			case 'Q':	/* Reverse navigation flags */
-				flip_flags = true;
 				break;
 			case 'S':	/* Specify spatial gradients, time gradients, or value differences along-track */
 				if (opt->arg[0] == 'd') {
