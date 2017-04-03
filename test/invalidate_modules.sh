@@ -23,7 +23,7 @@ grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt makecpt \
 mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage mgd77path \
 mgd77sniffer mgd77track minmax nearneighbor originator project psconvert \
 psbasemap psclip pscoast pscontour pscoupe pshistogram psimage pslegend \
-psmask psmeca pspolar psrose psscale pssegy pssegyz pssolar pstext psvelo pswiggle \
+psmask psmeca pspolar psrose psscale pssegy pssegyz pssolar psternary pstext psvelo pswiggle \
 psxy psxyz rotconverter rotsmoother sample1d segy2grd spectrum1d sph2grd sphdistance \
 sphinterpolate sphtriangulate splitxyz surface trend1d trend2d triangulate \
 x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \

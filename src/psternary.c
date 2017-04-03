@@ -369,8 +369,6 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psternary main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_NORMAL, "psternary is experimental and not completed!\n");
-
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Register data input */
 		Return (API->error);
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
