@@ -546,6 +546,38 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 }
 
 /*! . */
+struct GMT_OPTION * GMT_Duplicate_Options (void *V_API, struct GMT_OPTION *head) {
+	/* Create an identical copy of the linked list of options pointed to by head */
+	struct GMT_OPTION *opt = NULL, *new_opt = NULL, *new_head = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (head == NULL)  return_null (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
+	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+
+	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
+		if ((new_opt = GMT_Make_Option (API, opt->option, opt->arg)) == NULL)
+			return_null (API, API->error);	/* Create the new option structure given the args, or return the error */
+		if ((new_head = GMT_Append_Option (API, new_opt, new_head)) == NULL)		/* Hook new option to the end of the list (or initiate list if new == NULL) */
+			return_null (API, API->error);	/* Create the new option structure given the args, or return the error */
+	}
+	return (new_head);
+}
+
+/*! . */
+int GMT_Free_Option (void *V_API, struct GMT_OPTION **opt) {
+	struct GMTAPI_CTRL *API = NULL;
+	/* Free the memory pointed to by *opt */
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (*opt == NULL)  return_error (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
+	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	gmt_M_str_free ((*opt)->arg);	/* The option had a text argument allocated by strdup, so free it first */
+	gmt_M_free (API->GMT, *opt);	/* Then free the structure which was allocated by gmt_M_memory */
+	*opt = NULL;
+	return (GMT_OK);	/* No error encountered */
+}
+
+/*! . */
 char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 	/* This function creates a character array with the command line options that
 	 * correspond to the linked options provided.  It is the inverse of GMT_Create_Options.
