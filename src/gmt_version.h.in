@@ -55,7 +55,11 @@
 
 #ifndef GMT_MANPAGE
 #	define GMT_VERSION GMT_version()
+#ifdef _WIN32
+	static _inline char *GMT_version () {
+#else
 	static inline char *GMT_version () {
+#endif
 		/* final string returned by GMT_version() */
 		static char version[] = GMT_STRING GMT_VER_64 GMT_MP;
 		return version;
