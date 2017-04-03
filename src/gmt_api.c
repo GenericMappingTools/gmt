@@ -8109,6 +8109,8 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 		this_dim = zero_dim;		/* Provide dimensions set to zero */
 		if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	}
+	else if (this_dim == NULL)
+		this_dim = zero_dim;		/* Provide dimensions set to zero */
 
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we creating a resource that is a module input? */
 	family -= module_input;
