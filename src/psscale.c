@@ -571,6 +571,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	start_val = P->data[0].z_low;
 	stop_val  = P->data[P->n_colors-1].z_high;
 	if (B_set) {	/* Let the general -B machinery do the annotation labeling */
+		A = &GMT->current.map.frame.axis[GMT_X];
+		if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
+		if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
+		if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
+		gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 		if (Ctrl->Q.active) {	/* Must set original start/stop values for axis */
 			start_val = pow (10.0, P->data[0].z_low);
 			stop_val  = pow (10.0, P->data[P->n_colors-1].z_high);
@@ -929,11 +934,6 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 
 		if (B_set) {	/* Used -B */
-			A = &GMT->current.map.frame.axis[GMT_X];
-			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
-			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
-			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
-			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			gmt_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
