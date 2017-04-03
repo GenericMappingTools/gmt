@@ -71,6 +71,7 @@ struct GMT_COMMON {
 		unsigned int id;
 		double par[6];
 		char string[GMT_LEN256];
+		char zstring[GMT_LEN256];	/* For -Jz|Z */
 	} J;
 	struct K {	/* -K */
 		bool active;

@@ -92,6 +92,7 @@ EXTERN_MSC int GMT_psmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psrose (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psscale (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssolar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psternary (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pstext (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);

@@ -5600,6 +5600,7 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 		double *x = NULL, *y = NULL;
 		uint64_t np;
 		bool donut;
+		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill));
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
 		gmt_setfill (GMT, &GMT->current.map.frame.fill, false);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));

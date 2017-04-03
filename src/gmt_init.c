@@ -3065,6 +3065,20 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	return (error);
 }
 
+void gmt_init_B (struct GMT_CTRL *GMT) {
+	unsigned int no, k;
+	for (no = 0; no < 3; no++) {
+		gmt_M_memset (&GMT->current.map.frame.axis[no], 1, struct GMT_PLOT_AXIS);
+		GMT->current.map.frame.axis[no].id = no;
+		for (k = 0; k < 6; k++) GMT->current.map.frame.axis[no].item[k].parent = no;
+		if (GMT->current.proj.xyz_projection[no] == GMT_TIME) GMT->current.map.frame.axis[no].type = GMT_TIME;
+	}
+	GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
+	GMT->current.map.frame.init = true;
+	GMT->current.map.frame.draw = false;
+	GMT->current.map.frame.set_frame[GMT_PRIMARY] = GMT->current.map.frame.set_frame[GMT_SECONDARY] = 0;
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* GMT5 clean version based on new syntax:
@@ -3108,18 +3122,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
-	if (!GMT->current.map.frame.init) {	/* First time we initialize stuff */
-		for (no = 0; no < 3; no++) {
-			gmt_M_memset (&GMT->current.map.frame.axis[no], 1, struct GMT_PLOT_AXIS);
-			GMT->current.map.frame.axis[no].id = no;
-			for (k = 0; k < 6; k++) GMT->current.map.frame.axis[no].item[k].parent = no;
-			if (GMT->current.proj.xyz_projection[no] == GMT_TIME) GMT->current.map.frame.axis[no].type = GMT_TIME;
-		}
-		GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
-		GMT->current.map.frame.init = true;
-		GMT->current.map.frame.draw = false;
-		GMT->current.map.frame.set_frame[GMT_PRIMARY] = GMT->current.map.frame.set_frame[GMT_SECONDARY] = 0;
-	}
+	if (!GMT->current.map.frame.init)	/* First time we initialize stuff */
+		gmt_init_B (GMT);
 
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
@@ -3433,11 +3437,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	gmt_M_memset (t_pos, 3, int);	gmt_M_memset (d_pos, 3, int);
 	GMT->current.proj.lon0 = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
 
-	strncpy (GMT->common.J.string, args, GMT_LEN256-1);	/* Verbatim copy */
 	project = gmtinit_project_type (args, &i, &width_given);
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
-	args += i;	/* Skip to first argument */
 
+	if (project == GMT_ZAXIS)
+		strncpy (GMT->common.J.zstring, args, GMT_LEN256-1);	/* Verbatim copy of -Jz|Z */
+	else
+		strncpy (GMT->common.J.string, args, GMT_LEN256-1);	/* Verbatim copy or map -J */
+	args += i;	/* Skip to first argument */
 	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
 	if (width_given) mod_flag = 1;
