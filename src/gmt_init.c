@@ -10767,6 +10767,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		 	 *    However, we cannot do this at the start of a plot since the history may not be relevant. */
 		
 			for (k = 0; k < strlen (required); k++) {
+				if (required[k] == 'r') continue;	/* Premature to handle modules that may require -R depending on other things */
 				code = (required[k] == 'd' || required[k] == 'g') ? 'R' : required[k];
 				opt = (code == 'J') ? gmt_find_J_option (API, *options) : GMT_Find_Option (API, code, *options);
 				if (opt) continue;	/* Got this one already */
