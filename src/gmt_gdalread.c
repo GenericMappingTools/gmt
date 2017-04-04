@@ -752,6 +752,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		/* Send back the info that I->header->mem_layout must be updated */
 		strncpy(prhs->O.mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);
 	}
+	if (!metadata_only && !prhs->O.mem_layout[0]) {	/* If caller did not ask the layout, assign it to the true one used here. */
+		prhs->O.mem_layout[0] = topdown  ? 'T' : 'B';
+		prhs->O.mem_layout[1] = rowmajor ? 'R' : 'C';
+		prhs->O.mem_layout[2] = do_BIP   ? 'P' : 'B';
+		prhs->O.mem_layout[3] = 'a';
+	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
 	pad_w = pad_e = pad_s = pad_n = pad;
