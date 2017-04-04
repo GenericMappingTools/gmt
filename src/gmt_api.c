@@ -11479,6 +11479,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 					tmp[in_node] = (uint8_t)I->data[out_node++];
 				}
 	}
+	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
 		            I->header->mem_layout, code);
@@ -11487,11 +11488,12 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	}
 
 	if (out1 == 0) {	/* Means we must update the Image data */
-		gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
+		if (I->alloc_mode != GMT_ALLOC_EXTERNALLY)
+			gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
 		I->data = tmp;
 	}
 	if (out2 == 0 && alpha) {	/* Means we must update the alpha data */
-		gmt_M_free_aligned (API->GMT, I->alpha);			/* Free previous aligned image transparency */
+		gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
 		I->alpha = alpha;
 	}
 
