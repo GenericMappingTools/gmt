@@ -108,8 +108,6 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 
-extern int errno;
-
 #include <time.h>
 
 #include "common_math.h"     /* Shared math functions */
