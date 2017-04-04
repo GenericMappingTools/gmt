@@ -841,7 +841,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
-			if (Img_proj->colormap == NULL && !strncmp (Img_proj->color_interp, "Gray", 4)) {	/* Grayscale image, only assign r as shade */
+			if (Img_proj->colormap == NULL && Img_proj->color_interp && !strncmp (Img_proj->color_interp, "Gray", 4)) {	/* Grayscale image, only assign r as shade */
 				r_table = gmt_M_memory (GMT, NULL, 256, double);
 				for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
 				gray_only = true;	/* Flag that we are doing a grayscale image below */
