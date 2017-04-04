@@ -580,6 +580,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
+		if (strncmp(I->header->mem_layout, "BRP", 3) != 0)
+			GMT_Report(API, GMT_MSG_NORMAL, "Warning: The image memory layout (%s) is of a wrong type. It should be BRPa.\n");
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -1074,7 +1076,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		/* Reprocess the byte image.  Here there are no worries about direction of rows, cols since that was dealt with during color assignment */
 		
-		for (row = k8 = k = 0; row < n_rows; row++) {	/* Process each scanline */
+		for (row = 0, k = k8 = 0; row < n_rows; row++) {	/* Process each scanline */
 			shift = 0; byte = 0;
 			for (col = 0; col < n_columns; col++, k++) {	/* Visit each byte in the original grayshade image */
 				b_or_w = (bitimage_8[k] == 255);	/* Let white == 1, black == 0 */
