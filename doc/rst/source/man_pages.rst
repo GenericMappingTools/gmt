@@ -81,6 +81,7 @@ Core modules
    psmask
    psrose
    psscale
+   psternary
    pstext
    pswiggle
    psxy

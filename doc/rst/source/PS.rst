@@ -17,6 +17,7 @@ PS
    psrose
    psscale
    pssolar
+   psternary
    pstext
    pswiggle
    psxy

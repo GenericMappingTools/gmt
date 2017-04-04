@@ -99,31 +99,29 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psternary <table> -JX<width> -Ramin/amax/bmin/bmax/cmin/cmax [-B<args> or -Ba<args> -Bb<args> -Bc<args>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-G<fill>] [-K] [-O] [-S[<symbol>][<size>[unit]]] [-W[<pen>][<attr>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<a/b/c> ][-M] [-N] [-O] [-P] [-Q[<cut>]] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psternary <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-G<fill>] [-JX<width>] [-K] [-L<a/b/c> ] [-M] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t [-S[<symbol>][<size>[unit]]] [-R<amin/amax/bmin/bmax/cmin/cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed.  -R, -J are not required (unless -B is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more polygon files.  If none, standard input is read.\n");
-	GMT_Option (API, "J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data sets.  If none, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-B Specify axis annotations for the three axis a, b, c with separate\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   specify contours to be drawn (with -Q).\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
-	GMT_Option (API, "<,B-,K");
+	GMT_Option (API, "J,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Give labels for each of the 3 vertices [no labels].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ASCII (or binary, see -bo) file of x,y to standard output.  No plotting occurs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Convert (a,b,c) to normalized (x,y) and write to standard output.  No plotting occurs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
-	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Selects contouring.  Optionally append <cut>.  If given, then we do not draw\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   closed contours with less than <cut> points [Draw all contours].\n");
+	GMT_Option (API, "O,P,R");
+	//GMT_Message (API, GMT_TIME_NONE, "\t-Q Selects contouring.  Optionally append <cut>.  If given, then we do not draw\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t   closed contours with less than <cut> points [Draw all contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See psxy for full list of symbols.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,bi2,di,f,g,h,i,p,t,:,.");
