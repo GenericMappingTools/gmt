@@ -475,7 +475,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
-		code = (side[k] & 2) ? cmode[k] : tolower (cmode[k]);
+		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
 		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, get_Bsetting (boptions[k]));
 		gmt_init_B (GMT);
 		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);

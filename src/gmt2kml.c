@@ -772,9 +772,9 @@ void KML_plot_object (struct GMTAPI_CTRL *API, double *x, double *y, uint64_t np
 }
 
 GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct KML *kml, double zscale, int mode, double azim[], int fill, int outline, int process_id, int amode, int N, double altitude) {
-	int64_t i, np;
+	int64_t i, np = 0;
 	double lon_len, lat_len, az = 0.0, s = 0.0, c = 0.0, lon_inc, lat_inc;
-	double start_az, stop_az, daz;
+	double start_az = 0, stop_az = 0, daz;
 	//char *RGB[2] = {"green", "red"};
 	/* Here, kml->{lon, lat, z} are the kml->n_in coordinates of one section of a to-be-designed wiggle.
 	 * We need to erect z, properly scaled, normal to the line and build the kml->n_out fake kml->{flon, flat}

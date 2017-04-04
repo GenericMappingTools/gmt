@@ -3122,7 +3122,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Sometimes a @P or @H record instead */
 						/* May also have a second comment record with just @P or @ H so check for this case */
 						if ((c = fgetc (fp)) == '#') {	/* Possibly, this record starts with a comment character # */
-							line[0] = c;	/* Since we ate the # already we place it here manually */
+							line[0] = (char)c;	/* Since we ate the # already we place it here manually */
 							p = gmt_fgets (GMT, &line[1], GMT_BUFSIZ-1, fp);	/* Start at position 1 since # placed already and required for gmtio_ogr_parser to work */
 							gmtio_ogr_parser (GMT, line);	/* Parse a possible GMT/OGR record (just returns if no OGR data there) */
 							if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Add the hole designation to the polygon option */
@@ -6274,7 +6274,7 @@ void gmt_set_seg_minmax (struct GMT_CTRL *GMT, unsigned int geometry, unsigned i
 	if (!S->min) S->min = gmt_M_memory (GMT, NULL, S->n_columns, double);
 	if (!S->max) S->max = gmt_M_memory (GMT, NULL, S->n_columns, double);
 	if (S->n_rows == 0) return;	/* Nothing more we can do */
-	if (n_cols == 0) n_cols = S->n_columns;	/* Set number of columns to work on */
+	if (n_cols == 0) n_cols = (unsigned int)S->n_columns;	/* Set number of columns to work on */
 	for (col = 0; col < n_cols; col++) {
 		if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
 			gmtlib_get_lon_minmax (GMT, S->data[col], S->n_rows, &(S->min[col]), &(S->max[col]));

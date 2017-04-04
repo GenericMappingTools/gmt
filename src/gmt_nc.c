@@ -969,13 +969,13 @@ GMT_LOCAL void gmtnc_pad_grid (void *gridp, const unsigned n_cols, const unsigne
 	/* Fill padded grid cells */
 	switch (filltype) {
 		case k_pad_fill_zero:
-			gmtnc_padding_zero (grid, n_new_cols, n_new_rows, n_pad, cell_size);
+			gmtnc_padding_zero (grid, (const unsigned)n_new_cols, (const unsigned)n_new_rows, n_pad, cell_size);
 			break;
 		case k_pad_fill_copy:
-			gmtnc_padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size, false);
+			gmtnc_padding_copy (grid, (const unsigned)n_new_cols, (const unsigned)n_new_rows, n_pad, cell_size, false);
 			break;
 		case k_pad_fill_copy_wrap:
-			gmtnc_padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size, true);
+			gmtnc_padding_copy (grid, (const unsigned)n_new_cols, (const unsigned)n_new_rows, n_pad, cell_size, true);
 			break;
 	}
 }
