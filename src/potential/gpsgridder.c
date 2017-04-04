@@ -713,7 +713,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		orig_u = gmt_M_memory (GMT, NULL, n_uv, double);
 		orig_v = gmt_M_memory (GMT, NULL, n_uv, double);
 		gmt_M_memcpy (orig_u, u, n_uv, double);
-		gmt_M_memcpy (orig_v, u, n_uv, double);
+		gmt_M_memcpy (orig_v, v, n_uv, double);
 	}
 
 	/* Initialize the Greens function machinery */
