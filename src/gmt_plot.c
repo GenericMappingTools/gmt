@@ -5105,8 +5105,9 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				this_outline = (p && p->rgb[0] == -1) ? false : outline;
 				if (this_outline) gmt_setpen (GMT, p);
 				gmt_setfill (GMT, f, this_outline);
+				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = s->p[1], dim[2] = s->p[2];
-				dim[5] = current_pen->width * GMT->session.u2u[GMT_PT][GMT_INCH];
+				dim[5] = p->width * GMT->session.u2u[GMT_PT][GMT_INCH];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_MARC);
 				break;
 
@@ -5117,6 +5118,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				this_outline = (p && p->rgb[0] == -1) ? false : outline;
 				if (this_outline) gmt_setpen (GMT, p);
 				gmt_setfill (GMT, f, this_outline);
+				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = s->p[1], dim[2] = s->p[2];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_WEDGE);
 				break;
