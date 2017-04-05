@@ -11197,8 +11197,9 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				decode_error++;
 			}
 			if (symbol_type == 'M') p->v.status |= GMT_VEC_MARC90;	/* Flag means we will plot right angle symbol if angles extend 90 exactly */
-			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Angle */
-			p->nondim_col[p->n_nondim++] = 4 + col_off;	/* Angle */
+			/* Note: Note col_off is used here since the symbol size for MARC is the vector head, NOT the radius */
+			p->nondim_col[p->n_nondim++] = 3;	/* Angle */
+			p->nondim_col[p->n_nondim++] = 4;	/* Angle */
 			break;
 		case 'N':
 			p->factor = 1.14948092619;	/* To equal area of circle with same diameter */
