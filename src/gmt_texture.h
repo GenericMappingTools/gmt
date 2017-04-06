@@ -80,6 +80,7 @@ struct GMT_FONT {
 
 /*! Holds information for each predefined font */
 struct GMT_FONTSPEC {
+	int encode_orig;
 	double height;			/* Height of letter "A" for unit fontsize */
 	char *name;			/* Name of the font */
 };
