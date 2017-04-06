@@ -4374,6 +4374,31 @@ GMT_LOCAL void gmtlib_free_one_custom_symbol (struct GMT_CTRL *GMT, struct GMT_C
 }
 
 /*! . */
+GMT_LOCAL int support_decode_arg (char *txt, int column, struct GMT_CUSTOM_SYMBOL_ITEM *s) {
+	/* Look for $<var> arguments which means supply input at runtime from data record.
+	 * Otherwise it is a value to be used as is.  One exception are values that end with
+	 * 'a' which means azimuth.  We return revised actions for the two rotation actions.
+	 * Other symbols will ignore the returned action. */
+	int new_action = s->action;	/* This output is only used for the ROTATE symbol */
+	size_t k = strlen (txt) - 1;	/* Index of last character */
+	assert (column < CUSTOM_SYMBOL_MAXVAR);	/* Otherwise we want to know */
+	if (txt[0] == '$') {	/* Got a variable as angle (azimuths has long been converted to plot angle by now) */
+		s->var[column] = atoi (&txt[1]);
+		s->is_var[column] = true;
+		new_action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
+	}
+	else if (txt[k] == 'a') {	/* Got a fixed azimuth and must flag via a different action */
+		txt[k] = '\0';	/* Temporarily remove the trailing 'a' */
+		s->p[column] = atof (txt);	/* Get azimuth */
+		new_action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
+		txt[k] = 'a';	/* Restore the trailing 'a' */
+	}
+	else	/* Got a fixed Cartesian plot angle */
+		s->p[column] = atof (txt);
+	return (new_action);
+}
+
+/*! . */
 GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
@@ -4577,29 +4602,13 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			case 'A':		/* Draw arc of a circle */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
-				s->p[1] = atof (col[3]);
-				s->p[2] = atof (col[4]);
+				k = support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
+				k = support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
 			case 'R':		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
-				k = (unsigned int)strlen (col[0]) - 1;	/* Index of last character */
-				if (col[0][0] == '$') {	/* Got a variable as angle (azimuths has long been converted to plot angle by now) */
-					s->var[0] = atoi (&col[0][1]);
-					//if (s->var[0] < 0.0) s->var[0] += 360.0;
-					s->action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
-				}
-				else if (col[0][k] == 'a') {	/* Got a fixed azimuth and must flag via a different action */
-					col[0][k] = '\0';	/* Temporarily remove the trailing 'a' */
-					s->p[0] = atof (col[0]);	/* Get azimuth */
-					//if (s->p[0] < 0.0) s->p[0] += 360.0;
-					s->action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
-					col[0][k] = 'a';	/* Restore the trailing 'a' */
-				}
-				else {	/* Got a fixed Cartesian plot angle */
-					s->p[0] = atof (col[0]);
-					//if (s->p[0] < 0.0) s->p[0] += 360.0;
-				}
+				s->action = support_decode_arg (col[0], 0, s);	/* angle could be a variable or constant heading or azimuth in degrees */
 				break;
 
 			case 'T':		/* Texture changes only (modify pen, fill settings) */
@@ -4689,12 +4698,18 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 
 			case 'e':		/* Draw ellipse symbol */
 			case 'j':		/* Draw rotated rect symbol */
+				if (last != 5) error++;
+				k = support_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
+				s->p[1] = atof (col[3]);
+				s->p[2] = atof (col[4]);
+				break;
+
 			case 'm':		/* Draw mathangle symbol */
 			case 'w':		/* Draw wedge (pie) symbol */
 				if (last != 5) error++;
-				s->p[0] = atof (col[2]);	/* Leave direction in degrees */
-				s->p[1] = atof (col[3]);
-				s->p[2] = atof (col[4]);
+				s->p[0] = atof (col[2]);
+				k = support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
+				k = support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
 			default:

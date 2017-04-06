@@ -10754,17 +10754,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (API->GMT->current.ps.active)	/* true if module will produce PS */
 				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
 		}
-		
-		if (API->GMT->current.ps.initialize) {	/* Start of a new plot so any -R -J history cannot be used */
+		fprintf (stderr, "In init_module\n");
+		if (!API->GMT->current.ps.active || API->GMT->current.ps.initialize) {	/* Start of a new plot so any -R -J history cannot be used */
 			/* 2. If -R is missing it may be derived from the data (grid or dataset) for some modules depending on required:
 			 *    g: May append a -R<grid> option if the input grid implicitly sets -R in this module
 			 *    d: May append a -R<region> option by obtaining <region> from the input datasets via gmt info. */
+			fprintf (stderr, "Calling gmtinit_add_missing_R_option\n");
 			k = gmtinit_add_missing_R_option (API, required, options);
 		}
 		else {	/* Not the first plot so history contains -R -J that we can use, if needed */
 			char code;
 			/* 3. Next we add blank -R or -J options if these are required but not provided on command line.
 		 	 *    However, we cannot do this at the start of a plot since the history may not be relevant. */
+			fprintf (stderr, "looping over required]\n");
 		
 			for (k = 0; k < strlen (required); k++) {
 				if (required[k] == 'r') continue;	/* Premature to handle modules that may require -R depending on other things */

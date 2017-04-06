@@ -4888,7 +4888,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
@@ -5021,7 +5021,9 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_ARC:	/* Append a circular arc to the path */
 				flush = true;
-				na = gmtlib_get_arc (GMT, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
+				angle1 = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
+				angle2 = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
+				na = gmtlib_get_arc (GMT, x, y, 0.5 * s->p[0] * size[0], angle1, angle2, &xp, &yp);
 				for (i = 0; i < na; i++) {
 					if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 					xx[n] = xp[i], yy[n] = yp[i], n++;
@@ -5039,8 +5041,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				/* Need to recover actual lon,lat location of symbol first */
 				gmt_xy_to_geo (GMT, &lon, &lat, x0, y0);
-				angle = gmt_azim_to_angle (GMT, lon, lat, 0.1, 90.0 - s->p[0]);
-				PSL_setorigin (PSL, 0.0, 0.0, angle, PSL_FWD);
+				angle1 = gmt_azim_to_angle (GMT, lon, lat, 0.1, 90.0 - s->p[0]);
+				PSL_setorigin (PSL, 0.0, 0.0, angle1, PSL_FWD);
 				break;
 
 			case GMT_SYMBOL_VARROTATE:	/* Rotate the symbol coordinate system by a variable amount */
@@ -5095,6 +5097,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (this_outline) gmt_setpen (GMT, p);
 				gmt_setfill (GMT, f, this_outline);
 				dim[0] = s->p[0];
+				if (s->is_var[1]) dim[1] = size[s->var[1]];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_ELLIPSE);
 				break;
 
@@ -5106,7 +5109,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (this_outline) gmt_setpen (GMT, p);
 				gmt_setfill (GMT, f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
-				dim[1] = s->p[1], dim[2] = s->p[2];
+				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
+				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
 				dim[5] = p->width * GMT->session.u2u[GMT_PT][GMT_INCH];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_MARC);
 				break;
@@ -5119,7 +5123,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (this_outline) gmt_setpen (GMT, p);
 				gmt_setfill (GMT, f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
-				dim[1] = s->p[1], dim[2] = s->p[2];
+				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
+				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_WEDGE);
 				break;
 
