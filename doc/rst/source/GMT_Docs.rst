@@ -9339,7 +9339,7 @@ Symbol variables
 Simple symbols, such as circles and triangles, only take a single
 parameter: the symbol size, which is either given on the command line
 (via **-Sk**) or as part of the input data. However, more complicated
-symbols, such as the ellipse or vector symbols, may require more
+symbols that involve angles, or conditional tests, may require more
 parameters. If your custom symbol requires more than the implicit single size
 parameter you must include the line
 
@@ -9379,7 +9379,9 @@ The custom symbol language contains commands to rotate the relative
 coordinate system, draw free-form polygons and lines, change the current
 fill and/or pen, place text, and include basic geometric symbols as part of the
 overall design (e.g., circles, triangles, etc.). The available commands
-are listed in Table :ref:`custsymb <tbl-custsymb>`.
+are listed in Table :ref:`custsymb <tbl-custsymb>`.  Note that all angles
+in the arguments can be provided as variables while the remaining parameters
+are constants.
 
 .. _tbl-custsymb:
 
