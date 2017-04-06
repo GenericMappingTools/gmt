@@ -10721,6 +10721,31 @@ GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION 
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	API->error = GMT_NOERROR;
+	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
+	 * We must consult the required string.  It may contain options that we need to set implicitly.
+	 * Possible letters in the required string are:
+	 *	R  The -R option is required for this program and if missing we will hunt for the last region in the history.
+	 *	r  The -R option may be required depending on other settings.  If it becomes required and no -R<region> was
+	 *     given then we hunt for one in the history.
+	 *  g  The region is required but if none is given the we simply use -R<grid>.  This applies to those modules that
+	 *     have a required grid for input (e.g., modules like grdimage).
+	 *  d  If no -R<region> is given AND there are no region in the history, then determine a suitable region
+	 *     from the input dataset.  This enables automatic region determination via gmtinfo.
+	 *  J  The -J option is required and if missing we will hunt for the last region in the history.
+	 *  j  The -J option may be required depending on other settings.  If it becomes required and no -J<info> was
+	 *     given then we hunt for one in the history.
+	 *
+	 * Note: 1. If no -J can be found in the history we provide either -JQ15c (geographic data) or -JX15c (Cartesian).
+	 * Note: 2. Some modules accept grids (-R via "g") but can also accept -R.  To simplify the situations when a user
+	 *          wants to use the previous -R from history we will accept -R+ to mean ("add previous -R setting").
+	 *
+	 * Modules like pslegend has "rj" since -R -J are not required if -Dx is used but required for other settings.
+	 * Modules like blockmean, surface has "R" since it is never cool to autodetermine grid domains as this also
+	 *  depends on grid spacing, for instance.
+	 * Modules like grdview has "g" since they always have a grid domain to fall back on in the absence of -R.
+	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
+	 */
+	
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int k, n_errors = 0;
 		struct GMT_OPTION *opt = NULL;
@@ -10738,9 +10763,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				n_errors++;
 			}
 			/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if history is needed) */
-			if ((opt = GMT_Find_Option (API, 'R', *options)) && opt->arg[0] == '\0') {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
-				n_errors++;
+			if ((opt = GMT_Find_Option (API, 'R', *options))) {	/* Got -R */
+				if (opt->arg[0] == '\0') {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
+					n_errors++;
+				}
+				else if (opt->arg[0] == '+' && opt->arg[1] == '\0')	/* Shorthand -R+ allows us to request past region. */
+					opt->arg[0] = '\0';
 			}
 			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
@@ -10755,22 +10784,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (API->GMT->current.ps.active)	/* true if module will produce PS */
 				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
 		}
-		fprintf (stderr, "In init_module\n");
 		if (!API->GMT->current.ps.active || API->GMT->current.ps.initialize) {	/* Start of a new plot so any -R -J history cannot be used */
 			/* 2. If -R is missing it may be derived from the data (grid or dataset) for some modules depending on required:
 			 *    g: May append a -R<grid> option if the input grid implicitly sets -R in this module
 			 *    d: May append a -R<region> option by obtaining <region> from the input datasets via gmt info. */
-			fprintf (stderr, "Calling gmtinit_add_missing_R_option\n");
 			k = gmtinit_add_missing_R_option (API, required, options);
 		}
 		else {	/* Not the first plot so history contains -R -J that we can use, if needed */
 			char code;
 			/* 3. Next we add blank -R or -J options if these are required but not provided on command line.
 		 	 *    However, we cannot do this at the start of a plot since the history may not be relevant. */
-			fprintf (stderr, "looping over required]\n");
 		
 			for (k = 0; k < strlen (required); k++) {
-				if (required[k] == 'r') continue;	/* Premature to handle modules that may require -R depending on other things */
+				if (strchr ("rj", required[k])) continue;	/* Premature to handle modules that may require -R -J depending on other things */
 				code = (required[k] == 'd' || required[k] == 'g') ? 'R' : required[k];
 				opt = (code == 'J') ? gmt_find_J_option (API, *options) : GMT_Find_Option (API, code, *options);
 				if (opt) continue;	/* Got this one already */

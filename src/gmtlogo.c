@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot the GMT logo on maps"
 #define THIS_MODULE_KEYS	">X}"
-#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_NEEDS	"rj"
 #define THIS_MODULE_OPTIONS "->KJOPRUVXYtxy" GMT_OPT("c")
 
 /* Specific colors for fonts, land, water, text etc */

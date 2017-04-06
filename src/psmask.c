@@ -42,7 +42,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
 #define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdhiprstxy" GMT_OPT("Ec")
 
 struct PSMASK_CTRL {

@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Place images or EPS files on maps"
 #define THIS_MODULE_KEYS	"<I{,>X}"
-#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_NEEDS	"rj"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
 struct PSIMAGE_CTRL {
