@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Finite rotation reconstruction of geographic grid"
 #define THIS_MODULE_KEYS	"<G{,FD(,GG},TD("
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:>RVbdfghno" GMT_OPT("HMmQ")
 
 #define PAD 3	/* Used to polish up a rotated grid by checking near neighbor nodes */

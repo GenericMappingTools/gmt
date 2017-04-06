@@ -49,7 +49,7 @@
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,ZG(,G?},GDN"
-#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-VRfhior" GMT_ADD_x_OPT
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))

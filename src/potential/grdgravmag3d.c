@@ -41,7 +41,7 @@
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,GG}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:RVfx"
 
 typedef void (*PFV) ();		/* pointer to a function returning void */

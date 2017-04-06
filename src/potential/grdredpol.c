@@ -37,7 +37,7 @@
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the Continuous Reduction To the Pole, AKA differential RTP"
 #define THIS_MODULE_KEYS	"<G{,EG(,GG},ZG)"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-RVn"
 
 struct REDPOL_CTRL {

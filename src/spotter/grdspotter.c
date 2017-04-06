@@ -109,7 +109,7 @@
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Create CVA image from a gravity or topography grid"
 #define THIS_MODULE_KEYS	"<G{,AG(,DG),LG),GG}"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:>RVhr" GMT_OPT("F")
 
 #define B_TO_MB	(1.0 / 1048576.0)

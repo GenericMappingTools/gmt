@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate motion model on a geographic grid"
 #define THIS_MODULE_KEYS	"<G{,FD(,GG),>DG"
-#define THIS_MODULE_NEEDS	"R"
+#define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:RVbdhor"
 
 #define N_PM_ITEMS	9
