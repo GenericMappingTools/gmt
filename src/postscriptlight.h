@@ -315,6 +315,7 @@ struct PSL_CTRL {
 			char *name;		/* Name of this font */
 			int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
 						/* This is also changed to true after we do re-encode a font */
+			int encoded_orig;	/* The original setting that we can reset the array to */
 		} *font;	/* Pointer to array of font structures 		*/
 		struct PSL_PATTERN {
 			int nx, ny;	/* Dimension of pattern image */

@@ -1118,7 +1118,7 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	/* Re-encode fonts with Standard+ or ISOLatin1[+] encodings */
 	PSL_command (PSL, "PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 	(PSL->internal.comments) ? PSL_command (PSL, "\t%% Set this font\n") : PSL_command (PSL, "\n");
-	PSL->internal.font[font_no].encoded = true;
+	PSL->internal.font[font_no].encoded = 1;
 	return (PSL_NO_ERROR);
 }
 
@@ -2968,6 +2968,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding font info for font %d\n", i);
 			PSL_exit (EXIT_FAILURE);
 		}
+		PSL->internal.font[i].encoded_orig = PSL->internal.font[i].encoded;	/* Keep the original setting */
 		PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (fullname)+1, char);
 		strcpy (PSL->internal.font[i].name, fullname);
 		i++;

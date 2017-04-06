@@ -4844,7 +4844,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
-	unsigned int i = 0, n_GMT_fonts;
+	unsigned int i = 0, n_GMT_fonts, encode;
 	size_t n_alloc = 0;
 	char buf[GMT_BUFSIZ] = {""}, fullname[GMT_BUFSIZ] = {""};
 	FILE *in = NULL;
@@ -4864,11 +4864,12 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (i == n_alloc) GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
-		if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
+		if (sscanf (buf, "%s %lf %d", fullname, &GMT->session.font[i].height, &encode) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding font info for font %d\n", i);
 			fclose (in);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
+		GMT->session.font[i].encode_orig = encode;
 		GMT->session.font[i++].name = strdup (fullname);
 	}
 	fclose (in);
@@ -10478,11 +10479,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	gmtinit_free_user_media (Ccopy);		/* Free user-specified media formats */
 
-	/* These are because they are kept between module calls in a same session. So we need to reset them. */
+	/* These are because they are kept between module calls in a same session. So we need to reset them
+	 * except for Symbol and ZapfDingbats, etc. */
 	if (GMT->hidden.func_level == 0) {	/* Only when top-level module ends */
 		GMT->current.setting.verbose = GMT_MSG_COMPAT;
 		for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
-			GMT->PSL->internal.font[i].encoded = false;
+			GMT->PSL->internal.font[i].encoded = GMT->PSL->internal.font[i].encoded_orig;
 		GMT->PSL->current.fontsize = 0;
 	}
 
