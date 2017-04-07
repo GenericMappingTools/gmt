@@ -43,8 +43,8 @@ Synopsis
 
 **gmt_get_map_height** **-R** **-J**
 
-**gmt_movie_script** [**-c** *canvas*] [**-e** *dpi*] [**-f** *format*] [**-g** *fill*] [**-h** *height*] [**-n** *frames*]
-	[**-m** *margin*] [**-r** *rate*] [**-w** *width*] *namestem*
+**gmt_movie_script** [**-c** *canvas* OR **-e** *dpi* **-h** *height* **-w** *width*] [**-f** *format*]
+	[**-g** *fill*] [**-n** *frames*] [**-m** *margin*] [**-r** *rate*] *namestem*
 
 **gmt_launch_jobs** [**-c** *n_cores*] [**-l** *nlines_per_cluster*] [**-n**] [**-v**] [**-w**] *commandfile*
 
@@ -122,8 +122,8 @@ functions made available are:
     returns the map height in the current measurement unit.
 
 **gmt_movie_script**
-    Creates a template for an animation bash script based on the arguments
-    that set size, number of frames, etc. 
+    Creates an animation bash script template based on the arguments
+    that set size, number of frames, video format etc. 
     Without arguments the function will display its usage.
 
 **gmt_launch_jobs**

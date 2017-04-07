@@ -188,8 +188,8 @@ gmt_movie_script() {
 		cat << EOF >&2
 gmt_movie_script - Create template script for anomation
 
-usage: gmt_movie_script [-c <canvas>] [-f <format>] [-g <fill>] [-h <height>] [-n <frames>]
-		[-m <margin>] [-e <dpi>] [-r <rate>] [-w <width>] <prefix>
+usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <height>]
+		[-m <margin>] [-n <frames>] [-r <rate>] [-w <width>] <prefix>
 
 	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
 	   The dpi will be set automatically for a ~pagesize plot.
@@ -198,7 +198,7 @@ usage: gmt_movie_script [-c <canvas>] [-f <format>] [-g <fill>] [-h <height>] [-
 	-h Instead of canvas, specify height [in inches].
 	-m Plot margins [1 inch].
 	-n Number of frames to produce [1].
-	-r Set frame rate (MP4) or delay (GIF).
+	-r Set frame rate (MP4) [1] or delay (GIF) [10].
 	-v Video format: GIF, MP4, none [none].
 	-w Instead of canvas, specify width [in inches].
 	-u Create Web page template [no web page].
@@ -207,7 +207,7 @@ usage: gmt_movie_script [-c <canvas>] [-f <format>] [-g <fill>] [-h <height>] [-
 EOF
 		return
 	fi
-	canvas=VGA; fill=white; nframes=1; margin=1; dpi=100; vformat=none; web=0
+	canvas=VGA; dpi=100; fill=white; nframes=1; margin=1; rate=0; vformat=none; web=0
 	while [ $# -ne 1 ]; do
 		case "$1" in
 		"-c") canvas=$2 ; shift ;;
@@ -243,34 +243,47 @@ EOF
 	h=`gmt math -Q ${height} ${margin} 2 MUL SUB =`
 	iw=`gmt math -Q ${width} $dpi MUL =`
 	ih=`gmt math -Q ${height} $dpi MUL =`
+	if [ "X$rate" -eq "X0" ]; then
+		if [ vformat = GIF ]; then
+			rate=10
+		else
+			rate=1
+		fi
+	fi
 	cat << EOF > $name.sh
 #!/bin/bash
 # Animation template script created by gmt_movie_script
-
+. gmt_shell_functions.sh	# Load in the gmt functions
 # 1a. Set animation parameters:
 CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
 CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
 CANVAS_FILL=${fill}	# The height of your paper canvas [in inch]
-DPI=$dpi			# Rasterization in dots per inch
-VIDEO_FORMAT=$vformat	# Type of animation product
+VIDEO_DPI=$dpi		# Rasterization in dots per inch [$dpi]
+VIDEO_FORMAT=$vformat	# Type of animation product [GIF|MP4|none]
 VIDEO_RATE=$rate	# Frame rate (per sec) for MP4 or delay (ms) for GIF
-PREFIX=$name		# The prefix of the movie products
-MAP_WIDTH=${w}i		# The maximum map width [in inch] given your MARGIN
-MAP_HEIGHT=${h}i	# The maximum map height [in inch] given your MARGIN
-MARGIN=$margin		# The spacing between canvas boundary and map frame
+VIDEO_PREFIX=$name	# The prefix of the movie products
+PLOT_WIDTH=${w}i		# The maximum map width given your margins [in inch]
+PLOT_HEIGHT=${h}i	# The maximum map height given your margins [in inch]
+PLOT_PDF=yes		# Make a PDF of the first frame [yes|n]
+PLOT_XMARGIN=$margin	# The spacing between canvas boundary and map frame on left [in inch]
+PLOT_YMARGIN=$margin	# The spacing between canvas boundary and map frame on bottom [in inch]
 
-# 1b. Create filled canvas as first layer in the GMT cake.
+# 1b. Create filled canvas as first layer in the GMT cake, then set origin.
 #     Any plot items that do not change during the frame loop can be appended
 #     to \$\$.canvas.ps to avoid uncessesary plotting in the main frame loop.
 gmt psxy -R0/\${CANVAS_WIDTH}/0/\${CANVAS_HEIGHT} -Jx1i -P -T -X0 -Y0 -B+n+g\${CANVAS_FILL} --PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i -K > \$\$.canvas.ps
+gmt psxy -R -J -O -T -X\${PLOT_XMARGIN} -Y\${PLOT_YMARGIN} >> \$\$.canvas.ps
 
-# 1c. Make a clean folder that will hold all the frame images
-rm -rf \${PREFIX}; mkdir -p \${PREFIX}
+# 1c. Perform any calculations that will not change inside the frame loop,
+#     e.g., data extractions, filtering, gradient calculations, etc.
+
+# 1d. Make a clean folder that will hold all the frame images
+rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
 
 # Design your plot(s) to fit inside the canvas size.  It is up to you
 # to select reasonable -R -J settings so that items fit.  Ultimately, the
 # size of each video frame will be determined by the expression
-# 	w x h = [\${CANVAS_WIDTH} * \$DPI] by [\${CANVAS_HEIGHT} * \$DPI]
+# 	w x h = [\${CANVAS_WIDTH} * \$VIDEO_DPI] by [\${CANVAS_HEIGHT} * \$VIDEO_DPI]
 # which currently is $iw x $ih pixels.  Add your plot code between the
 # FRAME PLOT BEGIN -- END lines, using overlay mode (-O -K).
 
@@ -282,26 +295,32 @@ let frame=0
 while [ \$frame -lt $nframes ]; do
 	echo "Working on frame \$frame"
 	# Set current frame prefix for unique file name
-	ps=\`gmt_set_framename \${PREFIX} \$frame\`.ps
+	ps=\`gmt_set_framename \${VIDEO_PREFIX} \$frame\`.ps
 	# Start the current frame with the blank canvas plot
 	cp cancas.\$\$.ps \$ps
 	# FRAME PLOT BEGIN
-	# Add plot code that appends to file \$ps; use -O -K on all commands
+	# Add overlay plot code that appends to file \$ps; use -O -K on all commands
 	# ...
 	# FRAME PLOT END
 	gmt psxy -R -J -O -T >> \$ps
+	if [ $frame -eq 0 ] && [ \${PLOT_PDF} == yes ]; then
+		# Make a PDF of first frame
+		gmt psconvert -Tf -P \$ps
+		pdf=`basename \$ps .ps`.pdf
+		echo "Made PDF of first frame: $pdf"
+	fi
 	# Convert frame to PNG and place in folder
-	gmt psconvert -Tg -E\$DPI -P -D\${PREFIX} -Z \$ps
+	gmt psconvert -Tg -E\$VIDEO_DPI -P -D\${VIDEO_PREFIX} -Z \$ps
 	let frame=frame+1	# Increment frame counter
 done
 
 # 3. Convert images to an animation
 if [ \${FORMAT} = GIF ]; then
 	# Animated GIF:
-	gmt_build_gif -d \${PREFIX} -r \${VIDEO_RATE} -l 0 \${PREFIX}
+	gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
 elif [ \${FORMAT} = MP4 ]; then
 	# MP4 movie
-	gmt_build_movie -d \${PREFIX} -r  \${VIDEO_RATE} \${PREFIX}
+	gmt_build_movie -d \${VIDEO_PREFIX} -r  \${VIDEO_RATE} \${VIDEO_PREFIX}
 fi
 
 # 4. Remove all files with process ID in the name
