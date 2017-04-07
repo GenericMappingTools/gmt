@@ -183,63 +183,22 @@ ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" $
 }
 
 # For animations: Build a m4v movie from stills
-gmt_build_movie() {
-	if [ $# -eq 0 ]; then
-		cat << EOF >&2
-gmt_build_movie - Process stills to m4v movie with ffmpeg
-	Note: M4V Requires images to have an even pixel width
-
-usage: gmt_build_movie [-d <directory>] [-n] [-r <rate>] [-v] <prefix>
-	<prefix> is the prefix of the still images and the resulting movie
-	-d Specify path to of directory with the stills [current directory]
-	-r Set frame rate in images per second [24]
-	-n Dry-run.  Do not run ffmpeg command, just print it
-	-v Verbose.  Give progress messages
-EOF
-		return
-	fi
-	missing=`which -s ffmpeg`
-	if [ $missing -eq 1 ]; then
-		echo "gmt_build_movie: Cannot find ffmpeg in your path - exiting" >&2
-		return
-	fi
-	rate=24; dir=.; dryrun=0; blabber=quiet
-	while [ $# -ne 1 ]; do
-		case "$1" in
-		"-d") dir=$2 ; shift ;;
-		"-n") dryrun=1 ;;
-		"-r") rate=$2 ; shift ;;
-		"-v") blabber=verbose ;;
-		*) echo "gmt_build_movie:  No such option ($1)" >&2
-		    ;;
-		esac
-		shift
-	done
-	if [ $dryrun -eq 1 ]; then
-		cat <<- EOF
-ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$dir/$1_*.*" -pix_fmt yuv420p ${1}.m4v
-		EOF
-	else
-		ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$dir/$1_*.*" -pix_fmt yuv420p ${1}.m4v
-	fi
-}
-
-# For animations: Build a m4v movie from still frames
 gmt_movie_script() {
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2
 gmt_movie_script - Create template script for anomation
 
 usage: gmt_movie_script [-c <canvas>] [-f <format>] [-g <fill>] [-h <height>] [-n <frames>]
-		[-m <margin>] [-r <dpi>] [-w <width>] <prefix>
+		[-m <margin>] [-e <dpi>] [-r <rate>] [-w <width>] <prefix>
 
 	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
 	   The dpi will be set automatically for a ~pagesize plot.
+	-e Instead of canvas, specify dots per inch [100].
 	-g Canvas color [white].
 	-h Instead of canvas, specify height [in inches].
 	-m Plot margins [1 inch].
 	-n Number of frames to produce [1].
-	-r Instead of canvas, specify dots per inch [100].
+	-r Set frame rate (MP4) or delay (GIF).
 	-v Video format: GIF, MP4, none [none].
 	-w Instead of canvas, specify width [in inches].
 	-u Create Web page template [no web page].
@@ -252,11 +211,12 @@ EOF
 	while [ $# -ne 1 ]; do
 		case "$1" in
 		"-c") canvas=$2 ; shift ;;
+		"-e") dpi=$2 ; shift ;;
 		"-g") fill=$2 ; shift ;;
 		"-h") height=$2 ; shift ;;
 		"-n") nframes=$2 ; shift ;;
 		"-m") margin=$2 ; shift ;;
-		"-r") dpi=$2 ; shift ;;
+		"-r") rate=$2 ; shift ;;
 		"-v") vformat=$2 ; shift ;;
 		"-w") width=$2 ; shift ;;
 		"-u") web=1 ;;
@@ -292,7 +252,8 @@ CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
 CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
 CANVAS_FILL=${fill}	# The height of your paper canvas [in inch]
 DPI=$dpi			# Rasterization in dots per inch
-FORMAT=$vformat		# Type of animation product
+VIDEO_FORMAT=$vformat	# Type of animation product
+VIDEO_RATE=$rate	# Frame rate (per sec) for MP4 or delay (ms) for GIF
 PREFIX=$name		# The prefix of the movie products
 MAP_WIDTH=${w}i		# The maximum map width [in inch] given your MARGIN
 MAP_HEIGHT=${h}i	# The maximum map height [in inch] given your MARGIN
@@ -337,10 +298,10 @@ done
 # 3. Convert images to an animation
 if [ \${FORMAT} = GIF ]; then
 	# Animated GIF:
-	gmt_build_gif -d \${PREFIX} -r delay -l loop \${PREFIX}
+	gmt_build_gif -d \${PREFIX} -r \${VIDEO_RATE} -l 0 \${PREFIX}
 elif [ \${FORMAT} = MP4 ]; then
 	# MP4 movie
-	gmt_build_movie -d \${PREFIX} -r rate \${PREFIX}
+	gmt_build_movie -d \${PREFIX} -r  \${VIDEO_RATE} \${PREFIX}
 fi
 
 # 4. Remove all files with process ID in the name
