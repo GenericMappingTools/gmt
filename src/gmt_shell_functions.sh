@@ -224,6 +224,162 @@ ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$
 	fi
 }
 
+# For animations: Build a m4v movie from still frames
+gmt_movie_script() {
+	if [ $# -eq 0 ]; then
+		cat << EOF >&2
+gmt_movie_script - Create template script for anomation
+
+usage: gmt_movie_script [-c <canvas>] [-f <format>] [-g <fill>] [-h <height>] [-n <frames>]
+		[-m <margin>] [-r <dpi>] [-w <width>] <prefix>
+
+	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
+	   The dpi will be set automatically for a ~pagesize plot.
+	-g Canvas color [white].
+	-h Instead of canvas, specify height [in inches].
+	-m Plot margins [1 inch].
+	-n Number of frames to produce [1].
+	-r Instead of canvas, specify dots per inch [100].
+	-v Video format: GIF, MP4, none [none].
+	-w Instead of canvas, specify width [in inches].
+	-u Create Web page template [no web page].
+
+	<prefix> is the required naming prefix of the animation products.
+EOF
+		return
+	fi
+	canvas=VGA; fill=white; nframes=1; margin=1; dpi=100; vformat=none; web=0
+	while [ $# -ne 1 ]; do
+		case "$1" in
+		"-c") canvas=$2 ; shift ;;
+		"-g") fill=$2 ; shift ;;
+		"-h") height=$2 ; shift ;;
+		"-n") nframes=$2 ; shift ;;
+		"-m") margin=$2 ; shift ;;
+		"-r") dpi=$2 ; shift ;;
+		"-v") vformat=$2 ; shift ;;
+		"-w") width=$2 ; shift ;;
+		"-u") web=1 ;;
+		*) echo "gmt_movie_script:  No such option ($1)" >&2
+		    ;;
+		esac
+		shift
+	done
+	name=$1
+	if [ "X$width" = "X" ]; then # Gave canvas, must set width, height, dpi
+		if [ $canvas = 360p ]; then
+			width=4.80; height=3.60;
+		elif [ $canvas = 480p ]; then
+			width=6.40; height=4.80;
+		elif [ $canvas = 720p ]; then
+			width=12.80; height=7.20;
+		elif [ $canvas = 1080p ]; then
+			width=9.60; height=5.40; dpi=200;
+		elif [ $canvas = 4k ]; then
+			width=9.60; height=5.40; dpi=400;
+		fi
+	fi
+	w=`gmt math -Q ${width} ${margin} 2 MUL SUB =`
+	h=`gmt math -Q ${height} ${margin} 2 MUL SUB =`
+	iw=`gmt math -Q ${width} $dpi MUL =`
+	ih=`gmt math -Q ${height} $dpi MUL =`
+	cat << EOF > $name.sh
+#!/bin/bash
+# Animation template script created by gmt_movie_script
+
+# 1a. Set animation parameters:
+CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
+CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
+CANVAS_FILL=${fill}	# The height of your paper canvas [in inch]
+DPI=$dpi			# Rasterization in dots per inch
+FORMAT=$vformat		# Type of animation product
+PREFIX=$name		# The prefix of the movie products
+MAP_WIDTH=${w}i		# The maximum map width [in inch] given your MARGIN
+MAP_HEIGHT=${h}i	# The maximum map height [in inch] given your MARGIN
+MARGIN=$margin		# The spacing between canvas boundary and map frame
+
+# 1b. Create filled canvas as first layer in the GMT cake.
+#     Any plot items that do not change during the frame loop can be appended
+#     to \$\$.canvas.ps to avoid uncessesary plotting in the main frame loop.
+gmt psxy -R0/\${CANVAS_WIDTH}/0/\${CANVAS_HEIGHT} -Jx1i -P -T -X0 -Y0 -B+n+g\${CANVAS_FILL} --PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i -K > \$\$.canvas.ps
+
+# 1c. Make a clean folder that will hold all the frame images
+rm -rf \${PREFIX}; mkdir -p \${PREFIX}
+
+# Design your plot(s) to fit inside the canvas size.  It is up to you
+# to select reasonable -R -J settings so that items fit.  Ultimately, the
+# size of each video frame will be determined by the expression
+# 	w x h = [\${CANVAS_WIDTH} * \$DPI] by [\${CANVAS_HEIGHT} * \$DPI]
+# which currently is $iw x $ih pixels.  Add your plot code between the
+# FRAME PLOT BEGIN -- END lines, using overlay mode (-O -K).
+
+#---------------------------------------------------------------------------------
+# 2. Main frame loop
+#---------------------------------------------------------------------------------
+
+let frame=0
+while [ \$frame -lt $nframes ]; do
+	echo "Working on frame \$frame"
+	# Set current frame prefix for unique file name
+	ps=\`gmt_set_framename \${PREFIX} \$frame\`.ps
+	# Start the current frame with the blank canvas plot
+	cp cancas.\$\$.ps \$ps
+	# FRAME PLOT BEGIN
+	# Add plot code that appends to file \$ps; use -O -K on all commands
+	# ...
+	# FRAME PLOT END
+	gmt psxy -R -J -O -T >> \$ps
+	# Convert frame to PNG and place in folder
+	gmt psconvert -Tg -E\$DPI -P -D\${PREFIX} -Z \$ps
+	let frame=frame+1	# Increment frame counter
+done
+
+# 3. Convert images to an animation
+if [ \${FORMAT} = GIF ]; then
+	# Animated GIF:
+	gmt_build_gif -d \${PREFIX} -r delay -l loop \${PREFIX}
+elif [ \${FORMAT} = MP4 ]; then
+	# MP4 movie
+	gmt_build_movie -d \${PREFIX} -r rate \${PREFIX}
+fi
+
+# 4. Remove all files with process ID in the name
+rm -f *.\$\$.*
+EOF
+if [ $web -eq 1 ]; then
+	cat << EOF > $name.html
+<HTML>
+<TITLE>Title of the Web Page</TITLE>
+<BODY bgcolor="ffffff">
+<CENTER>
+<H1>Title of the Web Page</H1>
+EOF
+if [ ${vformat} = GIF ]; then
+	echo "<IMG src=\"$name.gif\">" >> $name.html
+else
+	cat << EOF >> $name.html
+<video controls>
+<source src="$name.mp4" type="video/mp4">
+Please use a modern browser
+</video>
+EOF
+fi
+cat << EOF >> $name.html
+</CENTER>
+Please add a movie caption here.
+<HR>
+<I>Create by $USER on `date`</I>
+</BODY>
+</HTML>
+EOF
+fi
+	
+echo "gmt_movie_script: Animation script template $name.sh created" >&2
+if [ $web -eq 1 ]; then
+	echo "gmt_movie_script: Animation web template $name.html created" >&2
+fi
+}
+
 # For spreading numerous commands across many CPUs in clusters of N lines
 gmt_launch_jobs() {
 	# gmt_launch_jobs -c <n_cpu> -j <nlines_per_cluster> <commandfile>

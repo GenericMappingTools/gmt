@@ -43,6 +43,9 @@ Synopsis
 
 **gmt_get_map_height** **-R** **-J**
 
+**gmt_movie_script** [**-c** *canvas*] [**-e** *dpi*] [**-f** *format*] [**-g** *fill*] [**-h** *height*] [**-n** *frames*]
+	[**-m** *margin*] [**-r** *rate*] [**-w** *width*] *namestem*
+
 **gmt_launch_jobs** [**-c** *n_cores*] [**-l** *nlines_per_cluster*] [**-n**] [**-v**] [**-w**] *commandfile*
 
 **gmt_set_psfile** *scriptfile*
@@ -117,6 +120,11 @@ functions made available are:
 **gmt_get_map_height**
     Expects the user to give the desired **-R** **-J** settings and
     returns the map height in the current measurement unit.
+
+**gmt_movie_script**
+    Creates a template for an animation bash script based on the arguments
+    that set size, number of frames, etc. 
+    Without arguments the function will display its usage.
 
 **gmt_launch_jobs**
     Takes a file with a long list of commands and splits them into
