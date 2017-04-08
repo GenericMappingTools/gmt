@@ -11,14 +11,15 @@ ps=GMT_App_M_1b.ps
 n=`cat tt.lis | wc -l`
 let n2=n/2
 # dy is line spacing and y0 is total box height
+dy=0.75
+y0=`echo "$n2 * $dy * 0.5" | bc`
 
 gmt gmtset MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
-gmt psbasemap -R0/6.1/0/7.5 -Jx1i -P -K -B0 > $ps
+gmt psbasemap -R0/6.1/0/$y0 -Jx1i -P -K -B0 > $ps
 
 i=1
 y=0.475
 y2=0.35
-dy=0.75
 while [ $i -le $n2 ]
 do
 	j=`expr $i + 1`

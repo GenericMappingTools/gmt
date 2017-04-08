@@ -254,7 +254,7 @@ affect users directly.  We have added four new examples and one new animation
 to highlight recently added capabilities.  There have been many bug fixes
 as well. For specific enhancements, we have:
 
-*  All GMT-distributed color palette tables (CPTs, now a total of 40) are
+*  All GMT-distributed color palette tables (CPTs, now a total of 44) are
    *dynamic* and many have a *hinge* and a default *range*.  What this means
    is that the range of all CPTs have been normalized to 0-1, expect that
    those with a hinge are normalized to -1/+1, with 0 being the normalized
@@ -9240,7 +9240,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The first 20 of the standard 40 CPTs supported by GMT
+   The first 22 of the standard 44 CPTs supported by GMT
 
 .. _CPT_files_b:
 
@@ -9248,7 +9248,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The second 20 of the standard 40 CPTs supported by GMT
+   The second 22 of the standard 44 CPTs supported by GMT
 
 
 Labeled and non-equidistant color legends
