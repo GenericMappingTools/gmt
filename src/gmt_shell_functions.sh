@@ -183,13 +183,55 @@ ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" $
 }
 
 # For animations: Build a m4v movie from stills
+gmt_build_movie() {
+	if [ $# -eq 0 ]; then
+		cat << EOF >&2
+gmt_build_movie - Process stills to m4v movie with ffmpeg
+	Note: M4V Requires images to have an even pixel width
+
+usage: gmt_build_movie [-d <directory>] [-n] [-r <rate>] [-v] <prefix>
+	<prefix> is the prefix of the still images and the resulting movie
+	-d Specify path to of directory with the stills [current directory]
+	-r Set frame rate in images per second [24]
+	-n Dry-run.  Do not run ffmpeg command, just print it
+	-v Verbose.  Give progress messages
+EOF
+		return
+	fi
+	missing=`which -s ffmpeg`
+	if [ $missing -eq 1 ]; then
+		echo "gmt_build_movie: Cannot find ffmpeg in your path - exiting" >&2
+		return
+	fi
+	rate=24; dir=.; dryrun=0; blabber=quiet
+	while [ $# -ne 1 ]; do
+		case "$1" in
+		"-d") dir=$2 ; shift ;;
+		"-n") dryrun=1 ;;
+		"-r") rate=$2 ; shift ;;
+		"-v") blabber=verbose ;;
+		*) echo "gmt_build_movie:  No such option ($1)" >&2
+		    ;;
+		esac
+		shift
+	done
+	if [ $dryrun -eq 1 ]; then
+		cat <<- EOF
+ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$dir/$1_*.*" -pix_fmt yuv420p ${1}.m4v
+		EOF
+	else
+		ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$dir/$1_*.*" -pix_fmt yuv420p ${1}.m4v
+	fi
+}
+
+# For animations: Build a animation script template
 gmt_movie_script() {
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2
 gmt_movie_script - Create template script for anomation
 
 usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <height>]
-		[-m <margin>] [-n <frames>] [-r <rate>] [-w <width>] <prefix>
+	[-m <margin>] [-n <frames>] [-r <rate>] [-w <width>] <prefix>
 
 	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
 	   The dpi will be set automatically for a ~pagesize plot.
