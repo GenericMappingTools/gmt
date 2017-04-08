@@ -194,12 +194,12 @@ usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <
 	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
 	   The dpi will be set automatically for a ~pagesize plot.
 	-e Instead of canvas, specify dots per inch [100].
+	-f Video format: GIF, MP4, none [none].
 	-g Canvas color [white].
 	-h Instead of canvas, specify height [in inches].
 	-m Plot margins [1 inch].
 	-n Number of frames to produce [1].
 	-r Set frame rate (MP4) [1] or delay (GIF) [10].
-	-v Video format: GIF, MP4, none [none].
 	-w Instead of canvas, specify width [in inches].
 	-u Create Web page template [no web page].
 
@@ -207,17 +207,18 @@ usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <
 EOF
 		return
 	fi
-	canvas=VGA; dpi=100; fill=white; nframes=1; margin=1; rate=0; vformat=none; web=0
+	all_args="$*"
+	dpi=100; fill=white; nframes=1; margin=1; rate=0; vformat=none; web=0; width=""; height=""
 	while [ $# -ne 1 ]; do
 		case "$1" in
 		"-c") canvas=$2 ; shift ;;
 		"-e") dpi=$2 ; shift ;;
 		"-g") fill=$2 ; shift ;;
+		"-f") vformat=$2 ; shift ;;
 		"-h") height=$2 ; shift ;;
 		"-n") nframes=$2 ; shift ;;
 		"-m") margin=$2 ; shift ;;
 		"-r") rate=$2 ; shift ;;
-		"-v") vformat=$2 ; shift ;;
 		"-w") width=$2 ; shift ;;
 		"-u") web=1 ;;
 		*) echo "gmt_movie_script:  No such option ($1)" >&2
@@ -227,105 +228,139 @@ EOF
 	done
 	name=$1
 	if [ "X$width" = "X" ]; then # Gave canvas, must set width, height, dpi
-		if [ $canvas = 360p ]; then
-			width=4.80; height=3.60;
-		elif [ $canvas = 480p ]; then
-			width=6.40; height=4.80;
-		elif [ $canvas = 720p ]; then
-			width=12.80; height=7.20;
-		elif [ $canvas = 1080p ]; then
-			width=9.60; height=5.40; dpi=200;
-		elif [ $canvas = 4k ]; then
-			width=9.60; height=5.40; dpi=400;
+		if [ "$canvas" = "360p" ]; then
+			width=4.80; height=3.60
+		elif [ "$canvas" = "480p" ]; then
+			width=6.40; height=4.80
+		elif [ "$canvas" = "720p" ]; then
+			width=12.80; height=7.20
+		elif [ "$canvas" = "1080p" ]; then
+			width=9.60; height=5.40; dpi=200
+		elif [ "$canvas" = "4k" ]; then
+			width=9.60; height=5.40; dpi=400
 		fi
 	fi
 	w=`gmt math -Q ${width} ${margin} 2 MUL SUB =`
 	h=`gmt math -Q ${height} ${margin} 2 MUL SUB =`
 	iw=`gmt math -Q ${width} $dpi MUL =`
 	ih=`gmt math -Q ${height} $dpi MUL =`
-	if [ "X$rate" -eq "X0" ]; then
+	if [ "X$rate" = "X0" ]; then
 		if [ vformat = GIF ]; then
 			rate=10
 		else
 			rate=1
 		fi
 	fi
+	now=`date`
+	you=`finger $LOGNAME | head -1 | awk -F': ' '{print $3}'`
 	cat << EOF > $name.sh
 #!/bin/bash
-# Animation template script created by gmt_movie_script
+# Author:	$you
+# Purpose:	Make an animation of ...
+# Date:		$now
+# Command:	gmt_movie_script $all_args
+#
 . gmt_shell_functions.sh	# Load in the gmt functions
+#---------------------------------------------------------------------------------
+# 1. INITIALIZATIONS:
+#---------------------------------------------------------------------------------
 # 1a. Set animation parameters:
+# Cancas settings:
 CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
 CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
 CANVAS_FILL=${fill}	# The height of your paper canvas [in inch]
+# Video settings:
 VIDEO_DPI=$dpi		# Rasterization in dots per inch [$dpi]
 VIDEO_FORMAT=$vformat	# Type of animation product [GIF|MP4|none]
-VIDEO_RATE=$rate	# Frame rate (per sec) for MP4 or delay (ms) for GIF
+VIDEO_FRAMES=$nframes		# Number of frames in the movie
+VIDEO_RATE=$rate		# Frame rate (per sec) for MP4 or delay (ms) for GIF
 VIDEO_PREFIX=$name	# The prefix of the movie products
+# Plot settings:
 PLOT_WIDTH=${w}i		# The maximum map width given your margins [in inch]
 PLOT_HEIGHT=${h}i	# The maximum map height given your margins [in inch]
-PLOT_PDF=yes		# Make a PDF of the first frame [yes|n]
-PLOT_XMARGIN=$margin	# The spacing between canvas boundary and map frame on left [in inch]
-PLOT_YMARGIN=$margin	# The spacing between canvas boundary and map frame on bottom [in inch]
-
-# 1b. Create filled canvas as first layer in the GMT cake, then set origin.
-#     Any plot items that do not change during the frame loop can be appended
-#     to \$\$.canvas.ps to avoid uncessesary plotting in the main frame loop.
-gmt psxy -R0/\${CANVAS_WIDTH}/0/\${CANVAS_HEIGHT} -Jx1i -P -T -X0 -Y0 -B+n+g\${CANVAS_FILL} --PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i -K > \$\$.canvas.ps
-gmt psxy -R -J -O -T -X\${PLOT_XMARGIN} -Y\${PLOT_YMARGIN} >> \$\$.canvas.ps
-
-# 1c. Perform any calculations that will not change inside the frame loop,
-#     e.g., data extractions, filtering, gradient calculations, etc.
-
-# 1d. Make a clean folder that will hold all the frame images
-rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
+PLOT_PDF=yes		# Make a PDF of the first frame and stop [yes|no]
+PLOT_XMARGIN=${margin}i	# The spacing between canvas boundary and map frame on left [in inch]
+PLOT_YMARGIN=${margin}i	# The spacing between canvas boundary and map frame on bottom [in inch]
 
 # Design your plot(s) to fit inside the canvas size.  It is up to you
 # to select reasonable -R -J settings so that items fit.  Ultimately, the
 # size of each video frame will be determined by the expression
-# 	w x h = [\${CANVAS_WIDTH} * \$VIDEO_DPI] by [\${CANVAS_HEIGHT} * \$VIDEO_DPI]
+# w x h = [\${CANVAS_WIDTH} * \$VIDEO_DPI] by [\${CANVAS_HEIGHT} * \$VIDEO_DPI]
 # which currently is $iw x $ih pixels.  Add your plot code between the
 # FRAME PLOT BEGIN -- END lines, using overlay mode (-O -K).
 
+# 1b. Perform any calculations that will not change inside the frame loop,
+#     e.g., data extractions, filtering, gradient calculations, etc.
+#     Temporary files named <prefix>.\$\$\.<extension> will be deleted automatically.
+
+# 1c. Create filled canvas as first layer in the GMT cake, then set origin.
+gmt psbasemap -R0/\${CANVAS_WIDTH}/0/\${CANVAS_HEIGHT} -Jx1i -P -K -X0 -Y0 -B+n+g\${CANVAS_FILL} \\
+	--PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i > canvas.\$\$.ps
+gmt psxy -R -J -O -K -T -X\${PLOT_XMARGIN} -Y\${PLOT_YMARGIN} >> canvas.\$\$.ps
+
+# 1d. Plot items that do not change during the frame loop should be appended
+#     to canvas.\$\$.ps to avoid unnecessary plotting in the main frame loop.
+#     The next line is an example that can be modified or removed.
+gmt psbasemap -R0/100/0/100 -JX\${PLOT_WIDTH}/\${PLOT_HEIGHT} -Baf -B+gpink -O -K >> canvas.\$\$.ps
+
+# 1e. Make a clean folder that will hold all the frame images
+rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
+
 #---------------------------------------------------------------------------------
-# 2. Main frame loop
+# 2. MAIN FRAME LOOP
 #---------------------------------------------------------------------------------
 
 let frame=0
-while [ \$frame -lt $nframes ]; do
+while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 	echo "Working on frame \$frame"
-	# Set current frame prefix for unique file name
+	# 2a. Perform any calculations that depends on the frame number
+	
+	# 2b. Set current frame prefix for lexically increasing file name
 	ps=\`gmt_set_framename \${VIDEO_PREFIX} \$frame\`.ps
-	# Start the current frame with the blank canvas plot
-	cp cancas.\$\$.ps \$ps
+	
+	# 2c. Start the current frame with the canvas plot composite
+	cp canvas.\$\$.ps \$ps
+	
+	# 2d. Append overlays to file \$ps; use -O -K on all commands
 	# FRAME PLOT BEGIN
-	# Add overlay plot code that appends to file \$ps; use -O -K on all commands
-	# ...
+	# ==> Add your frame-specific plotting here
 	# FRAME PLOT END
+	
+	# 2e. Finalize the frame plot
 	gmt psxy -R -J -O -T >> \$ps
-	if [ $frame -eq 0 ] && [ \${PLOT_PDF} == yes ]; then
-		# Make a PDF of first frame
-		gmt psconvert -Tf -P \$ps
-		pdf=`basename \$ps .ps`.pdf
-		echo "Made PDF of first frame: $pdf"
+	if [ \$frame -eq 0 ] && [ "\${PLOT_PDF}" == "yes" ]; then
+		# 2f. Make a PDF of first frame only and break out
+		pdf=\${VIDEO_PREFIX}
+		gmt psconvert -Tf -P -Z -F\$pdf \$ps
+		echo "Made PDF of first frame: \$pdf.pdf"
+		break
 	fi
-	# Convert frame to PNG and place in folder
-	gmt psconvert -Tg -E\$VIDEO_DPI -P -D\${VIDEO_PREFIX} -Z \$ps
+	# 2g. Convert frame to PNG and save to image folder
+	gmt psconvert -Tg -E\${VIDEO_DPI} -P -D\${VIDEO_PREFIX} -Z \$ps
 	let frame=frame+1	# Increment frame counter
 done
 
-# 3. Convert images to an animation
-if [ \${FORMAT} = GIF ]; then
-	# Animated GIF:
+#---------------------------------------------------------------------------------
+# 3. CONVERT IMAGES TO AN ANIMATION
+#---------------------------------------------------------------------------------
+if [ "\${VIDEO_FORMAT}" = "GIF" ]; then
+	# Make an animated GIF:
 	gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
-elif [ \${FORMAT} = MP4 ]; then
-	# MP4 movie
-	gmt_build_movie -d \${VIDEO_PREFIX} -r  \${VIDEO_RATE} \${VIDEO_PREFIX}
+elif [ "\${VIDEO_FORMAT}" = "MP4" ]; then
+	# Man a MP4 movie:
+	gmt_build_movie -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} \${VIDEO_PREFIX}
 fi
 
-# 4. Remove all files with process ID in the name
+#---------------------------------------------------------------------------------
+# 4. REMOVE ALL TEMPORARY FILES WITH PROCESS ID IN THE NAME
+#---------------------------------------------------------------------------------
 rm -f *.\$\$.*
 EOF
+echo "gmt_movie_script: Animation script template $name.sh created" >&2
+if [ "${vformat}" = "none" ]; then
+	web=0
+fi
+# Generate the HTML template if a graphics format was selected
 if [ $web -eq 1 ]; then
 	cat << EOF > $name.html
 <HTML>
@@ -334,13 +369,13 @@ if [ $web -eq 1 ]; then
 <CENTER>
 <H1>Title of the Web Page</H1>
 EOF
-if [ ${vformat} = GIF ]; then
+if [ "${vformat}" = "GIF" ]; then
 	echo "<IMG src=\"$name.gif\">" >> $name.html
 else
 	cat << EOF >> $name.html
 <video controls>
 <source src="$name.mp4" type="video/mp4">
-Please use a modern browser
+Your browser do not appear to support video controls
 </video>
 EOF
 fi
@@ -352,11 +387,7 @@ Please add a movie caption here.
 </BODY>
 </HTML>
 EOF
-fi
-	
-echo "gmt_movie_script: Animation script template $name.sh created" >&2
-if [ $web -eq 1 ]; then
-	echo "gmt_movie_script: Animation web template $name.html created" >&2
+echo "gmt_movie_script: Animation web template $name.html created" >&2
 fi
 }
 
