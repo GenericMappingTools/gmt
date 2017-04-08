@@ -156,11 +156,7 @@ usage: gmt_build_gif [-d <directory>] [-l <loop>] [-r <delay>] <prefix>
 EOF
 		return
 	fi
-	missing=`which -s ${GRAPHICSMAGICK-gm}`
-	if [ $missing -eq 1 ]; then
-		echo "gmt_build_gif: Cannot find gm in your path - exiting" >&2
-		return
-	fi
+	command -v ${GRAPHICSMAGICK-gm} >/dev/null 2>&1 || { echo "gmt_build_movie: Cannot find graphicsmagick in your path - exiting." >&2; return; }
 	delay=24; dir=.; loop=0; dryrun=0
 	while [ $# -ne 1 ]; do
 		case "$1" in
@@ -198,11 +194,7 @@ usage: gmt_build_movie [-d <directory>] [-n] [-r <rate>] [-v] <prefix>
 EOF
 		return
 	fi
-	missing=`which -s ffmpeg`
-	if [ $missing -eq 1 ]; then
-		echo "gmt_build_movie: Cannot find ffmpeg in your path - exiting" >&2
-		return
-	fi
+	command -v ffmpeg >/dev/null 2>&1 || { echo "gmt_build_movie: Cannot find ffmpeg in your path - exiting." >&2; return; }
 	rate=24; dir=.; dryrun=0; blabber=quiet
 	while [ $# -ne 1 ]; do
 		case "$1" in
@@ -233,17 +225,18 @@ gmt_movie_script - Create template script for anomation
 usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <height>]
 	[-m <margin>] [-n <frames>] [-r <rate>] [-w <width>] <prefix>
 
-	-c Specify a standard canvas size from 360p, 480p, 720p, 1080p, or 4k
-	   The dpi will be set automatically for a ~pagesize plot.
-	-e Instead of canvas, specify dots per inch [100].
-	-f Video format: GIF, MP4, none [none].
-	-g Canvas color [white].
-	-h Instead of canvas, specify height [in inches].
-	-m Plot margins [1 inch].
-	-n Number of frames to produce [1].
-	-r Set frame rate (MP4) [1] or delay (GIF) [10].
-	-w Instead of canvas, specify width [in inches].
-	-u Create Web page template [no web page].
+	-c Specify a standard canvas size: 360p, 480p, 720p, 1080p, or 4k
+	   The dpi will be set automatically for a ~pagesize plot
+	   Alternatively, specify -e -h and -w separately
+	-e Image resolution in dots per inch [100]
+	-f Video format: GIF, MP4, none [none]
+	-g Canvas color [white]
+	-h Specify image height [in inches]
+	-m Plot margins [1 inch]
+	-n Number of frames to produce [1]
+	-r Set frame rate (MP4) [1] or delay (GIF) [10]
+	-w Specify image width [in inches]
+	-u Create Web page template [no web page].  Requires -f
 
 	<prefix> is the required naming prefix of the animation products.
 EOF
@@ -375,6 +368,7 @@ while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 		pdf=\${VIDEO_PREFIX}
 		gmt psconvert -Tf -P -Z -F\$pdf \$ps
 		echo "Made PDF of first frame: \$pdf.pdf"
+		echo "[Set PLOT_PDF to no to build all frames]"
 		break
 	fi
 	# 2g. Convert frame to PNG and save to image folder
@@ -416,7 +410,7 @@ if [ "${vformat}" = "GIF" ]; then
 else
 	cat << EOF >> $name.html
 <video controls>
-<source src="$name.mp4" type="video/mp4">
+<source src="$name.m4v" type="video/mp4">
 Your browser do not appear to support video controls
 </video>
 EOF
