@@ -10507,7 +10507,7 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 		}
 	}
 	if (gmt_M_is_zero (S->size_x)) return 0;	/* Not set yet */
-	if (S->symbol != GMT_SYMBOL_VECTOR_V4) {
+	if (!(S->symbol == GMT_SYMBOL_VECTOR_V4 || S->v.parsed_v4)) {
 		S->v.h_length = (float)S->size_x;
 		S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
 	}
@@ -10576,7 +10576,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'g':	/* Vector head fill +g[-|<fill>]*/
 				g_opt = true;	/* Marks that +g was used */
 				if (p[1] == '-') break; /* Do NOT turn on fill */
-				S->v.status |= GMT_VEC_FILL;
+				S->v.status |= PSL_VEC_FILL;
 				if (p[1]) {
 					if (gmt_getfill (GMT, &p[1], &S->v.fill)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
@@ -10584,6 +10584,8 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 					S->v.status |= GMT_VEC_FILL2;
 				}
+				else
+					S->v.status |= GMT_VEC_FILL;
 				break;
 			case 'j':	/* Vector justification */
 				if (symbol == 'm') {
@@ -10653,19 +10655,20 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
-				if (p[1] == '-')	/* Do NOT turn on outlines */
+				if (p[1] == '-')	/* Do NOT turn on head outlines */
 					j = 2;
-				else {
+				else {	/* Do turn on head outlines */
 					j = 1;
-					S->v.status |= GMT_VEC_OUTLINE;
+					S->v.status |= PSL_VEC_OUTLINE;
 				}
 				if (p[j]) {	/* Change default vector pen */
 					if (gmt_getpen (GMT, &p[j], &S->v.pen)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
 						error++;
 					}
-					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
+					S->v.status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
+				/* So status may here be both PSL_VEC_OUTLINE (draw head outline) and PSL_VEC_OUTLINE2 (do it with this pen) */
 				break;
 			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
 			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halves at active heads */
@@ -11302,6 +11305,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			else {	/* Parse old-style vector specs */
 				int one = 2;
+				if (p->v.status & GMT_VEC_BEGIN) p->v.status -= GMT_VEC_BEGIN;	/* Remove previous setting */
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
 						p->v.status |= GMT_VEC_BEGIN;
