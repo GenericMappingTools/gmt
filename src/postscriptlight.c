@@ -2070,7 +2070,10 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	return (image_no);
 }
 
-#if 0
+#ifdef PSL_WITH_GMT4_SUPPORT
+/* This code is included so we may offer backwards compatibility with GMT 4 old-school
+ * polygon vectors.  It is not documented and should not be used by non-GMT developers.
+ */
 void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], double rgb[], int outline)
 {
 	/* Old GMT4 vector symbol:
@@ -2080,39 +2083,39 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 	 * param[3] = headlength;
 	 * param[4] = headwidth;
 	 * param[5] = headshape;
-	/* Will make sure that arrow has a finite width in PS coordinates */
+	 * Will make sure that arrow has a finite width in PS coordinates */
 
-	double angle, xtail, ytail, tailwidth, headlength, headwidth, headshape;
+	double angle, xtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape;
 	int w2, length, hw, hl, hl2, hw2, l2;
 
 	xtail = x;	ytail = y;	xtip = param[0];	ytip = param[1];
-	length = psl_iz (PSL, hypot (xtail-xtip, ytail-ytip));					/* Vector length in PS units */
-	if (length == 0) return;					/* NULL vector */
+	length = psl_iz (PSL, hypot (xtail-xtip, ytail-ytip));	/* Vector length in PS units */
+	if (length == 0) return;	/* NULL vector */
 
 	tailwidth  = param[2];
 	headlength = param[3];
 	headwidth  = param[4];
 	headshape  = param[5];
 	if (outline & 8)
-		ps_setfill (rgb, outline - 8);
+		PSL_setfill (PSL, rgb, outline - 8);
 	else
-		ps_setfill (rgb, outline);
-	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;					/* Angle vector makes with horizontal, in radians */
-	fprintf (PSL->internal.fp, "V %ld %ld T ", (PSL_LONG)irint (xtail * PSL->internal.scale), (PSL_LONG)irint (ytail * PSL->internal.scale));	/* Temporarily set tail point the local origin (0, 0) */
-	if (angle != 0.0) fprintf (PSL->internal.fp, "%g R ", angle);					/* Rotate so vector is horizontal in local coordinate system */
-	w2 = (PSL_LONG)irint (0.5 * tailwidth * PSL->internal.scale);	if (w2 == 0) w2 = 1;			/* Half-width of vector tail */
-	hw = (PSL_LONG)irint (headwidth * PSL->internal.scale);	if (hw == 0) hw = 1;				/* Width of vector head */
-	hl = (PSL_LONG)irint (headlength * PSL->internal.scale);							/* Length of vector head */
-	hl2 = (PSL_LONG)irint (0.5 * headshape * headlength * PSL->internal.scale);					/* Cut-in distance due to slanted back-side of arrow head */
-	hw2 = hw - w2;										/* Distance from tail side to head side (vertically) */
+		PSL_setfill (PSL, rgb, outline);
+	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;			/* Angle vector makes with horizontal, in radians */
+	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtail), psl_ix (PSL, ytail));	/* Temporarily set tail point the local origin (0, 0) */
+	if (angle != 0.0) PSL_command (PSL, "%g R ", angle);		/* Rotate so vector is horizontal in local coordinate system */
+	w2 = psl_ix (PSL, 0.5 * tailwidth);	if (w2 == 0) w2 = 1;	/* Half-width of vector tail */
+	hw = psl_ix (PSL, headwidth);	if (hw == 0) hw = 1;		/* Width of vector head */
+	hl = psl_ix (PSL, headlength);								/* Length of vector head */
+	hl2 = psl_ix (PSL, 0.5 * headshape * headlength);			/* Cut-in distance due to slanted back-side of arrow head */
+	hw2 = hw - w2;		/* Distance from tail side to head side (vertically) */
 	if (outline & 8) {	/* Double-headed vector */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
-		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld Sv U\n",
+		PSL_command (PSL, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d Sv U\n",
 				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
-		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld SV U\n",
+		PSL_command (PSL, "%d %d %d %d %d %d %d %d %d %d %d SV U\n",
 			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
 	}
 }

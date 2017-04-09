@@ -10507,8 +10507,10 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 		}
 	}
 	if (gmt_M_is_zero (S->size_x)) return 0;	/* Not set yet */
-	S->v.h_length = (float)S->size_x;
-	S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
+	if (S->symbol != GMT_SYMBOL_VECTOR_V4) {
+		S->v.h_length = (float)S->size_x;
+		S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
+	}
 	return 0;
 }
 
