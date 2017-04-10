@@ -1111,7 +1111,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
 					}
-					else if (S.v.status & PSL_VEC_OUTLINE) {
+					else {	/* Reset to default pen */
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 					}
 					if (S.v.status & PSL_VEC_FILL2) {
@@ -1420,10 +1420,24 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
 					dim[5] = S.v.v_shape;
-					dim[6] = (double)S.v.status;
-					dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
-					dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
-					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
+					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
+						double *v4_rgb = NULL;
+						int v4_outline = Ctrl->W.active;
+						if (Ctrl->G.active)
+							v4_rgb = Ctrl->G.fill.rgb;
+						else
+							v4_rgb = GMT->session.no_rgb;
+						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
+						if (S.v.status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+						dim[4] *= 0.5;	/* Since it was double in the parsing */
+						psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
+					}
+					else {
+						dim[6] = (double)S.v.status;
+						dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
+						dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
+					}
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */

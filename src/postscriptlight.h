@@ -32,6 +32,8 @@
 #ifndef _POSTSCRIPTLIGHT_H
 #define _POSTSCRIPTLIGHT_H
 
+#define PSL_WITH_GMT4_SUPPORT	/* For as long as we want to be backwards compatible with GMT4 vectors */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -430,6 +432,11 @@ EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode);
 EXTERN_MSC int PSL_fclose (struct PSL_CTRL *C);
+
+#ifdef PSL_WITH_GMT4_SUPPORT
+/* Backwards compatible vector symbol from GMT 4 days */
+EXTERN_MSC void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], double rgb[], int outline);
+#endif
 
 /*! Macro for free that excplicitly checks for NULL pointer and sets freed pointer to NULL */
 #define PSL_free(ptr) (free((void *)(ptr)),(ptr)=NULL)

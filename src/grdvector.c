@@ -72,6 +72,7 @@ struct GRDVECTOR_CTRL {
 	} T;
 	struct W {	/* -W<pen> */
 		bool active;
+		bool cpt_effect;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
@@ -86,6 +87,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	C->Q.S.symbol = PSL_VECTOR;
 	C->W.pen = GMT->current.setting.map_default_pen;
 	C->S.factor = 1.0;
 	return (C);
@@ -210,7 +212,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 			case 'Q':	/* Vector plots, with parameters */
 				Ctrl->Q.active = true;
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
+					if (gmt_M_is_geographic (GMT, GMT_IN))
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated for geo-vectors; see -Q documentation.\n");
+					Ctrl->Q.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
+					Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+					Ctrl->Q.S.v.h_length = (float)Ctrl->Q.S.size_x;	/* 9p */
+					Ctrl->Q.S.v.v_angle = 60.0f;
+					Ctrl->Q.S.v.pen = GMT->current.setting.map_default_pen;
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
 						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);
@@ -223,14 +231,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
+							Ctrl->Q.S.v.v_width = gmt_M_to_inch (GMT, txt_a);
 							Ctrl->Q.S.v.pen.width = gmt_M_to_points (GMT, txt_a);
 							Ctrl->Q.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 							Ctrl->Q.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
-							Ctrl->Q.S.v.v_angle = (float)atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
+							//Ctrl->Q.S.v.v_angle = (float)atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
 						}
 					}
 					if (Ctrl->Q.S.v.v_norm > 0.0) opt->arg[j] = 'n';	/* Restore the n<norm> string */
 					Ctrl->Q.S.v.status |= (PSL_VEC_JUST_B + PSL_VEC_FILL);	/* Start filled vector at node location */
+					Ctrl->Q.S.symbol = GMT_SYMBOL_VECTOR_V4;
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
@@ -272,6 +282,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
+				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				break;
 			case 'Z':	/* Azimuths given */
 				Ctrl->Z.active = true;
@@ -297,6 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
 	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cpt_effect && !Ctrl->C.active, "Syntax error -W: modifier +c only makes sense if -C is given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -437,8 +449,8 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		}
 	}
 
-	Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
+		if (Ctrl->Q.S.symbol == PSL_VECTOR) Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -482,6 +494,11 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	dim[6] = (double)Ctrl->Q.S.v.status;
 	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	
+	if (Ctrl->W.cpt_effect) {	/* Should color apply to pen, fill, or both [fill] */
+		if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
+			gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
+	}
+
 	PSL_command (GMT->PSL, "V\n");
 	for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
 		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
@@ -513,13 +530,21 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				value = vec_length;
 			}
 			
-			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
+			if (Ctrl->C.active) {	/* Get color based on the vector length */
 				gmt_get_fill_from_z (GMT, P, value, &Ctrl->G.fill);
-				gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
+			}
+			if (Ctrl->W.cpt_effect) {	/* Should color apply to pen, fill, or both [fill] */
+				if (Ctrl->W.pen.cptmode & 1)	/* Change pen color via CPT */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
+			}
+			if (Ctrl->C.active) {	/* Update pen and fill color settings */
+				if (!Ctrl->Q.active)	/* Must update stick pen */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
 			}
+
 			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 			
@@ -560,7 +585,19 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
 					for (k = 2; k <= 4; k++) dim[k] *= f;
 				}
-				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+					int v4_outline = Ctrl->W.active;
+					double *this_rgb = NULL;
+					if (Ctrl->G.active || Ctrl->C.active)
+						this_rgb = Ctrl->G.fill.rgb;
+					else
+						this_rgb = GMT->session.no_rgb;
+					if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
+					if (Ctrl->Q.S.v.status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+					psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, v4_outline);
+				}
+				else
+					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 			}
 		}
 	}

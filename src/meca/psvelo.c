@@ -189,13 +189,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 			case 'A':	/* Change size of arrow head */
 				got_A = true;
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -A<awidth>/<alength>/<hwidth>; use -A<vecpar> instead.\n");
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-					Ctrl->A.S.v.pen.width = gmt_M_to_points (GMT, txt);
+					Ctrl->A.S.v.v_width = gmt_M_to_inch (GMT, txt);
 					Ctrl->A.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 					Ctrl->A.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 					Ctrl->A.S.v.v_angle = (float)atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
 					Ctrl->A.S.v.status |= PSL_VEC_OUTLINE2;
+					Ctrl->A.S.symbol = GMT_SYMBOL_VECTOR_V4;
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
@@ -207,6 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 						Ctrl->A.S.size_x = gmt_M_to_inch (GMT, txt);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
 					}
+					Ctrl->A.S.symbol = PSL_VECTOR;
 				}
 				break;
 			case 'D':	/* Rescale Sigmas */
@@ -355,6 +356,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
+	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
@@ -369,7 +371,6 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
-	Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	n_k = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) ? 7 : 9;
 
 	do {	/* Keep returning records until we reach EOF */
@@ -480,17 +481,28 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 						hl = Ctrl->A.S.v.h_length;
 						vw = Ctrl->A.S.v.v_width;
 					}
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = Ctrl->A.S.v.v_shape;
-					dim[6] = (double)Ctrl->A.S.v.status;
-					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
-					if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
-						gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
-					else if (Ctrl->G.active)
-						gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
-					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
-					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					if (Ctrl->A.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+						double *this_rgb = NULL;
+						if (Ctrl->G.active)
+							this_rgb = Ctrl->G.fill.rgb;
+						else
+							this_rgb = GMT->session.no_rgb;
+						if (Ctrl->L.active) gmt_setpen (GMT, &Ctrl->W.pen);
+						psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, Ctrl->L.active);
+					}
+					else {
+						dim[6] = (double)Ctrl->A.S.v.status;
+						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
+						if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
+							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
+						else if (Ctrl->G.active)
+							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+						PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
+					}
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;

@@ -497,7 +497,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool default_outline, outline_active, save_u = false, geovector = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
-	unsigned int n_cols_start = 3, justify;
+	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
 	int error = GMT_NOERROR;
 
@@ -509,7 +509,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	void *record = NULL;	/* Opaque pointer to either a text or double record */
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
-	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL;
+	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, length;
 
 	struct GMT_PEN default_pen, current_pen;
@@ -784,7 +784,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
 					}
-					else if (S.v.status & PSL_VEC_OUTLINE) {
+					else {
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
 					}
 					if (S.v.status & PSL_VEC_FILL2) {
@@ -980,9 +980,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[3] = s * S.v.h_length;
 					data[n].dim[4] = s * S.v.h_width;
 					data[n].dim[5] = S.v.v_shape;
-					data[n].dim[6] = (double)S.v.status;
-					data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
-					data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
+					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
+						dim[4] *= 0.5;	/* Since it was double in the parsing */
+						data[n].symbol = GMT_SYMBOL_VECTOR_V4;
+					}
+					else {
+						data[n].dim[6] = (double)S.v.status;
+						data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
+						data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
+					}
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
@@ -1207,6 +1213,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_VECTOR:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_VECTOR);
+						break;
+					case GMT_SYMBOL_VECTOR_V4:
+						v4_outline = Ctrl->W.active;
+						if (Ctrl->G.active)
+							v4_rgb = Ctrl->G.fill.rgb;
+						else
+							v4_rgb = GMT->session.no_rgb;
+						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
+						v4_status = lrint (data[n].dim[6]);
+						if (v4_status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
+						psl_vector_v4 (PSL, xpos[item], data[i].y, data[i].dim, v4_rgb, v4_outline);
 						break;
 					case GMT_SYMBOL_GEOVECTOR:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);

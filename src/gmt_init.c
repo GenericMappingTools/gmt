@@ -11002,8 +11002,10 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 		}
 	}
 	if (gmt_M_is_zero (S->size_x)) return 0;	/* Not set yet */
-	S->v.h_length = (float)S->size_x;
-	S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
+	if (!(S->symbol == GMT_SYMBOL_VECTOR_V4 || S->v.parsed_v4)) {
+		S->v.h_length = (float)S->size_x;
+		S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
+	}
 	return 0;
 }
 
@@ -11078,6 +11080,8 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 					S->v.status |= PSL_VEC_FILL2;
 				}
+				else
+					S->v.status |= GMT_VEC_FILL;
 				break;
 			case 'h':	/* Vector shape [MAP_VECTOR_SHAPE] */
 				S->v.v_shape = (float)atof (&p[1]);
@@ -11154,9 +11158,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
-				if (p[1] == '-')	/* Do NOT turn on outlines */
+				if (p[1] == '-')	/* Do NOT turn on head outlines */
 					j = 2;
-				else {
+				else {	/* Do turn on head outlines */
 					j = 1;
 					S->v.status |= PSL_VEC_OUTLINE;
 				}
@@ -11167,6 +11171,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 					S->v.status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
+				/* So status may here be both PSL_VEC_OUTLINE (draw head outline) and PSL_VEC_OUTLINE2 (do it with this pen) */
 				break;
 			case 'q': S->v.status |= PSL_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
 			case 'r': S->v.status |= (PSL_VEC_BEGIN_R + PSL_VEC_END_R);	break;	/* Obsolete modifier for right halves at active heads */
@@ -11328,7 +11333,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
+				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
 				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
@@ -11339,7 +11344,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->size_x = p->given_size_x = p->v.h_length;
 			}
 			else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
 				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				k = 2;
 				strncpy (arg, &text[2], GMT_LEN64-1);
@@ -11803,6 +11808,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			else {	/* Parse old-style vector specs */
 				int one = 2;
+				if (p->v.status & GMT_VEC_BEGIN) p->v.status -= GMT_VEC_BEGIN;	/* Remove previous setting */
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
 						p->v.status |= PSL_VEC_BEGIN;

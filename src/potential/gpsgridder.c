@@ -23,7 +23,8 @@
  * Brief synopsis: gpsgridder grids GPS vector strain data u(x,y) & v(x,y) using
  * Green's functions derived from a thin elastic sheet [e.g., Haines et al., 2015].
  * See Sandwell and Wessel, 2016, "Interpolation of 2-D Vector Data Using Constraints
- *   from Elasticity", Geophys. Res. Lett., in press., for details.
+ *   from Elasticity", Geophys. Res. Lett., 43, 10,703-710,709, doi:10.1002/2016GL070340,
+ *   for details.
  */
 
 #include "gmt_dev.h"
@@ -515,7 +516,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gpsgridder main code ----------------------------*/
 
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gpsgridder is considered experimental - use at your own rist!\n");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gpsgridder is considered experimental - use at your own risk!\n");
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -605,7 +606,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		n_read++;
 		if (skip) continue;	/* Current point was a duplicate of a previous point */
 		u[n_uv] = in[GMT_U];	v[n_uv] = in[GMT_V];	/* Save current u,v data pair */
-		if (Ctrl->W.active) {	/* Got sigmas or weights */
+		if (Ctrl->W.active) {	/* Got sigmas or weights in cols 4 & 5 */
 			X[n_uv][GMT_WU] = in[4];
 			X[n_uv][GMT_WV] = in[5];
 			if (Ctrl->W.mode == 0) {	/* Got sigmas, create weights */
@@ -627,13 +628,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Normally just disables further data input, but here we got screwed */
 		for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 		Return (API->error);
 	}
 
-	n_params = 2 * n_uv;	/* Dimension of array is twice since using u & v */
+	n_params = 2 * n_uv;	/* Dimension of array is twice the size since using both u & v */
 	for (k = n_uv; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove what was not used */
 	X = gmt_M_memory (GMT, X, n_uv, double *);	/* Realloc to exact size */
 	u = gmt_M_memory (GMT, u, n_params, double);	/* We will append v to the end of u later so need the extra space */
@@ -775,7 +776,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 #endif
 
 	gmt_M_memcpy (&u[n_uv], v, n_uv, double);	/* Place v array at end of u array */
-	obs = u;				/* Use obs to refer to this combined u,v array */
+	obs = u;				/* Use obs to refer to the combined u,v array */
 	
 	if (Ctrl->W.active) {
 		err_sum = sqrt (0.5 * err_sum / n_uv);	/* Mean data rms from u,v uncertainties */
@@ -876,8 +877,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 	}
-	alpha_x = obs;		/* Just a different name since the obs vector now holds the alpha factors */
-	alpha_y = &obs[n_uv];	/* Halfway down we get the y alphas */
+	alpha_x = obs;		/* Just a different name since the obs vector now holds all the alpha factors */
+	alpha_y = &obs[n_uv];	/* Halfway down the array we find the y alphas */
 #ifdef DUMPING
 	fp = fopen ("alpha.txt", "w");	/* Save alpha coefficients for debugging purposes */
 	for (p = 0; p < n_uv; p++) fprintf (fp, "%g\t%g\n", alpha_x[p], alpha_y[p]);
@@ -930,7 +931,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			dev_v = orig_v[j] - here[GMT_V];
 			rms_u += dev_v * dev_v;
 			rms += dev_u * dev_u + dev_v * dev_v;
-			if (Ctrl->E.mode) {	
+			if (Ctrl->E.mode) {	/* Save information in output dataset */
 				for (p = 0; p < 2; p++)
 					S->data[p][j] = X[j][p];
 				S->coord[p++][j] = orig_u[j];
@@ -961,7 +962,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.file) {	/* Predict solution at specified discrete points only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
-		double out[4];
+		double out[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
@@ -981,9 +982,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
 			Return (error);
 		}
-		gmt_M_memset (out, 4, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
-		/* This cannot be under OpenMP as is since the record writing will appear out of sync.  Must instead
+		/* This cannot be under OpenMP as is since the record writing would appear to be out of sync.  Must instead
 		 * save to memory and THEN write the output via GMT_Write_Data */
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
@@ -1007,12 +1007,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* Output on equidistance lattice */
+	else {	/* Output on equidistant lattice */
 		int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
 		char file[GMT_BUFSIZ] = {""};
 		double *xp = NULL, *yp = NULL, V[4];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
-		/* Precalculate coordinates */
+		/* Precalculate all coordinates */
 		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
 		gmt_M_memset (V, 4, double);
@@ -1025,7 +1025,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
 				if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only do solution where mask is not NaN */
 				V[GMT_X] = xp[col];
-				/* Here, V holds the current output coordinates */
+				/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 				for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {
 					get_gps_dxdy (GMT, V, X[p], &dx, &dy, geo);
 					evaluate_greensfunctions (dx, dy, par, G);
