@@ -169,7 +169,7 @@ EOF
 		esac
 		shift
 	done
-	delay=`gmt math -Q 100 $rate DIV RINT 10 MUL =`	# Delay to nearest 10 ms
+	delay=`gmt math -Q 100 $rate DIV RINT =`	# Delay to nearest 1/100 s
 	if [ $dryrun -eq 1 ]; then
 		cat <<- EOF
 ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" ${1}.gif
@@ -294,7 +294,7 @@ EOF
 # 1. INITIALIZATIONS:
 #---------------------------------------------------------------------------------
 # 1a. Set animation parameters:
-# Cancas settings:
+# Canvas settings:
 CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
 CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
 CANVAS_FILL=${fill}	# The color of your paper canvas [in inch]
@@ -341,7 +341,7 @@ rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
 
 let frame=0
 while [ \$frame -lt \${VIDEO_FRAMES} ]; do
-	echo "Working on frame \$frame"
+	echo "Working on frame \$frame" >&2
 	# 2a. Perform any calculations that depends on the frame number
 	
 	# 2b. Set current frame prefix for lexically increasing file name
@@ -361,8 +361,8 @@ while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 		# 2f. Make a PDF of first frame only and break out
 		pdf=\${VIDEO_PREFIX}
 		gmt psconvert -Tf -P -Z -F\$pdf \$ps
-		echo "Made PDF of first frame: \$pdf.pdf"
-		echo "[Set PLOT_PDF to no to build all frames]"
+		echo "Made PDF of first frame: \$pdf.pdf" >&2
+		echo "[Set PLOT_PDF to no to build all frames]" >&2
 		break
 	fi
 	# 2g. Convert frame to PNG and save to image folder
@@ -373,14 +373,16 @@ done
 #---------------------------------------------------------------------------------
 # 3. CONVERT IMAGES TO AN ANIMATION
 #---------------------------------------------------------------------------------
-if [ "\${VIDEO_FORMAT}" = "GIF" ]; then
-	# Make an animated GIF:
-	gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
-elif [ "\${VIDEO_FORMAT}" = "MP4" ]; then
-	# Man a MP4 movie:
-	gmt_build_movie -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} \${VIDEO_PREFIX}
+if [ "${PLOT_PDF}" == "no" ]; then
+	if [ "\${VIDEO_FORMAT}" = "GIF" ]; then
+		# Make an animated GIF:
+		gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
+	elif [ "\${VIDEO_FORMAT}" = "MP4" ]; then
+		# Man a MP4 movie:
+		gmt_build_movie -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} \${VIDEO_PREFIX}
+	fi
+	echo "The individual frames can be found in directory \${VIDEO_PREFIX}" >&2
 fi
-
 #---------------------------------------------------------------------------------
 # 4. REMOVE ALL TEMPORARY FILES WITH PROCESS ID IN THE NAME
 #---------------------------------------------------------------------------------
@@ -405,7 +407,7 @@ else
 	cat << EOF >> $name.html
 <video controls>
 <source src="$name.m4v" type="video/mp4">
-Your browser do not appear to support video controls
+Your browser does not appear to support video controls
 </video>
 EOF
 fi
@@ -413,7 +415,7 @@ cat << EOF >> $name.html
 </CENTER>
 Please add a movie caption here.
 <HR>
-<I>Create by $USER on `date`</I>
+<I>Create by $you on `date`</I>
 </BODY>
 </HTML>
 EOF
