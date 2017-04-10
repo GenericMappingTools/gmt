@@ -4365,16 +4365,17 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		clip_on = true;
 	}
 
-	plot_map_gridlines (GMT, PSL, w, e, s, n);
+	plot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these two would kick in */
 	plot_map_gridcross (GMT, PSL, w, e, s, n);
 
 	plot_map_tickmarks (GMT, PSL, w, e, s, n);
 
+	plot_map_boundary (GMT, PSL, w, e, s, n);	/* This sets frame.side[] = true|false so must come before map_annotate */
+
 	plot_map_annotate (GMT, PSL, w, e, s, n);
 
-	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo swap */
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
 
-	plot_map_boundary (GMT, PSL, w, e, s, n);
 	if (clip_on) gmt_map_clip_off (GMT);
 
 	PSL_setdash (PSL, NULL, 0);
