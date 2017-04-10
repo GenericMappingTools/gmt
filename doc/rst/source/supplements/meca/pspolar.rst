@@ -158,10 +158,11 @@ Optional Arguments
     **-Qh**
         Use special format derived from HYPO71 output
 
-    **-Qs**\ *half-size*/[**V**\ [*v_width/h_length/h_width/shape*]][**G**\ *color*][**L**]
-        Plots S polarity azimuth. S polarity is in last column. It may be a vector (**V** flag) or a segment.
-        Give *half-size,v_width,h_length,h_width* in default units (unless **c**, **i**,
-        or **p** is appended). [**L**] flag is for outline.
+    **-Qs**\ *half-size*\ [**+v**\ *v_size*\ [*vecspecs*]]
+        Plots S polarity azimuth. S polarity is in last column. Append **+v** to select a vector
+        and append head size and any vector specifications.  If **+v** is given without arguments then we
+	default to **+v**\ 0.3i+e+gblack [Default is a line segment].
+        Give *half-size* in default units (unless **c**, **i**, or **p** is appended).
         See `Vector Attributes`_ for specifying additional attributes.
 
     **-Qt**\ *pen*
