@@ -4742,10 +4742,22 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			s->pen = gmt_M_memory (GMT, NULL, 1, struct GMT_PEN);
 			if (pen_p[0] == '-')	/* Do not want to draw outline */
 				s->pen->rgb[0] = -1;
-			else if (gmt_getpen (GMT, pen_p, s->pen)) {
-				gmt_pen_syntax (GMT, 'W', " ", 0);
-				fclose (fp);
-				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			else {	/* Pen of some sort */
+				bool p_normal = false;
+				if (pen_p[0] == '$')	{	/* Variable pen thickness obtained at run-time via data column */
+					s->var_pen = atoi (&pen_p[1]);
+					pen_p[0] = '0';	pen_p[1] = '1';	/* Set pen to "1", scale by the indicated variable later */
+				}
+				else if (strchr (pen_p, 'c') == NULL && strchr (pen_p, 'i') == NULL && strchr (pen_p, 'p') == NULL) {
+					/* No unit means normalized pen thickness in 0-1 range to be scaled by symbol size later */
+					p_normal = true;
+				}
+				if (gmt_getpen (GMT, pen_p, s->pen)) {
+					gmt_pen_syntax (GMT, 'W', " ", 0);
+					fclose (fp);
+					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+				}
+				if (p_normal) s->pen->width = -s->pen->width;	/* Negative pen means normalized 0-1 */
 			}
 		}
 		else

@@ -67,7 +67,7 @@ struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[CUSTOM_SYMBOL_MAXVAR], const_val[CUSTOM_SYMBOL_MAXVAR];
-	int action, operator, var[CUSTOM_SYMBOL_MAXVAR];	/* For conditionals: var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
+	int action, operator, var_pen, var[CUSTOM_SYMBOL_MAXVAR];	/* For conditionals: var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
 	unsigned int conditional;
 	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
 	bool negate, is_var[CUSTOM_SYMBOL_MAXVAR];

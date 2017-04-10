@@ -9447,7 +9447,12 @@ For **M**, **T**, and all the lower-case symbol codes you may optionally
 append specific pens (with **-W**\ *pen*) and fills (with
 **-G**\ *pen*). These settings will override the pens and fills you may
 have specified on the command line. Passing **-G**- or **-W**- means no
-fill or outline, respectively.
+fill or outline, respectively.  Pen width is a dimension and you can specify
+it in three different ways: (1) Give a normal pen with trailing unit (e.g., **-W**\ 1p),
+(2) give a normalized pen thickness in the 0-1 range (e.g., **-W**\ 0.02);
+at run-time this thickness will be scaled by the symbol size to yield
+the actual pen thickness, and (3) using a variable (e.g., **-W**\ $1); we then
+obtain the pen thickness from the data record.
 
 Symbol substitution
 ~~~~~~~~~~~~~~~~~~~

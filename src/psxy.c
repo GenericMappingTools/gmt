@@ -1419,7 +1419,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
-					dim[5] = S.v.v_shape;
 					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
 						double *v4_rgb = NULL;
 						int v4_outline = Ctrl->W.active;
@@ -1429,10 +1428,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
 						if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+						dim[5] = GMT->current.setting.map_vector_shape;
 						dim[4] *= 0.5;	/* Since it was double in the parsing */
 						psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
 					}
 					else {
+						dim[5] = S.v.v_shape;
 						dim[6] = (double)S.v.status;
 						dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
 						dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
