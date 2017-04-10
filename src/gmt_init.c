@@ -10830,7 +10830,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
+				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
 				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
@@ -10841,7 +10841,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->size_x = p->given_size_x = p->v.h_length;
 			}
 			else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				k = 2;
 				strncpy (arg, &text[2], GMT_LEN64-1);

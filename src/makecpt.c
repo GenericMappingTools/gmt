@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
-	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && !strchr (Ctrl->C.file, ',')) {
+	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
 		Ctrl->Z.active = false;
 	}
