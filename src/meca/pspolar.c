@@ -137,7 +137,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-N] [-O] [-P] [-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>/[V[<vecpar>]][G<fill>][L] [-Qt<pen>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT);
 
@@ -177,12 +177,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   g Outline of station symbol in compressive part.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Add <pen attributes> if not current pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h Use special format derived from HYPO71 output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s Plot S polarity azimuth: -Append <half-size>/[V[<vecpar>]][G<fill>][L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Plot S polarity azimuth: Append <half-size>[+v<size>[+<specs>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Azimuth of S polarity is in last column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     It may be a vector (V option) or a segment. Append half-size.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     L option is for outline\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of vector is 0.075/0.3/0.25/1\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Outline is current pen\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Specify a vector (with +v modifier) [Default is segment line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of vector is +v0.3i+e+gblack if just +v is given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t Set pen attributes to write station codes [default is current pen].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T [<info about label printing>] to write station code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <angle/form/justify/fontsize in points>\n");
@@ -194,6 +192,50 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSPOLAR_CTRL *Ctrl) {
+	/* Deal with the old syntax: -Qs<half-size>/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L] */
+	char *c = NULL, *text = strdup (arg);	/* Work on a copy */
+	unsigned int n_errors = 0;
+	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape> is deprecated; use -Qs+v<vecpar> instead.\n");
+	if ((c = strchr (text, 'L'))) {	/* Found trailing L for outline */
+		Ctrl->S2.outline = true;
+		c[0] = '\0';	/* Chop off L */
+	}
+	if ((c = strchr (text, 'G'))) {	/* Found trailing G for fill */
+		if (gmt_getfill (GMT, &c[1], &Ctrl->S2.fill)) {
+			gmt_fill_syntax (GMT, 's', " ");
+			n_errors++;
+		}
+		Ctrl->S2.scolor = true;
+		c[0] = '\0';	/* Chop off G */
+	}
+	
+	if ((c = strchr (text, 'V'))) {	/* Got the Vector specs */
+		Ctrl->S2.vector = true;
+		if (c[1] == '\0') {	/* Provided no size information - set defaults */
+			Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1;
+			Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+			if (!GMT->current.setting.proj_length_unit) {
+				Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25;
+				Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+			}
+		}
+		else {
+			char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
+			char txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+			sscanf (&c[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+			Ctrl->S2.width  = gmt_M_to_inch (GMT, txt_a);
+			Ctrl->S2.length = gmt_M_to_inch (GMT, txt_b);
+			Ctrl->S2.head   = gmt_M_to_inch (GMT, txt_c);
+			Ctrl->S2.vector_shape = atof (txt_d);
+		}
+		Ctrl->S2.S.symbol = GMT_SYMBOL_VECTOR_V4;
+	}
+	gmt_M_str_free (text);
+	return (n_errors);
+	
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pspolar and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -203,8 +245,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, n;
-	char txt[GMT_LEN64] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
-	char txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""}, *p = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -284,56 +325,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					case 's':	/* Get S polarity */
 						Ctrl->S2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_LEN64);
-						n = 0;
-						while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++;	/* Why all this if it stops at first '/'? */
-						txt[n] = 0;
-						Ctrl->S2.size = gmt_M_to_inch (GMT, txt);
-						if (strchr (&opt->arg[1], 'V')) {
-							if (gmt_M_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
-								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape>; use -QsV<vecpar> instead.\n");
-								Ctrl->S2.vector = true;
-								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* Vector bit no sizes. Using defaults */
-								if (strncmp(txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen(txt) == 1) {
-									Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1;
-									Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-									if (!GMT->current.setting.proj_length_unit) {
-										Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25;
-										Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-									}
+						p = strchr (opt->arg, '/');	/* Find the first slash */
+						p[0] = '\0';	/* Temporarily remove the slash */
+						Ctrl->S2.size = gmt_M_to_inch (GMT, opt->arg);
+						p[0] = '/';	/* Restore the slash */
+						if (strchr (opt->arg, 'V') || strchr (opt->arg, 'G') || strchr (opt->arg, 'L'))	/* Clearly got the old syntax */
+							n_errors += old_Q_parser (GMT, &p[1], Ctrl);
+						else {	/* New syntax: -Qs[+v[<size>][+parameters]] */
+							char symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+							if ((p = strstr (opt->arg, "+v"))) {	/* Got vector specification +v<size>[+<attributes>] */
+								if (p[2] == '\0') {	/* Nothing, use defaults */
+									Ctrl->S2.S.size_x = 0.3;	/* Length of vector */
+									n_errors += gmt_parse_vector (GMT, symbol, "+e+gblack", &Ctrl->S2.S);
 								}
-								else {
-									sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
-									Ctrl->S2.width = gmt_M_to_inch (GMT, txt);
-									Ctrl->S2.length = gmt_M_to_inch (GMT, txt_b);
-									Ctrl->S2.head = gmt_M_to_inch (GMT, txt_c);
-									Ctrl->S2.vector_shape = atof(txt_d);
-								}
-							}
-							else {
-								char symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
-								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* But if -QsV...G|L things will screw here, no? */ 
-								if (txt[0] == '+') {	/* No size (use default), just attributes */
-									n_errors += gmt_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
+								else if (p[2] == '+') {	/* No size (use default), just attributes */
+									Ctrl->S2.S.size_x = 0.3;	/* Length of vector */
+									n_errors += gmt_parse_vector (GMT, symbol, &p[2], &Ctrl->S2.S);
 								}
 								else {	/* Size, plus possible attributes */
-									n = sscanf (txt, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
-									if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+									n = sscanf (&p[2], "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+									if (n == 1) txt_b[0] = '\0';	/* No modifiers were present, set txt_b to empty */
 									Ctrl->S2.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 									n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
 								}
-								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
-								   WOULD A COPY TO THE CORRESPONDING MEMBERS OF Ctrl->S2 BE GOOD ENOUGH? */
+								Ctrl->S2.S.symbol = PSL_VECTOR;
 							}
 						}
-						if (strchr (opt->arg, 'G')) {
-							if (gmt_getfill (GMT, strchr (opt->arg+2,'G')+1, &Ctrl->S2.fill)) {
-								gmt_fill_syntax (GMT, 's', " ");
-								n_errors++;
-							}
-							Ctrl->S2.scolor = true;
-						}
-						if (strchr (&opt->arg[1], 'L')) Ctrl->S2.outline = true;
 						break;
 					case 't':	/* Set color for station label */
 						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) {
@@ -604,10 +621,14 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
 				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
 				dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
-				gmt_setfill (GMT, &(Ctrl->S2.fill), Ctrl->S2.outline);
-				PSL_plotsymbol (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, PSL_VECTOR);
+				if (Ctrl->S2.S.symbol == GMT_SYMBOL_VECTOR_V4)
+					psl_vector_v4 (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, Ctrl->S2.fill.rgb, Ctrl->S2.outline);
+				else {	/* Modern vector */
+					gmt_setfill (GMT, &(Ctrl->S2.fill), Ctrl->S2.outline);
+					PSL_plotsymbol (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, PSL_VECTOR);
+				}
 			}
-			else {
+			else {	/* Just draw a segment line */
 				if (Ctrl->S2.scolor) PSL_setcolor (PSL, Ctrl->S2.fill.rgb, PSL_IS_STROKE);
 				else PSL_setcolor (PSL, Ctrl->W.pen.rgb, PSL_IS_STROKE);
 				PSL_plotsegment (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, plot_x + Ctrl->S2.size*si, plot_y + Ctrl->S2.size*co);

@@ -101,6 +101,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	C->M.S.symbol = PSL_VECTOR;
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->S.scale = 3.0;
 	C->Z.scale = 1.0;
@@ -259,13 +260,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
+						Ctrl->M.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
+						Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
+						Ctrl->M.S.v.h_length = (float)Ctrl->M.S.size_x;	/* 9p */
+						Ctrl->M.S.v.v_angle = 60.0f;
+						Ctrl->M.S.v.pen = GMT->current.setting.map_default_pen;
 						Ctrl->W.active[1] = true;
-						Ctrl->W.pen[1].width = gmt_M_to_points (GMT, txt_a);
+						//Ctrl->W.pen[1].width = gmt_M_to_points (GMT, txt_a);
+						Ctrl->M.S.v.v_width = gmt_M_to_inch (GMT, txt_a);
 						Ctrl->M.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 						Ctrl->M.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
-						Ctrl->M.S.v.v_angle = (float)atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
-						Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL);
+						Ctrl->M.S.v.status |= GMT_VEC_FILL2;
 					}
+					Ctrl->M.S.symbol = GMT_SYMBOL_VECTOR_V4;
 				}
 				else {
 					if (opt->arg[0] == '+' || opt->arg[0] == '\0') {	/* No size argument (use default), just attributes */
@@ -298,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'W':	/* Get pen width for outline */
 				n = (opt->arg[0] == 'v') ? 1 : 0;
 				Ctrl->W.active[n] = true;
-				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen[n])) {
+				if (gmt_getpen (GMT, &opt->arg[n], &Ctrl->W.pen[n])) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -687,11 +694,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (windrose) {	/* Here we draw individual vectors */
 		if (Ctrl->M.active) { /* Initialize vector head settings */
 			gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
-			Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+			if (Ctrl->M.S.symbol == PSL_VECTOR) Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 			dim[5] = GMT->current.setting.map_vector_shape;
 			dim[6] = (double)Ctrl->M.S.v.status;
 			dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
-			if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+			if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 			if (Ctrl->M.S.v.status & GMT_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
 		}
 		for (i = 0; i < n; i++) {
@@ -703,14 +710,39 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 				dim[2] = f * Ctrl->M.S.v.v_width, dim[3] = f * Ctrl->M.S.v.h_length, dim[4] = f * Ctrl->M.S.v.h_width;
 			}
 			if (Ctrl->T.active) {
-				if (Ctrl->M.active)	/* Draw two-headed vectors */
-					PSL_plotsymbol (PSL,  -radius * c, -radius * s, dim, PSL_VECTOR);
+				if (Ctrl->M.active)	{	/* Draw two-headed vectors */
+					if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+						int v4_outline = Ctrl->W.active[1];
+						double *this_rgb = NULL;
+						if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+							this_rgb = Ctrl->M.S.v.fill.rgb;
+						else
+							this_rgb = GMT->session.no_rgb;
+						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+						v4_outline += 8;	/* Double-headed */
+						psl_vector_v4 (PSL, -radius * c, -radius * s, dim, this_rgb, v4_outline);
+					}
+					else
+						PSL_plotsymbol (PSL,  -radius * c, -radius * s, dim, PSL_VECTOR);
+				}
 				else
 					PSL_plotsegment (PSL, -radius * c, -radius * s, radius * c, radius * s);
 			}
 			else {
-				if (Ctrl->M.active) /* Draw one-headed vectors */
-					PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
+				if (Ctrl->M.active) {	/* Draw one-headed vectors */
+					if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+						int v4_outline = Ctrl->W.active[1];
+						double *this_rgb = NULL;
+						if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+							this_rgb = Ctrl->M.S.v.fill.rgb;
+						else
+							this_rgb = GMT->session.no_rgb;
+						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+						psl_vector_v4 (PSL, 0.0, 0.0, dim, this_rgb, v4_outline);
+					}
+					else
+						PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
+				}
 				else
 					PSL_plotsegment (PSL, 0.0, 0.0, radius * c, radius * s);
 			}
@@ -768,6 +800,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {
 		unsigned int this_mode;
+		int v4_outline = Ctrl->W.active[1];
+		double *this_rgb = NULL;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (Ctrl->C.mean) {	/* Not given, calculate and use mean direction only */
 			n_modes = 1;
@@ -793,18 +827,25 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 			Ctrl->M.S.v.v_width  = (float)(VECTOR_LINE_WIDTH * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* 9p */
 			Ctrl->M.S.v.v_angle  = 30.0f;
-			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_OUTLINE2 + GMT_VEC_FILL + GMT_VEC_FILL2 + GMT_VEC_END);
+			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL + GMT_VEC_FILL2 + GMT_VEC_END);
 			gmt_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
 			gmt_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
 		gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
-		Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+		if (Ctrl->M.S.symbol == PSL_VECTOR) Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
 		dim[5] = GMT->current.setting.map_vector_shape;
 		dim[6] = (double)Ctrl->M.S.v.status;
 		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
-		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+		if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+			if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+				this_rgb = Ctrl->M.S.v.fill.rgb;
+			else
+				this_rgb = GMT->session.no_rgb;
+			if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		}
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {
 			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
 			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;
@@ -813,7 +854,10 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			xr = Ctrl->S.scale * mode_length[this_mode] * c;
 			yr = Ctrl->S.scale * mode_length[this_mode] * s;
 			dim[0] = xr, dim[1] = yr;
-			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
+			if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4)
+				psl_vector_v4 (PSL, 0.0, 0.0, dim, this_rgb, v4_outline);
+			else
+				PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}
 
 	}
