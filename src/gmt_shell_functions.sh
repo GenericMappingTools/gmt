@@ -147,28 +147,29 @@ gmt_build_gif() {
 		cat << EOF >&2
 gmt_build_gif - Process stills to animated gif with convert
 
-usage: gmt_build_gif [-d <directory>] [-l <loop>] [-r <delay>] <prefix>
+usage: gmt_build_gif [-d <directory>] [-l <loop>] [-r <rate>] <prefix>
 	<prefix> is the prefix of the still images and the resulting movie
 	-d Specify path to of directory with the stills [current directory]
 	-l Specify number of times to loop, 0 for continuous [0]
-	-r Set delay time between images in millisecond [10]
+	-r Set frame rate in images per second [24]
 	-n Dry-run.  Do not run convert command, just print it
 EOF
 		return
 	fi
 	command -v ${GRAPHICSMAGICK-gm} >/dev/null 2>&1 || { echo "gmt_build_movie: Cannot find graphicsmagick in your path - exiting." >&2; return; }
-	delay=24; dir=.; loop=0; dryrun=0
+	rate=24; dir=.; loop=0; dryrun=0
 	while [ $# -ne 1 ]; do
 		case "$1" in
 		"-d") dir=$2 ; shift ;;
 		"-l") loop=$2 ; shift ;;
 		"-n") dryrun=1 ;;
-		"-r") delay=$2 ; shift ;;
+		"-r") rate=$2 ; shift ;;
 		*) echo "gmt_build_gif:  No such option ($1)" >&2
 		    ;;
 		esac
 		shift
 	done
+	delay=`gmt math -Q 100 $rate DIV RINT 10 MUL =`	# Delay to nearest 10 ms
 	if [ $dryrun -eq 1 ]; then
 		cat <<- EOF
 ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" ${1}.gif
@@ -234,7 +235,7 @@ usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <
 	-h Specify image height [in inches]
 	-m Plot margins [1 inch]
 	-n Number of frames to produce [1]
-	-r Set frame rate (MP4) [1] or delay (GIF) [10]
+	-r Set frame rate per second [1]
 	-w Specify image width [in inches]
 	-u Create Web page template [no web page].  Requires -f
 
@@ -243,7 +244,7 @@ EOF
 		return
 	fi
 	all_args="$*"
-	dpi=100; fill=white; nframes=1; margin=1; rate=0; vformat=none; web=0; width=""; height=""
+	dpi=100; fill=white; nframes=1; margin=1; rate=1; vformat=none; web=0; width=""; height=""
 	while [ $# -ne 1 ]; do
 		case "$1" in
 		"-c") canvas=$2 ; shift ;;
@@ -279,13 +280,6 @@ EOF
 	h=`gmt math -Q ${height} ${margin} 2 MUL SUB =`
 	iw=`gmt math -Q ${width} $dpi MUL =`
 	ih=`gmt math -Q ${height} $dpi MUL =`
-	if [ "X$rate" = "X0" ]; then
-		if [ vformat = GIF ]; then
-			rate=10
-		else
-			rate=1
-		fi
-	fi
 	now=`date`
 	you=`finger $LOGNAME | head -1 | awk -F': ' '{print $3}'`
 	cat << EOF > $name.sh
@@ -303,12 +297,12 @@ EOF
 # Cancas settings:
 CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
 CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
-CANVAS_FILL=${fill}	# The height of your paper canvas [in inch]
+CANVAS_FILL=${fill}	# The color of your paper canvas [in inch]
 # Video settings:
 VIDEO_DPI=$dpi		# Rasterization in dots per inch [$dpi]
 VIDEO_FORMAT=$vformat	# Type of animation product [GIF|MP4|none]
 VIDEO_FRAMES=$nframes		# Number of frames in the movie
-VIDEO_RATE=$rate		# Frame rate (per sec) for MP4 or delay (ms) for GIF
+VIDEO_RATE=$rate		# Frame rate (frames per sec)
 VIDEO_PREFIX=$name	# The prefix of the movie products
 # Plot settings:
 PLOT_WIDTH=${w}i		# The maximum map width given your margins [in inch]

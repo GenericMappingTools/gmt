@@ -979,12 +979,13 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[2] = s * S.v.v_width;
 					data[n].dim[3] = s * S.v.h_length;
 					data[n].dim[4] = s * S.v.h_width;
-					data[n].dim[5] = S.v.v_shape;
 					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
 						dim[4] *= 0.5;	/* Since it was double in the parsing */
 						data[n].symbol = GMT_SYMBOL_VECTOR_V4;
+						data[n].dim[5] = GMT->current.setting.map_vector_shape;
 					}
 					else {
+						data[n].dim[5] = S.v.v_shape;
 						data[n].dim[6] = (double)S.v.status;
 						data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
 						data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];

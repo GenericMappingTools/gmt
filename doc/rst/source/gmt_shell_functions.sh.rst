@@ -156,7 +156,7 @@ functions made available are:
 **gmt_build_gif**
     Accepts a *namestem* which gives the prefix of a series of image files
     with names *dir*/*namestem*\ _*.*.  Optional argument sets the
-    directory [same as *namestem*], loop count and delay [10].
+    directory [same as *namestem*], loop count and frame rate [24].
     Without arguments the function will display its usage.
 
 **gmt_build_kmz**

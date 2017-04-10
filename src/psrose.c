@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
-						Ctrl->M.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
+						Ctrl->M.S.v.status = PSL_VEC_END + PSL_VEC_FILL + PSL_VEC_OUTLINE;
 						Ctrl->M.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 						Ctrl->M.S.v.h_length = (float)Ctrl->M.S.size_x;	/* 9p */
 						Ctrl->M.S.v.v_angle = 60.0f;
@@ -300,7 +300,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						Ctrl->M.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 						Ctrl->M.S.v.v_angle = (float)atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
 						Ctrl->M.S.v.status |= (PSL_VEC_OUTLINE + PSL_VEC_FILL);
-						Ctrl->M.S.v.status |= GMT_VEC_FILL2;
+						Ctrl->M.S.v.status |= PSL_VEC_FILL2;
 					}
 					Ctrl->M.S.symbol = GMT_SYMBOL_VECTOR_V4;
 				}
@@ -752,12 +752,13 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 					if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
 						int v4_outline = Ctrl->W.active[1];
 						double *this_rgb = NULL;
-						if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+						if (Ctrl->M.S.v.status & PSL_VEC_FILL2)
 							this_rgb = Ctrl->M.S.v.fill.rgb;
 						else
 							this_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 						v4_outline += 8;	/* Double-headed */
+						dim[5] = GMT->current.setting.map_vector_shape;
 						psl_vector_v4 (PSL, -radius * c, -radius * s, dim, this_rgb, v4_outline);
 					}
 					else
@@ -771,11 +772,12 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 					if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
 						int v4_outline = Ctrl->W.active[1];
 						double *this_rgb = NULL;
-						if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+						if (Ctrl->M.S.v.status & PSL_VEC_FILL2)
 							this_rgb = Ctrl->M.S.v.fill.rgb;
 						else
 							this_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+						dim[5] = GMT->current.setting.map_vector_shape;
 						psl_vector_v4 (PSL, 0.0, 0.0, dim, this_rgb, v4_outline);
 					}
 					else
@@ -899,10 +901,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		dim[5] = Ctrl->M.S.v.v_shape;
 		dim[6] = (double)Ctrl->M.S.v.status;
 		dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
-		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & PSL_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
 		if (Ctrl->M.S.symbol == GMT_SYMBOL_VECTOR_V4) {
-			if (Ctrl->M.S.v.status & GMT_VEC_FILL2)
+			dim[5] = GMT->current.setting.map_vector_shape;
+			if (Ctrl->M.S.v.status & PSL_VEC_FILL2)
 				this_rgb = Ctrl->M.S.v.fill.rgb;
 			else
 				this_rgb = GMT->session.no_rgb;
