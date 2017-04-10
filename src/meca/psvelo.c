@@ -481,7 +481,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 						hl = Ctrl->A.S.v.h_length;
 						vw = Ctrl->A.S.v.v_width;
 					}
-					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
+					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = Ctrl->A.S.v.v_shape;
@@ -497,7 +497,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					else {
 						dim[6] = (double)Ctrl->A.S.v.status;
 						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
-						if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
+						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
 							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 						else if (Ctrl->G.active)
 							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);

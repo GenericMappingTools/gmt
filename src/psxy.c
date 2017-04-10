@@ -1428,7 +1428,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
-						if (S.v.status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+						if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 						dim[4] *= 0.5;	/* Since it was double in the parsing */
 						psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
 					}

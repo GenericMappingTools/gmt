@@ -11081,7 +11081,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					S->v.status |= PSL_VEC_FILL2;
 				}
 				else
-					S->v.status |= GMT_VEC_FILL;
+					S->v.status |= PSL_VEC_FILL;
 				break;
 			case 'h':	/* Vector shape [MAP_VECTOR_SHAPE] */
 				S->v.v_shape = (float)atof (&p[1]);
@@ -11808,7 +11808,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			else {	/* Parse old-style vector specs */
 				int one = 2;
-				if (p->v.status & GMT_VEC_BEGIN) p->v.status -= GMT_VEC_BEGIN;	/* Remove previous setting */
+				if (p->v.status & PSL_VEC_BEGIN) p->v.status -= PSL_VEC_BEGIN;	/* Remove previous setting */
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
 						p->v.status |= PSL_VEC_BEGIN;

@@ -1222,7 +1222,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
 						v4_status = lrint (data[n].dim[6]);
-						if (v4_status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+						if (v4_status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						psl_vector_v4 (PSL, xpos[item], data[i].y, data[i].dim, v4_rgb, v4_outline);
 						break;

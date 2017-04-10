@@ -214,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					if (gmt_M_is_geographic (GMT, GMT_IN))
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated for geo-vectors; see -Q documentation.\n");
-					Ctrl->Q.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
+					Ctrl->Q.S.v.status = PSL_VEC_END + PSL_VEC_FILL + PSL_VEC_OUTLINE;
 					Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 					Ctrl->Q.S.v.h_length = (float)Ctrl->Q.S.size_x;	/* 9p */
 					Ctrl->Q.S.v.v_angle = 60.0f;
@@ -593,7 +593,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 					else
 						this_rgb = GMT->session.no_rgb;
 					if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
-					if (Ctrl->Q.S.v.status & GMT_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
+					if (Ctrl->Q.S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 					psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, v4_outline);
 				}
 				else
