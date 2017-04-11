@@ -388,6 +388,7 @@ fi
 #---------------------------------------------------------------------------------
 rm -f *.\$\$.*
 EOF
+chmod +x $name.sh
 echo "gmt_movie_script: Animation script template $name.sh created" >&2
 if [ "${vformat}" = "none" ]; then
 	web=0
