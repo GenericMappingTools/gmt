@@ -156,7 +156,7 @@ usage: gmt_build_gif [-d <directory>] [-l <loop>] [-r <rate>] <prefix>
 EOF
 		return
 	fi
-	command -v ${GRAPHICSMAGICK-gm} >/dev/null 2>&1 || { echo "gmt_build_movie: Cannot find graphicsmagick in your path - exiting." >&2; return; }
+	command -v ${GRAPHICSMAGICK-gm} >/dev/null 2>&1 || { echo "gmt_build_gif: Cannot find graphicsmagick in your path - exiting." >&2; return; }
 	rate=24; dir=.; loop=0; dryrun=0
 	while [ $# -ne 1 ]; do
 		case "$1" in
@@ -176,6 +176,7 @@ ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" $
 		EOF
 	else
 		${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" ${1}.gif
+		echo "gmt_build_gif: GIF file is called ${1}.gif" >&2
 	fi
 }
 
@@ -183,7 +184,7 @@ ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" $
 gmt_build_movie() {
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2
-gmt_build_movie - Process stills to m4v movie with ffmpeg
+gmt_build_movie - Process stills to MP4 movie with ffmpeg
 	Note: M4V Requires images to have an even pixel width
 
 usage: gmt_build_movie [-d <directory>] [-n] [-r <rate>] [-v] <prefix>
@@ -214,6 +215,7 @@ ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$
 		EOF
 	else
 		ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$dir/$1_*.*" -pix_fmt yuv420p ${1}.m4v
+		echo "gmt_build_movie: MP4 file is called ${1}.m4v" >&2
 	fi
 }
 
@@ -295,21 +297,29 @@ EOF
 #---------------------------------------------------------------------------------
 # 1a. Set animation parameters:
 # Canvas settings:
-CANVAS_WIDTH=${width}	# The width of your paper canvas [in inch]
-CANVAS_HEIGHT=${height}	# The height of your paper canvas [in inch]
-CANVAS_FILL=${fill}	# The color of your paper canvas [in inch]
+CANVAS_WIDTH=${width}		# The width of your paper canvas [in inch]
+CANVAS_HEIGHT=${height}		# The height of your paper canvas [in inch]
+CANVAS_FILL=${fill}		# The color of your paper canvas [in inch]
 # Video settings:
-VIDEO_DPI=$dpi		# Rasterization in dots per inch [$dpi]
-VIDEO_FORMAT=$vformat	# Type of animation product [GIF|MP4|none]
+VIDEO_DPI=$dpi			# Rasterization in dots per inch [$dpi]
+VIDEO_FORMAT=$vformat		# Type of animation product [GIF|MP4|none]
 VIDEO_FRAMES=$nframes		# Number of frames in the movie
-VIDEO_RATE=$rate		# Frame rate (frames per sec)
-VIDEO_PREFIX=$name	# The prefix of the movie products
+VIDEO_RATE=$rate			# Frame rate (frames per sec)
+VIDEO_PREFIX=$name			# The prefix of the movie products
 # Plot settings:
-PLOT_WIDTH=${w}i		# The maximum map width given your margins [in inch]
-PLOT_HEIGHT=${h}i	# The maximum map height given your margins [in inch]
-PLOT_PDF=yes		# Make a PDF of the first frame and stop [yes|no]
-PLOT_XMARGIN=${margin}i	# The spacing between canvas boundary and map frame on left [in inch]
-PLOT_YMARGIN=${margin}i	# The spacing between canvas boundary and map frame on bottom [in inch]
+PLOT_WIDTH=${w}i			# The maximum map width given your margins [in inch]
+PLOT_HEIGHT=${h}i		# The maximum map height given your margins [in inch]
+PLOT_PDF=yes			# Make a PDF of the first frame and stop [yes|no]
+PLOT_XMARGIN=${margin}i		# Spacing between edge and map frame on left [in inch]
+PLOT_YMARGIN=${margin}i		# Spacing between edge and map frame on bottom [in inch]
+R=0/100/0/60			# Your data region [CHANGE THIS]
+J=X\${PLOT_WIDTH}/\${PLOT_HEIGHT}	# Your projection [CHANGE THIS]
+#---------------------------------------------------------------------------------
+# 1b. Set the common -R -J -O -K sequence as string RJOK:
+RJOK="-R\${R} -J\${J} -O -K"
+
+# 1c. Make a clean folder that will hold all the frame images
+rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
 
 # Design your plot(s) to fit inside the canvas size.  It is up to you
 # to select reasonable -R -J settings so that items fit.  Ultimately, the
@@ -317,23 +327,22 @@ PLOT_YMARGIN=${margin}i	# The spacing between canvas boundary and map frame on b
 # w x h = [\${CANVAS_WIDTH} * \$VIDEO_DPI] by [\${CANVAS_HEIGHT} * \$VIDEO_DPI]
 # which currently is $iw x $ih pixels.  Add your plot code between the
 # FRAME PLOT BEGIN -- END lines, using overlay mode (-O -K).
+# Temporary files named <prefix>.\$\$\.<extension> will be deleted automatically.
 
-# 1b. Perform any calculations that will not change inside the frame loop,
-#     e.g., data extractions, filtering, gradient calculations, etc.
-#     Temporary files named <prefix>.\$\$\.<extension> will be deleted automatically.
+# 1d. Frame-independent assignments and calculations go here:
 
-# 1c. Create filled canvas as first layer in the GMT cake, then set origin.
+# 1e. Create filled canvas as first layer in the GMT cake, then set origin.
 gmt psbasemap -R0/\${CANVAS_WIDTH}/0/\${CANVAS_HEIGHT} -Jx1i -P -K -X0 -Y0 -B+n+g\${CANVAS_FILL} \\
-	--PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i > canvas.\$\$.ps
-gmt psxy -R -J -O -K -T -X\${PLOT_XMARGIN} -Y\${PLOT_YMARGIN} >> canvas.\$\$.ps
+	--PS_MEDIA=\${CANVAS_WIDTH}ix\${CANVAS_HEIGHT}i > background.\$\$.ps
+gmt psxy -R -J -O -K -T -X\${PLOT_XMARGIN} -Y\${PLOT_YMARGIN} >> background.\$\$.ps
 
-# 1d. Plot items that do not change during the frame loop should be appended
-#     to canvas.\$\$.ps to avoid unnecessary plotting in the main frame loop.
+# 1f. Add frame-independent background layers to background.\$\$.ps
 #     The next line is an example that can be modified or removed.
-gmt psbasemap -R0/100/0/100 -JX\${PLOT_WIDTH}/\${PLOT_HEIGHT} -Baf -B+gpink -O -K >> canvas.\$\$.ps
+gmt psbasemap \${RJOK} -Baf -B+gpink >> background.\$\$.ps
 
-# 1e. Make a clean folder that will hold all the frame images
-rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
+# 1g. Add frame-indendent foreground layers to foreground.\$\$.ps
+#     Place more plotting commands BEFORE next line, if needed.
+gmt psxy -R -J -O -T >> foreground.\$\$.ps
 
 #---------------------------------------------------------------------------------
 # 2. MAIN FRAME LOOP
@@ -342,21 +351,22 @@ rm -rf \${VIDEO_PREFIX}; mkdir -p \${VIDEO_PREFIX}
 let frame=0
 while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 	echo "Working on frame \$frame" >&2
-	# 2a. Perform any calculations that depends on the frame number
-	
-	# 2b. Set current frame prefix for lexically increasing file name
+	# 2a. Set current frame prefix for lexically increasing file name
 	ps=\`gmt_set_framename \${VIDEO_PREFIX} \$frame\`.ps
 	
-	# 2c. Start the current frame with the canvas plot composite
-	cp canvas.\$\$.ps \$ps
+	# 2b. Perform any calculations that depends on the frame number
 	
-	# 2d. Append overlays to file \$ps; use -O -K on all commands
+	# 2c. Start the current frame with the background layer
+	cp background.\$\$.ps \$ps
+	
+	# 2d. Append overlays to file \$ps; add \$RJOK to all commands
 	# FRAME PLOT BEGIN
 	# ==> Add your frame-specific plotting here
 	# FRAME PLOT END
 	
-	# 2e. Finalize the frame plot
-	gmt psxy -R -J -O -T >> \$ps
+	# 2e. Append the foreground layer
+	cat foreground.\$\$.ps >> \$ps
+	
 	if [ \$frame -eq 0 ] && [ "\${PLOT_PDF}" == "yes" ]; then
 		# 2f. Make a PDF of first frame only and break out
 		pdf=\${VIDEO_PREFIX}
@@ -373,7 +383,7 @@ done
 #---------------------------------------------------------------------------------
 # 3. CONVERT IMAGES TO AN ANIMATION
 #---------------------------------------------------------------------------------
-if [ "${PLOT_PDF}" == "no" ]; then
+if [ "\${PLOT_PDF}" == "no" ]; then
 	if [ "\${VIDEO_FORMAT}" = "GIF" ]; then
 		# Make an animated GIF:
 		gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
