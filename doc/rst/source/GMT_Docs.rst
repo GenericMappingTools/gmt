@@ -9439,20 +9439,37 @@ are constants.
 | y-dash        | **y**      | Plot a y-dash                          | :math:`x, y`,\ *size*                      |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 
-Note for **R**\: if an **a** is appended then :math:`\alpha` is considered
+Note for **R**\: if an **a** is appended to the angle then :math:`\alpha` is considered
 to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
 does not apply if the angle is given via a variable, in which case the type of angle
 has already been specified via **N:** above and already converged before seen by **R**.
-For **M**, **T**, and all the lower-case symbol codes you may optionally
-append specific pens (with **-W**\ *pen*) and fills (with
-**-G**\ *pen*). These settings will override the pens and fills you may
-have specified on the command line. Passing **-G**- or **-W**- means no
-fill or outline, respectively.  Pen width is a dimension and you can specify
-it in three different ways: (1) Give a normal pen with trailing unit (e.g., **-W**\ 1p),
+
+Symbol fill and outline
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Normally, symbols, polygons and lines will be rendered using any
+fill and outline options you have given on the command line, similarly to how
+the regular built-in symbols behave. For **M**, **T**, and all the lower-case
+symbol codes you may optionally append specific pens (with **-W**\ *pen*) and fills (with
+**-G**\ *pen*).  These options will force the use of these settings and
+ignore any pens and fills you may or may not have specified on the command line.
+Passing **-G**- or **-W**- means a symbol or polygon will have no
+fill or outline, respectively, regardless of what your command line settings are.
+Unlike pen options on the command line, a pen setting inside the macro symbol
+offers more control.  Here, pen width is a *dimension* and you can specify
+it in three different ways: (1) Give a fixed pen width with trailing unit (e.g., **-W**\ 1p,red);
+we then apply that pen exactly as it is regardless of the size of the symbol,
 (2) give a normalized pen thickness in the 0-1 range (e.g., **-W**\ 0.02);
-at run-time this thickness will be scaled by the symbol size to yield
-the actual pen thickness, and (3) using a variable (e.g., **-W**\ $1); we then
-obtain the pen thickness from the data record.
+at run-time this thickness will be multiplied by the current symbol size to yield
+the actual pen thickness, and (3) specify a variable pen thickness (e.g., **-W**\ $1,blue); we then
+obtain the actual pen thickness from the data record at run-time.
+Finally, you may indicate that a symbol or polygon should be filled using the color
+of the current pen instead of the current fill; do this by specifying **-G+p**.
+Likewise, you may indicate that an outline should be drawn with the color of the
+current fill instead of the current pen; do this by appending **+g** to your
+**-W** setting (which may also indicate pen thickness and texture).  E.g.,
+**-W**\ 1p,-+g would mean "draw the outline with a 1p thick dashed pen but obtain
+the color from the current fill".
 
 Symbol substitution
 ~~~~~~~~~~~~~~~~~~~
@@ -9699,7 +9716,8 @@ a line to be labeled. The codes are:
 **L**:
     Same as **l** except we will treat the lines given as great circle
     start/stop coordinates and fill in the points between before looking
-    for intersections.
+    for intersections.  You must make sure not to give antipodal start and
+    stop coordinates since the great circle path would be undefined.
 
 **n**:
     Full syntax is

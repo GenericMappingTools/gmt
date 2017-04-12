@@ -216,6 +216,11 @@ enum GMT_enum_runmode {
 	GMT_CLASSIC = 0, /* Select Classic GMT behavior with -O -K -R -J */
 	GMT_MODERN};  /* Select Modern behavior where -O -K are disabled and -R -J optional if possible */
 
+/*! Selections for pen/fill color replacements in custom symbol macros */
+enum GMT_enum_colorswap {
+	GMT_USE_FILL_RGB  = 1,	/* Take pen color from that of the current fill */
+	GMT_USE_PEN_RGB = 2};	/* Take fill color from that of the current pen */
+
 /*! Various algorithms for triangulations */
 enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */

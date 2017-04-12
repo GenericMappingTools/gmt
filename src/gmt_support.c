@@ -4727,12 +4727,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 
 		if (do_fill) {	/* Update current fill */
 			s->fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
-			if ((c = strstr (fill_p, "+p"))) {	/* Want to replace this fills's color with that of the current pen color */
-				s->var_pen -= 2;	/* Flag for later */
-				c[0] = '\0';	/* Chop off the "g+" suffix */
-			}
-			if (fill_p[0] == '-')	/* Do not want to fill this polygon */
-				s->fill->rgb[0] = -1;
+			if ((c = strstr (fill_p, "+p")))	/* Want to replace this fills's color with that of the current pen color */
+				s->var_pen -= GMT_USE_PEN_RGB;	/* Flag so we can replace fill color at run-time */
+			else if (fill_p[0] == '-')	/* Do not want to fill this polygon */
+				s->fill->rgb[0] = -1.0;
 			else if (gmt_getfill (GMT, fill_p, s->fill)) {
 				gmt_fill_syntax (GMT, 'G', " ");
 				fclose (fp);
@@ -4745,16 +4743,20 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (do_pen) {	/* Update current pen */
 			s->pen = gmt_M_memory (GMT, NULL, 1, struct GMT_PEN);
 			if (pen_p[0] == '-')	/* Do not want to draw outline */
-				s->pen->rgb[0] = -1;
+				s->pen->rgb[0] = -1.0;
 			else {	/* Pen of some sort */
 				bool p_normal = false;
 				if ((c = strstr (pen_p, "+g"))) {	/* Want to replace this pen's color with that of the current fill color */
-					s->var_pen -= 21;	/* Flag for later */
+					s->var_pen -= GMT_USE_FILL_RGB;	/* Flag so we can replace pen color at run-time */
 					c[0] = '\0';	/* Chop off the "g+" suffix */
 				}
 				if (pen_p[0] == '$')	{	/* Variable pen thickness obtained at run-time via data column */
-					s->var_pen = atoi (&pen_p[1]);
-					pen_p[0] = '0';	pen_p[1] = '1';	/* Set pen to "1", scale by the indicated variable later */
+					unsigned int k = 0;
+					s->var_pen = atoi (&pen_p[1]);	/* Remember variable column number */
+					/* Replace ${var} by "01" (number of zeros depends on size of var), scale pen by the indicated variable later */
+					while (pen_p[k] && pen_p[k] != ',')
+						pen_p[k++] = '0';
+					if (k) pen_p[k-1] = '1';	/* Now we have a unit pen thickness for later scaling */
 				}
 				else if (strchr (pen_p, 'c') == NULL && strchr (pen_p, 'i') == NULL && strchr (pen_p, 'p') == NULL) {
 					/* No unit means normalized pen thickness in 0-1 range to be scaled by symbol size later */

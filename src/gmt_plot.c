@@ -4885,7 +4885,7 @@ void gmt_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 
 GMT_LOCAL void get_the_pen (struct GMT_PEN *p, struct GMT_CUSTOM_SYMBOL_ITEM *s, struct GMT_PEN *cp, struct GMT_FILL *f) {
 	/* Returns the pointer to the pen we should use.  If this is an action pen then
-	 * we set restore to true so that we can reset it later.  If var_pen contains a -1
+	 * we set restore to true so that we can reset it later.  If var_pen contains a -GMT_USE_FILL_RGB
 	 * then we overwrite the pen color with the current fill color */
 	if (s->pen) {
 		gmt_M_memcpy (p, s->pen, 1, struct GMT_PEN);
@@ -4893,19 +4893,19 @@ GMT_LOCAL void get_the_pen (struct GMT_PEN *p, struct GMT_CUSTOM_SYMBOL_ITEM *s,
 	else if (cp) {
 		gmt_M_memcpy (p, cp, 1, struct GMT_PEN);
 	}
-	if (s->var_pen < 0 && (abs(s->var_pen) & 1) && f) gmt_M_rgb_copy (p->rgb, f->rgb);
+	if (s->var_pen < 0 && (abs(s->var_pen) & GMT_USE_FILL_RGB) && f) gmt_M_rgb_copy (p->rgb, f->rgb);
 }
 
 GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *s, struct GMT_PEN *cp, struct GMT_FILL *cf) {
 	/* Returns pointer to the chosen fill: The one specified by -G inside the macro or -G on command line.
-	 * If var_pen contains a -2 then we copy in the color of the current pen instead */
+	 * If var_pen contains a -GMT_USE_PEN_RGB then we copy in the color of the current pen instead */
 	if (s->fill)
 		gmt_M_memcpy (f, s->fill, 1, struct GMT_FILL);
 	else if (cf)
 		gmt_M_memcpy (f, cf, 1, struct GMT_FILL);
 	else
 		f->rgb[0] = -1;	/* No fill */
-	if (f->rgb[0] >= 0.0 && s->var_pen < 0 && (abs(s->var_pen) & 2) && cp) gmt_M_rgb_copy (f->rgb, cp->rgb);
+	if (f->rgb[0] >= 0.0 && s->var_pen < 0 && (abs(s->var_pen) & GMT_USE_PEN_RGB) && cp) gmt_M_rgb_copy (f->rgb, cp->rgb);
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
@@ -4914,7 +4914,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, angle1, angle2, pwidth, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL f, *current_fill = fill;
@@ -5021,11 +5021,10 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		dim[1] = s->p[1] * size[0];
 		dim[2] = s->p[2] * size[0];
 		if (s->pen) {	/* This action has a pen setting */
-			pwidth = s->pen->width;	/* Save so we can restore this value */
 			if (s->pen->width < 0.0)	/* Convert the normalized pen width to points given current size */
 				s->pen->width = fabs (s->pen->width * size[0] * GMT->session.u2u[GMT_INCH][GMT_PT]);
-			else if (s->var_pen)	/* Convert the specified variable to points */
-			s->pen->width = size[s->var_pen] * GMT->session.u2u[GMT_INCH][GMT_PT];
+			else if (s->var_pen > 0)	/* Convert the specified variable to points */
+				s->pen->width = size[s->var_pen] * GMT->session.u2u[GMT_INCH][GMT_PT];
 		}
 		if (s->action == '?')	/* Reset to what is last in the input record */
 			action = GMT->current.io.record[strlen(GMT->current.io.record)-1];
