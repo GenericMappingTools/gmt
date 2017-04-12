@@ -4727,6 +4727,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 
 		if (do_fill) {	/* Update current fill */
 			s->fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
+			if ((c = strstr (fill_p, "+p"))) {	/* Want to replace this fills's color with that of the current pen color */
+				s->var_pen -= 2;	/* Flag for later */
+				c[0] = '\0';	/* Chop off the "g+" suffix */
+			}
 			if (fill_p[0] == '-')	/* Do not want to fill this polygon */
 				s->fill->rgb[0] = -1;
 			else if (gmt_getfill (GMT, fill_p, s->fill)) {
@@ -4744,6 +4748,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				s->pen->rgb[0] = -1;
 			else {	/* Pen of some sort */
 				bool p_normal = false;
+				if ((c = strstr (pen_p, "+g"))) {	/* Want to replace this pen's color with that of the current fill color */
+					s->var_pen -= 21;	/* Flag for later */
+					c[0] = '\0';	/* Chop off the "g+" suffix */
+				}
 				if (pen_p[0] == '$')	{	/* Variable pen thickness obtained at run-time via data column */
 					s->var_pen = atoi (&pen_p[1]);
 					pen_p[0] = '0';	pen_p[1] = '1';	/* Set pen to "1", scale by the indicated variable later */

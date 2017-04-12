@@ -2594,7 +2594,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 	return (!result);			/* Return the opposite of the test result */
 }
 
-GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, double width, bool restore, bool *flush) {
+GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush) {
 	bool draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? true : false;
@@ -2606,7 +2606,6 @@ GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		gmt_setfill (GMT, f, draw_outline);
 		PSL_plotpolygon (PSL, x, y, (int)*n);
 	}
-	if (restore) p->width = width;
 	*flush = false;
 	*n = 0;
 }
@@ -4884,30 +4883,42 @@ void gmt_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 
 #define GMT_N_COND_LEVELS	10	/* Number of max nesting level for conditionals */
 
-GMT_LOCAL struct GMT_PEN *get_the_pen (struct GMT_PEN *sp, struct GMT_PEN *cp, bool *restore) {
+GMT_LOCAL void get_the_pen (struct GMT_PEN *p, struct GMT_CUSTOM_SYMBOL_ITEM *s, struct GMT_PEN *cp, struct GMT_FILL *f) {
 	/* Returns the pointer to the pen we should use.  If this is an action pen then
-	 * we set restore to true so that we can reset it later */
-	struct GMT_PEN *p = NULL;
-	if (sp) {
-		p = sp; *restore = true;
+	 * we set restore to true so that we can reset it later.  If var_pen contains a -1
+	 * then we overwrite the pen color with the current fill color */
+	if (s->pen) {
+		gmt_M_memcpy (p, s->pen, 1, struct GMT_PEN);
 	}
-	else {
-		p = cp; *restore = false;
+	else if (cp) {
+		gmt_M_memcpy (p, cp, 1, struct GMT_PEN);
 	}
-	return (p);
+	if (s->var_pen < 0 && (abs(s->var_pen) & 1) && f) gmt_M_rgb_copy (p->rgb, f->rgb);
+}
+
+GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *s, struct GMT_PEN *cp, struct GMT_FILL *cf) {
+	/* Returns pointer to the chosen fill: The one specified by -G inside the macro or -G on command line.
+	 * If var_pen contains a -2 then we copy in the color of the current pen instead */
+	if (s->fill)
+		gmt_M_memcpy (f, s->fill, 1, struct GMT_FILL);
+	else if (cf)
+		gmt_M_memcpy (f, cf, 1, struct GMT_FILL);
+	else
+		f->rgb[0] = -1;	/* No fill */
+	if (f->rgb[0] >= 0.0 && s->var_pen < 0 && (abs(s->var_pen) & 2) && cp) gmt_M_rgb_copy (f->rgb, cp->rgb);
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action;
 	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
-	bool flush = false, this_outline = false, found_elseif = false, restore = false, skip[GMT_N_COND_LEVELS+1];
+	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle1, angle2, pwidth, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
-	struct GMT_FILL *f = NULL, *current_fill = fill;
-	struct GMT_PEN save_pen, *p = NULL, *current_pen = pen;
+	struct GMT_FILL f, *current_fill = fill;
+	struct GMT_PEN save_pen, p, *current_pen = pen;
 	struct GMT_FONT font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -4943,6 +4954,8 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	/* Remember current settings as we wish to restore at the end */
 	plot_savepen (GMT, &save_pen);
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
+	gmt_M_memset (&f, 1, struct GMT_FILL);
+	gmt_M_memset (&p, 1, struct GMT_PEN);
 
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = false;	/* Only do this once */
@@ -5021,17 +5034,17 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 		switch (action) {
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				n = 0;
 				if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				f = (s->fill) ? s->fill : current_fill;
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
+				get_the_pen (&p, s, current_pen, current_fill);
+				get_the_fill (&f, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
 				break;
 
 			case GMT_SYMBOL_STROKE:	/* To force the drawing of a line (outline == 2), not a closed polygon */
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, 2, pwidth, restore, &flush);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, 2, &flush);
 				n = 0;
 				break;
 
@@ -5055,12 +5068,12 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, s->p[0], PSL_FWD);
 				break;
 
 			case GMT_SYMBOL_AZIMROTATE:	/* Rotate the symbol y-axis to the a fixed azimuth */
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				/* Need to recover actual lon,lat location of symbol first */
 				gmt_xy_to_geo (GMT, &lon, &lat, x0, y0);
 				angle1 = gmt_azim_to_angle (GMT, lon, lat, 0.1, 90.0 - s->p[0]);
@@ -5068,7 +5081,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			case GMT_SYMBOL_VARROTATE:	/* Rotate the symbol coordinate system by a variable amount */
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, size[s->var[0]], PSL_FWD);
 				break;
 
@@ -5101,49 +5114,49 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case PSL_RECT:
 			case PSL_XDASH:
 			case PSL_YDASH:
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
-				f = (s->fill) ? s->fill : current_fill;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
-				if (this_outline) gmt_setpen (GMT, p);
-				gmt_setfill (GMT, f, this_outline);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				get_the_fill (&f, s, current_pen, current_fill);
+				get_the_pen (&p, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
+				if (this_outline) gmt_setpen (GMT, &p);
+				gmt_setfill (GMT, &f, this_outline);
 				PSL_plotsymbol (PSL, x, y, dim, action);
 				break;
 
 			case PSL_ELLIPSE:
 			case PSL_ROTRECT:
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
-				f = (s->fill) ? s->fill : current_fill;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
-				if (this_outline) gmt_setpen (GMT, p);
-				gmt_setfill (GMT, f, this_outline);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				get_the_fill (&f, s, current_pen, current_fill);
+				get_the_pen (&p, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
+				if (this_outline) gmt_setpen (GMT, &p);
+				gmt_setfill (GMT, &f, this_outline);
 				dim[0] = s->p[0];
 				if (s->is_var[1]) dim[1] = size[s->var[1]];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_ELLIPSE);
 				break;
 
 			case PSL_MARC:
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
-				f = (s->fill) ? s->fill : current_fill;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
-				if (this_outline) gmt_setpen (GMT, p);
-				gmt_setfill (GMT, f, this_outline);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				get_the_fill (&f, s, current_pen, current_fill);
+				get_the_pen (&p, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
+				if (this_outline) gmt_setpen (GMT, &p);
+				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
 				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
-				dim[5] = p->width * GMT->session.u2u[GMT_PT][GMT_INCH];
+				dim[5] = p.width * GMT->session.u2u[GMT_PT][GMT_INCH];
 				PSL_plotsymbol (PSL, x, y, dim, PSL_MARC);
 				break;
 
 			case PSL_WEDGE:
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
-				f = (s->fill) ? s->fill : current_fill;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
-				if (this_outline) gmt_setpen (GMT, p);
-				gmt_setfill (GMT, f, this_outline);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				get_the_fill (&f, s, current_pen, current_fill);
+				get_the_pen (&p, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
+				if (this_outline) gmt_setpen (GMT, &p);
+				gmt_setfill (GMT, &f, this_outline);
 				dim[0] *= 0.5;	/* Give diameter */
 				dim[1] = (s->is_var[1]) ? size[s->var[1]] : s->p[1];
 				dim[2] = (s->is_var[2]) ? size[s->var[2]] : s->p[2];
@@ -5152,21 +5165,21 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_TEXT:
 			case GMT_SYMBOL_VARTEXT:
-				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
-				f = (s->fill) ? s->fill : current_fill;
-				p = get_the_pen (s->pen, current_pen, &restore);
-				this_outline = (p && p->rgb[0] == -1) ? false : outline;
-				if (this_outline) gmt_setpen (GMT, p);
+				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				get_the_fill (&f, s, current_pen, current_fill);
+				get_the_pen (&p, s, current_pen, current_fill);
+				this_outline = (p.rgb[0] == -1) ? false : outline;
+				if (this_outline) gmt_setpen (GMT, &p);
 				plot_format_symbol_string (GMT, s, size, type, start, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size */
 					font.size = -s->p[0];
 				else	/* Fractional size */
 					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				gmt_setfont (GMT, &s->font);
-				if (f && this_outline)
-					gmt_setfill (GMT, f, this_outline);
-				else if (f)
-					PSL_setcolor (PSL, f->rgb, PSL_IS_FONT);
+				if (f.rgb[0] >= 0.0 && this_outline)
+					gmt_setfill (GMT, &f, this_outline);
+				else if (f.rgb[0] >= 0.0)
+					PSL_setcolor (PSL, f.rgb, PSL_IS_FONT);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
 				PSL_command (PSL, "PSL_symbol_%s_setfont_%d\n", symbol->name, id++);
@@ -5181,7 +5194,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		}
 		s = s->next;
 	}
-	if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, pwidth, restore, &flush);
+	if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 	PSL_command (PSL, "U\n");
 	PSL_comment (PSL, "End of symbol %s\n", symbol->name);
 	gmt_reset_meminc (GMT);
