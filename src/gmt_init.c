@@ -4839,8 +4839,6 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.history = (k_history_read | k_history_write);
 	/* GMT_INTERPOLANT */
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
-	/* GMT_RUNMODE */
-	GMT->current.setting.run_mode = GMT_CLASSIC;
 	/* GMT_TRIANGULATE */
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
 	/* GMT_VERBOSE (compat) */
@@ -8767,22 +8765,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
-		case GMTCASE_GMT_RUNMODE:
-			if (core) {
-				if (!strcmp (lower_value, "classic"))
-					GMT->current.setting.run_mode = GMT_CLASSIC;
-				else if (!strcmp (lower_value, "modern"))
-					GMT->current.setting.run_mode = GMT_MODERN;
-				else
-					error = true;
-			}
-			else {
-				static char *rmode[2] = {"classic", "modern"};
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Parameter %s can only be set via gmt.conf - ignored here.  Mode remain %s.\n",
-					GMT_keywords[case_val], rmode[GMT->current.setting.run_mode]);
-				error = true;
-			}
-			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
 				GMT->current.setting.triangulate = GMT_TRIANGLE_WATSON;
@@ -8953,7 +8935,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
 	if (len && case_val >= 0) GMT->current.setting.given_unit[case_val] = value[len-1];
 
-	if (error && case_val >= 0 && case_val != GMTCASE_GMT_RUNMODE) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
+	if (error && case_val >= 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 	return ((error) ? 1 : 0);
 }
 
@@ -9862,14 +9844,6 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "cubic");
 			else if (GMT->current.setting.interpolant == GMT_SPLINE_NONE)
 				strcpy (value, "none");
-			else
-				strcpy (value, "undefined");
-			break;
-		case GMTCASE_GMT_RUNMODE:
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)
-				strcpy (value, "classic");
-			else if (GMT->current.setting.run_mode == GMT_MODERN)
-				strcpy (value, "modern");
 			else
 				strcpy (value, "undefined");
 			break;
@@ -10820,17 +10794,17 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (API->GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O -K are allowed */
 			if ((opt = GMT_Find_Option (API, 'O', *options))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for GMT_RUNMODE = modern.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
 			if ((opt = GMT_Find_Option (API, 'K', *options))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for GMT_RUNMODE = modern.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
 			/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if history is needed) */
 			if ((opt = GMT_Find_Option (API, 'R', *options))) {	/* Got -R */
 				if (opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for GMT_RUNMODE = modern.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for modern GMT mode.\n");
 					n_errors++;
 				}
 				else if (opt->arg[0] == '+' && opt->arg[1] == '\0')	/* Shorthand -R+ allows us to request past region. */
@@ -10845,7 +10819,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for GMT_RUNMODE = modern.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
 			if (n_errors) {	/* Oh, well, live and learn */

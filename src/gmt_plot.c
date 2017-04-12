@@ -6407,7 +6407,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	GMT->current.proj.z_project.plane = plane;
 }
 
-/* Creation of hidden PS0 filename used under GMT_RUNMODE modern */
+/* Creation of hidden PS0 filename used under modern GMT mode */
 
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {

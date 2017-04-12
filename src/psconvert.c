@@ -758,13 +758,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	                                   "Syntax error: Creation of Multipage PDF requires setting -F option\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (GMT->current.setting.run_mode == GMT_MODERN),
-	                                   "Error: Cannot use -L for list file when GMT_RUNMODE = modern\n");
+	                                   "Error: Cannot use -L for list file under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && (GMT->current.setting.run_mode == GMT_MODERN),
-	                                   "Syntax error: No listed input files allowed when GMT_RUNMODE = modern\n");
+	                                   "Syntax error: No listed input files allowed under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && (GMT->current.setting.run_mode == GMT_MODERN),
-	                                   "Syntax error: GMT_RUNMODE = modern requires the -F option\n");
+	                                   "Syntax error: Modern GMT mode requires the -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
