@@ -12988,7 +12988,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"};
 	int err = 0, error = GMT_NOERROR;
-	unsigned int n_files = 0;
+	unsigned int n_files = 0, k;
     struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
 	API->gwf_dir = strdup (dir);
@@ -13014,9 +13014,11 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
+#ifndef HARDWIRE_GMTCONF
 			gmtinit_conf (API->GMT);		/* Get the original system defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			gmt_putdefaults (API->GMT, dir);
+#endif
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			break;
 		case GMT_USE_WORKFLOW:
@@ -13026,15 +13028,17 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
-			sprintf (dir, "%s/*", API->gwf_dir);	/* Reuse dir string for wildcard for finding all files in that dir */
-			if ((n_files = gmtlib_glob_list (API->GMT, dir, &filelist))) {
-				for (unsigned int k = 0; k < n_files; k++) {
+			//sprintf (dir, "%s/*", API->gwf_dir);	/* Reuse dir string for wildcard for finding all files in that dir */
+			chdir (API->gwf_dir);
+			if ((n_files = gmtlib_glob_list (API->GMT, "*", &filelist))) {
+				for (k = 0; k < n_files; k++) {
 					if (gmt_remove_file (API->GMT, filelist[k]))
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s [permissions?]\n", filelist[k]);
 				}
 				gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 			}
-			if (rmdir (API->gwf_dir)) {	/* Unable to delete the directory */
+			chdir("../");				/* Just get out of current dir so thaat it can be removed */
+			if (rmdir(API->gwf_dir)) {	/* Unable to delete the directory */
 				perror (API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
