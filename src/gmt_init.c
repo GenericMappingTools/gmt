@@ -4891,7 +4891,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
-	unsigned int i = 0, n_GMT_fonts;
+	unsigned int i = 0, n_GMT_fonts, encode;
 	size_t n_alloc = 0;
 	char buf[GMT_BUFSIZ] = {""}, fullname[GMT_BUFSIZ] = {""};
 	FILE *in = NULL;
