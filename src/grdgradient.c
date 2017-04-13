@@ -35,19 +35,25 @@
 #define THIS_MODULE_NAME	"grdgradient"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute directional gradients from a grid"
-#define THIS_MODULE_KEYS	"<G{,GG},SG)"
+#define THIS_MODULE_KEYS	"<G{,AG(,GG},SG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVfn"
 
+enum grdgradient_mode {
+	GRDGRADIENT_FIX = 1,
+	GRDGRADIENT_VAR = 2};
+		
 struct GRDGRADIENT_CTRL {
 	struct In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A<azim>[/<azim2>] */
+	struct A {	/* -A<azim>[/<azim2>] | -A<file>*/
 		bool active;
 		bool two;
 		double azimuth[2];
+		unsigned int mode;
+		char *file;
 	} A;
 	struct D {	/* -D[a][c][o][n] */
 		bool active;
@@ -91,6 +97,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->A.file);	
 	gmt_M_str_free (C->G.file);	
 	gmt_M_str_free (C->S.file);	
 	gmt_M_free (GMT, C);	
@@ -127,6 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and select the one larger in magnitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  If <azim> is a grid we expect variable azimuths on a grid coregistered with <ingrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of the vector grad z (up-slope direction).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to get the aspect instead (down-slope direction).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].\n");
@@ -187,8 +195,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 
 			case 'A':	/* Set azimuth */
 				Ctrl->A.active = true;
-				j = sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth[0], &Ctrl->A.azimuth[1]);
-				Ctrl->A.two = (j == 2);
+				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
+					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.mode = GRDGRADIENT_VAR;
+				}
+				else {
+					j = sscanf (opt->arg, "%lf/%lf", &Ctrl->A.azimuth[0], &Ctrl->A.azimuth[1]);
+					Ctrl->A.two = (j == 2);
+					Ctrl->A.mode = GRDGRADIENT_FIX;
+				}
 				break;
 			case 'D':	/* Find direction of grad|z| */
 				Ctrl->D.active = true;
@@ -361,13 +376,13 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 	
-	double dx_grid, dy_grid, x_factor = 0.0, x_factor_set, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
+	double dx_grid, dy_grid, x_factor = 0.0, x_factor_set, y_factor, y_factor_set, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output, one;
 	double x_factor2 = 0.0, x_factor2_set = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2] = {0.0, 0.0};
 	
-	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL;
+	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL, *A = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -404,11 +419,18 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
-		while (Ctrl->A.azimuth[0] < 0.0) Ctrl->A.azimuth[0] += 360.0;
-		while (Ctrl->A.azimuth[0] > 360.0) Ctrl->A.azimuth[0] -= 360.0;
-		if (Ctrl->A.two) {
-			while (Ctrl->A.azimuth[1] < 0.0) Ctrl->A.azimuth[1] += 360.0;
-			while (Ctrl->A.azimuth[1] > 360.0) Ctrl->A.azimuth[1] -= 360.0;
+		if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Got variable azimuth(s) */
+			if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->A.file, NULL)) == NULL) {
+				Return (API->error);
+			}
+		}
+		else {	/* Got fixed azimuth(s) */
+			while (Ctrl->A.azimuth[0] < 0.0) Ctrl->A.azimuth[0] += 360.0;
+			while (Ctrl->A.azimuth[0] > 360.0) Ctrl->A.azimuth[0] -= 360.0;
+			if (Ctrl->A.two) {
+				while (Ctrl->A.azimuth[1] < 0.0) Ctrl->A.azimuth[1] += 360.0;
+				while (Ctrl->A.azimuth[1] > 360.0) Ctrl->A.azimuth[1] -= 360.0;
+			}
 		}
 	}
 	if (Ctrl->E.active) {	/* Get azimuth in 0-360 range */
@@ -442,6 +464,25 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* IGiven 2 grids, make sure they are co-registered and has same size, registration, etc. */
+		if (Surf->header->registration != A->header->registration) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input and azimuth grids have different registrations!\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (!gmt_M_grd_same_shape (GMT, Surf, A)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input and azimuth grids have different dimensions\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (!gmt_M_grd_same_region (GMT, Surf, A)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input and azimuth grids have different regions\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (!gmt_M_grd_same_inc (GMT, Surf, A)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input and azimuth grids have different intervals\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
 	}
@@ -462,8 +503,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	}
 	one = (Ctrl->D.active) ? +1.0 : -1.0;	/* With -D we want positive grad direction, not negative as for shading (-A, -E) */
 	x_factor_set = one / (2.0 * dx_grid);
-	y_factor = one / (2.0 * dy_grid);
-	if (Ctrl->A.active) {	/* Convert azimuths to radians to save multiplication later */
+	y_factor = y_factor_set = one / (2.0 * dy_grid);
+	if (Ctrl->A.mode == GRDGRADIENT_FIX) {	/* Convert fixed azimuths to radians to save multiplication later */
 		if (Ctrl->A.two) {
 			Ctrl->A.azimuth[1] *= D2R;
 			sin_Az[1] = sin (Ctrl->A.azimuth[1]);
@@ -502,24 +543,29 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = gmt_M_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
-			if (dx_grid > 0.0) x_factor = one / (2.0 * dx_grid);	/* Use previous value at the poles */
-			if (Ctrl->A.active) {
+			if (dx_grid > 0.0) x_factor = x_factor_set = one / (2.0 * dx_grid);	/* Use previous value at the poles */
+			if (Ctrl->A.mode == GRDGRADIENT_FIX) {
 				if (Ctrl->A.two) x_factor2 = x_factor * sin_Az[1];
 				x_factor *= sin_Az[0];
 			}
 		}
 		else {	/* Use the constant factors */
 			x_factor = x_factor_set;
-			if (Ctrl->A.two) x_factor2 = x_factor2_set;
+			if (Ctrl->A.mode == GRDGRADIENT_FIX && Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
 		for (col = 0; col < Surf->header->n_columns; col++, ij0++) {
 			ij = gmt_M_ijp (Surf->header, row, col);	/* Index into padded grid */
 			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Surf->data[ij+p[n]])) bad = true;
-			if (bad) {	/* One of star corners = NaN; assign NaN answers and skip to next node */
+			if (bad) {	/* One of the 4-star corners = NaN; assign NaN answer and skip to next node */
 				index = (new_grid) ? ij : ij0;
 				Out->data[index] = GMT->session.f_NaN;
 				if (Ctrl->S.active) Slope->data[ij] = GMT->session.f_NaN;
 				continue;
+			}
+			if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Must update azimuth for every node */
+				Ctrl->A.azimuth[0] = A->data[ij] * D2R;
+				x_factor = x_factor_set * sin (Ctrl->A.azimuth[0]);
+				y_factor = y_factor_set * cos (Ctrl->A.azimuth[0]);
 			}
 
 			/* We can now evaluate the central finite differences */

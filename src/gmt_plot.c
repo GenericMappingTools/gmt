@@ -6411,40 +6411,17 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
-	/* Set hidden PS filename and return 0 if does not exist and 1 if does exist */
-#if defined(WIN32) || defined(DEBUG_MODERN)
-	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
-	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
-	   using the PPID (parent PID) to create unique file names. 
-	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
-	   we are forcing PPID = 0 in all Windows variants. */
-	int k, ppid = 0;
-#else
-	int k, ppid = gmt_get_ppid (GMT);	/* Parent process (or GMT app) ID */
-#endif
-	if (GMT->parent->tmp_dir)	/* Use the established temp directory */
-		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps0", GMT->parent->tmp_dir, ppid);
-	else	/* Must dump it in current directory */
-		sprintf (GMT->current.ps.filename, "gmt_%d.ps0", ppid);
+	int k;
+	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set??? Writing to current dir instead\n");
+		strncpy (GMT->current.ps.filename, "gmt.ps0", 7U);
+	}
+	else
+		sprintf (GMT->current.ps.filename, "%s/gmt.ps0", GMT->parent->gwf_dir);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
 	GMT->current.ps.initialize = (k == 0);	/* False means it is an overlay and -R -J may come from history */
 	return k;
 }
-
-#if 0
-void gmt_vector_v4 (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1, double tailwidth, double headlength, double headwidth, double shape, struct GMT_FILL *fill, int outline)
-{
-	/* Plots the GMT4 vector symbol */
-
-	if (fill && fill->use_pattern) {	/* Setup pattern first */
-		int rgb[3] = {-3, -3, -3};
-		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
-		psl_vector_v4 (PSL, x0, y0, param, rgb, outline);
-	}
-	else	/* Just draw as we please */
-		psl_vector_v4 (PSL, x0, y0, param, fill->rgb, outline);
-}
-#endif
 
 /* All functions involved in reading, writing, duplicating GMT_POSTSCRIPT structs and their PostScript content */
 

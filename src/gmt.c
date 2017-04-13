@@ -92,7 +92,19 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
+	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
+		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
+		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
+			return GMT_RUNTIME_ERROR;
+		return GMT_NOERROR;
+	}
+	else if (gmt_main && argc == 2 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
+		gmt_manage_workflow (api_ctrl, GMT_END_WORKFLOW);
+		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
+			return GMT_RUNTIME_ERROR;
+		return GMT_NOERROR;
+	}
+	else if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
 		module = argv[1];	/* Name of module that does not exist, but will give reasonable message */
 		modulename_arg_n = 1;
@@ -174,6 +186,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show the shared library */
+			else if (!strncmp (argv[arg_n], "--show-library", 10U)) {
+				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_library);
+				status = GMT_NOERROR;
+			}
+
 			/* Show share directory */
 			else if (!strncmp (argv[arg_n], "--show-sharedir", 12U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
@@ -206,6 +224,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --show-cores      Print number of available cores.\n");
 		fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 		fprintf (stderr, "  --show-modules    List all module names.\n");
+		fprintf (stderr, "  --show-library    Show path of the shaded GMT library.\n");
 		fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 		fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
 		fprintf (stderr, "  --version         Print GMT version number.\n\n");

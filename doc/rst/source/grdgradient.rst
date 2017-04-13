@@ -28,7 +28,7 @@ Description
 -----------
 
 **grdgradient** may be used to compute the directional derivative in a
-given direction (**-A**), or the direction (**-S**) [and the magnitude
+given direction (**-A**), or to find the direction (**-S**) [and the magnitude
 (**-D**)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
@@ -65,7 +65,10 @@ Optional Arguments
     directions are calculated and the one larger in magnitude is
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
-    north (top) and west (left).
+    north (top) and west (left).  Finally, if *azim* is a file it must
+    be a grid of the same domain, spacing and registration as *in_grdfile*
+    and we will update the azimuth at each output node when computing the
+    directional derivatives.
 
 .. _-D:
 

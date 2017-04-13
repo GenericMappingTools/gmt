@@ -266,14 +266,14 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
-		if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'B') continue;	/* Not a shorthand option under modern mode */
+		if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'B') continue;	/* The -B option is NOT a shorthand option under modern mode */
 		update = false;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
 
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
-			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* No -J found */
+			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* No -J found at all - nothing more to do */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
@@ -314,6 +314,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		}
 		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
 			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* Error: user gave shorthand option but there is no record in the history */
+			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R' && !GMT->current.ps.active)	/* Check RG instead */
+				id++;	/* RG follows R in gmt_unique.h order [Modern mode only] */
 			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
 		}
 		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */

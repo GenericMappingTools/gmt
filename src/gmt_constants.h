@@ -216,6 +216,12 @@ enum GMT_enum_runmode {
 	GMT_CLASSIC = 0, /* Select Classic GMT behavior with -O -K -R -J */
 	GMT_MODERN};  /* Select Modern behavior where -O -K are disabled and -R -J optional if possible */
 
+/*! Selections for workflow mode */
+enum GMT_enum_workflowmode {
+	GMT_USE_WORKFLOW = 0, 	/* Default is to use current workflow if initiated and ignore if otherwise */
+	GMT_BEGIN_WORKFLOW = 1,	/* Initiate a new workflow via gmt begin */
+	GMT_END_WORKFLOW = 2};  /* Terminate current workflow via gmt begin */
+
 /*! Selections for pen/fill color replacements in custom symbol macros */
 enum GMT_enum_colorswap {
 	GMT_USE_FILL_RGB  = 1,	/* Take pen color from that of the current fill */

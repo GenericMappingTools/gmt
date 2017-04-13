@@ -584,7 +584,44 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 		case GMT_N_FAMILIES:	break;
 	}
 }
+#endif
 
+/*! . */
+GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
+	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
+	int ppid = -1;
+#if defined(WIN32) || defined(DEBUG_MODERN)
+	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
+	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
+	   using the PPID (parent PID) to create unique file names. 
+	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
+	   we are forcing PPID = 0 in all Windows variants. */
+	ppid = 0;
+#else
+	if (API->external)	/* Return ID of the gmt application instead for external interfaces */
+		ppid = getpid ();
+	else	/* Here we are probably running from the command line and want the shell's PID */
+		ppid = getppid(); /* parent process id */
+#endif
+	return (ppid);
+}
+
+#if 0
+/* This was our effort to get PPID under Windows.  Remains as comments for now */
+#ifdef _WIN32
+	int pid = GetCurrentProcessId ();
+	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
+	PROCESSENTRY32 pe = { 0 };
+	pe.dwSize = sizeof (PROCESSENTRY32);
+
+	if (Process32First(h, &pe)) {
+		do {
+			if (pe.th32ProcessID == pid)
+				ppid = pe.th32ParentProcessID;
+		} while (ppid == -1 && Process32Next(h, &pe));
+	}
+	CloseHandle (h);
+#endif
 #endif
 
 /*! . */
@@ -662,6 +699,10 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		else
 #endif
 		{
+		/* Set full path to the core library */
+		snprintf (plugindir, GMT_LEN256, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
+		if (!GMT->init.runtime_library) GMT->init.runtime_library = strdup (plugindir);
+
 #ifdef WIN32
 			snprintf (plugindir, GMT_LEN256, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
 #else
@@ -5697,8 +5738,9 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	else	/* Set standard temporary directory under *nix */
 		API->tmp_dir = strdup ("/tmp");
 #endif
+	API->PPID = api_get_ppid (API);		/* Save PPID for the rest of the session */
 
-	/* gmt_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
+	/* gmt_begin initializes, among other things, the settings in the user's (or the system's) gmt.conf file */
 	if (gmt_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
 		gmt_M_str_free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
@@ -9930,6 +9972,8 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 		sprintf (value, "%s", API->GMT->session.DATADIR);
 	else if (!strncmp (keyword, "API_PLUGINDIR", 14U))	/* Report plugin directory */
 		sprintf (value, "%s", API->GMT->init.runtime_plugindir);
+	else if (!strncmp (keyword, "API_LIBRARY", 11U))	/* Report core library */
+		sprintf (value, "%s", API->GMT->init.runtime_library);
 	else if (!strncmp (keyword, "API_CORES", 9U))	/* Report number of cores */
 		sprintf (value, "%d", API->n_cores);
 #ifdef HAVE_GDAL
