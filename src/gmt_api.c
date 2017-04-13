@@ -590,6 +590,7 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
 	int ppid = -1;
+	gmt_M_unused(API);
 #if defined(WIN32) || defined(DEBUG_MODERN)
 	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
 	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
@@ -6752,7 +6753,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			return_null (API, API->error);
 		}
 		/* Try to catch a matrix or vector masquerading as dataset by examining the object's actual family  */
-		if (family == API->object[item]->actual_family) {	/* True to its word, otherwise we fall through and read the data */
+		if (family == (unsigned int)API->object[item]->actual_family) {	/* True to its word, otherwise we fall through and read the data */
 #ifdef DEBUG
 			api_set_object (API, API->object[item]);
 #endif

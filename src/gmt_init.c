@@ -4891,7 +4891,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
-	unsigned int i = 0, n_GMT_fonts, encode;
+	unsigned int i = 0, n_GMT_fonts;
 	size_t n_alloc = 0;
 	char buf[GMT_BUFSIZ] = {""}, fullname[GMT_BUFSIZ] = {""};
 	FILE *in = NULL;
@@ -7479,6 +7479,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
 	double dval;
+	gmt_M_unused(core);
 
 	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ-1);	/* Get a lower case version */
@@ -13030,7 +13031,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			/* We only get here when gmt end is called */
 			//sprintf (dir, "%s/*", API->gwf_dir);	/* Reuse dir string for wildcard for finding all files in that dir */
 			chdir (API->gwf_dir);
-			if ((n_files = gmtlib_glob_list (API->GMT, "*", &filelist))) {
+			if ((n_files = (unsigned int)gmtlib_glob_list (API->GMT, "*", &filelist))) {
 				for (k = 0; k < n_files; k++) {
 					if (gmt_remove_file (API->GMT, filelist[k]))
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s [permissions?]\n", filelist[k]);

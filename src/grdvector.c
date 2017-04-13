@@ -231,7 +231,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
-							Ctrl->Q.S.v.v_width = gmt_M_to_inch (GMT, txt_a);
+							Ctrl->Q.S.v.v_width = (float)gmt_M_to_inch (GMT, txt_a);
 							Ctrl->Q.S.v.pen.width = gmt_M_to_points (GMT, txt_a);
 							Ctrl->Q.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 							Ctrl->Q.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);

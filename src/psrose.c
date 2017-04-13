@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 						Ctrl->M.S.v.pen = GMT->current.setting.map_default_pen;
 						Ctrl->W.active[1] = true;
 						//Ctrl->W.pen[1].width = gmt_M_to_points (GMT, txt_a);
-						Ctrl->M.S.v.v_width = gmt_M_to_inch (GMT, txt_a);
+						Ctrl->M.S.v.v_width = (float)gmt_M_to_inch (GMT, txt_a);
 						Ctrl->M.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 						Ctrl->M.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 						Ctrl->M.S.v.v_angle = (float)atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);

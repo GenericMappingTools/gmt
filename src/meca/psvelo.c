@@ -190,7 +190,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				got_A = true;
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-					Ctrl->A.S.v.v_width = gmt_M_to_inch (GMT, txt);
+					Ctrl->A.S.v.v_width = (float)gmt_M_to_inch (GMT, txt);
 					Ctrl->A.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
 					Ctrl->A.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 					Ctrl->A.S.v.v_angle = (float)atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);

@@ -61,6 +61,10 @@
 
 /* #define DEBUG_RUNPATH */
 
+#ifndef gmt_M_unused
+#	define gmt_M_unused(x) (void)(x)
+#endif
+
 #define gmt_M_str_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
 
 /* Private functions */
@@ -375,14 +379,15 @@ char *gmt_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 
 /* Verifies the correct version of the share directory */
 int gmt_verify_sharedir_version (const char *dir) {
-	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
-	char version_file[PATH_MAX+1];
 
 #ifdef NO_SHAREDIR_VERIFY
 	/* For Mirone and probably other future external program call one cannot impose
 	 * a certain sharedir version. */
+	gmt_M_unused(dir);
 	return true;
 #else
+	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
+	char version_file[PATH_MAX+1];
 
 #ifdef DEBUG_RUNPATH
 	fprintf (stderr, "gmt_verify_sharedir_version: got dir '%s'.\n", dir);
