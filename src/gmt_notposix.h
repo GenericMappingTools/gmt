@@ -485,6 +485,13 @@
 #	define fileno _fileno
 #endif
 
+/* rmdir is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in direct.h */
+#ifdef HAVE__GETCWD
+#	define rmdir _rmdir
+#endif
+
 /* getcwd is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in direct.h */
