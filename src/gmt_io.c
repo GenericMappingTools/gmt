@@ -8030,10 +8030,12 @@ char **gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	do {
-		list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
-		if (n == n_alloc) {			/* Allocate more memory for list */
-			n_alloc <<= 1;
-			list = gmt_M_memory (GMT, list, n_alloc, char *);
+		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
+			list[n++] = strdup(FindFileData.cFileName);	/* Save the file name */
+			if (n == n_alloc) {			/* Allocate more memory for list */
+				n_alloc <<= 1;
+				list = gmt_M_memory (GMT, list, n_alloc, char *);
+			}
 		}
 	} while (FindNextFile(hFind, &FindFileData));
 	FindClose(hFind);
