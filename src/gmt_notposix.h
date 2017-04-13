@@ -199,6 +199,10 @@
 #	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */
 #endif
 
+#ifndef S_ISDIR
+#	define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR) 	/* Copied from linux libc sys/stat.h */
+#endif
+
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
  * These functions are available on many platforms and we
  * seek to use them.  If not available then we compile in
