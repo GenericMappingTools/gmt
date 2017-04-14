@@ -131,6 +131,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+#ifdef SHORT_GMTCONF
+EXTERN_MSC bool GMT_keywords_updated[GMT_N_KEYS];
+#endif
+
 int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
 
@@ -187,6 +191,14 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 		gmt_getdefaults (GMT, Ctrl->G.file);
 
 	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
+
+#ifdef SHORT_GMTCONF		// When -D was used, write all keys so first we have to set them to 'modified'
+	if (Ctrl->D.active) {
+		int k;
+		for (k = 0; k < GMT_N_KEYS; k++)
+			GMT_keywords_updated[k] = true;
+	}
+#endif
 
 	gmt_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 
