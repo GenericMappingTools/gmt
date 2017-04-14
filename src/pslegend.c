@@ -1415,6 +1415,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 	Ctrl->D.refpoint->x = x_orig;	Ctrl->D.refpoint->y = y_orig;
 
+	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
 	for (id = 0; id < N_DAT; id++) {
