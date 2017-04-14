@@ -460,20 +460,29 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in
 	 * G[GPS_FUNC_Q], G[GPS_FUNC_P], and G[GPS_FUNC_W].
-	 * Here, par[0] holds Poisson's ratio and par[1] holds delta_r to prevent singularity */
+	 * Here, par[0] holds Poisson's ratio, par[1] holds delta_r^2 (to prevent singularity) */
+	double c1, c2, c2_dr2, dr2_fudge, dx2_fudge, dy2_fudge, dxdy_fudge;
+	double dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
+	double dr2 = dx2 + dy2;					/* Origial radius squared */
 	
-	double dx2 = dx * dx, dy2 = dy * dy;	/* Squared offsets */
-	double dr2 = dx2 + dy2 + par[1];	/* Radius squared (remember par[1] already squared during initialization) */
-	double c1, c2;
+	dr2_fudge = dr2 + par[1];	/* Fudged radius squared (par[1] holds delta_r^2) */
+	if (dr2 == 0.0)	/* Since r will be fudged away from origin we decide dr2_fudge should fall along N45E trend */
+		dx2_fudge = dy2_fudge = dxdy_fudge = 0.5 * par[1];
+	else {	/* Not at singular origin so stretch dx2,dy2 by same amount as dr2 was stretched */
+		double stretch2 = dr2_fudge / dr2;	/* How much to lengthen dx2, dy2, dxy */
+		dx2_fudge = dx2 * stretch2;	dy2_fudge = dy2 * stretch2;	/* Modified offsets */
+		dxdy_fudge = dx * dy * stretch2;
+	}
 	
 	c1 = (3.0 - par[0]) / 2.0;	/* The half is here since we take log of r^2, not r */
 	c2 = (1.0 + par[0]);
 	
-	G[GPS_FUNC_Q] = G[GPS_FUNC_P] = c1 * log (dr2);
-	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
-	G[GPS_FUNC_Q] +=  c2 * dr2 * dy2;
-	G[GPS_FUNC_P] +=  c2 * dr2 * dx2;
-	G[GPS_FUNC_W]  = -c2 * dr2 * dx  * dy;
+	G[GPS_FUNC_Q] = G[GPS_FUNC_P] = c1 * log (dr2_fudge);
+	dr2_fudge = 1.0 / dr2_fudge;	/* Get inverse squared radius */
+	c2_dr2 = c2 * dr2_fudge;		/* Do this multiplication once */
+	G[GPS_FUNC_Q] +=  c2_dr2 * dy2_fudge;
+	G[GPS_FUNC_P] +=  c2_dr2 * dx2_fudge;
+	G[GPS_FUNC_W]  = -c2_dr2 * dxdy_fudge;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
