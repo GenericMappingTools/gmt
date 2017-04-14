@@ -327,7 +327,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			gmt_xy_to_geo (GMT, &xNW, &yNW, wesn[XLO], wesn[YHI]);		/* NW corner */
 			gmt_xy_to_geo (GMT, &xNE, &yNE, wesn[XHI], wesn[YHI]);		/* NE corner */
 			gmt_xy_to_geo (GMT, &xSE, &ySE, wesn[XHI], wesn[YLO]);		/* SE corner */
-			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), ySW, MAX(xNE, xSE), yNE);
+			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), MIN(ySW, ySE), MAX(xNE, xSE), MAX(yNW, yNE));
 
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active[RSET] = false;
