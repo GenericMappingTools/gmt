@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test # 1 in Sandwell & Wessel tarball test data sets
 ps=gpsgridder1.ps
-V=-Vl
+#V=-Vl
 INC=5m
 DEC=2
 gmt select ${src:-.}/wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0-5 > data.lluv
@@ -26,7 +26,7 @@ gmt grdmath tmp_v.nc mask.grd MUL = GPS_v.grd
 # make a plot of GPS velocity vectors 
 #
 #
-gmtset  FORMAT_GEO_MAP = dddF
+gmt set FORMAT_GEO_MAP = dddF
 gmt select blk.lluv $R -fg | awk '{ print($0," 0 ") }' > data.lluvenct
 #
 #   first make a mask
