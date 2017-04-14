@@ -6353,6 +6353,9 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	/* Only do this in 3D mode */
 	if (!GMT->current.proj.three_D) return;
 
+	/* Only do this at top module */
+	if (GMT->hidden.func_level > 1) return;
+	
 	/* Nothing changed since last call, hence ignore */
 	if (plane == GMT->current.proj.z_project.plane && gmt_M_eq(level,GMT->current.proj.z_project.level)) return;
 
