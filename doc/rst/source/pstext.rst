@@ -32,10 +32,8 @@ Synopsis
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
-[ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
-[ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
