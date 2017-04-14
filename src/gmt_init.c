@@ -137,6 +137,10 @@ static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.con
 #include "gmt_keywords.h"
 };
 
+#ifdef SHORT_GMTCONF
+EXTERN_MSC bool GMT_keywords_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
+#endif
+
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
 };
@@ -1947,6 +1951,14 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 
 		/* Write things out (with possible tabs, spaces) */
 		sscanf (line, "%[^=]", string);
+#ifdef SHORT_GMTCONF		// TEMPORARY, ONLY TO SHOW UP HOW WE CAN SAVE ONLY NON-DEFAULT KEYS
+		{
+			int case_val;
+			case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+			if (!GMT_keywords_updated[case_val])	/* If equal to default, skip it */
+				continue;
+		}
+#endif
 		fprintf (fpo, "%s= %s\n", string, gmtlib_putparameter (GMT, keyword));
 	}
 
@@ -4922,6 +4934,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 	fclose (in);
 	GMT->session.n_fonts = n_GMT_fonts = i;
 #else
+	gmt_M_unused(encode);
 	n_GMT_fonts = i = gmtinit_def_std_fonts (GMT);
 #endif
 
@@ -7428,7 +7441,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		error += gmtlib_setparameter (GMT, keyword, value, true);
+		error += gmtlib_setparameter (GMT, keyword, value, false);
 	}
 
 	fclose (fp);
@@ -8960,7 +8973,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
 	if (len && case_val >= 0) GMT->current.setting.given_unit[case_val] = value[len-1];
 
-	if (error && case_val >= 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
+	if (error && case_val >= 0)
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
+#ifdef SHORT_GMTCONF
+	else if (core)		/* So far, only gmtset calls this function with core = true, but this is a too fragile solution */
+		GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
+#endif
 	return ((error) ? 1 : 0);
 }
 
@@ -12987,7 +13005,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	 */
 	
 	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"};
+	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"}, t_file[GMT_LEN256] = {""};
 	int err = 0, error = GMT_NOERROR;
 	unsigned int n_files = 0, k;
     struct stat S;
@@ -13015,7 +13033,13 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
-#ifndef HARDWIRE_GMTCONF
+#ifdef HARDWIRE_GMTCONF
+			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
+				gmtinit_conf (API->GMT);		/* Get the original system defaults */
+				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
+				gmt_putdefaults (API->GMT, dir);
+			}
+#else
 			gmtinit_conf (API->GMT);		/* Get the original system defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			gmt_putdefaults (API->GMT, dir);
