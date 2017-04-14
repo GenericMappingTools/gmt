@@ -490,7 +490,7 @@ GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], dou
 
 int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, n_uv, n_params, n_ok = 0, ij;
-	uint64_t Gu_ij, Gv_ij, Guv_ij, Gvu_ij, n_duplicates = 0, n_skip = 0;
+	uint64_t Gu_ij, Gv_ij, Guv_ij, Gvu_ij, off, n_duplicates = 0, n_skip = 0;
 	unsigned int normalize, unit = 0, n_cols;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID;
@@ -499,7 +499,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	char *mem_unit[3] = {"kb", "Mb", "Gb"}, *comp[2] = {"u(x,y)", "v(x,y)"}, *tag[2] = {"u", "v"};
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
-	double *alpha_x = NULL, *alpha_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
+	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
 	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v;
 	double err_sum = 0.0, r_min, r_max, G[3];
 
@@ -754,9 +754,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %.1f %s\n", mem, mem_unit[unit]);
 	A = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system Ax = b\n");
+	if (Ctrl->W.active)
+		GMT_Report (API, GMT_MSG_VERBOSE, "Build weighted linear system WAx = Wb\n");
+	else
+		GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system Ax = b\n");
 
-	weight_u = weight_v = 1.0;
+	weight_u = weight_v = 1.0;	/* Unit weights unless -W was used */
+	off = n_uv * n_params;	/* Separation in index between rows evaluating u and v for same column */
 	for (row = 0; row < n_uv; row++) {	/* For each data constraint pair (u,v)_row */
 		if (Ctrl->W.active) {	/* Apply any weights */
 			weight_u = X[row][GMT_WU];
@@ -765,15 +769,15 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			v[row] *= weight_v;
 		}
 		for (col = 0; col < n_uv; col++) {	/* For each data constraint pair (u,v)_col  */
-			Gu_ij  = row * n_params + col;			/* Index for Gu term */
-			Guv_ij = Gu_ij + n_uv;					/* Index for Guv term */
-			Gvu_ij = (row+n_uv) * n_params + col;	/* Index for Gvu term */
-			Gv_ij  = Gvu_ij + n_uv;					/* Index for Gv term */
+			Gu_ij  = row * n_params + col;	/* Index for Gu term in equation for u */
+			Guv_ij = Gu_ij + n_uv;			/* Index for Guv term in equation for u */
+			Gvu_ij = Gu_ij + off;			/* Index for Gvu term in equation for v */
+			Gv_ij  = Gvu_ij + n_uv;			/* Index for Gv term in equation for v */
 			get_gps_dxdy (GMT, X[col], X[row], &dx, &dy, geo);
 			evaluate_greensfunctions (dx, dy, par, G);
 			A[Gu_ij]  = weight_u * G[GPS_FUNC_Q];
-			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
 			A[Guv_ij] = weight_u * G[GPS_FUNC_W];
+			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
 			A[Gvu_ij] = weight_v * G[GPS_FUNC_W];
 		}
 	}
@@ -893,11 +897,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 	}
-	alpha_x = obs;		/* Just a different name since the obs vector now holds all the alpha factors */
-	alpha_y = &obs[n_uv];	/* Halfway down the array we find the y alphas */
+	f_x = obs;			/* Just a different name for clarity since obs vector now holds all body forces f_x, f_y */
+	f_y = &obs[n_uv];	/* Halfway down the array we find the f_y body forces */
 #ifdef DUMPING
-	fp = fopen ("alpha.txt", "w");	/* Save alpha coefficients for debugging purposes */
-	for (p = 0; p < n_uv; p++) fprintf (fp, "%g\t%g\n", alpha_x[p], alpha_y[p]);
+	fp = fopen ("alpha.txt", "w");	/* Save body forces coefficients for debugging purposes */
+	for (p = 0; p < n_uv; p++) fprintf (fp, "%g\t%g\n", f_x[p], f_y[p]);
 	fclose (fp);
 #endif
 	gmt_M_free (GMT, A);
@@ -924,8 +928,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			for (p = 0; p < n_uv; p++) {
 				get_gps_dxdy (GMT, here, X[p], &dx, &dy, geo);
 				evaluate_greensfunctions (dx, dy, par, G);
-				here[GMT_U] += (alpha_x[p] * G[GPS_FUNC_Q] + alpha_y[p] * G[GPS_FUNC_W]);
-				here[GMT_V] += (alpha_y[p] * G[GPS_FUNC_P] + alpha_x[p] * G[GPS_FUNC_W]);
+				here[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+				here[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 			}
 			undo_gps_normalization (here, normalize, norm);
 			rms += pow (orig_u[j] - here[GMT_U], 2.0) + pow (orig_v[j] - here[GMT_V], 2.0);
@@ -1009,8 +1013,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				for (p = 0; p < n_uv; p++) {
 					get_gps_dxdy (GMT, out, X[p], &dx, &dy, geo);
 					evaluate_greensfunctions (dx, dy, par, G);
-					out[GMT_U] += (alpha_x[p] * G[GPS_FUNC_Q] + alpha_y[p] * G[GPS_FUNC_W]);
-					out[GMT_V] += (alpha_y[p] * G[GPS_FUNC_P] + alpha_x[p] * G[GPS_FUNC_W]);
+					out[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+					out[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
 				undo_gps_normalization (out, normalize, norm);
 				GMT_Put_Record (API, GMT_WRITE_DATA, out);
@@ -1033,20 +1037,20 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
 		gmt_M_memset (V, 4, double);
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n_uv,normalize,geo)
+#pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,f_x,f_y,norm,n_uv,normalize,geo)
 #endif
-		for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+		for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 			V[GMT_Y] = yp[row];
-			for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
+			for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
 				ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
-				if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only do solution where mask is not NaN */
+				if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only evaluate solution where mask is not NaN */
 				V[GMT_X] = xp[col];
 				/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 				for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {
 					get_gps_dxdy (GMT, V, X[p], &dx, &dy, geo);
 					evaluate_greensfunctions (dx, dy, par, G);
-					V[GMT_U] += (alpha_x[p] * G[GPS_FUNC_Q] + alpha_y[p] * G[GPS_FUNC_W]);
-					V[GMT_V] += (alpha_y[p] * G[GPS_FUNC_P] + alpha_x[p] * G[GPS_FUNC_W]);
+					V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+					V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
 				undo_gps_normalization (V, normalize, norm);
 				Out[GMT_X]->data[ij] = (float)V[GMT_U];
