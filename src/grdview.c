@@ -491,8 +491,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT,
 					            "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-					/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-					strncpy (GMT->common.n.BC, opt->arg, 4U);
+					gmt_strncpy (GMT->common.n.BC, opt->arg, 4U);
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
