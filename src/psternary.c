@@ -310,7 +310,7 @@ GMT_LOCAL char * get_Bsetting (struct GMT_OPTION *B) {
 	if (c) c[0] = 'g';	/* Restore the g */
 	sofar = strlen (bopt);
 	len = strlen (g);	/* How long is the g thing? */
-	if (c && c[len] && (sofar+len) < GMT_LEN64) strcat (bopt, &c[len]);	/* Append the rest */
+	if (c && c[len] && (sofar+len) < GMT_LEN64) strncat (bopt, &c[len], GMT_LEN64-1);	/* Append the rest */
 	return (bopt);
 }
 
