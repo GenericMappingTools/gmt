@@ -4,7 +4,7 @@
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT modules:	pscoast, pslegend, pstext, psxy
-# Unix progs:	echo, rm
+# Unix progs:	
 #
 ps=example_07.ps
 gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest \
