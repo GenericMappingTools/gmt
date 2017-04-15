@@ -13027,10 +13027,14 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			else if (err == 0 && S_ISDIR (S.st_mode))	/* Direcetory already exists, give warning */
 				GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
 		    else {	/* Create the new directory */
+				/* To avoid the weird CID 167015 that says:
+				toctou: Calling function mkdir that uses API->gwf_dir after a check function.
+				This can cause a time-of-check, time-of-use race condition.
+				we will use "dir" instead of "API->gwf_dir" below  */
 #ifndef _WIN32
-				if (mkdir (API->gwf_dir, (mode_t)0777))
+				if (mkdir (dir, (mode_t)0777))
 #else
-				if (mkdir (API->gwf_dir))
+				if (mkdir (dir))
 #endif
 				{
 	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT WorkFlow directory : %s\n", API->gwf_dir);
