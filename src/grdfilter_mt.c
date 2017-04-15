@@ -1003,7 +1003,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
-			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_BUFSIZ];
+			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_LEN256];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {
