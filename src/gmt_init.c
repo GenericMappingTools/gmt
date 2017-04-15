@@ -13062,7 +13062,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
 			//sprintf (dir, "%s/*", API->gwf_dir);	/* Reuse dir string for wildcard for finding all files in that dir */
-			chdir (API->gwf_dir);
+			chdir (dir);
 			if ((n_files = (unsigned int)gmtlib_glob_list (API->GMT, "*", &filelist))) {
 				for (k = 0; k < n_files; k++) {
 					if (gmt_remove_file (API->GMT, filelist[k]))
