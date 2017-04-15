@@ -3156,31 +3156,33 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	/* Then any custom fonts */
 
 	psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname);
-	if (!access (fullname, R_OK)) {	/* Decode Custom font file */
+	if (access (fullname, R_OK)) {	/* Decode Custom font file */
+		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Cannot finf file %s\n", fullname);
+		PSL_exit (EXIT_FAILURE);
+	}
 
-		if ((in = fopen (fullname, "r")) == NULL)
-		{
-			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
-			perror (fullname);
+	if ((in = fopen (fullname, "r")) == NULL) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
+		perror (fullname);
+		PSL_exit (EXIT_FAILURE);
+	}
+
+	while (fgets (buf, PSL_BUFSIZ, in)) {
+		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+		PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
+		if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
 			PSL_exit (EXIT_FAILURE);
 		}
-
-		while (fgets (buf, PSL_BUFSIZ, in)) {
-			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
-			if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
-				PSL_exit (EXIT_FAILURE);
-			}
-			i++;
-			if (i == n_alloc) {
-				n_alloc <<= 1;
-				PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
-			}
+		i++;
+		if (i == n_alloc) {
+			n_alloc <<= 1;
+			PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
 		}
-		fclose (in);
-		PSL->internal.N_FONTS = i;
 	}
+	fclose (in);
+	PSL->internal.N_FONTS = i;
+
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 }
 
@@ -5608,13 +5610,13 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
 			if (system (cmd)) {	/* convert failed, give up */
 				PSL_message (PSL, PSL_MSG_NORMAL, "Error: Automatic conversion of file %s to Sun rasterfile failed\n", file);
-				remove (tmp_file);	/* Remove the temp file */
+				if (remove (tmp_file));	/* Remove the temp file */
 				return (PSL_READ_FAILURE);
 			}
 		}
 		if ((fp = fopen (tmp_file, "rb")) == NULL) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", tmp_file);
-			remove (tmp_file);
+			if (remove (tmp_file));		/* ... and shut up Coverity */
 			return (PSL_READ_FAILURE);
 		}
 		if (psl_read_rasheader (PSL, fp, h, 0, 0)) {

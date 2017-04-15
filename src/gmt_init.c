@@ -1603,7 +1603,7 @@ GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 			case 'b':	/* Set BCs */
 				GMT->common.n.bc_set = true;
 				/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-				strncpy (GMT->common.n.BC, &p[1], 4U);
+				gmt_strncpy (GMT->common.n.BC, &p[1], 4U);
 				for (j = 0; j < MIN (4,strlen (GMT->common.n.BC)); j++) {
 					switch (GMT->common.n.BC[j]) {
 						case 'g': case 'x': case 'y': break;

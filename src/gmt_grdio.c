@@ -3023,10 +3023,8 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	if (to_gdalread->O.mem_layout[0]) {	/* If a different mem_layout request was applyied in gmt_gdalread than we must update */
-		strncpy(I->header->mem_layout, to_gdalread->O.mem_layout, 3);
-		I->header->mem_layout[3] = to_gdalread->O.mem_layout[3];
-	}
+	if (to_gdalread->O.mem_layout[0]) 	/* If a different mem_layout request was applyied in gmt_gdalread than we must update */
+		gmt_strncpy(I->header->mem_layout, to_gdalread->O.mem_layout, 4);
 
 	if (to_gdalread->B.active) gmt_M_str_free (I->header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
 

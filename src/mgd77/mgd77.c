@@ -1286,9 +1286,9 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 			break;
 		switch (k) {	/* The cases are 1-26 as per MGD77T docs */
 			/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-			case  1: strncpy (MGD77Record->word[0], p, 10U);	set_present (p, MGD77_ID);	break;
+			case  1: gmt_strncpy (MGD77Record->word[0], p, 10U);	set_present (p, MGD77_ID);	break;
 			case  2: set_a_val (p, MGD77_TZ);		break;
-			case  3: strncpy (r_date, p, 9U);			break;
+			case  3: gmt_strncpy (r_date, p, 9U);			break;
 			case  4: r_time = (p[0]) ? atof (p) : GMT->session.d_NaN;	break;
 			case  5: set_a_val (p, MGD77_LATITUDE);		break;
 			case  6: set_a_val (p, MGD77_LONGITUDE);	break;
@@ -1351,8 +1351,7 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (!gmt_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
-			/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-			strncpy (MGD77Record->word[nwords++], p, 10U);		/* Just copy text without changing it at all */
+			gmt_strncpy (MGD77Record->word[nwords++], p, 10U);		/* Just copy text without changing it at all */
 			for (j = n9 = 0; p[j]; j++) if (p[j] == '9') n9++;
 			if (n9 < j) MGD77Record->bit_pattern |= MGD77_this_bit[i];
 		}
@@ -3195,8 +3194,7 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, stru
 			MGD77Record.time = dvals[0];
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
 			for (k = 0; k < MGD77_N_STRING_FIELDS; k++)
-				/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-				strncpy (MGD77Record.word[k], tvals[k], 10U);
+				gmt_strncpy (MGD77Record.word[k], tvals[k], 10U);
 			error = MGD77_Write_Data_Record_txt (GMT, F, &MGD77Record);
 			break;
 		default:
@@ -3538,8 +3536,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		else {
 			rfStart = mgd77rf[ref_field_code].start;
 			rfEnd = mgd77rf[ref_field_code].end;
-			/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-			strncpy (m_model, mgd77rf[ref_field_code].model, 16U);	/* Use name corresponding to given code */
+			gmt_strncpy (m_model, mgd77rf[ref_field_code].model, 16U);	/* Use name corresponding to given code */
 		}
 		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
 		if (yr1 < rfStart || yr2 > rfEnd) {

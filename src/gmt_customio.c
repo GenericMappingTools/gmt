@@ -1407,7 +1407,7 @@ int gmt_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
-	strncpy (h.id, "DSBB", 4U);
+	gmt_strncpy (h.id, "DSBB", 4U);
 	h.n_columns = (short int)header->n_columns;	 h.n_rows = (short int)header->n_rows;
 	if (header->registration == GMT_GRID_PIXEL_REG) {
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2.0;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2.0;
@@ -1636,7 +1636,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* store header information and array */
 
 	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
-	strncpy (h.id, "DSBB", 4U);
+	gmt_strncpy (h.id, "DSBB", 4U);
 	h.n_columns = (short int)header->n_columns;	 h.n_rows = (short int)header->n_rows;
 	if (header->registration == GMT_GRID_PIXEL_REG) {
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2;
