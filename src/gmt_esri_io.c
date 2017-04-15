@@ -329,6 +329,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 
 		header->bits = 32;	/* Those float binary files */
 		/* Ok, now as mentioned above undo the file pointer swapping (point again to data file) */
+		gmt_fclose (GMT, fp);
 		fp = fpBAK;
 		gmt_fclose (GMT, fp2);
 	}
