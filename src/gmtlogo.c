@@ -165,7 +165,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, dim[2];
 
-	char cmd[GMT_BUFSIZ] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
 
 	struct GMT_FONT F;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
