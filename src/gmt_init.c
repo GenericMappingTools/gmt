@@ -1955,7 +1955,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 		{
 			int case_val;
 			case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-			if (!GMT_keywords_updated[case_val])	/* If equal to default, skip it */
+			if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
 				continue;
 		}
 #endif
@@ -6679,13 +6679,13 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Must handle any internal history regarding incs and registration */
 		/* Here, item may be of the form <region>[+I<incs>][+GP|G] if -R was given to a non-plotting module */
-		if ((c = strstr (item, "+G"))) {	/* Got grid registration */
+		if ((c = strstr (item, "+G")) != NULL) {	/* Got grid registration */
 			GMT->common.R.active[GSET] = true;
 			GMT->common.R.registration = (c[2] == 'P') ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid registration %c from RG history\n", c[2]);
 			c[0] = '\0';	/* Chop off this modifier */
 		}
-		if ((c = strstr (item, "+I"))) {	/* Got grid increments */
+		if ((c = strstr (item, "+I")) != NULL) {	/* Got grid increments */
 			gmt_getinc (GMT, &c[2], GMT->common.R.inc);
 			GMT->common.R.active[ISET] = true;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid spacing %s from RG history\n", &c[2]);
@@ -8976,7 +8976,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	if (error && case_val >= 0)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 #ifdef SHORT_GMTCONF
-	else if (core)		/* So far, only gmtset calls this function with core = true, but this is a too fragile solution */
+	else if (core && case_val >= 0)		/* So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 		GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 #endif
 	return ((error) ? 1 : 0);
@@ -10650,6 +10650,7 @@ bool geo;
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Send stdin to %s.\n", file);
 				if ((content = malloc (GMT_BUFSIZ)) == NULL) {
 					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_region_from_data: Unable to allocate %d bytes for buffer.\n", GMT_BUFSIZ);
+				    fclose (fp);
 					return GMT_RUNTIME_ERROR;
 				}
 				while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
@@ -13005,7 +13006,10 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	 */
 	
 	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"}, t_file[GMT_LEN256] = {""};
+	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"};
+#ifdef HARDWIRE_GMTCONF
+	char t_file[GMT_LEN256] = {""};
+#endif
 	int err = 0, error = GMT_NOERROR;
 	unsigned int n_files = 0, k;
     struct stat S;

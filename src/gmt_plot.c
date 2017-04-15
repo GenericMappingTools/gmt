@@ -6417,7 +6417,7 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	int k;
 	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set??? Writing to current dir instead\n");
-		strncpy (GMT->current.ps.filename, "gmt.ps0", 7U);
+		strcpy (GMT->current.ps.filename, "gmt.ps0");
 	}
 	else
 		sprintf (GMT->current.ps.filename, "%s/gmt.ps0", GMT->parent->gwf_dir);

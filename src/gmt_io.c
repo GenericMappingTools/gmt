@@ -8092,22 +8092,29 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 		}
 		if ((fpi = fopen (oldfile, "rb")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to open %s! [fopen error: %s]\n", oldfile, strerror (errno));
+			fclose (fpo);
 			return errno;
 		}
 		/* Get memory for reading GMT_BUFSIZ characters at the time */
 		if ((chunk = calloc (GMT_BUFSIZ, sizeof (char))) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to allocate memory! [calloc error: %s]\n", strerror (errno));
+			fclose (fpi);
+			fclose (fpo);
 			return errno;
 		}
 		while ((ni = fread (chunk, sizeof (char), GMT_BUFSIZ, fpi))) {	/* Read until nothing, write each chunk */
 			if ((no = fwrite (chunk, sizeof (char), ni, fpo)) != ni) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to write %" PRIuS " bytes to %s! [fwrite error: %s]\n", ni, newfile, strerror (errno));
+				fclose (fpi);
+				fclose (fpo);
+				free (chunk);	/* Free the chunk */
 				return errno;
 			}
 		}
 		free (chunk);	/* Free the chunk */
 		if (fclose (fpi)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to close %s! [fwrite error: %s]\n", oldfile, strerror (errno));
+			fclose (fpo);
 			return errno;
 		}
 		if (fclose (fpo)) {

@@ -298,18 +298,19 @@ GMT_LOCAL char * get_gridint (struct GMT_OPTION *B) {
 }
 
 GMT_LOCAL char * get_Bsetting (struct GMT_OPTION *B) {
-	size_t len;
+	size_t len, sofar;
 	char *c = NULL, *g = NULL;
-	static char bopt[GMT_LEN32] = {""};
+	static char bopt[GMT_LEN64] = {""};
 	if (B == NULL) return NULL;	/* No option... */
 	if ((g = get_gridint (B)) == NULL) return (&B->arg[1]);	/* No gridlines requested so use the entire thing */
 	
 	c = strstr (B->arg, g);	/* Start of g[<pars>] */
-	c[0] = '\0';	/* Hide g for now */
-	strcpy (bopt, &B->arg[1]);	/* Place start of b up to g[<pars>] in bopt, skipping the leading a,b,c */
-	c[0] = 'g';	/* Restore the g */
+	if (c) c[0] = '\0';	/* Hide g for now */
+	strncpy (bopt, &B->arg[1], 63U);	/* Place start of b up to g[<pars>] in bopt, skipping the leading a,b,c */
+	if (c) c[0] = 'g';	/* Restore the g */
+	sofar = strlen (bopt);
 	len = strlen (g);	/* How long is the g thing? */
-	if (c[len]) strcat (bopt, &c[len]);	/* Append the rest */
+	if (c && c[len] && (sofar+len) < GMT_LEN64) strcat (bopt, &c[len]);	/* Append the rest */
 	return (bopt);
 }
 

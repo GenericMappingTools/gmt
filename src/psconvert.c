@@ -1122,6 +1122,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		for (row = 0; row < nRows; row++) {
 			if ((k = read (fd[0], tmp, (unsigned int)(nCols * nBands))) == 0) {	/* Read a row of nCols by nBands bytes of data */
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not read row from pipe into Image structure\n");
+				gmt_M_free (API->GMT, tmp);
 				return GMT_RUNTIME_ERROR;
 			}
 			for (col = n = 0; col < nCols; col++)

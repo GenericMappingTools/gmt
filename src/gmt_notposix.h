@@ -503,6 +503,13 @@
 #	define getcwd _getcwd
 #endif
 
+/* mktemp is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
+#if defined HAVE__MKTEMP && !defined HAVE_MKTEMP
+#	define mktemp _mktemp
+#endif
+
 /* getpid is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in process.h */
