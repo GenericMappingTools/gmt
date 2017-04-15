@@ -368,8 +368,10 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_remove_file (GMT, old_index_path))	/* First delete old file */
+	if (gmt_remove_file (GMT, old_index_path)) {	/* First delete old file */
+		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
+	}
 	if (gmt_rename_file (GMT, index_path, old_index_path)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
 		x2sys_end (GMT, s);
