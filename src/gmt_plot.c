@@ -5287,7 +5287,7 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (!G->n_segments) return;	/* Northing to do here */
-
+	
 	if (G->debug) plot_contlabel_debug (GMT, PSL, G);		/* Debugging lines and points */
 
 	/* See if there are labels at all */
@@ -5313,6 +5313,7 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		if (G->delay) mode |= PSL_TXT_CLIP_ON;		/* Also turn on clip path after done */
 		plot_contlabel_plotlabels (GMT, PSL, G, mode);	/* Plot labels and possibly turn on clipping if delay */
 	}
+	PSL_command (GMT->PSL, "[] 0 B\n");	/* Ensure no pen textures remain in effect */
 }
 
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
