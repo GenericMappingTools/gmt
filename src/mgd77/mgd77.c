@@ -636,80 +636,80 @@ static int MGD77_Find_Cruise_ID (struct GMT_CTRL *GMT, char *name, char **cruise
 static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT, struct MGD77_HEADER_PARAMS *P, char *record) {
 	/* Copies information from record to the header structure */
 	int k = 0;
-	char *stringp = NULL, *word = NULL, buffer[GMT_BUFSIZ+1];
+	char *stringp = NULL, *word = NULL, buffer[GMT_BUFSIZ];
 	gmt_M_unused(GMT);
 
 	P->Record_Type = '4';	/* Set record type */
 
-	strncpy (buffer, record, GMT_BUFSIZ);
+	strncpy (buffer, record, GMT_BUFSIZ-1);
 	stringp = buffer;
 	while (k < MGD77T_N_HEADER_ITEMS && (word = strsep (&stringp, "\t")) != NULL ) {
 		switch (k) {
 			/* coverity[buffer_size_warning] */	/* Do not remove this comment */
-			case  0:	strncpy (P->Survey_Identifier, word, 9U);			break;
-			case  1:	strncpy (P->Format_Acronym, word, 6U);				break;
-			case  2:	strncpy (P->Data_Center_File_Number, word, 9U);		break;
-			case  3:	strncpy (P->Parameters_Surveyed_Code, word, 6U);	break;
-			case  4:	strncpy (P->File_Creation_Year, word, 4);
-			            strncpy (P->File_Creation_Month, &word[4], 2);
-			            strncpy (P->File_Creation_Day, &word[6], 2);		break;
-			case  5:	strncpy (P->Source_Institution, word, 40U);			break;
-			case  6:	strncpy (P->Country, word, 19U);					break;
-			case  7:	strncpy (P->Platform_Name, word, 22U);				break;
+			case  0:	gmt_strncpy (P->Survey_Identifier, word, 9U);			break;
+			case  1:	gmt_strncpy (P->Format_Acronym, word, 6U);				break;
+			case  2:	gmt_strncpy (P->Data_Center_File_Number, word, 9U);		break;
+			case  3:	gmt_strncpy (P->Parameters_Surveyed_Code, word, 6U);	break;
+			case  4:	gmt_strncpy (P->File_Creation_Year, word, 4);
+			            gmt_strncpy (P->File_Creation_Month, &word[4], 2);
+			            gmt_strncpy (P->File_Creation_Day, &word[6], 2);		break;
+			case  5:	gmt_strncpy (P->Source_Institution, word, 40U);			break;
+			case  6:	gmt_strncpy (P->Country, word, 19U);					break;
+			case  7:	gmt_strncpy (P->Platform_Name, word, 22U);				break;
 			case  8:	P->Platform_Type_Code = word[0];					break;
-			case  9:	strncpy (P->Platform_Type, word, 7U);				break;
-			case 10:	strncpy (P->Chief_Scientist, word, 33U);			break;
-			case 11:	strncpy (P->Project_Cruise_Leg, word, 59U);			break;
-			case 12:	strncpy (P->Funding, word, 21U);					break;
-			case 13:	strncpy (P->Survey_Departure_Year, word, 4);
-					strncpy (P->Survey_Departure_Month, &word[4], 2);
-					strncpy (P->Survey_Departure_Day, &word[6], 2);			break;
-			case 14:	strncpy (P->Port_of_Departure, word, 33U);			break;
-			case 15:	strncpy (P->Survey_Arrival_Year, word, 4);
-					strncpy (P->Survey_Arrival_Month, &word[4], 2);
-					strncpy (P->Survey_Arrival_Day, &word[6], 2);			break;
-			case 16:	strncpy (P->Port_of_Arrival, word, 31U);			break;
-			case 17:	strncpy (P->Navigation_Instrumentation, word, 41U);		break;
-			case 18:	strncpy (P->Geodetic_Datum_Position_Determination_Method, word, 39U);	break;
-			case 19:	strncpy (P->Bathymetry_Instrumentation, word, 41U);			break;
-			case 20:	strncpy (P->Bathymetry_Add_Forms_of_Data, word, 39U);			break;
-			case 21:	strncpy (P->Magnetics_Instrumentation, word, 41U);			break;
-			case 22:	strncpy (P->Magnetics_Add_Forms_of_Data, word, 39U);			break;
-			case 23:	strncpy (P->Gravity_Instrumentation, word, 41U);			break;
-			case 24:	strncpy (P->Gravity_Add_Forms_of_Data, word, 39U);			break;
-			case 25:	strncpy (P->Seismic_Instrumentation, word, 41U);			break;
-			case 26:	strncpy (P->Seismic_Data_Formats, word, 39U);				break;
-			case 27:	strncpy (P->Topmost_Latitude, word, 4U);				break;
-			case 28:	strncpy (P->Bottommost_Latitude, word, 4U);				break;
-			case 29:	strncpy (P->Leftmost_Longitude, word, 5U);				break;
-			case 30:	strncpy (P->Rightmost_Longitude, word, 5U);				break;
-			case 31:	strncpy (P->Bathymetry_Digitizing_Rate, word, 4U);			break;
-			case 32:	strncpy (P->Bathymetry_Sampling_Rate, word, 13U);			break;
-			case 33:	strncpy (P->Bathymetry_Assumed_Sound_Velocity, word, 6U);		break;
-			case 34:	strncpy (P->Bathymetry_Datum_Code, word, 3U);				break;
-			case 35:	strncpy (P->Bathymetry_Interpolation_Scheme, word, 57U);		break;
-			case 36:	strncpy (P->Magnetics_Digitizing_Rate, word, 4U);			break;
-			case 37:	strncpy (P->Magnetics_Sampling_Rate, word, 3U);				break;
-			case 38:	strncpy (P->Magnetics_Sensor_Tow_Distance, word, 5U);			break;
-			case 39:	strncpy (P->Magnetics_Sensor_Depth, word, 6U);				break;
-			case 40:	strncpy (P->Magnetics_Sensor_Separation, word, 4U);			break;
-			case 41:	strncpy (P->Magnetics_Ref_Field_Code, word, 3U);			break;
-			case 42:	strncpy (P->Magnetics_Ref_Field, word, 13U);				break;
-			case 43:	strncpy (P->Magnetics_Method_Applying_Res_Field, word, 48U);		break;
-			case 44:	strncpy (P->Gravity_Digitizing_Rate, word, 4U);				break;
-			case 45:	strncpy (P->Gravity_Sampling_Rate, word, 3U);				break;
+			case  9:	gmt_strncpy (P->Platform_Type, word, 7U);				break;
+			case 10:	gmt_strncpy (P->Chief_Scientist, word, 33U);			break;
+			case 11:	gmt_strncpy (P->Project_Cruise_Leg, word, 59U);			break;
+			case 12:	gmt_strncpy (P->Funding, word, 21U);					break;
+			case 13:	gmt_strncpy (P->Survey_Departure_Year, word, 4);
+					gmt_strncpy (P->Survey_Departure_Month, &word[4], 2);
+					gmt_strncpy (P->Survey_Departure_Day, &word[6], 2);			break;
+			case 14:	gmt_strncpy (P->Port_of_Departure, word, 33U);			break;
+			case 15:	gmt_strncpy (P->Survey_Arrival_Year, word, 4);
+					gmt_strncpy (P->Survey_Arrival_Month, &word[4], 2);
+					gmt_strncpy (P->Survey_Arrival_Day, &word[6], 2);			break;
+			case 16:	gmt_strncpy (P->Port_of_Arrival, word, 31U);			break;
+			case 17:	gmt_strncpy (P->Navigation_Instrumentation, word, 41U);		break;
+			case 18:	gmt_strncpy (P->Geodetic_Datum_Position_Determination_Method, word, 39U);	break;
+			case 19:	gmt_strncpy (P->Bathymetry_Instrumentation, word, 41U);			break;
+			case 20:	gmt_strncpy (P->Bathymetry_Add_Forms_of_Data, word, 39U);			break;
+			case 21:	gmt_strncpy (P->Magnetics_Instrumentation, word, 41U);			break;
+			case 22:	gmt_strncpy (P->Magnetics_Add_Forms_of_Data, word, 39U);			break;
+			case 23:	gmt_strncpy (P->Gravity_Instrumentation, word, 41U);			break;
+			case 24:	gmt_strncpy (P->Gravity_Add_Forms_of_Data, word, 39U);			break;
+			case 25:	gmt_strncpy (P->Seismic_Instrumentation, word, 41U);			break;
+			case 26:	gmt_strncpy (P->Seismic_Data_Formats, word, 39U);				break;
+			case 27:	gmt_strncpy (P->Topmost_Latitude, word, 4U);				break;
+			case 28:	gmt_strncpy (P->Bottommost_Latitude, word, 4U);				break;
+			case 29:	gmt_strncpy (P->Leftmost_Longitude, word, 5U);				break;
+			case 30:	gmt_strncpy (P->Rightmost_Longitude, word, 5U);				break;
+			case 31:	gmt_strncpy (P->Bathymetry_Digitizing_Rate, word, 4U);			break;
+			case 32:	gmt_strncpy (P->Bathymetry_Sampling_Rate, word, 13U);			break;
+			case 33:	gmt_strncpy (P->Bathymetry_Assumed_Sound_Velocity, word, 6U);		break;
+			case 34:	gmt_strncpy (P->Bathymetry_Datum_Code, word, 3U);				break;
+			case 35:	gmt_strncpy (P->Bathymetry_Interpolation_Scheme, word, 57U);		break;
+			case 36:	gmt_strncpy (P->Magnetics_Digitizing_Rate, word, 4U);			break;
+			case 37:	gmt_strncpy (P->Magnetics_Sampling_Rate, word, 3U);				break;
+			case 38:	gmt_strncpy (P->Magnetics_Sensor_Tow_Distance, word, 5U);			break;
+			case 39:	gmt_strncpy (P->Magnetics_Sensor_Depth, word, 6U);				break;
+			case 40:	gmt_strncpy (P->Magnetics_Sensor_Separation, word, 4U);			break;
+			case 41:	gmt_strncpy (P->Magnetics_Ref_Field_Code, word, 3U);			break;
+			case 42:	gmt_strncpy (P->Magnetics_Ref_Field, word, 13U);				break;
+			case 43:	gmt_strncpy (P->Magnetics_Method_Applying_Res_Field, word, 48U);		break;
+			case 44:	gmt_strncpy (P->Gravity_Digitizing_Rate, word, 4U);				break;
+			case 45:	gmt_strncpy (P->Gravity_Sampling_Rate, word, 3U);				break;
 			case 46:	P->Gravity_Theoretical_Formula_Code = word[0];				break;
-			case 47:	strncpy (P->Gravity_Theoretical_Formula, word, 18U);			break;
+			case 47:	gmt_strncpy (P->Gravity_Theoretical_Formula, word, 18U);			break;
 			case 48:	P->Gravity_Reference_System_Code = word[0];				break;
-			case 49:	strncpy (P->Gravity_Reference_System, word, 17U);			break;
-			case 50:	strncpy (P->Gravity_Corrections_Applied, word, 39U);			break;
-			case 51:	strncpy (P->Gravity_Departure_Base_Station, word, 8U);			break;
-			case 52:	strncpy (P->Gravity_Departure_Base_Station_Name, word, 34U);		break;
-			case 53:	strncpy (P->Gravity_Arrival_Base_Station, word, 8U);			break;
-			case 54:	strncpy (P->Gravity_Arrival_Base_Station_Name, word, 32U);		break;
-			case 55:	strncpy (P->Number_of_Ten_Degree_Identifiers, word, 3U);		break;
-			case 56:	strncpy (P->Ten_Degree_Identifier, word, 151U);				break;
-			case 57:	strncpy (P->Additional_Documentation_1, word, 79U);			break;
+			case 49:	gmt_strncpy (P->Gravity_Reference_System, word, 17U);			break;
+			case 50:	gmt_strncpy (P->Gravity_Corrections_Applied, word, 39U);			break;
+			case 51:	gmt_strncpy (P->Gravity_Departure_Base_Station, word, 8U);			break;
+			case 52:	gmt_strncpy (P->Gravity_Departure_Base_Station_Name, word, 34U);		break;
+			case 53:	gmt_strncpy (P->Gravity_Arrival_Base_Station, word, 8U);			break;
+			case 54:	gmt_strncpy (P->Gravity_Arrival_Base_Station_Name, word, 32U);		break;
+			case 55:	gmt_strncpy (P->Number_of_Ten_Degree_Identifiers, word, 3U);		break;
+			case 56:	gmt_strncpy (P->Ten_Degree_Identifier, word, 151U);				break;
+			case 57:	gmt_strncpy (P->Additional_Documentation_1, word, 79U);			break;
 		}
 		k++;
 	}
@@ -1234,7 +1234,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 		k = len - 1;
 		while (k >= 0 && currentField[k] == ' ') k--;
 		currentField[++k] = '\0';	/* No longer any trailing blanks */
-		strncpy (MGD77Record->word[nwords], currentField, 10U);	/* Just copy text without changing it at all */
+		gmt_strncpy (MGD77Record->word[nwords], currentField, 10U);	/* Just copy text without changing it at all */
 	}
 
 	/* Get absolute time, if all the pieces are there */
@@ -1288,21 +1288,21 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 			/* coverity[buffer_size_warning] */	/* Do not remove this comment */
 			case  1: gmt_strncpy (MGD77Record->word[0], p, 10U);	set_present (p, MGD77_ID);	break;
 			case  2: set_a_val (p, MGD77_TZ);		break;
-			case  3: gmt_strncpy (r_date, p, 9U);			break;
+			case  3: gmt_strncpy (r_date, p, 9U);	break;
 			case  4: r_time = (p[0]) ? atof (p) : GMT->session.d_NaN;	break;
 			case  5: set_a_val (p, MGD77_LATITUDE);		break;
 			case  6: set_a_val (p, MGD77_LONGITUDE);	break;
 			case  7: set_a_val (p, MGD77_PTC);		break;
 			case  8: set_a_val (p, MGD77_NQC);		break;
 			case  9: set_a_val (p, MGD77_TWT);		break;
-			case 10: set_a_val (p, MGD77_DEPTH);		break;
+			case 10: set_a_val (p, MGD77_DEPTH);	break;
 			case 11: set_a_val (p, MGD77_BCC);		break;
 			case 12: set_a_val (p, MGD77_BTC);		break;
 			case 13: set_a_val (p, MGD77T_BQC);		break;
 			case 14: set_a_val (p, MGD77_MTF1);		break;
 			case 15: set_a_val (p, MGD77_MTF2);		break;
 			case 16: set_a_val (p, MGD77_MAG);		break;
-			case 17: set_a_val (p, MGD77_MSENS);		break;
+			case 17: set_a_val (p, MGD77_MSENS);	break;
 			case 18: set_a_val (p, MGD77_DIUR);		break;
 			case 19: set_a_val (p, MGD77_MSD);		break;
 			case 20: set_a_val (p, MGD77T_MQC);		break;
@@ -1310,8 +1310,8 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 			case 22: set_a_val (p, MGD77_EOT);		break;
 			case 23: set_a_val (p, MGD77_FAA);		break;
 			case 24: set_a_val (p, MGD77T_GQC);		break;
-			case 25: strncpy (MGD77Record->word[1], p, 10U);	set_present (p, MGD77_SLN);		break;
-			case 26: strncpy (MGD77Record->word[2], p, 10U);	set_present (p, MGD77_SSPN);		break;
+			case 25: gmt_strncpy (MGD77Record->word[1], p, 10U);	set_present (p, MGD77_SLN);		break;
+			case 26: gmt_strncpy (MGD77Record->word[2], p, 10U);	set_present (p, MGD77_SSPN);		break;
 		}
 	}
 	if (r_date[0] && !gmt_M_is_dnan (r_time)) {	/* Got all the time items */
@@ -1341,10 +1341,10 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	int j, n9, nwords, k, yyyy, mm, dd;
 	unsigned int pos, i;
 	int64_t rata_die;
-	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
+	char line[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 	double tz, secs;
 
-	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
+	if (!(fgets (line, GMT_LEN256, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	gmt_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
@@ -2460,28 +2460,28 @@ int MGD77_Write_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD
 
 	P = H->mgd77[use];
 	fputs (MGD77T_HEADER, F->fp);					fputs ("\n", F->fp);
-	fputs (P->Survey_Identifier, F->fp);				fputs ("\t", F->fp);
+	fputs (P->Survey_Identifier, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Format_Acronym, F->fp);				fputs ("\t", F->fp);
-	fputs (P->Data_Center_File_Number, F->fp);			fputs ("\t", F->fp);
-	fputs (P->Parameters_Surveyed_Code, F->fp);			fputs ("\t", F->fp);
+	fputs (P->Data_Center_File_Number, F->fp);		fputs ("\t", F->fp);
+	fputs (P->Parameters_Surveyed_Code, F->fp);		fputs ("\t", F->fp);
 	fputs (P->File_Creation_Year, F->fp);
 	fputs (P->File_Creation_Month, F->fp);
-	fputs (P->File_Creation_Day, F->fp);				fputs ("\t", F->fp);
-	fputs (P->Source_Institution, F->fp);				fputs ("\t", F->fp);
+	fputs (P->File_Creation_Day, F->fp);			fputs ("\t", F->fp);
+	fputs (P->Source_Institution, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Country, F->fp);					fputs ("\t", F->fp);
 	fputs (P->Platform_Name, F->fp);				fputs ("\t", F->fp);
-	fputc (P->Platform_Type_Code, F->fp);				fputs ("\t", F->fp);
+	fputc (P->Platform_Type_Code, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Platform_Type, F->fp);				fputs ("\t", F->fp);
 	fputs (P->Chief_Scientist, F->fp);				fputs ("\t", F->fp);
-	fputs (P->Project_Cruise_Leg, F->fp);				fputs ("\t", F->fp);
+	fputs (P->Project_Cruise_Leg, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Funding, F->fp);					fputs ("\t", F->fp);
 	fputs (P->Survey_Departure_Year, F->fp);
 	fputs (P->Survey_Departure_Month, F->fp);
-	fputs (P->Survey_Departure_Day, F->fp);				fputs ("\t", F->fp);
-	fputs (P->Port_of_Departure, F->fp);				fputs ("\t", F->fp);
+	fputs (P->Survey_Departure_Day, F->fp);			fputs ("\t", F->fp);
+	fputs (P->Port_of_Departure, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Survey_Arrival_Year, F->fp);
 	fputs (P->Survey_Arrival_Month, F->fp);
-	fputs (P->Survey_Arrival_Day, F->fp);				fputs ("\t", F->fp);
+	fputs (P->Survey_Arrival_Day, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Port_of_Arrival, F->fp);				fputs ("\t", F->fp);
 	fputs (P->Navigation_Instrumentation, F->fp);			fputs ("\t", F->fp);
 	fputs (P->Geodetic_Datum_Position_Determination_Method, F->fp);	fputs ("\t", F->fp);
@@ -2755,7 +2755,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 		if (append)	/* No extension, must append extension */
 			sprintf (geo_path, "%s.%s", track, MGD77_suffix[fmt]);
 		else
-			strncpy (geo_path, track, GMT_BUFSIZ);	/* Extension already there */
+			strncpy (geo_path, track, GMT_BUFSIZ-1);	/* Extension already there */
 
 		/* Here we have a relative (or absolute, if hard path was given) path.  First look in current directory */
 
@@ -3178,7 +3178,7 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, stru
 		case MGD77_FORMAT_M77:		/* Will write a single MGD77 record; first fill out MGD77_RECORD structure */
 			MGD77Record.time = dvals[0];
 			for (i = 1; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
-			for (k = 0; k < MGD77_N_STRING_FIELDS; k++) strncpy (MGD77Record.word[k], tvals[k], 10U);
+			for (k = 0; k < MGD77_N_STRING_FIELDS; k++) gmt_strncpy (MGD77Record.word[k], tvals[k], 10U);
 			error = MGD77_Write_Data_Record_m77 (GMT, F, &MGD77Record);
 			break;
 		case MGD77_FORMAT_CDF:		/* Will write a single MGD77+ netCDF record */
@@ -3187,7 +3187,7 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, stru
 		case MGD77_FORMAT_M7T:		/* Will write a single ASCII table record; first fill out MGD77_RECORD structure */
 			MGD77Record.time = dvals[0];
 			for (i = 0; i < MGD77T_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
-			for (k = 0; k < MGD77_N_STRING_FIELDS; k++) strncpy (MGD77Record.word[k], tvals[k], 10U);
+			for (k = 0; k < MGD77_N_STRING_FIELDS; k++) gmt_strncpy (MGD77Record.word[k], tvals[k], 10U);
 			error = MGD77_Write_Data_Record_m77t (GMT, F, &MGD77Record);
 			break;
 		case MGD77_FORMAT_TBL:		/* Will write a single ASCII table record; first fill out MGD77_RECORD structure */
@@ -3357,7 +3357,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		if (F->verbose_level & 2) fprintf (fp_err, "Y-E-%s-H10-01: Invalid Format Type: (%c) [A]\n", F->NGDC_id, P->Format_Type);
 		H->errors[ERR]++;
 	}
-	strncpy (copy, P->Format_Description, 151U);
+	gmt_strncpy (copy, P->Format_Description, 151U);
 	gmt_str_toupper (copy);
 	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)") OR_TRUE) {
 		if (F->verbose_level & 2) fprintf (fp_err, "Y-E-%s-H10-02: Invalid Format Description: (%s) [(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)]\n", F->NGDC_id, P->Format_Description);
@@ -3531,7 +3531,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 				rfEnd = INT_MAX;
 				if (F->verbose_level & 2) fprintf (fp_err, "Y-W-%s-H13-09: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
 			}
-			strncpy (m_model, P->Magnetics_Ref_Field, 16U);
+			gmt_strncpy (m_model, P->Magnetics_Ref_Field, 16U);
 		}
 		else {
 			rfStart = mgd77rf[ref_field_code].start;
@@ -3625,7 +3625,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		H->errors[ERR]++;
 	}
 	pos = n_block = 0;
-	strncpy (copy, P->Ten_Degree_Identifier, 151U);
+	gmt_strncpy (copy, P->Ten_Degree_Identifier, 151U);
 	while (gmt_strtok (copy,",", &pos, p)) {
 		if (!strcmp (p, "9999")) {
 			if ((n && n_block != n) OR_TRUE) {
@@ -4126,7 +4126,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 			strncpy (value, &p[k], GMT_LEN256-1);
 		}
 		else			/* Just copy the word */
-			strncpy (word, p, GMT_LEN256);
+			strncpy (word, p, GMT_LEN256-1);
 
 		/* Turn word into lower case if upper case */
 
