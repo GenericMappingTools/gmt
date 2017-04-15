@@ -329,7 +329,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						if (p) p[0] = '\0';	/* Temporarily remove the slash */
 						Ctrl->S2.size = gmt_M_to_inch (GMT, opt->arg);
 						if (p) p[0] = '/';	/* Restore the slash */
-						if (strchr (opt->arg, 'V') || strchr (opt->arg, 'G') || strchr (opt->arg, 'L'))	/* Clearly got the old syntax */
+						if (p && p[0] == '/' && (strchr (opt->arg, 'V') || strchr (opt->arg, 'G') || strchr (opt->arg, 'L')))	/* Clearly got the old syntax */
 							n_errors += old_Q_parser (GMT, &p[1], Ctrl);
 						else {	/* New syntax: -Qs[+v[<size>][+parameters]] */
 							char symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
