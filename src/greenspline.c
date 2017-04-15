@@ -1367,7 +1367,7 @@ GMT_LOCAL double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, dou
 
 int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize = 0, unit = 0, n_cols, w_col, L_Max = 0;
+	unsigned int dimension = 0, normalize = 0, n_cols, w_col, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way, n_columns;
 	bool delete_grid = false, check_longitude, skip;
@@ -1384,7 +1384,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		"continuous curvature spherical spline in tension",
 		"linear Cartesian spline [1-D]",
 		"bilinear Cartesian spline [2-D]"};
-	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_col, weight_row;
@@ -1980,10 +1979,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 * are scaled by weight_row.
 	 */
 
-	mem = ((double)nm * (double)nm * (double)sizeof (double)) / 1024.0;	/* In kb */
-	unit = 0;
-	while (mem > 1024.0 && unit < 2) { mem /= 1024.0; unit++; }	/* Select next unit */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %.1f %s\n", mem, mem_unit[unit]);
+	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
+	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use (mem));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
