@@ -36,12 +36,13 @@
  *
  * The following functions are here:
  *
- *  gmtlib_getuserpath     Get pathname of file in "user directories" (GMT->session.TMPDIR, CWD, HOME, GMT->session.USERDIR)
+ *  gmtlib_getuserpath  Get pathname of file in "user directories" (GMT->session.TMPDIR, CWD, HOME, GMT->session.USERDIR)
  *  gmt_getdatapath     Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
  *  gmt_getsharepath    Get pathname of file in "share directories" (CWD, GMT->session.USERDIR, GMT->session.SHAREDIR tree)
  *  gmt_fopen:          Open a file using gmt_getdatapath
  *  gmt_fclose:         Close a file
- *  gmtlib_io_init:        Init GMT_IO structure
+ *  gmt_strncpy:        Copy n characters of a char string without triggering a Coverity issue
+ *  gmtlib_io_init:     Init GMT_IO structure
  *  gmt_write_segmentheader:   Write header record for multisegment files
  *  gmt_scanf:          Robust scanf function with optional dd:mm:ss conversion
  *  gmt_set_z_io:       Set GMT_Z_IO structure based on -Z
@@ -4514,6 +4515,16 @@ char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	return (NULL);	/* No file found, give up */
 }
 
+/*! Copy num characters from a char string without triggering a Coverity issue about 
+    "Buffer not null terminated" */
+char *gmt_strncpy (char *dest, const char *source, size_t num) {
+	/* This function is meant to be used only when Coverity annoying and insistently acuses of
+	   "Buffer not null terminated". We have several of those cases where strings are not NULL terminated. */
+	strncpy(dest, source, num-1);
+	dest[num-1] = source[num-1];
+	return dest;
+}
+
 /*! Like access but also checks the GMT_*DIR places */
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	char file[GMT_BUFSIZ] = {""}, *c = NULL;
@@ -7539,11 +7550,9 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	I->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	gmt_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	if (GMT->current.gdal_read_in.O.mem_layout[0])
-		/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
-		strncpy (I->header->mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);	/* Set the current memory layout */
+		gmt_strncpy (I->header->mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);	/* Set the current memory layout */
 	else
-		/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
-		strncpy (I->header->mem_layout, GMT_IMAGE_LAYOUT, 4);	/* Set the default array memory layout */
+		gmt_strncpy (I->header->mem_layout, GMT_IMAGE_LAYOUT, 4);	/* Set the default array memory layout */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 	return (I);
 }
