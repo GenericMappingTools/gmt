@@ -13072,8 +13072,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 				gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 			}
 			chdir("../");				/* Just get out of current dir so thaat it can be removed */
-			if (rmdir(API->gwf_dir)) {	/* Unable to delete the directory */
-				perror (API->gwf_dir);
+			if (rmdir(dir)) {	/* Unable to delete the directory */
+				perror (dir);
 				error = GMT_RUNTIME_ERROR;
 			}
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
