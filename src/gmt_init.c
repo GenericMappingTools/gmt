@@ -10657,6 +10657,7 @@ bool geo;
 			        if (fwrite (content, 1, n_read, fp) != n_read) {
 						GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_region_from_data: fwrite failure.\n");
 						free (content);
+				    	fclose (fp);
 						return GMT_RUNTIME_ERROR;
 					}
 			    }		
