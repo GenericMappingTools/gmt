@@ -3531,7 +3531,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 				rfEnd = INT_MAX;
 				if (F->verbose_level & 2) fprintf (fp_err, "Y-W-%s-H13-09: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
 			}
-			gmt_strncpy (m_model, P->Magnetics_Ref_Field, 16U);
+			gmt_strncpy (m_model, P->Magnetics_Ref_Field, 13U);
 		}
 		else {
 			rfStart = mgd77rf[ref_field_code].start;
