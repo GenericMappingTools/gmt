@@ -163,6 +163,9 @@ Optional Arguments
    Append **w** if weights are given instead of uncertainties.  This results in
    a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
    [Default uses no weights or uncertainties].
+   Note: At present the **-W** option is *unstable*.  We do not yet know if it reflects
+   a coding bug or a theoretical limitation.  Users beware, and make sure you compare
+   the results with non-weighted output for basic sanity checking.
 
 .. _-V:
 

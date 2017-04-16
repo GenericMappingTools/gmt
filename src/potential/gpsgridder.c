@@ -189,6 +189,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weights instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via 1/sigma_x, 1/sigma_y].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this option will only have an effect if -C is used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   PS: CURRENTLY NOT STABLE\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4-6 input columns (see -W); use -i to select columns from any data table.\n");
 	GMT_Option (API, "d,f,h,i,n,o,r,s,x,:,.");
@@ -304,6 +305,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Tne -W option is not stable.  We are trying to determine if this is a bug or feature.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Users beware.  Please compare to results obtained without -W for sanity checking.\n");
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
