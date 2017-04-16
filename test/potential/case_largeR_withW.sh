@@ -7,7 +7,7 @@ ps=case_largeR_withW.ps
 # Use real GPS data with uncertainties
 data=wus_gps_final_crowell.dat 
 #  Large region
-R=122.5W/115W/32.7N/38N
+R=122.5W/115W/33N/38N
 # blockmean interval
 I=10m
 # Gridding interval

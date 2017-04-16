@@ -624,7 +624,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	struct GMT_DATASEGMENT *S = NULL;
 	struct NN_DIST *P = gmt_M_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
-	n_cols = MIN (D->n_columns, 4);
+	n_cols = MIN (D->n_columns, 4);	/* Expects lon,lat and makes room for at least z, w and other colums */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
@@ -695,6 +695,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Aa to replace close neighbor pairs with their weighted average location until\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   no point pair has a NN distance less than the specified <min_dist> distance [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");

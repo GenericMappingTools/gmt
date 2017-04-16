@@ -66,7 +66,9 @@ Optional Arguments
    averaged) coordinates and the updated NN distances and point IDs.  A
    negative point number means the original point was replaced by a weighted
    average (the absolute ID value gives the ID of the first original point
-   ID to be included in the average.)
+   ID to be included in the average.).  Note: The input data are assumed to
+   contain (*lon, lat*) or (*x, y*), optionally followed by a *z* and a *weight* [1] column.
+   We compute a weighted average of the location and *z* (if present).
 
 .. _-C:
 

@@ -29,8 +29,8 @@ awk '{if($1 > -116.6 && $1 < -116.5 && $2 > 33.5 && $2 < 33.7) print($1,$2,-$3,$
 #  do the gridding. Seem to work correctly without weights
 #
 # Only use ~1/4 of the eigenvalues
-nr=`cat blk.lluv | wc -l`
-ne=`gmt math -Q $nr 40 DIV CEIL 10 MUL =`
+npairs=`cat blk.lluv | wc -l`
+ne=`gmt math -Q $npairs 2 MUL 40 DIV CEIL 10 MUL =`
 gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Vl -Fd4 -r -Cn${ne}+eigen.txt -S0.50 $W
 #
 
