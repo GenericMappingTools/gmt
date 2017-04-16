@@ -1162,6 +1162,55 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	return GMT_NOERROR;	/* Done here */
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char **ps_names, char *gs_BB, char *gs_params, char *device[], char *device_options[], char *ext[]) {
+	char out_file[GMT_LEN256] = {""};
+	int    error = 0;
+	double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
+
+	if (ps_names[0][1])		/* See if we have a margin request */
+		margin = gmt_M_to_points (API->GMT, &ps_names[0][1]);
+
+	if (API->GMT->PSL->internal.pmode != 3) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n",
+		            API->GMT->PSL->internal.pmode);
+		error++;
+	}
+	if (error) 			/* Return in error state */
+		return error;
+
+	if (pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
+
+	if (Ctrl->T.active) {		/* Then write the converted file into a file instead of storing it into a Image struct */
+		char t[GMT_LEN256] = {""};
+		sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
+		strcat (out_file, t);
+		if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
+			strncpy (t, Ctrl->F.file, GMT_LEN256-11);
+		}
+		else {
+			if (API->tmp_dir)	/* Use the established temp directory */
+				sprintf (t, "%s/psconvert_tmp", API->tmp_dir);
+			else	/* Must dump it in current directory */
+				sprintf (t, "psconvert_tmp");
+		}
+		strcat (t, ext[Ctrl->T.device]);
+		if (API->external) {		/* Apparently we cannot have the output file name inside quotes */
+			strcat (out_file, t);		strcat (out_file, " -");
+		}
+		else {
+			strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);
+			strcat (out_file, " -");
+		}
+	}
+	if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run ghostscript to convert the PS to the desired output format */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
+		error++;
+	}
+	return error;
+}
+
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_psconvert (void *V_API, int mode, void *args) {
@@ -1370,63 +1419,21 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->In.n_files = 1;
 	}
 
-	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
+	/* -------------------- Special case of in-memory PS. Process it and return ------------------- */
 	if (API->external && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
-		int    error = 0;
-		double margin = 0, w = 0, h = 0;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
-
-		if (ps_names[0][1])		/* See if we have a margin request */
-			margin = gmt_M_to_points (GMT, &ps_names[0][1]);
 		if (!return_image && !Ctrl->T.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			error++;
 		}
-		if (GMT->PSL->internal.pmode != 3) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-			            "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
-			error++;
-		}
-		if (error) {	/* Return in error state */
-			if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
-			gmt_M_free (GMT, ps_names);
-			gmt_M_free (GMT, line);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
+		else
+			error = in_mem_PS_convert(API, Ctrl, ps_names, gs_BB, gs_params, device, device_options, ext);
 
-		if (Ctrl->T.active) {			/* Then write the converted file into a file instead of storing it into a Image struct */
-			char t[GMT_LEN256] = {""};
-			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
-			strcat (out_file, t);
-			if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
-				strncpy (t, Ctrl->F.file, GMT_LEN256-11);
-			}
-			else {
-				if (API->tmp_dir)	/* Use the established temp directory */
-					sprintf (t, "%s/psconvert_tmp", API->tmp_dir);
-				else	/* Must dump it in current directory */
-					sprintf (t, "psconvert_tmp");
-			}
-			strcat (t, ext[Ctrl->T.device]);
-			if (API->external) {		/* Apparently we cannot have the output file name inside quotes */
-				strcat (out_file, t);		strcat (out_file, " -");
-			}
-			else {
-				strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);
-				strcat (out_file, " -");
-			}
-		}
-		if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run ghostscript to convert the PS to the desired output format */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
-			error++;
-		}
 		if (!Ctrl->L.active) gmt_M_str_free (ps_names[0]);		/* Otherwise ps_names contents are the Garbageman territory */
 		gmt_M_free (GMT, ps_names);
 		gmt_M_free (GMT, line);
 		Return (error ? GMT_RUNTIME_ERROR : GMT_NOERROR);		/* Done here */
 	}
-	/* -------------------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------------------- */
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
