@@ -39,8 +39,9 @@
 /* Control structure for gpsgridder */
 
 struct GPSGRIDDER_CTRL {
-	struct C {	/* -C[n|v]<cutoff>[/<file>] */
+	struct C {	/* -C[n|r|v]<cutoff>[+f<file>] */
 		bool active;
+		bool movie;	/* Undocumented and not-yet-working movie mode */
 		unsigned int mode;
 		double value;
 		char *file;
@@ -135,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile> [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|r|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -221,6 +222,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
+				if (gmt_get_modifier (opt->arg, 'm', p))
+					Ctrl->C.movie = true;
 				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -1037,38 +1040,75 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		/* Precalculate all coordinates */
 		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
+		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
+			float *tmp = gmt_M_memory_aligned (GMT, NULL, Out[0]->header->size, float);
+			
+			for (p = 0; p < (int64_t)n_uv; p++) {	/* For each eigenvalue */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", p);
+				for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
+					V[GMT_Y] = yp[row];
+					for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
+						ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
+						if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only evaluate solution where mask is not NaN */
+						V[GMT_X] = xp[col];
+						/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
+						get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
+						evaluate_greensfunctions (dx, dy, par, G);
+						V[GMT_U] = (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+						V[GMT_V] = (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
+						undo_gps_normalization (V, normalize, norm);
+						Out[GMT_X]->data[ij] += (float)V[GMT_U];
+						Out[GMT_Y]->data[ij] += (float)V[GMT_V];
+					}
+				}
+				for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
+					gmt_grd_init (GMT, Out[k]->header, options, true);
+					snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
+					sprintf (file, Ctrl->G.file, tag[k], (int)p);
+					gmt_M_memcpy (tmp, Out[k]->data, Out[k]->header->size, float);	/* Save before write */
+					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
+					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_NOERROR) {
+						Return (API->error);
+					}
+					gmt_M_memcpy (Out[k]->data, tmp, Out[k]->header->size, float);	/* Restore after write */
+				}
+			}
+			gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
+		}
+		else {
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,f_x,f_y,norm,n_uv,normalize,geo)
 #endif
-		for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
-			V[GMT_Y] = yp[row];
-			for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
-				ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
-				if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only evaluate solution where mask is not NaN */
-				V[GMT_X] = xp[col];
-				/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
-				for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up terms */
-					get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
-					evaluate_greensfunctions (dx, dy, par, G);
-					V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
-					V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
+			for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
+				V[GMT_Y] = yp[row];
+				for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
+					ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
+					if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only evaluate solution where mask is not NaN */
+					V[GMT_X] = xp[col];
+					/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
+					for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up terms */
+						get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
+						evaluate_greensfunctions (dx, dy, par, G);
+						V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+						V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
+					}
+					undo_gps_normalization (V, normalize, norm);
+					Out[GMT_X]->data[ij] = (float)V[GMT_U];
+					Out[GMT_Y]->data[ij] = (float)V[GMT_V];
 				}
-				undo_gps_normalization (V, normalize, norm);
-				Out[GMT_X]->data[ij] = (float)V[GMT_U];
-				Out[GMT_Y]->data[ij] = (float)V[GMT_V];
+			}
+			for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
+				gmt_grd_init (GMT, Out[k]->header, options, true);
+				snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
+				sprintf (file, Ctrl->G.file, tag[k]);
+				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
 			}
 		}
 		gmt_M_free (GMT, xp);
 		gmt_M_free (GMT, yp);
-		for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
-			gmt_grd_init (GMT, Out[k]->header, options, true);
-			snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
-			sprintf (file, Ctrl->G.file, tag[k]);
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_NOERROR) {
-				Return (API->error);
-			}
-		}
 	}
 
 	/* Clean up */
