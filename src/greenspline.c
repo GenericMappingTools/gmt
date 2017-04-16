@@ -65,8 +65,9 @@ struct GREENSPLINE_CTRL {
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C[n|v]<cutoff>[+f<file>] */
+	struct C {	/* -C[n|r|v]<cutoff>[+f<file>] */
 		bool active;
+		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
 		unsigned int mode;
 		double value;
 		char *file;
@@ -424,6 +425,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
+				if (gmt_get_modifier (opt->arg, 'm', p))
+					Ctrl->C.movie = 1;
+				else if (gmt_get_modifier (opt->arg, 'M', p))
+					Ctrl->C.movie = 2;
 				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -1369,7 +1374,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, n_cols, w_col, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
-	int error, out_ID, way, n_columns;
+	int error, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip;
 
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
@@ -1385,6 +1390,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		"linear Cartesian spline [1-D]",
 		"bilinear Cartesian spline [2-D]"};
 
+	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0, limit;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_col, weight_row;
 	double *A = NULL, r_min, r_max, err_sum = 0.0;
@@ -2049,8 +2055,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
-		int n_use, error;
-		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit;
+		int error;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD\n");
 #ifndef HAVE_LAPACK
@@ -2060,7 +2065,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		v = gmt_M_memory (GMT, NULL, nm * nm, double);
 		s = gmt_M_memory (GMT, NULL, nm, double);
 		if ((error = gmt_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
-
+		if (Ctrl->C.movie) {	/* Keep copy of original eigenvalues */
+			ssave = gmt_M_memory (GMT, NULL, nm, double);
+			gmt_M_memcpy (ssave, s, nm, double);
+		}
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, 2};
@@ -2108,9 +2116,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
 
-		gmt_M_free (GMT, s);
-		gmt_M_free (GMT, v);
-		gmt_M_free (GMT, b);
+		if (Ctrl->C.movie == 0) {
+			gmt_M_free (GMT, s);
+			gmt_M_free (GMT, v);
+			gmt_M_free (GMT, b);
+		}
 	}
 	else {				/* Gauss-Jordan elimination */
 		int error;
@@ -2132,7 +2142,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
 	fclose (fp);
 #endif
-	gmt_M_free (GMT, A);
+	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0, dev;
@@ -2271,67 +2281,119 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		} /* Else we are writing a grid */
 		gmt_M_memset (V, 4, double);
-		for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
-			int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
-			double z_level = 0.0;
-			if (dimension == 3) z_level = gmt_M_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
-#ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par,nz_off,z_level,nm,normalize)
-#endif
-			for (row = 0; row < Grid->header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-				if (dimension > 1) {
-					V[GMT_Y] = yp[row];
-					if (dimension == 3) V[GMT_Z] = z_level;
-				}
-				for (col = 0; col < Grid->header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
-					ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
-					if (dimension == 2 && gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
-					V[GMT_X] = xp[col];
-					/* Here, V holds the current output coordinates */
-					for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
-						r = get_radius (GMT, V, X[p], dimension);
-						if (Ctrl->Q.active) {
-							C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
-							part = dGdr (GMT, r, par, Lz) * C;
-						}
-						else
-							part = G (GMT, r, par, Lz);
-						wp += alpha[p] * part;
-					}
-					V[dimension] = (float)undo_normalization (V, wp, normalize, norm, dimension);
-					if (dimension > 1)	/* Special 2-D grid output */
-						Out->data[ij] = (float)V[dimension];
-					else	/* Crude dump for now for both 1-D and 3-D */
-						GMT->hidden.mem_coord[GMT_X][col] = V[dimension];
-				}
-			}
-			/* Write output, in case of 3-D just a single slice */
-			if (dimension == 1) {	/* Must dump 1-D table */
-				for (col = 0; col < Grid->header->n_columns; col++) {
-					V[GMT_X] = xp[col];
-					V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
-					GMT_Put_Record (API, GMT_WRITE_DATA, V);
-				}
-			}
-			else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
-				V[GMT_Z] = z_level;
-				for (row = 0; row < Grid->header->n_rows; row++) {
-					V[GMT_Y] = yp[row];
-					for (col = 0; col < Grid->header->n_columns; col++) {
-						V[GMT_X] = xp[col];
-						ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
-						V[dimension] = Out->data[ij];
-						GMT_Put_Record (API, GMT_WRITE_DATA, V);
-					}
-				}
-			}
-		}
-		if (dimension == 2) {	/* Write the grid */
+		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
+			float *tmp = NULL;
+			char file[GMT_LEN256] = {""};
+			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, float);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
-				Return (API->error);
+			for (k = 0; k < (int64_t)nm; k++) {
+				fprintf (stderr, "Eigen # %d\n", (int)k+1);
+				limit = k;
+				/* Update solution for k eigenvalues only */
+				gmt_M_memcpy (s, ssave, nm, double);
+				n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
+				for (row = 0; row < Grid->header->n_rows; row++) {
+					V[GMT_Y] = yp[row];
+					for (col = 0; col < Grid->header->n_columns; col++) {
+						ij = gmt_M_ijp (Grid->header, row, col);
+						if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
+						V[GMT_X] = xp[col];
+						/* Here, V holds the current output coordinates */
+						for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
+							r = get_radius (GMT, V, X[p], 2U);
+							if (Ctrl->Q.active) {
+								C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
+								part = dGdr (GMT, r, par, Lz) * C;
+							}
+							else
+								part = G (GMT, r, par, Lz);
+							wp += alpha[p] * part;
+						}
+						V[GMT_Z] = undo_normalization (V, wp, normalize, norm, 2U);
+						Out->data[ij] = (float)V[GMT_Z];
+					}
+				}
+				sprintf (file, Ctrl->G.file, (int)k+1);
+				if (Ctrl->C.movie == 1) {
+					gmt_M_grd_loop (GMT, Out, row, col, ij) Out->data[ij] -= tmp[ij];	/* Incremental improvement since last time */
+					gmt_M_grd_loop (GMT, Out, row, col, ij) tmp[ij] += Out->data[ij];	/* Current solution */
+				}
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->C.movie == 1) gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
+			gmt_M_free (GMT, A);
+			gmt_M_free (GMT, s);
+			gmt_M_free (GMT, v);
+			gmt_M_free (GMT, b);
+			gmt_M_free (GMT, ssave);
+		}
+		else {
+			for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
+				int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
+				double z_level = 0.0;
+				if (dimension == 3) z_level = gmt_M_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+#ifdef _OPENMP
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,Grid,xp,X,Ctrl,GMT,alpha,Lz,norm,Out,par,nz_off,z_level,nm,normalize)
+#endif
+				for (row = 0; row < Grid->header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+					if (dimension > 1) {
+						V[GMT_Y] = yp[row];
+						if (dimension == 3) V[GMT_Z] = z_level;
+					}
+					for (col = 0; col < Grid->header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
+						ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
+						if (dimension == 2 && gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
+						V[GMT_X] = xp[col];
+						/* Here, V holds the current output coordinates */
+						for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
+							r = get_radius (GMT, V, X[p], dimension);
+							if (Ctrl->Q.active) {
+								C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
+								part = dGdr (GMT, r, par, Lz) * C;
+							}
+							else
+								part = G (GMT, r, par, Lz);
+							wp += alpha[p] * part;
+						}
+						V[dimension] = (float)undo_normalization (V, wp, normalize, norm, dimension);
+						if (dimension > 1)	/* Special 2-D grid output */
+							Out->data[ij] = (float)V[dimension];
+						else	/* Crude dump for now for both 1-D and 3-D */
+							GMT->hidden.mem_coord[GMT_X][col] = V[dimension];
+					}
+				}
+				/* Write output, in case of 3-D just a single slice */
+				if (dimension == 1) {	/* Must dump 1-D table */
+					for (col = 0; col < Grid->header->n_columns; col++) {
+						V[GMT_X] = xp[col];
+						V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
+						GMT_Put_Record (API, GMT_WRITE_DATA, V);
+					}
+				}
+				else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
+					V[GMT_Z] = z_level;
+					for (row = 0; row < Grid->header->n_rows; row++) {
+						V[GMT_Y] = yp[row];
+						for (col = 0; col < Grid->header->n_columns; col++) {
+							V[GMT_X] = xp[col];
+							ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
+							V[dimension] = Out->data[ij];
+							GMT_Put_Record (API, GMT_WRITE_DATA, V);
+						}
+					}
+				}
+			}
+			if (dimension == 2) {	/* Write the grid */
+				gmt_grd_init (GMT, Out->header, options, true);
+				snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
+				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
+					Return (API->error);
+				}
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */

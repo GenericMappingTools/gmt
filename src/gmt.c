@@ -224,7 +224,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --show-cores      Print number of available cores.\n");
 		fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 		fprintf (stderr, "  --show-modules    List all module names.\n");
-		fprintf (stderr, "  --show-library    Show path of the shaded GMT library.\n");
+		fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 		fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 		fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
 		fprintf (stderr, "  --version         Print GMT version number.\n\n");

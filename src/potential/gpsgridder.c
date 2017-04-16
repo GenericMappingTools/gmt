@@ -41,7 +41,7 @@
 struct GPSGRIDDER_CTRL {
 	struct C {	/* -C[n|r|v]<cutoff>[+f<file>] */
 		bool active;
-		bool movie;	/* Undocumented and not-yet-working movie mode */
+		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
 		unsigned int mode;
 		double value;
 		char *file;
@@ -224,7 +224,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
 				if (gmt_get_modifier (opt->arg, 'm', p))
-					Ctrl->C.movie = true;
+					Ctrl->C.movie = 1;
+				else if (gmt_get_modifier (opt->arg, 'M', p))
+					Ctrl->C.movie = 2;
 				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -503,7 +505,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	uint64_t Gu_ij, Gv_ij, Guv_ij, Gvu_ij, off, n_duplicates = 0, n_skip = 0;
 	unsigned int normalize, n_cols;
 	size_t old_n_alloc, n_alloc;
-	int error, out_ID;
+	int n_use, error, out_ID;
 	bool geo, skip;
 
 	char *comp[2] = {"u(x,y)", "v(x,y)"}, *tag[2] = {"u", "v"};
@@ -512,6 +514,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
 	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v;
 	double err_sum = 0.0, r_min, r_max, G[3];
+	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0, limit = 0.0;
 
 #ifdef DUMPING
 	FILE *fp = NULL;
@@ -813,8 +816,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->C.active) {		/* Solve using SVD decomposition */
-		int n_use, error;
-		double *V = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit = 0.0;
+		int error;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD\n");
 #ifndef HAVE_LAPACK
@@ -827,6 +829,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, V);
 			Return (error);
+		}
+		if (Ctrl->C.movie) {	/* Keep copy of original eigenvalues */
+			ssave = gmt_M_memory (GMT, NULL, n_params, double);
+			gmt_M_memcpy (ssave, s, n_params, double);
 		}
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
@@ -884,9 +890,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.2f %% of data variance]\n", n_use, n_params, limit);
 
-		gmt_M_free (GMT, s);
-		gmt_M_free (GMT, V);
-		gmt_M_free (GMT, b);
+		if (Ctrl->C.movie == 0) {
+			gmt_M_free (GMT, s);
+			gmt_M_free (GMT, V);
+			gmt_M_free (GMT, b);
+		}
 	}
 	else {				/* Gauss-Jordan elimination */
 		int error;
@@ -910,7 +918,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	for (p = 0; p < n_uv; p++) fprintf (fp, "%g\t%g\n", f_x[p], f_y[p]);
 	fclose (fp);
 #endif
-	gmt_M_free (GMT, A);
+	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {	/* Want to estimate misfits between data and model */
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0;
@@ -1036,7 +1044,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Output on equidistant lattice */
-		int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
+		int64_t col, row, p, e; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
 		char file[GMT_LEN256] = {""};
 		double *xp = NULL, *yp = NULL, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
@@ -1044,10 +1052,16 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
 		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
-			float *tmp = gmt_M_memory_aligned (GMT, NULL, Out[0]->header->size, float);
+			float *tmp[2] = {NULL, NULL};
+			if (Ctrl->C.movie == 1) {	/* Need temp arrays to capture increments */
+				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[k]->header->size, float);
+			}
 			
-			for (p = 0; p < (int64_t)n_uv; p++) {	/* For each eigenvalue */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", p);
+			for (e = 1; e <= n_params; e++) {	/* For each eigenvalue */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", e);
+				limit = (double)e;	/* Update solution for e eigenvalues only */
+				gmt_M_memcpy (s, ssave, n_params, double);
+				n_use = gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, &limit, 2);
 				for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
 					for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
@@ -1055,28 +1069,39 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						if (gmt_M_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only evaluate solution where mask is not NaN */
 						V[GMT_X] = xp[col];
 						/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
-						get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
-						evaluate_greensfunctions (dx, dy, par, G);
-						V[GMT_U] = (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
-						V[GMT_V] = (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
+						for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
+							get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
+							evaluate_greensfunctions (dx, dy, par, G);
+							V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
+							V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
+						}
 						undo_gps_normalization (V, normalize, norm);
-						Out[GMT_X]->data[ij] += (float)V[GMT_U];
-						Out[GMT_Y]->data[ij] += (float)V[GMT_V];
+						Out[GMT_X]->data[ij] = (float)V[GMT_U];
+						Out[GMT_Y]->data[ij] = (float)V[GMT_V];
 					}
 				}
 				for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
 					gmt_grd_init (GMT, Out[k]->header, options, true);
 					snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
-					sprintf (file, Ctrl->G.file, tag[k], (int)p);
-					gmt_M_memcpy (tmp, Out[k]->data, Out[k]->header->size, float);	/* Save before write */
+					sprintf (file, Ctrl->G.file, tag[k], (int)e);
 					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
+					if (Ctrl->C.movie == 1) {
+						gmt_M_grd_loop (GMT, Out[k], row, col, ij) Out[k]->data[ij] -= tmp[k][ij];	/* Incremental improvement since last time */
+						gmt_M_grd_loop (GMT, Out[k], row, col, ij) tmp[k][ij] += Out[k]->data[ij];	/* Current solution */
+					}
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_NOERROR) {
 						Return (API->error);
 					}
-					gmt_M_memcpy (Out[k]->data, tmp, Out[k]->header->size, float);	/* Restore after write */
 				}
 			}
-			gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
+			if (Ctrl->C.movie == 1) {
+				for (k = 0; k < 2; k++) gmt_M_free_aligned (GMT, tmp[k]);
+			}
+			gmt_M_free (GMT, A);
+			gmt_M_free (GMT, s);
+			gmt_M_free (GMT, v);
+			gmt_M_free (GMT, b);
+			gmt_M_free (GMT, ssave);
 		}
 		else {
 #ifdef _OPENMP
