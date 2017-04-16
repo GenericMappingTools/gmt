@@ -856,7 +856,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
-	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128], t[32] = {""}, *pch, c;
+	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
 	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;
@@ -919,7 +919,6 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	n = 0;
 	while (read(fh, t, 1U) && t[0] != '\n')		/* Read second line which has the HiResBoundingBox */
 		buf[n++] = t[0];
-	buf[n] = '\0';
 #ifdef _WIN32
 	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close read end of pipe.\n");
@@ -1005,7 +1004,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
-	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
+	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands, n_bytes;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
@@ -1062,8 +1061,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 
 	/* Send the PS down ghostscript's throat */
 #ifdef _WIN32
-	if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
-		GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
+	if ((n_bytes = fwrite (PS->data, sizeof(char), PS->n_bytes, fp)) != PS->n_bytes)
+		GMT_Report (API, GMT_MSG_NORMAL,
+		            "Error writing PostScript buffer to GhostScript process. Bytes writen = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
 	if (fflush (fp) == EOF)
 		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
 	if (pclose (fp) == -1)
@@ -1285,7 +1285,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.active && gmt_M_file_is_memory (Ctrl->F.file)) {
 		if (Ctrl->T.device <= GS_DEV_SVG || Ctrl->In.n_files > 1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Can only return one raster image to calling program via memory array.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Can only return one (PS or PDF) raster image to calling program via memory array.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		return_image = true;
@@ -1377,7 +1377,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (ps_names[0][1])		/* See if we have a margin request */
 			margin = gmt_M_to_points (GMT, &ps_names[0][1]);
-		if (!return_image) {
+		if (!return_image && !Ctrl->T.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			error++;
 		}
@@ -1399,12 +1399,23 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			char t[GMT_LEN256] = {""};
 			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 			strcat (out_file, t);
-			if (API->tmp_dir)	/* Use the established temp directory */
-				sprintf (t, "%s/psconvert_test", API->tmp_dir);
-			else	/* Must dump it in current directory */
-				sprintf (t, "psconvert_test");
+			if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
+				strncpy (t, Ctrl->F.file, GMT_LEN256-11);
+			}
+			else {
+				if (API->tmp_dir)	/* Use the established temp directory */
+					sprintf (t, "%s/psconvert_tmp", API->tmp_dir);
+				else	/* Must dump it in current directory */
+					sprintf (t, "psconvert_tmp");
+			}
 			strcat (t, ext[Ctrl->T.device]);
-			strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);	strcat (out_file, " -");
+			if (API->external) {		/* Apparently we cannot have the output file name inside quotes */
+				strcat (out_file, t);		strcat (out_file, " -");
+			}
+			else {
+				strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);
+				strcat (out_file, " -");
+			}
 		}
 		if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run ghostscript to convert the PS to the desired output format */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
