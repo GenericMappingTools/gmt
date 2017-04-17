@@ -135,9 +135,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile> [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|r|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile> [%s] [-I<dx>[/<dy>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[n|r|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n", GMT_V_OPT,
 		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|v]<val>[+<file>]\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|r|v]<val>[+f<file>]\n");
 						n_errors++;
 					}
 				}
@@ -469,14 +469,16 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 	}
 }
 
-GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
+GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, double *X1, double par[], bool geo, double G[]) {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in
 	 * G[GPS_FUNC_Q], G[GPS_FUNC_P], and G[GPS_FUNC_W].
 	 * Here, par[0] holds Poisson's ratio, par[1] holds delta_r^2 (to prevent singularity) */
-	double c1, c2, c2_dr2, dr2_fudge, dx2_fudge, dy2_fudge, dxdy_fudge;
-	double dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
-	double dr2 = dx2 + dy2;					/* Origial radius squared */
+	double dx, dy, dx2, dy2, dr2, c1, c2, c2_dr2, dr2_fudge, dx2_fudge, dy2_fudge, dxdy_fudge;
 	
+	get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
+
+	dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
+	dr2 = dx2 + dy2;				/* Origial radius squared */
 	dr2_fudge = dr2 + par[1];	/* Fudged radius squared (par[1] holds delta_r^2) */
 	if (dr2 == 0.0)	/* Since r will be fudged away from origin we decide dr2_fudge should fall along N45E trend */
 		dx2_fudge = dy2_fudge = dxdy_fudge = 0.5 * par[1];	/* Squared quantities */
@@ -512,7 +514,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
-	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v;
+	double mem, r, par[2], norm[GSP_LENGTH], weight_u, weight_v;
 	double err_sum = 0.0, r_min, r_max, G[3];
 	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0, limit = 0.0;
 
@@ -782,8 +784,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Guv_ij = Gu_ij + n_uv;			/* Index for Guv term in equation for u */
 			Gvu_ij = Gu_ij + off;			/* Index for Gvu term in equation for v */
 			Gv_ij  = Guv_ij + off;			/* Index for Gv term in equation for v */
-			get_gps_dxdy (GMT, X[col], X[row], &dx, &dy, geo);
-			evaluate_greensfunctions (dx, dy, par, G);
+			evaluate_greensfunctions (GMT, X[col], X[row], par, geo, G);
 			A[Gu_ij]  = weight_u * G[GPS_FUNC_Q];
 			A[Guv_ij] = weight_u * G[GPS_FUNC_W];
 			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
@@ -911,6 +912,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 	}
+	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
+
 	f_x = obs;			/* Just a different name for clarity since obs vector now holds all body forces f_x, f_y */
 	f_y = &obs[n_uv];	/* Halfway down the array we find the start of the f_y body forces */
 #ifdef DUMPING
@@ -918,7 +921,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	for (p = 0; p < n_uv; p++) fprintf (fp, "%g\t%g\n", f_x[p], f_y[p]);
 	fclose (fp);
 #endif
-	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {	/* Want to estimate misfits between data and model */
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0;
@@ -931,6 +933,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->E.mode == GPS_MISFIT) {	/* Want to write out prediction errors */
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving misfit estimates\n");
+				if (Ctrl->C.movie) {
+					gmt_M_free (GMT, ssave);
+					gmt_M_free (GMT, A);
+					gmt_M_free (GMT, s);
+					gmt_M_free (GMT, V);
+					gmt_M_free (GMT, b);
+				}
 				Return (API->error);
 			}
 			S = E->table[0]->segment[0];
@@ -940,8 +949,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			here[GMT_Y] = X[j][GMT_Y];
 			here[GMT_U] = here[GMT_V] = 0.0;	/* Initialize before we sum up */
 			for (p = 0; p < n_uv; p++) {
-				get_gps_dxdy (GMT, X[p], here, &dx, &dy, geo);
-				evaluate_greensfunctions (dx, dy, par, G);
+				evaluate_greensfunctions (GMT, X[p], here, par, geo, G);
 				here[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 				here[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 			}
@@ -1027,8 +1035,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				out[GMT_Y] = T->segment[seg]->data[GMT_Y][row];
 				out[GMT_U] = out[GMT_V] = 0.0;	/* Initialize before adding up terms */
 				for (p = 0; p < n_uv; p++) {
-					get_gps_dxdy (GMT, X[p], out, &dx, &dy, geo);
-					evaluate_greensfunctions (dx, dy, par, G);
+					evaluate_greensfunctions (GMT, X[p], out, par, geo, G);
 					out[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 					out[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
@@ -1070,8 +1077,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						V[GMT_X] = xp[col];
 						/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 						for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
-							get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
-							evaluate_greensfunctions (dx, dy, par, G);
+							evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 							V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 							V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 						}
@@ -1105,7 +1111,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		else {
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,f_x,f_y,norm,n_uv,normalize,geo)
+#pragma omp parallel for private(V,row,col,ij,p) shared(yp,Out,xp,X,Ctrl,GMT,f_x,f_y,norm,n_uv,normalize,geo)
 #endif
 			for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 				V[GMT_Y] = yp[row];
@@ -1115,8 +1121,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					V[GMT_X] = xp[col];
 					/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 					for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up terms */
-						get_gps_dxdy (GMT, X[p], V, &dx, &dy, geo);
-						evaluate_greensfunctions (dx, dy, par, G);
+						evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 						V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 						V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 					}
