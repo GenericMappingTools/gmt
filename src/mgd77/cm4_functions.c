@@ -225,7 +225,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
 	/* coverity[overflow_sink] */		/* For Coverity analysis. Do not remove this comment */
-	gpmg = calloc ((2U * (size_t)lsmg * (size_t)lcmg), sizeof(double));
+	gpmg = calloc ((2 * (size_t)lsmg * (size_t)lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
@@ -234,7 +234,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 
 	/* coverity[overflow_sink] */		/* For Coverity analysis. Do not remove this comment */
-	gsmg = calloc((2U * (size_t)lsmg * (size_t)lcmg), sizeof(double));
+	gsmg = calloc((2 * (size_t)lsmg * (size_t)lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
@@ -245,7 +245,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d", &lcsq, &lssq);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
-	gpsq = calloc((2U * (size_t)lssq * (size_t)lcsq), sizeof(double));
+	gpsq = calloc((2 * (size_t)lssq * (size_t)lcsq), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lssq; ++j) {
 			n = (j + k * 5) * 13680;
@@ -264,7 +264,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
 	if (Ctrl->CM4_DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waste time/memory with them */
-		gcto_mg = calloc((2U * (size_t)lrto * (size_t)lsto * (size_t)lcto), sizeof(double));
+		gcto_mg = calloc((2 * (size_t)lrto * (size_t)lsto * (size_t)lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
 				for (j = 0; j < lsto; ++j) {
