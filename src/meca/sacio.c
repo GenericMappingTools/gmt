@@ -400,7 +400,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	}
 	fclose(strm);
 
-	if (lswap == true) byte_swap((char*)ar, (size_t)nn*SAC_DATA_SIZEOF);
+	if (lswap == true) byte_swap((char*)ar, (size_t)nn*sizeof(float));
 
 	return ar;
 }
