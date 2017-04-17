@@ -252,7 +252,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	if (n != 2) return (1);
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)strlen (fill->pattern);
-	for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
+	for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++)
+		if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 	if (pos > -1) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) fill->pattern_no = -1;
@@ -9790,7 +9791,8 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	else if (ndec > 0)
 		sprintf (format, "%%.%df", ndec);
 	else if (!general) {	/* Pull ndec from given format if .<precision> is given */
-		for (i = 0, j = -1; j == -1 && GMT->current.setting.format_float_map[i]; i++) if (GMT->current.setting.format_float_map[i] == '.') j = i;
+		for (i = 0, j = -1; j == -1 && GMT->current.setting.format_float_map[i]; i++)
+			if (GMT->current.setting.format_float_map[i] == '.') j = i;
 		if (j > -1) ndec = atoi (&GMT->current.setting.format_float_map[j+1]);
 		strcpy (format, GMT->current.setting.format_float_map);
 	}
