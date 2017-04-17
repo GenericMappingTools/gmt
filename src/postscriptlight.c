@@ -3156,10 +3156,6 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	/* Then any custom fonts */
 
 	psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname);
-	if (access (fullname, R_OK)) {	/* Decode Custom font file */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Cannot finf file %s\n", fullname);
-		PSL_exit (EXIT_FAILURE);
-	}
 
 	if ((in = fopen (fullname, "r")) == NULL) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
