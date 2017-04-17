@@ -1195,12 +1195,12 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 			else	/* Must dump it in current directory */
 				sprintf (t, "psconvert_tmp");
 		}
-		strcat (t, ext[Ctrl->T.device]);
+		strncat (t, ext[Ctrl->T.device], 5);
 		if (API->external) {		/* Apparently we cannot have the output file name inside quotes */
 			strcat (out_file, t);		strcat (out_file, " -");
 		}
 		else {
-			strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);
+			strncat (out_file, squote, 1);	strcat (out_file, t);	strncat (out_file, squote, 1);
 			strcat (out_file, " -");
 		}
 	}
