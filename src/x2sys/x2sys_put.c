@@ -403,19 +403,23 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 		if (fwrite (&index, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+			fclose (fbin);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		if (fwrite (&B.base[index].n_tracks, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+			fclose (fbin);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		for (this_track = B.base[index].first_track->next_track; this_track; this_track = this_track->next_track) {
 			if (fwrite (&this_track->track_id, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+				fclose (fbin);
 				Return (GMT_DATA_WRITE_ERROR);
 			}
 			if (fwrite (&this_track->track_flag, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to write to binary file. Aborts!\n");
+				fclose (fbin);
 				Return (GMT_DATA_WRITE_ERROR);
 			}
 		}
