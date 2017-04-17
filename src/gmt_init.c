@@ -6686,7 +6686,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			c[0] = '\0';	/* Chop off this modifier */
 		}
 		if ((c = strstr (item, "+I")) != NULL) {	/* Got grid increments */
-			gmt_getinc (GMT, &c[2], GMT->common.R.inc);
+			if (gmt_getinc (GMT, &c[2], GMT->common.R.inc)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT modern: Error parsing the grid spacing.\n");
+				return (GMT_PARSE_ERROR);
+			}
 			GMT->common.R.active[ISET] = true;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid spacing %s from RG history\n", &c[2]);
 			c[0] = '\0';	/* Chop off this modifier also */
