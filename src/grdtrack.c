@@ -385,7 +385,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					if (opt->arg[0]) {
 						GMT_Report (API, GMT_MSG_COMPAT,
 						            "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-						strncpy (GMT->common.n.BC, opt->arg, 4U);
+						gmt_strncpy (GMT->common.n.BC, opt->arg, 4U);
 					}
 					else {
 						gmt_set_geographic (GMT, GMT_IN);
