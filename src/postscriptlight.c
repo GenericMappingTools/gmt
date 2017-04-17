@@ -3693,7 +3693,7 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 	/* Correct origin (x,y) in case of justification */
 	if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
 		x -= 0.5 * ((justify + 3) % 4) * xsize;
-		y -= 0.5 * (justify / 4) * ysize;
+		y -= 0.5 * (int)(justify / 4) * ysize;
 	}
 
 	/* Gray scale, CMYK or RGB encoding/colorspace */
