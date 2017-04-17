@@ -660,8 +660,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Read failure at jin = %d.\n", jin);
-			gmt_M_free (GMT, ix);
-			gmt_M_free (GMT, row);
+			gmt_M_free (GMT, ix);	gmt_M_free (GMT, row);
+			fclose (fp);
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 
