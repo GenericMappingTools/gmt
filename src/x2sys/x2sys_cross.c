@@ -417,6 +417,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
+				fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			pair[n_pairs].id1 = strdup (name1);
@@ -490,6 +491,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
+		if (fpC) fclose (fpC);
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
