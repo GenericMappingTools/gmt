@@ -4694,6 +4694,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 	for (i = 0; i < N_CARTER_BINS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read offset # %d\n", i);
+       		fclose (fp);
 			return (-1);
 		}
 		C->carter_zone[i] = (short)atoi (buffer);
