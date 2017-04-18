@@ -32,7 +32,7 @@ command: (but refer to Julia's `package manager <http://docs.julialang.org/en/re
 
   ::
 
-    Pkg.clone("git://github.com/joa-quim/GMT.jl.git")
+    Pkg.add("GMT")
 
 Now you are ready to start using the **GMT** wrapper and the only condition for it to work is that the GMT5.2 shared libs
 are listed in your path. On Windows the **GMT** installer takes care of that but be careful that no other previous version
@@ -102,7 +102,7 @@ but compute the CPT separately.
   ::
 
    cpt = gmt("grd2cpt -Cblue,red", G);
-   gmt("grdimage -JX8c -Ba -P -C -G > crap_img.ps", cpt, G)
+   gmt("grdimage -JX8c -Ba -P -C -G > crap_img.ps", G, cpt)
 
 Now we had to explicitly write the **-C** & **-G** (well, actually we could have omitted the **-G** because
 it's a mandatory input but that would make the things more confusing). Note also the order of the input data variables.
@@ -113,11 +113,11 @@ made of colored filled circles.
 
 .. code-block:: none
 
-   x = linspace(-pi, pi)';            # The *xx* var
+   x = linspace(-pi, pi);             # The *xx* var
    seno = sin(x);                     # *yy*
    xyz  = [x seno seno];              # Duplicate *yy* so that it can be colored
    cpt  = gmt("makecpt -T-1/1/0.1");  # Create a CPT
-   gmt("psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps", cpt, xyz)
+   gmt("psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps", xyz, cpt)
 
 The poin here is that we had to give *cpt, xyz* and not *xyz, cpt* (which would error) because input data
 associated with an option letter **always comes first** and has to respect the corresponding options order
