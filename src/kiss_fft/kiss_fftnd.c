@@ -90,7 +90,7 @@ It doesn't.
 P.S.
 The below code might give you some warm fuzzies and help convince you.
        */
-    if ( ptr - (char*)st != (int)memneeded ) {
+    if ( ptr - (char*)st != memneeded ) {
         fprintf(stderr,
                 "################################################################################\n"
                 "Internal error! Memory allocation miscalculation\n"

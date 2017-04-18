@@ -995,10 +995,10 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
 		}
-		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":")) {
+		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && strchr(&header->name[i+2], ':')) {
 			char *pch;
 			size_t nc_limit = 2147483647U;	/* 2^31 - 1 is the max length of a 1-D array in netCDF */
-			pch = strstr(&header->name[i+2], ":");
+			pch = strchr(&header->name[i+2], ':');
 			header->pocket = strdup(++pch);
 			header->name[i-1] = '\0';			/* Done, rip the driver/outtype info from file name */
 			if (!strncmp (header->pocket, "GMT", 3U) && header->nm > nc_limit) {

@@ -246,15 +246,15 @@ int get_attrib_from_string(struct GMT_GDALREAD_OUT_CTRL *Ctrl, GDALRasterBandH h
 	for (i = 0; i < nCounterBand; i++) {
 		if ((pch = strstr(papszMetadataBand[i], "add_offset")) != NULL) {
 			/* Fish the value from a string of the type "geophysical_data_sst_add_offset=0" */
-			if ((pch2 = strstr(pch, "=")) != NULL)
+			if ((pch2 = strchr(pch, '=')) != NULL)
 				Ctrl->band_field_names[nBand].ScaleOffset[1] = atof(&pch2[1]);
 		}
 		else if ((pch = strstr(papszMetadataBand[i], "scale_factor")) != NULL) {
-			if ((pch2 = strstr(pch, "=")) != NULL)
+			if ((pch2 = strchr(pch, '=')) != NULL)
 				Ctrl->band_field_names[nBand].ScaleOffset[0] = atof(&pch2[1]);
 		}
 		else if ((pch = strstr(papszMetadataBand[i], "_FillValue")) != NULL) {
-			if ((pch2 = strstr(pch, "=")) != NULL) {
+			if ((pch2 = strchr(pch, '=')) != NULL) {
 				*dfNoDataValue = atof(&pch2[1]);
 				Ctrl->band_field_names[nBand].nodata = *dfNoDataValue;
 			}

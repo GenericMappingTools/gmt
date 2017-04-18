@@ -3558,7 +3558,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		}
 		else
 			n = 1;
-		GMT->current.io.count[i][1] = (int)n;
+		GMT->current.io.count[i][1] = n;
 		GMT->current.io.ncols += (int)n;
 
 		/* If selected by value instead of index */
