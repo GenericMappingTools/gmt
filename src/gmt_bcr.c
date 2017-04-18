@@ -241,7 +241,7 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 
 	unsigned int i, j;
 	uint64_t ij, node;
-	double retval, wsum, wx[4], wy[4], w;
+	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 
 	/* Determine nearest node ij and set weights wx, wy */
 
@@ -277,7 +277,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 
 	unsigned int i, j;
 	uint64_t ij, node;
-	double retval, wsum, wx[4], wy[4], w;
+	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
@@ -319,7 +319,7 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 
 	unsigned int i, j, b, nb = G->header->n_bands;
 	uint64_t ij;
-	double retval[4], wsum, wx[4], wy[4], w;
+	double retval[4], wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
