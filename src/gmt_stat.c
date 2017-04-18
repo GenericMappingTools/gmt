@@ -160,7 +160,10 @@ GMT_LOCAL void gmtstat_gamma_ser (struct GMT_CTRL *GMT, double *gamser, double a
 	int n;
 	double sum, del, ap;
 
-	gmtstat_ln_gamma_r (GMT, a, gln);
+	if (gmtstat_ln_gamma_r (GMT, a, gln) == -1) {
+		*gamser = GMT->session.d_NaN;
+		return;
+	}
 
 	if (x < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  x < 0 in gmtstat_gamma_ser(x)\n");
@@ -192,7 +195,10 @@ GMT_LOCAL void gmtstat_gamma_cf (struct GMT_CTRL *GMT, double *gammcf, double a,
 	double gold = 0.0, g, fac = 1.0, b1 = 1.0;
 	double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
 
-	gmtstat_ln_gamma_r (GMT, a, gln);
+	if (gmtstat_ln_gamma_r (GMT, a, gln) == -1) {
+		*gln = GMT->session.d_NaN;
+		return;
+	}
 
 	a1 = x;
 	for (n = 1; n <= ITMAX; n++) {

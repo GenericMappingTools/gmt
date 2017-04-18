@@ -180,7 +180,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		backtrace_symbols_fd (array, 1, STDERR_FILENO); /* print interrupted function */
 		process_info();
 		fprintf (stderr, "Press return to continue, ctrl-c to quit.");
-		while (( c = getchar() != '\n' && c != EOF ));
+		while (( c = getchar()) != '\n' && c != EOF );
 		sigaction (SIGINT, &oldact, NULL); /* restore old action */
 		return;
 	}

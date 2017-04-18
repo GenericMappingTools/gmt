@@ -2041,6 +2041,10 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 
 		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
 		if (found) return (PSL_N_PATTERNS + i - 1);
+		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
+			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
+			PSL_exit (EXIT_FAILURE);
+		}
 		psl_getsharepath (PSL, NULL, imagefile, "", file);
 		PSL->internal.user_image[PSL->internal.n_userimages] = PSL_memory (PSL, NULL, strlen (imagefile)+1, char);
 		strcpy (PSL->internal.user_image[PSL->internal.n_userimages], imagefile);
