@@ -92,6 +92,7 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+#ifdef TEST_MODERN
 	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
 		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
@@ -105,6 +106,9 @@ int main (int argc, char *argv[]) {
 		return GMT_NOERROR;
 	}
 	else if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
+#else
+	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
+#endif
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
 		module = argv[1];	/* Name of module that does not exist, but will give reasonable message */
 		modulename_arg_n = 1;
@@ -218,6 +222,11 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
+#ifdef TEST_MODERN
+		fprintf (stderr, "Session management:\n");
+		fprintf (stderr, "  gmt begin         Initiate a new GMT session.\n");
+		fprintf (stderr, "  gmt end           Terminate the current GMT session.\n\n");
+#endif
 		fprintf (stderr, "options:\n");
 		fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 		fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
