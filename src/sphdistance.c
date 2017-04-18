@@ -400,7 +400,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				else if (gmt_M_rec_is_segment_header (GMT))			/* Parse segment headers */
 					first = true;
 				continue;	/* Go back and read the next record */
-				assert (in != NULL);						/* Should never get here */
 			}
 
 			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
