@@ -22,7 +22,7 @@
  * computes the continuous reduction to the pole (RTP) anomaly by calculating the
  * filter coefficients in the frequency, inverse FT and convolve in space domain.
  * For details on the method see, Luis, J.F and J.M. Miranda (2008), 
- * "Reevaluation of magnetic chrons in the North Atlantic between 35°N and 47°N: 
+ * "Reevaluation of magnetic chrons in the North Atlantic between 35ï¿½N and 47ï¿½N: 
  * Implications for the formation of the Azores Triple Junction and associated plateau, 
  * J. Geophys. Res., 113, B10105, doi:10.1029/2007JB005573 
  *
@@ -1377,7 +1377,6 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {	/* */
 				if (Ctrl->E.dip_grd_only) {		/* Use mag DEC = 0 */
 					dip_m = gmt_bcr_get_z(GMT, Gdip, slonm, slatm) * D2R;
-					dec_m = 0;
 					tau = -cos(dip_m);
 					mu  =  0;
 					nu  = -sin(dip_m);
@@ -1443,7 +1442,6 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 						Ctrl->C.dip = out_igrf[6] * D2R;
 						if (Ctrl->E.dip_grd_only) {
 							dip_m = gmt_bcr_get_z(GMT, Gdip, ftlon[row], ftlat[row]) * D2R;
-							dec_m = 0;
 							tau1 = -cos(dip_m);
 							mu1  =  0;
 							nu1  = -sin(dip_m);
