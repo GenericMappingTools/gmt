@@ -355,52 +355,52 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_NOERROR) {
 			Return (error);
 		}
+	}
 
-		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
-			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-			Return (API->error);
-		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-			Return (API->error);
-		}
+	/* Initialize the i/o since we are doing record-by-record reading/writing */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		Return (API->error);
+	}
 
-		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
-					if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-					gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
-					Return (GMT_RUNTIME_ERROR);
-				}
-				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
-					continue;
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
-					break;
-				assert (in != NULL);						/* Should never get here */
+	do {	/* Keep returning records until we reach EOF */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+				gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
+				Return (GMT_RUNTIME_ERROR);
 			}
-
-			/* Data record to process */
-	
-			xx[n] = in[GMT_X];	yy[n] = in[GMT_Y];
-			if (triplets[GMT_IN]) zz[n] = in[GMT_Z];
-			n++;
-
-			if (n == n_alloc) {	/* Get more memory */
-				n_alloc <<= 1;
-				xx = gmt_M_memory (GMT, xx, n_alloc, double);
-				yy = gmt_M_memory (GMT, yy, n_alloc, double);
-				if (triplets[GMT_IN]) zz = gmt_M_memory (GMT, zz, n_alloc, double);
-			}
-		} while (true);
-	
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-			gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
-			Return (API->error);
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
+				continue;
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+				break;
+			assert (in != NULL);						/* Should never get here */
 		}
+
+		/* Data record to process */
+
+		xx[n] = in[GMT_X];	yy[n] = in[GMT_Y];
+		if (triplets[GMT_IN]) zz[n] = in[GMT_Z];
+		n++;
+
+		if (n == n_alloc) {	/* Get more memory */
+			n_alloc <<= 1;
+			xx = gmt_M_memory (GMT, xx, n_alloc, double);
+			yy = gmt_M_memory (GMT, yy, n_alloc, double);
+			if (triplets[GMT_IN]) zz = gmt_M_memory (GMT, zz, n_alloc, double);
+		}
+	} while (true);
+	
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+		gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
+		Return (API->error);
 	}
 
 	if (Ctrl->F.active) {	/* Use non-NaN nodes in a previous grid as input data, possibly in addition to input records */

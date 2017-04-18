@@ -469,7 +469,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				}
 				np++;	/* Number of points within the overlap zone */
 			}
-            		separation[0] = (np > 1) ? separation[0] / np : DBL_MAX;	/* Mean distance between S and S' */
+            separation[0] = (np > 1) ? separation[0] / np : DBL_MAX;	/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np > 1) ? separation[0] / use_length : DBL_MAX;	/* Closeness as viewed from S */
 			use_sep = (separation[0] == DBL_MAX) ? GMT->session.d_NaN : separation[0];
@@ -483,8 +483,8 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 					med_close[0] = med_separation[0] / use_length;
 				}
 				else med_close[0] = DBL_MAX;
-				use_sep = (med_separation[0] == DBL_MAX) ? GMT->session.d_NaN : med_separation[0];
-				use_close = (med_close[0] == DBL_MAX) ? GMT->session.d_NaN : med_close[0];
+				use_sep = (np == 0 || med_separation[0] == DBL_MAX) ? GMT->session.d_NaN : med_separation[0];
+				use_close = (np == 0 || med_close[0] == DBL_MAX) ? GMT->session.d_NaN : med_close[0];
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n",
 				            use_sep, use_close);
 			}

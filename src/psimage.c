@@ -309,6 +309,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
 	int j;
 
+	if (file == NULL || file[0] == '\0') return -1;	/* Nothing given */
 	if (gmt_M_file_is_memory (file)) return (0);	/* Special passing of image */
 	j = (int)strlen(file) - 1;
 	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */

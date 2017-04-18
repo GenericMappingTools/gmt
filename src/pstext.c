@@ -739,6 +739,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			/* Note: Blank lines may call through below - this is OK; hence no extra continue here */
 		}
 
 		/* Data record or segment header (line == NULL) to process */

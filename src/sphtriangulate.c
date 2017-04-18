@@ -599,14 +599,11 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT,  zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
-				continue;
-			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
+			else if (gmt_M_rec_is_segment_header (GMT))			/* Parse segment headers */
 				first = true;
-				continue;
-			}
+			continue;	/* Go back and read the next record */
 		}
 		if (in == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");

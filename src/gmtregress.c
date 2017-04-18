@@ -978,7 +978,7 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 			}
 		}
 		for (k = 0; k < n; k++) {	/* Modify weights based on z-score threshold (correlations are not modified) */
-			w_k = (fabs (z[k]) < GMTREGRESS_ZSCORE_LIMIT) ? 1.0 : 0.0;
+			w_k = (mode == 0 && fabs (z[k]) < GMTREGRESS_ZSCORE_LIMIT) ? 1.0 : 0.0;
 			if (www[GMT_X]) www[GMT_X][k] *= w_k;
 			if (www[GMT_Y]) www[GMT_Y][k] *= w_k;
 		}
@@ -986,7 +986,7 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
 			if (made[col]) gmt_M_free (GMT, www[col]);
 	}
-	return (z);	/* Return those z-scoores, calling unit must free this array when done */
+	return (z);	/* Return those z-scores, calling unit must free this array when done */
 }
 
 /* Must free allocated memory before returning */

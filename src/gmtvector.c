@@ -643,7 +643,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->A.mode) for (k = 0; k < 3; k++) Sout->data[k+n_out][0] = E[k];	/* Place az, major, minor in the single output record */
+	if (Ctrl->A.mode && Sout) for (k = 0; k < 3; k++) Sout->data[k+n_out][0] = E[k];	/* Place az, major, minor in the single output record */
 	
 	/* Time to write out the results */
 	
