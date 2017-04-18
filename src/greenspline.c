@@ -1517,11 +1517,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
-				continue;
-			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (false);						/* Should never get here */
+			continue;							/* Go back and read the next record */
 		}
 
 		/* Data record to process */

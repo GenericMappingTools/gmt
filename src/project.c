@@ -966,24 +966,22 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
-					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
-					continue;
 				}
-				if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
+				else if (gmt_M_rec_is_table_header (GMT))	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
+				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
 						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
-					continue;
 				}
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (in != NULL);						/* Should never get here */
+				continue;							/* Go back and read the next record */
 			}
 
 			/* Data record to process */

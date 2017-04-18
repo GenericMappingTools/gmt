@@ -214,14 +214,9 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
-					continue;
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-			}
-			if (line == NULL) {	/* Crazy safety valve but it should never get here*/
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
-				return (GMT_PTR_IS_NULL);
+				continue;							/* Go back and read the next record */
 			}
 			/* Data record to process */
 			

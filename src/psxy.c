@@ -1049,12 +1049,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_table_header (GMT)) {	/* Skip table headers */
-					continue;
 				}
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
@@ -1071,9 +1069,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
 					}
-					continue;
 				}
-				assert (false);						/* Should never get here */
+				continue;							/* Go back and read the next record */
 			}
 
 			/* Data record to process */
