@@ -1114,18 +1114,16 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
+				}
+				else if (gmt_M_rec_is_table_header (GMT))	/* Echo table headers */
 					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
-					continue;
-				}
-				if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
+				else if (gmt_M_rec_is_segment_header (GMT))			/* Echo segment headers */
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
-					continue;
-				}
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
+				continue;	/* Go back and read the next record */
 			}
 
 			/* Data record to process */

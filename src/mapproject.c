@@ -855,20 +855,20 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
-				continue;
 			}
-			if (gmt_M_rec_is_new_segment (GMT)) {			/* Echo segment headers */
+			else if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
+			}
+			else if (gmt_M_rec_is_new_segment (GMT)) {			/* Echo segment headers */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				line_start = true;
 				n_read_in_seg = 0;
-				continue;
 			}
-			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			continue;	/* Go back and read the next record */
 		}
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
