@@ -6555,7 +6555,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'Y': error += GMT->common.Y.active == false; break;
 		case 'a': error += GMT->common.a.active == false; break;
 		case 'b': error += ((GMT->common.b.active[GMT_IN] == false && GMT->common.b.nc[GMT_IN] == false) \
-			&& (GMT->common.b.active[GMT_OUT] == false && GMT->common.b.active[GMT_OUT] == false)); break;
+			&& (GMT->common.b.active[GMT_OUT] == false && GMT->common.b.nc[GMT_OUT] == false)); break;
 		case 'c': error += GMT->common.c.active == false; break;
 		case 'd': error += (GMT->common.d.active[GMT_IN] == false && GMT->common.d.active[GMT_OUT] == false); break;
 		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
