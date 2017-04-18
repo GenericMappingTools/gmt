@@ -492,6 +492,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
 		if (fpC) fclose (fpC);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
@@ -531,12 +532,15 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 
@@ -545,6 +549,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		if (s->x_col < 0 || s->y_col < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
+			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
