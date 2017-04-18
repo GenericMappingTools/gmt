@@ -4718,7 +4718,6 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
-	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
 	/* MAP_TICK_LENGTH_PRIMARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 5 * pt;	/* 5p */
 	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 2.5 * pt;	/* 2.5p */
