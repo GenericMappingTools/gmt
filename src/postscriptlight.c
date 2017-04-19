@@ -1842,7 +1842,6 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 			} /* End loop over word with @ in it */
 
-			last_k = k - 1;
 			if (!plain_word && (last_k = k - 1) >= 0) {	/* Allow space if text ends with @ commands only */
 				word[last_k]->flag &= 60;
 				word[last_k]->flag |= 1;
@@ -5304,7 +5303,6 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 
 		if (justify < 0) psl_remove_spaces (label, n_segments, nlabel_per_seg);	/* Strip leading and trailing spaces */
 		for (i = 0; i < n_segments; i++) n_labels += nlabel_per_seg[i];	/* Count number of labels */
-		justify = abs (justify);
 
 		/* Set clearance and text height parameters */
 		PSL_comment (PSL, "Set constants for textbox clearance:\n");

@@ -278,7 +278,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 		sincosd (slat, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) scpole[i] = (afactor * a[i] + bfactor * b[i]);
 		gmt_normalize3v (GMT, scpole);
-		fit = circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
+		(void)circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
 		return (90.0-slat);
 	}
 
@@ -307,7 +307,6 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 	oldfit = fit;
 
 	/* Now, while not converged, take golden section of wider interval.  */
-	length_ab   = d_acos (gmt_dot3v (GMT, a, b));
 	length_aold = d_acos (gmt_dot3v (GMT, a, oldpole));
 	length_bold = d_acos (gmt_dot3v (GMT, b, oldpole));
 	do {

@@ -491,7 +491,6 @@ GMT_LOCAL int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left
 			lacking = true;
 		else {
 			last_t = F->data[F->t_col][this_row];
-			last_row = this_row;
 			++this_row;
 		}
 	}

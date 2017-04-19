@@ -605,12 +605,6 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 				first = true;
 			continue;	/* Go back and read the next record */
 		}
-		if (in == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
-			gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
-			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);	gmt_M_free (GMT, zz);
-			Return (GMT_PTR_IS_NULL);
-		}
 
 		/* Data record to process */
 

@@ -1059,10 +1059,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		}
 		n_tables = Dt->n_tables;
 	}
-	if (GMT->common.R.active[RSET] && first) {	/* Issue Region tag as given on command line */
+	if (GMT->common.R.active[RSET] && first)	/* Issue Region tag as given on command line */
 		place_region_tag (API, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
-		first = false;
-	}
 	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 		double wesn[4];
 		if (no_text) {	/* This information is part of the dataset header and obtained during reading */
