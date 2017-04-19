@@ -223,7 +223,7 @@ ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$
 gmt_movie_script() {
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2
-gmt_movie_script - Create template script for anomation
+gmt_movie_script - Create template script for animation
 
 usage: gmt_movie_script [-c <canvas>] [-e <dpi>] [-f <format>] [-g <fill>] [-h <height>]
 	[-m <margin>] [-n <frames>] [-r <rate>] [-w <width>] <prefix>
