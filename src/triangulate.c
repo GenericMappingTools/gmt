@@ -337,6 +337,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
 	triplets[GMT_IN] = (n_input == 3);
+	if (n_output > n_input) triplets[GMT_OUT] = false;	/* No can do. */
 	
 	if (Ctrl->G.active && GMT->common.R.active[RSET] && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;

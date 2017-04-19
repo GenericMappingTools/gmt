@@ -1204,7 +1204,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 			MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
-			old_flags = MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
+			(void)MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
 				gmt_chop (line);					/* Rid the world of CR/LF */
@@ -1261,7 +1261,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						GMT_Message (API, GMT_TIME_NONE, "Warning: Correction found for %s which is not in this cruise?\n", field);
 					}
 					else {
-						k = MGD77_Info_from_Abbrev (GMT, field, &(D->H), &set, &item);
+						(void) MGD77_Info_from_Abbrev (GMT, field, &(D->H), &set, &item);
 						value = atof (answer);
 						switch (number) {
 							case E77_HDR_PDR:	/* Must deal with undetected Precision Depth Recorder wrap-arounds - this also force recalc of depth when data is read*/
@@ -1327,7 +1327,6 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 			}
 			/* Now start on data record section */
-			has_time = true;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET)
 				has_time = false;
 			else {	/* See if we really have time or if they are all NaN */

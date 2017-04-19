@@ -237,7 +237,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 					case 'z': side = 1; break;
 					default:  both = true; break;
 				}
-				k = (both) ? 0 : 1;	/* Offset in string */
 				Ctrl->M.active[side] = true;
 				if (both) Ctrl->M.active[1] = Ctrl->M.active[0];
 				break;
@@ -641,7 +640,6 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 	/* Solve for w */
 
-	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	if (error == 1) {
@@ -958,7 +956,6 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
 
 	/* Solve for w */
 
-	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	gmt_M_free (GMT, squeeze);

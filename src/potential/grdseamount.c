@@ -767,18 +767,18 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
 						a = in[3];			/* Semi-major axis */
 						b = in[4];			/* Semi-minor axis */
-						e = in[4] / in[3];		/* Eccentricity */
+						e = b / a;		/* Eccentricity */
 						e2 = e * e;
 						ca2 = ca * ca;
 						sa2 = sa * sa;
-						r_km = in[4] * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
+						r_km = b * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
 						r = r_km;
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
 						f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 						A = f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
 						B = -f * (sa * ca * (1.0 - e2));
 						C = f * (e2 * sa2 + ca2);
-						r_in = in[3];			/* Semi-major axis in user units (Cartesian or km)*/
+						r_in = a;			/* Semi-major axis in user units (Cartesian or km)*/
 						r_km = r_in * Ctrl->S.value;	/* Scaled semi-major axis in user units (Cartesian or km) */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */

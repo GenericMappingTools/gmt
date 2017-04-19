@@ -299,7 +299,7 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
 #ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
-		options = GMT_Append_Option(API, opt, options);
+		(void)GMT_Append_Option(API, opt, options);
 #else
 		GMT_Report(API, GMT_MSG_NORMAL,
 		           "Warning: -J option to set grid's referencing system is only available when GMT was build with GDAL\n");
@@ -567,7 +567,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		previous_bin_i = GMT->common.b.active[GMT_IN];
 		GMT->current.io.input = gmt_z_input;		/* Override and use chosen input mode */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set binary as well */
-		in = GMT->current.io.curr_rec;
 		GMT->current.io.fmt[GMT_IN][zcol].type = gmt_get_io_type (GMT, Ctrl->Z.type);
 	}
 	else {
