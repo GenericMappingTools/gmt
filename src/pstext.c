@@ -824,7 +824,6 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
 				if (Ctrl->F.orientation) {
-					tmp = T.paragraph_angle;
 					if (T.paragraph_angle > 180.0) T.paragraph_angle -= 360.0;
 					if (T.paragraph_angle > 90.0) T.paragraph_angle -= 180.0;
 					else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
@@ -976,7 +975,6 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 			}
 			if (Ctrl->F.orientation) {
-				tmp = T.paragraph_angle;
 				if (T.paragraph_angle > 180.0) T.paragraph_angle -= 360.0;
 				if (T.paragraph_angle > 90.0) T.paragraph_angle -= 180.0;
 				else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;

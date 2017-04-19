@@ -90,7 +90,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 	uint64_t i, ij;
 	bool do_authalic;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0}, k;
-	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
+	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist;
 	char segment_header[GMT_BUFSIZ];
 	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
 	if (get_area == 2) /* Return area in steradians */
@@ -211,7 +211,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 
 	char segment_header[GMT_BUFSIZ];
 
-	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN;
+	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist;
 	double y[3], V1[3], V2[3], V3[3];
 	double *plat = NULL, *plon = NULL, R2;
 
