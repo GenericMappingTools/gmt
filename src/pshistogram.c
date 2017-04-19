@@ -234,7 +234,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 }
 
 GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D) {
-	int i, index, fmode = 0, label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
+	int i, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
 	bool first = true;
@@ -332,7 +332,6 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 				x[1] = x[0] + F->box_width;
 				if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
 				if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
-				xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
 				x[2] = x[1];
 				x[3] = x[0];
 				y[0] = y[1] = F->wesn[YLO];

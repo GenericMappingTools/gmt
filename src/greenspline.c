@@ -386,13 +386,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 
 			case 'A':	/* Gradient data: -A<gradientfile>+f<format> */
 				Ctrl->A.active = true;
-				k = 0;
 				if (strchr (opt->arg, ',')) {	/* Old syntax: Specified a particular format with -A<mode>,<file> */
 					if (gmt_M_compat_check (API->GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A<format>,<gradientfile> is deprecated; use -A<gradientfile>+f<format> instead\n");
 						Ctrl->A.mode = (int)(opt->arg[0] - '0');
-						k = 2;
-						Ctrl->A.file = strdup (&opt->arg[k]);
+						Ctrl->A.file = strdup (&opt->arg[2]);
 					}
 					else {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
@@ -671,7 +669,6 @@ GMT_LOCAL void dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *,
 	dx = (x1 - x0) / (N - 1);
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
-		t = (x0 < 0.0) ? acosd (x) : x;
 		y = G (GMT, x, par, Lz);
 		dy = D (GMT, x, par, Lg);
 		if (y < min_y) min_y = y;
@@ -2291,7 +2288,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				limit = k;
 				/* Update solution for k eigenvalues only */
 				gmt_M_memcpy (s, ssave, nm, double);
-				n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
+				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
 				for (row = 0; row < Grid->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
 					for (col = 0; col < Grid->header->n_columns; col++) {
