@@ -4354,7 +4354,6 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HARDWIRE_GMTCONF
 GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 
 	/* GMT Time language file for US (english) mode [US] */
@@ -4415,7 +4414,6 @@ GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.language.cardinal_name[0][3], "North"); strcpy (GMT->current.language.cardinal_name[1][3], "N");
 	strcpy (GMT->current.language.cardinal_name[2][3], "N");
 }
-#endif
 
 /*! . */
 int gmt_get_V (char arg) {
@@ -4457,12 +4455,10 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 
 	int i, nm = 0, nw = 0, nu = 0, nc = 0;
 
-#ifdef HARDWIRE_GMTCONF
 	if (!strcmp(GMT->current.setting.language, "us")) {
 		gmtinit_def_us_locale (GMT);
 		return 0;
 	}
-#endif
 
 	gmt_M_memset (months, 12, char *);
 
@@ -4537,7 +4533,6 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HARDWIRE_GMTCONF
 GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 
 	/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
@@ -4592,13 +4587,13 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 	GMT->session.n_fonts = i;
 	return i;
 }
-#endif
 
 /*! . */
 GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
-
+	/* Initialize all the settings to standard SI settings */
+	
 		/* FORMAT group */
 
 	/* FORMAT_CLOCK_IN */
@@ -4899,7 +4894,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
-	unsigned int i = 0, n_GMT_fonts, encode;
+	unsigned int i = 0, n_GMT_fonts;
 	size_t n_alloc = 0;
 	char buf[GMT_BUFSIZ] = {""}, fullname[GMT_BUFSIZ] = {""};
 	FILE *in = NULL;
@@ -4908,31 +4903,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-#ifndef HARDWIRE_GMTCONF
-	gmt_getsharepath (GMT, "postscriptlight", "PSL_standard_fonts", ".txt", fullname, R_OK);
-	if ((in = fopen (fullname, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
-		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
-	}
-
-	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	while (fgets (buf, GMT_BUFSIZ, in)) {
-		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (i == n_alloc) GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
-		if (sscanf (buf, "%s %lf %d", fullname, &GMT->session.font[i].height, &encode) != 3) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding font info for font %d\n", i);
-			fclose (in);
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
-		}
-		GMT->session.font[i].encode_orig = encode;
-		GMT->session.font[i++].name = strdup (fullname);
-	}
-	fclose (in);
-	GMT->session.n_fonts = n_GMT_fonts = i;
-#else
-	gmt_M_unused(encode);
 	n_GMT_fonts = i = gmtinit_def_std_fonts (GMT);
-#endif
 
 	/* Then any custom fonts */
 
@@ -12867,11 +12838,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
-#ifdef HARDWIRE_GMTCONF		/* Use Hardwired params. I.e, no reading from share/gmt.conf */
-	gmtinit_conf (GMT);
-#else
-	gmt_loaddefaults (GMT, path);	/* Load GMT system default settings [and PSL settings if selected] */
-#endif
+	gmtinit_conf (GMT);	/* Set default params using SI settings */
+
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
 
 	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation */
@@ -13010,9 +12978,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"};
-#ifdef HARDWIRE_GMTCONF
 	char t_file[GMT_LEN256] = {""};
-#endif
 	int err = 0, error = GMT_NOERROR;
 	unsigned int n_files = 0, k;
     struct stat S;
@@ -13044,17 +13010,11 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
-#ifdef HARDWIRE_GMTCONF
 			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
 				gmtinit_conf (API->GMT);		/* Get the original system defaults */
 				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 				gmt_putdefaults (API->GMT, dir);
 			}
-#else
-			gmtinit_conf (API->GMT);		/* Get the original system defaults */
-			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
-			gmt_putdefaults (API->GMT, dir);
-#endif
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			break;
 		case GMT_USE_WORKFLOW:
