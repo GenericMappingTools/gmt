@@ -4594,7 +4594,7 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 }
 #endif
 
-//#ifdef HARDWIRE_GMTCONF
+#ifdef TEST_MODERN
 
 /*! . */
 GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
@@ -4898,7 +4898,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 }
-//#endif
+#endif
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
@@ -12836,11 +12836,13 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 	
+#ifdef TEST_MODERN
 	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
+#endif
 	
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 	PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
@@ -13000,6 +13002,7 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 	return 1;
 }
 
+#ifdef TEST_MODERN
 /*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	/* Manage the GMT workflow.  Mode can take the following values:
@@ -13087,6 +13090,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
 	return error;
 }
+#endif
 
 /*! Return the number of CPU cores */
 int gmtlib_get_num_processors() {
