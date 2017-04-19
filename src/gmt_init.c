@@ -4594,8 +4594,6 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 }
 #endif
 
-#ifdef TEST_MODERN
-
 /*! . */
 GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
@@ -4898,7 +4896,6 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 }
-#endif
 
 /*! . */
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
