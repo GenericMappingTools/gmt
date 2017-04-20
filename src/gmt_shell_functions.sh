@@ -353,20 +353,20 @@ while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 	echo "Working on frame \$frame" >&2
 	# 2a. Set current frame prefix for lexically increasing file name
 	ps=\`gmt_set_framename \${VIDEO_PREFIX} \$frame\`.ps
-	
+
 	# 2b. Perform any calculations that depends on the frame number
-	
+
 	# 2c. Start the current frame with the background layer
 	cp background.\$\$.ps \$ps
-	
+
 	# 2d. Append overlays to file \$ps; add \$RJOK to all commands
 	# FRAME PLOT BEGIN
 	# ==> Add your frame-specific plotting here
 	# FRAME PLOT END
-	
+
 	# 2e. Append the foreground layer
 	cat foreground.\$\$.ps >> \$ps
-	
+
 	if [ \$frame -eq 0 ] && [ "\${PLOT_PDF}" == "yes" ]; then
 		# 2f. Make a PDF of first frame only and break out
 		pdf=\${VIDEO_PREFIX}
@@ -375,20 +375,21 @@ while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 		echo "[Set PLOT_PDF to no to build all frames]" >&2
 		break
 	fi
+
 	# 2g. Convert frame to PNG and save to image folder
 	gmt psconvert -Tg -E\${VIDEO_DPI} -P -D\${VIDEO_PREFIX} -Z \$ps
 	let frame=frame+1	# Increment frame counter
 done
 
 #---------------------------------------------------------------------------------
-# 3. CONVERT IMAGES TO AN ANIMATION
+# 3. CONVERT IMAGES TO AN ANIMATION FORMAT
 #---------------------------------------------------------------------------------
 if [ "\${PLOT_PDF}" == "no" ]; then
 	if [ "\${VIDEO_FORMAT}" = "GIF" ]; then
 		# Make an animated GIF:
 		gmt_build_gif -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} -l 0 \${VIDEO_PREFIX}
 	elif [ "\${VIDEO_FORMAT}" = "MP4" ]; then
-		# Man a MP4 movie:
+		# Make a MP4 movie:
 		gmt_build_movie -d \${VIDEO_PREFIX} -r \${VIDEO_RATE} \${VIDEO_PREFIX}
 	fi
 	echo "The individual frames can be found in directory \${VIDEO_PREFIX}" >&2
@@ -426,7 +427,7 @@ cat << EOF >> $name.html
 </CENTER>
 Please add a movie caption here.
 <HR>
-<I>Create by $you on `date`</I>
+<I>Created by $you on `date`</I>
 </BODY>
 </HTML>
 EOF
