@@ -1004,12 +1004,14 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
-	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands, n_bytes;
+	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_POSTSCRIPT *PS = NULL;
-#ifndef _WIN32
+#ifdef _WIN32
+	uint64_t  n_bytes;
+#else
 	struct popen2 *H = NULL;
 #endif
 	FILE     *fp = NULL;

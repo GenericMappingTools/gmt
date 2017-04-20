@@ -2283,7 +2283,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-			for (k = 0; k < (int64_t)nm; k++) {
+			for (k = 0; k < nm; k++) {
 				fprintf (stderr, "Eigen # %d\n", (int)k+1);
 				limit = k;
 				/* Update solution for k eigenvalues only */
@@ -2296,7 +2296,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 						if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 						V[GMT_X] = xp[col];
 						/* Here, V holds the current output coordinates */
-						for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
+						for (p = 0, wp = 0.0; p < nm; p++) {
 							r = get_radius (GMT, V, X[p], 2U);
 							if (Ctrl->Q.active) {
 								C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);

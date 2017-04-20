@@ -64,6 +64,15 @@
 /* Name of PSL library */
 #define PSL_LIB_NAME "@PSL_LIB_NAME@"
 
+/* Name of DCW path */
+#define DCW_INSTALL_PATH "@DCW_ROOT@"
+
+/* Name of GSHHG path */
+#define GSHHG_INSTALL_PATH "@GSHHG_ROOT@"
+
+/* Default units (SI vs US) */
+#define GMT_DEF_UNITS "@UNITS@"
+
 /* Suffix of gmt executable, include dir, data dir, and plugin dir */
 #define GMT_INSTALL_NAME_SUFFIX "@GMT_INSTALL_NAME_SUFFIX@"
 

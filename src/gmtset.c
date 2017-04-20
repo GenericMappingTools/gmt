@@ -138,9 +138,6 @@ EXTERN_MSC bool GMT_keywords_updated[GMT_N_KEYS];
 int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
 
-	char path[GMT_LEN256] = {""};
-	char* gmtconf_file;
-
 	struct GMTSET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -169,21 +166,9 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 	/* Read the supplied default file or the users defaults to override system settings */
 
 	if (Ctrl->D.active) {
-		switch (Ctrl->D.mode) {
-			case 's':
-				gmtconf_file = "gmt_SI.conf";
-				break;
-			case 'u':
-				gmtconf_file = "gmt_US.conf";
-				break;
-			default:
-				gmtconf_file = "gmt.conf";
-				break;
-		}
-
-		if (! gmt_getsharepath (GMT, "conf", "", gmtconf_file, path, R_OK))
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
-		gmt_getdefaults (GMT, path);
+		gmtinit_conf (GMT);	/* Get default params using SI settings */
+		if (Ctrl->D.mode == 'u')
+			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else if (Ctrl->C.active)
 		gmt_getdefaults (GMT, ".gmtdefaults4");

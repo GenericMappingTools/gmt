@@ -118,8 +118,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	int error;
 
-	char path[GMT_LEN256] = {""};
-
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -146,10 +144,13 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {
-		gmt_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI.conf" : (Ctrl->D.mode == 'u') ? "_US.conf" : ".conf", path, R_OK);
-		gmt_loaddefaults (GMT, path);
+		gmtinit_conf (GMT);	/* Get default params using SI settings */
+		if (Ctrl->D.mode == 'u')
+			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
 	}
-
+	else
+		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
+		
 	gmt_putdefaults (GMT, "-");
 
 	Return (GMT_NOERROR);

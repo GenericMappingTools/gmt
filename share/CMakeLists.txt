@@ -63,7 +63,6 @@ else (DCW_PATH AND COPY_DCW)
 endif (DCW_PATH AND COPY_DCW)
 
 # add subtrees
-add_subdirectory (conf)
 add_subdirectory (tools)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

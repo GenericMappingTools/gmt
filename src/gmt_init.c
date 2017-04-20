@@ -132,6 +132,130 @@ EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, do
 /* Load private fixed array parameters from include files */
 /*--------------------------------------------------------------------*/
 
+struct GMT5_params {
+	const int code;
+	const char *name;
+};
+static struct GMT5_params GMT5_keywords[]= {
+	{ 1, "COLOR Parameters"},
+	{ 0, "COLOR_BACKGROUND"},	
+	{ 0, "COLOR_FOREGROUND"},	
+	{ 0, "COLOR_NAN"},	
+	{ 0, "COLOR_MODEL"},	
+	{ 0, "COLOR_HSV_MIN_S"},     
+	{ 0, "COLOR_HSV_MAX_S"},     
+	{ 0, "COLOR_HSV_MIN_V"},     
+	{ 0, "COLOR_HSV_MAX_V"},     
+	{ 1, "DIR Parameters"},           
+	{ 0, "DIR_DATA"},
+	{ 0, "DIR_DCW"},
+	{ 0, "DIR_GSHHG"},
+	{ 1, "FONT Parameters"},
+	{ 0, "FONT_ANNOT_PRIMARY"},
+	{ 0, "FONT_ANNOT_SECONDARY"},
+	{ 0, "FONT_LABEL"},
+	{ 0, "FONT_LOGO"},
+	{ 0, "FONT_TITLE"},
+	{ 1, "FORMAT Parameters"},
+	{ 0, "FORMAT_CLOCK_IN"},
+	{ 0, "FORMAT_CLOCK_OUT"},
+	{ 0, "FORMAT_CLOCK_MAP"},
+	{ 0, "FORMAT_DATE_IN"},
+	{ 0, "FORMAT_DATE_OUT"},
+	{ 0, "FORMAT_DATE_MAP"},
+	{ 0, "FORMAT_GEO_OUT"},
+	{ 0, "FORMAT_GEO_MAP"},
+	{ 0, "FORMAT_FLOAT_OUT"},
+	{ 0, "FORMAT_FLOAT_MAP"},
+	{ 0, "FORMAT_TIME_PRIMARY_MAP"},
+	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
+	{ 0, "FORMAT_TIME_STAMP"},
+	{ 1, "GMT Miscellaneous Parameters"},
+	{ 0, "GMT_COMPATIBILITY"},
+	{ 0, "GMT_CUSTOM_LIBS"},
+	{ 0, "GMT_EXPORT_TYPE"},
+	{ 0, "GMT_EXTRAPOLATE_VAL"},
+	{ 0, "GMT_FFT"},	
+	{ 0, "GMT_HISTORY"},
+	{ 0, "GMT_INTERPOLANT"},
+	{ 0, "GMT_LANGUAGE"},
+	{ 0, "GMT_TRIANGULATE"},
+	{ 0, "GMT_VERBOSE"},
+	{ 1, "I/O Parameters"},
+	{ 0, "IO_COL_SEPARATOR"},
+	{ 0, "IO_GRIDFILE_FORMAT"},
+	{ 0, "IO_GRIDFILE_SHORTHAND"},
+	{ 0, "IO_HEADER"},
+	{ 0, "IO_N_HEADER_RECS"},
+	{ 0, "IO_NAN_RECORDS"},
+	{ 0, "IO_NC4_CHUNK_SIZE"},
+	{ 0, "IO_NC4_DEFLATION_LEVEL"},
+	{ 0, "IO_LONLAT_TOGGLE"},
+	{ 0, "IO_SEGMENT_BINARY"},
+	{ 0, "IO_SEGMENT_MARKER"},
+	{ 1, "MAP Parameters"},
+	{ 0, "MAP_ANNOT_MIN_ANGLE"},
+	{ 0, "MAP_ANNOT_MIN_SPACING"},
+	{ 0, "MAP_ANNOT_OBLIQUE"},
+	{ 0, "MAP_ANNOT_OFFSET_PRIMARY"},
+	{ 0, "MAP_ANNOT_OFFSET_SECONDARY"},
+	{ 0, "MAP_ANNOT_ORTHO"},
+	{ 0, "MAP_DEFAULT_PEN"},
+	{ 0, "MAP_DEGREE_SYMBOL"},
+	{ 0, "MAP_FRAME_AXES"},
+	{ 0, "MAP_FRAME_PEN"},
+	{ 0, "MAP_FRAME_TYPE"},
+	{ 0, "MAP_FRAME_WIDTH"},
+	{ 0, "MAP_GRID_CROSS_SIZE_PRIMARY"},
+	{ 0, "MAP_GRID_CROSS_SIZE_SECONDARY"},
+	{ 0, "MAP_GRID_PEN_PRIMARY"},
+	{ 0, "MAP_GRID_PEN_SECONDARY"},
+	{ 0, "MAP_LABEL_OFFSET"},
+	{ 0, "MAP_LINE_STEP"},
+	{ 0, "MAP_LOGO"},
+	{ 0, "MAP_LOGO_POS"},
+	{ 0, "MAP_ORIGIN_X"},
+	{ 0, "MAP_ORIGIN_Y"},
+	{ 0, "MAP_POLAR_CAP"},
+	{ 0, "MAP_SCALE_HEIGHT"},
+	{ 0, "MAP_TICK_LENGTH_PRIMARY"},
+	{ 0, "MAP_TICK_LENGTH_SECONDARY"},
+	{ 0, "MAP_TICK_PEN_PRIMARY"},
+	{ 0, "MAP_TICK_PEN_SECONDARY"},
+	{ 0, "MAP_TITLE_OFFSET"},
+	{ 0, "MAP_VECTOR_SHAPE"},
+	{ 1, "Projection Parameters"},
+	{ 0, "PROJ_AUX_LATITUDE"},
+	{ 0, "PROJ_ELLIPSOID"},
+	{ 0, "PROJ_GEODESIC"},
+	{ 0, "PROJ_LENGTH_UNIT"},
+	{ 0, "PROJ_MEAN_RADIUS"},
+	{ 0, "PROJ_SCALE_FACTOR"},
+	{ 1, "PostScript Parameters"},
+	{ 0, "PS_CHAR_ENCODING"},
+	{ 0, "PS_COLOR_MODEL"},
+	{ 0, "PS_COMMENTS"},
+	{ 0, "PS_IMAGE_COMPRESS"},
+	{ 0, "PS_LINE_CAP"},
+	{ 0, "PS_LINE_JOIN"},
+	{ 0, "PS_MITER_LIMIT"},
+	{ 0, "PS_MEDIA"},
+	{ 0, "PS_PAGE_COLOR"},
+	{ 0, "PS_PAGE_ORIENTATION"},
+	{ 0, "PS_SCALE_X"},
+	{ 0, "PS_SCALE_Y"},
+	{ 0, "PS_TRANSPARENCY"},
+	{ 1, "Calendar/Time Parameters"},
+	{ 0, "TIME_EPOCH"},
+	{ 0, "TIME_IS_INTERVAL"},
+	{ 0, "TIME_INTERVAL_FRACTION"},
+	{ 0, "TIME_REPORT"},
+	{ 0, "TIME_UNIT"},
+	{ 0, "TIME_WEEK_START"},
+	{ 0, "TIME_Y2K_OFFSET_YEAR"},
+	{ -1, NULL}
+};
+
 #include "gmt_keycases.h"				/* Get all the default case values */
 static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.conf */
 #include "gmt_keywords.h"
@@ -1903,7 +2027,7 @@ GMT_LOCAL bool gmtinit_badvalreport (struct GMT_CTRL *GMT, const char *keyword) 
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
+GMT_LOCAL int gmtinit_savedefaults_old (struct GMT_CTRL *GMT, char *file) {
 	unsigned int rec = 0;
 	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	FILE *fpi = NULL, *fpo = NULL;
@@ -1963,6 +2087,47 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 	}
 
 	fclose (fpi);
+	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
+
+	return (0);
+}
+
+/*! . */
+GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
+	bool header = false;
+	unsigned int k = 0, current_group;
+	FILE *fpo = NULL;
+
+	if (file[0] == '-' && !file[1])
+		fpo = GMT->session.std[GMT_OUT];
+	else if ((fpo = fopen (file, "w")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create file %s\n", file);
+		return (-1);
+	}
+
+	fprintf (fpo, "#\n# GMT %d.%d.%d Defaults file\n", GMT_MAJOR_VERSION, GMT_MINOR_VERSION, GMT_RELEASE_VERSION);
+	while (GMT5_keywords[k].name != NULL) {
+		if (GMT5_keywords[k].code == 1) {	/* Start of new group */
+			current_group = k++;
+			header = false;
+			continue;
+		}
+#ifdef SHORT_GMTCONF		// TEMPORARY, ONLY TO SHOW UP HOW WE CAN SAVE ONLY NON-DEFAULT KEYS
+		{
+			int case_val;
+			case_val = gmt_hash_lookup (GMT, GMT_keywords[k], keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+			if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
+			{ k++; continue;}
+		}
+#endif
+		if (!header) {
+			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
+			header = true;
+		}
+		fprintf (fpo, "%-30s = %s\n", GMT5_keywords[k].name, gmtlib_putparameter (GMT, GMT5_keywords[k].name));
+		k++;
+	}
+
 	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
 
 	return (0);
@@ -4589,7 +4754,7 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
+void gmtinit_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
 	/* Initialize all the settings to standard SI settings */
@@ -4858,9 +5023,15 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 		/* DIR group */
 
-	/* DIR_DATA (These are all empty) */
+	/* DIR_DATA (Empty) */
 	/* DIR_DCW */
+	if (GMT->session.DCWDIR)
+		gmt_M_str_free (GMT->session.DCWDIR);
+	GMT->session.DCWDIR = strdup (DCW_INSTALL_PATH);
 	/* DIR_GSHHG */
+	if (GMT->session.GSHHGDIR)
+		gmt_M_str_free (GMT->session.GSHHGDIR);
+	GMT->session.GSHHGDIR = strdup (GSHHG_INSTALL_PATH);
 
 		/* TIME group */
 
@@ -4890,6 +5061,36 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
+	
+	if (strncmp (GMT_DEF_UNITS, "US", 2U))
+		gmtinit_conf_US (GMT);	/* Override with US settings */
+}
+
+/*! . */
+void gmtinit_conf_US (struct GMT_CTRL *GMT) {
+	int i;
+	/* Update the settings to US where they differ from standard SI settings:
+	 *     Setting			SI			US
+	 * --------------------------------------------
+	 * PROJ_LENGTH_UNIT		cm	 		inch
+	 * PS_CHAR_ENCODING		ISOLatin1+	Standard+
+	 * PS_MEDIA				a4			letter
+	 * TIME_WEEK_START		Monday		Sunday
+	 */
+	
+	/* PROJ_LENGTH_UNIT */
+	GMT->current.setting.proj_length_unit = GMT_INCH;
+	/* PS_CHAR_ENCODING */
+	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
+	gmtinit_load_encoding (GMT);
+	/* PS_MEDIA */
+	i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
+	/* Use the specified standard format */
+	GMT->current.setting.ps_media = i;
+	GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
+	GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	/* TIME_WEEK_START */
+	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
 }
 
 /*! . */
@@ -12764,7 +12965,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 * API->do_not_exit have not been modified by external API yet.
 	 */
 
-	char path[GMT_LEN256] = {""};
 	struct GMT_CTRL *GMT = NULL;
 
 #ifdef __FreeBSD__
@@ -12827,18 +13027,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
-	/* Initialize the standard GMT system default settings from the system file */
-
-	sprintf (path, "%s/conf/gmt.conf", GMT->session.SHAREDIR);
-	if (access (path, R_OK)) {
-		/* Not found in SHAREDIR, try USERDIR instead */
-		if (gmtlib_getuserpath (GMT, "conf/gmt.conf", path) == NULL) {
-			GMT_Message (API, GMT_TIME_NONE, "Error: Could not find system defaults file %s - Aborting.\n", path);
-			gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
-			return NULL;
-		}
-	}
-	gmtinit_conf (GMT);	/* Set default params using SI settings */
+	gmtinit_conf (GMT);	/* Initialize the standard GMT system default settings */
 
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
 
