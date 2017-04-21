@@ -3791,7 +3791,7 @@ struct osub *s;
   struct osub printsh;
   struct otri printtri;
   vertex printvertex;
-
+  (void)(b);
   printf("subsegment x%" PRIu " with orientation %d and mark %d:\n",
          (unsigned LONG) s->ss, s->ssorient, mark(*s));
   sdecode(s->ss[0], printsh);
@@ -8269,7 +8269,7 @@ int triflaws;
   int i;
   triangle ptr;                         /* Temporary variable used by sym(). */
   subseg sptr;         /* Temporary variable used by spivot() and tspivot(). */
-
+  (void)(triflaws);
   if (b->verbose > 1) {
     printf("  Inserting (%.12g, %.12g).\n", newvertex[0], newvertex[1]);
   }
