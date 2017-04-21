@@ -165,8 +165,10 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 
 	/* Read the supplied default file or the users defaults to override system settings */
 
-	if (Ctrl->D.active) {
-		gmtinit_conf (GMT);	/* Get default params using SI settings */
+	if (Ctrl->D.active) {	/* Start with the system defaults settings which were loaded by GMT_Create_Session */
+#ifdef SHORT_GMTCONF
+		gmt_M_memset (GMT_keywords_updated, GMT_N_KEYS, bool);
+#endif
 		if (Ctrl->D.mode == 'u')
 			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
 	}
@@ -177,13 +179,13 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 
 	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
 
-#ifdef SHORT_GMTCONF		// When -D was used, write all keys so first we have to set them to 'modified'
-	if (Ctrl->D.active) {
-		int k;
-		for (k = 0; k < GMT_N_KEYS; k++)
-			GMT_keywords_updated[k] = true;
-	}
-#endif
+//#ifdef SHORT_GMTCONF		// When -D was used, write all keys so first we have to set them to 'modified'
+//	if (Ctrl->D.active) {
+//		int k;
+//		for (k = 0; k < GMT_N_KEYS; k++)
+//			GMT_keywords_updated[k] = true;
+//	}
+//#endif
 
 	gmt_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 
