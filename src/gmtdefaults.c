@@ -62,9 +62,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of the defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of the defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the current GMT default settings.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to print the SI version of the system defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to print the US version of the system defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tALL settings will be written to standard output.\n");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -115,6 +116,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+#ifdef SHORT_GMTCONF
+EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
+#endif
+
 int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	int error;
 
@@ -143,14 +148,18 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
-	if (Ctrl->D.active) {
-		gmtinit_conf (GMT);	/* Get default params using SI settings */
+	if (Ctrl->D.active) {	/* Start with default params using SI settings */
 		if (Ctrl->D.mode == 'u')
 			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else
 		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
 		
+	/* To ensure that all is written to stdout we must set updated to true */
+#ifdef SHORT_GMTCONF
+	gmtinit_update_keys (GMT, true);
+#endif
+
 	gmt_putdefaults (GMT, "-");
 
 	Return (GMT_NOERROR);

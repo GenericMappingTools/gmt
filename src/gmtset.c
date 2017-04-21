@@ -79,7 +79,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to modify.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tThe modified defaults are written to the current directory as gmt.conf.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOnly settings that differ from the GMT SI system defaults are written\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to the file gmt.conf in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Set the expansion of any of these shorthand options.\n");
 	
@@ -132,7 +133,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 #ifdef SHORT_GMTCONF
-EXTERN_MSC bool GMT_keywords_updated[GMT_N_KEYS];
+EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
 #endif
 
 int GMT_gmtset (void *V_API, int mode, void *args) {
@@ -167,7 +168,7 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Start with the system defaults settings which were loaded by GMT_Create_Session */
 #ifdef SHORT_GMTCONF
-		gmt_M_memset (GMT_keywords_updated, GMT_N_KEYS, bool);
+		gmtinit_update_keys (GMT, false);
 #endif
 		if (Ctrl->D.mode == 'u')
 			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
@@ -178,14 +179,6 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 		gmt_getdefaults (GMT, Ctrl->G.file);
 
 	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
-
-//#ifdef SHORT_GMTCONF		// When -D was used, write all keys so first we have to set them to 'modified'
-//	if (Ctrl->D.active) {
-//		int k;
-//		for (k = 0; k < GMT_N_KEYS; k++)
-//			GMT_keywords_updated[k] = true;
-//	}
-//#endif
 
 	gmt_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 

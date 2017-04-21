@@ -262,7 +262,7 @@ static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.con
 };
 
 #ifdef SHORT_GMTCONF
-EXTERN_MSC bool GMT_keywords_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
+bool GMT_keywords_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
 #endif
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
@@ -7571,6 +7571,18 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 
 	return (GMT_NOERROR);
 }
+
+#ifdef SHORT_GMTCONF
+void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
+	gmt_M_unused(GMT);
+	if (arg == false)
+		gmt_M_memset (GMT_keywords_updated, GMT_N_KEYS, bool);
+	else {
+		for (unsigned int k = 0; k < GMT_N_KEYS; k++)
+			GMT_keywords_updated[k] = true;
+	}
+}
+#endif
 
 /*! . */
 unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {

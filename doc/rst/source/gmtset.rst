@@ -27,7 +27,8 @@ Description
 current directory's :doc:`gmt.conf` file. If no such file exists one will
 be created. The main purpose of **gmtset** is temporarily to change
 certain parameters inside a shell script, e.g., set the dots-per-inch to
-72, run the script, and reset to 1200 dpi. Optionally, you can specify
+72, run the script, and reset to 1200 dpi.  Only parameters that differ
+from the GMT SI system defaults will be written.  Optionally, you can specify
 one or more temporary changes directly on any GMT command line with
 the syntax **-**\ **-PARAMETER**\ =\ *VALUE*; such changes are only in effect
 for that command and do not permanently change the default settings on

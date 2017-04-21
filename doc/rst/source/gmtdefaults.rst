@@ -20,7 +20,7 @@ Synopsis
 Description
 -----------
 
-**gmtdefaults** lists the GMT parameter defaults if the option
+**gmtdefaults** lists all the GMT parameter defaults if the option
 **-D** is used. There are three ways to change some of the settings: (1)
 Use the command :doc:`gmtset`, (2) use any text editor to edit the file
 :doc:`gmt.conf` in your home, ~/.gmt or current directory (if you do not
