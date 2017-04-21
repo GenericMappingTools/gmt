@@ -2027,72 +2027,6 @@ GMT_LOCAL bool gmtinit_badvalreport (struct GMT_CTRL *GMT, const char *keyword) 
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_savedefaults_old (struct GMT_CTRL *GMT, char *file) {
-	unsigned int rec = 0;
-	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
-	FILE *fpi = NULL, *fpo = NULL;
-
-	if (file[0] == '-' && !file[1])
-		fpo = GMT->session.std[GMT_OUT];
-	else if ((fpo = fopen (file, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create file %s\n", file);
-		return (-1);
-	}
-
-	/* Find the global gmt.conf file */
-
-	sprintf (line, "%s/conf/gmt.conf", GMT->session.SHAREDIR);
-	if (access (line, R_OK)) {
-		/* Not found in SHAREDIR, try USERDIR instead */
-		if (gmtlib_getuserpath (GMT, "conf/gmt.conf", line) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
-			fclose (fpo);
-			GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
-		}
-	}
-	if ((fpi = fopen (line, "r")) == NULL) {
-		fclose (fpo);
-		return (-1);
-	}
-
-	while (fgets (line, GMT_BUFSIZ, fpi)) {
-		rec++;
-		gmt_chop (line);	/* Get rid of [\r]\n */
-		if (rec == 2) {	/* Copy version from gmt.conf */
-			sscanf (line, "# GMT %s", string);
-			fprintf (fpo, "# GMT %s Defaults file\n", string);
-			continue;
-		}
-		if (line[0] == '#') { /* Copy comments */
-			fprintf (fpo, "%s\n", line);
-			continue;
-		}
-		if (line[0] == '\0') continue;	/* Skip Blank lines */
-
-		/* Read the keyword and get the value from memory */
-		keyword[0] = '\0';
-		sscanf (line, "%s", keyword);
-
-		/* Write things out (with possible tabs, spaces) */
-		sscanf (line, "%[^=]", string);
-#ifdef SHORT_GMTCONF		// TEMPORARY, ONLY TO SHOW UP HOW WE CAN SAVE ONLY NON-DEFAULT KEYS
-		{
-			int case_val;
-			case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-			if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
-				continue;
-		}
-#endif
-		fprintf (fpo, "%s= %s\n", string, gmtlib_putparameter (GMT, keyword));
-	}
-
-	fclose (fpi);
-	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
-
-	return (0);
-}
-
-/*! . */
 GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 	bool header = false;
 	unsigned int k = 0, current_group;
@@ -5062,7 +4996,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 	
-	if (strncmp (GMT_DEF_UNITS, "US", 2U))
+	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
 		gmtinit_conf_US (GMT);	/* Override with US settings */
 }
 
