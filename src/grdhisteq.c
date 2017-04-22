@@ -183,7 +183,6 @@ GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, u
 
 	do {
 		if (cell[i].low <= x && cell[i].high >= x) {
-			last_cell = i;
 			return ((float)i);
 		}
 		else if (cell[low].low <= x && cell[low].high >= x) {
@@ -379,7 +378,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	gmt_grd_init (GMT, Out->header, options, true);
 
 	if (Ctrl->N.active)
-		error = do_gaussian_scores (GMT, Out, Ctrl->N.norm);
+		do_gaussian_scores (GMT, Out, Ctrl->N.norm);
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			int out_ID;

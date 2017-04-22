@@ -532,7 +532,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		error = free_them_grids (API, G, grdfile, ngrd);
+		free_them_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
 

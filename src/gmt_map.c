@@ -3863,9 +3863,6 @@ GMT_LOCAL bool map_init_genper (struct GMT_CTRL *GMT) {
 	GMT->common.R.wesn[YLO] = -90.0;
 	GMT->common.R.wesn[YHI] = 90.0;
 
-	xmin = ymin = -GMT->current.proj.g_rmax;
-	xmax = ymax = -xmin;
-
 	xmin = GMT->current.proj.g_xmin;
 	xmax = GMT->current.proj.g_xmax;
 	ymin = GMT->current.proj.g_ymin;
@@ -6522,8 +6519,6 @@ void gmt_xy_to_geo_noshift (struct GMT_CTRL *GMT, double *lon, double *lat, doub
 
 	if (gmt_M_is_dnan (x) || gmt_M_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT->current.proj.inv) (GMT, lon, lat, x, y);
-	x = x * GMT->current.proj.i_scale[GMT_X];
-	y = y * GMT->current.proj.i_scale[GMT_Y];
 }
 
 /*! . */

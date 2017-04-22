@@ -938,7 +938,6 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Region reset to -R%g/%g/%g/%gr.\n",
 				            Grid->header->wesn[XLO], Grid->header->wesn[YLO], Grid->header->wesn[XHI], Grid->header->wesn[YHI]);
 		}
-		error = 0;
 	}
 
 	/* Now we are ready to go */

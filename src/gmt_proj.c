@@ -223,7 +223,6 @@ GMT_LOCAL void proj_genper_toxy (struct GMT_CTRL *P, double lat, double lon, dou
 		sincos (angle, &xp, &yp);
 		xp *= P->current.proj.g_rmax;
 		yp *= P->current.proj.g_rmax;
-		angle *= R2D;
 	}
 	*x = xp;
 	*y = yp;
@@ -1413,7 +1412,6 @@ void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 
 	GMT->current.proj.g_outside = false;
 
-	angle = M_PI - dlon;
 	if (cosc < GMT->current.proj.g_P_inverse) { /* over the horizon */
 		GMT->current.proj.g_outside = true;
 

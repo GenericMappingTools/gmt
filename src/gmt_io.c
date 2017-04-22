@@ -2017,7 +2017,6 @@ GMT_LOCAL int gmtio_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd
 				            &ival[GMT->current.io.date_input.item_order[1]], month);
 				break;
 			default:
-				k = 0;
 				return (-1);
 				break;
 		}

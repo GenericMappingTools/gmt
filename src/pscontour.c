@@ -303,7 +303,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		}
 	}
 
-	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	(void)gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
@@ -469,17 +469,15 @@ GMT_LOCAL unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, 
 			Ctrl->T.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
 		}
 	}
-	n = 0;
 	for (j = 0; arg[j] && arg[j] != ':'; j++);
 	if (arg[j] == ':') Ctrl->T.label = true, j++;
 	if (arg[j]) {	/* Override high/low markers */
 		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
 			txt_a[0] = arg[j++];	txt_a[1] = '\0';
 			txt_b[0] = arg[j++];	txt_b[1] = '\0';
-			n = 2;
 		}
 		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
-			n = sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
+			(void)sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as +lLH or +l<low>,<high>.\n");

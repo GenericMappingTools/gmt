@@ -485,7 +485,6 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
 		in = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, NULL);
-		do_report = false;
 
 		if (gmt_M_rec_is_error (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (gmt_M_rec_is_table_header (GMT)) continue;	/* Skip table headers */

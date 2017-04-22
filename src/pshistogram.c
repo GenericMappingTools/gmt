@@ -633,7 +633,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	uint64_t n;
 	size_t n_alloc = GMT_CHUNK;
 
-	char format[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ] = {""};
 
 	double *data = NULL, stats[6], area, tmp, x_min, x_max, *in = NULL;
 
@@ -672,6 +672,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	gmt_M_memset (&F, 1, struct PSHISTOGRAM_INFO);
+	gmt_M_memset (stats, 6, double);
 	F.hist_type  = Ctrl->Z.mode;
 	F.box_width  = Ctrl->W.inc;
 	F.cumulative = Ctrl->Q.active;

@@ -769,7 +769,6 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		p_first_x = p_last_x = DBL_MAX;
 		p_first_y = p_last_y = DBL_MAX;
 		n_steps_pass_2 = out_p = n_seg_length = 0;
-		done = false;
 		first = true;
 		do {
 			G = segment[id].group;	/* This is which table this line segment came from */

@@ -1535,7 +1535,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							low = corner[p];
 							n = 0;
 							add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
-							start_side = next_side = low;
+							next_side = low;
 							way = 0;
 
 							for (this_cont = start_cont; this_cont; this_cont = this_cont->next_cont) {
@@ -1564,14 +1564,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 								exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
-								if (way == 0 || next_side == entry_side) {	/* Just hook up */
+								if (way == 0 || next_side == entry_side)	/* Just hook up */
 									copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
-									next_side = exit_side;
-								}
-								else if (next_side == exit_side) {	/* Just hook up but reverse */
+								else if (next_side == exit_side)	/* Just hook up but reverse */
 									copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
-									next_side = entry_side;
-								}
+
 								/* Compute the xy from the xyz triplets */
 
 								for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);

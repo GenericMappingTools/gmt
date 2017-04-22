@@ -4603,8 +4603,8 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			case 'A':		/* Draw arc of a circle */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
-				k = support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
-				k = support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
+				support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
+				support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
 			case 'R':		/* Rotate coordinate system about (0,0) */
@@ -4700,7 +4700,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			case 'e':		/* Draw ellipse symbol */
 			case 'j':		/* Draw rotated rect symbol */
 				if (last != 5) error++;
-				k = support_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
+				support_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
 				s->p[1] = atof (col[3]);
 				s->p[2] = atof (col[4]);
 				break;
@@ -4709,8 +4709,8 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			case 'w':		/* Draw wedge (pie) symbol */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
-				k = support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
-				k = support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
+				support_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
+				support_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
 			default:
@@ -12260,7 +12260,6 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 					xb_start = B[this_b].start;
 					xb_stop  = B[this_b].stop;
 				}
-				new_b = false;
 				xb_OK = (sb[xb_start] == sb[xb_stop]);	/* false if we cross between multiple segments */
 			}
 

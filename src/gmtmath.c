@@ -5053,7 +5053,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		use_t_col = 0;
-		got_t_from_file = 2;
 	}
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
@@ -5127,7 +5126,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->data[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
-		t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
 	}
 
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */

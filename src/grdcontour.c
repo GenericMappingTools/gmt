@@ -257,17 +257,15 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 			Ctrl->T.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
 		}
 	}
-	n = 0;
 	for (j = 0; arg[j] && arg[j] != ':'; j++);
 	if (arg[j] == ':') Ctrl->T.label = true, j++;
 	if (arg[j]) {	/* Override high/low markers */
 		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
 			txt_a[0] = arg[j++];	txt_a[1] = '\0';
 			txt_b[0] = arg[j++];	txt_b[1] = '\0';
-			n = 2;
 		}
 		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
-			n = sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
+			sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
