@@ -1096,7 +1096,8 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		return GMT_NOERROR;
 	/* ---------------------------------------------------------------------------------------- */
 
-	n = read (fh, buf, 3U);				/* Consume first header line */
+	if ((n = read (fh, buf, 3U)) != 3)				/* Consume first header line */
+		GMT_Report (API, GMT_MSG_NORMAL, "pipe_ghost: failed read first line in popen store. Expect failures.\n");
 	while (read (fh, buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
 	n = 0;
 	while (read(fh, buf, 1U) && buf[0] != ' ') 		/* Get string with number of columns from 3rd header line */
@@ -1137,7 +1138,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	}
 	else {
 		for (row = 0; row < nRows; row++) {
-			k = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -1189,7 +1190,7 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 		sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 		strcat (out_file, t);
 		if (API->external && Ctrl->F.active && !gmt_M_file_is_memory (Ctrl->F.file)) {
-			strncpy (t, Ctrl->F.file, GMT_LEN256-11);
+			strncpy (t, Ctrl->F.file, GMT_LEN256-1);
 		}
 		else {
 			if (API->tmp_dir)	/* Use the established temp directory */
