@@ -485,7 +485,6 @@ GMT_LOCAL void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, flo
 
 	if (data0 == 0.0 && data1 == 0.0) return; /* probably shouldn't strictly, but pathological enough I don't really want to deal with it! */
 
-	interp = 0.0;
 	if ((data0 * data1) < 0.0) {
 		/* points to plot are on different sides of zero - interpolate to find out where zero is */
 		interp = z0 + data0 * ((z0 - z1) / (data1 - data0));

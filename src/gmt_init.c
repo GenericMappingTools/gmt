@@ -261,9 +261,7 @@ static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.con
 #include "gmt_keywords.h"
 };
 
-#ifdef SHORT_GMTCONF
 bool GMT_keywords_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
-#endif
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
@@ -2048,12 +2046,8 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			continue;
 		}
 		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-#ifdef SHORT_GMTCONF		// TEMPORARY, ONLY TO SHOW UP HOW WE CAN SAVE ONLY NON-DEFAULT KEYS
-		{
-			if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
+		if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
 			{ k++; continue;}
-		}
-#endif
 		if (!header) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
 			header = true;
@@ -7556,12 +7550,10 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 
 		if (gmtlib_setparameter (GMT, keyword, value, false))
 			error++;
-#ifdef SHORT_GMTCONF
 		else {
 			int case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 			GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 		}
-#endif
 	}
 
 	fclose (fp);
@@ -7572,7 +7564,6 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	return (GMT_NOERROR);
 }
 
-#ifdef SHORT_GMTCONF
 void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
 	gmt_M_unused(GMT);
 	if (arg == false)
@@ -7582,7 +7573,6 @@ void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
 			GMT_keywords_updated[k] = true;
 	}
 }
-#endif
 
 /*! . */
 unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -7782,7 +7772,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_tick_length[GMT_SECONDARY] *= scale;
 				GMT->current.setting.map_tick_length[2] *= scale;
 				GMT->current.setting.map_tick_length[3] *= scale;
-#ifdef SHORT_GMTCONF
 				if (core) {		/* Need to update more than just FONT_ANNOT_PRIMARY */
 					int p = gmt_hash_lookup (GMT, "FONT_ANNOT_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
@@ -7805,7 +7794,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					p = gmt_hash_lookup (GMT, "MAP_FRAME_WIDTH", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 				}
-#endif
 			}
 			else
 				if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
@@ -9131,10 +9119,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 	if (error && case_val >= 0)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
-#ifdef SHORT_GMTCONF
 	else if (core && case_val >= 0)		/* So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 		GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
-#endif
 	return ((error) ? 1 : 0);
 }
 

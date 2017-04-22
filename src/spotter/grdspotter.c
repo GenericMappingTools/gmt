@@ -1001,7 +1001,6 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 		/* Now do bootstrap sampling of flowlines */
 	
-		try = 0;
 		srand ((unsigned int)time(NULL));	/* Initialize random number generator */
 		x_scale = (double)G->header->n_columns / (double)RAND_MAX;
 		y_scale = (double)G->header->n_rows / (double)RAND_MAX;

@@ -2839,14 +2839,14 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 
 	/* Strip out Prefix and store in control structure */
 
-	start = stop = MGD77_NOT_SET;
+	stop = MGD77_NOT_SET;
 	len = (int)strlen (F->path);
 	for (start = len - 1; stop == MGD77_NOT_SET && start > 0; start--)
 		if (F->path[start] == '.') stop = start;
 	while (start >= 0 && F->path[start] != '/') start--;
 	start++;
 	len = stop - start;
-	strncpy (F->NGDC_id, &F->path[start], len);
+	strncpy (F->NGDC_id, &F->path[start], MAX(MGD77_COL_ABBREV_LEN-1,(unsigned int)len));
 	F->NGDC_id[stop - start] = '\0';
 
 	return (MGD77_NO_ERROR);

@@ -2088,7 +2088,6 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 	sincos(*theta, sinthe, costhe);
     if (ctyp == 0) {
 	if (ifirst == 1) {
-	    ifirst = 0;
 	    re2 = re * re;
 	    rp2 = rp * rp;
 	}

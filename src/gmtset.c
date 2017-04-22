@@ -132,9 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-#ifdef SHORT_GMTCONF
 EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
-#endif
 
 int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -167,9 +165,7 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 	/* Read the supplied default file or the users defaults to override system settings */
 
 	if (Ctrl->D.active) {	/* Start with the system defaults settings which were loaded by GMT_Create_Session */
-#ifdef SHORT_GMTCONF
 		gmtinit_update_keys (GMT, false);
-#endif
 		if (Ctrl->D.mode == 'u')
 			gmtinit_conf_US (GMT);	/* Change a few to US defaults */
 	}

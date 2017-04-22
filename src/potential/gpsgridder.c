@@ -1068,7 +1068,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", e);
 				limit = (double)e;	/* Update solution for e eigenvalues only */
 				gmt_M_memcpy (s, ssave, n_params, double);
-				n_use = gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, &limit, 2);
+				(void)gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, &limit, 2);
 				for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
 					for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
