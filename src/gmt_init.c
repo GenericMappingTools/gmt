@@ -2047,7 +2047,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 		}
 		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
-			{ k++; continue;}
+				{k++; continue;}
 		if (!header) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
 			header = true;
