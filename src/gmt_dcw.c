@@ -317,9 +317,24 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	/* Get global attributes */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
-		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
-		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
-		retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source);
+		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute version\n");
+			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, order);
+			return NULL;
+		}
+		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute title\n");
+			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, order);
+			return NULL;
+		}
+		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute source\n");
+			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, order);
+			return NULL;
+		}
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Using country and state data from gmt-dcw\n");
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Title  : %s\n", title);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Source : %s\n", source);
@@ -364,11 +379,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 		sprintf (dim, "%s_length", TAG);
 		if ((retval = nc_inq_dimid (ncid, dim, &id))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s!\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error getting ID for variable %s in %s!\n", dim, path);
 			continue;
 		}
-		retval = nc_inq_dimlen (ncid, id, &np);
-
+		if ((retval = nc_inq_dimlen (ncid, id, &np))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error getting dimension length for variable %s in %s!\n", dim, path);
+			continue;
+		}
 		if (mode > GMT_DCW_REGION && np > max_np) {
 			size_t tmp_size = max_np;
 			gmt_M_malloc2 (GMT, lon, lat, np, &tmp_size, double);

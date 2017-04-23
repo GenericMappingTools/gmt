@@ -7765,7 +7765,6 @@ double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 	dx = x1 - x0;
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (dx) > (width = gmtlib_half_map_width (GMT, y0))) {
 		width *= 2.0;
-		dx = copysign (width - fabs (dx), -dx);
 		if (x1 < width)
 			x0 -= width;
 		else

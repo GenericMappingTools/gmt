@@ -1583,7 +1583,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								n = 0;
 								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
-								start_side = entry_side;
 								way = (Z_vert[low] < (float)this_cont->value) ? -1 : 1;
 							}
 

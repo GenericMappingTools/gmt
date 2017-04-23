@@ -916,6 +916,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (&shelf, &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 		gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_X], &GMT->current.map.frame.axis[GMT_Y], 1, struct GMT_PLOT_AXIS);
 		gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_Y], &shelf, 1, struct GMT_PLOT_AXIS);
+		gmt_M_int_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
 		/* But must update the ids of parents and children since x and y ids have been swapped too */
 		GMT->current.map.frame.axis[GMT_X].id = GMT_X;
 		GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;

@@ -1510,7 +1510,6 @@ GMT_LOCAL void plot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		if (GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
 		if (GMT->current.setting.map_annot_oblique & 8) {
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
-			tick_length /= div;
 			o_len /= div;
 		}
 		xx[i] += o_len * ca;
@@ -1645,7 +1644,7 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		PSL_setdash (PSL, NULL, 0);
 	}
-	reset = gmt_genper_reset (GMT, reset);
+	gmt_genper_reset (GMT, reset);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting plot_map_gridlines\n");
 }
 
@@ -5729,10 +5728,8 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	type = gmtlib_determine_pole (GMT, S->data[GMT_X], S->data[GMT_Y], n);
-	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
+	if (abs(type) == 2)	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		plot_reverse_polygon (GMT, S);
-		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
-	}
 	start_lon = GMT->common.R.wesn[XHI];
 	stop_lon  = GMT->common.R.wesn[XLO];
 	
@@ -5976,7 +5973,9 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
 		L = hypot (px - qx, py - qy);	/* Distance in inches for 1 degree of azimuth change */
 		N = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
+#ifdef DEBUG
 		N = n_path = irint (fabs (az_stop - az_start));	/* Debugging */
+#endif
 		d_az = (az_stop - az_start) / (N-1);	/* Azimuthal sampling rate */
 	}
 	if (mode & 2) n_path++;		/* Add apex */

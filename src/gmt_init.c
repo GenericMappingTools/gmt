@@ -2028,7 +2028,7 @@ GMT_LOCAL bool gmtinit_badvalreport (struct GMT_CTRL *GMT, const char *keyword) 
 GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 	bool header = false;
 	int case_val;
-	unsigned int k = 0, current_group;
+	unsigned int k = 0, current_group = 0;
 	FILE *fpo = NULL;
 
 	if (file[0] == '-' && !file[1])
@@ -2610,7 +2610,6 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 			n_errors++;
 			continue;
 		}
-		k = 0;
 		for (k = 0; type[k]; k++) {
 			switch (type[k]) {
 				case 'a':	/* Regular annotation */
@@ -10824,7 +10823,6 @@ bool geo;
 				if (strchr ("xXpP", opt->arg[0]) == NULL || (toupper (opt->arg[0]) == 'X' && opt->arg[strlen(opt->arg)-1] == 'd')) {	/* Geographic projection of some sort */ 
 					if ((tmp = GMT_Make_Option (API, 'f', "g")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 						return API->error;	/* Failure to make new option or append to list */
-					geo = true;
 				}
 			}
 			if ((tmp = GMT_Make_Option (API, 'C', NULL)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
@@ -11613,12 +11611,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		for (j = (int)strlen (text)-1; j > 0 && text[j] != '/'; --j);	/* Determine last slash */
 		if (j == 0) {	/* No slash, i.e., no symbol size given (and no UNIX path either) */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
-			n = sscanf (text, "%c%s", &symbol_type, text_cp);
+			sscanf (text, "%c%s", &symbol_type, text_cp);
 			col_off++;
 		}
 		else {	/* Found a slash, is it separating the size or part of UNIX path? */
 			text[j] = ' ';	/* Temporary remove the slash we found */
-			n = sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
+			sscanf (text, "%c%s %s", &symbol_type, text_cp, txt_a);
 			text[j] = '/';	/* Restore the bugger */
 			if (strchr("CcIiPp", txt_a[strlen(txt_a) - 1])) {	/* If last char equals a unit char... */
 				char t[GMT_LEN64] = {""};
@@ -11692,10 +11690,9 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {
 		/* Symbol, but no size given (size assumed given on command line), only unit information */
-		n = sscanf (text, "%c", &symbol_type);
+		sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
-		j = 0;
 		if (text[1]) {	/* Gave unit information */
 			if ((j = gmtinit_get_unit (GMT, text[1])) < 0)
 				decode_error = true;
@@ -11707,7 +11704,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {
 		/* Symbol, but no size given (size assumed given on command line) */
-		n = sscanf (text, "%c", &symbol_type);
+		sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		col_off++;

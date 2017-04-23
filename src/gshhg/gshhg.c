@@ -300,7 +300,6 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
 		is_river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
-		m = h.flag >> 26;				/* Magnitude for area scale */
 		w = h.west  * GSHHG_SCL;			/* Convert region from microdegrees to degrees */
 		e = h.east  * GSHHG_SCL;
 		s = h.south * GSHHG_SCL;

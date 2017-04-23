@@ -535,8 +535,12 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 					k3 += 3;
 				}
 			}
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+				gmt_M_str_free (grdfile);
+				Return (API->error);
+			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Grid) != GMT_NOERROR) {
+				gmt_M_str_free (grdfile);
 				Return (API->error);
 			}
 			gmt_M_str_free (grdfile);
