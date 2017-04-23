@@ -145,265 +145,265 @@ These are symbols used to illustrate sightings of whales.
 .. |C003| image:: gallery/users_contrib_symbols/images/atlantwhitesided_low.png
     :width: 150
 
-.. |C004| image :: gallery/users_contrib_symbols/images/beluga.png
+.. |C004| image:: gallery/users_contrib_symbols/images/beluga.png
     :width: 150
 
-.. |C005| image :: gallery/users_contrib_symbols/images/beluga_high.png
+.. |C005| image:: gallery/users_contrib_symbols/images/beluga_high.png
     :width: 150
 
-.. |C006| image :: gallery/users_contrib_symbols/images/beluga_low.png
+.. |C006| image:: gallery/users_contrib_symbols/images/beluga_low.png
     :width: 150
 
-.. |C007| image :: gallery/users_contrib_symbols/images/bottlenose.png
+.. |C007| image:: gallery/users_contrib_symbols/images/bottlenose.png
     :width: 150
 
-.. |C008| image :: gallery/users_contrib_symbols/images/bottlenose_high.png
+.. |C008| image:: gallery/users_contrib_symbols/images/bottlenose_high.png
     :width: 150
 
-.. |C009| image :: gallery/users_contrib_symbols/images/bottlenose_low.png
+.. |C009| image:: gallery/users_contrib_symbols/images/bottlenose_low.png
     :width: 150
 
-.. |C010| image :: gallery/users_contrib_symbols/images/bowhead.png
+.. |C010| image:: gallery/users_contrib_symbols/images/bowhead.png
     :width: 150
 
-.. |C011| image :: gallery/users_contrib_symbols/images/bowhead_high.png
+.. |C011| image:: gallery/users_contrib_symbols/images/bowhead_high.png
     :width: 150
 
-.. |C012| image :: gallery/users_contrib_symbols/images/bowhead_low.png
+.. |C012| image:: gallery/users_contrib_symbols/images/bowhead_low.png
     :width: 150
 
-.. |C013| image :: gallery/users_contrib_symbols/images/burmeistersporpoise.png
+.. |C013| image:: gallery/users_contrib_symbols/images/burmeistersporpoise.png
     :width: 150
 
-.. |C014| image :: gallery/users_contrib_symbols/images/burmeistersporpoise_high.png
+.. |C014| image:: gallery/users_contrib_symbols/images/burmeistersporpoise_high.png
     :width: 150
 
-.. |C015| image :: gallery/users_contrib_symbols/images/burmeistersporpoise_low.png
+.. |C015| image:: gallery/users_contrib_symbols/images/burmeistersporpoise_low.png
     :width: 150
 
-.. |C016| image :: gallery/users_contrib_symbols/images/commondolphin.png
+.. |C016| image:: gallery/users_contrib_symbols/images/commondolphin.png
     :width: 150
 
-.. |C017| image :: gallery/users_contrib_symbols/images/commondolphin_high.png
+.. |C017| image:: gallery/users_contrib_symbols/images/commondolphin_high.png
     :width: 150
 
-.. |C018| image :: gallery/users_contrib_symbols/images/commondolphin_low.png
+.. |C018| image:: gallery/users_contrib_symbols/images/commondolphin_low.png
     :width: 150
 
-.. |C019| image :: gallery/users_contrib_symbols/images/commondolphin_midhigh.png
+.. |C019| image:: gallery/users_contrib_symbols/images/commondolphin_midhigh.png
     :width: 150
 
-.. |C020| image :: gallery/users_contrib_symbols/images/commondolphin_midlow.png
+.. |C020| image:: gallery/users_contrib_symbols/images/commondolphin_midlow.png
     :width: 150
 
-.. |C021| image :: gallery/users_contrib_symbols/images/commonporpoise.png
+.. |C021| image:: gallery/users_contrib_symbols/images/commonporpoise.png
     :width: 150
 
-.. |C022| image :: gallery/users_contrib_symbols/images/commonporpoise_high.png
+.. |C022| image:: gallery/users_contrib_symbols/images/commonporpoise_high.png
     :width: 150
 
-.. |C023| image :: gallery/users_contrib_symbols/images/commonporpoise_low.png
+.. |C023| image:: gallery/users_contrib_symbols/images/commonporpoise_low.png
     :width: 150
 
-.. |C024| image :: gallery/users_contrib_symbols/images/cuviersbeaked.png
+.. |C024| image:: gallery/users_contrib_symbols/images/cuviersbeaked.png
     :width: 150
 
-.. |C025| image :: gallery/users_contrib_symbols/images/cuviersbeaked_high.png
+.. |C025| image:: gallery/users_contrib_symbols/images/cuviersbeaked_high.png
     :width: 150
 
-.. |C026| image :: gallery/users_contrib_symbols/images/cuviersbeaked_low.png
+.. |C026| image:: gallery/users_contrib_symbols/images/cuviersbeaked_low.png
     :width: 150
 
-.. |C027| image :: gallery/users_contrib_symbols/images/finwhale.png
+.. |C027| image:: gallery/users_contrib_symbols/images/finwhale.png
     :width: 150
 
-.. |C028| image :: gallery/users_contrib_symbols/images/finwhale_high.png
+.. |C028| image:: gallery/users_contrib_symbols/images/finwhale_high.png
     :width: 150
 
-.. |C029| image :: gallery/users_contrib_symbols/images/finwhale_low.png
+.. |C029| image:: gallery/users_contrib_symbols/images/finwhale_low.png
     :width: 150
 
-.. |C030| image :: gallery/users_contrib_symbols/images/graywhale.png
+.. |C030| image:: gallery/users_contrib_symbols/images/graywhale.png
     :width: 150
 
-.. |C031| image :: gallery/users_contrib_symbols/images/graywhale_high.png
+.. |C031| image:: gallery/users_contrib_symbols/images/graywhale_high.png
     :width: 150
 
-.. |C032| image :: gallery/users_contrib_symbols/images/graywhale_low.png
+.. |C032| image:: gallery/users_contrib_symbols/images/graywhale_low.png
     :width: 150
 
-.. |C033| image :: gallery/users_contrib_symbols/images/humpbacktail_one.png
+.. |C033| image:: gallery/users_contrib_symbols/images/humpbacktail_one.png
     :width: 150
 
-.. |C034| image :: gallery/users_contrib_symbols/images/humpbacktail_one_low.png
+.. |C034| image:: gallery/users_contrib_symbols/images/humpbacktail_one_low.png
     :width: 150
 
-.. |C035| image :: gallery/users_contrib_symbols/images/humpbacktail_two.png
+.. |C035| image:: gallery/users_contrib_symbols/images/humpbacktail_two.png
     :width: 150
 
-.. |C036| image :: gallery/users_contrib_symbols/images/humpbacktail_two_low.png
+.. |C036| image:: gallery/users_contrib_symbols/images/humpbacktail_two_low.png
     :width: 150
 
-.. |C037| image :: gallery/users_contrib_symbols/images/jumpback.png
+.. |C037| image:: gallery/users_contrib_symbols/images/jumpback.png
     :width: 150
 
-.. |C038| image :: gallery/users_contrib_symbols/images/jumpback_high.png
+.. |C038| image:: gallery/users_contrib_symbols/images/jumpback_high.png
     :width: 150
 
-.. |C039| image :: gallery/users_contrib_symbols/images/jumpback_low.png
+.. |C039| image:: gallery/users_contrib_symbols/images/jumpback_low.png
     :width: 150
 
-.. |C040| image :: gallery/users_contrib_symbols/images/killerwhale.png
+.. |C040| image:: gallery/users_contrib_symbols/images/killerwhale.png
     :width: 150
 
-.. |C041| image :: gallery/users_contrib_symbols/images/killerwhale_high.png
+.. |C041| image:: gallery/users_contrib_symbols/images/killerwhale_high.png
     :width: 150
 
-.. |C042| image :: gallery/users_contrib_symbols/images/killerwhale_low.png
+.. |C042| image:: gallery/users_contrib_symbols/images/killerwhale_low.png
     :width: 150
 
-.. |C043| image :: gallery/users_contrib_symbols/images/longfinnedpilotwhale.png
+.. |C043| image:: gallery/users_contrib_symbols/images/longfinnedpilotwhale.png
     :width: 150
 
-.. |C044| image :: gallery/users_contrib_symbols/images/longfinnedpilotwhale_high.png
+.. |C044| image:: gallery/users_contrib_symbols/images/longfinnedpilotwhale_high.png
     :width: 150
 
-.. |C045| image :: gallery/users_contrib_symbols/images/longfinnedpilotwhale_low.png
+.. |C045| image:: gallery/users_contrib_symbols/images/longfinnedpilotwhale_low.png
     :width: 150
 
-.. |C046| image :: gallery/users_contrib_symbols/images/minkewhale.png
+.. |C046| image:: gallery/users_contrib_symbols/images/minkewhale.png
     :width: 150
 
-.. |C047| image :: gallery/users_contrib_symbols/images/minkewhale_high.png
+.. |C047| image:: gallery/users_contrib_symbols/images/minkewhale_high.png
     :width: 150
 
-.. |C048| image :: gallery/users_contrib_symbols/images/minkewhale_low.png
+.. |C048| image:: gallery/users_contrib_symbols/images/minkewhale_low.png
     :width: 150
 
-.. |C049| image :: gallery/users_contrib_symbols/images/northernrightwhale.png
+.. |C049| image:: gallery/users_contrib_symbols/images/northernrightwhale.png
     :width: 150
 
-.. |C050| image :: gallery/users_contrib_symbols/images/northernrightwhale_high.png
+.. |C050| image:: gallery/users_contrib_symbols/images/northernrightwhale_high.png
     :width: 150
 
-.. |C051| image :: gallery/users_contrib_symbols/images/northernrightwhale_low.png
+.. |C051| image:: gallery/users_contrib_symbols/images/northernrightwhale_low.png
     :width: 150
 
-.. |C052| image :: gallery/users_contrib_symbols/images/pigmyspermwhale.png
+.. |C052| image:: gallery/users_contrib_symbols/images/pigmyspermwhale.png
     :width: 150
 
-.. |C053| image :: gallery/users_contrib_symbols/images/pigmyspermwhale_high.png
+.. |C053| image:: gallery/users_contrib_symbols/images/pigmyspermwhale_high.png
     :width: 150
 
-.. |C054| image :: gallery/users_contrib_symbols/images/pigmyspermwhale_low.png
+.. |C054| image:: gallery/users_contrib_symbols/images/pigmyspermwhale_low.png
     :width: 150
 
-.. |C055| image :: gallery/users_contrib_symbols/images/rissosdolphin.png
+.. |C055| image:: gallery/users_contrib_symbols/images/rissosdolphin.png
     :width: 150
 
-.. |C056| image :: gallery/users_contrib_symbols/images/rissosdolphin_high.png
+.. |C056| image:: gallery/users_contrib_symbols/images/rissosdolphin_high.png
     :width: 150
 
-.. |C057| image :: gallery/users_contrib_symbols/images/rissosdolphin_low.png
+.. |C057| image:: gallery/users_contrib_symbols/images/rissosdolphin_low.png
     :width: 150
 
-.. |C058| image :: gallery/users_contrib_symbols/images/seiwhale.png
+.. |C058| image:: gallery/users_contrib_symbols/images/seiwhale.png
     :width: 150
 
-.. |C059| image :: gallery/users_contrib_symbols/images/seiwhale_high.png
+.. |C059| image:: gallery/users_contrib_symbols/images/seiwhale_high.png
     :width: 150
 
-.. |C060| image :: gallery/users_contrib_symbols/images/seiwhale_low.png
+.. |C060| image:: gallery/users_contrib_symbols/images/seiwhale_low.png
     :width: 150
 
-.. |C061| image :: gallery/users_contrib_symbols/images/shortfinnedpilotwhale.png
+.. |C061| image:: gallery/users_contrib_symbols/images/shortfinnedpilotwhale.png
     :width: 150
 
-.. |C062| image :: gallery/users_contrib_symbols/images/shortfinnedpilotwhale_high.png
+.. |C062| image:: gallery/users_contrib_symbols/images/shortfinnedpilotwhale_high.png
     :width: 150
 
-.. |C063| image :: gallery/users_contrib_symbols/images/shortfinnedpilotwhale_low.png
+.. |C063| image:: gallery/users_contrib_symbols/images/shortfinnedpilotwhale_low.png
     :width: 150
 
-.. |C064| image :: gallery/users_contrib_symbols/images/southernrightwhale.png
+.. |C064| image:: gallery/users_contrib_symbols/images/southernrightwhale.png
     :width: 150
 
-.. |C065| image :: gallery/users_contrib_symbols/images/southernrightwhale_high.png
+.. |C065| image:: gallery/users_contrib_symbols/images/southernrightwhale_high.png
     :width: 150
 
-.. |C066| image :: gallery/users_contrib_symbols/images/southernrightwhale_low.png
+.. |C066| image:: gallery/users_contrib_symbols/images/southernrightwhale_low.png
     :width: 150
 
-.. |C067| image :: gallery/users_contrib_symbols/images/spectacledporpoise.png
+.. |C067| image:: gallery/users_contrib_symbols/images/spectacledporpoise.png
     :width: 150
 
-.. |C068| image :: gallery/users_contrib_symbols/images/spectacledporpoise_high.png
+.. |C068| image:: gallery/users_contrib_symbols/images/spectacledporpoise_high.png
     :width: 150
 
-.. |C069| image :: gallery/users_contrib_symbols/images/spectacledporpoise_low.png
+.. |C069| image:: gallery/users_contrib_symbols/images/spectacledporpoise_low.png
     :width: 150
 
-.. |C070| image :: gallery/users_contrib_symbols/images/spermwhale.png
+.. |C070| image:: gallery/users_contrib_symbols/images/spermwhale.png
     :width: 150
 
-.. |C071| image :: gallery/users_contrib_symbols/images/spermwhale_high.png
+.. |C071| image:: gallery/users_contrib_symbols/images/spermwhale_high.png
     :width: 150
 
-.. |C072| image :: gallery/users_contrib_symbols/images/spermwhale_low.png
+.. |C072| image:: gallery/users_contrib_symbols/images/spermwhale_low.png
     :width: 150
 
-.. |C073| image :: gallery/users_contrib_symbols/images/spermwhaletail.png
+.. |C073| image:: gallery/users_contrib_symbols/images/spermwhaletail.png
     :width: 150
 
-.. |C074| image :: gallery/users_contrib_symbols/images/spermwhaletail_high.png
+.. |C074| image:: gallery/users_contrib_symbols/images/spermwhaletail_high.png
     :width: 150
 
-.. |C075| image :: gallery/users_contrib_symbols/images/spermwhaletail_low.png
+.. |C075| image:: gallery/users_contrib_symbols/images/spermwhaletail_low.png
     :width: 150
 
-.. |C076| image :: gallery/users_contrib_symbols/images/srightwhaledolphin.png
+.. |C076| image:: gallery/users_contrib_symbols/images/srightwhaledolphin.png
     :width: 150
 
-.. |C077| image :: gallery/users_contrib_symbols/images/srightwhaledolphin_high.png
+.. |C077| image:: gallery/users_contrib_symbols/images/srightwhaledolphin_high.png
     :width: 150
 
-.. |C078| image :: gallery/users_contrib_symbols/images/srightwhaledolphin_low.png
+.. |C078| image:: gallery/users_contrib_symbols/images/srightwhaledolphin_low.png
     :width: 150
 
-.. |C079| image :: gallery/users_contrib_symbols/images/stripeddolphin.png
+.. |C079| image:: gallery/users_contrib_symbols/images/stripeddolphin.png
     :width: 150
 
-.. |C080| image :: gallery/users_contrib_symbols/images/stripeddolphin_high.png
+.. |C080| image:: gallery/users_contrib_symbols/images/stripeddolphin_high.png
     :width: 150
 
-.. |C081| image :: gallery/users_contrib_symbols/images/stripeddolphin_low.png
+.. |C081| image:: gallery/users_contrib_symbols/images/stripeddolphin_low.png
     :width: 150
 
-.. |C082| image :: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale.png
+.. |C082| image:: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale.png
     :width: 150
 
-.. |C083| image :: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale_high.png
+.. |C083| image:: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale_high.png
     :width: 150
 
-.. |C084| image :: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale_low.png
+.. |C084| image:: gallery/users_contrib_symbols/images/unidentifiedbeakedwhale_low.png
     :width: 150
 
-.. |C085| image :: gallery/users_contrib_symbols/images/unidentifieddolphin.png
+.. |C085| image:: gallery/users_contrib_symbols/images/unidentifieddolphin.png
     :width: 150
 
-.. |C086| image :: gallery/users_contrib_symbols/images/unidentifieddolphin_high.png
+.. |C086| image:: gallery/users_contrib_symbols/images/unidentifieddolphin_high.png
     :width: 150
 
-.. |C087| image :: gallery/users_contrib_symbols/images/unidentifieddolphin_low.png
+.. |C087| image:: gallery/users_contrib_symbols/images/unidentifieddolphin_low.png
     :width: 150
 
-.. |C088| image :: gallery/users_contrib_symbols/images/unidentifiedwhale.png
+.. |C088| image:: gallery/users_contrib_symbols/images/unidentifiedwhale.png
     :width: 150
 
-.. |C089| image :: gallery/users_contrib_symbols/images/unidentifiedwhale_high.png
+.. |C089| image:: gallery/users_contrib_symbols/images/unidentifiedwhale_high.png
     :width: 150
 
-.. |C090| image :: gallery/users_contrib_symbols/images/unidentifiedwhale_low.png
+.. |C090| image:: gallery/users_contrib_symbols/images/unidentifiedwhale_low.png
 	:width: 150
 
 .. toctree::

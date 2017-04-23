@@ -3,4 +3,4 @@
 A Beluga whale (low)
 --------------------
 
-. literalinclude:: beluga_low.def
+.. literalinclude:: beluga_low.def

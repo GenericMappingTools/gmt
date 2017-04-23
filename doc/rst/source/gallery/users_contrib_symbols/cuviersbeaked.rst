@@ -3,4 +3,4 @@
 A Cuvier's Beaked Whale
 -----------------------
 
-. literalinclude:: cuviersbeaked.def
+.. literalinclude:: cuviersbeaked.def

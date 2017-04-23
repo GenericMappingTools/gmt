@@ -3,4 +3,4 @@
 A Sei Whale
 -----------
 
-. literalinclude:: seiwhale.def
+.. literalinclude:: seiwhale.def

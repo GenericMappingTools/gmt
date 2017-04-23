@@ -3,4 +3,4 @@
 A Beluga whale
 --------------
 
-. literalinclude:: beluga.def
+.. literalinclude:: beluga.def

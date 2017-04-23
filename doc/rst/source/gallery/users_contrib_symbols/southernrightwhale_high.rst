@@ -3,4 +3,4 @@
 A Southern Right Whale (high)
 -----------------------------
 
-. literalinclude:: southernrightwhale_high.def
+.. literalinclude:: southernrightwhale_high.def

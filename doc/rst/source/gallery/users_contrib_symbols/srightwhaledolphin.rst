@@ -3,4 +3,4 @@
 A Southern Right Whale Dolphin
 ------------------------------
 
-. literalinclude:: srightwhaledolphin.def
+.. literalinclude:: srightwhaledolphin.def

@@ -3,4 +3,4 @@
 A Southern Right Whale
 ----------------------
 
-. literalinclude:: southernrightwhale.def
+.. literalinclude:: southernrightwhale.def

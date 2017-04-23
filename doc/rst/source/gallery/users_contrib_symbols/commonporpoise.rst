@@ -3,4 +3,4 @@
 A Common Porpoise
 -----------------
 
-. literalinclude:: commonporpoise.def
+.. literalinclude:: commonporpoise.def

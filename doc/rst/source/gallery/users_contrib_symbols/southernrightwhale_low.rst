@@ -3,4 +3,4 @@
 A Southern Right Whale (low)
 ----------------------------
 
-. literalinclude:: southernrightwhale_low.def
+.. literalinclude:: southernrightwhale_low.def

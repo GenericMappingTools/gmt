@@ -3,4 +3,4 @@
 A Striped Dolphin (high)
 ------------------------
 
-. literalinclude:: stripeddolphin_high.def
+.. literalinclude:: stripeddolphin_high.def

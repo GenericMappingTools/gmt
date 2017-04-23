@@ -3,4 +3,4 @@
 A Beluga whale (high)
 ---------------------
 
-. literalinclude:: beluga_high.def
+.. literalinclude:: beluga_high.def

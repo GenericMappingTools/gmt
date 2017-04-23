@@ -3,4 +3,4 @@
 A Sperm Whale
 -------------
 
-. literalinclude:: spermwhale.def
+.. literalinclude:: spermwhale.def

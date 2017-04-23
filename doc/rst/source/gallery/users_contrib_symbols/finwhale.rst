@@ -3,4 +3,4 @@
 A Fin Whale
 -----------
 
-. literalinclude:: finwhale.def
+.. literalinclude:: finwhale.def

@@ -3,4 +3,4 @@
 A Striped Dolphin (low)
 -----------------------
 
-. literalinclude:: stripeddolphin_low.def
+.. literalinclude:: stripeddolphin_low.def

@@ -3,4 +3,4 @@
 A Northern Right Whale (low)
 ----------------------------
 
-. literalinclude:: northernrightwhale_low.def
+.. literalinclude:: northernrightwhale_low.def
