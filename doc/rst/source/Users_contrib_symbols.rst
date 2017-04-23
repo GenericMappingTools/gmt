@@ -2,25 +2,23 @@
 
 Users Symbol Contributions
 ==========================
- 
-.. toctree::
-   :hidden:
 
-   gallery/users_contrib_symbols/atlantwhitesided.rst
-   gallery/users_contrib_symbols/atlantwhitesided_high.rst
-   gallery/users_contrib_symbols/atlantwhitesided_low.rst
-   gallery/users_contrib_symbols/pirata.rst
 
 Biology symbols
 ---------------
 
+.. toctree::
+   :maxdepth: 1
+
+   gallery/users_contrib_symbols/Cetacea.rst
+
 These are symbols used to illustrate sightings of whales.
 
-+------------------------------------+--------------------------------------+---------------------------------------+
-| :ref:`atlantwhitesided.rst`        | :ref:`atlantwhitesided_high.rst`     | :ref:`atlantwhitesided_low.rst`       |
-|                                    |                                      |                                       |
-| |C001|                             | |C002|                               | |C003|                                |
-+------------------------------------+--------------------------------------+---------------------------------------+
++--------------------------------+----------------------------------+---------------------------------------+
+| :ref:`atlantwhitesided`        | :ref:`atlantwhitesided_high`     | :ref:`atlantwhitesided_low`           |
+|                                |                                  |                                       |
+| |C001|                         | |C002|                           | |C003|                                |
++--------------------------------+----------------------------------+---------------------------------------+
 
 .. |C001| image:: gallery/users_contrib_symbols/images/atlantwhitesided.png
     :width: 150
@@ -32,13 +30,21 @@ These are symbols used to illustrate sightings of whales.
     :width: 150
 
 
+.. toctree::
+   :hidden:
+
+   gallery/users_contrib_symbols/atlantwhitesided.rst
+   gallery/users_contrib_symbols/atlantwhitesided_high.rst
+   gallery/users_contrib_symbols/atlantwhitesided_low.rst
+
+
 Miscellaneous symbols
 ---------------------
 
-These are general-purpose symbols you may find useful.
+.. toctree::
+   :maxdepth: 2
 
-.. |0001| image:: gallery/users_contrib_symbols/images/pirata.png
-    :width: 150
+These are general-purpose symbols you may find useful.
 
 +-----------------+----------------+
 | :ref:`pirata`   |                |
@@ -46,3 +52,10 @@ These are general-purpose symbols you may find useful.
 | |0001|          |                |
 +-----------------+----------------+
 
+.. |0001| image:: gallery/users_contrib_symbols/images/pirata.png
+    :width: 150
+
+.. toctree::
+   :hidden:
+
+   gallery/users_contrib_symbols/pirata.rst
