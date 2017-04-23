@@ -80,7 +80,8 @@ Optional Arguments
 
 **-A**
     Plot the histogram horizontally from x = 0 [Default is vertically
-    from y = 0]. 
+    from y = 0].  The plot dimensions remain the same, but the two
+    axes are flipped.
 
 .. _-B:
 
