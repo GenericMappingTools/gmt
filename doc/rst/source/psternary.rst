@@ -106,6 +106,7 @@ Optional Arguments
     their respective corners.
 
 .. _-M:
+
 **-M**
     Do no plotting.  Instead, convert the input (*a*,\ *b*,\ *c*\ [,*z*]) records
     to Cartesian (*x*,\ *y*,\ [,*z*]) records, where *x, y* are normalized coordinates
