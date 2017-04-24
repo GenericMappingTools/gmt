@@ -736,6 +736,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			Return (API->error);
 		/* Prepare the grdgradient arguments using selected -A -N */
 		sprintf (l_args, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method);
+		if (GMT->common.R.active[RSET]) { strcat (l_args, " -R"); strcat (l_args, GMT->common.R.string); }
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", l_args);
 		if (GMT->common.R.oblique) GMT->common.R.active[RSET] = false;	/* Must turn -R off temporarily */

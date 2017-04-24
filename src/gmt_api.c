@@ -834,7 +834,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
 {	/* Downloads a file if not found locally */
 	
-	CURL* easyhandle = NULL;
+	CURL* handle = NULL;
 	FILE* fp = NULL;
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
 	
@@ -843,28 +843,36 @@ void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char*
 		
 	/* OK, this is a file we should download */
 
-  	if ((easyhandle = curl_easy_init()) == NULL) {
+  	if ((handle = curl_easy_init()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", file_name);
 		return;
 	}
 	sprintf (url, "%s/%s", GMT_DATA_URL, file_name);
 	sprintf (local_path, "%s/%s", GMT->session.USERDIR, file_name);
 	
-	curl_easy_setopt (easyhandle, CURLOPT_URL, url);
+	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
+		return;
+	}
 
   	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
 		return;
 	}
 
-	curl_easy_setopt (easyhandle, CURLOPT_WRITEDATA, fp);
+	if (curl_easy_setopt (handle, CURLOPT_WRITEDATA, fp)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
+		return;
+	}
 
-	if (curl_easy_perform (easyhandle)) {
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
+	if (curl_easy_perform (handle)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to download file %s\n", url);
 		gmt_remove_file (GMT, local_path);
 	}
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete.\n");
 
-	curl_easy_cleanup (easyhandle);
+	curl_easy_cleanup (handle);
 
 	fclose (fp);
 }
