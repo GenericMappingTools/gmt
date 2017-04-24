@@ -201,6 +201,13 @@ enum GMT_enum_index {
 	GMT_PRIMARY = 0, GMT_SECONDARY = 1
 	};
 
+#ifdef DO_CURL
+/*! Various mode for auto-download */
+enum GMT_enum_download {
+	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1
+	};
+#endif
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */

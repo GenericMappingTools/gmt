@@ -181,6 +181,10 @@
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include <stdarg.h>
 
+#ifdef DO_CURL
+#include <curl/curl.h>
+#endif
+
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
 #endif
@@ -813,6 +817,58 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 	gmt_M_free (API->GMT, API->lib);
 	API->n_shared_libs = 0;
 }
+
+#ifdef DO_CURL
+/* Copy a known file from the GMT auto-download directory.  We recognize
+ * Grids:  gmt_earth_relief_<res>.nc	Various global relief nc grids
+ * Tables: gmt_test_data_<ID>.txt		Various data tables used in examples
+ *
+ * If auto-download is enabled and a requested input file matches these
+ * names and not found by normal means then we download the file to the
+ * user-directory.  All places that opens files (GMT_Read_Data) will do
+ * this check by calling gmt_download_file_if_not_found.
+ */
+
+#define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"
+
+void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
+{	/* Downloads a file if not found locally */
+	
+	CURL* easyhandle = NULL;
+	FILE* fp = NULL;
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
+	
+	/* Return immediately if cannot bedownloaded (for various reason) */
+	if (!gmtlib_file_is_downloadable (GMT, file_name)) return;
+		
+	/* OK, this is a file we should download */
+
+  	if ((easyhandle = curl_easy_init()) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", file_name);
+		return;
+	}
+	sprintf (url, "%s/%s", GMT_DATA_URL, file_name);
+	sprintf (local_path, "%s/%s", GMT->session.USERDIR, file_name);
+	
+	curl_easy_setopt (easyhandle, CURLOPT_URL, url);
+
+  	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
+		return;
+	}
+
+	curl_easy_setopt (easyhandle, CURLOPT_WRITEDATA, fp);
+
+	if (curl_easy_perform (easyhandle)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to download file %s\n", url);
+		gmt_remove_file (GMT, local_path);
+	}
+
+	curl_easy_cleanup (easyhandle);
+
+	fclose (fp);
+}
+#endif
 
 /* The basic gmtread|write module meat; used by external APIs only, such as the GMT/MATLAB API */
 
@@ -2018,6 +2074,9 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:	/* Filename given; we must open the file here */
 			if (S_obj->family == GMT_IS_GRID || S_obj->family == GMT_IS_IMAGE) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids or images not allowed here */
+#ifdef DO_CURL
+			gmt_download_file_if_not_found (API->GMT, S_obj->filename);	/* Deal with downloadable GMT data sets first */
+#endif
 			if (direction == GMT_OUT && S_obj->filename && S_obj->filename[0] == '>') {
 				mode = GMT->current.io.a_mode;	/* Must append to an existing file (we have already checked the file exists) */
 				first = 1;
@@ -5975,6 +6034,9 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				}
 				if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 					not_url = !gmtlib_check_url_name (file);
+#ifdef DO_CURL
+				gmt_download_file_if_not_found (API->GMT, file);	/* Deal with downloadable GMT data sets first */
+#endif
 				if (gmt_access (GMT, file, F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
 					gmt_M_str_free (file);
@@ -6709,6 +6771,9 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 	}
 	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
+#ifdef DO_CURL
+		gmt_download_file_if_not_found (API->GMT, input);	/* Deal with downloadable GMT data sets first */
+#endif
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;

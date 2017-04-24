@@ -171,6 +171,9 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
+#ifdef DO_CURL
+	{ 0, "GMT_AUTO_DOWNLOAD"},
+#endif
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -4932,6 +4935,10 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 	/* GMT_COMPATIBILITY */
 	GMT->current.setting.compatibility = 4;
+#ifdef DO_CURL
+	/* GMTCASE_GMT_AUTO_DOWNLOAD */
+	GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+#endif
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
@@ -8817,6 +8824,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.compatibility = ival;
 			break;
 
+#ifdef DO_CURL
+		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			if (!strncmp (lower_value, "yes", 4))
+				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
+			else if (!strncmp (lower_value, "no", 4)) /* complete name: fftw */
+				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_AUTO_DOWNLOAD: Expects either yes or no\n");
+				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			}
+			break;
+#endif
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
 				if (GMT->session.CUSTOM_LIBS) {
@@ -9931,6 +9951,12 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_GMT_COMPATIBILITY:
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
+
+#ifdef DO_CURL
+		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "no" : "yes", GMT_LEN256-1);
+			break;
+#endif
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256-1);
@@ -13030,6 +13056,20 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	return (GMT);
 }
 
+#ifdef DO_CURL
+bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file) {
+	/* Returns true if file is a known GMT-distributable file and download is enabled */
+	/* Return immediately if no auto-download is disabled */
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;
+	/* Return immediately if file is NULL */
+	if (file == NULL) return false;
+	if (!gmt_access (GMT, file, F_OK))	return false;	/* File exists already */
+	/* Determine if this file is in the auto-download registry */
+	if (!((!strncmp (file, "gmt_earth_relief_", 17U) && strstr (file, ".nc")) ||
+		(!strncmp (file, "gmt_test_data_", 14U) && strstr (file, ".txt")))) return false;
+	return true;
+}
+#endif
 /*! . */
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
@@ -13052,13 +13092,18 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
 	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 		not_url = !gmtlib_check_url_name (&file[k]);
-	if (gmt_access (GMT, &file[k], F_OK) && not_url) {	/* Cannot find the file anywhere GMT looks */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
-		return false;	/* Could not find this file */
-	}
-	if (gmt_access (GMT, &file[k], R_OK) && not_url) {	/* Cannot read this file (permissions?) */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
-		return false;	/* Could not find this file */
+#ifdef DO_CURL
+	if (not_url) not_url = !gmtlib_file_is_downloadable (GMT, file);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
+#endif
+	if (not_url) {
+		if (gmt_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
+			return false;	/* Could not find this file */
+		}
+		if (gmt_access (GMT, &file[k], R_OK)) {	/* Cannot read this file (permissions?) */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
+			return false;	/* Could not find this file */
+		}
 	}
 	return true;	/* Seems OK */
 }
