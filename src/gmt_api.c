@@ -820,7 +820,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 
 #ifdef DO_CURL
 /* Copy a known file from the GMT auto-download directory.  We recognize
- * Grids:  gmt_earth_relief_<res>.nc	Various global relief nc grids
+ * Grids:  earth_relief_<res>.nc	Various global relief nc grids
  * Tables: gmt_test_data_<ID>.txt		Various data tables used in examples
  *
  * If auto-download is enabled and a requested input file matches these

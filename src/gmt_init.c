@@ -13057,6 +13057,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 }
 
 #ifdef DO_CURL
+#define GMT_GRID_PREFIX "earth_relief_"
+#define GMT_DATA_PREFIX "gmt_test_data_"
+
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
@@ -13065,11 +13068,12 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file) {
 	if (file == NULL) return false;
 	if (!gmt_access (GMT, file, F_OK))	return false;	/* File exists already */
 	/* Determine if this file is in the auto-download registry */
-	if (!((!strncmp (file, "gmt_earth_relief_", 17U) && strstr (file, ".nc")) ||
-		(!strncmp (file, "gmt_test_data_", 14U) && strstr (file, ".txt")))) return false;
+	if (!((!strncmp (file, GMT_GRID_PREFIX, strlen(GMT_GRID_PREFIX)) && strstr (file, ".nc")) ||
+		(!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".txt")))) return false;
 	return true;
 }
 #endif
+
 /*! . */
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
