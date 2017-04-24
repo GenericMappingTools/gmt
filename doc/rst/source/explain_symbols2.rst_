@@ -337,9 +337,10 @@
 
     **-Sv**
         **v**\ ector. Direction (in degrees counter-clockwise from
-        horizontal) and length must be found in columns 4 and 5. The *size*
-        is the length of the vector head. Vector width is set by **-W**. See
-        VECTOR ATTRIBUTES for specifying attributes.
+        horizontal) and length must be found in columns 4 and 5, and *size*,
+        if not specified on the command-line, should be  present in column 6.
+        The *size* is the length of the vector head. Vector width is set by **-W**.
+        See VECTOR ATTRIBUTES for specifying attributes.
 
     **-SV**
         Same as **-Sv**, except azimuth (in degrees east of north) should be

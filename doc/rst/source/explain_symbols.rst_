@@ -1,5 +1,6 @@
 **-S**\ [*symbol*][\ *size*\ [**u**]]
-    Plot symbols. If present, *size* is symbol size in the unit set in
+    Plot symbols (including vectors, pie slices, fronts, decorated or quoted lines).
+    If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
     the input data; this cannot be used in conjunction with binary input.
@@ -321,9 +322,10 @@
         **t**\ riangle. *size* is diameter of circumscribing circle.
     **-Sv**
         **v**\ ector. Direction (in degrees counter-clockwise from
-        horizontal) and length must be found in columns 3 and 4. The *size*
-        is the length of the vector head. Vector width is set by **-W**. See
-        VECTOR ATTRIBUTES for specifying other attributes.
+        horizontal) and length must be found in columns 3 and 4, and *size*,
+        if not specified on the command-line, should be  present in column 5.
+        The *size* is the length of the vector head. Vector width is set by **-W**.
+        See VECTOR ATTRIBUTES for specifying other attributes.
     **-SV**
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
