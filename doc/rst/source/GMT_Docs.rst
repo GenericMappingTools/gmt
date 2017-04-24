@@ -3983,7 +3983,7 @@ specification. The line attribute modifiers are:
    :align: center
 
    Same line as above but now we have requested a blue vector head at the end of the line and a
-   red circle at the beginning of the line with **-W**\ 2p\ **+o**\ 1c/500k\ **+vb**\ 0.2i+gred+pfaint+bc\ **+ve**\ 0.3i+gblue.
+   red circle at the beginning of the line with **-W**\ 2p\ **+o**\ 1c/500k\ **+vb**\ 0.2i\ **+g**\ red\ **+p**\ faint\ **+b**\ c\ **+ve**\ 0.3i\ **+g**\ blue.
    Note that we also prescribed the line offsets in addition to the symbol endings.
 
 Specifying area fill attributes
