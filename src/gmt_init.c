@@ -13057,19 +13057,26 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 }
 
 #ifdef DO_CURL
-#define GMT_GRID_PREFIX "earth_relief_"
-#define GMT_DATA_PREFIX "gmt_test_data_"
+#define GMT_DATA_PREFIX "earth_relief_"
+#define GMT_DEMO_PREFIX "demo_"
 
-bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file) {
+bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
+	*kind = 0;
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;
 	/* Return immediately if file is NULL */
 	if (file == NULL) return false;
 	if (!gmt_access (GMT, file, F_OK))	return false;	/* File exists already */
 	/* Determine if this file is in the auto-download registry */
-	if (!((!strncmp (file, GMT_GRID_PREFIX, strlen(GMT_GRID_PREFIX)) && strstr (file, ".nc")) ||
-		(!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".txt")))) return false;
+	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd")) {
+		/* Useful data set distributed by GMT */
+		*kind = 1;
+		return true;
+	}
+	/* Here we are looking at demo data which needs to to in a demo subdir [kind = 0] */
+	if (!strncmp (file, GMT_DEMO_PREFIX, strlen(GMT_DEMO_PREFIX)) && strstr (file, ".txt")) return true;
+	if (!strncmp (file, GMT_DEMO_PREFIX, strlen(GMT_DEMO_PREFIX)) && strstr (file, ".grd")) return true;
 	return true;
 }
 #endif
@@ -13078,7 +13085,7 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file) {
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
 	 * exists and is readable. Otherwise we return false. */
-	unsigned int k = 0;
+	unsigned int k = 0, kind = 0;
 	bool not_url = true;
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
@@ -13097,7 +13104,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 		not_url = !gmtlib_check_url_name (&file[k]);
 #ifdef DO_CURL
-	if (not_url) not_url = !gmtlib_file_is_downloadable (GMT, file);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
+	if (not_url) not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
 #endif
 	if (not_url) {
 		if (gmt_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */

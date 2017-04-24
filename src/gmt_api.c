@@ -820,26 +820,31 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 
 #ifdef DO_CURL
 /* Copy a known file from the GMT auto-download directory.  We recognize
- * Grids:  earth_relief_<res>.nc	Various global relief nc grids
- * Tables: gmt_test_data_<ID>.txt		Various data tables used in examples
+ * different types and names of files.  First there are data sets we think
+ * will ev useful to all GMT users, such as global relief:
+ * 	earth_relief_<res>.grd	Various global relief grids
+ * We may add more data later but this is our start.
+ * Then, there are data sets only used to run an example or a test script
+ * and these are all called demo_*.*.  They live in a demo subdirectory
+ * and will be placed in a demo directory in the users ~/.gmt directory.
  *
  * If auto-download is enabled and a requested input file matches these
  * names and not found by normal means then we download the file to the
- * user-directory.  All places that opens files (GMT_Read_Data) will do
- * this check by calling gmt_download_file_if_not_found.
+ * user-directory.  All places that open files (GMT_Read_Data) will do
+ * this check by first calling gmt_download_file_if_not_found.
  */
 
 #define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"
 
 void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
 {	/* Downloads a file if not found locally */
-	
+	unsigned int kind = 0;
 	CURL* handle = NULL;
 	FILE* fp = NULL;
-	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
+	char url[PATH_MAX] = {""}, *local_dir[2] = {"/demo", ""}, local_path[PATH_MAX] = {""};
 	
 	/* Return immediately if cannot bedownloaded (for various reason) */
-	if (!gmtlib_file_is_downloadable (GMT, file_name)) return;
+	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind)) return;
 		
 	/* OK, this is a file we should download */
 
@@ -847,19 +852,30 @@ void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char*
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", file_name);
 		return;
 	}
-	sprintf (url, "%s/%s", GMT_DATA_URL, file_name);
-	sprintf (local_path, "%s/%s", GMT->session.USERDIR, file_name);
+	sprintf (local_path, "%s%s", GMT->session.USERDIR, local_dir[kind]);
 	
-	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
-		return;
+	if (kind == 0 && access (local_path, F_OK)) {	/* Must create the demo directory first */
+#ifndef _WIN32
+		if (mkdir (local_path, (mode_t)0777))
+#else
+		if (mkdir (local_path))
+#endif
+		{
+	        GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create demo directory in the user dir: %s\n", local_path);
+			return;
+		}
 	}
-
-  	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
+ 	sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[kind], file_name);
+	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
 		return;
 	}
 
+ 	sprintf (url, "%s%s/%s", GMT_DATA_URL, local_dir[kind], file_name);
+	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
+		return;
+	}
 	if (curl_easy_setopt (handle, CURLOPT_WRITEDATA, fp)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
 		return;

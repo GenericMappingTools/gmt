@@ -4389,6 +4389,8 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	if (GMT->session.USERDIR) {
 		sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
 		if (!access (path, R_OK)) return (path);
+		sprintf (path, "%s/demo/%s", GMT->session.USERDIR, stem);
+		if (!access (path, R_OK)) return (path);
 	}
 
 	return (NULL);	/* No file found, give up */
@@ -4456,6 +4458,10 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #endif /* HAVE_DIRENT_H_ */
 				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
+				if (!found && d == 0) {	/* Also check demo directory */
+					sprintf (path, "%s/demo/%s", dir, stem);
+					found = (!access (path, F_OK));
+				}
 #ifdef HAVE_DIRENT_H_
 			}
 #endif /* HAVE_DIRENT_H_ */
