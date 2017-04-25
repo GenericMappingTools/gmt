@@ -182,6 +182,8 @@ message(
 	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
+	"*  Curl library               : ${CURL_LIBRARY}\n"
+	"*  Curl include dir           : ${CURL_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
 	"*  FFTW library               : ${FFTW3F_LIBRARY}\n"

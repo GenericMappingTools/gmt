@@ -39,6 +39,10 @@ message (STATUS "Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 
+find_package (CURL REQUIRED)
+include_directories (${CURL_INCLUDE_DIRS})
+list (APPEND GMT_OPTIONAL_LIBRARIES ${CURL_LIBRARIES})
+
 if (NOT DEFINED GMT_EXCLUDE_GDAL)
 	find_package (GDAL)
 endif (NOT DEFINED GMT_EXCLUDE_GDAL)

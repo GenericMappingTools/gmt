@@ -4937,7 +4937,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.compatibility = 4;
 #ifdef DO_CURL
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
-	GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 #endif
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
@@ -8826,12 +8826,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 #ifdef DO_CURL
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
-			if (!strncmp (lower_value, "yes", 4))
+			if (!strncmp (lower_value, "on", 3))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
-			else if (!strncmp (lower_value, "no", 4)) /* complete name: fftw */
+			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_AUTO_DOWNLOAD: Expects either yes or no\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_AUTO_DOWNLOAD: Expects either on or off\n");
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
@@ -9954,7 +9954,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 #ifdef DO_CURL
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
-			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "no" : "yes", GMT_LEN256-1);
+			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_LEN256-1);
 			break;
 #endif
 
