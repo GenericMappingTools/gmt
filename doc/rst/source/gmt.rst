@@ -28,7 +28,17 @@ Synopsis
 **gmt** module module-options
 
 where module is the name of a GMT module and the options are those
-that pertain to that particular module.  If no module is given then
+that pertain to that particular module.  A few special modules
+are also available:
+
+**gmt clear** *items*
+
+while delete the user's history.  Choose between *history* (deletes the
+gmt.history file in the current directory), *conf* (deletes the gmt.conf
+file in the current directory), *cache* (deletes the user's cache directory
+and all of its content), or *all* (does all of the above).
+
+If no module is given then
 several other options are available:
 
 **-**\ **-help**

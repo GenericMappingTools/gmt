@@ -89,9 +89,7 @@ struct GMT_DEFAULTS {
 	char format_time_stamp[GMT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
-#ifdef DO_CURL
 	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-downlaod of known files */
-#endif
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */

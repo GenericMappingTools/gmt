@@ -147,6 +147,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "COLOR_HSV_MIN_V"},     
 	{ 0, "COLOR_HSV_MAX_V"},     
 	{ 1, "DIR Parameters"},           
+	{ 0, "DIR_CACHE"},
 	{ 0, "DIR_DATA"},
 	{ 0, "DIR_DCW"},
 	{ 0, "DIR_GSHHG"},
@@ -171,9 +172,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
-#ifdef DO_CURL
 	{ 0, "GMT_AUTO_DOWNLOAD"},
-#endif
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -2388,6 +2387,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
+	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
+		GMT->session.CACHEDIR = strdup (this_c);
 	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
 		GMT->session.USERDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
@@ -2399,11 +2400,19 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
+		/* Use default path for GMT_CACHEDIR (~/.gmt/cache) */
+		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt/cache");
+		GMT->session.CACHEDIR = strdup (path);
 	}
 	gmt_dos_path_fix (GMT->session.USERDIR);
+	gmt_dos_path_fix (GMT->session.CACHEDIR);
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
 		gmt_M_str_free (GMT->session.USERDIR);
+	}
+	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
+		/* If we cannot access this dir then we won't use it */
+		gmt_M_str_free (GMT->session.CACHEDIR);
 	}
 
 	if (gmt_M_compat_check (GMT, 4)) {
@@ -4935,10 +4944,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 	/* GMT_COMPATIBILITY */
 	GMT->current.setting.compatibility = 4;
-#ifdef DO_CURL
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
-#endif
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
@@ -4958,6 +4965,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 		/* DIR group */
 
 	/* DIR_DATA (Empty) */
+	/* DIR_USER (Empty) */
+	/* DIR_CACHE (Empty) */
 	/* DIR_DCW */
 	if (GMT->session.DCWDIR)
 		gmt_M_str_free (GMT->session.DCWDIR);
@@ -5155,6 +5164,7 @@ GMT_LOCAL void gmtinit_free_dirnames (struct GMT_CTRL *GMT) {
 	gmt_M_str_free (GMT->session.DCWDIR);
 	gmt_M_str_free (GMT->session.GSHHGDIR);
 	gmt_M_str_free (GMT->session.USERDIR);
+	gmt_M_str_free (GMT->session.CACHEDIR);
 	gmt_M_str_free (GMT->session.TMPDIR);
 	gmt_M_str_free (GMT->session.CUSTOM_LIBS);
 }
@@ -8824,7 +8834,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.compatibility = ival;
 			break;
 
-#ifdef DO_CURL
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
 			if (!strncmp (lower_value, "on", 3))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
@@ -8835,7 +8844,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
-#endif
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
@@ -8992,6 +9000,17 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_CACHE:
+			if (*value) {
+				if (GMT->session.CACHEDIR) {
+					if ((strcmp (GMT->session.CACHEDIR, value) == 0))
+						break; /* stop here if string in place is equal */
+					gmt_M_str_free (GMT->session.CACHEDIR);
+				}
+				/* Set session CACHEDIR dir */
+				GMT->session.CACHEDIR = strdup (value);
+			}
+			break;
 		case GMTCASE_DIR_DATA:
 			if (*value) {
 				if (GMT->session.DATADIR) {
@@ -9952,11 +9971,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
 
-#ifdef DO_CURL
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
 			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_LEN256-1);
 			break;
-#endif
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256-1);
@@ -10082,6 +10099,10 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_CACHE:
+			/* Force update of session.CACHEDIR before copying the string */
+			strncpy (value, (GMT->session.CACHEDIR) ? GMT->session.CACHEDIR : "", GMT_LEN256-1);
+			break;
 		case GMTCASE_DIR_DATA:
 			/* Force update of session.DATADIR before copying the string */
 			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256-1);
@@ -10650,6 +10671,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	Csave->session.SHAREDIR = (GMT->session.SHAREDIR) ? strdup (GMT->session.SHAREDIR) : NULL;
 	Csave->session.HOMEDIR = (GMT->session.HOMEDIR) ? strdup (GMT->session.HOMEDIR) : NULL;
 	Csave->session.USERDIR = (GMT->session.USERDIR) ? strdup (GMT->session.USERDIR) : NULL;
+	Csave->session.CACHEDIR = (GMT->session.CACHEDIR) ? strdup (GMT->session.CACHEDIR) : NULL;
 	Csave->session.DATADIR = (GMT->session.DATADIR) ? strdup (GMT->session.DATADIR) : NULL;
 	Csave->session.TMPDIR = (GMT->session.TMPDIR) ? strdup (GMT->session.TMPDIR) : NULL;
 	Csave->session.CUSTOM_LIBS = (GMT->session.CUSTOM_LIBS) ? strdup (GMT->session.CUSTOM_LIBS) : NULL;
@@ -11305,6 +11327,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->session.SHAREDIR = (Ccopy->session.SHAREDIR) ? strdup (Ccopy->session.SHAREDIR) : NULL;
 	GMT->session.HOMEDIR = (Ccopy->session.HOMEDIR) ? strdup (Ccopy->session.HOMEDIR) : NULL;
 	GMT->session.USERDIR = (Ccopy->session.USERDIR) ? strdup (Ccopy->session.USERDIR) : NULL;
+	GMT->session.CACHEDIR = (Ccopy->session.CACHEDIR) ? strdup (Ccopy->session.CACHEDIR) : NULL;
 	GMT->session.DATADIR = (Ccopy->session.DATADIR) ? strdup (Ccopy->session.DATADIR) : NULL;
 	GMT->session.TMPDIR = (Ccopy->session.TMPDIR) ? strdup (Ccopy->session.TMPDIR) : NULL;
 	GMT->session.CUSTOM_LIBS = (Ccopy->session.CUSTOM_LIBS) ? strdup (Ccopy->session.CUSTOM_LIBS) : NULL;
@@ -13056,8 +13079,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	return (GMT);
 }
 
-#ifdef DO_CURL
-
 unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	/* Takes an URL and finds start of the filename. If given just a filename it returns 0 */
 	unsigned int pos = strlen (url);
@@ -13090,7 +13111,6 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 		*kind = GMT_DATA_FILE;
 	return (*kind) ? true : false;	/* Download if flagged as special file, else not */
 }
-#endif
 
 /*! . */
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
@@ -13112,11 +13132,9 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
 	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-#ifdef DO_CURL
 	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
 	if (kind == GMT_CACHE_FILE) pos = 1;	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
 	else if (kind == GMT_URL_FILE) pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-#endif
 	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
 		not_url = !gmtlib_check_url_name (&file[pos]);
 	if (not_url) {

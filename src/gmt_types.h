@@ -311,7 +311,8 @@ struct GMT_SESSION {
 	char *GSHHGDIR;			/* Path to the GSHHG directory */
 	char *SHAREDIR;			/* Path to the GMT share directory */
 	char *HOMEDIR;			/* Path to the user's home directory */
-	char *USERDIR;			/* Path to the user's GMT settings directory */
+	char *USERDIR;			/* Path to the user's GMT data directory */
+	char *CACHEDIR;			/* Path to the user's GMT cache directory for downloaded files */
 	char *DATADIR;			/* Path to one or more directories with data sets */
 	char *TMPDIR;			/* Path to the directory directory for isolation mode */
 	char *CUSTOM_LIBS;		/* Names of one or more comma-separated GMT-compatible shared libraries */

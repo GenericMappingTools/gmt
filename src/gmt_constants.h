@@ -201,12 +201,10 @@ enum GMT_enum_index {
 	GMT_PRIMARY = 0, GMT_SECONDARY = 1
 	};
 
-#ifdef DO_CURL
 /*! Various mode for auto-download */
 enum GMT_enum_download {
 	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1
 	};
-#endif
 
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
@@ -374,10 +372,6 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 #define GMT_ENDIAN		'L'
 #endif
 
-#ifdef DO_CURL
-#define gmt_M_file_is_cache(file) (file && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
-#define gmt_M_file_is_url(file) (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U))
-
 /* Constants used for automatic data download via curl */
 enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exist */
 	GMT_CACHE_FILE = 1,	/* Temporary GMT test data file destined for the cache */
@@ -388,6 +382,5 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 
 #define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"	/* URL to GMT data distribution site */
 #define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
-#endif
 
 #endif  /* _GMT_CONSTANTS_H */

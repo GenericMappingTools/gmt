@@ -36,8 +36,8 @@
  *
  * The following functions are here:
  *
- *  gmtlib_getuserpath  Get pathname of file in "user directories" (GMT->session.TMPDIR, CWD, HOME, GMT->session.USERDIR)
- *  gmt_getdatapath     Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
+ *  gmtlib_getuserpath  Get pathname of file in "user directories" (GMT->session.TMPDIR, CWD, HOME, GMT->session.USERDIR, GMT->session.CACHEDIR)
+ *  gmt_getdatapath     Get pathname of file in "data directories" (CWD, GMT_{USER,CACHE,DATA,GRID,IMG}DIR)
  *  gmt_getsharepath    Get pathname of file in "share directories" (CWD, GMT->session.USERDIR, GMT->session.SHAREDIR tree)
  *  gmt_fopen:          Open a file using gmt_getdatapath
  *  gmt_fclose:         Close a file
@@ -4389,7 +4389,9 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	if (GMT->session.USERDIR) {
 		sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
 		if (!access (path, R_OK)) return (path);
-		sprintf (path, "%s/cache/%s", GMT->session.USERDIR, stem);
+	}
+	if (GMT->session.CACHEDIR) {
+		sprintf (path, "%s/%s", GMT->session.CACHEDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -4407,7 +4409,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	size_t L;
 	bool found;
-	char *udir[2] = {GMT->session.USERDIR, GMT->session.DATADIR}, dir[GMT_BUFSIZ];
+	char *udir[3] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR}, dir[GMT_BUFSIZ];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
@@ -4442,7 +4444,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 
 	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
 
-	for (d = 0; d < 2; d++) {	/* Loop over USER and DATA dirs */
+	for (d = 0; d < 3; d++) {	/* Loop over USER, DATA and CACHE dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		found = false;
 		pos = 0;
@@ -4458,10 +4460,6 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #endif /* HAVE_DIRENT_H_ */
 				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
-				if (!found && d == 0) {	/* Also check cache directory */
-					sprintf (path, "%s/cache/%s", dir, stem);
-					found = (!access (path, F_OK));
-				}
 #ifdef HAVE_DIRENT_H_
 			}
 #endif /* HAVE_DIRENT_H_ */

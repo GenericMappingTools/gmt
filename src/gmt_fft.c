@@ -370,12 +370,12 @@ GMT_LOCAL char *fft_fftwf_wisdom_filename (struct GMT_CTRL *GMT) {
 	static char wisdom_file[PATH_MAX+256] = "\0";
 	char hostname[257];
 	if (*wisdom_file == '\0') { /* wisdom_file has not been set yet */
-		if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK|W_OK|X_OK))
-			/* USERDIR does not exist, or not writable */
+		if (GMT->session.CACHEDIR == NULL || access (GMT->session.CACHEDIR, R_OK|W_OK|X_OK))
+			/* CACHEDIR does not exist, or not writable */
 			return NULL;
 		else {
-			/* create wisdom file in USERDIR */
-			strncpy (wisdom_file, GMT->session.USERDIR, PATH_MAX);
+			/* create wisdom file in CACHEDIR */
+			strncpy (wisdom_file, GMT->session.CACHEDIR, PATH_MAX);
 			strcat (wisdom_file, "/" FFTWF_WISDOM_FILENAME "_");
 			/* cat hostname */
 			memset (hostname, '\0', 257); /* in case gethostname does not null-terminate string */
@@ -399,7 +399,7 @@ GMT_LOCAL void fft_fftwf_import_wisdom_from_filename (struct GMT_CTRL *GMT) {
 
 	/* Initialize filenames */
 	filenames[0] = FFTWF_WISDOM_FILENAME; /* 1st try importing wisdom from file in current dir */
-	filenames[1] = fft_fftwf_wisdom_filename(GMT); /* 2nd try wisdom file in USERDIR */
+	filenames[1] = fft_fftwf_wisdom_filename(GMT); /* 2nd try wisdom file in CACHEDIR */
 	filenames[2] = NULL; /* end of array */
 
 	while (*filename != NULL) {
@@ -422,7 +422,7 @@ GMT_LOCAL void fft_fftwf_export_wisdom_to_filename (struct GMT_CTRL *GMT) {
 	int status;
 
 	if (filename == NULL)
-		/* USERDIR does not exist, write wisdom to file in current directory */
+		/* CACHEDIR does not exist, write wisdom to file in current directory */
 		filename = FFTWF_WISDOM_FILENAME;
 
 	status = fftwf_export_wisdom_to_filename (filename);

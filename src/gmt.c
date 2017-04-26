@@ -92,11 +92,10 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-#ifdef DO_CURL
 	if (gmt_main && argc == 3 && !strcmp (argv[1], "clear")) {	/* Clear something. */
 		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache */
 			char cache[PATH_MAX] = {""};
-			sprintf (cache, "%s/cache", api_ctrl->GMT->session.USERDIR);
+			sprintf (cache, "%s/cache", api_ctrl->GMT->session.CACHEDIR);
 			if (gmt_remove_dir (api_ctrl, cache))
 				return GMT_RUNTIME_ERROR;
 		}
@@ -110,7 +109,6 @@ int main (int argc, char *argv[]) {
 		}
 		return GMT_NOERROR;
 	}
-#endif
 #ifdef TEST_MODERN
 	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
 		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
@@ -239,11 +237,13 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
-#ifdef TEST_MODERN
 		fprintf (stderr, "Session management:\n");
+#ifdef TEST_MODERN
 		fprintf (stderr, "  gmt begin         Initiate a new GMT session.\n");
 		fprintf (stderr, "  gmt end           Terminate the current GMT session.\n\n");
 #endif
+		fprintf (stderr, "  gmt clear history | conf | cache | all\n");
+		fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
 		fprintf (stderr, "options:\n");
 		fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 		fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");

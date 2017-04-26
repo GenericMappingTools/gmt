@@ -67,7 +67,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-A] [-C] [-D] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-A] [-C] [-D] [-G] [%s]\n\n", GMT_V_OPT);
      
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -75,9 +75,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Only consider files you have permission to read [all files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
-#ifdef DO_CURL
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
-#endif
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -179,10 +177,9 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-#ifdef DO_CURL
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg);
-#endif
+
 		if (gmt_getdatapath (GMT, &opt->arg[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
 				p = strstr (path, &opt->arg[first]);	/* Start of filename */

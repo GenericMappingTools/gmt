@@ -3651,9 +3651,10 @@ are simply data records whose fields are all set to NaN; see Chapter
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
-will look in two other directories pointed to by the
-:ref:`directory parameters <DIR Parameters>` **DIR_DATA**
-or by the environmental parameters **$GMT_USERDIR** and
+will look in other directories pointed to by the
+:ref:`directory parameters <DIR Parameters>` **DIR_DATA**,
+:ref:`directory parameters <DIR Parameters>` **DIR_CACHE** and
+or by the environmental parameters **$GMT_USERDIR**, **$GMT_CACHEDIR** and
 **$GMT_DATADIR** (if set). They may be set by the user to point to
 directories that contain data sets of general use, thus eliminating the
 need to specify a full path to these files. Usually, the **DIR_DATA**
@@ -3661,9 +3662,36 @@ directory will hold data sets of a general nature (tables, grids),
 whereas the **$GMT_USERDIR** directory (its default value is $HOME/.gmt)
 may hold miscellaneous data sets more
 specific to the user; this directory also stores GMT defaults and other
-configuration files. See :ref:`directory parameters <DIR Parameters>`
+configuration files. The **DIR_CACHE** will typically contain data files
+downloaded automatically by GMT modules.  See :ref:`directory parameters <DIR Parameters>`
 for details. Program output is always written to the current directory
 unless a full path has been specified.
+
+URLs and special files
+----------------------
+
+Three classes of files are given special treatment in GMT.
+
+#. Some data sets are ubiquitous and used by nearly all GMT users.
+   At the moment this set is limited to Earth relief grids.  If you reference
+   files called **earth_relief_**\ *res*\ **.grd** on a command line then
+   that grid will automatically be downloaded from the GMT Data Site and placed
+   in **DIR_USER**.  Resolutions *res* are presently limited to
+   60m, 30m, 10m, 5m, 2m, 1m, and 30s (with file sizes 111 kb, 373 kb,
+   2.9 Mb, 11 Mb, 51 Mb, 214 Mb, and 778 Mb, respectively).  Once one of
+   these have been downloaded any future reference will simply obtain the
+   file from **DIR_USER** (except if explicitly removed by the user).
+#. If a file is given as a full URL, starting with **http://**, **https://**,
+   or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
+   read from there (until removed by the user).
+#. Demonstration files used in online documentation, example scripts, or even the
+   large test suite are given in the format @*filename*.  When such a file is
+   encountered on the command line it is simply a short-hand for the full URL to the
+   GMT Cache Data FTP site.  Since this address may change over time we use the leading
+   @ to simplify the access to these files.  Such files will also be downloaded
+   to **DIR_CACHE** and subsequently read from there (until removed by the user).
+
+The user cache (**DIR_CACHE**) and all its contents can be cleared via **gmt clear cache**.
 
 Verbose operation
 -----------------
