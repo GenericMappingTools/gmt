@@ -44,6 +44,9 @@ struct GMTWHICH_CTRL {	/* All control options for this program (except common ar
 	struct D {	/* -D */
 		bool active;
 	} D;
+	struct G {	/* -G */
+		bool active;
+	} G;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -72,6 +75,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Only consider files you have permission to read [all files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
+#ifdef DO_CURL
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
+#endif
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -105,6 +111,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 			case 'D':	/* Want directory instead */
 				Ctrl->D.active = true;
 				break;
+			case 'G':	/* Want directory instead */
+				Ctrl->G.active = true;
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -123,6 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 
 int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	int error = 0, fmode;
+	unsigned int first = 0;	/* Real start of filename */
 	
 	char path[GMT_BUFSIZ] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
@@ -169,9 +179,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-		if (gmt_getdatapath (GMT, opt->arg, path, fmode)) {	/* Found the file */
+#ifdef DO_CURL
+		if (Ctrl->G.active)
+			first = gmt_download_file_if_not_found (GMT, opt->arg);
+#endif
+		if (gmt_getdatapath (GMT, &opt->arg[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
-				p = strstr (path, opt->arg);	/* Start of filename */
+				p = strstr (path, &opt->arg[first]);	/* Start of filename */
 				if (!strcmp (p, path)) /* Current directory */
 					GMT_Put_Record (API, GMT_WRITE_TEXT, cwd);
 				else {
@@ -184,7 +198,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		}
 		else {
 			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
-			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", opt->arg);
+			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &opt->arg[first]);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

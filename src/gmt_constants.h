@@ -374,4 +374,20 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 #define GMT_ENDIAN		'L'
 #endif
 
+#ifdef DO_CURL
+#define gmt_M_file_is_cache(file) (file && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
+#define gmt_M_file_is_url(file) (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U))
+
+/* Constants used for automatic data download via curl */
+enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exist */
+	GMT_CACHE_FILE = 1,	/* Temporary GMT test data file destined for the cache */
+	GMT_DATA_FILE  = 2,	/* Official GMT data file destined for the user's user dir */
+	GMT_URL_FILE   = 3,	/* Data given by an URL destined for the cache */
+	GMT_CACHE_DIR  = 0,	/* Use the cache directory */
+	GMT_DATA_DIR   = 1};	/* Use the data directory */
+
+#define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"	/* URL to GMT data distribution site */
+#define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
+#endif
+
 #endif  /* _GMT_CONSTANTS_H */

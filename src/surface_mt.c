@@ -2255,25 +2255,25 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		size_t mem_use, mem_total;
 		mem_use = mem_total = C.npoints * sizeof (struct SURFACE_DATA);
 		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use, 1));
 		mem_use = sizeof (struct GMT_GRID) + C.Grid->header->size * sizeof (float);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use, 1));
 		for (end = LO; end <= HI; end++) if (C.set_limit[end]) {	/* Will need to keep a lower|upper surface constrain grid */
 			mem_total += mem_use;
-			GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use));
+			GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use, 1));
 		}
 #ifdef PARALLEL_MODE
 		mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use, 1));
 		mem_use = C.Grid->header->size * sizeof (uint64_t);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use, 1));
 #endif
 		mem_use = C.npoints * sizeof (struct SURFACE_BRIGGS) ;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use, 1));
 		mem_use = C.Grid->header->size;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use, 1));
 		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total, 1));
 		GMT_Report (API, GMT_MSG_VERBOSE, "==========================================\n");
 	}
 

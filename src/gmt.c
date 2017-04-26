@@ -92,6 +92,25 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+#ifdef DO_CURL
+	if (gmt_main && argc == 3 && !strcmp (argv[1], "clear")) {	/* Clear something. */
+		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache */
+			char cache[PATH_MAX] = {""};
+			sprintf (cache, "%s/cache", api_ctrl->GMT->session.USERDIR);
+			if (gmt_remove_dir (api_ctrl, cache))
+				return GMT_RUNTIME_ERROR;
+		}
+		if (!strcmp (argv[2], "history") || !strcmp (argv[2], "all")) {	/* Clear the history */
+			if (gmt_remove_file (api_ctrl->GMT, "gmt.history"))
+				return GMT_RUNTIME_ERROR;
+		}
+		if (!strcmp (argv[2], "conf") || !strcmp (argv[2], "all")) {	/* Clear the configuration */
+			if (gmt_remove_file (api_ctrl->GMT, "gmt.conf"))
+				return GMT_RUNTIME_ERROR;
+		}
+		return GMT_NOERROR;
+	}
+#endif
 #ifdef TEST_MODERN
 	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
 		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
@@ -105,10 +124,8 @@ int main (int argc, char *argv[]) {
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
-	else if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
-#else
-	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 #endif
+	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
 		module = argv[1];	/* Name of module that does not exist, but will give reasonable message */
 		modulename_arg_n = 1;

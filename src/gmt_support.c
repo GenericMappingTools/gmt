@@ -14505,15 +14505,19 @@ char * gmt_get_filename (char *string) {
 	return (file);
 }
 
-char * gmt_memory_use (size_t bytes) {
-	/* Format the given bytes in terms of kb, Mb, or Gb, or Tb */
+char * gmt_memory_use (size_t bytes, int width) {
+	/* Format the given bytes in terms of kb, Mb, or Gb, or Tb.
+	 * Width is the precision, e.g., 1 or 3 probably */
 	static char mem_report[GMT_LEN32] = {""};
+	static char *unit = "kMGT";	/* bytes, kilo-, Mega-, Giga-, Tera- */
 	unsigned int kind = 0;
-	double mem;
-	char *unit = "kMGT";	/* kilo-, Mega-, Giga-, Tera- */
-	mem = bytes / 1024.0;	/* Report kbytes unless it is too much */
-	while (mem > 1024.0 && kind < 3) { mem /= 1024.0; kind++; }	/* Goto next higher unit */
-	snprintf (mem_report, GMT_LEN32, "%.1f %cb", mem, unit[kind]);
+	if (bytes < 1000)
+		snprintf (mem_report, GMT_LEN32, "%d bytes", (int)bytes);
+	else {
+		double mem = bytes / 1024.0;	/* Report kb unless it is too much */
+		while (mem > 1024.0 && kind < strlen(unit)) { mem /= 1024.0; kind++; }	/* Goto next higher unit */
+		snprintf (mem_report, GMT_LEN32, "%.*f %cb", width, mem, unit[kind]);
+	}
 	return mem_report;
 }
 

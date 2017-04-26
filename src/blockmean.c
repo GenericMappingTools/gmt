@@ -249,7 +249,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLHG);
 		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
 		n_bytes = n_bytes_per_record * Grid->header->nm;	/* Report kbytes unless it is too much */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %s for all arrays.\n", gmt_memory_use (n_bytes));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %s for all arrays.\n", gmt_memory_use (n_bytes, 1));
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */

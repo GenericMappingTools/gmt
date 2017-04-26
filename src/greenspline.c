@@ -1981,7 +1981,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use (mem));
+	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use (mem, 1));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);

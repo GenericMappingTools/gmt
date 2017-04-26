@@ -836,32 +836,35 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
  * this check by first calling gmt_download_file_if_not_found.
  */
 
-#define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"
 
-unsigned int GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
-{	/* Downloads a file if not found locally */
-	unsigned int kind = 0, dir, pos = 0;
-	CURL* handle = NULL;
+unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
+{	/* Downloads a file if not found locally.  Returns the position in file_name of the
+ 	 * start of the actual file (e.g., if given an URL). */
+	unsigned int kind = 0, dir = 0, pos = 0;
+	int curl_err = 0;
+	CURL* Curl = NULL;
 	FILE* fp = NULL;
-	char url[PATH_MAX] = {""}, *local_dir[2] = {"/cache", ""}, local_path[PATH_MAX] = {""};
+	static char *local_dir[2] = {"/cache", ""};
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
 	
-	/* Return immediately if cannot bedownloaded (for various reason) */
-	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind)) {
-		return (file_name && !gmt_M_file_is_memory (file_name) && file_name[0] == '@') ? 1 : 0;
-	}
-	
-	if (!gmt_M_file_is_memory (file_name) && file_name[0] == '@') pos = 1;	/* A leading '@' was found */
+	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
+	if (gmt_M_file_is_cache (file_name)) pos = 1;	/* A leading '@' was found */
+	else if (gmt_M_file_is_url (file_name)) pos = gmtlib_get_pos_of_filename (file_name);	/* Start of file (0) or file in URL (> 0) */
 		
-	/* OK, this is a file we should download */
-
-  	if ((handle = curl_easy_init()) == NULL) {
+	/* Return immediately if cannot bedownloaded (for various reasons) */
+	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind))
+		return (pos);
+	
+	/* Here we will try to download a file */
+	
+  	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file_name[pos]);
 		return 0;
 	}
-	dir = (kind == 2) ? 0 : kind;
+	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
 	sprintf (local_path, "%s%s", GMT->session.USERDIR, local_dir[dir]);
 	
-	if (dir == 0 && access (local_path, F_OK)) {	/* Must create the cache directory first */
+	if (dir == GMT_CACHE_DIR && access (local_path, F_OK)) {	/* Must create the cache directory first */
         GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Create cache directory: %s\n", local_path);
 #ifndef _WIN32
 		if (mkdir (local_path, (mode_t)0777))
@@ -873,36 +876,46 @@ unsigned int GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, con
 			return 0;
 		}
 	}
-	sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[dir], &file_name[pos]);
+	if (kind == GMT_URL_FILE) {	/* General URL given, must extract file name */
+		pos = gmtlib_get_pos_of_filename (file_name);
+		sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[dir], &file_name[pos]);
+	}
+	else
+		sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[dir], &file_name[pos]);
 	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
 		return 0;
 	}
-	if (kind == 2)	/* General URL given */
+	if (kind == GMT_URL_FILE)	/* General URL given */
 		sprintf (url, "%s", file_name);
-	else			/* Use GMT ftp dir, possible in subfolder */
-		sprintf (url, "%s%s/%s", GMT_DATA_URL, local_dir[kind], &file_name[pos]);
+	else			/* Use GMT ftp dir, possible from subfolder cache */
+		sprintf (url, "%s%s/%s", GMT_DATA_URL, local_dir[dir], &file_name[pos]);
 
- 	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
+ 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
 		return 0;
 	}
-	if (curl_easy_setopt (handle, CURLOPT_WRITEDATA, fp)) {
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
 		return 0;
 	}
-
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
-	if (curl_easy_perform (handle)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to download file %s\n", url);
+	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		gmt_remove_file (GMT, local_path);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete.\n");
-
-	curl_easy_cleanup (handle);
+	curl_easy_cleanup (Curl);
 
 	fclose (fp);
 	
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		struct stat buf;
+		if (stat (local_path, &buf))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of downloaded file %s\n", &file_name[pos]);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
+	}
+
 	return (pos);
 }
 #endif

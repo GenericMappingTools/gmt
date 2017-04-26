@@ -51,6 +51,7 @@ struct GMT_XINGS {
 
 #ifdef DO_CURL
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
+EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);
 #endif
 EXTERN_MSC bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word);
 EXTERN_MSC char * gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F);

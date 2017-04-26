@@ -13057,29 +13057,38 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 }
 
 #ifdef DO_CURL
-#define GMT_DATA_PREFIX "earth_relief_"
+
+unsigned int gmtlib_get_pos_of_filename (const char *url) {
+	/* Takes an URL and finds start of the filename. If given just a filename it returns 0 */
+	unsigned int pos = strlen (url);
+	assert (pos > 0);
+	pos--;	/* Last character in name */
+	while (url[pos] && pos > 0 && url[pos] != '/') pos--;	/* Wind to first slash */
+	if (url[pos] == '/') pos++;	/* First letter after last slash */
+	return pos;
+}
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
-	unsigned int k = 0;
-	bool download = true;
-	*kind = 0;
-	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;
-	/* Return immediately if file is NULL */
-	if (file == NULL) return false;
-	if (!gmt_M_file_is_memory (file) && file[0] == '@') k = 1;	/* Short-hand for GMT Site URL */
-	if (!gmt_access (GMT, &file[k], F_OK)) return false;	/* File exists already */
-	/* Determine if this file is in the auto-download registry */
-	if (k == 1)	/* Special @<file> available via GMT FTP */
-		*kind = 0;
-	else if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
-		*kind = 1;
-	else if (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U))	/* Full URL given */
-		*kind = 2;
-	else
-		download = false;
-	return download;
+	unsigned int pos = 0;	/* Start of actual filename in the file string */
+	*kind = GMT_REGULAR_FILE;	/* Default is a regular file */
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;	/* Not enabled */
+	if (file == NULL) return false;	/* Return immediately if file is NULL */
+	if (gmt_M_file_is_cache (file)) {	/* Special @<filename> syntax for GMT cache files */
+		*kind = GMT_CACHE_FILE;
+		pos = 1;	/* Need to skip first character in name */
+	}
+	else if (gmt_M_file_is_url(file)) {	/* Full URL given */
+		*kind = GMT_URL_FILE;
+		pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
+	}
+	if (!gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
+	/* Here the file does not yet exist locally, so we will try to download if it matches one of three criteria.
+	 * Otherwise, it is just a file that does not exist and will yield an error upstream */
+	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
+		*kind = GMT_DATA_FILE;
+	return (*kind) ? true : false;	/* Download if flagged as special file, else not */
 }
 #endif
 
@@ -13087,8 +13096,8 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
 	 * exists and is readable. Otherwise we return false. */
-	unsigned int k = 0, kind = 0;
-	bool not_url = true;
+	unsigned int pos = 0, kind = 0;
+	bool not_url = false;
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
 		sprintf (message, "for input file");
@@ -13102,20 +13111,21 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		return false;	/* No file given */
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
-	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
-		not_url = !gmtlib_check_url_name (&file[k]);
+	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
 #ifdef DO_CURL
-	if (not_url) not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
-	if (!gmt_M_file_is_memory (file) && file[0] == '@') k = 1;	/* Has leading '@' in name */
+	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
+	if (kind == GMT_CACHE_FILE) pos = 1;	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
+	else if (kind == GMT_URL_FILE) pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 #endif
+	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
+		not_url = !gmtlib_check_url_name (&file[pos]);
 	if (not_url) {
-		if (gmt_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
+		if (gmt_access (GMT, &file[pos], F_OK)) {	/* Cannot find the file anywhere GMT looks */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[pos]);
 			return false;	/* Could not find this file */
 		}
-		if (gmt_access (GMT, &file[k], R_OK)) {	/* Cannot read this file (permissions?) */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
+		if (gmt_access (GMT, &file[pos], R_OK)) {	/* Cannot read this file (permissions?) */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[pos]);
 			return false;	/* Could not find this file */
 		}
 	}
@@ -13183,6 +13193,33 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 	return 1;
 }
 
+int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
+	/* Delete all files in a directory, then the directory itself */
+	unsigned int n_files, k;
+	int error = GMT_NOERROR;
+	char **filelist = NULL;
+	struct GMT_CTRL *GMT = API->GMT;	/* Shorthand */
+	if (access (dir, F_OK)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No directory named %s\n", dir);
+		return GMT_FILE_NOT_FOUND;
+	}
+	chdir (dir);
+	if ((n_files = (unsigned int)gmtlib_glob_list (GMT, "*", &filelist))) {
+		for (k = 0; k < n_files; k++) {
+			fprintf (stderr, "Delete %s\n", filelist[k]);
+			if (gmt_remove_file (GMT, filelist[k]))
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s [permissions?]\n", filelist[k]);
+		}
+		gmtlib_free_list (GMT, filelist, n_files);	/* Free the file list */
+	}
+	chdir ("../");		/* Just get out of current dir so thaat it can be removed */
+	if (rmdir (dir)) {	/* Unable to delete the directory */
+		perror (dir);
+		error = GMT_RUNTIME_ERROR;
+	}
+	return error;
+}
+
 #ifdef TEST_MODERN
 /*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
@@ -13193,10 +13230,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	 */
 	
 	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""}, **filelist = NULL, *type[2] = {"classic", "modern"};
+	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
 	char t_file[GMT_LEN256] = {""};
 	int err = 0, error = GMT_NOERROR;
-	unsigned int n_files = 0, k;
     struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
 	API->gwf_dir = strdup (dir);
@@ -13240,20 +13276,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
-			//sprintf (dir, "%s/*", API->gwf_dir);	/* Reuse dir string for wildcard for finding all files in that dir */
-			chdir (dir);
-			if ((n_files = (unsigned int)gmtlib_glob_list (API->GMT, "*", &filelist))) {
-				for (k = 0; k < n_files; k++) {
-					if (gmt_remove_file (API->GMT, filelist[k]))
-						GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s [permissions?]\n", filelist[k]);
-				}
-				gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
-			}
-			chdir("../");				/* Just get out of current dir so thaat it can be removed */
-			if (rmdir(dir)) {	/* Unable to delete the directory */
-				perror (dir);
-				error = GMT_RUNTIME_ERROR;
-			}
+			error = gmt_remove_dir (API, dir);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:

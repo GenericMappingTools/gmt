@@ -47,6 +47,7 @@ EXTERN_MSC int gmt_get_V (char arg);
 EXTERN_MSC char gmt_set_V (int mode);
 EXTERN_MSC void gmtinit_conf_US (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtinit_conf (struct GMT_CTRL *GMT);
+EXTERN_MSC int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir);
 EXTERN_MSC int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode);
 EXTERN_MSC bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family);
 EXTERN_MSC int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M);
@@ -307,7 +308,7 @@ EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double *
 EXTERN_MSC bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P);
 EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
 EXTERN_MSC void gmt_str_toupper (char *string);
-EXTERN_MSC char * gmt_memory_use (size_t bytes);
+EXTERN_MSC char * gmt_memory_use (size_t bytes, int width);
 EXTERN_MSC void gmt_sort_order (struct GMT_CTRL *GMT, struct GMT_ORDER *base, uint64_t n, int dir);
 EXTERN_MSC bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
 EXTERN_MSC bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *h, bool wrap_180);
@@ -510,6 +511,7 @@ EXTERN_MSC void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *thet
 EXTERN_MSC struct GMTAPI_CTRL *gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC void gmt_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
 EXTERN_MSC bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr);
+EXTERN_MSC unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name);
 
 /* From gmt_stat.c */
 EXTERN_MSC double gmt_bei (struct GMT_CTRL *GMT, double x);
