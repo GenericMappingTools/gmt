@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (requires -A).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (implies -A).\n");
 	GMT_Option (API, "f,p,t,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -284,6 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				break;
 			case 'Z':	/* Azimuths given */
+				Ctrl->A.active = true;
 				Ctrl->Z.active = true;
 				break;
 
@@ -302,8 +303,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
 	                                 "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active,
-	                                 "Syntax error -Z option: Azimuth adjustment does not apply to Cartesian component grids\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
 	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");

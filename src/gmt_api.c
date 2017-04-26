@@ -819,15 +819,17 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 }
 
 #ifdef DO_CURL
-/* Copy a known file from the GMT auto-download directory.  We recognize
- * different types and names of files.  First there are data sets we think
- * will ev useful to all GMT users, such as global relief:
- * 	earth_relief_<res>.grd	Various global relief grids
+/* Copy a file from the GMT auto-download directory or the Internet.  We recognize
+ * different types and names of files.
+ * 1. There are data sets of use to all GMT users, such as global relief:
+ * 	   earth_relief_<res>.grd	Various global relief grids
  * We may add more data later but this is our start.
- * Then, there are data sets only used to run an example or a test script
- * and these are all called demo_*.*.  They live in a demo subdirectory
- * and will be placed in a demo directory in the users ~/.gmt directory.
- *
+ * 2. Data sets only used to run an example or a test script
+ * and these are all called @*, i.e., a '@' is pre-pended to the name.
+ * They live in a cache subdirectory under the GMT_DATA_URL
+ * and will be placed in a cache directory in the users ~/.gmt directory.
+ * 3. Generic URLs starting with http:, https:, or ftp:  These will be
+ * downloaded to the cache directory.
  * If auto-download is enabled and a requested input file matches these
  * names and not found by normal means then we download the file to the
  * user-directory.  All places that open files (GMT_Read_Data) will do
@@ -836,49 +838,58 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 
 #define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"
 
-void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
+unsigned int GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
 {	/* Downloads a file if not found locally */
-	unsigned int kind = 0;
+	unsigned int kind = 0, dir, pos = 0;
 	CURL* handle = NULL;
 	FILE* fp = NULL;
-	char url[PATH_MAX] = {""}, *local_dir[2] = {"/demo", ""}, local_path[PATH_MAX] = {""};
+	char url[PATH_MAX] = {""}, *local_dir[2] = {"/cache", ""}, local_path[PATH_MAX] = {""};
 	
 	/* Return immediately if cannot bedownloaded (for various reason) */
-	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind)) return;
+	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind)) {
+		return (file_name && !gmt_M_file_is_memory (file_name) && file_name[0] == '@') ? 1 : 0;
+	}
+	
+	if (!gmt_M_file_is_memory (file_name) && file_name[0] == '@') pos = 1;	/* A leading '@' was found */
 		
 	/* OK, this is a file we should download */
 
   	if ((handle = curl_easy_init()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", file_name);
-		return;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file_name[pos]);
+		return 0;
 	}
-	sprintf (local_path, "%s%s", GMT->session.USERDIR, local_dir[kind]);
+	dir = (kind == 2) ? 0 : kind;
+	sprintf (local_path, "%s%s", GMT->session.USERDIR, local_dir[dir]);
 	
-	if (kind == 0 && access (local_path, F_OK)) {	/* Must create the demo directory first */
+	if (dir == 0 && access (local_path, F_OK)) {	/* Must create the cache directory first */
+        GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Create cache directory: %s\n", local_path);
 #ifndef _WIN32
 		if (mkdir (local_path, (mode_t)0777))
 #else
 		if (mkdir (local_path))
 #endif
 		{
-	        GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create demo directory in the user dir: %s\n", local_path);
-			return;
+	        GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create cache directory in the user dir: %s\n", local_path);
+			return 0;
 		}
 	}
- 	sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[kind], file_name);
+	sprintf (local_path, "%s%s/%s", GMT->session.USERDIR, local_dir[dir], &file_name[pos]);
 	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
-		return;
+		return 0;
 	}
+	if (kind == 2)	/* General URL given */
+		sprintf (url, "%s", file_name);
+	else			/* Use GMT ftp dir, possible in subfolder */
+		sprintf (url, "%s%s/%s", GMT_DATA_URL, local_dir[kind], &file_name[pos]);
 
- 	sprintf (url, "%s%s/%s", GMT_DATA_URL, local_dir[kind], file_name);
-	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
+ 	if (curl_easy_setopt (handle, CURLOPT_URL, url)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
-		return;
+		return 0;
 	}
 	if (curl_easy_setopt (handle, CURLOPT_WRITEDATA, fp)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
-		return;
+		return 0;
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
@@ -891,6 +902,8 @@ void GMT_LOCAL gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char*
 	curl_easy_cleanup (handle);
 
 	fclose (fp);
+	
+	return (pos);
 }
 #endif
 
@@ -2099,7 +2112,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 		case GMT_IS_FILE:	/* Filename given; we must open the file here */
 			if (S_obj->family == GMT_IS_GRID || S_obj->family == GMT_IS_IMAGE) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids or images not allowed here */
 #ifdef DO_CURL
-			gmt_download_file_if_not_found (API->GMT, S_obj->filename);	/* Deal with downloadable GMT data sets first */
+			first = gmt_download_file_if_not_found (API->GMT, S_obj->filename);	/* Deal with downloadable GMT data sets first */
 #endif
 			if (direction == GMT_OUT && S_obj->filename && S_obj->filename[0] == '>') {
 				mode = GMT->current.io.a_mode;	/* Must append to an existing file (we have already checked the file exists) */
@@ -6045,6 +6058,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 		case GMT_IS_FILE:	/* Registration via a single file name */
 			/* No, so presumably it is a regular file name */
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
+				unsigned int first = 0;
 				char *p, *file = strdup (resource);
 				bool not_url = true;
 				if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
@@ -6059,15 +6073,15 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 					not_url = !gmtlib_check_url_name (file);
 #ifdef DO_CURL
-				gmt_download_file_if_not_found (API->GMT, file);	/* Deal with downloadable GMT data sets first */
+				first = gmt_download_file_if_not_found (API->GMT, file);	/* Deal with downloadable GMT data sets first */
 #endif
-				if (gmt_access (GMT, file, F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
-					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
+				if (gmt_access (GMT, &file[first], F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
+					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", &file[first]);
 					gmt_M_str_free (file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
 				}
-				if (gmt_access (GMT, file, R_OK) && not_url) {	/* Found it but we cannot read. */
-					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", file);
+				if (gmt_access (GMT, &file[first], R_OK) && not_url) {	/* Found it but we cannot read. */
+					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", &file[first]);
 					gmt_M_str_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
@@ -6795,13 +6809,14 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 	}
 	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
+		unsigned int first = 0;
 #ifdef DO_CURL
-		gmt_download_file_if_not_found (API->GMT, input);	/* Deal with downloadable GMT data sets first */
+		first = gmt_download_file_if_not_found (API->GMT, input);	/* Deal with downloadable GMT data sets first */
 #endif
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
+			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (&input[first]);
 			if ((c_err = api_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				gmt_M_str_free (file);
@@ -6823,7 +6838,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				return_null (API, API->error);
 			}
 		}
-		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET)
+		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, &input[first])) == GMT_NOTSET)
 			return_null (API, API->error);
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */

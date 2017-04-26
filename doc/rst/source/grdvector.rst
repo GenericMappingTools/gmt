@@ -163,7 +163,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (requires **-A**). 
+    The theta grid provided contains azimuths rather than directions (implies **-A**). 
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

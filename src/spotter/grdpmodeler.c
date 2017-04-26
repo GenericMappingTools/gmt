@@ -112,7 +112,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of the grid to work on [Default works on the entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Must contain \"%s\" if more than one item is specified in -S.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Must contain %%s if more than one item is specified in -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes x,y,<predictions> to standard output\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
 	GMT_Option (API, "Rg");

@@ -532,7 +532,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		i_status = Ctrl->I.status;
 		if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_IMG) {
-			if (!(strstr (G->header->remark, "img2grd") || strstr (G->header->remark, "img2mercgrd"))) {
+			if (!(strstr (G->header->command, "img2grd") || strstr (G->header->command, "img2mercgrd"))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not find a -Rw/e/s/n string produced by img tools - returning regular grid -R\n");
 				i_status = GRDINFO_GIVE_REG_ORIG;
 			}

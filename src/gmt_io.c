@@ -4354,7 +4354,7 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
 	 * Looks for file stem in the temporary directory (if defined),
-	 * current directory, home directory and $GMT->session.USERDIR (default ~/.gmt)
+	 * current directory, home directory and $GMT->session.USERDIR (default ~/.gmt[/cache])
 	 */
 
 	/* If a full path is given, we only look for that file directly */
@@ -4389,7 +4389,7 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 	if (GMT->session.USERDIR) {
 		sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
 		if (!access (path, R_OK)) return (path);
-		sprintf (path, "%s/demo/%s", GMT->session.USERDIR, stem);
+		sprintf (path, "%s/cache/%s", GMT->session.USERDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -4458,8 +4458,8 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #endif /* HAVE_DIRENT_H_ */
 				sprintf (path, "%s/%s", dir, stem);
 				found = (!access (path, F_OK));
-				if (!found && d == 0) {	/* Also check demo directory */
-					sprintf (path, "%s/demo/%s", dir, stem);
+				if (!found && d == 0) {	/* Also check cache directory */
+					sprintf (path, "%s/cache/%s", dir, stem);
 					found = (!access (path, F_OK));
 				}
 #ifdef HAVE_DIRENT_H_

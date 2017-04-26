@@ -13058,26 +13058,28 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 #ifdef DO_CURL
 #define GMT_DATA_PREFIX "earth_relief_"
-#define GMT_DEMO_PREFIX "demo_"
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
+	unsigned int k = 0;
+	bool download = true;
 	*kind = 0;
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;
 	/* Return immediately if file is NULL */
 	if (file == NULL) return false;
-	if (!gmt_access (GMT, file, F_OK))	return false;	/* File exists already */
+	if (!gmt_M_file_is_memory (file) && file[0] == '@') k = 1;	/* Short-hand for GMT Site URL */
+	if (!gmt_access (GMT, &file[k], F_OK)) return false;	/* File exists already */
 	/* Determine if this file is in the auto-download registry */
-	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd")) {
-		/* Useful data set distributed by GMT */
+	if (k == 1)	/* Special @<file> available via GMT FTP */
+		*kind = 0;
+	else if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
 		*kind = 1;
-		return true;
-	}
-	/* Here we are looking at demo data which needs to to in a demo subdir [kind = 0] */
-	if (!strncmp (file, GMT_DEMO_PREFIX, strlen(GMT_DEMO_PREFIX)) && strstr (file, ".txt")) return true;
-	if (!strncmp (file, GMT_DEMO_PREFIX, strlen(GMT_DEMO_PREFIX)) && strstr (file, ".grd")) return true;
-	return true;
+	else if (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U))	/* Full URL given */
+		*kind = 2;
+	else
+		download = false;
+	return download;
 }
 #endif
 
@@ -13105,6 +13107,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		not_url = !gmtlib_check_url_name (&file[k]);
 #ifdef DO_CURL
 	if (not_url) not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
+	if (!gmt_M_file_is_memory (file) && file[0] == '@') k = 1;	/* Has leading '@' in name */
 #endif
 	if (not_url) {
 		if (gmt_access (GMT, &file[k], F_OK)) {	/* Cannot find the file anywhere GMT looks */
