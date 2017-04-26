@@ -3685,7 +3685,7 @@ Three classes of files are given special treatment in GMT.
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).
 #. Demonstration files used in online documentation, example scripts, or even the
-   large test suite are given in the format @*filename*.  When such a file is
+   large test suite are given in the format @\ *filename*.  When such a file is
    encountered on the command line it is simply a short-hand for the full URL to the
    GMT Cache Data FTP site.  Since this address may change over time we use the leading
    @ to simplify the access to these files.  Such files will also be downloaded
