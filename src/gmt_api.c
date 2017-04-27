@@ -6821,7 +6821,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (&input[first]);
+			char CPT_file[GMT_LEN256] = {""}, *file = strdup (&input[first]);
 			if ((c_err = api_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
 				gmt_M_str_free (file);
@@ -6833,10 +6833,10 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containing +u|U */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else	/* Use name as is */
-					strncpy (CPT_file, file, GMT_BUFSIZ-1);
+					strncpy (CPT_file, file, GMT_LEN256-1);
 			}
 			else	/* Got color list, now a temp CPT instead */
-				strncpy (CPT_file, file, GMT_BUFSIZ-1);
+				strncpy (CPT_file, file, GMT_LEN256-1);
 			gmt_M_str_free (file);	/* Free temp CPT name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
