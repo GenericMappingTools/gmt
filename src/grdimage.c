@@ -899,16 +899,18 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 		}
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array */
-		strcpy (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");				/* This is the grdimage's mem layout */
+		if (GMT->current.gdal_read_in.O.mem_layout[0])
+			strcpy (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
+		else
+			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* This is the grdimage's mem layout */
+
 		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
-		if (!mem_layout[0])
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: The memory layout code is empty, but it shouldn't be.\n");
-		else
-			GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
+
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
 			
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
 		if (header_work->ProjRefWKT != NULL)
