@@ -535,7 +535,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		/* Prepare the grdgradient arguments using selected -A -N */
 		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file[0], int_grd, Ctrl->I.azimuth, Ctrl->I.method);
-		if (GMT->common.R.active[RSET]) { strcat (cmd, " -R"); strcat (cmd, GMT->common.R.string); }
+		if (GMT->common.R.active[RSET] && !GMT->common.R.oblique) { strcat (cmd, " -R"); strcat (cmd, GMT->common.R.string); }
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdgradient with args %s\n", cmd);
 		if (GMT->common.R.oblique) GMT->common.R.active[RSET] = false;	/* Must turn -R off temporarily */
