@@ -873,7 +873,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		}
 	}
 	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
-	if ((fp = fopen (local_path, GMT->current.io.w_mode)) == NULL) {
+	if ((fp = fopen (local_path, "wb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
 		return 0;
 	}

@@ -2387,8 +2387,6 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
-	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
-		GMT->session.CACHEDIR = strdup (this_c);
 	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
 		GMT->session.USERDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
@@ -2396,11 +2394,13 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.USERDIR = strdup (GMT_USER_DIR_DEBUG);
 #endif
-	else {
-		/* Use default path for GMT_USERDIR (~/.gmt) */
+	else {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
-		/* Use default path for GMT_CACHEDIR (~/.gmt/cache) */
+	}
+	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
+		GMT->session.CACHEDIR = strdup (this_c);
+	else {	/* Use default path for GMT_CACHEDIR (~/.gmt/cache) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt/cache");
 		GMT->session.CACHEDIR = strdup (path);
 	}
@@ -2409,10 +2409,6 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
 		gmt_M_str_free (GMT->session.USERDIR);
-	}
-	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
-		/* If we cannot access this dir then we won't use it */
-		gmt_M_str_free (GMT->session.CACHEDIR);
 	}
 
 	if (gmt_M_compat_check (GMT, 4)) {
