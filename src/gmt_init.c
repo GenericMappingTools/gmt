@@ -2361,7 +2361,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			fprintf (stderr, "Error: Could not locate share directory that matches the current GMT version %s.\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not locate share directory that matches the current GMT version %s.\n",
 			         GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
@@ -2380,7 +2380,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* If HOME not set: use root directory instead (http://gmt.soest.hawaii.edu/issues/710) */
 		GMT->session.HOMEDIR = strdup ("/"); /* Note: Windows will use the current drive if drive letter unspecified. */
 #ifdef DEBUG
-		fprintf (stderr, "Warning: HOME environment not set. Using root directory instead.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: HOME environment not set. Using root directory instead.\n");
 #endif
 	}
 	gmt_dos_path_fix (GMT->session.HOMEDIR);
@@ -2398,26 +2398,30 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
 	}
-	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
-		GMT->session.CACHEDIR = strdup (this_c);
-	else {	/* Use default path for GMT_CACHEDIR (~/.gmt/cache) */
-		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt/cache");
-		GMT->session.CACHEDIR = strdup (path);
-	}
-	gmt_dos_path_fix (GMT->session.USERDIR);
-	gmt_dos_path_fix (GMT->session.CACHEDIR);
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
 		gmt_M_str_free (GMT->session.USERDIR);
 	}
+	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
+		GMT->session.CACHEDIR = strdup (this_c);
+	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_CACHEDIR as GMT_USERDIR/cache */
+		sprintf (path, "%s/%s", GMT->session.USERDIR,"/cache");
+		GMT->session.CACHEDIR = strdup (path);
+	}
+	else {	/* Only get here if user gave a bad unreadable userdir and we must place the cache in the home dir */
+		sprintf (path, "%s/%s", GMT->session.HOMEDIR, "/cache");
+		GMT->session.CACHEDIR = strdup (path);
+	}
+	gmt_dos_path_fix (GMT->session.USERDIR);
+	gmt_dos_path_fix (GMT->session.CACHEDIR);
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
 
 		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {		/* GMT_CPTDIR was set */
-			fprintf (stderr, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
-			fprintf (stderr, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
-			fprintf (stderr, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
 		}
 	}
 
@@ -2441,8 +2445,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {		/* GMT_TMPDIR was set */
 		if (access (this_c, R_OK|W_OK|X_OK)) {
-			fprintf (stderr, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
-			fprintf (stderr, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT->session.TMPDIR = NULL;
 		}
 		else
@@ -13220,7 +13224,6 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
 	chdir (dir);
 	if ((n_files = (unsigned int)gmtlib_glob_list (GMT, "*", &filelist))) {
 		for (k = 0; k < n_files; k++) {
-			fprintf (stderr, "Delete %s\n", filelist[k]);
 			if (gmt_remove_file (GMT, filelist[k]))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s [permissions?]\n", filelist[k]);
 		}
