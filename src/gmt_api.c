@@ -832,13 +832,13 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
  * this check by first calling gmt_download_file_if_not_found.
  */
 
-unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name)
-{	/* Downloads a file if not found locally.  Returns the position in file_name of the
+unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* file_name) {
+	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). */
 	unsigned int kind = 0, dir = 0, pos = 0;
 	int curl_err = 0;
-	CURL* Curl = NULL;
-	FILE* fp = NULL;
+	CURL *Curl = NULL;
+	FILE *fp = NULL;
 	static char *ftp_dir[2] = {"/cache", ""};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
