@@ -164,6 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, k, n_tags = 0;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	/* We are just checking the options for syntax here, not parsing is actually needed */
@@ -190,7 +191,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				if ((c = strstr (opt->arg, ".def")) == NULL)
+					Ctrl->D.file = strdup (opt->arg);
+				else {
+					c[0] = '\0';	/* Chop off extension */
+					Ctrl->D.file = strdup (opt->arg);
+					c[0] = '.';	/* Restore extension */
+				}
 				break;
 			case 'E':
 				Ctrl->E.active = true;
