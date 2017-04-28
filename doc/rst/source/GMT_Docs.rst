@@ -2363,7 +2363,8 @@ numerous parameters than modify units, scales, etc. For a complete
 listing, see the :doc:`gmt.conf` man pages.
 We suggest that you go through all the available parameters at least
 once so that you know what is available to change via one of the
-described mechanisms.
+described mechanisms.  The gmt.conf file can be cleared by running
+**gmt clear conf**.
 
 Command line arguments
 ----------------------
@@ -3609,7 +3610,8 @@ be clobbered since GMT uses advisory file locking. The uncertainty in
 processing order makes the use of shorthands in pipes unreliable. We
 therefore recommend that you only use shorthands in single process
 command lines, and spell out the full command option when using chains
-of commands connected with pipes.
+of commands connected with pipes.  The history can be cleared by running
+**gmt clear history**.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -3676,19 +3678,20 @@ Three classes of files are given special treatment in GMT.
    At the moment this set is limited to Earth relief grids.  If you reference
    files called **earth_relief_**\ *res*\ **.grd** on a command line then
    that grid will automatically be downloaded from the GMT Data Site and placed
-   in **DIR_USER**.  Resolutions *res* are presently limited to
-   60m, 30m, 10m, 5m, 2m, 1m, and 30s (with file sizes 111 kb, 373 kb,
-   2.9 Mb, 11 Mb, 51 Mb, 214 Mb, and 778 Mb, respectively).  Once one of
+   in **DIR_USER**.  Resolutions *res* are presently limited to nine:
+   60m, 30m, 10m, 6m, 5m, 2m, 1m, 30s, and 15s (with file sizes 111 kb, 376 kb,
+   2.8 Mb, 7.5 Mb, 11 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).  Once one of
    these have been downloaded any future reference will simply obtain the
    file from **DIR_USER** (except if explicitly removed by the user).
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).
 #. Demonstration files used in online documentation, example scripts, or even the
-   large test suite are given in the format @\ *filename*.  When such a file is
-   encountered on the command line it is simply a short-hand for the full URL to the
-   GMT Cache Data FTP site.  Since this address may change over time we use the leading
-   @ to simplify the access to these files.  Such files will also be downloaded
+   large test suite may be given in the format @\ *filename*.  When such a file is
+   encountered on the command line it is understood to be a short-hand representation
+   of the full URL to *filename on the GMT Cache Data FTP site.
+   Since this address may change over time we use the leading
+   @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared via **gmt clear cache**.

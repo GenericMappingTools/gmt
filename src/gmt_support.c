@@ -11240,9 +11240,9 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			return (1);	/* Failed basic parsing */
 		}
 
-		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "josw")) return (1);
+		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw")) return (1);
 
-		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]. */
+		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
 		/* Required modifier +w */
 		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
 			if (string[0] == '\0') {	/* Got nutin' */
@@ -11291,19 +11291,22 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			else
 				B->file = strdup (string);
 		}
+		if (gmt_get_modifier (B->refpoint->args, 't', string))
+				B->translate = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
 	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
 		char *c = NULL, p[GMT_LEN128] = {""};
 		unsigned int pos;
-		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+u<unit>] or old -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>] */
+		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+t][+u<unit>] or old -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>][+t] */
 		if ((c = gmt_first_modifier (GMT, text, "rsu"))) {
-			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>] */
+			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+t][+u<unit>] */
 			pos = 0;	/* Reset to start of new word */
-			while (gmt_getmodopt (GMT, option, c, "rsu", &pos, p, &error) && error == 0) {
+			while (gmt_getmodopt (GMT, option, c, "rstu", &pos, p, &error) && error == 0) {
 				switch (p[0]) {
 					case 'r': B->oblique = true;	break;
 					case 's': B->file = strdup (&p[1]);	break;
+					case 't': B->translate = true;	break;
 					case 'u': B->unit = p[1]; break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				}

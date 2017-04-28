@@ -42,7 +42,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
 		bool active;
 		struct GMT_MAP_INSERT insert;
 	} D;
@@ -285,9 +285,9 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	gmt_map_basemap (GMT);	/* Plot base map */
 
-	if (Ctrl->D.active) gmt_draw_map_insert (GMT, &Ctrl->D.insert);
 	if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
+	if (Ctrl->D.active) gmt_draw_map_insert (GMT, &Ctrl->D.insert);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 
