@@ -15,8 +15,6 @@ gmt grdimage dist_km.grd -Ct.cpt -JM6i -P -K -Xc -Ei > $ps
 gmt pscoast -R -J -O -Ggray -Baf -K -Df >> $ps
 gmt psxy -R -J c2308.txt -W0.25p,cyan -O -K -i0,1 >> $ps
 gmt psxy c2308_faa_x.txt -R -J -K -O -Sc0.02c -Ggreen@50 >> $ps
-gmt psbasemap -R -J -O -K -DjTL+w2i+o0.6i/0.2i+stmp >> $ps
-read x0 y0 w h < tmp
-gmt psxy -R -J -O -K -T -X$x0 -Y$y0 >> $ps
+gmt psbasemap -R -J -O -K -DjTL+w2i+o0.6i/0.2i+t >> $ps
 gmt pshistogram xfaa.txt -W2 -R0/150/0/30 -JX2i -Gred -L0.25p -BWSne+glightblue -Byaf+u% -Bxaf+lmGal -O -K >> $ps
 gmt psxy -R -J -O -T >> $ps
