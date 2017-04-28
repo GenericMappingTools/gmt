@@ -512,7 +512,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t-L Apply operators on a per-segment basis [cumulates operations across file].\n"
 		"\t-N Set the number of columns and optionally the id of the time column (0 is first) [2/0].\n"
 		"\t   If input files are given, -N will add extra columns initialized to zero, if needed.\n"
-		"\t-Q Quick scalar calculator. Shorthand for -Ca -N1/0 -T0/0/1.\n"
+		"\t-Q Quick scalar calculator (Shorthand for -Ca -N1/0 -T0/0/1).\n"
+		"\t-  Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n", GMT_DIM_UNITS_DISPLAY
 		"\t-S Only write first row upon completion of calculations [write all rows].\n"
 		"\t   Optionally, append l for last row or f for first row [Default].\n"
 		"\t-T Set domain from t_min to t_max in steps of t_inc.\n"
@@ -4801,9 +4802,10 @@ GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **reca
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  gmt_end_module (GMT, GMT_cpy); bailout (code); }
 
-GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
+GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, bool *dimension, struct GMT_HASH *H) {
 	unsigned int expect;
 	int key;
+	size_t last;
 	bool check = GMT_IS_NAN, possible_number = false;
 	char copy[GMT_LEN256] = {""};
 	char *mark = NULL;
@@ -4857,6 +4859,15 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 		return GMTMATH_ARG_IS_FILE;
 	}
 
+	/* Check if it is a dimension (which would fail the gmt_not_numeric check above) */
+	
+	last = strlen (txt) - 1;	/* Position of last character in string */
+	if (strchr (GMT_DIM_UNITS, txt[last])) {	/* Yes, ends in c, i, or p */
+		*value = gmt_M_to_inch (GMT, txt);
+		*dimension = true;
+		return GMTMATH_ARG_IS_NUMBER;
+	}
+	
 	if (check != GMT_IS_NAN) {	/* OK it is a number */
 		*value = tmp;
 		return GMTMATH_ARG_IS_NUMBER;
@@ -4901,7 +4912,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	int i, k, op = 0, status = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, nstack = 0, n_stored = 0, kk;
-	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
+	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false, dimension = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
 
@@ -4974,7 +4985,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		gmtmath_backwards_fixing (GMT, &(opt->arg));	/* Possibly exchange obsolete operator name for new one unless compatibility is off */
-		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
+		op = decode_gmt_argument (GMT, opt->arg, &value, &dimension, localhashnode);	/* Determine what this is */
 		if (op == GMTMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (op != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
@@ -5168,7 +5179,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N]      = (double)n_records;
 
 	gmtmath_init (call_operator, consumed_operands, produced_operands);
-	op = decode_gmt_argument (GMT, "EXCH", &value, localhashnode);
+	op = decode_gmt_argument (GMT, "EXCH", &value, &dimension, localhashnode);
 	consumed_operands[op] = produced_operands[op] = 0;	/* Modify items since we simply swap pointers */
 
 	for (opt = list, error = false; !error && opt; opt = opt->next) {
@@ -5185,7 +5196,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		gmtmath_backwards_fixing (GMT, &(opt->arg));	/* Possibly exchange obsolete operator name for new one unless compatibility is off */
 
-		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);
+		op = decode_gmt_argument (GMT, opt->arg, &value, &dimension, localhashnode);
 
 		if (op != GMTMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!\n", opt->arg, opt->arg);
 
@@ -5442,6 +5453,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		else {		/* Can happen if only -T [-N] was specified with no operators */
 			R = Template;
 			template_used = true;
+		}
+		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, must return in current units */
+			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 		}
 		if (place_t_col && Ctrl->N.tcol < R->n_columns) {
 			load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */

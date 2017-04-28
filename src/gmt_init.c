@@ -944,6 +944,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 			case 'f':	/* Plain floating point coordinates */
 				code = GMT_IS_FLOAT;
 				break;
+			case 'd':	/* Length dimension (with possible unit) */
+				code = GMT_IS_DIMENSION;
+				break;
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s]\n", arg);
 				return 1;

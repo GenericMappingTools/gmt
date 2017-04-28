@@ -121,6 +121,8 @@ Optional Arguments
 
 **-Q**
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
+    In this mode, constants may have plot units (i.e., c, i, p) and if so the final
+    answer will be reported in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
 
 .. _-S:
 
@@ -652,6 +654,12 @@ columns will have been loaded but are then ignored until you undo the effect of 
 Examples
 --------
 
+To add two plot dimensions of different units, we can run
+
+   ::
+   
+    length=`gmt math -Q 15c 2i SUB =`
+   
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
