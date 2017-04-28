@@ -11315,12 +11315,12 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			B->unit = text[0];
 			k = 1;
 		}
-		if (c) c[0] = '+';	/* Restore original argument */
 		/* Decode the w/e/s/n part */
 		if ((n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d)) != 4) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify w/e/s/n or <unit>xmin/xmax/ymin/ymax\n", option);
 			return (GMT_PARSE_ERROR);
 		}
+		if (c) c[0] = '+';	/* Restore original argument */
 		col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Set correct input types */
 		col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 		if (k == 0) {	/* Got geographic w/e/s/n or <w/s/e/n>r */

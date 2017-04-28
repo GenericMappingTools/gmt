@@ -4594,23 +4594,26 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 	/* Deal with rectangular insert */
 	/* Determine panel dimensions */
 
-	panel->width = rect[XHI] - rect[XLO];	panel->height = rect[YHI] - rect[YLO];
-	if (!panel->clearance) gmt_M_memset (panel->padding, 4, double);	/* No clearance is default for map inserts unless actually specified */
+	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
-		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, panel->width*s, panel->height*s);
+		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, dim[GMT_X]*s, dim[GMT_Y]*s);
 	if (B->file) {	/* Save x0 y0 w h to file */
 		FILE *fp = fopen (B->file, "w");
 		if (fp) {
-			fprintf (fp, "%.12g %.12g %.12g %.12g\n", rect[XLO]*s, rect[YLO]*s, panel->width*s, panel->height*s);
+			fprintf (fp, "%.12g %.12g %.12g %.12g\n", rect[XLO]*s, rect[YLO]*s, dim[GMT_X]*s, dim[GMT_Y]*s);
 			fclose (fp);
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", B->file);
 		gmt_M_str_free (B->file);
 	}
-	gmt_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
+	if (panel) {	/* Requested to draw a panel */
+		panel->width = dim[GMT_X];	panel->height = dim[GMT_Y];
+		if (!panel->clearance) gmt_M_memset (panel->padding, 4, double);	/* No clearance is default for map inserts unless actually specified */
+		gmt_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
+	}
 }
 
 int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {

@@ -6232,7 +6232,7 @@ void gmt_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>+u<unit> of bounding rectangle in projected coordinates.\n");
 	gmt_message (GMT, "\t     c) Set reference point and dimensions of the insert:\n");
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
-	gmt_message (GMT, "\t        Append <width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
+	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 2);
 	gmt_message (GMT, "\t     Append +s<file> to save insert lower left corner and dimensions to <file>.\n");
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");

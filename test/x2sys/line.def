@@ -1,0 +1,15 @@
+#		$Id: geoz.def 12824 2014-02-01 00:01:27Z remko $
+#
+# Define file for X2SYS processing of ASCII lon,lat,time,z files
+#
+# This file applies to plain 4-column ASCII files.
+#
+#---------------------------------------------------------------------
+#ASCII		# The input file is ASCII
+#SKIP 1		# The number of header records to skip
+#---------------------------------------------------------------------
+#name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
+lon	a	N		0		1	0	%10.5f
+lat	a	N		0		1	0	%9.5f
+time	a	N		0		1	0	%6.1f
+faa	a	N		0		1	0	%6.1f
