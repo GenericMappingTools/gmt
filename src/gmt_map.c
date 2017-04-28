@@ -2202,7 +2202,7 @@ GMT_LOCAL double map_mean_radius (struct GMT_CTRL *GMT, double a, double f) {
 			break;
 		default:	/* Cannot get here! Safety valve */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal ERROR: GMT mean radius not specified\n");
-			exit (GMT_RUNTIME_ERROR);
+			GMT_exit (GMT, GMT_RUNTIME_ERROR);
 			break;
 	}
 
@@ -6001,7 +6001,7 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);
-			exit (GMT_PROJECTION_ERROR);
+			GMT_exit (GMT, GMT_PROJECTION_ERROR);
 			break;
 	}
 	if (type > 0) return;	/* Contour-related assignments end here */

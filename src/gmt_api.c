@@ -493,7 +493,7 @@ GMT_LOCAL inline struct GMT_DATASET * api_get_dataset_data (struct GMT_DATASET *
 /*! If API is not set or do_not_exit is false then we call system exit, else we move along */
 GMT_LOCAL inline void api_exit (struct GMTAPI_CTRL *API, int code) {
 	if (API == NULL || API->do_not_exit == false)
-		exit (code);
+		GMT_exit (API->GMT, code);
 }
 
 /*! api_return_address is a convenience function that, given type, calls the correct converter */

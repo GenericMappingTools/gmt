@@ -985,8 +985,8 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 		/* cannot call gmt_M_free_options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = GMT->parent;
 		 * if (GMT_Destroy_Session (G))
-		 *   exit (GMT_PARSE_ERROR); */
-		exit (GMT_NOERROR);
+		 *   GMT_exit (GMT, GMT_PARSE_ERROR); */
+		GMT_exit (GMT, GMT_NOERROR);
 	}
 
 	/* print GMT folders and exit */
@@ -994,7 +994,7 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 		snprintf (message, GMT_LEN128, "%s\n", GMT->session.SHAREDIR);
 		GMT->parent->print_func (stdout, message);
 		/* leaking on exit same as above. */
-		exit (GMT_NOERROR);
+		GMT_exit (GMT, GMT_NOERROR);
 	}
 
 	if ((this_c = strchr (text, '='))) {

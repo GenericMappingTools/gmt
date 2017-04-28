@@ -352,7 +352,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *
 
 	if (id == MGD77_NOT_SET) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: MGD77_Get_Header_Item returns %d for item %s\n", id, item);
-		exit (GMT_RUNTIME_ERROR);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 
 	return id;

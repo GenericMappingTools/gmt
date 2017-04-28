@@ -189,7 +189,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
-	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
 	/* Create a virtual file to hold the resampled grid */
 	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
 		Return (API->error);
@@ -228,7 +228,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	strcat (args, " --GMT_HISTORY=false");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling greenspline with args %s\n", args);
-  	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
+  	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) GMT_exit (API->GMT, EXIT_FAILURE);
 	if ((G_hole = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
 		Return (API->error);
 	}
