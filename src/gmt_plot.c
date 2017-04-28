@@ -45,12 +45,12 @@
  *	gmt_vertical_axis 	 : Draw 3-D vertical axes
  *	gmt_xy_axis 		 : Draw x or y axis
  *	gmt_linearx_grid 	 : Draw linear x grid lines
- *	gmt_setfill              : 
- *	gmt_setfont              : 
- *	gmt_draw_map_insert      : 
- *	gmt_setpen               : 
- *	gmt_draw_custom_symbol   : 
- *	gmt_add_label_record     : 
+ *	gmt_setfill              :
+ *	gmt_setfont              :
+ *	gmt_draw_map_insert      :
+ *	gmt_setpen               :
+ *	gmt_draw_custom_symbol   :
+ *	gmt_add_label_record     :
  *	gmt_contlabel_save_begin :
  *	gmt_contlabel_save_end   :
  *	gmt_textpath_init        :
@@ -3095,7 +3095,7 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 #endif
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
-	
+
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
@@ -3107,7 +3107,7 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 	}
 	start_lon = GMT->common.R.wesn[XHI];
 	stop_lon  = GMT->common.R.wesn[XLO];
-		
+
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
 		if (k && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
 	}
@@ -5289,7 +5289,7 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (!G->n_segments) return;	/* Northing to do here */
-	
+
 	if (G->debug) plot_contlabel_debug (GMT, PSL, G);		/* Debugging lines and points */
 
 	/* See if there are labels at all */
@@ -5581,7 +5581,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		PSL_setorigin (PSL, x0, y0, GMT->common.p.z_rotation, PSL_FWD);
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
 	}
-	
+
 	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
 	this_proj = GMT->current.proj.projection;
@@ -5679,7 +5679,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	}
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !K_active);
-	
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Reset file pointer and name */
 		GMT->current.ps.fp = NULL;
 		GMT->current.ps.filename[0] = '\0';
@@ -5726,7 +5726,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 #endif
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
-	
+
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -5735,7 +5735,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 		plot_reverse_polygon (GMT, S);
 	start_lon = GMT->common.R.wesn[XHI];
 	stop_lon  = GMT->common.R.wesn[XLO];
-	
+
 	for (k = 0; k < n; k++) 	/* Make negative longitudes only */
 		if (S->data[GMT_X][k] >= 180.0) S->data[GMT_X][k] -= 360.0;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
@@ -5925,7 +5925,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	N = irint (GMT_ELLIPSE_APPROX * L / GMT->current.setting.map_line_step);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ellipse will be approximated by %d-sided polygon\n", N);
 	/* Approximate ellipse by a N-sided polygon */
-	
+
 	delta_azimuth = 2.0 * M_PI / N;
 	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, N+1, 2, NULL, NULL);
 	px = S->data[GMT_X];	py = S->data[GMT_Y];
@@ -5948,7 +5948,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 	   mode = 2: Just draw jaw [no fill possible]
  	*/
 
-	int N, k, kk, n_path;
+	int n_arc, k, kk, n_path;
 	uint64_t n_new;
 	double d_az, px, py, qx, qy, L, plat, plon, qlon, qlat, az, rot_start, E[3], P[3], Q[3], R[3][3];
 	struct GMT_DATASEGMENT *S = NULL;
@@ -5964,9 +5964,9 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 	}
 	gmt_geo_to_cart (GMT, xlat, xlon, E, true);	/* Euler rotation pole */
 	gmt_geo_to_cart (GMT, plat, plon, P, true);	/* Vector <radius> degrees away from E along meridian */
-	if (mode == 2) {	/* No arc */
+	if (mode == 2) {	/* No arc, only start and end point */
 		d_az = az_stop - az_start;
-		N = n_path = 2;
+		n_arc = 2;
 	}
 	else {	/* Compute distance between P and Q and compare to map_line_step to determine azimuthal sampling */
 		gmt_make_rot_matrix2 (GMT, E, 1.0, R);		/* Test point 1 degree away */
@@ -5975,21 +5975,22 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		gmt_geo_to_xy (GMT, plon, plat, &px, &py);	/* P projected on map */
 		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
 		L = hypot (px - qx, py - qy);	/* Distance in inches for 1 degree of azimuth change */
-		N = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
+		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
 #ifdef DEBUG
-		N = n_path = irint (fabs (az_stop - az_start));	/* Debugging */
+		n_arc = irint (fabs (az_stop - az_start));	/* Debugging */
 #endif
-		d_az = (az_stop - az_start) / (N-1);	/* Azimuthal sampling rate */
+		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
 	}
-	if (mode & 2) n_path++;		/* Add apex */
+	n_path = n_arc;				/* Total number of points */
+	if (mode > 1) n_path++;		/* Add apex */
 	if (mode == 3) n_path++;	/* Closed polygon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
 	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
 	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
 	d_az = -d_az;		/* Same reason */
-	for (k = kk = 0; k < N; k++, kk++) {
+	for (k = kk = 0; k < n_arc; k++, kk++) {
 		az = rot_start + k * d_az;
-		gmt_make_rot_matrix2 (GMT, E, az, R);	
+		gmt_make_rot_matrix2 (GMT, E, az, R);
 		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);
 		gmt_cart_to_geo (GMT, &S->data[GMT_Y][kk], &S->data[GMT_X][kk], Q, true);	/* rotated point */
 		if (mode == 2 && k == 0) {	/* Add in the apex now */
@@ -6358,7 +6359,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 	/* Only do this at top module */
 	if (GMT->hidden.func_level > 1) return;
-	
+
 	/* Nothing changed since last call, hence ignore */
 	if (plane == GMT->current.proj.z_project.plane && gmt_M_eq(level,GMT->current.proj.z_project.level)) return;
 
@@ -6485,7 +6486,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	struct GMT_POSTSCRIPT *P = NULL;
 	FILE *fp = NULL;
 	gmt_M_unused(mode);
-	
+
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
@@ -6547,7 +6548,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	P->header[0] = strdup (buffer);
 	P->n_headers = 1;
 	if (n_alloc) P->data = gmt_M_memory (GMT, NULL, n_alloc, char);
-	
+
 	/* Start reading PostScript from fp */
 
 	while ((c = fgetc (fp)) != EOF ) {
@@ -6575,7 +6576,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.
 	 */
-	
+
 	bool close_file = false, append = false;
 	char ps_file[GMT_BUFSIZ] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
@@ -6583,7 +6584,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	gmt_M_unused(mode);
 
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
-	
+
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
 		strncpy (ps_file, dest, GMT_BUFSIZ-1);
@@ -6620,7 +6621,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 		return (GMT_NOT_A_VALID_METHOD);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s PostScript to %s\n", msg1[append], &ps_file[append]);
-	
+
 	/* Start writing PostScript to fp */
 
 	if (fwrite (P->data, 1U, P->n_bytes, fp) != P->n_bytes) {
