@@ -288,6 +288,50 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 	"", "BL", "BC", "BR", "", "ML", "MC", "MR", "", "TL", "TC", "TR"
 };
 
+/* ISO Font encodings.  Ensure that the order of PSL_ISO_names matches order of includes below */
+
+static char *PSL_ISO_name[] = {
+	"PSL_Standard",
+	"PSL_Standard+",
+	"PSL_ISOLatin1",
+	"PSL_ISOLatin1+",
+	"PSL_ISO-8859-1",
+	"PSL_ISO-8859-2",
+	"PSL_ISO-8859-3",
+	"PSL_ISO-8859-4",
+	"PSL_ISO-8859-5",
+	"PSL_ISO-8859-6",
+	"PSL_ISO-8859-7",
+	"PSL_ISO-8859-8",
+	"PSL_ISO-8859-9",
+	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-13",
+	"PSL_ISO-8859-14",
+	"PSL_ISO-8859-15",
+	NULL
+};
+
+static char *PSL_ISO_encoding[] = {
+#include "PSL_Standard.h"
+#include "PSL_Standard+.h"
+#include "PSL_ISOLatin1.h"
+#include "PSL_ISOLatin1+.h"
+#include "PSL_ISO-8859-1.h"
+#include "PSL_ISO-8859-2.h"
+#include "PSL_ISO-8859-3.h"
+#include "PSL_ISO-8859-4.h"
+#include "PSL_ISO-8859-5.h"
+#include "PSL_ISO-8859-6.h"
+#include "PSL_ISO-8859-7.h"
+#include "PSL_ISO-8859-8.h"
+#include "PSL_ISO-8859-9.h"
+#include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-13.h"
+#include "PSL_ISO-8859-14.h"
+#include "PSL_ISO-8859-15.h"
+NULL
+};
+
 /* Local variables to gmt_init.c */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
@@ -379,6 +423,13 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
 }
 #endif
+
+GMT_LOCAL int get_psl_encoding (const char *encoding) {
+	/* Return the specified encoding ID */
+	int k = 0, match = 0;
+	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
+	return (match == 0) ? k : -1;
+}
 
 GMT_LOCAL int gmtinit_get_uservalue (struct GMT_CTRL *GMT, char *txt, int type, double *value, char *err_msg) {
 	/* Use to get a single data value of given type and exit if error, and return GMT_PARSE_ERROR */
@@ -4420,44 +4471,38 @@ GMT_LOCAL int gmtinit_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_
 	return (GMT_NOERROR);
 }
 
-/*! Load a PostScript encoding from a file, given the filename.
+/*! Scan a PostScript encoding string and look for degree, ring and other special encodings.
  * Use Brute Force and Ignorance.
  */
 GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
-	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
-	unsigned int code = 0, pos;
-	FILE *in = NULL;
+	char symbol[GMT_LEN256] = {""};
+	unsigned int code = 0, pos = 0;
+	int k;
 	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
 	snprintf (symbol, GMT_LEN256, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
-	gmt_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
-	if ((in = fopen (line, "r")) == NULL) {
-		perror (line);
-		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
+	if ((k = get_psl_encoding (symbol)) == -1) {
+		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_RUNTIME_ERROR;
 	}
 
-	while (fgets (line, GMT_LEN256, in)) {
-		pos = 0;
-		while ((gmt_strtok (line, " /\t\n", &pos, symbol))) {
-			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */ {
-				code = 0;
-				continue;
-			}
-			if (strcmp (symbol, "degree") == 0)
-				enc->code[gmt_degree] = code;
-			else if (strcmp (symbol, "ring") == 0)
-				enc->code[gmt_ring] = code;
-			else if (strcmp (symbol, "quotedbl") == 0)
-				enc->code[gmt_dquote] = code;
-			else if (strcmp (symbol, "quotesingle") == 0)
-				enc->code[gmt_squote] = code;
-			else if (strcmp (symbol, "colon") == 0)
-				enc->code[gmt_colon] = code;
-			code++;
+	while ((gmt_strtok (PSL_ISO_encoding[k], " /\t\n", &pos, symbol))) {	/* Here, symbol is reused */
+		if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */ {
+			code = 0;
+			continue;
 		}
+		if (strcmp (symbol, "degree") == 0)
+			enc->code[gmt_degree] = code;
+		else if (strcmp (symbol, "ring") == 0)
+			enc->code[gmt_ring] = code;
+		else if (strcmp (symbol, "quotedbl") == 0)
+			enc->code[gmt_dquote] = code;
+		else if (strcmp (symbol, "quotesingle") == 0)
+			enc->code[gmt_squote] = code;
+		else if (strcmp (symbol, "colon") == 0)
+			enc->code[gmt_colon] = code;
+		code++;
 	}
 
-	fclose (in);
 	return (GMT_NOERROR);
 }
 
