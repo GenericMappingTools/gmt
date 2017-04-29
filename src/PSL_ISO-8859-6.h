@@ -1,0 +1,34 @@
+"/ISO-8859-6_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quotesingle\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/grave		/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/.notdef	/.notdef	/.notdef	/currency	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/afii57388	/hyphen		/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/afii57403	/.notdef	/.notdef	/.notdef	/afii57407\n\
+/.notdef	/afii57409	/afii57410	/afii57411	/afii57412	/afii57413	/afii57414	/afii57415\n\
+/afii57416	/afii57417	/afii57418	/afii57419	/afii57420	/afii57421	/afii57422	/afii57423\n\
+/afii57424	/afii57425	/afii57426	/afii57427	/afii57428	/afii57429	/afii57430	/afii57431\n\
+/afii57432	/afii57433	/afii57434	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/afii57440	/afii57441	/afii57442	/afii57443	/afii57444	/afii57445	/afii57446	/afii57470\n\
+/afii57448	/afii57449	/afii57450	/afii57451	/afii57452	/afii57453	/afii57454	/afii57455\n\
+/afii57456	/afii57457	/afii57458	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+] def\n",

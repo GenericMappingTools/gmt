@@ -1,0 +1,34 @@
+"/ISO-8859-13_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quotesingle\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/grave		/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclamdown	/cent		/sterling	/currency	/quotedblbase	/brokenbar	/section\n\
+/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron\n\
+/degree		/plusminus	/twosuperior	/threesuperior	/quotedblleft	/mu		/paragraph	/periodcentered\n\
+/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown\n\
+/Aogonek	/Iogonek	/Amacron	/Cacute		/Adieresis	/Aring		/Eogonek	/Emacron\n\
+/Ccaron		/Eacute		/Zacute		/Edotaccent	/Gcommaaccent	/Kcommaaccent	/Imacron	/Lcommaaccent\n\
+/Scaron		/Nacute		/Ncommaaccent	/Oacute		/Omacron	/Otilde		/Odieresis	/multiply\n\
+/Uogonek	/Lslash		/Sacute		/Umacron	/Udieresis	/Zdotaccent	/Zcaron		/germandbls\n\
+/aogonek	/iogonek	/amacron	/cacute		/adieresis	/aring		/eogonek	/emacron\n\
+/ccaron		/eacute		/zacute		/edotaccent	/gcommaaccent	/kcommaaccent	/imacron	/lcommaaccent\n\
+/scaron		/nacute		/ncommaaccent	/oacute		/omacron	/otilde		/odieresis	/divide\n\
+/uogonek	/lslash		/sacute		/umacron	/udieresis	/zdotaccent	/zcaron		/quoteright\n\
+] def\n",

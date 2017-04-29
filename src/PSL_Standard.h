@@ -1,0 +1,34 @@
+"/Standard_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/quoteleft	/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section\n\
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl\n\
+/.notdef	/endash		/dagger		/daggerdbl	/periodcentered	/.notdef	/paragraph	/bullet\n\
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/.notdef	/questiondown\n\
+/.notdef	/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent\n\
+/dieresis	/.notdef	/ring		/cedilla	/.notdef	/hungarumlaut	/ogonek		/caron\n\
+/emdash		/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/AE		/.notdef	/ordfeminine	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/Lslash		/Oslash		/OE		/ordmasculine	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/ae		/.notdef	/.notdef	/.notdef	/dotlessi	/.notdef	/.notdef\n\
+/lslash		/oslash		/oe		/germandbls	/.notdef	/.notdef	/.notdef	/.notdef\n\
+] def\n",

@@ -1,0 +1,34 @@
+"/ISO-8859-7_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/quoteleft	/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/tilde		/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/quoteleft	/quoteright	/sterling	/.notdef	/.notdef	/brokenbar	/section\n\
+/dieresis	/copyright	/.notdef	/guillemotleft	/logicalnot	/hyphen		/.notdef	/endash\n\
+/degree		/plusminus	/twosuperior	/threesuperior	/acute		/dieresisacute	/afii9936	/periodcentered\n\
+/afii9937	/afii9938	/afii9939	/guillemotright	/afii9940	/onehalf	/afii9941	/afii9942\n\
+/afii9977	/afii9793	/afii9794	/afii9796	/afii9797	/afii9798	/afii9801	/afii9802\n\
+/afii9803	/afii9804	/afii9805	/afii9806	/afii9807	/afii9808	/afii9809	/afii9810\n\
+/afii9811	/afii9813	/.notdef	/afii9814	/afii9816	/afii9817	/afii9818	/afii9819\n\
+/afii9820	/afii9821	/afii9943	/afii9944	/afii9968	/afii9969	/afii9970	/afii9971\n\
+/afii9978	/afii9825	/afii9826	/afii9828	/afii9829	/afii9830	/afii9833	/afii9834\n\
+/afii9835	/afii9836	/afii9837	/afii9838	/afii9839	/afii9840	/afii9841	/afii9842\n\
+/afii9843	/afii9845	/afii9847	/afii9846	/afii9848	/afii9849	/afii9850	/afii9851\n\
+/afii9852	/afii9853	/afii9975	/afii9976	/afii9972	/afii9973	/afii9974	/.notdef\n\
+] def\n",

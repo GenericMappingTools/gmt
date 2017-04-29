@@ -1,0 +1,34 @@
+"/Standard+_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/quoteleft	/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin\n\
+/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn\n\
+/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree\n\
+/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde\n\
+/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn\n\
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section\n\
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl\n\
+/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet\n\
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown\n\
+/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent\n\
+/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron\n\
+/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute\n\
+/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute\n\
+/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis\n\
+/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave\n\
+/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex\n\
+/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis\n\
+] def\n",

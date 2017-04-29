@@ -1,0 +1,34 @@
+"/ISO-8859-10_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quotesingle\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/grave		/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/Aogonek	/Emacron	/Gcommaaccent	/Imacron	/Itilde		/Kcommaaccent	/section\n\
+/Lcommaaccent	/Dcroat		/Scaron		/Tbar		/Zcaron		/hyphen		/Umacron	/Eng\n\
+/degree		/aogonek	/emacron	/gcommaaccent	/imacron	/itilde		/kcommaaccent	/periodcentered\n\
+/lcommaaccent	/dcroat		/scaron		/tbar		/zcaron		/emdash		/umacron	/eng\n\
+/Amacron	/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Iogonek\n\
+/Ccaron		/Eacute		/Eogonek	/Edieresis	/Edotaccent	/Iacute		/Icircumflex	/Idieresis\n\
+/Eth		/Ncommaaccent	/Omacron	/Oacute		/Ocircumflex	/Otilde		/Odieresis	/Utilde\n\
+/Oslash		/Uogonek	/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Thorn		/germandbls\n\
+/amacron	/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/iogonek\n\
+/ccaron		/eacute		/eogonek	/edieresis	/edotaccent	/iacute		/icircumflex	/idieresis\n\
+/eth		/ncommaaccent	/omacron	/oacute		/ocircumflex	/otilde		/odieresis	/utilde\n\
+/oslash		/uogonek	/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/kgreenlandic\n\
+] def\n",

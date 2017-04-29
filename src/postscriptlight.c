@@ -98,7 +98,7 @@
  *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
  *			   Remko.Scharroo@eumetsat.int
  * Date:	15-OCT-2009
- * Version:	5.3 [64-bit enabled API edition, decoupled from GMT]
+ * Version:	5.4 [64-bit enabled API edition, decoupled from GMT]
  *
  * Thanks to J. Goff and L. Parkes for their contributions to an earlier version.
  *
@@ -197,6 +197,50 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 #else
 #define PSL_exit(code) exit(code)
 #endif
+
+/* ISO Font encodings.  Ensure that the order of PSL_ISO_names matches order of includes below */
+
+static char *PSL_ISO_name[] = {
+	"PSL_Standard",
+	"PSL_Standard+",
+	"PSL_ISOLatin1",
+	"PSL_ISOLatin1+",
+	"PSL_ISO-8859-1",
+	"PSL_ISO-8859-2",
+	"PSL_ISO-8859-3",
+	"PSL_ISO-8859-4",
+	"PSL_ISO-8859-5",
+	"PSL_ISO-8859-6",
+	"PSL_ISO-8859-7",
+	"PSL_ISO-8859-8",
+	"PSL_ISO-8859-9",
+	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-13",
+	"PSL_ISO-8859-14",
+	"PSL_ISO-8859-15",
+	NULL
+};
+
+static char *PSL_ISO_encoding[] = {
+#include "PSL_Standard.h"
+#include "PSL_Standard+.h"
+#include "PSL_ISOLatin1.h"
+#include "PSL_ISOLatin1+.h"
+#include "PSL_ISO-8859-1.h"
+#include "PSL_ISO-8859-2.h"
+#include "PSL_ISO-8859-3.h"
+#include "PSL_ISO-8859-4.h"
+#include "PSL_ISO-8859-5.h"
+#include "PSL_ISO-8859-6.h"
+#include "PSL_ISO-8859-7.h"
+#include "PSL_ISO-8859-8.h"
+#include "PSL_ISO-8859-9.h"
+#include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-13.h"
+#include "PSL_ISO-8859-14.h"
+#include "PSL_ISO-8859-15.h"
+NULL
+};
 
 /*--------------------------------------------------------------------
  *		     STANDARD CONSTANTS MACRO DEFINITIONS
@@ -1525,6 +1569,18 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */
+}
+
+static void psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
+	/* Write the specified encoding string to file */
+	int k = 0, match = 0;
+	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
+	if (match == 0)
+		PSL_command (PSL, "%s", PSL_ISO_encoding[k]);
+	else {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Could not find ISO encoding %s\n", encoding);
+		PSL_exit (EXIT_FAILURE);
+	}
 }
 
 /* This function copies a file called $PSL_SHAREDIR/postscriptlight/<fname>.ps
@@ -4353,8 +4409,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%BeginProlog\n");
 		psl_bulkcopy (PSL, "PSL_prologue");	/* General PS code */
 		sprintf (PSL_encoding, "PSL_%s", PSL->init.encoding);	/* Prepend the PSL_ prefix */
-		psl_bulkcopy (PSL, PSL_encoding);
-
+		psl_place_encoding (PSL, PSL_encoding);
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
 		psl_bulkcopy (PSL, "PSL_label");	/* PS code for label line annotations and clipping */
