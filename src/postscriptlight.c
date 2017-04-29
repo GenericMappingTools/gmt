@@ -242,6 +242,14 @@ static char *PSL_ISO_encoding[] = {
 NULL
 };
 
+/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+ * The fontheight is the height of A for unit fontsize. */
+
+#define PSL_N_STANDARD_FONTS 35
+static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
+#include "standard_adobe_fonts.h"
+};
+
 /*--------------------------------------------------------------------
  *		     STANDARD CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
@@ -3158,20 +3166,19 @@ static int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, un
 
 	/* Fill header struct with appropriate values */
 	h->magic = EPS_MAGIC;
-	h->width = (int)(trx - llx);
-	h->height = (int)(try - lly);
+	h->width = trx - llx;
+	h->height = try - lly;
 	h->depth = 0;
-	h->length = (int)n;
+	h->length = n;
 	h->type = RT_EPS;
 	h->maptype = RMT_NONE;
 	h->maplength = 0;
-	h->xorigin = (int)llx;
-	h->yorigin = (int)lly;
+	h->xorigin = llx;
+	h->yorigin = lly;
 
 	*picture = buffer;
 	return (0);
 }
-
 
 static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	FILE *in = NULL;
@@ -3181,9 +3188,59 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	char buf[PSL_BUFSIZ];
 	char fullname[PSL_BUFSIZ];
 
+	PSL->internal.font = PSL_memory (PSL, NULL, n_alloc, struct PSL_FONT);
+
 	/* Loads the available fonts for this installation */
 
 	/* First the standard 35 PostScript fonts from Adobe */
+	memcpy (PSL->internal.font, PSL_standard_fonts, PSL_N_STANDARD_FONTS * sizeof (struct PSL_FONT));
+	PSL->internal.N_FONTS = n_PSL_fonts = i = PSL_N_STANDARD_FONTS;
+
+	/* Then any custom fonts */
+
+	if (psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname)) {
+		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
+			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
+			perror (fullname);
+			PSL_exit (EXIT_FAILURE);
+		}
+
+		while (fgets (buf, PSL_BUFSIZ, in)) {
+			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+			if (sscanf (buf, "%s %lf %d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+				PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
+				continue;
+			}
+			if (strlen (fullname) >= PSL_NAME_LEN) {
+				PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
+				fullname[PSL_NAME_LEN-1] = '\0';
+			}
+			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			i++;
+			if (i == n_alloc) {
+				n_alloc <<= 1;
+				PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
+			}
+		}
+		fclose (in);
+		PSL->internal.N_FONTS = i;
+	}
+	/* Final allocation of font array */
+	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
+}
+
+#if 0
+static void psl_init_fonts_old (struct PSL_CTRL *PSL) {
+	FILE *in = NULL;
+	int n_PSL_fonts;
+	unsigned int i = 0;
+	size_t n_alloc = 64;
+	char buf[PSL_BUFSIZ];
+	char fullname[PSL_BUFSIZ];
+
+	/* Loads the available fonts for this installation */
+
+	/* First the standard.grdript fonts from Adobe */
 
 	psl_getsharepath (PSL, "postscriptlight", "PSL_standard_fonts", ".txt", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
@@ -3240,6 +3297,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 }
+#endif
 
 static char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset) {
 	/* Writes the dash pattern */
@@ -3525,7 +3583,7 @@ int PSL_endsession (struct PSL_CTRL *PSL) {
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
 	psl_freeplot (PSL);
-	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
+	//for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
 	PSL_free (PSL->internal.SHAREDIR);
