@@ -246,6 +246,14 @@ enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
  *			PSL PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
 
+struct PSL_FONT {	/* Definition */
+	char *name;		/* Name of this font */
+	double height;		/* Height of A for unit fontsize */
+	int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
+				/* This is also changed to true after we do re-encode a font */
+	int encoded_orig;	/* The original setting that we can reset the array to */
+};
+
 struct PSL_CTRL {
 	struct INIT {	/* Parameters set by user via PSL_beginplot() */
 		FILE *err;			/* Error stream (NULL means stderr)		*/
@@ -318,13 +326,7 @@ struct PSL_CTRL {
 		size_t n_alloc;			/* Allocation length of buffer			*/
 		size_t n;			/* Length of buffer				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
-		struct PSL_FONT {
-			double height;		/* Height of A for unit fontsize */
-			char *name;		/* Name of this font */
-			int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
-						/* This is also changed to true after we do re-encode a font */
-			int encoded_orig;	/* The original setting that we can reset the array to */
-		} *font;	/* Pointer to array of font structures 		*/
+		struct PSL_FONT *font;		/* Pointer to array of font structures 		*/
 		struct PSL_PATTERN {
 			int nx, ny;	/* Dimension of pattern image */
 			int status, depth, dpi;

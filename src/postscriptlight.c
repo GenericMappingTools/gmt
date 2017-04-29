@@ -3214,29 +3214,29 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 
 	/* Then any custom fonts */
 
-	psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname);
-
-	if ((in = fopen (fullname, "r")) == NULL) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
-		perror (fullname);
-		PSL_exit (EXIT_FAILURE);
-	}
-
-	while (fgets (buf, PSL_BUFSIZ, in)) {
-		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
-		if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
+	if (psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname)) {
+		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
+			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
+			perror (fullname);
 			PSL_exit (EXIT_FAILURE);
 		}
-		i++;
-		if (i == n_alloc) {
-			n_alloc <<= 1;
-			PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
+
+		while (fgets (buf, PSL_BUFSIZ, in)) {
+			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+			PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
+			if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+				PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
+				PSL_exit (EXIT_FAILURE);
+			}
+			i++;
+			if (i == n_alloc) {
+				n_alloc <<= 1;
+				PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
+			}
 		}
+		fclose (in);
+		PSL->internal.N_FONTS = i;
 	}
-	fclose (in);
-	PSL->internal.N_FONTS = i;
 
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 }
