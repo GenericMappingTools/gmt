@@ -3229,76 +3229,6 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 }
 
-#if 0
-static void psl_init_fonts_old (struct PSL_CTRL *PSL) {
-	FILE *in = NULL;
-	int n_PSL_fonts;
-	unsigned int i = 0;
-	size_t n_alloc = 64;
-	char buf[PSL_BUFSIZ];
-	char fullname[PSL_BUFSIZ];
-
-	/* Loads the available fonts for this installation */
-
-	/* First the standard.grdript fonts from Adobe */
-
-	psl_getsharepath (PSL, "postscriptlight", "PSL_standard_fonts", ".txt", fullname);
-	if ((in = fopen (fullname, "r")) == NULL) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
-		perror (fullname);
-		PSL_exit (EXIT_FAILURE);
-	}
-
-	PSL->internal.font = PSL_memory (PSL, NULL, n_alloc, struct PSL_FONT);
-
-	while (fgets (buf, PSL_BUFSIZ, in)) {
-		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (sscanf (buf, "%s %lf %d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding font info for font %d\n", i);
-			PSL_exit (EXIT_FAILURE);
-		}
-		PSL->internal.font[i].encoded_orig = PSL->internal.font[i].encoded;	/* Keep the original setting */
-		PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (fullname)+1, char);
-		strcpy (PSL->internal.font[i].name, fullname);
-		i++;
-		if (i == n_alloc) {
-			n_alloc <<= 1;
-			PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
-		}
-	}
-	fclose (in);
-	PSL->internal.N_FONTS = n_PSL_fonts = i;
-
-	/* Then any custom fonts */
-
-	if (psl_getsharepath (PSL, "postscriptlight", "PSL_custom_fonts", ".txt", fullname)) {
-		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
-			PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
-			perror (fullname);
-			PSL_exit (EXIT_FAILURE);
-		}
-
-		while (fgets (buf, PSL_BUFSIZ, in)) {
-			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
-			if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
-				PSL_exit (EXIT_FAILURE);
-			}
-			i++;
-			if (i == n_alloc) {
-				n_alloc <<= 1;
-				PSL->internal.font = PSL_memory (PSL, PSL->internal.font, n_alloc, struct PSL_FONT);
-			}
-		}
-		fclose (in);
-		PSL->internal.N_FONTS = i;
-	}
-
-	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
-}
-#endif
-
 static char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset) {
 	/* Writes the dash pattern */
 	static char text[PSL_BUFSIZ];
@@ -3583,7 +3513,6 @@ int PSL_endsession (struct PSL_CTRL *PSL) {
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
 	psl_freeplot (PSL);
-	//for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
 	PSL_free (PSL->internal.SHAREDIR);

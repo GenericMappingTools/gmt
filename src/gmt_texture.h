@@ -78,11 +78,12 @@ struct GMT_FONT {
 	struct GMT_PEN pen;		/* Font outline pen [none] */
 };
 
-/*! Holds information for each predefined font */
+/*! Holds information for each predefined font [Matches PSL_FONT structure] */
 struct GMT_FONTSPEC {
+	char name[GMT_LEN32];	/* Name of the font */
+	double height;		/* Height of letter "A" for unit fontsize */
+	int encode;
 	int encode_orig;
-	double height;			/* Height of letter "A" for unit fontsize */
-	char *name;			/* Name of the font */
 };
 
 /*! Holds information about paper sizes in points */

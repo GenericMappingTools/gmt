@@ -332,6 +332,14 @@ static char *PSL_ISO_encoding[] = {
 NULL
 };
 
+/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+ * The fontheight is the height of A for unit fontsize. */
+
+#define GMT_N_STANDARD_FONTS 35
+static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
+#include "standard_adobe_fonts.h"
+};
+
 /* Local variables to gmt_init.c */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
@@ -4685,61 +4693,6 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
-
-	/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
-	   To add additional fonts, create a similar file called PSL_custom_fonts.txt
-	   in GMT/share/postscriptlight and add your extra font information there.
-	   The fontheight below is the height of A for unit fontsize.
-	   Encoded = 0 if we may re-encode this font as needed.
-	*/
-	unsigned int i = 0;
-	size_t n_alloc = 0;
-
-	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
-
-	/* Use strdup() because the non-hardwired version uses it too and somewhere there must be a free() */
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica");
-	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-Bold");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Oblique");
-	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-BoldOblique");
-	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Roman");
-	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-Bold");
-	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Italic");
-	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-BoldItalic");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Bold");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Oblique");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-BoldOblique");
-	GMT->session.font[i].height = 0.679;		GMT->session.font[i++].name = strdup("Symbol");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Book");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-BookOblique");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Demi");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-DemiOblique");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Demi");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-DemiItalic");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Light");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-LightItalic");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow");
-	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Bold");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Oblique");
-	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-BoldOblique");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Roman");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Italic");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Bold");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-BoldItalic");
-	GMT->session.font[i].height = 0.689;		GMT->session.font[i++].name = strdup("Palatino-Roman");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Palatino-Italic");
-	GMT->session.font[i].height = 0.665;		GMT->session.font[i++].name = strdup("Palatino-Bold");
-	GMT->session.font[i].height = 0.677;		GMT->session.font[i++].name = strdup("Palatino-BoldItalic");
-	GMT->session.font[i].height = 0.610;		GMT->session.font[i++].name = strdup("ZapfChancery-MediumItalic");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("ZapfDingbats");
-
-	GMT->session.n_fonts = i;
-	return i;
-}
-
 /*! . */
 void gmtinit_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
@@ -5096,18 +5049,28 @@ void gmtinit_conf_US (struct GMT_CTRL *GMT) {
 GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 	unsigned int i = 0, n_GMT_fonts;
 	size_t n_alloc = 0;
-	char buf[GMT_BUFSIZ] = {""}, fullname[GMT_BUFSIZ] = {""};
-	FILE *in = NULL;
+	char fullname[GMT_BUFSIZ] = {""};
 
-	/* Loads the available fonts for this installation */
+	/* Loads all available fonts for this installation */
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
-	n_GMT_fonts = i = gmtinit_def_std_fonts (GMT);
+	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount [64] */
+	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, 0, &n_alloc, struct GMT_FONTSPEC);
 
-	/* Then any custom fonts */
+	/* First the standard 35 PostScript fonts from Adobe */
+	gmt_M_memcpy (GMT->session.font, GMT_standard_fonts, GMT_N_STANDARD_FONTS, struct GMT_FONTSPEC);
+	GMT->session.n_fonts = n_GMT_fonts = i = GMT_N_STANDARD_FONTS;
+
+	/* Then any custom fonts: 
+	   To add additional fonts, create a file called PSL_custom_fonts.txt
+	   in GMT/share/postscriptlight and add your extra font information there.
+	   The fontheight below is the height of A for unit fontsize.
+	   Encoded = 0 if we may re-encode this font as needed. */
 
 	if (gmt_getsharepath (GMT, "postscriptlight", "PSL_custom_fonts", ".txt", fullname, R_OK)) {	/* Decode Custom font file */
+		FILE *in = NULL;
+		char buf[GMT_BUFSIZ] = {""};
 		if ((in = fopen (fullname, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
@@ -5117,11 +5080,15 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (i == n_alloc) GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
-				fclose (in);
-				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Trouble decoding custom font info [%s].  Skipping this font.\n", buf);
+				continue;
 			}
-			GMT->session.font[i++].name = strdup (fullname);
+			if (strlen (fullname) >= GMT_LEN32) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Font %s exceeds %d characters and will be truncated\n", fullname, GMT_LEN32);
+				fullname[GMT_LEN32-1] = '\0';
+			}
+			strncpy (GMT->session.font[i].name, fullname, GMT_LEN32-1);
+			i++;
 		}
 		fclose (in);
 		GMT->session.n_fonts = i;
@@ -10607,8 +10574,6 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmtinit_put_history (GMT);
 
 	/* Remove font structures */
-	for (i = 0; i < GMT->session.n_fonts; i++)
-		gmt_M_str_free (GMT->session.font[i].name);
 	gmt_M_free (GMT, GMT->session.font);
 #ifdef __FreeBSD__
 #ifdef _i386_
