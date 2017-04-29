@@ -3016,7 +3016,7 @@ GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, do
 			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE);	/* South of a N polar cap */
 			if (plat > P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
 		}
-		if (P->pole == -1) {	/* S polar cap */
+		else if (P->pole == -1) {	/* S polar cap */
 			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE);	/* North of a S polar cap */
 			if (plat < P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a S polar cap */
 		}

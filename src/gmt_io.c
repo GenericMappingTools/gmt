@@ -5005,6 +5005,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 	 * +2 : A north polar cap going counter-clockwise.
 	 * -99: Returned if there is an error (open polygon or no points)
 	 */
+	bool touched_N = false, touched_S = false;
 	uint64_t row;
 	int type = 0, n_360;
 	double dlon, lon_sum = 0.0, lat_sum = 0.0;
@@ -5019,12 +5020,16 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 		gmt_M_set_delta_lon (lon[row], lon[row+1], dlon);	/* Handles the 360 jump cases */
 		lon_sum += dlon;
 		lat_sum += lat[row];
+		if (doubleAlmostEqual (lat[row], +90.0)) touched_N = true;
+		else if (doubleAlmostEqual (lat[row], -90.0)) touched_S = true;
 	}
 	n_360 = irint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
 	if (n_360) {	/* test is true if contains a pole; adjust rectangular bounds and set pole flag accordingly */
 		dlon = (n_360 > 0) ? 2.0 : 1.0;			/* 2 for CCW, 1 for CW paths */
 		type = irint (copysign (dlon, lat_sum));	/* Here, either -2, -1 or +1, +2 */
 	}
+	if (type == 0 && touched_N) type = 1;	/* Cuts through the N pole */
+	else if (type == 0 && touched_S) type = -1;	/* Cuts through the S pole */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_determine_pole: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", n, n_360, lon_sum - n_360 * 360.0, pole[type+2]);
 	return (type);
 }
@@ -5045,7 +5050,7 @@ void gmt_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 		S->pole = (answer < 0) ? -1 : +1;
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->lat_limit = S->min[GMT_Y], S->min[GMT_Y] = -90.0;
-		if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
+		else if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
 	}
 	else	/* So, 0 means not polar */
 		S->pole = 0;
