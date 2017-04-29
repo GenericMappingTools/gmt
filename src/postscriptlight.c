@@ -5695,8 +5695,8 @@ int PSL_command (struct PSL_CTRL *C, const char *format, ...) {
 	va_list args;
 	va_start (args, format);
 	if (C->internal.memory) {	/* Send command to memory buffer */
-		char tmp_buffer[PSL_BUFSIZ] = {""};
-		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
+		char tmp_buffer[4096] = {""};		/* Have to use this large array because sometimes we get the char encoding array, which is large. */
+		size_t len = vsnprintf (tmp_buffer, 4096, format, args);
 		psl_prepare_buffer (C, len);
 		C->internal.buffer[C->internal.n] = '\0';	/* Play safe before the strcat of next line. Otherwise trash in the middle may occur */
 		strncat (&(C->internal.buffer[C->internal.n]), tmp_buffer, len);
