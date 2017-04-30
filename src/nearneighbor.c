@@ -215,8 +215,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				break;
 			case 'N':	/* -N[sectors[/minsectors]] or -Nn */
 				Ctrl->N.active = true;
-				if (opt->arg[0] == 'n')
+				if (opt->arg[0] == 'n') {
 					Ctrl->N.mode = 1;
+					GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -Nn is experimental and unstable.\n");
+				}
 				else {
 					n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
 					if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;	/* Just gave -N with no args means -N4/4 */

@@ -297,14 +297,13 @@ Optional Arguments
 Examples
 --------
 
-To plot solid red circles (diameter = 0.25 cm) at the positions listed
-in the file DSDP.xy on a Mercator map at 5 cm/degree of the area 150E to
-154E, 18N to 23N, with tick-marks every 1 degree and gridlines every 15
-minutes, use
+To plot solid red circles (diameter = 0.2 cm) at the positions listed
+in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
+160E, 20S to 30N, with automatic tick-marks and gridlines, use
 
    ::
 
-    gmt psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
+    gmt psxy DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg > map.ps
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
