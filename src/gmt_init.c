@@ -7806,25 +7806,25 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_tick_length[3] *= scale;
 				if (core) {		/* Need to update more than just FONT_ANNOT_PRIMARY */
 					int p = gmt_hash_lookup (GMT, "FONT_ANNOT_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_LABEL", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_TITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TITLE_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_FRAME_WIDTH", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 				}
 			}
 			else
