@@ -717,6 +717,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		else {
 			if (fabs (fabs (az - azp) - M_PI) < D2R * 10.) {
 				azi[n][1] = azp;
+				assert (n < 2);
 				azi[++n][0] = az;
 			}
 			if (fabs (fabs (az - azp) - M_PI * 2.) < D2R * 2.) {
