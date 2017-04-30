@@ -3472,8 +3472,9 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 #ifdef SET_IO_MODE
 				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
-				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
-					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
+				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	{	/* Only single tables if GMT/OGR */
+					gmt_M_free (GMT, D_obj);	return_null (API, GMT_OGR_ONE_TABLE_ONLY);
+				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %" PRIxS "\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (size_t)S_obj->fp);
 				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->fp, S_obj->method, greenwich, &geometry, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
@@ -3563,7 +3564,9 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 
 	 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
 				/* Each column array source becomes column arrays in a separate table with one (or more if NaN-records) segments */
-				if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((V_obj = S_obj->resource) == NULL) {
+					gmt_M_free (GMT, D_obj);	return_null (API, GMT_PTR_IS_NULL);
+				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
 				/* Allocate a single table with one segment - there may be more if there are nan-records */
@@ -3619,8 +3622,12 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				break;
 
 		 	case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
-				if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-				if (V_obj->type[0] != GMT_DOUBLE) return_null (API, GMT_NOT_A_VALID_TYPE);
+				if ((V_obj = S_obj->resource) == NULL) {
+					gmt_M_free (GMT, D_obj);	return_null (API, GMT_PTR_IS_NULL);
+				}
+				if (V_obj->type[0] != GMT_DOUBLE) {
+					gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
+				}
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : V_obj->n_columns;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
