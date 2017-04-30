@@ -3501,13 +3501,17 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
 		 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 				/* Each matrix source becomes a separate table with a single segment unless there are NaN-records as segment headers */
-				if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((M_obj = S_obj->resource) == NULL) {
+					gmt_M_free (GMT, D_obj);
+					return_null (API, GMT_PTR_IS_NULL);
+				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user matrix location\n");
 				/* Allocate a table with a single segment given matrix dimensions, but if nan-record we may end up with more segments */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : M_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
-				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, GMT_IS_DATASET, M_obj->n_rows, n_columns, NULL, NULL);
+				S = D_obj->table[D_obj->n_tables]->segment[0] = 
+				    GMT_Alloc_Segment (API, GMT_IS_DATASET, M_obj->n_rows, n_columns, NULL, NULL);
 				GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				api_get_val = api_select_get_function (API, M_obj->type);
 				n_use = api_n_cols_needed_for_gaps (GMT, M_obj->n_columns);	/* Number of input columns to process */
