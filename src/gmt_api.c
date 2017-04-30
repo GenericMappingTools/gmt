@@ -896,12 +896,13 @@ unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* fi
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 		fclose (fp);
+		fp = NULL;
 		if (gmt_remove_file (GMT, local_path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
 	curl_easy_cleanup (Curl);
 
-	fclose (fp);
+	if (fp) fclose (fp);
 	
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		struct stat buf;
