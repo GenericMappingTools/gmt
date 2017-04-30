@@ -762,7 +762,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	/* Set up linear system Ax = b to solve for f_x, f_y body forces */
 
 	mem = (double)n_params * (double)n_params * (double)sizeof (double);	/* In bytes */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use (mem, 1));
+	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use ((size_t)mem, 1));
 	A = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 
 	if (Ctrl->W.active)
