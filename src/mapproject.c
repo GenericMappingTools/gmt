@@ -647,7 +647,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
 	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **data = NULL, *in = NULL;
-	double speed, last_speed = -1.0, extra[MP_COL_N];	/* Max possible extra output columns from -A -G -L -Z */
+	double speed = 0, last_speed = -1.0, extra[MP_COL_N];	/* Max possible extra output columns from -A -G -L -Z */
 
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};

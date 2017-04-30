@@ -2180,7 +2180,7 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 
 /*! . */
 GMT_LOCAL double map_mean_radius (struct GMT_CTRL *GMT, double a, double f) {
-	double r, b = a * (1 - f);
+	double r = 0, b = a * (1 - f);
 
 	if (f == 0.0) return a;	/* Not that hard */
 

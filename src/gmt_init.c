@@ -13095,12 +13095,12 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	/* Takes an URL and finds start of the filename. If given just a filename it returns 0 */
-	unsigned int pos = strlen (url);
+	size_t pos = strlen (url);
 	assert (pos > 0);
 	pos--;	/* Last character in name */
 	while (url[pos] && pos > 0 && url[pos] != '/') pos--;	/* Wind to first slash */
 	if (url[pos] == '/') pos++;	/* First letter after last slash */
-	return pos;
+	return (unsigned int)pos;
 }
 
 bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
