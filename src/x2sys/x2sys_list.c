@@ -515,6 +515,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 
 	o_mode = (mixed) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, trk_nx);
+		gmt_M_free (GMT, weights);
 		Return (API->error);
 	}
 	gmt_set_cols (GMT, GMT_OUT, n_output);
