@@ -148,11 +148,18 @@ exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_dir}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
-GLOBIGNORE="*.bat:*.ps:*.sh"
-for file in "$src"/* ; do
+# The GLOBIGNORE is not working for Paul on OSX - unknown why.
+# Until this can be solved I have replaced it with an egrep.
+#
+#GLOBIGNORE="*.bat:*.ps:*.sh"
+#for file in "$src"/* ; do
+#  test -f "$file" && ln -s "$file" .
+#done
+#unset GLOBIGNORE
+for file in `ls "$src"/* | egrep -v '.bat$|.ps$|.sh$'` ; do
   test -f "$file" && ln -s "$file" .
 done
-unset GLOBIGNORE
+
 ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
