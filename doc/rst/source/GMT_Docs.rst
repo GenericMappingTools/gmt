@@ -220,7 +220,7 @@ New Features in GMT 5.4
 
 Between 5.3 and 5.4 we continued to work on the underlying API
 needed to support the modules and especially the external interfaces
-we are building toward MATLAB and Python.  We have introduced the use of
+we are building toward MATLAB, Julia and Python.  We have introduced the use of
 static analyzers to fix any code irregularities and we continue to submit
 our builds to Coverity for similar reasons.  We have also made an effort
 to standardize GMT non-common option usage across the suite.
