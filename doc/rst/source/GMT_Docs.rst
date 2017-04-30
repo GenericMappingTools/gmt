@@ -406,8 +406,8 @@ used across GMT and will get a special mention first:
    **-Gp**\ \|\ **P**\ *pattern*\ [**+b**\ *color*\ ][**+f**\ *color*\ ][**+r**\ *dpi*\ ]
 
 *  When specifying grids one can always add information such as grid type, scaling,
-   offset, etc.  This is now done using a cleaner syntax
-   =\ *ext*\ [**+s**\ *scl>*\][**+o**\ *off*\][**+n**\ *NaN*\][**+b**\ *band*\].
+   offset, etc.  This is now done using a cleaner syntax for grids:
+   gridfile[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]].
 
 Here is a list of modules with revised options:
 
@@ -3915,7 +3915,7 @@ Three classes of files are given special treatment in GMT.
 #. Demonstration files used in online documentation, example scripts, or even the
    large test suite may be given in the format @\ *filename*.  When such a file is
    encountered on the command line it is understood to be a short-hand representation
-   of the full URL to *filename on the GMT Cache Data FTP site.
+   of the full URL to *filename* on the GMT Cache Data FTP site.
    Since this address may change over time we use the leading
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
@@ -4657,6 +4657,12 @@ value it will remove an integer multiple of the *z*-range represented by the
 color table so that we are always inside the range of the color table.  This
 means that the fore- and back-ground colors can never be activated.  Wrapped
 color tables are useful for highlighting small changes.
+
+.. figure:: /_images/GMT_cyclic.*
+   :width: 500 px
+   :align: center
+
+   Cyclic color bars are indicated by a cycle symbol on the left side of the bar. 
 
 .. _manipulating_CPTs:
 
