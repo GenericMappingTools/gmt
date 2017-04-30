@@ -215,6 +215,232 @@ an issue in the bug tracker
 (see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
 
 
+New Features in GMT 5.4
+=======================
+
+Between 5.3 and 5.4 we continued to work on the underlying API
+needed to support the modules and especially the external interfaces
+we are building toward MATLAB and Python.  We have introduced the use of
+static analyzers to fix any code irregularities and we continue to submit
+our builds to Coverity for similar reasons.  We have also made an effort
+to standardize GMT non-common option usage across the suite.
+Nevertheless, there have been many user-level enhancements as well.
+Here is a summary of these changes in three key areas:
+
+New modules
+-----------
+
+We have added a new module to the GMT core called
+:doc:`psternary`.
+This module allows for the construction of ternary diagram, currently
+restricted to symbols (i.e., a psxy-like experience but for ternary data).
+The *mgd77* supplement has gained a new tool :doc:`mgd77header <supplements/mgd77/mgd77header>`
+for creating a valid MGD77-format header from basic metadata and information
+determined from the header-less data file.
+
+General improvements
+--------------------
+
+A range of new capabilities have been added to all of GMT; here is a
+summary of these changes:
+
+*  All modules can now read data via external URL addresses.  This works
+   by using libcurl to access an external file and save it to the users'
+   GMT cache directory.  This directory can be specified via a new GMT
+   defaults called :ref:`DIR_CACHE <DIR_CACHE>` (and defaults to
+   the sub-directory cache under the :ref:`DIR_USER <DIR_USER>` [~/.gmt]).
+   Subsequent use of the same URL will be read from the cache (except
+   if explicitly removed by the user).
+
+*  Any reference to Earth topographic/bathymetric relief files called
+   **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
+   from the GMT data server.  The resolution *res* is presently limited to nine:
+   60m, 30m, 10m, 6m, 5m, 2m, 1m, 30s, and 15s (with file sizes 111 kb, 376 kb,
+   2.8 Mb, 7.5 Mb, 11 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).
+   Once one of these have been downloaded any future reference will simply
+   obtain the file from :ref:`DIR_USER <DIR_USER>` (except if explicitly
+   removed by the user).
+
+*  We are laying the groundwork for more dynamic documentation.  At present,
+   the examples on the man pages (with the exception of psbasemap and pscoast)
+   cannot be run by cut and paste since they reference imaginary data sets.
+   These will soon appear with filenames starting in @ (e.g., @hotspots.txt),
+   and when such files are found on the command line it is interpreted to be
+   a shorthand notation for the full URL to the GMT cache data server.
+
+*  We have added four new color tables inspired by matplotlib to the collection.
+   These CPTs are called plasma, magma, inferno, and viridis.
+
+*  We have updated the online documentation of user-contributed custom symbols and
+   restored the beautiful biological symbols for whales and dolphins created by
+   Pablo Valdés during the GMT4 era.  These are now complemented by new custom
+   symbols for structural geology designed by José A. Álvarez-Gómez.  
+
+*  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
+   list of standard fonts and character encodings, reducing the number of configure
+   files required.
+
+*  The :doc:`gmt.conf` files produced by gmt set will only write parameters that differ
+   from the GMT SI Standard settings.  This means most gmt.conf files will just
+   be a few lines.
+
+*  We have deprecated the **-c**\ *copies* option whose purpose was to modify the
+   number of copies a printer would issue give a *PostScript* file.  This is better
+   controlled by your printer driver and most users now work with PDF files.
+
+*  The **-p** option can now do a simple rotation about the z-axis (i.e., not a
+   perspective view) for more advanced plotting.
+
+*  The placement of color scales around a map can now be near-automatic, as
+   the **-DJ** setting now has many default values (such as for bar length,
+   width, offsets and orientation) based on which side you specified.  If you
+   use this option in concert with **-B** to turn off frame annotation on the
+   side you place the scale bar then justification works exactly.
+
+*  The **-i** option to select input columns can now handle repeat entries,
+   e.g., -i0,2,2,4, which is useful when a column is needed as a coordinate
+   *and* for symbol color or size.
+
+*  The vector specifications now take one more modifier: **+h**\ *shape*
+   allows vectors to quickly set the head shape normally specified via
+   :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>`.  This is particularly useful
+   when the symbol types are given via the input file.
+
+*  The custom symbol macro language has been strengthened and now allows all
+   angular quantities to be variables (i.e., provided from your data file as
+   extra columns), the pen thickness can be specified as relative (and thus
+   scale with the symbol size at run-time), and a symbol can internally switch
+   colors between the pen and fill colors given on the command line.
+
+*  We have reintroduced the old GMT4 polygon-vector for those who fell so hard
+   in love with that symbol.  By giving old-style vector specifications you
+   will now get the old-style symbol.  The new and superior vector symbols
+   will require the use of the new (and standard) syntax.
+
+Module enhancements
+-------------------
+
+Several modules have obtained new options to extend their capabilities:
+
+*  :doc:`gmt` has new session management option that lets you clear various
+   files and cache directories via the new commands
+   **gmt clear** *all*\ \|\ *history*\ \|\ *conf*\ \|\ *cache*.
+
+*  :doc:`gmt2kml` adds option **-Fw** for drawing wiggles along track.
+
+*  :doc:`gmtinfo` adds option **-F** for reporting the number of tables,
+   segments, records, headers, etc.
+
+*  :doc:`gmtmath` will convert all plot dimensions given on the command line
+   to the prevailing length unit set via :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+   This allows you to combine measurements like 12c, 4i, and 72p. The module
+   also has a new **SORT** operator for sorting columns.
+
+*  :doc:`gmtwhich` **-G** will download a file from the internet (as discussed
+   above) before reporting the path to the file (which will then be in the
+   user's cache directory).
+
+*  :doc:`grdgradient` can now take a grid of azimuths via the **-A** option.
+
+*  :doc:`grdimage` and :doc:`grdview` can now auto-compute the intensities
+   directly from the required input grid via **-I**, and this option now
+   supports modifiers **+a** and **+n** for changing the options of the
+   grdgradient call within the module.
+
+*  :doc:`grdinfo` adds option **-D** to determine the regions of all the
+   smaller-size grid tiles required to cover the larger area.  It also take
+   a new argument **-Ii** for reporting the exact region of an img grid.
+
+*  :doc:`grdmath` has a new operator **TRIM** which will set all grid values
+   that fall in the specified tails of the data distribution to NaN.
+
+*  :doc:`makecpt` and :doc:`grd2cpt` add option **-Ws** for producing
+   wrapped (cyclic) CPT tables that repeat endlessly.  New CPT keyword
+   **CYCLIC** controls if the CPT is cyclic.
+
+*  :doc:`mapproject` adds a new **-Z** option for temporal calculations based
+   on distances and speeds, and has been redesigned to allow several outputs
+   by combining the options **-A**, **-G**, **-L**, and **-Z**.
+
+*  :doc:`psbasemap` has a new map-insert (**-D**) modifier **+t** that will
+   translate the plot origin after determining the lower-left corner of the
+   map insert.
+
+*  :doc:`psrose` adds option **-Q** for setting the  confidence level used
+   for a Rayleigh test for uniformity of direction.  The **-C** option also
+   takes a new modifier **+w**\ *modfile* for storing mode direction to file.
+
+*  :doc:`gmt_shell_functions.sh` adds numerous new functions to simplify the
+   building of animation scripts, animated GIF and MP4 videos, launching
+   groups of jobs across many cores, packaging KMLs into a single KMZ archive,
+   and more.
+
+API changes
+-----------
+
+We have introduced one change that breaks backwards compatibility for users of
+the API functions.  We don't do this lightly but given the API is still considered
+beta it was the best solution.  Function GMT_Create_Data now requires the mode to
+be **GMT_IS_OUTPUT** (an new constant) if a dummy (empty) container should be
+created to hold the output of a module.  We also added two new API functions
+GMT_Duplicate_Options and GMT_Free_Option to manage option lists, and added
+the new constants **GMT_GRID_IS_CARTESIAN** and **GMT_GRID_IS_GEO** so that
+external tools can communicate the nature of grid written in situations where there
+are no projections involved (hence GMT does not know a grid is geographic).
+Passing this constant will be required in MB-System.
+
+Backwards-compatible syntax changes
+-----------------------------------
+
+We strive to keep the GMT user interface consistent.  The common options help
+with that, but the module-specific options have often used very different
+forms to achieve similar goals.  We have revised the syntax of numerous options
+across the modules to use the common *modifier* method.  However, as no GMT
+users would be happy that their
+scripts no longer run, these changes are backwards compatible.  Only the new
+syntax will be documented but old syntax will be accepted.  Some options are
+used across GMT and will get a special mention first:
+
+*  Many modules use **-G** to specify the fill (solid color or pattern).
+   The pattern specification has now changed to be
+   **-Gp**\ \|\ **P**\ *pattern*\ [**+b**\ *color*\ ][**+f**\ *color*\ ][**+r**\ *dpi*\ ]
+
+*  When specifying grids one can always add information such as grid type, scaling,
+   offset, etc.  This is now done using a cleaner syntax
+   =\ *ext*\ [**+s**\ *scl>*\][**+o**\ *off*\][**+n**\ *NaN*\][**+b**\ *band*\].
+
+Here is a list of modules with revised options:
+
+*  :doc:`grdcontour` now expects **-Z**\ [**+**\ *scale*\ ][**+o**\ *offset*\ ][**+p**\ ].
+
+*  In :doc:`grdedit` and :doc:`xyz2grd`, the mechanism to change a grid's
+   metadata is now done via modifiers to the **-D** option, such as
+   **+x**\ *xname*, **+t**\ *title*, etc.
+
+*  :doc:`grdfft` has changed to **-E**\ [**+w**\ [**k**\ ]][**+n**\ ].
+
+*  :doc:`grdgradient` modifies the syntax of **-E** and **-N** by introducing modifiers,
+   i.e., **-E**\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] and
+   **-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ].
+
+*  :doc:`grdtrend` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**\ ].
+
+*  :doc:`mapproject` introduces new and consistent syntax for **-G** and **-L** as
+   **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**] and
+   **-L**\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**].
+
+*  :doc:`project` expects **-G**\ *inc*\ [/*lat*\ ][**+h**\ ].
+
+*  :doc:`psrose` now wants **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] to
+   match the other labeling options.
+
+*  :doc:`pstext` now expects **-D**\ [**j**\ \|\ **J**\ ]\ *dx*\ [/*dy*\ ][**+v**\ [*pen*\ ]].
+
+*  :doc:`psxy` expects **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*].
+
+*  :doc:`trend2d` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**\ ].
+
+
 New Features in GMT 5.3
 =======================
 
