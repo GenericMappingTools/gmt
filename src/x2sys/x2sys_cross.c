@@ -493,7 +493,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		s->dist_flag = 0;
 		if (fpC) fclose (fpC);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+			gmt_M_free (GMT, duplicate);
+			Return (GMT_PROJECTION_ERROR);
+		}
 	}
 
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
