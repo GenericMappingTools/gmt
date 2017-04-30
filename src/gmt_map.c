@@ -8195,11 +8195,12 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 	double t;
 
 	if (text[0] == '\0' || text[0] == '-') {	/* Shortcut for WGS-84 */
-		i = gmt_get_ellipsoid (GMT, "WGS-84");
-		gmt_M_memset (D->xyz, 3, double);
-		D->a = GMT->current.setting.ref_ellipsoid[i].eq_radius;
-		D->f = GMT->current.setting.ref_ellipsoid[i].flattening;
-		D->ellipsoid_id = i;
+		if ((i = gmt_get_ellipsoid (GMT, "WGS-84")) >= 0) {	/* For Coverity's benefit */
+			gmt_M_memset (D->xyz, 3, double);
+			D->a = GMT->current.setting.ref_ellipsoid[i].eq_radius;
+			D->f = GMT->current.setting.ref_ellipsoid[i].flattening;
+			D->ellipsoid_id = i;
+		}
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
 		char ellipsoid[GMT_LEN256] = {""}, dr[GMT_LEN256] = {""};

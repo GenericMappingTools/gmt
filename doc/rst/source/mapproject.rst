@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ [*dx*/*dy*] ]
 [ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
-[ |-G|\ [*lon0*/*lat0*/][[**+**\ \|\ **-**]\ *unit*][**+a**][**+i**][**+v**] ]
+[ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**] ]
 [ |-I| ]
 [ |-L|\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**] ]
 [ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
@@ -138,9 +138,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*lon0*/*lat0*/][[**+**\ \|\ **-**]\ *unit*][**+a**][**+i**][**+v**]
+**-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit (see UNITS for available
+    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see UNITS for available
     units and how distances are computed), including
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit

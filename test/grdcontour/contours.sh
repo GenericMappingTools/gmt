@@ -12,7 +12,7 @@ color_contour () {
 
 	for name in contour_*.txt; do
 		# For each contour we compute distance a
-		gmt mapproject -Gk $name > contour.d
+		gmt mapproject -G+uk $name > contour.d
 		L=`gmt info -C contour.d | cut -f8`
 		$AWK -v L=$L '{print $1, $2, $4/L}' contour.d | gmt psxy -R -J -O -K -Ccontour.cpt -Sc0.005i >> $ps
 	done

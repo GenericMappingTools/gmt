@@ -2,7 +2,7 @@
 # Test basic pswiggle operations
 # Create an artificial data set of cosine along track
 ps=wiggles.ps
-cat << EOF | gmt sample1d -I5k | gmt mapproject -Gk | gmt math STDIN -C2 10 DIV COS = line.txt
+cat << EOF | gmt sample1d -I5k | gmt mapproject -G+uk | gmt math STDIN -C2 10 DIV COS = line.txt
 0	7
 1	8
 8	3

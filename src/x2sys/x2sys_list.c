@@ -356,6 +356,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -518,9 +519,15 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	}
 	gmt_set_cols (GMT, GMT_OUT, n_output);
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, trk_nx);
+		gmt_M_free (GMT, weights);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, trk_nx);
+		gmt_M_free (GMT, weights);
 		Return (API->error);
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);

@@ -492,7 +492,7 @@ GMT_LOCAL inline struct GMT_DATASET * api_get_dataset_data (struct GMT_DATASET *
 
 /*! If API is not set or do_not_exit is false then we call system exit, else we move along */
 GMT_LOCAL inline void api_exit (struct GMTAPI_CTRL *API, int code) {
-	if (API == NULL || API->do_not_exit == false)
+	if (API->do_not_exit == false)
 		GMT_exit (API->GMT, code);
 }
 
@@ -884,16 +884,20 @@ unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* fi
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
+		fclose (fp);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
+		fclose (fp);
 		return 0;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-		gmt_remove_file (GMT, local_path);
+		fclose (fp);
+		if (gmt_remove_file (GMT, local_path))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
 	curl_easy_cleanup (Curl);
 
@@ -2113,9 +2117,10 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 	method = api_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as DATASET */
 	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:	/* Filename given; we must open the file here */
+			assert (S_obj->filename != NULL);
 			if (S_obj->family == GMT_IS_GRID || S_obj->family == GMT_IS_IMAGE) return (gmtapi_report_error (API, GMT_NOT_A_VALID_TYPE));	/* Grids or images not allowed here */
 			first = gmt_download_file_if_not_found (API->GMT, S_obj->filename);	/* Deal with downloadable GMT data sets first */
-			if (direction == GMT_OUT && S_obj->filename && S_obj->filename[0] == '>') {
+			if (direction == GMT_OUT && S_obj->filename[0] == '>') {
 				mode = GMT->current.io.a_mode;	/* Must append to an existing file (we have already checked the file exists) */
 				first = 1;
 			}

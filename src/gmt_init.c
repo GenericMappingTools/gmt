@@ -5024,16 +5024,16 @@ void gmtinit_conf_US (struct GMT_CTRL *GMT) {
 	
 	/* PROJ_LENGTH_UNIT */
 	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	GMT->current.setting.proj_length_unit = GMT_INCH;
 	/* PS_CHAR_ENCODING */
 	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
 	/* PS_MEDIA */
 	case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
 	/* Use the specified standard format */
 	GMT->current.setting.ps_media = i;
@@ -5041,7 +5041,7 @@ void gmtinit_conf_US (struct GMT_CTRL *GMT) {
 	GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
 	/* TIME_WEEK_START */
 	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
 	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
 }
 
@@ -7584,7 +7584,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 			error++;
 		else {
 			int case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-			GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
+			if (case_val >= 0) GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 		}
 	}
 

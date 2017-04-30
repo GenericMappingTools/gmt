@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
-# GMT modules:	makecpt, grdimage, grdmath, pscoast, pstext, mapproject
+# GMT modules:	makecpt, grdimage, grdmath, pscoast, pstext,
 # Unix progs:	rm, echo
 #
 ps=example_28.ps

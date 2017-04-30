@@ -1626,7 +1626,8 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", dbase);
-		GMT_exit (GMT, GMT_ERROR_ON_FOPEN);
+		*nx = 0;
+		return 0;
 	}
 
 	n_alloc_p = n_alloc_t = GMT_CHUNK;

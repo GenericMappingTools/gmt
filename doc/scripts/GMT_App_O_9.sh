@@ -8,7 +8,7 @@ gmt grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
 gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
 gmt project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.txt
 gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
-km=`echo -17 28 | gmt mapproject -G-74/41/k -fg --FORMAT_FLOAT_OUT=%.0f -o2`
+km=`echo -17 28 | gmt mapproject -G-74/41+uk -fg --FORMAT_FLOAT_OUT=%.0f -o2`
 gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N > ttt.cpt
 gmt grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
 gmt grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
