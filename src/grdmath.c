@@ -3208,7 +3208,7 @@ GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	T = D->table[0];	/* Only one table in a single file */
 
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node,d,dummy) shared(info,stack,last,GMT,T)
+#pragma omp parallel for private(row,col,node,dummy) shared(info,stack,last,GMT,T)
 #endif 
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
@@ -3233,7 +3233,7 @@ GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	prev = last - 1;
 
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node,d,dummy) shared(info,stack,prev,GMT,T)
+#pragma omp parallel for private(row,col,node,dummy) shared(info,stack,prev,GMT,T)
 #endif 
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
