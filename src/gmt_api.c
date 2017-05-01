@@ -6115,10 +6115,12 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				if (p) p[0] = '=';	/* Restore the extensions */
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
+				gmt_M_str_free (file);
 				return_value (API, GMT_OUTPUT_NOT_SET, GMT_NOTSET);
 			}
 			/* Create a new data object and initialize variables */
 			if ((S_obj = api_make_dataobject (API, family, method, geometry, NULL, direction)) == NULL) {
+				gmt_M_str_free (file);
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) {
