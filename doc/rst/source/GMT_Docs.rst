@@ -351,8 +351,9 @@ Several modules have obtained new options to extend their capabilities:
    smaller-size grid tiles required to cover the larger area.  It also take
    a new argument **-Ii** for reporting the exact region of an img grid.
 
-*  :doc:`grdmath` has a new operator **TRIM** which will set all grid values
-   that fall in the specified tails of the data distribution to NaN.
+*  :doc:`grdmath` has a new operators **TRIM**, which will set all grid values
+   that fall in the specified tails of the data distribution to NaN, and **NODE**,
+   which will create a grid with node indices 0 to (nx*ny)-1.
 
 *  :doc:`makecpt` and :doc:`grd2cpt` add option **-Ws** for producing
    wrapped (cyclic) CPT tables that repeat endlessly.  New CPT keyword

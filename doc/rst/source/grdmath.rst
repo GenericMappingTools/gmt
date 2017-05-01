@@ -592,6 +592,8 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **YROW**    | Grid with row numbers 0, 1, ..., NY-1           |
 +-------------+-------------------------------------------------+
+| **NODE**    | Grid with node numbers 0, 1, ..., (NX*NY)-1     |
++-------------+-------------------------------------------------+
 
 Notes On Operators
 ------------------
@@ -668,7 +670,8 @@ Notes On Operators
 
 #. When OpenMP support is compiled in, a few operators will take advantage
    of the ability to spread the load onto several cores.  At present, the
-   list of such operators is: **LDIST**.
+   list of such operators is: **LDIST**, **LDIST2**, **PDIST**, **PDIST2**,
+   **SAZ**, **SBAZ**, **SDIST**, **YLM**, and **grd_YLMg**.
 
 .. include:: explain_float.rst_
 
