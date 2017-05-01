@@ -6110,6 +6110,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					gmt_M_str_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
+				if (p) p[0] = '=';	/* Restore the extensions */
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				return_value (API, GMT_OUTPUT_NOT_SET, GMT_NOTSET);

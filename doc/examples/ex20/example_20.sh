@@ -18,10 +18,10 @@ gmt psxy -R -J @hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> $ps
 # Overlay a few bullseyes at NY, Cairo, Perth, and Montevideo
 
 cat > cities.txt << END
-74W	40.45N	0.8
-31.15E	30.03N	0.8
-115.49E	31.58S	0.8
-56.16W	34.9S	0.0
+74W	40.45N	0.5
+31.15E	30.03N	0.5
+115.49E	31.58S	0.5
+56.16W	34.9S	0.5
 END
 
 gmt psxy -R -J cities.txt -Skbullseye -O >> $ps

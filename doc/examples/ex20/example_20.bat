@@ -18,10 +18,10 @@ gmt psxy -R -J @hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> %ps%
 
 REM Overlay a few bullseyes at NY, Cairo, erth, and Montevideo
 
-echo 74W 40.45N 0.8 > cities.txt
-echo 31.15E 30.03N 0.8 >> cities.txt
-echo 115.49E 31.58S 0.8 >> cities.txt
-echo 56.16W 34.9S 0.8 >> cities.txt
+echo 74W 40.45N 0.5 > cities.txt
+echo 31.15E 30.03N 0.5 >> cities.txt
+echo 115.49E 31.58S 0.5 >> cities.txt
+echo 56.16W 34.9S 0.5 >> cities.txt
 
 gmt psxy -R -J cities.txt -Skbullseye -O >> %ps%
 
