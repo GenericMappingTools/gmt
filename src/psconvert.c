@@ -1235,7 +1235,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "";
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
-	     cmd[PATH_MAX] = {""}, proj4_name[20] = {""}, *quiet = NULL;
+	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
 	                              "jpeggray", "pnggray", "tiffgray", "bmpgray"};
@@ -1301,7 +1301,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if GhostScript can be executed (version query) */
-	snprintf(cmd, PATH_MAX-1, "%s --version", Ctrl->G.file);
+	sprintf(cmd, "%s --version", Ctrl->G.file);
 	if ((fp = popen(cmd, "r")) != NULL) {
 		int n;
 		n = fscanf(fp, "%d.%d", &gsVersion.major, &gsVersion.minor);
