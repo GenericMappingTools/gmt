@@ -69,7 +69,7 @@ The following recipe is used when designing a new symbol.
    :doc:`psxy </psxy>` or :doc:`psxyz </psxyz>`.
 
 We are now ready to give it a try. Based on the hotspot locations in the
-file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
+file ``hotspots.txt`` (with a 3rd column giving the desired symbol sizes in inches) we
 lay down a world map and overlay red volcano symbols using our
 custom-built volcano symbol and :doc:`psxy </psxy>`. We
 do something similar with the bulls eye symbols. Without the **-G**
