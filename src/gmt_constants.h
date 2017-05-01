@@ -377,6 +377,7 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_CACHE_FILE = 1,	/* Temporary GMT test data file destined for the cache */
 	GMT_DATA_FILE  = 2,	/* Official GMT data file destined for the user's user dir */
 	GMT_URL_FILE   = 3,	/* Data given by an URL destined for the cache */
+	GMT_URL_CMD    = 4,	/* Data given by an URL CGI command destined for the cache */
 	GMT_CACHE_DIR  = 0,	/* Use the cache directory */
 	GMT_DATA_DIR   = 1};	/* Use the data directory */
 

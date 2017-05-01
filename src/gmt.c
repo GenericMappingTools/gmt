@@ -94,9 +94,7 @@ int main (int argc, char *argv[]) {
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
 	if (gmt_main && argc == 3 && !strcmp (argv[1], "clear")) {	/* Clear something. */
 		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache */
-			char cache[PATH_MAX] = {""};
-			sprintf (cache, "%s/cache", api_ctrl->GMT->session.CACHEDIR);
-			if (gmt_remove_dir (api_ctrl, cache))
+			if (gmt_remove_dir (api_ctrl, api_ctrl->GMT->session.CACHEDIR))
 				return GMT_RUNTIME_ERROR;
 		}
 		if (!strcmp (argv[2], "history") || !strcmp (argv[2], "all")) {	/* Clear the history */

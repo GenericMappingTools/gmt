@@ -832,7 +832,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
  * this check by first calling gmt_download_file_if_not_found.
  */
 
-unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* file_name) {
+unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). */
 	unsigned int kind = 0, dir = 0, pos = 0;
@@ -841,7 +841,7 @@ unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* fi
 	FILE *fp = NULL;
 	static char *ftp_dir[2] = {"/cache", ""};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
-	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL;
 	
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file_name)) pos = 1;	/* A leading '@' was found */
@@ -873,11 +873,15 @@ unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* fi
 		}
 	}
 	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
+	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
+		c = strchr (local_path, '?');
+		c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+	}
 	if ((fp = fopen (local_path, "wb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
 		return 0;
 	}
-	if (kind == GMT_URL_FILE)	/* General URL given */
+	if (kind == GMT_URL_FILE || kind == GMT_URL_CMD)	/* General URL given */
 		sprintf (url, "%s", file_name);
 	else			/* Use GMT ftp dir, possible from subfolder cache */
 		sprintf (url, "%s%s/%s", GMT_DATA_URL, ftp_dir[dir], &file_name[pos]);
@@ -904,7 +908,11 @@ unsigned int gmt_download_file_if_not_found(struct GMT_CTRL *GMT, const char* fi
 
 	if (fp) fclose (fp);
 	
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in local filename */
+		c = strchr (file_name, '?');
+		c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+	}
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of downloaded file %s\n", &file_name[pos]);
@@ -6045,7 +6053,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	int item, object_ID;
 	unsigned int module_input, mode = method & GMT_IO_RESET;	/* In case we wish to reuse this resource */
 	unsigned int first = 0;
-	char message[GMT_LEN256];
+	char message[GMT_LEN256], *file = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -6076,13 +6084,14 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	switch (method) {	/* Consider CPT, data, text, and grids, accessed via a variety of methods */
 		case GMT_IS_FILE:	/* Registration via a single file name */
 			/* No, so presumably it is a regular file name */
+			file = strdup (resource);
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
-				char *p, *file = strdup (resource);
+				char *p = NULL;
 				bool not_url = true;
 				if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
 					char *c = strchr (file, '.');	/* The period before an extension */
-					 /* PW 1/30/2014: Protect images with band requiest, e.g., my_image.jpg+b2 */
+					 /* PW 1/30/2014: Protect images with band requests, e.g., my_image.jpg+b2 */
 					if (c && c < p && p[1] == 'b' && isdigit (p[2])) {
 						GMT_Report (API, GMT_MSG_DEBUG, "Truncating +b modifier for image filename %s\n", file);
 						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
@@ -6101,7 +6110,6 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					gmt_M_str_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
-				gmt_M_str_free (file);
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				return_value (API, GMT_OUTPUT_NOT_SET, GMT_NOTSET);
@@ -6111,14 +6119,12 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) {
-				if (first) {	/* Must strip off the beginning of the name */
-					char *tmp = strdup (resource);
-					S_obj->filename = strdup (&tmp[first]);
-					gmt_M_str_free (tmp);
-				}
+				if (first)	/* Must strip off the beginning of the name */
+					S_obj->filename = strdup (&file[first]);
 				else
-					S_obj->filename = strdup (resource);
+					S_obj->filename = strdup (file);
 			}
+			gmt_M_str_free (file);
 			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 

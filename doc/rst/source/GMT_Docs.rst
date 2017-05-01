@@ -250,7 +250,8 @@ summary of these changes:
    defaults called :ref:`DIR_CACHE <DIR_CACHE>` (and defaults to
    the sub-directory cache under the **$GMT_USERDIR** directory [~/.gmt]).
    Subsequent use of the same URL will be read from the cache (except
-   if explicitly removed by the user).
+   if explicitly removed by the user).  An exception is CGI Get Commands
+   which will be executed anew each time.
 
 *  Any reference to Earth topographic/bathymetric relief files called
    **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
@@ -3905,14 +3906,16 @@ Three classes of files are given special treatment in GMT.
    At the moment this set is limited to Earth relief grids.  If you reference
    files called **earth_relief_**\ *res*\ **.grd** on a command line then
    that grid will automatically be downloaded from the GMT Data Site and placed
-   in **DIR_USER**.  Resolutions *res* are presently limited to nine:
+   in **$GMT_USERDIR** [~/.gmt].  Resolutions *res* are presently limited to nine:
    60m, 30m, 10m, 6m, 5m, 2m, 1m, 30s, and 15s (with file sizes 111 kb, 376 kb,
    2.8 Mb, 7.5 Mb, 11 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).  Once one of
    these have been downloaded any future reference will simply obtain the
-   file from **DIR_USER** (except if explicitly removed by the user).
+   file from **$GMT_USERDIR** (except if explicitly removed by the user).
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
-   read from there (until removed by the user).
+   read from there (until removed by the user).  If the URL is actually a CGI Get
+   command (i.e., ends in ?par=val1&par2=val2...) then we download the file
+   each time we encounter the URL.
 #. Demonstration files used in online documentation, example scripts, or even the
    large test suite may be given in the format @\ *filename*.  When such a file is
    encountered on the command line it is understood to be a short-hand representation
