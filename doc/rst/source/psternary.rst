@@ -183,8 +183,6 @@ Optional Arguments
 
 .. include:: explain_distunits.rst_
 
-.. _Vec_attributes:
-
 .. include:: explain_vectors.rst_
 
 Examples
