@@ -5,7 +5,7 @@
 #
 # Use the knowledge that we need 2 pages.
 
-tr '"' ' ' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | awk '{print $1}' | sort -r > tt.lis
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | awk '{print $1}' | sort -r > tt.lis
 
 ps=GMT_App_M_1b.ps
 n=`cat tt.lis | wc -l`
