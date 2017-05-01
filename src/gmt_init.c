@@ -136,6 +136,9 @@ struct GMT5_params {
 	const int code;
 	const char *name;
 };
+/* These are the active GMT5 keywords, containing no backwards-compatible variants.
+ * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
+
 static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "COLOR Parameters"},
 	{ 0, "COLOR_BACKGROUND"},	

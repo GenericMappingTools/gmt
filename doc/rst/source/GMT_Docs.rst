@@ -248,7 +248,7 @@ summary of these changes:
    by using libcurl to access an external file and save it to the users'
    GMT cache directory.  This directory can be specified via a new GMT
    defaults called :ref:`DIR_CACHE <DIR_CACHE>` (and defaults to
-   the sub-directory cache under the :ref:`DIR_USER <DIR_USER>` [~/.gmt]).
+   the sub-directory cache under the **$GMT_USERDIR** directory [~/.gmt]).
    Subsequent use of the same URL will be read from the cache (except
    if explicitly removed by the user).
 
@@ -258,7 +258,7 @@ summary of these changes:
    60m, 30m, 10m, 6m, 5m, 2m, 1m, 30s, and 15s (with file sizes 111 kb, 376 kb,
    2.8 Mb, 7.5 Mb, 11 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).
    Once one of these have been downloaded any future reference will simply
-   obtain the file from :ref:`DIR_USER <DIR_USER>` (except if explicitly
+   obtain the file from **$GMT_USERDIR** (except if explicitly
    removed by the user).
 
 *  We are laying the groundwork for more dynamic documentation.  At present,
