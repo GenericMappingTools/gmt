@@ -239,8 +239,7 @@ static int use_buffer(URL_FILE *file,int want)
   return 0;
 }
 
-URL_FILE *url_fopen(const char *url,const char *operation)
-{
+URL_FILE *url_fopen(const char *url,const char *operation) {
   /* this code could check for URLs or types in the 'url' and
      basically use the real fopen() for standard files */
 
@@ -260,6 +259,7 @@ URL_FILE *url_fopen(const char *url,const char *operation)
     file->type = CFTYPE_CURL; /* marked as URL */
     file->handle.curl = curl_easy_init();
 
+    curl_easy_setopt(file->handle.curl, CURLOPT_SSL_VERIFYPEER, FALSE);		/* Tell libcurl to not verify the peer */
     curl_easy_setopt(file->handle.curl, CURLOPT_URL, url);
     curl_easy_setopt(file->handle.curl, CURLOPT_WRITEDATA, file);
     curl_easy_setopt(file->handle.curl, CURLOPT_VERBOSE, 0L);
