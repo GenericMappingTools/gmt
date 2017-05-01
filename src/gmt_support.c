@@ -159,6 +159,15 @@ static struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths
 #include "gmt_pennames.h"
 };
 
+/*! List of GMT color tables available in makecpt and grd2cpt
+ *  Some are based on MATLAB and Matplotlib color schemes.
+ *  To add more tables, place the master CPT file in share/cpt and
+ *  add a one-line entry with name and explanation in gmt_cpt_masters.h. */
+
+static char *GMT_CPT_master[GMT_N_CPT_MASTERS] = {
+#include "gmt_cpt_masters.h"
+};
+
 /* Local functions needed for public functions below */
 
 GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
@@ -6844,24 +6853,14 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	FILE *fpc = NULL;
-	char buffer[GMT_BUFSIZ];
-
-	gmt_getsharepath (GMT, "conf", "gmt_cpt", ".conf", buffer, R_OK);
-	if ((fpc = fopen (buffer, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", buffer);
-		return (GMT_ERROR_ON_FOPEN);
-	}
-
 	gmt_message (GMT, "\t-%c Specify a colortable [Default is rainbow]:\n", option);
 	gmt_message (GMT, "\t   [Notes: R=Default z-range, H=Hinge, C=colormodel]\n");
-	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t   %s", buffer);
-	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");
+	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
+	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
 	gmt_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city/]\n");
 	gmt_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
 	gmt_message (GMT, "\t   continuous CPT from those colors automatically.\n");
-	fclose (fpc);
 
 	return (GMT_NOERROR);
 }

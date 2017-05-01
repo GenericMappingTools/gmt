@@ -5,7 +5,7 @@
 #
 # Use the knowledge that we need 2 pages.
 
-grep -v '#' "${GMT_SHAREDIR}"/conf/gmt_cpt.conf | cut -d: -f1 | sort -r > tt.lis
+tr '"' ' ' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | awk '{print $1}' | sort -r > tt.lis
 
 ps=GMT_App_M_1a.ps
 n=`cat tt.lis | wc -l`

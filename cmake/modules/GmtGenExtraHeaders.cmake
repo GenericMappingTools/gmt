@@ -137,7 +137,7 @@ macro (gen_gmt_keywords_h)
 	file (WRITE gmt_keywords.h "${_gmtkeywords}\n")
 endmacro (gen_gmt_keywords_h)
 
-# gmt_media_name.h gmt_pennames.h gmt_unique.h
+# gmt_media_name.h gmt_pennames.h gmt_unique.h gmt_cpt_masters.h
 macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_media_name.h)
 	list (REMOVE_DUPLICATES _file_lines)
@@ -148,6 +148,9 @@ macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_unique.h)
 	list (REMOVE_DUPLICATES _file_lines)
 	list (LENGTH _file_lines GMT_N_UNIQUE)
+	file2list (_file_lines ${GMT_SRC}/src/gmt_cpt_masters.h)
+	list (REMOVE_DUPLICATES _file_lines)
+	list (LENGTH _file_lines GMT_N_CPT_MASTERS)
 
 	# count lines in generated heders
 	file2list (_file_lines gmt_datums.h)
