@@ -1981,7 +1981,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use (mem, 1));
+	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use ((size_t)mem, 1));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
@@ -2282,10 +2282,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, float);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
+				Return (API->error);
 			for (k = 0; k < nm; k++) {
 				fprintf (stderr, "Eigen # %d\n", (int)k+1);
-				limit = k;
+				limit = (double)k;
 				/* Update solution for k eigenvalues only */
 				gmt_M_memcpy (s, ssave, nm, double);
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
