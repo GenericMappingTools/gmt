@@ -6096,6 +6096,8 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 						GMT_Report (API, GMT_MSG_DEBUG, "Truncating +b modifier for image filename %s\n", file);
 						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
 					}
+					else	/* Make sure p is NULL so we dont restore a character below */
+						p = NULL;
 				}
 				if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 					not_url = !gmtlib_check_url_name (file);
