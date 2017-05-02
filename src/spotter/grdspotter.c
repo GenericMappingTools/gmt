@@ -1009,8 +1009,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		
 			gmt_M_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				row = urint (floor (rand() * y_scale));		/* Get a random integer in 0 to n_rows-1 range */
-				col = urint (floor (rand() * x_scale));		/* Get a random integer in 0 to n_columns-1 range */
+				row = urint (floor (gmt_rand(GMT) * y_scale));		/* Get a random integer in 0 to n_rows-1 range */
+				col = urint (floor (gmt_rand(GMT) * x_scale));		/* Get a random integer in 0 to n_columns-1 range */
 				ij = gmt_M_ijp (G->header, row, col);		/* Get the node index */
 				gmt_M_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];
