@@ -876,7 +876,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
-		c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
 	if ((fp = fopen (local_path, "wb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
@@ -911,7 +911,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
-		c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Say a few things about the file we got */
 		struct stat buf;
