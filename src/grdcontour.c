@@ -887,7 +887,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Allocate memory and read data file\n");
 
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -921,7 +921,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* Read data */
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);
 	}
 

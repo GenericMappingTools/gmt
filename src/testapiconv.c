@@ -46,9 +46,9 @@ int main (int argc, char *argv[]) {
 
 	/* Test reading several grid headers */
 	
-	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, "*.nc", &n, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, "*.nc", &n, NULL)) == NULL) exit (EXIT_FAILURE);
 	/* Then read grid data */
-	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
+	if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, "*.nc", NULL, G)) == NULL) exit (EXIT_FAILURE);
 	if (GMT_Destroy_Group (API, &G, n) != GMT_NOERROR) exit (EXIT_FAILURE);
 	/* Test reading several CPTs */
 	n = 0;

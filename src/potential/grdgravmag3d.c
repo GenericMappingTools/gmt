@@ -514,7 +514,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* ---------------------------------------------------------------------------- */
 
-	if ((GridA = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+	if ((GridA = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL,
 	                           Ctrl->In.file[0], NULL)) == NULL) 	/* Get header only */
 		Return(API->error);
 
@@ -534,7 +534,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return(GMT_RUNTIME_ERROR);
 		}
 
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc,
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
 			GridA->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		GMT_Report(API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n",
@@ -581,7 +581,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	else
 		gmt_M_memcpy (wesn_padded, GridA->header->wesn, 4, double);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,
 	                   Ctrl->In.file[0], GridA) == NULL) {			/* Get subset, or all */
 		Return (API->error);
 	}
@@ -624,7 +624,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* -------------- In case we have one second grid, for bottom surface -------------- */
 	if (Ctrl->In.file[1]) {
-		if ((GridB = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+		if ((GridB = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL,
 		                           Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 			Return(API->error);
 		}
@@ -634,7 +634,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
+		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,
 		                  Ctrl->In.file[1], GridB) == NULL) {			/* Get subset, or all */
 			Return(API->error);
 		}
@@ -648,7 +648,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* -------------- In case we have  a source (magnetization) grid -------------------- */
 	if (Ctrl->H.got_maggrid) {
-		if ((GridS = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+		if ((GridS = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL,
 		                           Ctrl->H.magfile, NULL)) == NULL) {	/* Get header only */
 			Return(API->error);
 		}
@@ -664,7 +664,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return(GMT_RUNTIME_ERROR);
 		}
 
-		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
+		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,
 		                   Ctrl->H.magfile, GridS) == NULL) {			/* Get subset, or all */
 			Return(API->error);
 		}
@@ -954,7 +954,7 @@ L1:
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR)
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR)
 			Return (API->error);
 	}
 	else {

@@ -447,7 +447,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	else  {	/* Read a raster image */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input raster via GDAL\n");
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */

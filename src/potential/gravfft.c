@@ -573,7 +573,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
 	}
 
@@ -597,7 +597,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.variable) {	/* Read density contrast grid */
-		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->D.file, NULL)) == NULL)
+		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
 		if(Orig[0]->header->registration != Rho->header->registration) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Surface and density grids have different registrations!\n");
@@ -621,7 +621,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		gmt_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
                                       GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
@@ -709,7 +709,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0]))
 				Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
                                 GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_NOERROR) {
 				Return (API->error);
 			}
@@ -820,7 +820,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, topo);
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
                         GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_NOERROR) {
 		gmt_M_free (GMT, topo);
 		Return (API->error);

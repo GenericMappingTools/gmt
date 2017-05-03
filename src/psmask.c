@@ -679,7 +679,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_M_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = true;
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);	/* Specifically only need 1 row/col padding */
 		
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
@@ -816,7 +816,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
-			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Grid->header->wesn, Grid->header->inc, \
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Grid->header->wesn, Grid->header->inc, \
 				Grid->header->registration, 0, NULL)) == NULL) Return (API->error);
 			for (ij = 0; ij < Grid->header->size; ij++) {	/* Copy over the 0/1 grid */
 				switch (Ctrl->L.mode) {
@@ -831,7 +831,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 						break;
 				}
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->L.file, G) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->L.file, G) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {

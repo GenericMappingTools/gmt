@@ -411,7 +411,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {	/* Provided an input grid */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 
@@ -431,7 +431,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->S.active) {	/* Read the input grid */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read grid file\n");
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -567,7 +567,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		GMT->common.R.active[RSET] = true;
 
-		if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, G->header->inc, \
+		if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, G->header->inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* Precalculate node coordinates in both degrees and radians */
@@ -655,7 +655,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			sprintf (gfile, Ctrl->G.file, Ctrl->T.value[t]);
 		else
 			strcpy (gfile, Ctrl->G.file);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, gfile, G_rot) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, gfile, G_rot) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_NOERROR)

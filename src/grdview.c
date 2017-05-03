@@ -714,7 +714,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
 
-	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	if (Ctrl->C.active) {
@@ -748,12 +748,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if (GMT->common.R.oblique) GMT->common.R.active[RSET] = true;	/* Reset -R */
 		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 	}
-	else if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+	else if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
 	if (Ctrl->G.active) {
-		for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
+		for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -795,7 +795,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing shape grid\n");
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
 		Return (API->error);
 	}
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
@@ -804,7 +804,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->G.n; k++) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
 				Return (API->error);
 			}
 			if (Drape[k]->header->n_columns != Topo->header->n_columns || Drape[k]->header->n_rows != Topo->header->n_rows) drape_resample = true;
@@ -919,7 +919,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing illumination grid\n");
 
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
 			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (API->error);
 		}

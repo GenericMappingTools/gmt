@@ -356,7 +356,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Initialize the CVA grid and structure */
 
-	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
@@ -568,7 +568,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		gmt_M_free (GMT, processed_node);	gmt_M_free (GMT, latfactor);	gmt_M_free (GMT, p);
 		gmt_M_free (GMT, ilatfactor);		gmt_M_free (GMT, xpos);			gmt_M_free (GMT, ypos);
 		Return (API->error);

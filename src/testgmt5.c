@@ -44,7 +44,7 @@ int main () {
 	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. READING IN A GRID */
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
@@ -78,7 +78,7 @@ int main () {
 	if (GMT_Destroy_Options (API, &head)) exit (EXIT_FAILURE);
 
 	/* 7. WRITING THE RESULT TO FILE */
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_grid, Gout) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_grid, Gout) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

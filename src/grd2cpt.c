@@ -441,7 +441,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	for (opt = options, k = 0; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, opt->arg, NULL)) == NULL) {
+		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, opt->arg, NULL)) == NULL) {
 			error = free_them_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);

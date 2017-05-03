@@ -348,7 +348,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				}
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
 					struct GMT_GRID *G = NULL;
-					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 						return (API->error);
 					}
 					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
@@ -566,7 +566,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				if ((Ctrl->T.active = gmt_check_filearg (GMT, 'T', opt->arg, GMT_IN, GMT_IS_GRID)) != 0) {	/* Obtain -R -I -r from file */
 					struct GMT_GRID *G = NULL;
 					Ctrl->T.file = strdup (opt->arg);
-					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 						return (API->error);
 					}
 					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
@@ -1770,7 +1770,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		            PRIu64 " set of linear equations\n", n, m, nm, nm);
 
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
-		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] &&
@@ -1786,7 +1786,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
@@ -1809,7 +1809,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 	else {	/* Fill in an equidistant output table or grid */
 		if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
-			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->R3.range, Ctrl->I.inc, \
+			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_ok = Grid->header->nm;
 			Z.nz = 1;	/* So that output logic will work for 1-D */
@@ -2316,7 +2316,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					gmt_M_grd_loop (GMT, Out, row, col, ij) Out->data[ij] -= tmp[ij];	/* Incremental improvement since last time */
 					gmt_M_grd_loop (GMT, Out, row, col, ij) tmp[ij] += Out->data[ij];	/* Current solution */
 				}
-				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out) != GMT_NOERROR) {
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out) != GMT_NOERROR) {
 					Return (API->error);
 				}
 			}
@@ -2387,7 +2387,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_grd_init (GMT, Out->header, options, true);
 				snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
 					Return (API->error);
 				}
 			}

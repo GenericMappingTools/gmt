@@ -843,7 +843,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* OK, here we have a recognized dataset ID */
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL,
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
 	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 		free (tselect);
 		Return (API->error);
@@ -1162,7 +1162,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	}
 	else {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

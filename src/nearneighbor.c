@@ -331,7 +331,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		n_ptr->option = 'N';	/* Switch back to -Nn */
 		g_ptr->arg = name;		/* Reset file name to original output name */
 		gmt_grd_init (GMT, Grid->header, options, true);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
@@ -341,7 +341,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
@@ -494,7 +494,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	if (n < n_alloc) point = gmt_M_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	/* Compute weighted averages based on the nearest neighbors */
 
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
 		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
 		Return (API->error);
@@ -551,7 +551,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
 		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
 		Return (API->error);

@@ -471,7 +471,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	if (Ctrl->S.active && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not known to be geographic */
@@ -496,7 +496,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);
 	}
 

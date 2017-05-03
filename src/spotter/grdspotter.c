@@ -569,7 +569,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	/* Initialize the CVA grid and structure */
 
-	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
@@ -614,7 +614,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
+	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
 		gmt_M_free (GMT, processed_node);
 		Return (API->error);
 	}
@@ -631,26 +631,26 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	y_cva = gmt_grd_coord (GMT, G->header, GMT_Y);
 
 	if (Ctrl->A.file) {
-		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(A->header->n_columns == Z->header->n_columns && A->header->n_rows == Z->header->n_rows && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
 			Return (API->error);
 		}
 	}
 	if (Ctrl->L.file) {
-		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
+		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(L->header->n_columns == Z->header->n_columns && L->header->n_rows == Z->header->n_rows && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
 			Return (API->error);
 		}
 		
@@ -813,7 +813,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
@@ -872,7 +872,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, CVA_inc);
 				Return (API->error);
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				gmt_M_free (GMT, CVA_inc);
@@ -953,7 +953,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write DI grid %s\n", Ctrl->D.file);
 			snprintf (DI->header->remark, GMT_GRID_REMARK_LEN160, "CVA maxima along flowlines from each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, DI)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->D.file, DI) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				Return (API->error);
@@ -963,7 +963,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write PA grid %s\n", Ctrl->PA.file);
 			snprintf (PA->header->remark, GMT_GRID_REMARK_LEN160, "Predicted age for each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, PA)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->PA.file, PA) != GMT_NOERROR) {
 				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 				Return (API->error);

@@ -6901,7 +6901,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	}
 	if (!gmt_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
-		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
+		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
@@ -10804,7 +10804,7 @@ bool geo;
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
 			if (gmt_access (API->GMT, opt->arg, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL)
+			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)
 				return API->error;	/* Failure to read grid header */
 			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
 			if (!exact) gmtinit_round_wesn (wesn, G->header->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */

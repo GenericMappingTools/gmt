@@ -25,7 +25,7 @@ int main () {
 	GMT_Close_VirtualFile (API, input);
 	GMT_Close_VirtualFile (API, output);
     /* Write the grid to file */
-    if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, "junk.nc", G)) return EXIT_FAILURE;
+    if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "junk.nc", G)) return EXIT_FAILURE;
     /* Destroy the GMT session */
     if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
 };

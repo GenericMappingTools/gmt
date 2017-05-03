@@ -1114,7 +1114,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
 
-	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 1, 0, NULL)) == NULL) {
+	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 1, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create Image structure\n");
 		return GMT_RUNTIME_ERROR;
 	}
@@ -1159,7 +1159,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	I->header->registration = GMT_GRID_PIXEL_REG;
 	gmt_M_memcpy (I->header->mem_layout, "TCBa", 4, char);  /* Signal that data is Band interleaved */
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);          /* Copy the no pad to the header */
-	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 
 	return GMT_NOERROR;	/* Done here */
@@ -2151,7 +2151,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			else
 				GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TCBa");
 	
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
 #else			/* Here we have already set device to PPM which we can read ourselves. */
@@ -2174,7 +2174,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 4th line */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create image structure\n");
 				fclose (fp_raw);
 				Return (API->error);
@@ -2193,7 +2193,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, tmp);
 			fclose (fp_raw);	fp_raw = NULL;
 #endif
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_NOERROR)
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 				Return (API->error);
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
 			if (Ctrl->Z.active) {	/* Remove the image since it is returned to a calling program and -Z was given */

@@ -430,7 +430,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
 
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
@@ -448,7 +448,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		n_grds++;
 
 		if (Ctrl->M.active || Ctrl->L.active || subset || Ctrl->D.mode || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 				Return (API->error);
 			}
 		}

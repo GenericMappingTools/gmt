@@ -423,7 +423,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.active) {
 
-		if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		gmt_grd_init (GMT, Gin->header, options, true);	/* Update command history only */
@@ -460,7 +460,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \
 			!one_or_zero, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
@@ -908,14 +908,14 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Write filtered grid\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write scale grid\n");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Sout)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Sout) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->S.file, Sout) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}

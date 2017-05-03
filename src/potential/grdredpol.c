@@ -1223,7 +1223,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) /* Get header only */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) /* Get header only */
 		Return (API->error);
 
 	if (Ctrl->F.compute_n) {
@@ -1249,7 +1249,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	gmt_grd_init (GMT, Gin->header, options, true);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -1270,17 +1270,17 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.dipfile, NULL)) == NULL)	/* Get header only */
+		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->E.dipfile, NULL)) == NULL)	/* Get header only */
 			Return (API->error);
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.dipfile, Gdip) == NULL)
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->E.dipfile, Gdip) == NULL)
 			Return (API->error);
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->E.decfile, NULL)) == NULL)
+		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->E.decfile, NULL)) == NULL)
 			Return (API->error);
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->E.decfile, Gdec) == NULL)
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->E.decfile, Gdec) == NULL)
 			Return (API->error);
 	}
 
@@ -1333,7 +1333,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	fi  = TWO_PI / Ctrl->F.ncoef_row;
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_new, Gin->header->inc, \
 	                             Gin->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
@@ -1342,7 +1342,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		inc[GMT_X] = inc[GMT_Y] = 1;
 		
-		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc,
+		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
 		                              GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
@@ -1526,12 +1526,12 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	strcpy (Gout->header->z_units, "nT");
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	if (Ctrl->Z.active) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gfilt)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, Gfilt) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Z.file, Gfilt) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

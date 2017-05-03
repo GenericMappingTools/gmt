@@ -245,7 +245,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
-		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			for (n = 0; n < n_files; n++) {
 				gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
 			}
@@ -360,7 +360,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
 			if (GMT_Destroy_Data (GMT->parent, &B[n].G))
 				return (-1);
-			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
 			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
@@ -449,7 +449,7 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 		B[k].wt_y *= B[k].weight;
 
 		if (!B[k].open) {
-			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
+			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
 				GMT_exit (GMT, GMT_GRID_READ_ERROR); return GMT_GRID_READ_ERROR;
 			}
 			if (B[k].skip) fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
@@ -650,7 +650,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	if ((err = gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false)) != GMT_NOERROR){
@@ -707,7 +707,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	if (gmt_M_file_is_memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
 		/* Allocate space for the entire output grid */
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			gmt_M_free (GMT, z);
 			Return (API->error);
 		}
@@ -725,7 +725,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		else
 			outfile = Ctrl->G.file;
 		/* Write the grid header unless -Q */
-		w_mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
+		w_mode = GMT_CONTAINER_ONLY | GMT_GRID_ROW_BY_ROW;
 		if (Ctrl->Q.active) w_mode |= GMT_GRID_NO_HEADER;
 		if ((error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, w_mode, NULL, outfile, Grid))) {
 			gmt_M_free (GMT, z);
@@ -824,13 +824,13 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	nx_final = Grid->header->n_columns;	ny_final = Grid->header->n_rows;
 
 	if (write_all_at_once) {	/* Must write entire grid */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			gmt_M_free (GMT, z);
 			Return (API->error);
 		}
 	}
 	else {	/* Finish the line-by-line writing */
-		mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
+		mode = GMT_CONTAINER_ONLY | GMT_GRID_ROW_BY_ROW;
 		if (Ctrl->Q.active) mode |= GMT_GRID_NO_HEADER;
 		if (!Ctrl->Q.active && (error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, outfile, Grid))) {
 			Return (error);

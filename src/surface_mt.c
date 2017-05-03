@@ -972,12 +972,12 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 			for (node = 0; node < C->mxmy; node++) C->Bound[end]->data[node] = (float)C->limit[end];
 		}
 		else {	/* Got a grid with a surface */
-			if ((C->Bound[end] = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->limit_file[end], NULL)) == NULL) return (API->error);	/* Get header only */
+			if ((C->Bound[end] = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->limit_file[end], NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Bound[end]->header->n_columns != C->Grid->header->n_columns || C->Bound[end]->header->n_rows != C->Grid->header->n_rows) {
 				GMT_Report (API, GMT_MSG_NORMAL, "%s limit file not of proper dimensions!\n", limit[end]);
 				return (GMT_RUNTIME_ERROR);
 			}
-			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, C->limit_file[end], C->Bound[end]) == NULL) return (API->error);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->limit_file[end], C->Bound[end]) == NULL) return (API->error);
 		}
 		if (transform) {	/* Remove best-fitting plane and normalize the bounding values */
 			for (row = 0; row < C->Grid->header->n_rows; row++) {
@@ -1039,7 +1039,7 @@ GMT_LOCAL int write_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char 
 		}
 	}
 	/* Time to write our final grid */
-	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_NOERROR)
+	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, grdfile, C->Grid) != GMT_NOERROR)
 		return (GMT->parent->error);
 
 	return (0);
@@ -1147,7 +1147,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	char file[GMT_LEN256] = {""};
 
 	if (debug) {
-		G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->Grid->header->wesn, C->inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL);
+		G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->Grid->header->wesn, C->inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL);
 		G->header->n_columns = C->current_nx;	G->header->n_rows = C->current_ny;
 		if (debug == 2)	/* Use two grids and copy new to old before each iteration */
 			u_old = C->alternate_grid;	/* u_old is always the temp grid which we copy to before iteration */
@@ -1184,7 +1184,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 					 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
 				}
 			}
-			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_NOERROR)
+			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR)
 				fprintf (stderr, "Writing %s failed\n", file);
 			G->data = NULL;	/* Since it is not ours */
 		}
@@ -1280,7 +1280,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 					 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
 				}
 			}
-			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_NOERROR)
+			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR)
 				fprintf (stderr, "Writing %s failed\n", file);
 			G->data = NULL;	/* Since it is not ours */
 		}
@@ -2166,7 +2166,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  We reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 	}
 	
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, NULL, \
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
@@ -2215,7 +2215,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lie exactly on a plane; write a grid with the plan and exit */
 		gmt_M_free (GMT, C.data);	/* The data set is no longer needed */
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL,
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL,
 			0, 0, C.Grid) == NULL) Return (API->error);	/* Get a grid of zeros... */
 		restore_planar_trend (&C);	/* ...and restore the plane we found */
 		if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write this grid */
@@ -2282,7 +2282,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	C.Briggs   = gmt_M_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.status   = gmt_M_memory (GMT, NULL, C.mxmy, char);
 	C.fraction = gmt_M_memory (GMT, NULL, C.current_stride, double);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL)
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL)
 		Return (API->error);
 #ifdef PARALLEL_MODE
 	/* To avoid race conditions we must alternate by updating one grid with values from another */

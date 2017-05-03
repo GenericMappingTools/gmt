@@ -359,7 +359,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->N.mode == 's') GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Schmidt normalization - as used in geomagnetism\n");
 	
 	/* Allocate output grid */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Grid evaluated from spherical harmonic coefficients", Grid)) Return (API->error);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
@@ -455,7 +455,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write grid to file\n");
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		error = API->error;
 	else
 		error = 0;

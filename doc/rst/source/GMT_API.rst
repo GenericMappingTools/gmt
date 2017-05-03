@@ -1225,10 +1225,10 @@ and pass the ``par`` array with contents as indicated below:
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the prevailing GMT default. The ``mode`` determines what is actually
 allocated when you have chosen grids or images. As for GMT_Read_Data_
-you can pass ``GMT_GRID_ALL`` to initialize the header *and* allocate
+you can pass ``GMT_CONTAINER_AND_DATA`` to initialize the header *and* allocate
 space for the array; here ``data`` must be NULL. Alternatively, you can pass
-``GMT_GRID_HEADER_ONLY`` to just initialize the grid or image header,
-and later call GMT_Create_Data a second time, now passing ``GMT_GRID_DATA_ONLY``, to allocate
+``GMT_CONTAINER_ONLY`` to just initialize the grid or image header,
+and later call GMT_Create_Data a second time, now passing ``GMT_DATA_ONLY``, to allocate
 space for the array. In that second call you pass the pointer returned
 by the first call as ``data`` and specify the family; all other
 arguments should be NULL or 0. Normally, resources created by this
@@ -1474,19 +1474,19 @@ different data types.
 
 **GMT grid** or **image**.
     Here, ``mode`` determines how we read the grid: To read the entire
-    grid and its header, pass ``GMT_GRID_ALL``. However, if you may need to
+    grid and its header, pass ``GMT_CONTAINER_AND_DATA``. However, if you may need to
     extract a sub-region you must first read the header by passing
-    ``GMT_GRID_HEADER_ONLY``, then examine the header structure range
+    ``GMT_CONTAINER_ONLY``, then examine the header structure range
     attributes, specify a subset via the array ``wesn``, and
     finally call GMT_Read_Data_ a second time, now with ``mode`` =
-    ``GMT_GRID_DATA_ONLY``, passing your ``wesn`` array and the grid
+    ``GMT_DATA_ONLY``, passing your ``wesn`` array and the grid
     structure returned from the first call as ``ptr``. In the event your
     data array should be allocated to hold both the real and imaginary
     parts of a complex data set you must add either
     ``GMT_GRID_IS_COMPLEX_REAL`` or ``GMT_GRID_IS_COMPLEX_IMAG`` to
     ``mode`` so as to allow for the extra memory needed and to stride
     the complex value-pairs correctly. If your grid is huge and you must read
-    it row-by-row, set ``mode`` to ``GMT_GRID_HEADER_ONLY`` \|
+    it row-by-row, set ``mode`` to ``GMT_CONTAINER_ONLY`` \|
     ``GMT_GRID_ROW_BY_ROW``. You can then access the grid row-by-row
     using GMT_Get_Row_. By default, the rows will be automatically
     processed in sequential order. To completely specify which row to be read, pass
@@ -2212,8 +2212,8 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     The ``mode`` is used the same way as for data tables.
 
 **GMT grid**
-    Here, ``mode`` may be ``GMT_GRID_HEADER_ONLY`` to only update a
-    file's header structure, but normally it is simply ``GMT_GRID_ALL``
+    Here, ``mode`` may be ``GMT_CONTAINER_ONLY`` to only update a
+    file's header structure, but normally it is simply ``GMT_CONTAINER_AND_DATA``
     so the entire grid and its header will be exported (a subset is
     not allowed during export). However, in the event your data array
     holds both the real and imaginary parts of a complex data set you
@@ -2223,7 +2223,7 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     grids you may skip writing the grid header by adding
     ``GMT_GRID_NO_HEADER``; this setting is ignored for all other grid
     formats. If your output grid is huge and you are building it
-    row-by-row, set ``mode`` to ``GMT_GRID_HEADER_ONLY`` \|
+    row-by-row, set ``mode`` to ``GMT_CONTAINER_ONLY`` \|
     ``GMT_GRID_ROW_BY_ROW``. You can then write the grid row-by-row
     using GMT_Put_Row_. By default the rows will be automatically
     processed in order. To completely specify which row to be written,

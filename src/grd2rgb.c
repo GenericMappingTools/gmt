@@ -425,7 +425,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 		for (channel = 0; channel < 3; channel++) {	/* Do the r, g, and b channels */
 			if (Ctrl->L.active && Ctrl->L.layer != rgb[channel]) continue;	/* Only do one of the layers */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
-			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
+			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			gmt_grd_init (GMT, Grid->header, options, true);
@@ -439,7 +439,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 				(void)gmt_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)gmt_M_s255 (f_rgb[channel]);
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Out) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, grdfile, Out) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_M_str_free (grdfile);
@@ -509,7 +509,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL,
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 		                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 				PSL_free (picture);
 				Return (API->error);
@@ -539,7 +539,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 				gmt_M_str_free (grdfile);
 				Return (API->error);
 			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Grid) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, grdfile, Grid) != GMT_NOERROR) {
 				gmt_M_str_free (grdfile);
 				Return (API->error);
 			}

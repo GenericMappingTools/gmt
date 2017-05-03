@@ -265,7 +265,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_GRID_ALL : GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	grid_was_read = Ctrl->G.active;
@@ -302,7 +302,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
-			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
+			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
 			grid_was_read = true;
 			/* Recalculate z_min/z_max */
@@ -321,14 +321,14 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Shifting longitudes in file %s by %g degrees\n", out_file, shift_amount);
-		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 		gmt_grd_shift (GMT, G, shift_amount);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -336,7 +336,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		int in_ID;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
-		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		/* Must register Ctrl->N.file first since we are going to read rec-by-rec from all available sources */
@@ -385,7 +385,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " new data points, updated %" PRIu64 ".\n", n_data, n_use);
@@ -395,7 +395,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		uint64_t ij, ij_tr = 0;
 		float *a_tr = NULL, *save_grid_pointer = NULL;
 
-		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
+		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 
@@ -464,7 +464,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		G->data = a_tr;
 		gmt_M_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
 		gmt_M_free (GMT, h_tr);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		G->data = save_grid_pointer;
@@ -493,7 +493,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset grid-spacing in file %s to %g/%g\n",
 				out_file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_GRID_ALL : GMT_GRID_HEADER_ONLY, NULL, out_file, G) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

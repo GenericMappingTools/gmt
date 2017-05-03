@@ -701,12 +701,12 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	}
 	/* Must initialize a new load grid */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read load file %s\n", file);
-	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, file, NULL)) == NULL) {
+	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading the header of file %s - file skipped\n", file);
 		return NULL;
 	}
 	gmt_grd_init (GMT, Orig->header, options, true);	/* Update the header */
-	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
  		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL) {	/* Get data only */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading the data of file %s - file skipped\n", file);
 		return NULL;
@@ -974,7 +974,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
 			Return (API->error);
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
 			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
 				Return (API->error);
 		}

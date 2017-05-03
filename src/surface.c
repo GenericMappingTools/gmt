@@ -701,12 +701,12 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 			for (ij = 0; ij < C->mxmy; ij++) C->Low->data[ij] = (float)C->low_limit;
 		}
 		else {
-			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
+			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Low->header->n_columns != C->Grid->header->n_columns || C->Low->header->n_rows != C->Grid->header->n_rows) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Lower limit file not of proper dimension!\n");
 				return (GMT_RUNTIME_ERROR);
 			}
-			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, C->low_file, C->Low) == NULL) return (API->error);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->low_file, C->Low) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->Grid->header->n_rows; j++) {
@@ -727,12 +727,12 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 			for (ij = 0; ij < C->mxmy; ij++) C->High->data[ij] = (float)C->high_limit;
 		}
 		else {
-			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
+			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->High->header->n_columns != C->Grid->header->n_columns || C->High->header->n_rows != C->Grid->header->n_rows) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Upper limit file not of proper dimension!\n");
 				return (GMT_RUNTIME_ERROR);
 			}
-			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, C->high_file, C->High) == NULL) return (API->error);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->high_file, C->High) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->Grid->header->n_rows; j++) {
@@ -787,7 +787,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	}
 	gmt_M_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
 	C->Grid->data = v2;			/* Hook in new scanline-oriented grid */
-	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_NOERROR) {
+	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, grdfile, C->Grid) != GMT_NOERROR) {
 		return (GMT->parent->error);
 	}
 	if ((C->set_low  > 0 && C->set_low  < 3) && GMT_Destroy_Data (GMT->parent, &C->Low) != GMT_NOERROR) {
@@ -1766,7 +1766,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 	}
 	
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, NULL, \
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
@@ -1825,7 +1825,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		gmt_M_free (GMT, C.data);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL,
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL,
 			0, 0, C.Grid) == NULL) Return (API->error);	/* Don't bother with padding since no BCs will be applied */
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
@@ -1853,7 +1853,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	C.briggs = gmt_M_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = gmt_M_memory (GMT, NULL, C.mxmy, char);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 

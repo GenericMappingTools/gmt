@@ -554,7 +554,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid && !Ctrl->I.derive) {	/* Illumination grid must be read */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read intensity file\n");
-		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -578,7 +578,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
 		
 		/* Read in the the entire image that is to be mapped */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (strncmp(I->header->mem_layout, "BRP", 3) != 0)
@@ -610,7 +610,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->D.active) {	/* Read the headers of 1 or 3 grids */
 		for (k = 0; k < n_grids; k++) {
-			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
 		}
@@ -691,7 +691,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Read the grid data, possibly via subset in wesn */
 
 	for (k = 0; k < n_grids; k++) {
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
 	}
@@ -703,7 +703,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read intensity file\n");
 
 		/* Remember, the illumination header was already read at the start of grdimage */
-		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
+		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
 		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns ||
@@ -753,7 +753,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			gmt_set_grddim (GMT, Img_proj->header);	/* Recalculate projected image dimensions */
-			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
+			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected image */
 			gmt_img_project (GMT, I, Img_proj, false);	/* Now project the image onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* Free the original image now we have projected.  Use Img_proj from now on */
@@ -770,7 +770,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
 			                Ctrl->In.file[k]);
 			gmt_set_grddim (GMT, Grid_proj[k]->header);	/* Recalculate projected grid dimensions */
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL)
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected grid */
 			gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);	/* Now project the grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_NOERROR) {	/* Free the original grid now we have projected.  Use Grid_proj from now on */
@@ -792,7 +792,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
 			                Ctrl->I.file);
 			gmt_set_grddim (GMT, Intens_proj->header);	/* Recalculate projected intensity grid dimensions */
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL)
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected intensity grid */
 			gmt_grd_project (GMT, Intens_orig, Intens_proj, false);	/* Now project the intensity grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {	/* Free the original intensity grid now we have projected.  Use Intens_proj from now on */
@@ -905,7 +905,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* This is the grdimage's mem layout */
 
-		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
+		if ((Out = GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
@@ -1111,7 +1111,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.return_image]);
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}
 		else {	/* Lay down a PostScript 8-bit image */
@@ -1131,7 +1131,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				}
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image %s\n", way[Ctrl->A.return_image]);
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}
 		else {	/* Lay down a PostScript 24-bit color image */

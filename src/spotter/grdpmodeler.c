@@ -293,11 +293,11 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {	/* Gave an age grid */
-		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G_age) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G_age) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		gmt_M_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
@@ -346,7 +346,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		G_mod = gmt_M_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
 		for (k = 0; k < Ctrl->S.n_items; k++) {
-			if ((G_mod[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
+			if ((G_mod[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, inc, \
 				registration, GMT_NOTSET, NULL)) == NULL) {	/* Free previous grids and bail */
 					unsigned int kk;
 					for (kk = 0; kk < k; kk++)
@@ -519,7 +519,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			strcpy (G_mod[k]->header->y_units, "degrees_north");
 			snprintf (G_mod[k]->header->remark, GMT_GRID_REMARK_LEN160, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode[k]], Ctrl->E.rot.file);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_mod[k])) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G_mod[k]) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G_mod[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}

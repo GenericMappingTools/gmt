@@ -262,7 +262,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
 		
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
 		row1 = G->header->n_rows - 1;	col1 = G->header->n_columns - 1;
@@ -354,7 +354,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		int row, col;
 		bool wrap;
 		
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		if (!gmt_M_is_geographic (GMT, GMT_IN)) {
@@ -439,7 +439,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Just the usual subset selection via -R.  First get the header */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
@@ -523,7 +523,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
 		}
 	}
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
 		Return (API->error);
 	}
 	if (gmt_M_file_is_memory (Ctrl->In.file) && (Ctrl->N.active || gmt_M_file_is_memory (Ctrl->G.file))) {
@@ -592,7 +592,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	/* Send the subset of the grid to the destination. */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

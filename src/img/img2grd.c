@@ -599,7 +599,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		bottom = wesn[YLO];
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Allocate Grid container for Mercator data\n");
-	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
+	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \
 		GMT_GRID_PIXEL_REG, GMT_NOTSET, NULL)) == NULL) {
 		fclose (fp);
 		Return (API->error);
@@ -727,7 +727,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Merc) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Merc) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);

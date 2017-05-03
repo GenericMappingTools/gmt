@@ -287,7 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 
 GMT_LOCAL struct GMT_GRID *alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template) {
 	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
-	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Template->header->wesn, Template->header->inc, \
+	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Template->header->wesn, Template->header->inc, \
 		Template->header->registration, GMT_NOTSET, NULL);
 	return (New);
 }
@@ -4984,7 +4984,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		in_file = opt->arg;
 		/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
-		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY | GMT_IO_RESET, NULL, in_file, NULL)) == NULL) {	/* Get header only */
+		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_IO_RESET, NULL, in_file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -5005,7 +5005,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, in_file, G_in) == NULL) {	/* Get subset only */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, in_file, G_in) == NULL) {	/* Get subset only */
 				Return (API->error);
 			}
 		}
@@ -5016,7 +5016,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	}
 	else if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
+		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		GMT->current.io.inc_code[GMT_X]	= GMT->current.io.inc_code[GMT_Y] = 0;	/* Must reset this since later we don't use GMT->common.R.inc but G->header->inc */
 	}
@@ -5123,7 +5123,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
@@ -5279,7 +5279,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_FILE) {		/* Filename given */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
-				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
+				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
 					Return (API->error);
 				}
 				if (!subset && !gmt_M_grd_same_shape (GMT, stack[nstack]->G, info.G)) {
@@ -5291,7 +5291,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "grid files do not cover the same area!\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
 				}
 			}

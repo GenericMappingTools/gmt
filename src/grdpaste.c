@@ -178,10 +178,10 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	/* Try to find a common side to join on  */
 
-	if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
+	if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
-	if ((B = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+	if ((B = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -336,7 +336,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_grddim (GMT, C->header);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL,
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL,
 		NULL, 0, 0, C) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
@@ -362,7 +362,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->my = C->header->my;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
@@ -378,7 +378,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->my = C->header->my;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
 				Return (API->error);
 			}
 			break;
@@ -394,7 +394,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->my = C->header->my;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
@@ -415,7 +415,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->my = C->header->my;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
 				Return (API->error);
 			}
 			break;
@@ -439,7 +439,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->mx = C->header->mx;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
@@ -455,7 +455,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->mx = C->header->mx;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
 				Return (API->error);
 			}
 			break;
@@ -474,7 +474,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->mx = C->header->mx;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
@@ -496,7 +496,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->mx = C->header->mx;		/* Needed if grid is read by gmt_gdal_read_grd */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
 				Return (API->error);
 			}
 			break;
@@ -504,7 +504,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	gmt_set_pad (GMT, 0U); /* Reset padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, C) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C) != GMT_NOERROR) {
 		Return (API->error);
 	}
 	A->data = B->data = NULL; /* Since these were never actually allocated */

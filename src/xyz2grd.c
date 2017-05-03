@@ -518,7 +518,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
@@ -529,7 +529,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	no_data_f = (GMT->common.d.active[GMT_IN]) ? (float)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
 
 	/* Set up and allocate output grid [note: zero padding specificied since no BCs required] */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
 	/* See if we have a projection info to add */
@@ -793,7 +793,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

@@ -742,12 +742,12 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations; it could also set -fg so do this first */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, NULL)) == NULL)
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Z.file, NULL)) == NULL)
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
 	else if (GMT->common.R.active[RSET]) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
-		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL,
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
@@ -1010,7 +1010,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, depths);	gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 			gmt_M_free (GMT, depths);	gmt_M_free (GMT, cake);
 			Return (API->error);
 		}

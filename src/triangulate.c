@@ -338,7 +338,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	
 	if (Ctrl->G.active) {
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, \
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
@@ -417,7 +417,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) {	/* Use non-NaN nodes in a previous grid as input data, possibly in addition to input records */
 		double *wesn = (Ctrl->G.active) ? Grid->header->wesn : NULL;
 		double xnoise, ynoise, rx, ry, percent = 5.0, fraction = 0.01 * percent;
-		if ((F = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, Ctrl->F.file, NULL)) == NULL) {
+		if ((F = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->F.file, NULL)) == NULL) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
 			Return (API->error);	/* Get subset if exceeding desired grid */
@@ -517,7 +517,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			/* F and G are the same region and F is not a memory grid via API.  Reuse F->data for G */
 			Grid->data = F->data;	F->data = NULL;
 		}
-		else if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+		else if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
@@ -601,7 +601,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
@@ -678,7 +678,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);

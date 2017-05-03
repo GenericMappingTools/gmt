@@ -268,7 +268,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, NULL, \
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
@@ -500,7 +500,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if (D != Din && GMT_Destroy_Data (API, &D) != GMT_NOERROR) Return (API->error);	/* Free the duplicate dataset */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

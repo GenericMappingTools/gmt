@@ -483,7 +483,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	struct GMT_GRID *A = NULL;
 
 	/* Base the area weight grid on the input grid domain and increments. */
-	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
+	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, G->header->wesn, G->header->inc, \
 		G->header->registration, GMT_NOTSET, NULL)) == NULL) return (NULL);
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -523,7 +523,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Area weight grid for debugging purposes", A)) return (NULL);
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_NOERROR) return (NULL);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, A) != GMT_NOERROR) return (NULL);
 	}
 	return (A);
 }
@@ -852,7 +852,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
 		Return (API->error);
 	}
 
@@ -903,7 +903,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Custom filter and multi-threading is not gurantied to work.\n");
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \
 		!one_or_zero, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
@@ -949,7 +949,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
 
 	if (Ctrl->F.custom) {	/* Get filter-weight grid rather than compute one */
-		if ((Fin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, NULL)) == NULL) {	/* Get filter-weight grid */
+		if ((Fin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, NULL)) == NULL) {	/* Get filter-weight grid */
 			Return (API->error);
 		}
 		F.n_columns = Fin->header->n_columns;	F.n_rows = Fin->header->n_rows;
@@ -1263,7 +1263,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		FILE *fp = fopen ("n_conv.txt", "w");
 		fprintf (fp, "%d\n", n_conv_tot);
 		fclose (fp);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gin) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &Gout) != GMT_NOERROR) {
@@ -1278,7 +1278,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	if (Ctrl->F.highpass && GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "High-pass filtered data", Gout)) {
 		Return (GMT->parent->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

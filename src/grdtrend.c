@@ -522,11 +522,11 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	trivial = (Ctrl->N.value < 5 && !weighted);
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (gmt_M_is_subset (GMT, G->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -552,7 +552,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	if (weighted) {
 		if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
-			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
+			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
 				gmt_M_free (GMT, gtd);		gmt_M_free (GMT, gtg);
 				gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 				gmt_M_free (GMT, old);		gmt_M_free (GMT, pstuff);
@@ -561,7 +561,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			if (W->header->n_columns != G->header->n_columns || W->header->n_rows != G->header->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
-				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					Return (API->error);
 				}
 				set_ones = false;
@@ -638,7 +638,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->T.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend surface", T)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, T)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->T.file, T) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->T.file, T) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -648,7 +648,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->D.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->D.file, R) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -660,7 +660,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend weights", W)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, W)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->W.file, W) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

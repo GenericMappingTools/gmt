@@ -768,7 +768,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->G.active) {	/* Grid mask */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}

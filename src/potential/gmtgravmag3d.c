@@ -495,7 +495,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
@@ -708,7 +708,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}

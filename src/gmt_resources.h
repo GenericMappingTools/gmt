@@ -94,6 +94,12 @@ enum GMT_enum_via {
 	GMT_VIA_NONE = 0,	/* No via anything */
 	GMT_VIA_MODULE_INPUT = 64};	/* To flag resources destined for another module's "command-line" input */
 
+/* We may allocate just a container, just the data (if container was allocated earlier), or both: */
+enum GMT_enum_container {
+	GMT_CONTAINER_AND_DATA	= 0U,    /* Create|Read|write both container and the data array */
+	GMT_CONTAINER_ONLY	= 1U,    /* Create|read|write the container but no data array */
+	GMT_DATA_ONLY		= 2U};   /* Create|Read|write the container's array only */
+
 /*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is a data table */
@@ -107,7 +113,7 @@ enum GMT_enum_family {
 	GMT_IS_COORD,		/* Entity is a double coordinate array */
 	GMT_N_FAMILIES};	/* Total number of families [API Developers only]  */
 
-#define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwardness for now */
+#define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
@@ -258,9 +264,6 @@ enum GMT_enum_dimindex {
 enum GMT_enum_gridio {
 	GMT_GRID_IS_CARTESIAN	   = 0U,    /* Grid is not geographic but Cartesian */
 	GMT_GRID_IS_REAL	   = 0U,    /* Read|write a normal real-valued grid */
-	GMT_GRID_ALL		   = 0U,    /* Read|write both grid header and the entire grid (no subset) */
-	GMT_GRID_HEADER_ONLY	   = 1U,    /* Just read|write the grid header */
-	GMT_GRID_DATA_ONLY	   = 2U,    /* Read|write the grid array given w/e/s/n set in the header */
 	GMT_GRID_IS_COMPLEX_REAL   = 4U,    /* Read|write the real component to/from a complex grid */
 	GMT_GRID_IS_COMPLEX_IMAG   = 8U,    /* Read|write the imaginary component to/from a complex grid */
 	GMT_GRID_IS_COMPLEX_MASK   = 12U,   /* To mask out the real|imag flags */
@@ -269,6 +272,10 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
 	GMT_GRID_IS_GEO		   = 256U}; /* Grid is a geographic grid, not Cartesian */
+
+#define GMT_GRID_ALL		= 0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
+#define GMT_GRID_HEADER_ONLY	= 1U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_ONLY */
+#define GMT_GRID_DATA_ONLY	= 2U   /* Backwards compatibility for < 5.3.3; See GMT_DATA_ONLY */
 
 /* These lengths (except GMT_GRID_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
 enum GMT_enum_grdlen {

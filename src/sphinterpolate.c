@@ -305,7 +305,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	
 	/* Set up output grid */
 	
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL,
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
 		                         GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
@@ -325,7 +325,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	/* Convert the doubles to float and unto the Fortran transpose order */
 	
 	sf = (w_max - w_min);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
 		gmt_M_free (GMT, surfd);
 		Return (API->error);
 	}
@@ -339,7 +339,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	/* Write solution */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

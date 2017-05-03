@@ -262,7 +262,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	else {	/* If -R was not given we infer the option via the input grid */
 		char opt_R[GMT_BUFSIZ];
 		struct GMT_GRID *G = NULL;
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		gmt_M_memcpy (wesn, G->header->wesn, 4, double);
@@ -383,7 +383,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
-		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -414,7 +414,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Geo->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
@@ -462,13 +462,13 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Geo) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Geo) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 	else {	/* Forward projection from geographical to rectangular grid */
 
-		if ((Geo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((Geo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -504,7 +504,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Rect->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);
 		gmt_grd_project (GMT, Geo, Rect, false);
 		gmt_grd_init (GMT, Rect->header, options, true);
@@ -544,7 +544,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Rect)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Rect) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Rect) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		gmt_M_str_free (Rect->header->ProjRefPROJ4);

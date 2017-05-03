@@ -223,7 +223,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -236,11 +236,11 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
 	}
-	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
+	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
 
