@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**filter1d** [ *table* ] |-F|\ *type<width>*\ [*mode*][**+h**]
-[ |-D|\ *increment* ] [ |-E| ] [ |-I|\ *ignore\_val* ]
+**filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
+[ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+n**] ]
 [ |SYN_OPT-V| ]
@@ -44,7 +44,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ *type<width>*\ [*mode*][**+h**]
+**-F**\ *type<width>*\ [*modifiers*]
     Sets the filter *type*. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *<width>* in same units as time column. Available convolution
@@ -65,8 +65,8 @@ Required Arguments
 
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
-    value. Append - or + to the filter width if you rather want to
-    return the smallest or largest of the modal values.
+    value. Append **+l** or **+u** if you rather want
+    to return the lowermost or uppermost of the modal values.
 
     (**l**) Lower: Return the minimum of all values.
 
@@ -104,11 +104,6 @@ Optional Arguments
 
 **-E**
     Include Ends of time series in output. Default loses half the filter-width of data at each end.
-
-.. _-I:
-
-**-I**\ *ignore\_val*
-    To ignore values; If an input value equals *ignore\_val* it will be set to NaN.
 
 .. _-L:
 

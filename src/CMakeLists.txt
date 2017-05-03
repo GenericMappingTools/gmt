@@ -36,9 +36,11 @@ include (CreateDebugSym)
 
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
+# NetCDF is required
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 
+# libcurl is required since 5.4
 find_package (CURL REQUIRED)
 include_directories (${CURL_INCLUDE_DIRS})
 list (APPEND GMT_OPTIONAL_LIBRARIES ${CURL_LIBRARIES})
