@@ -294,14 +294,17 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 				int shift = 0;
+				bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);
 				if (Gin->header->wesn[XHI] < wesn[XLO]) shift += 360;
-				if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
+				else if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
+				else if (geo && wesn[XHI] > Gin->header->wesn[XHI]) shift += 360;
+				else if (geo && wesn[XLO] < Gin->header->wesn[XLO]) shift -= 360;
 				if (shift) {	/* Must modify header */
 					Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 				}
 			}
-			if (wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) || wesn[XHI] > (Gin->header->wesn[XHI] + Gin->header->inc[GMT_X])) {
+			if (!geo && (wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) || wesn[XHI] > (Gin->header->wesn[XHI] + Gin->header->inc[GMT_X]))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file by more than one x-increment!\n");
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -325,7 +328,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->n_columns, Gout->header->n_rows,
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
