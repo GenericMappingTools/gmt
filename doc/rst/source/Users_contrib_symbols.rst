@@ -500,6 +500,158 @@ These are symbols used to illustrate sightings of whales.
    gallery/users_contrib_symbols/unidentifiedwhale_high.rst
    gallery/users_contrib_symbols/unidentifiedwhale_low.rst
 
+Structural geology symbols
+--------------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   gallery/users_contrib_symbols/Geology.rst
+
+These are symbols used in structural geology.
+
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-cleavage`       | :ref:`geo-cleavage_hor`   | :ref:`geo-cleavage_vert` |
+|                           |                           |                          |
+| |G001|                    | |G002|                    | |G003|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-foliation-2`    | :ref:`geo-foliation-3`    | :ref:`geo-foliation`     |
+|                           |                           |                          |
+| |G004|                    | |G005|                    | |G006|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-foliation_hor`  | :ref:`geo-foliation_vert` | :ref:`geo-joint`         |
+|                           |                           |                          |
+| |G007|                    | |G008|                    | |G009|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-joint_hor`      | :ref:`geo-joint_vert`     | :ref:`geo-lineation-2`   |
+|                           |                           |                          |
+| |G010|                    | |G011|                    | |G012|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-lineation-3`    | :ref:`geo-lineation`      | :ref:`geo-lineation_hor` |
+|                           |                           |                          |
+| |G013|                    | |G014|                    | |G015|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-lineation_vert` | :ref:`geo-plane`          | :ref:`geo-plane_gentle`  |
+|                           |                           |                          |
+| |G016|                    | |G017|                    | |G018|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-plane_hor`      | :ref:`geo-plane_inv`      | :ref:`geo-plane_medium`  |
+|                           |                           |                          |
+| |G019|                    | |G020|                    | |G021|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-plane_rake`     | :ref:`geo-plane_steep`    | :ref:`geo-plane_und`     |
+|                           |                           |                          |
+| |G022|                    | |G023|                    | |G024|                   |
++---------------------------+---------------------------+--------------------------+
+| :ref:`geo-plane_vert`     |                           |                          |
+|                           |                           |                          |
+| |G025|                    |                           |                          |
++---------------------------+---------------------------+--------------------------+
+
+.. |G001| image:: gallery/users_contrib_symbols/images/geo-cleavage.png
+    :width: 150
+
+.. |G002| image:: gallery/users_contrib_symbols/images/geo-cleavage_hor.png
+    :width: 150
+
+.. |G003| image:: gallery/users_contrib_symbols/images/geo-cleavage_vert.png
+    :width: 150
+
+.. |G004| image:: gallery/users_contrib_symbols/images/geo-foliation-2.png
+    :width: 150
+
+.. |G005| image:: gallery/users_contrib_symbols/images/geo-foliation-3.png
+    :width: 150
+
+.. |G006| image:: gallery/users_contrib_symbols/images/geo-foliation.png
+    :width: 150
+
+.. |G007| image:: gallery/users_contrib_symbols/images/geo-foliation_hor.png
+    :width: 150
+
+.. |G008| image:: gallery/users_contrib_symbols/images/geo-foliation_vert.png
+    :width: 150
+
+.. |G009| image:: gallery/users_contrib_symbols/images/geo-joint.png
+    :width: 150
+
+.. |G010| image:: gallery/users_contrib_symbols/images/geo-joint_hor.png
+    :width: 150
+
+.. |G011| image:: gallery/users_contrib_symbols/images/geo-joint_vert.png
+    :width: 150
+
+.. |G012| image:: gallery/users_contrib_symbols/images/geo-lineation-2.png
+    :width: 150
+
+.. |G013| image:: gallery/users_contrib_symbols/images/geo-lineation-3.png
+    :width: 150
+
+.. |G014| image:: gallery/users_contrib_symbols/images/geo-lineation.png
+    :width: 150
+
+.. |G015| image:: gallery/users_contrib_symbols/images/geo-lineation_hor.png
+    :width: 150
+
+.. |G016| image:: gallery/users_contrib_symbols/images/geo-lineation_vert.png
+    :width: 150
+
+.. |G017| image:: gallery/users_contrib_symbols/images/geo-plane.png
+    :width: 150
+
+.. |G018| image:: gallery/users_contrib_symbols/images/geo-plane_gentle.png
+    :width: 150
+
+.. |G019| image:: gallery/users_contrib_symbols/images/geo-plane_hor.png
+    :width: 150
+
+.. |G020| image:: gallery/users_contrib_symbols/images/geo-plane_inv.png
+    :width: 150
+
+.. |G021| image:: gallery/users_contrib_symbols/images/geo-plane_medium.png
+    :width: 150
+
+.. |G022| image:: gallery/users_contrib_symbols/images/geo-plane_rake.png
+    :width: 150
+
+.. |G023| image:: gallery/users_contrib_symbols/images/geo-plane_steep.png
+    :width: 150
+
+.. |G024| image:: gallery/users_contrib_symbols/images/geo-plane_und.png
+    :width: 150
+
+.. |G025| image:: gallery/users_contrib_symbols/images/geo-plane_vert.png
+    :width: 150
+
+.. toctree::
+   :hidden:
+
+   gallery/users_contrib_symbols/geo-cleavage.rst
+   gallery/users_contrib_symbols/geo-cleavage_hor.rst
+   gallery/users_contrib_symbols/geo-cleavage_vert.rst
+   gallery/users_contrib_symbols/geo-foliation-2.rst
+   gallery/users_contrib_symbols/geo-foliation-3.rst
+   gallery/users_contrib_symbols/geo-foliation.rst
+   gallery/users_contrib_symbols/geo-foliation_hor.rst
+   gallery/users_contrib_symbols/geo-foliation_vert.rst
+   gallery/users_contrib_symbols/geo-joint.rst
+   gallery/users_contrib_symbols/geo-joint_hor.rst
+   gallery/users_contrib_symbols/geo-joint_vert.rst
+   gallery/users_contrib_symbols/geo-lineation-2.rst
+   gallery/users_contrib_symbols/geo-lineation-3.rst
+   gallery/users_contrib_symbols/geo-lineation.rst
+   gallery/users_contrib_symbols/geo-lineation_hor.rst
+   gallery/users_contrib_symbols/geo-lineation_vert.rst
+   gallery/users_contrib_symbols/geo-plane.rst
+   gallery/users_contrib_symbols/geo-plane_gentle.rst
+   gallery/users_contrib_symbols/geo-plane_hor.rst
+   gallery/users_contrib_symbols/geo-plane_inv.rst
+   gallery/users_contrib_symbols/geo-plane_medium.rst
+   gallery/users_contrib_symbols/geo-plane_rake.rst
+   gallery/users_contrib_symbols/geo-plane_steep.rst
+   gallery/users_contrib_symbols/geo-plane_und.rst
+   gallery/users_contrib_symbols/geo-plane_vert.rst
+
 Miscellaneous symbols
 ---------------------
 
