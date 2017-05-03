@@ -288,13 +288,13 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			adjust_R (API, Ctrl, Gin, wesn);
 		}
 		else {
+			bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);
 			if (wesn[YLO] < (Gin->header->wesn[YLO] - Gin->header->inc[GMT_Y]) || wesn[YHI] > (Gin->header->wesn[YHI] + Gin->header->inc[GMT_Y])) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file by more than one y-increment!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 				int shift = 0;
-				bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);
 				if (Gin->header->wesn[XHI] < wesn[XLO]) shift += 360;
 				else if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
 				else if (geo && wesn[XHI] > Gin->header->wesn[XHI]) shift += 360;
