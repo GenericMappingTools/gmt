@@ -2979,10 +2979,7 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 		/* Calculate latitude at intersection */
 		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */ 
 			if (GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (1);	/* P is on S boundary */
-			if (doubleAlmostEqual (P->data[GMT_Y][i], 90.0))	/* Polygon includes the N pole */
-				x_lat = 90.0;
-			else if (doubleAlmostEqual (P->data[GMT_Y][i], -90.0))	/* Polygon includes the S pole */
-				x_lat = -90.0;
+			x_lat = P->data[GMT_Y][i];
 		}
 		else
 			x_lat = P->data[GMT_Y][i] + ((P->data[GMT_Y][in] - P->data[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
@@ -4414,7 +4411,7 @@ GMT_LOCAL int support_decode_arg (char *txt, int column, struct GMT_CUSTOM_SYMBO
 
 /*! . */
 GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0;
+	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
@@ -4432,15 +4429,20 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		strncpy (name, in_name, length-4);
 	else	/* Use as is */
 		strcpy (name, in_name);
-
-	if (!gmt_getsharepath (GMT, "custom", name, ".def", file, R_OK)) {	/* No *.def file found */
+	
+	sprintf (file, "%s.def", name);	/* Full name of def file */
+	pos = gmt_download_file_if_not_found (GMT, name);	/* Deal with downloadable GMT data sets first */
+	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
+	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", file, R_OK)) {	/* No *.def file found */
 		/* See if we got EPS macro */
 		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
 			strncpy (name, in_name, length-4);
 		else	/* Use as is */
 			strcpy (name, in_name);
 		/* First check for eps macro */
-		if (gmt_getsharepath (GMT, "custom", name, ".eps", file, R_OK)) {
+		sprintf (file, "%s.eps", name);	/* Full name of eps file */
+		pos = gmt_download_file_if_not_found (GMT, name);	/* Deal with downloadable GMT data sets first */
+		if (gmt_getsharepath (GMT, "custom", &name[pos], ".eps", file, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", file);
 			if (stat (file, &buf)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of EPS macro %s\n", name);
@@ -4451,17 +4453,16 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find either custom symbol or EPS macro %s\n", name);
 	}
-	else {
+	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", file);
-	}
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", &name[pos]);
 		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 	}
 
 	head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
-	strncpy (head->name, basename (name), GMT_LEN64-1);
+	strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
 			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
@@ -4477,7 +4478,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					got_BB[bb] = true;
 					if (bb == 0) got_BB[1] = true;	/* If we find Highres BB then we don't need to look for lowres BB */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
-						name, (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
+						&name[pos], (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
 				}
 			}
 			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
@@ -4492,7 +4493,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			head->type = gmt_M_memory (GMT, NULL, head->n_required, unsigned int);
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", &name[pos]);
 					fclose (fp);
 					gmtlib_free_one_custom_symbol (GMT, head);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
@@ -4505,7 +4506,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
 						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", name, flags);
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", &name[pos], flags);
 							fclose (fp);
 							GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 							break;
