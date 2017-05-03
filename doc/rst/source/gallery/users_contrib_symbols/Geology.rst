@@ -29,13 +29,13 @@ a plane and is perpendicular to the strike direction. For the lines the trend an
 are used. The trend is measured clockwise from the north and the plunge is the angle of
 the line with the horizontal.
 
-In order to use the symbols in GMT you need to use the program psxy, using the custom
+In order to use the symbols in GMT you need to use the program :doc:`psxy`, using the custom
 symbol type **-Sk**\ [*symbolname*\ ]/\ *size*\ ; where symbolname is one of the short
-names of the geological symbols shown on table 1. In addition to the location of the
+names of the geological symbols shown in the table below. In addition to the location of the
 symbol (x,y) given on the first two columns of the input file, you will need additional
 parameters for some of the symbols. You can also use as variables the size and color of
-the symbol as in any symbol plotted with psxy. In table 1 the parameters needed for
-each symbol are shown, as well as the corresponding representation in Figure 1.
+the symbol as in any symbol plotted with :doc:`psxy`. The table lists the parameters needed for
+each symbol; see the gallery for visual representation.
 
 .. _tbl-Geology:
 
@@ -94,5 +94,5 @@ each symbol are shown, as well as the corresponding representation in Figure 1.
     +-----------------------------------------------------+--------------------+-------------------+
 
     Symbols of the GMT geological symbols collection. The symbol short name is the name that should 
-    be used in psxy **-Sk**\ *symbolname*\ /*size*. The rcyts parameters needed for each symbol are
+    be used in :doc:`psxy` **-Sk**\ *symbolname*\ /*size*. The extra parameters needed for each symbol are
     shown on the order that is expected for the symbol definition.

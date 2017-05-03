@@ -29,8 +29,8 @@ How to use the symbols?
 -----------------------
 
 Before to start, think in the type of map you want to obtain and prepare your data. 
-If you want to create a 2D map (most common situation) you need psxy, if you want a 3D
-map you should use psxyz instead. Think also in how many different symbols you want to 
+If you want to create a 2D map (most common situation) you need :doc:`psxy`, if you want a 3D
+map you should use :doc:`psxyz` instead. Think also in how many different symbols you want to 
 show in each individual map. You should have at least a different .xy file for each
 species that you want to show. You could want also to show separately males and females 
 or adults/youngs/calfs. In this case, you will either need to give a different size to each 
@@ -52,11 +52,11 @@ The symbolsize field is optional, but if not provided you must specify a common 
 (used for all observations in this file) in the script with -Sksymbolname/simbolsize  
 
 The symboltype field is also optional, k means custom symbol. Currently I can't pass 
-different symbols to psxy in the same file (I need split first the file) 
+different symbols to :doc:`psxy` in the same file (I need split first the file) 
 and must provide a unique symbolname in the script for all lines, so the interest 
 of having this field is reduced. Probably I'm missing something. You can also add other fields
 like font, angle, position or a last field with a short remembering note in a text line, they
-are ignored by psxy but you could pass it to pstext.
+are ignored by :doc:`psxy` but you could pass it to :doc:`pstext`.
 
 Take a look at the pics (.png) and choose the symbols that you want. No installation needed, 
 simply browse the directory symbols and copy the files with extension .def having the same 
@@ -155,7 +155,7 @@ Cetacea
        	- unidentifiedwhale_low.def, unidentifiedwhale.def, unidentifiedwhale_high.def
 
 
-3: Call them including the corresponding pxsy or psxyz lines in a GMT script like this: 
+3: Call them including the corresponding :doc:`psxy` or :doc:`psxyz` lines in a GMT script like this: 
 
 .. code-block:: none
 
@@ -256,7 +256,7 @@ Why they are so may similar symbols low, high, etc... for the same species?
     and heterogeneous stranding, for instance a mother/calf stranding or two different species 
     sighted in exactly the same point. You can deal with those cases if you stack several 
     low/high symbols until you obtain the complex symbol desired. You will need duplicate 
-    or triplicate the psxy lines in the script and perhaps play also with the size and color 
+    or triplicate the :doc:`psxy` lines in the script and perhaps play also with the size and color 
     of the symbols. For instance if you see a killer whale harassing two dolphins and you want
     to show all in the same map:
 
