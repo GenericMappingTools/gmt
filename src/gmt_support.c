@@ -2925,9 +2925,6 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 		 */
 		if (gmt_same_longitude (plon, P->data[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->data[GMT_Y][i])) return (1);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
-		/* First skip segments that have no actual length: consecutive points with both latitudes == -90 or +90 */
-		if (fabs (P->data[GMT_Y][i]) == 90.0 && doubleAlmostEqualZero (P->data[GMT_Y][i], P->data[GMT_Y][in]))
-			continue;
 		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
 		if (gmt_same_longitude (plon, P->data[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->data[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
@@ -2980,8 +2977,15 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 			return (1);	/* P is on segment boundary; we are done*/
 		}
 		/* Calculate latitude at intersection */
-		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in]) && GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (1);	/* P is on S boundary */
-		x_lat = P->data[GMT_Y][i] + ((P->data[GMT_Y][in] - P->data[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
+		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */ 
+			if (GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (1);	/* P is on S boundary */
+			if (doubleAlmostEqual (P->data[GMT_Y][i], 90.0))	/* Polygon includes the N pole */
+				x_lat = 90.0;
+			else if (doubleAlmostEqual (P->data[GMT_Y][i], -90.0))	/* Polygon includes the S pole */
+				x_lat = -90.0;
+		}
+		else
+			x_lat = P->data[GMT_Y][i] + ((P->data[GMT_Y][in] - P->data[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
 		if (doubleAlmostEqualZero (x_lat, plat))
 			return (1);	/* P is on S boundary */
 
