@@ -7013,8 +7013,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			p[i] = atof (text);
 		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
-			if (got & GMT_IS_GEO)
+			if (got & GMT_IS_GEO) {
 				GMT->current.io.col_type[GMT_IN][icol] = got;
+				gmt_set_geographic (GMT, GMT_IN);
+			}
 			else if (got & GMT_IS_RATIME)
 				GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 		}
@@ -7036,6 +7038,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		error += gmtinit_rectR_to_geoR (GMT, r_unit, p, wesn, true);
 		gmt_M_memcpy (p, wesn, 4, double);
 		GMT->common.R.oblique = true;
+		gmt_set_geographic (GMT, GMT_IN);
 	}
 	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
 		double fwd_scale, inv_scale = 0.0, inch_to_unit = 0, unit_to_inch = 0;

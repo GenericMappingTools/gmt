@@ -6448,6 +6448,7 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 /*! . */
 int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n) {
 	unsigned int last, i, pos;
+	bool geo = true;	/* Until proven wrong in the switch */
 	char p[GMT_BUFSIZ];
 	double scale = 1.0;
 
@@ -6527,6 +6528,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 				break;
 			default:	/* No special flags or units */
 				scale = 1.0;
+				geo = false;
 				break;
 		}
 		if ((sscanf(p, "%lf", &inc[i])) != 1) {
@@ -6536,7 +6538,8 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
 	}
-
+	if (geo) gmt_set_geographic (GMT, GMT_IN);
+	
 	return (i);	/* Returns the number of increments found */
 }
 

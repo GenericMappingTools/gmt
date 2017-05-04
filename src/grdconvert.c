@@ -244,6 +244,12 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Get all */
 	}
 
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
+		if (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && gmt_M_180_range (Grid->header->wesn[YLO], Grid->header->wesn[YHI])) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Use -fg to ensure the output grid will be identified as geographic.\n");
+		}
+	}
 	Grid->header->type = type[GMT_OUT];
 
 	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
