@@ -1310,7 +1310,7 @@ or ``GMT_IS_TEXTSET``.  If ``S`` is not NULL then we simply reallocate the lengt
 of the segment; otherwise a new segment is first allocated.
 
 For a :ref:`GMT_DATASET <struct-dataset>` there is also the option of controlling the allocation of the segment
-array by setting n_rows = 0.  This would allow external arrays (double-precision only) to connected to
+array by setting n_rows = 0.  This would allow external arrays (double-precision only) to connect to
 the S->data[col] arrays and not be freed by GMT's garbage collector.
 
 Duplicate resources
