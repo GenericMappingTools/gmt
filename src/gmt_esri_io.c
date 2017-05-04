@@ -334,6 +334,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		gmt_fclose (GMT, fp2);
 	}
 
+	if (fp2) gmt_fclose(GMT, fp2);
 	return (GMT_NOERROR);
 }
 
