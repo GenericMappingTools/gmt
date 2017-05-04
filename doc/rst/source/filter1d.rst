@@ -44,11 +44,13 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ *type<width>*\ [*modifiers*]
-    Sets the filter *type*. Choose among convolution and non-convolution
+**-F**\ **type**\ *width*\ [*modifiers*]
+    Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
-    *<width>* in same units as time column. Available convolution
-    filters are:
+    *width* in same units as time column. By default we
+    perform low-pass filtering; append **+h** to select high-pass filtering.
+    Some filters allow for optional arguments and modifiers. Available convolution
+    filter types are:
 
     (**b**) Boxcar: All weights are equal.
 
@@ -59,7 +61,7 @@ Required Arguments
     (**f**) Custom: Instead of *width* give name of a one-column file
     with your own weight coefficients.
 
-    Non-convolution filters are:
+    Non-convolution filter types are:
 
     (**m**) Median: Returns median value.
 
@@ -82,9 +84,6 @@ Required Arguments
 
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
-
-    By default we perform low-pass filtering; append **+h** to instead
-    perform high-pass filtering.
 
 Optional Arguments
 ------------------
