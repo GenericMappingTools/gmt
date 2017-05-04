@@ -3168,7 +3168,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			else				/* Default column order */
 				col_pos = col_no;
 			n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
-			if (n_convert != GMT_IS_NAN && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
+			if (n_convert != GMT_IS_NAN && col_pos > 1 && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
@@ -3969,7 +3969,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
-			if (gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
+			if (col_no > 1 && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 			else	/* Still clean, so skip to next column */
 				continue;
