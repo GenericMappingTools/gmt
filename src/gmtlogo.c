@@ -32,7 +32,6 @@
 #define THIS_MODULE_NEEDS	"rj"
 #define THIS_MODULE_OPTIONS "->KJOPRUVXYtxy" GMT_OPT("c")
 
-#if 0
 #define GMT_N_LETTERS	116
 static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 	{ NAN, NAN },
@@ -152,7 +151,6 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 	{ 110.32, 30.47 },
 	{ 110.32, -41.8 }
 };
-#endif
 
 /* Specific colors for fonts, land, water, text etc */
 
@@ -290,7 +288,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
 	int error, fmode;
 
-	//uint64_t par[4] = {0, 0, 0, 0};
+	uint64_t par[4] = {0, 0, 0, 0};
 	
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, dim[2];
@@ -298,6 +296,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_BUFSIZ] = {""};
 
 	struct GMT_FONT F;
+	struct GMT_MATRIX *M = NULL;
 	struct GMTLOGO_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -388,24 +387,23 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
 
-#if 0
-	/* Allocate a matrix containers for input separately */
-	dim[0] = 2;	dim[1] = GMT_N_LETTERS;
-	if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+	/* Allocate a matrix container for holding the GMT-matrix coordinates */
+	par[0] = 2;	par[1] = GMT_N_LETTERS;
+	if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, 0, NULL)) == NULL)
 		exit (EXIT_FAILURE);
-#endif
-
-	gmt_getsharepath (GMT, "conf", "gmtlogo_letters", ".txt", file, R_OK);
-
+	GMT_Put_Matrix (API, M, GMT_FLOAT, gmt_letters);	/* Hook in our static float matrix */
+	GMT_Open_VirtualFile (API, GMT_IS_MATRIX, GMT_IS_POINT, GMT_IN, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
+	GMT_Init_VirtualFile (API, 0, file);	/* Reset since we are reading it a 2nd time */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi --GMT_HISTORY=false",
 		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
-
+	GMT_Close_VirtualFile (API, file);
+	
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_INV);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */
