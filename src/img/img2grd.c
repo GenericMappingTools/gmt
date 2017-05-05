@@ -377,7 +377,7 @@ GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, st
 int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	unsigned int n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	unsigned int first, n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	int jin, iinstart, iinstop;
 
 	uint64_t ij;
@@ -437,8 +437,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		imgrange.maxlat = Ctrl->D.max;
 	}
 
-	if (!gmt_getdatapath (GMT, Ctrl->In.file, infile, R_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", Ctrl->In.file);
+	first = gmt_download_file_if_not_found (GMT, Ctrl->In.file);	/* Deal with downloadable GMT data sets first */
+
+	if (!gmt_getdatapath (GMT, &Ctrl->In.file[first], infile, R_OK)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", &Ctrl->In.file[first]);
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
