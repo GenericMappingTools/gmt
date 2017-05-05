@@ -396,6 +396,29 @@ GMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) 
 }
 
 /*! . */
+GMT_LOCAL bool gmt_skip_record (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, char *record) {
+	/* Return true if the pattern was found; see gmt_set_text_selection for details */
+	bool match = false;
+	if (S == NULL || S->n == 0) return (true);	/* No selection criteria given, so can only return true */
+	/* Could be one or n patterns to check */
+	for (uint64_t k = 0; !match && k < S->n; k++) {
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
+		if (S->regexp[k])
+		 	match = gmtlib_regexp_match (GMT, record, S->pattern[k], S->caseless[k]);	/* true if we matched */
+		else
+#endif
+			match = (strstr (record, S->pattern[k]) != NULL);
+	}
+	/* Here, match == true if we found the pattern we specified.  There are now two cases to consider:
+	   1) invert is false, which means we want to skip records when match == false.
+	      So if match == false and invert == false then we will skip.
+	   2) invert == true, which means we want to skip recprds when match == true.
+	      So if match == true and invert == true then we will skip
+	   This means in either scenario, the test below is true if we want to skip. */
+	return (S->invert == match);	/* Returns true if we should skip this record */
+}
+
+/*! . */
 GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S) {
 	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attempt to convert to double in dvalue.
@@ -3148,6 +3171,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Aspatial associations set with -a but input file is not in OGR/GMT format!\n");
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
 		}
+
+		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 		gmt_update_prev_rec (GMT, n_use);

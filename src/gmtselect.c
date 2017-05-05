@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
 #define THIS_MODULE_KEYS	"<D{,CD(=,FD(,LD(=,>D},GG("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>JRVabdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>JRVabdefghios" GMT_OPT("HMm")
 
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 

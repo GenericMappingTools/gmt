@@ -6755,6 +6755,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 			&& (GMT->common.b.active[GMT_OUT] == false && GMT->common.b.nc[GMT_OUT] == false)); break;
 		case 'c': error += GMT->common.c.active == false; break;
 		case 'd': error += (GMT->common.d.active[GMT_IN] == false && GMT->common.d.active[GMT_OUT] == false); break;
+		case 'e': error += GMT->common.e.active == false; break;
 		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
 		case 'g': error += GMT->common.g.active == false; break;
 		case 'H':
@@ -7125,6 +7126,17 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
 	}
 	if (first == GMT_IN) strncpy (GMT->common.d.string, arg, GMT_LEN64-1);	/* Verbatim copy */
+	return (GMT_NOERROR);
+}
+
+/*! . */
+GMT_LOCAL unsigned int gmtinit_parse_e_option (struct GMT_CTRL *GMT, char *arg) {
+	/* Parse the -e option.  Full syntax: -e[~]\"search string\" */
+
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -e requires an argument */
+	strncpy (GMT->common.e.string, arg, GMT_LEN64-1);	/* Make copy of -e argument verbatim */
+	GMT->common.e.select = gmt_set_text_selection (GMT, arg);
+
 	return (GMT_NOERROR);
 }
 
@@ -11318,6 +11330,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_str_free (GMT->common.h.title);
 	gmt_M_str_free (GMT->common.h.remark);
 	gmt_M_str_free (GMT->common.h.colnames);
+	if (GMT->common.e.active) gmt_free_text_selection (GMT, &GMT->common.e.select);
 
 	/* GMT_PLOT */
 
@@ -12714,6 +12727,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					break;
 			}
 			error += gmt_parse_d_option (GMT, item);
+			break;
+
+		case 'e':
+			error += (GMT_more_than_once (GMT, GMT->common.e.active) || gmtinit_parse_e_option (GMT, item));
+			GMT->common.e.active = true;
 			break;
 
 		case 'f':

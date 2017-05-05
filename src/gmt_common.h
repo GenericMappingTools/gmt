@@ -143,6 +143,11 @@ struct GMT_COMMON {
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;
+	struct e {	/* -e[~]\"search string\"] */
+		bool active;
+		char string[GMT_LEN256];
+		struct GMT_TEXT_SELECTION *select;
+	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
 		char string[GMT_LEN64];

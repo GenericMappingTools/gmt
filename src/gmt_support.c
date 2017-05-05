@@ -14037,7 +14037,7 @@ void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **
 }
 
 /*! . */
-bool gmt_get_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
+bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
 	/* Return true if the pattern was found; see at end for what to check for in calling program */
 	bool match;
 	if (S == NULL || S->n == 0) return (true);	/* No selection criteria given, so can only return true */
@@ -14075,7 +14075,7 @@ struct GMT_TEXT_SELECTION * gmt_set_text_selection (struct GMT_CTRL *GMT, char *
 	 * If the leading ~ is given we return the inverse selection (segments that did not match).
 	 * Escape ~ or +f at start of an actual pattern with \\~ to bypass their special meanings.
 	 * We return a pointer to struct GMT_TEXT_SELECTION, which holds the information.
-	 * Programs should call gmt_get_text_selection on a segment to determine a match,
+	 * Programs should call gmt_get_segtext_selection on a segment to determine a match,
 	 * and gmt_free_text_selection to free memory when done.
 	 */
 	uint64_t k = 0, n = 0, n_items, arg_length;
