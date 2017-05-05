@@ -51,6 +51,12 @@ Otherwise, get netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
 You need at least version 4.0 with netCDF-4/HDF5 data model support (do not
 disable HDF5/ZLIB in netCDF with --disable-netcdf-4).
 
+Install CURL library
+--------------------
+
+To handle URLs we depend on libcurl so install via your favorite package
+manager if it is not intrinsic to your Unix installation.  Otherwise, get
+it from https://curl.haxx.se.
 
 GDAL (optional)
 ---------------
@@ -121,10 +127,8 @@ a for-profit organization you should read Shewchuk's copyright statement (in
 src/triangle.c) first.  If you agree with the license terms you can enable
 Shewchuk's triangulation routine in cmake/ConfigUser.cmake.
 
-At run-time, GMT will initialize all default variables by reading the
-share/gmt.conf. Although strongly discouraged, if you want to make permanent
-changes to some of the defaults you can edit the share/gmt.conf file directly.
-A much better approach is to create a gmt.conf file in your home directory
+At run-time, GMT will initialize all default variables. You can change
+this by adding a gmt.conf file in your current or home directory
 and edit those settings since GMT will check for that file before loading
 system defaults (actually, it will first look in the current directory, then
 the home directory, and then finally in share).  See the gmt.conf man page

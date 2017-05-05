@@ -86,9 +86,9 @@ CMake supports out-of-source builds and puts generated files in a completely
 separate directory, so that the source tree is unchanged. Trying to run CMake
 in the source tree will result in an error. CMake will first check for the
 minimal required version and then search for required and optional libraries
-(netCDF, PCRE, GDAL, LAPACK) in the default locations. The configuration step
-will fail if dependencies are not met. You have to ensure that CMake can find
-the required resources by configuring *cmake/ConfigUser.cmake*.
+(netCDF, CURL, PCRE, GDAL, LAPACK) in the default locations. The configuration
+step will fail if dependencies are not met. You have to ensure that CMake can
+find the required resources by configuring *cmake/ConfigUser.cmake*.
 
 Finding GSHHG:
 ~~~~~~~~~~~~~~
