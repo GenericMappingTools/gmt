@@ -24,6 +24,8 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -146,6 +148,12 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_

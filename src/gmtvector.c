@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Operations on Cartesian vectors in 2-D and 3-D"
 #define THIS_MODULE_KEYS	"<D{,AD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
 
 enum gmtvector_method {	/* The available methods */
 	DO_NOTHING=0,
@@ -108,8 +108,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-A[m][<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|R|x] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|R|x] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -142,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
-	GMT_Option (API, "bo,d,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "bo,d,e,f,g,h,i,o,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

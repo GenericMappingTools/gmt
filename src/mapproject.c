@@ -44,7 +44,7 @@
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformations, datum conversions and geodesy"
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>JRVbdfghiops" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>JRVbdefghiops" GMT_OPT("HMm")
 
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */
@@ -183,8 +183,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[<lon0>/<lat0>][+a][+i][+u[-|+]<unit>][+v]]", GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<table>[+u[+|-]<unit>][+p] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[w|h]] [-Z[<speed>][+a][+i][+f][+t<epoch>]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -249,7 +249,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +f to format the elapsed time using the ISO 8601 convention.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      The FORMAT_CLOCK_OUT setting is used to determine the ss.xxx format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +t with epoch to get absolute time along track.\n");
-	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,p,s,:,.");
+	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,p,s,:,.");
 	GMT_Message (API, GMT_TIME_NONE, "\tNote: Output order is A before G before L before Z, if used.\n");
 
 	return (GMT_MODULE_USAGE);

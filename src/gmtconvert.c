@@ -117,7 +117,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -158,12 +158,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If your pattern begins with ~, escape it with \\~.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To match OGR aspatial values, use name=value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To match OGR aspatial values, use name=value, and to match against\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   extended regular expressions use -S[~]/regexp/[i] (i for insensitive).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give +f<file> for a file list with such patterns, one per line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To give a single pattern starting with +f, escape it with \\+f.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
-	GMT_Option (API, "V,a,bi,bo,d,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "V,a,bi,bo,d,e,f,g,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

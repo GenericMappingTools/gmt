@@ -41,7 +41,7 @@
 #define THIS_MODULE_PURPOSE	"Get mean rotations and covarience matrices from set of finate rotations"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
 
 struct ROTSMOOTHER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -102,8 +102,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: rotsmoother [<table>] [-A] [-C] [-N] [-S] [-T<time(s)>] [%s] [-W] [-Z] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: rotsmoother [<table>] [-A] [-C] [-N] [-S] [-T<time(s)>] [%s] [-W] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -122,7 +122,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expect weights in last column for a weighted mean rotation [no weights].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Report negative opening angles [positive].\n");
-	GMT_Option (API, "bi3,bo,d,h,i,o,s,:,.");
+	GMT_Option (API, "bi3,bo,d,e,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

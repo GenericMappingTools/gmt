@@ -23,6 +23,7 @@ Synopsis
 [ |-Z|\ [*flags*\ ] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -159,6 +160,9 @@ Optional Arguments
 .. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
     [Default is NaN].
 .. include:: explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

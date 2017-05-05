@@ -5847,6 +5847,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");
 			break;
 
+		case 'e':	/* -e option for ASCII grep operation on data records */
+
+			gmt_message (GMT, "\t-e Only accept input data records that contain the string \"pattern\".\n");
+			gmt_message (GMT, "\t   Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern.\n");
+			gmt_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.  To match against\n");
+			gmt_message (GMT, "\t   extended regular expressions use -e[~]/regexp/[i] (i for case-insensitive).\n");
+			gmt_message (GMT, "\t   Give +f<file> for a file list with such patterns, one per line.\n");
+			gmt_message (GMT, "\t   To give a single pattern starting with +f, escape it with \\+f.\n");
+			break;
+
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
 
 			gmt_message (GMT, "\t-di Replace any <nodata> in input data with NaN.\n");
@@ -7014,10 +7024,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			p[i] = atof (text);
 		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
-			if (got & GMT_IS_GEO) {
+			if (got & GMT_IS_GEO)
 				GMT->current.io.col_type[GMT_IN][icol] = got;
-				gmt_set_geographic (GMT, GMT_IN);
-			}
 			else if (got & GMT_IS_RATIME)
 				GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 		}

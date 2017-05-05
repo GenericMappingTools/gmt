@@ -50,7 +50,7 @@
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,ZG(,G?},GDN"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-VRfhior" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-VRdefhior" GMT_ADD_x_OPT
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
@@ -229,7 +229,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|n|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>] [%s] \n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-fg] [%s]\n\t[%s] [%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -254,6 +254,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append either a constant or the name of gridfile with levels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If given a grid then it also defines the output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot use both -Z<grid> and -R -I [-r].\n");
+	GMT_Option (API, "d,e");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -Mh]).\n");
 	GMT_Option (API, "h,i,o,r,x,.");
 	return (GMT_MODULE_USAGE);

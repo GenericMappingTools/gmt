@@ -41,7 +41,7 @@
 #define THIS_MODULE_PURPOSE	"Spherical gridding in tension of data on a sphere"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdhirs" GMT_OPT("F")
+#define THIS_MODULE_OPTIONS "-:RVbdehirs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
@@ -93,8 +93,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -120,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
-	GMT_Option (API, "bi3,di,h,i,r,s,:,.");
+	GMT_Option (API, "bi3,di,e,h,i,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -122,8 +122,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-N] [-O]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-	             GMT_X_OPT, GMT_Y_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -149,7 +149,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
-	GMT_Option (API, "X,o,p");
+	GMT_Option (API, "X,b,o,p");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);

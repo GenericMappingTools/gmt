@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry"
 #define THIS_MODULE_KEYS	"<T{,GG},MT),TD("
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdfhir" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:RVbdefhir" GMT_OPT("H")
 
 #define SHAPE_GAUS	0
 #define SHAPE_PARA	1
@@ -151,8 +151,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M<list>] [-N<norm>] [-Q<bmode><fmode>] [-S<r_scale>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -191,7 +191,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set the reference depth [0].  Not allowed for -Qi.\n");
-	GMT_Option (API, "V,bi,di");
+	GMT_Option (API, "V,bi,di,e");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
 	GMT_Option (API, "h,i,r,:,.");

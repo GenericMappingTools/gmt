@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads, forces, and bending moments"
 #define THIS_MODULE_KEYS	"ED(,QD(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vfhio"
+#define THIS_MODULE_OPTIONS "-Vdefhio"
 
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
@@ -297,7 +297,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_e_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -331,7 +331,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Subaerial topography will be scaled by -D to account for density differences.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].\n");
-	GMT_Option (API, "h,i,o,.");
+	GMT_Option (API, "d,e,h,i,o,.");
 	return (GMT_MODULE_USAGE);
 }
 

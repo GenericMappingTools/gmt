@@ -26,6 +26,7 @@ Synopsis
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -172,6 +173,9 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_

@@ -33,7 +33,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
 #define THIS_MODULE_KEYS	"<T{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdhit" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
 
 #define CINE 1
 #define ANISO 2
@@ -128,7 +128,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s] [-D<sigscale>]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-L] [-N] [-O] [-P] [-S<symbol><scale><fontsize>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     x  Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,di,h,i,t,:,.");
+	GMT_Option (API, "X,di,e,h,i,t,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

@@ -29,6 +29,7 @@ Synopsis
 [ |-W|\ [**w**]]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
@@ -266,6 +267,9 @@ Optional Arguments
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

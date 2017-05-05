@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
 #define THIS_MODULE_KEYS	"<D{,AD(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
@@ -467,8 +467,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+n]]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+n]]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -521,7 +521,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t   If a filename is given instead we read t coordinates from first column.\n"
 		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
 		"\t   This choice also implies -Ca.\n");
-	GMT_Option (API, "V,bi,bo,d,f,g,h,i,o,s,.");
+	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,s,.");
 
 	return (GMT_MODULE_USAGE);
 }

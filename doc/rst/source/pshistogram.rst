@@ -34,6 +34,7 @@ Synopsis
 [ |-Z|\ *type* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -200,6 +201,9 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

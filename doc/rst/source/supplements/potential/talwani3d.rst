@@ -24,6 +24,8 @@ Synopsis
 [ |-Z|\ *level*\ \|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-d| ]
+[ |SYN_OPT-e| ]
 [ **-fg** ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
@@ -114,6 +116,12 @@ Optional Arguments
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 **-fg**
     Geographic grids (dimensions of longitude, latitude) will be converted to

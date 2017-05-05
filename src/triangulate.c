@@ -39,7 +39,7 @@
 #define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
 #define THIS_MODULE_KEYS	"<D{,>D},GG)"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:>JRVbdfhirs" GMT_OPT("Hm")
+#define THIS_MODULE_OPTIONS "-:>JRVbdefhirs" GMT_OPT("Hm")
 
 struct TRIANGULATE_CTRL {
 	struct Out {	/* -> */
@@ -124,8 +124,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q]\n", GMT_I_OPT, GMT_J_OPT);
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [-T] [%s] [-Z] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [-T] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
 	GMT_Option (API, "R,V,bi2");
 	GMT_Message (API, GMT_TIME_NONE, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
-	GMT_Option (API, "d,f,h,i,r,s,:,.");
+	GMT_Option (API, "d,e,f,h,i,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

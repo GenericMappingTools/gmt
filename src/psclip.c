@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
 #define THIS_MODULE_KEYS	"<D{,>X},C-("
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdfghipstxy" GMT_OPT("EZMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
 	struct A {	/* -A[m|p|step] */
@@ -75,7 +75,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[a|<n>] [-A[m|p|x|y]] [-K] [-O]  OR\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -92,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
-	GMT_Option (API, "U,V,X,bi2,di,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "U,V,X,bi2,di,e,f,g,h,i,p,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -31,6 +31,7 @@ pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-t| ]
@@ -192,6 +193,9 @@ Optional Arguments
 .. include:: ../../explain_-XY.rst_
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-t.rst_

@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
 #define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdhiprstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiprstxy" GMT_OPT("Ec")
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */
@@ -428,7 +428,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmask <table> %s %s\n", GMT_I_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] [-K] [-L<grid>] [-N] [-O] [-P] [-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -458,7 +458,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_Option (API, "U,V,X,bi2,bo,d,h,i,p,r,s,t,:,.");
+	GMT_Option (API, "U,V,X,bi2,bo,d,e,h,i,p,r,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

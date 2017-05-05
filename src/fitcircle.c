@@ -79,7 +79,7 @@
 #define THIS_MODULE_PURPOSE	"Find mean position and great [or small] circle fit to points on sphere"
 #define THIS_MODULE_KEYS	"<D{,>T},>DF"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdfghio" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghio" GMT_OPT("H")
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -121,8 +121,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: fitcircle [<table>] -L[<norm>] [-F[<flags>]] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -140,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -L3 is used we repeat the output for m|n|s|c (if selected).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Attempt to fit a small circle rather than a great circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
-	GMT_Option (API, "V,a,bi,di,f,g,h,i,o,:,.");
+	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

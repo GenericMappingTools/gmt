@@ -4659,7 +4659,8 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 			*status = 0;
 			return (NULL);
 		}
-		more = false;	/* Got a valid record */
+		if (!(GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)))	/* Fail a grep test */
+			more = false;	/* Got a valid record */
 	}
 
 	/* Normal data record */

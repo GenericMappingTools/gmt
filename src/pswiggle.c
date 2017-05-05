@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdfghipstxy" GMT_OPT("EHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EHMmc")
 
 EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 
@@ -211,8 +211,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pswiggle [<table>] %s %s -Z<scale>[<unit>]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-G[-|+|=]<fill>] [-I<az>] [%s] [-K] [-O]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] ",
-		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] ",
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -243,7 +243,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append any unit from among %s [c].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Option (API, "bi3,di,f,g,h,i,p,s,t,:,.");
+	GMT_Option (API, "bi3,di,e,f,g,h,i,p,s,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

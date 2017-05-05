@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Split xyz[dh] data tables into individual segments"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdfghis" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghis" GMT_OPT("H")
 
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
@@ -150,8 +150,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -180,7 +180,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
-	GMT_Option (API, "bo,d,f,g,h,i,s,:,.");
+	GMT_Option (API, "bo,d,e,f,g,h,i,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

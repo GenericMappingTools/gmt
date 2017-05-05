@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
 #define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdfghipstxy"
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy"
 
 struct PSTERNARY_CTRL {
 	struct PSTERNARY_A {	/* -A[-][labelinfo] */
@@ -102,7 +102,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: psternary <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-G<fill>] [-JX<width>] [-K] [-L<a/b/c> ] [-M] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t [-S[<symbol>][<size>[unit]]] [-R<amin/amax/bmin/bmax/cmin/cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -124,7 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See psxy for full list of symbols.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
-	GMT_Option (API, "X,bi2,di,f,g,h,i,p,t,:,.");
+	GMT_Option (API, "X,bi2,di,e,f,g,h,i,p,t,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

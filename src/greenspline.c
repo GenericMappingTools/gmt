@@ -53,7 +53,7 @@
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
 #define THIS_MODULE_KEYS	"<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:>Vbdefghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
@@ -216,8 +216,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-E[<misfittable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]] [-D<mode>] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]][-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s]\n\n",
-		GMT_bi_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
+		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -287,7 +287,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -D) and weights (see -W).\n");
-	GMT_Option (API, "d,g,h,i,o,r,s,x,:,.");
+	GMT_Option (API, "d,e,g,h,i,o,r,s,x,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

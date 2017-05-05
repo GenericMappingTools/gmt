@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdfghios"
+#define THIS_MODULE_OPTIONS "-:>Vabdefghios"
 
 /* Various integer constants for flags and modes */
 
@@ -132,7 +132,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtregress [<table>] [-A[<min>/<max>/<inc>]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T<min>/<max>/<inc> | -T<n>] [%s] [-W[w][x][y][r]] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Given a sigma, the weight will be computed via weight = 1/sigma.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ww if weights are precomputed and not given as 1-sigma values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Except for -N1 we square the weights when computing misfits.\n");
-	GMT_Option (API, "V,a,bi,bo,g,h,i,o,.");
+	GMT_Option (API, "V,a,bi,bo,d,e,g,h,i,o,.");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -29,7 +29,7 @@
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "->RVbhirs" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "->RVbdhirs" GMT_ADD_x_OPT
 
 #ifndef M_LN2
 #define M_LN2 0.69314718055994530942  /* log_e 2 */
@@ -92,8 +92,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]%s\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-	GMT_Option (API, "V,bi4,h,i,r,s,x,.");
+	GMT_Option (API, "V,bi4,e,h,i,r,s,x,.");
 	
 	return (GMT_MODULE_USAGE);
 }

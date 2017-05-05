@@ -244,6 +244,10 @@ General improvements
 A range of new capabilities have been added to all of GMT; here is a
 summary of these changes:
 
+*  We have added a new lower-case GMT common option.  Programs that read
+   ASCII data can use **-e** to only select data records that match a
+   specified pattern or regular expression.
+
 *  All modules can now read data via external URL addresses.  This works
    by using libcurl to access an external file and save it to the users'
    GMT cache directory.  This directory can be specified via a new GMT
@@ -2615,7 +2619,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 25 switches in
+to setting the data region, the map projection, etc. The 26 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -2651,6 +2655,8 @@ importance (some are used a lot more than others).
 | **-b**   | Select binary input and/or output                                  |
 +----------+--------------------------------------------------------------------+
 | **-d**   | Replace user *nodata* values with IEEE NaNs                        |
++----------+--------------------------------------------------------------------+
+| **-e**   | Only process data records that match a *pattern*                   |
 +----------+--------------------------------------------------------------------+
 | **-f**   | Specify the data format on a per column basis                      |
 +----------+--------------------------------------------------------------------+
@@ -3561,6 +3567,15 @@ you can use the **-d** option to have such values replaced with NaNs.
 Similarly, should your GMT output need to conform to such a requirement
 you can replace all NaNs with the chosen nodata value.  If only input
 or output should be affected, use **-di** or **-do**, respectably.
+
+Data record pattern matching: The **-e** option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Modules that read ASCII tables will normally process all the data records
+that are read.  The **-e** option offers a built in pattern scanner that
+will only pass records that match the given patterns or regular expressions.
+The test can also be inverted to only pass data records that *do not* match
+the pattern.  The test does not apply to header or segment headers.
 
 Data type selection: The **-f** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

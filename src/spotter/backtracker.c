@@ -78,7 +78,7 @@
 #define THIS_MODULE_PURPOSE	"Generate forward and backward flowlines and hotspot tracks"
 #define THIS_MODULE_KEYS	"<D{,>D},FD("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -150,8 +150,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] %s [-A[<young></old>]] [-Df|b]\n", SPOTTER_E_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -184,7 +184,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt will output lon,lat,time,az,major,minor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D to specify which direction to rotate [forward in time].\n");
-	GMT_Option (API, "bi3,bo,d,h,i,o,s,:,.");
+	GMT_Option (API, "bi3,bo,d,e,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

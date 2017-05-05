@@ -131,7 +131,7 @@
 #define THIS_MODULE_PURPOSE	"Create CVA image from seamount locations"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVbdghirs" GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:>RVbdeghirs" GMT_OPT("FHMm")
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -187,8 +187,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: hotspotter [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-D<factor>] [-N<upper_age>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -203,7 +203,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_Option (API, "V,bi5,di,h,i,r,:,.");
+	GMT_Option (API, "V,bi5,di,e,h,i,r,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }

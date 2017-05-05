@@ -22,6 +22,8 @@ Synopsis
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-d| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
@@ -130,6 +132,12 @@ Optional Arguments
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

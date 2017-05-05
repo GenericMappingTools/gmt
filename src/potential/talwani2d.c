@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 2-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vhio" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-Vdehio" GMT_ADD_x_OPT
 
 struct TALWANI2D_CTRL {
 	struct Out {	/* -> */
@@ -218,7 +218,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[%s]\n\t[%s] [%s]%s\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[%s] [%s] [%s]\n\t[%s] [%s]%s\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -241,7 +241,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
-	GMT_Option (API, "h,i,o,x,.");
+	GMT_Option (API, "d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
 

@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:RVbdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVbdefghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
@@ -158,8 +158,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmath [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [%s] [%s] [%s] [%s]\n\t[%s]"
-		" [%s]\n\t[%s] [%s] [%s] [%s]\n\t%s",	GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
+		" [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t%s",	GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
 	GMT_Message (API, GMT_TIME_NONE, " A B op C op D op ... = <outgrd>\n\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t-N Do not perform strict domain check if several grids are involved.\n"
 		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_CONV4_LIMIT);
 	GMT_Option (API, "R,V");
-	GMT_Option (API, "bi2,di,f,g,h,i");
+	GMT_Option (API, "bi2,di,e,f,g,h,i");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
 	GMT_Option (API, "n,r,s,x,.");
 

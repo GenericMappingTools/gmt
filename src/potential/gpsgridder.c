@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet"
 #define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVbdfghinors" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:>RVbdefghinors" GMT_ADD_x_OPT
 
 /* Control structure for gpsgridder */
 
@@ -137,8 +137,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile> [%s] [-I<dx>[/<dy>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[n|r|v]<val>[+f<file>]] [-Fd|f<val>] [-L] [-N<nodefile>] [-S<nu>] [-T<maskgrid>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n", GMT_V_OPT,
-		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n", GMT_V_OPT,
+		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -189,7 +189,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   PS: CURRENTLY NOT STABLE\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4-6 input columns (see -W); use -i to select columns from any data table.\n");
-	GMT_Option (API, "d,f,h,i,n,o,r,s,x,:,.");
+	GMT_Option (API, "d,e,f,h,i,n,o,r,s,x,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

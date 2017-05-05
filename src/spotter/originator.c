@@ -112,7 +112,7 @@
 #define THIS_MODULE_PURPOSE	"Associate seamounts with nearest hotspot point sources"
 #define THIS_MODULE_KEYS	"<D{,FD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdhis" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdehis" GMT_OPT("HMm")
 
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -211,7 +211,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -236,7 +236,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
-	GMT_Option (API, "bi5,d,h,i,s,:,.");
+	GMT_Option (API, "bi5,d,e,h,i,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
