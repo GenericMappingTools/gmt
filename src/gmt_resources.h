@@ -273,9 +273,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
 	GMT_GRID_IS_GEO		   = 256U}; /* Grid is a geographic grid, not Cartesian */
 
-#define GMT_GRID_ALL		= 0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
-#define GMT_GRID_HEADER_ONLY	= 1U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_ONLY */
-#define GMT_GRID_DATA_ONLY	= 2U   /* Backwards compatibility for < 5.3.3; See GMT_DATA_ONLY */
+#define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
+#define GMT_GRID_HEADER_ONLY	1U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_ONLY */
+#define GMT_GRID_DATA_ONLY	2U   /* Backwards compatibility for < 5.3.3; See GMT_DATA_ONLY */
 
 /* These lengths (except GMT_GRID_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
 enum GMT_enum_grdlen {
