@@ -39,59 +39,59 @@ each symbol; see the gallery for visual representation.
 
 .. _tbl-Geology:
 
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Symbol Description                                  | Symbol Name        | Parameters needed |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of beds                              | geo-plane          | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Horizontal beds                                     | geo-plane_hor      |                   |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike of vertical beds                             | geo-plane_vert     | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of overturned beds                   | geo-plane_inv      | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of bed with rake of lineation        | geo-plane_rake     | Strike, Dip, Rake |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip direction of gently dipping beds     | geo-plane_gentle   | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip direction of moderately dipping beds | geo-plane_medium   | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip direction of steeply dipping beds    | geo-plane_steep    | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of crenulated or undulated beds      | geo-plane_und      | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of foliation                         | geo-foliation      | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Horizontal foliation                                | geo-foliation_hor  |                   |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike of vertical foliation                        | geo-foliation_vert | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of cleavage                          | geo-cleavage       | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Horizontal cleavage                                 | geo-cleavage_hor   |                   |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike of vertical cleavage                         | geo-cleavage_vert  | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of foliation 2                       | geo-foliation-2    | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of foliation 3                       | geo-foliation-3    | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike and dip of joints                            | geo-joint          | Strike, Dip       |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Horizontal joints                                   | geo-joint_hor      |                   |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Strike of vertical joints                           | geo-joint_vert     | Strike            |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Trend and plunge of lineation                       | geo-lineation      | Trend, Plunge     |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Vertical lineation                                  | geo-lineation_vert |                   |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Horizontal lineation                                | geo-lineation_hor  | Trend             |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Trend and plunge of lineation 2                     | geo-lineation-2    | Trend, Plunge     |
-    +-----------------------------------------------------+--------------------+-------------------+
-    | Trend and plunge of lineation 3                     | geo-lineation-3    | Trend, Plunge     |
-    +-----------------------------------------------------+--------------------+-------------------+
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Symbol Description                                            | Symbol Name        | Parameters needed |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of beds                         | geo-plane          | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Horizontal beds                                               | geo-plane_hor      |                   |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike of vertical beds                                       | geo-plane_vert     | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of overturned beds              | geo-plane_inv      | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of bed with rake of lineation   | geo-plane_rake     | Strike, Dip, Rake |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike and dip direction of gently dipping beds               | geo-plane_gentle   | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike and dip direction of moderately dipping beds           | geo-plane_medium   | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike and dip direction of steeply dipping beds              | geo-plane_steep    | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of crenulated or undulated beds | geo-plane_und      | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of foliation                    | geo-foliation      | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Horizontal foliation                                          | geo-foliation_hor  |                   |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike of vertical foliation                                  | geo-foliation_vert | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of cleavage                     | geo-cleavage       | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Horizontal cleavage                                           | geo-cleavage_hor   |                   |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike of vertical cleavage                                   | geo-cleavage_vert  | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of foliation 2                  | geo-foliation-2    | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of foliation 3                  | geo-foliation-3    | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike, dip direction and dip of joints                       | geo-joint          | Strike, Dip       |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Horizontal joints                                             | geo-joint_hor      |                   |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Strike of vertical joints                                     | geo-joint_vert     | Strike            |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Trend and plunge of lineation                                 | geo-lineation      | Trend, Plunge     |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Vertical lineation                                            | geo-lineation_vert |                   |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Horizontal lineation                                          | geo-lineation_hor  | Trend             |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Trend and plunge of lineation 2                               | geo-lineation-2    | Trend, Plunge     |
+    +---------------------------------------------------------------+--------------------+-------------------+
+    | Trend and plunge of lineation 3                               | geo-lineation-3    | Trend, Plunge     |
+    +---------------------------------------------------------------+--------------------+-------------------+
 
     Symbols of the GMT geological symbols collection. The symbol short name is the name that should 
     be used in :doc:`psxy` **-Sk**\ *symbolname*\ /*size*. The extra parameters needed for each symbol are

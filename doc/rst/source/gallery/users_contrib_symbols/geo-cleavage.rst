@@ -1,6 +1,6 @@
 .. _geo-cleavage:
 
-Strike and dip of cleavage
---------------------------
+Strike, dip direction and dip of cleavage
+-----------------------------------------
 
 . literalinclude:: geo-cleavage.def
