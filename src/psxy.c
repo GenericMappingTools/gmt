@@ -1139,8 +1139,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (get_rgb) {
 				gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
-				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 				if (P->skip) continue;	/* Chosen CPT indicates skip for this z */
+				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 			}
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {

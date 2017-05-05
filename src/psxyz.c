@@ -811,8 +811,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (get_rgb) {	/* Lookup t to get rgb */
 				gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
-				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 				if (P->skip) continue;	/* Chosen CPT indicates skip for this t */
+				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 			}
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
