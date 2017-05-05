@@ -33,10 +33,6 @@ set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
-## Generate manpages
-#string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
-#gmt_create_manpages ("${SUPPL_MAN_1}")
-
 # install example data
 install (FILES ${SUPPL_EXAMPLE_FILES}
 	DESTINATION ${GMT_DOCDIR}/supplements/meca

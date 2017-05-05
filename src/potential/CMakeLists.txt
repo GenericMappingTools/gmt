@@ -31,8 +31,4 @@ set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules})
 
-## Generate manpages
-#string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
-#gmt_create_manpages ("${SUPPL_MAN_1}")
-
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
