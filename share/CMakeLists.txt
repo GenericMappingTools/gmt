@@ -19,7 +19,7 @@
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs conf cpt custom dbase localization mgd77 mgg
+set (_gmt_share_dirs cpt custom dbase localization mgd77 mgg
 	postscriptlight spotter x2sys)
 
 # install target for data
@@ -41,7 +41,7 @@ if (GSHHG_PATH AND COPY_GSHHG)
 	install (DIRECTORY ${GSHHG_PATH}/
 		DESTINATION ${GMT_DATADIR}/coast
 		COMPONENT GSHHG)
-	# location must be blank in share/conf/gmt.conf
+	# location must be blank in gmt.conf
 	set (GSHHG_INSTALL_PATH)
 	# create coastline.conf which is needed for in-build-dir ctest
 	configure_file (coastline.conf.in coastline.conf @ONLY)
@@ -55,7 +55,7 @@ if (DCW_PATH AND COPY_DCW)
 	install (DIRECTORY ${DCW_PATH}/
 		DESTINATION ${GMT_DATADIR}/dcw
 		COMPONENT DCW)
-	# location must be blank in share/conf/gmt.conf
+	# location must be blank in gmt.conf
 	set (DCW_INSTALL_PATH)
 else (DCW_PATH AND COPY_DCW)
 	# set installed location

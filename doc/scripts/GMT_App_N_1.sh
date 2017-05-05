@@ -6,7 +6,7 @@
 #	file since the number of figures must be calculated.
 #	Dimensions are in inches
 #
-grep -v '^#' "${GMT_SOURCE_DIR}"/share/conf/gmt_custom_symbols.conf | $AWK '{print $1}' > tt.lis
+grep -v '^#' "${GMT_SOURCE_DIR}"/share/custom/gmt_custom_symbols.conf | $AWK '{print $1}' > tt.lis
 n=`cat tt.lis | wc -l`
 
 # Because of text, the first page figure will contain less symbol rows than

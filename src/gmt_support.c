@@ -12116,7 +12116,7 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 
 	/* Open the list in $GMT->session.SHAREDIR */
 
-	gmt_getsharepath (GMT, "conf", "gmt_custom_symbols", ".conf", list, R_OK);
+	gmt_getsharepath (GMT, "custom", "gmt_custom_symbols", ".conf", list, R_OK);
 	if ((fp = fopen (list, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", list);
 		return;

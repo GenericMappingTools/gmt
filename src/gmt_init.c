@@ -5134,7 +5134,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
-	gmt_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file, R_OK);
+	gmt_getsharepath (GMT, "postscriptlight", "gmt_custom_media", ".conf", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) return (0);	/* Not a critical file so no error if we cannot read it */
 
 	gmtinit_free_user_media (GMT);	/* Free any previously allocated user-specified media formats */
