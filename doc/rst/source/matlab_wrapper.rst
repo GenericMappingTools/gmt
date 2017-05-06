@@ -181,6 +181,7 @@ documentation, has many (not so trivial) examples on usage of the MEX GMT API.
   inc             % 1x2 vector with [x_inc y_inc]
   registration    % Registration type: 0 -> Grid registration; 1 -> Pixel registration
   nodata          % The value of nodata
+  pad             % A scalar pad. Optional and only when direction is to GMT. (new in 1.1)
   title           % Title (Optional)
   comment         % Remark (Optional)
   command         % Command used to create the grid (Optional) 
@@ -205,6 +206,7 @@ Definition of the *grid structure* that holds a grid and its metadata.
   inc             % 1x2 vector with [x_inc y_inc]
   registration    % Registration type: 0 -> Grid registration; 1 -> Pixel registration [Default]
   nodata          % The value of nodata
+  pad             % A scalar pad (optional). Use only when direction is to GMT and Image will be projected ([2]) (new in 1.1)
   title           % Title (Optional)
   comment         % Remark (Optional)
   command         % Command used to create the image (Optional) 
