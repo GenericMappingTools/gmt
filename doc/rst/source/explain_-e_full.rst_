@@ -9,4 +9,4 @@
     against extended regular expressions enclose the expression in slashes.
     Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
-    To give a single pattern starting with +f, escape it with a backslash.
+    To give a single pattern starting with **+f**, escape it with a backslash.

@@ -28,7 +28,7 @@
 
 .. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`
 
-.. |SYN_OPT-e| replace:: **-e**\ [**~**]\ *"pattern"* \| |-e|\ [**~**]/\ *regexp*/[**i**]
+.. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>` 
 
 .. |SYN_OPT-f| replace:: **-f**\ :ref:`flags <-f_full>`
 
