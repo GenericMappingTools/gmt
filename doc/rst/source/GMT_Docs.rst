@@ -3928,6 +3928,9 @@ Three classes of files are given special treatment in GMT.
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively). Once
    one of these have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** (except if explicitly removed by the user).
+   Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
+   ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
+   of ETOPO1.
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).  If the URL is actually a CGI Get
@@ -3941,7 +3944,8 @@ Three classes of files are given special treatment in GMT.
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 
-The user cache (**DIR_CACHE**) and all its contents can be cleared via **gmt clear cache**.
+The user cache (**DIR_CACHE**) and all its contents can be cleared any time
+via the command **gmt clear cache**.
 
 Verbose operation
 -----------------
