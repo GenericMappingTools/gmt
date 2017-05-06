@@ -3569,7 +3569,7 @@ you can replace all NaNs with the chosen nodata value.  If only input
 or output should be affected, use **-di** or **-do**, respectably.
 
 Data record pattern matching: The **-e** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Modules that read ASCII tables will normally process all the data records
 that are read.  The **-e** option offers a built in pattern scanner that

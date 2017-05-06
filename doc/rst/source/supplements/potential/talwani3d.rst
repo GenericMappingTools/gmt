@@ -121,7 +121,7 @@ Optional Arguments
 .. include:: explain_-d.rst_
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-e.rst_
+.. include:: ../../explain_-e.rst_
 
 **-fg**
     Geographic grids (dimensions of longitude, latitude) will be converted to
