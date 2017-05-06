@@ -1065,7 +1065,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 #ifdef _WIN32
 	if ((n_bytes = fwrite (PS->data, sizeof(char), PS->n_bytes, fp)) != PS->n_bytes)
 		GMT_Report (API, GMT_MSG_NORMAL,
-		            "Error writing PostScript buffer to GhostScript process. Bytes writen = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
+		            "Error writing PostScript buffer to GhostScript process. Bytes written = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
 	if (fflush (fp) == EOF)
 		GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
 	if (pclose (fp) == -1)
@@ -2385,7 +2385,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, ps_names);
 	gmt_M_free (GMT, line);
 	gmt_M_free (GMT, PS);
-	/* Acording to Coverity there are still paths that may reach here with the files not closed */
+	/* According to Coverity there are still paths that may reach here with the files not closed */
 	if (fp != NULL) fclose (fp);
 	if (fpo != NULL) fclose (fpo);	if (fpb != NULL) fclose (fpb);
 	if (fp2 != NULL) fclose (fp2);	if (fpw != NULL) fclose (fpw);

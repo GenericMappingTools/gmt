@@ -1,7 +1,7 @@
 #Balaena mysticetus (Bowhead whale)
 #low
 #Pablo Valdés - May 2008
-#comment the lines 5, 56, 80 and 96 AND uncommment the lines 6, 57, 81, 97 if you want gray instead color
+#comment the lines 5, 56, 80 and 96 AND uncomment the lines 6, 57, 81, 97 if you want gray instead color
 0      0      M -G33/24/90
 #0      0      M -G30
 0      4      D

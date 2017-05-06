@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				gmt_M_str_free (Ctrl->G.string);
 				Ctrl->G.string = strdup (opt->arg);
 				break;
-			case 'L':	/* get the three lables seaprated by slashes */
+			case 'L':	/* get the three labels seaprated by slashes */
 				Ctrl->L.active = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
 				break;
