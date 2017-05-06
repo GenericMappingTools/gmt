@@ -112,7 +112,7 @@ Optional Arguments
 .. include:: ../../explain_-d.rst_
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-e.rst_
+.. include:: ../../explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
