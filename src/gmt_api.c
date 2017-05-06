@@ -11453,7 +11453,7 @@ void *GMT_Convert_Data_ (void *V_API, void *In, unsigned int *family_in, void *O
 }
 #endif
 
-GMT_LOCAL struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
+struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
 	/* Allocates space for a complete data segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_DATASEGMENT *S = NULL;
