@@ -11769,7 +11769,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		else if (!text[k] || text[k] == '+') {	/* No size nor unit, just possible attributes */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if (p->size_x == 0.0)	/* If symbol size was given on command line then we dont want to read it again */
+			if (p->size_x == 0.0)	/* If symbol size was given on command line then we don't want to read it again */
 				col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}

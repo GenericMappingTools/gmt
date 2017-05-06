@@ -1928,7 +1928,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	/* Strip off any extensions */
 
 	for (i = 0; i < A; i++) {
-		if ((p = strchr (file[i], '.')) != NULL)
+		if ((p = strrchr (file[i], '.')) != NULL)
 			file[i][(size_t)(p-file[i])] = '\0';
 	}
 

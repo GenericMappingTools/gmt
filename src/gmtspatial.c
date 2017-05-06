@@ -624,7 +624,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	struct GMT_DATASEGMENT *S = NULL;
 	struct NN_DIST *P = gmt_M_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
-	n_cols = MIN (D->n_columns, 4);	/* Expects lon,lat and makes room for at least z, w and other colums */
+	n_cols = MIN (D->n_columns, 4);	/* Expects lon,lat and makes room for at least z, w and other columns */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];

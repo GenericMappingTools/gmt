@@ -340,7 +340,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-/*----------------------------------END OF VARIBLE DECLARATIONS---------------------------------------------*/
+/*----------------------------------END OF VARIABLE DECLARATIONS---------------------------------------------*/
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
