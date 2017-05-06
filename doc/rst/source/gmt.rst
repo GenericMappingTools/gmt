@@ -169,6 +169,9 @@ programs. No space between the option flag and the associated arguments.
 .. |Add_-do| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-do_full.rst_
 
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e_full.rst_
+
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f_full.rst_
 
