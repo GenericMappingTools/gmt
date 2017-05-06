@@ -265,7 +265,7 @@ struct GMT_TILES {
 GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
 	/* Find the tiles covering the present grid, if given */
 	bool use = true;
-	unsigned int nx, ny, i, j, js, jn, ie, iw;
+	unsigned int nx, ny, i, j, js = 0, jn = 0, ie, iw;
 	uint64_t row, col, node;
 	double wesn[4], out[4], box[4];
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
@@ -391,6 +391,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]) {
 		global_xmin = GMT->common.R.wesn[XLO]; global_ymin = GMT->common.R.wesn[YLO];
 		global_xmax = GMT->common.R.wesn[XHI] ; global_ymax = GMT->common.R.wesn[YHI];
+		global_zmin = DBL_MAX;		global_zmax = -DBL_MAX;
 	}
 	else {
 		global_xmin = global_ymin = global_zmin = DBL_MAX;
