@@ -170,7 +170,7 @@ just call them with
 
 .. code-block:: none
 
-    type GMTJL_GRID               # The type holding a local header and data of a GMT grid
+    type GMTgrid                  # The type holding a local header and data of a GMT grid
        proj4::String              # Projection string in PROJ4 syntax (Optional)
        wkt::String                # Projection string in WKT syntax (Optional)
        range::Array{Float64,1}    # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
@@ -221,15 +221,49 @@ Definition of the *grid type* that holds a grid and its metadata.
 
 Definition of the *image type* that holds an image and its metadata.
 
+.. _dataset-type:
+
+.. code-block:: c
+
+    type GMTdataset
+        header::String
+        data::Array{Float64,2}
+        text::Array{Any,1}
+        comment::Array{Any,1}
+        proj4::String
+        wkt::String
+    end
+
+Definition of the *daset type*.
+
 .. _cpt-type:
 
 .. code-block:: c
 
-    type GMTJL_CPT
+    type GMTcpt
         colormap::Array{Float64,2}
         alpha::Array{Float64,1}
         range::Array{Float64,2}
-        rangeMinMax::Array{Float64,1}
+        minmax::Array{Float64,1}
+        bfn::Array{Float64,2}
+        depth::Cint
+        hinge::Cdouble
+        cpt::Array{Float64,2}
+        model::String
+        comment::Array{Any,1}   # Cell array with any comments
     end
 
 Definition of the *cpt type* that holds a CPT paltette.
+
+.. _ps-type:
+
+.. code-block:: c
+
+    type GMTps
+        postscript::String      # Actual PS plot (text string)
+        length::Int             # Byte length of postscript
+        mode::Int               # 1 = Has header, 2 = Has trailer, 3 = Has both
+        comment::Array{Any,1}   # Cell array with any comments
+    end
+
+Definition of the *PotScript type*.
