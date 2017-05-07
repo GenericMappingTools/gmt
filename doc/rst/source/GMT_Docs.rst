@@ -361,9 +361,10 @@ Several modules have obtained new options to extend their capabilities:
    added **-Lp** for mode (maximum-likelihood) estimate of location and scale,
    and **-La** for requesting all of the statistical estimates.
 
-*  :doc:`grdmath` has a new operators **TRIM**, which will set all grid values
-   that fall in the specified tails of the data distribution to NaN, and **NODE**,
-   which will create a grid with node indices 0 to (nx*ny)-1.
+*  :doc:`grdmath` has new operators **TRIM**, which will set all grid values
+   that fall in the specified tails of the data distribution to NaN, **NODE**,
+   which will create a grid with node indices 0 to (nx*ny)-1, and **RMSW**,
+   which will compute the weighted root-mean-square.
 
 *  :doc:`makecpt` and :doc:`grd2cpt` add option **-Ws** for producing
    wrapped (cyclic) CPT tables that repeat endlessly.  New CPT keyword

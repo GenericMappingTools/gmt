@@ -3757,6 +3757,46 @@ GMT_LOCAL int table_RMS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	return 0;
 }
 
+GMT_LOCAL int table_RMSW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: RMSW 2 1 Weighted Root-mean-square of A for weights in B.  */
+{
+	uint64_t s, row, n = 0;
+	unsigned int prev;
+	double sum2 = 0.0, sumw = 0.0, w;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	if (S[prev]->constant) sum2 = S[prev]->factor;
+	for (s = 0; s < info->T->n_segments; s++) {
+		if (!S[prev]->constant) {
+			if (info->local) {n = 0; sum2 = sumw = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T_prev->segment[s]->data[col][row])) continue;
+				if (S[last]->constant)
+					w = S[last]->factor;
+				else if (gmt_M_is_dnan (T->segment[s]->data[col][row]))
+					continue;
+				else
+					w = T->segment[s]->data[col][row];
+				n++;
+				sum2 += w * (T_prev->segment[s]->data[col][row] * T_prev->segment[s]->data[col][row]);
+				sumw += w;
+			}
+			if (info->local) {
+				sum2 = (sumw > 0.0) ? sqrt (sum2 / sumw) : GMT->session.d_NaN;
+			}
+		}
+		if (info->local) {
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = sum2;
+		}
+	}
+	if (info->local) return 0;	/* Done with local */
+	if (!S[prev]->constant) sum2 = (n > 0) ? sqrt (sum2 / sumw) : GMT->session.d_NaN;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = sum2;
+	return 0;
+}
+
 GMT_LOCAL void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
 {	/* Copy contents of Sfrom to Sto */
 	Sto->D          = Sfrom->D;
@@ -4100,11 +4140,11 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 /*OPERATOR: STD 1 1 Standard deviation of A.  */
 {
 	uint64_t s, row;
-	double var;
+	double std;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant)	/* Trivial case: std is undefined */
-		var = GMT->session.d_NaN;
+	if (S[last]->constant && info->T->n_records < 2)	/* Trivial case: std is undefined */
+		std = GMT->session.d_NaN;
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;
 		double mean = 0.0, sum2 = 0.0, delta;
@@ -4118,14 +4158,14 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 				sum2 += delta * (T->segment[s]->data[col][row] - mean);
 			}
 			if (info->local) {
-				var = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
-				for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = var;
+				std = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
+				for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = std;
 			}
 		}
 		if (info->local) return 0;	/* Done with local */
-		var = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
+		std = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
 	}
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = var;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = std;
 	return 0;
 }
 
@@ -4139,7 +4179,7 @@ GMT_LOCAL int table_STDW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant)	/* Trivial case: std = 0 */
+	if (S[prev]->constant && info->T->n_records < 2)	/* Trivial case: std is undefined */
 		std = GMT->session.d_NaN;
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;
@@ -4444,7 +4484,7 @@ GMT_LOCAL int table_VAR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double var;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant)	/* Trivial case: variance is undefined */
+	if (S[last]->constant && info->T->n_records < 2)	/* Trivial case: variance is undefined */
 		var = GMT->session.d_NaN;
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;
@@ -4480,7 +4520,7 @@ GMT_LOCAL int table_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant)	/* Trivial case: cariance is undefined */
+	if (S[prev]->constant && info->T->n_records < 2)	/* Trivial case: variance is undefined */
 		var = GMT->session.d_NaN;
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;

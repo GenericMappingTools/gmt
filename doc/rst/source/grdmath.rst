@@ -137,7 +137,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 200 operators. "args" are the number of input
+Choose among the following 209 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
