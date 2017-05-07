@@ -2020,7 +2020,7 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 	else
 		med = GMT->session.d_NaN;
 	gmt_M_free (GMT, dev);
-	*scale = 1.4826 * med;
+	*scale = MAD_NORMALIZE * med;
 }
 
 void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale) {
@@ -2045,7 +2045,7 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 	else
 		med = GMT->session.d_NaN;
 	gmt_M_free (GMT, dev);
-	*scale = 1.4826 * med;
+	*scale = MAD_NORMALIZE * med;
 }
 
 double gmt_extreme (struct GMT_CTRL *GMT, double x[], uint64_t n, double x_default, int kind, int way) {
@@ -2450,3 +2450,342 @@ void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 	}
 }
 
+double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
+	/* Compute the [weighted] mean of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
+	uint64_t node, n = 0;
+	unsigned int row, col;
+	double sum_zw = 0.0, sum_w = 0.0;
+	if (W) {	/* Weights provided */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node])) continue;
+			sum_zw += G->data[node] * W->data[node];
+			sum_w  += W->data[node];
+			n++;
+		}
+	}
+	else {	/* Plain average */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node])) continue;
+			sum_zw += G->data[node];
+			n++;
+		}
+		sum_w = n;
+	}
+	return (n == 0 || sum_w == 0.0) ? GMT->session.d_NaN : sum_zw / sum_w;
+}
+
+double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
+	/* Compute the [weighted] std of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
+	uint64_t node, n = 0;
+	unsigned int row, col;
+	double std, mean = 0.0, delta, sumw = 0.0;
+	if (W) {	/* Weights provided */
+		double temp, R, M2 = 0.0;
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node])) continue;
+			temp  = W->data[node] + sumw;
+			delta = G->data[node] - mean;
+			R = delta * W->data[node] / temp;
+			mean += R;
+			M2 += sumw * delta * R;
+			sumw = temp;
+			n++;
+		}
+		std = (n <= 1 || sumw == 0.0) ? GMT->session.d_NaN : sqrt ((n * M2) / (sumw * (n - 1.0)));
+	}
+	else {	/* Plain average */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node])) continue;
+			n++;
+			delta = G->data[node] - mean;
+			mean += delta / n;
+			sumw += delta * (G->data[node] - mean);
+		}
+		std = (n > 1) ? sqrt (sumw / (n - 1.0)) : GMT->session.d_NaN;
+	}
+	return (std);
+}
+
+double gmt_grd_rms (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
+	/* Compute the [weighted] rms of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
+	uint64_t node, n = 0;
+	unsigned int row, col;
+	double rms, sum_z2w = 0.0, sum_w = 0.0;
+	if (W) {	/* Weights provided */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node])) continue;
+			sum_z2w += W->data[node] * (G->data[node] * G->data[node]);
+			sum_w   += W->data[node];
+		}
+	}
+	else {	/* Plain average */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node])) continue;
+			n++;
+			sum_z2w += (G->data[node] * G->data[node]);
+		}
+		sum_w = n;
+	}
+	rms = (sum_w > 0) ? sqrt (sum_z2w / sum_w) : GMT->session.d_NaN;
+	return (rms);
+}
+
+double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite) {
+	/* Compute the weighted median of a grid.  Handle geographic grids with spherical weights W */
+	/* Non-destructive: Original grid left as is unless overwrite = true */
+	uint64_t node, n = 0;
+	double wmed;
+	
+	if (W) {	/* Weights provided */
+		unsigned int row, col;
+		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		/* 1. Create array of value,weight pairs, skipping NaNs */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+				continue;
+			pair[n].value    = G->data[node];
+			pair[n++].weight = W->data[node];
+		}
+		/* 2. Find the weighted median */
+		wmed = gmt_median_weighted (GMT, pair, n);
+		gmt_M_free (GMT, pair);
+	}
+	else {	/* Plain median */
+		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
+		gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
+		for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
+		if (n)
+			wmed = (n%2) ? Z->data[n/2] : 0.5f * (Z->data[(n-1)/2] + Z->data[n/2]);
+		else
+			wmed = GMT->session.f_NaN;
+		if (!overwrite) gmt_free_grid (GMT, &Z, true);
+	}
+	return wmed;
+}
+
+double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *median, bool overwrite) {
+	/* Compute the [weighted] MAD of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian].
+	 * Non-destructive: Original grid left as is unless overwrite = true.
+	 * If median == NULL then we must first compute the median, else we already have it */
+	uint64_t node, n = 0;
+	double wmed, wmad;
+	if (W) {	/* Weights provided */
+		unsigned int row, col;
+		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (median) {	/* Already have the median */
+			wmed = *median;
+			/* 3. Compute the absolute deviations from this median */
+			gmt_M_grd_loop (GMT, G, row, col, node) {
+				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+					continue;
+				pair[n].value    = (float)fabs (G->data[node] - wmed);
+				pair[n++].weight = W->data[node];
+			}
+		}
+		else {	/* Must first compute median */
+			/* 1. Create array of value,weight pairs, skipping NaNs */
+			gmt_M_grd_loop (GMT, G, row, col, node) {
+				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+					continue;
+				pair[n].value    = G->data[node];
+				pair[n++].weight = W->data[node];
+			}
+			/* 2. Find the weighted median */
+			wmed = gmt_median_weighted (GMT, pair, n);
+			/* 3. Compute the absolute deviations from this median */
+			for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - wmed);
+		}
+		/* 4. Find the weighted median absolue deviation */
+		wmad = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
+		gmt_M_free (GMT, pair);
+	}
+	else {	/* Plain MAD */
+		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
+		if (median) {	/* Already have the median */
+			wmed = *median;
+			n = Z->header->nm;
+		}
+		else {	/* Must first compute the median */
+			gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
+			for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
+			if (n)
+				wmed = (n%2) ? Z->data[n/2] : 0.5 * (Z->data[(n-1)/2] + Z->data[n/2]);
+			else
+				wmed = GMT->session.d_NaN;
+		}
+		gmt_getmad_f (GMT, Z->data, n, wmed, &wmad);
+		if (!overwrite) gmt_free_grid (GMT, &Z, true);
+	}
+	return wmad;
+}
+
+double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite) {
+	/* Compute the weighted mode (lms) of a grid.  Handle geographic grids with spherical weights W */
+	/* Non-destructive: Original grid left as is unless overwrite = true */
+	uint64_t node, n = 0;
+	double wmode;
+	
+	if (W) {	/* Weights provided */
+		unsigned int row, col;
+		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		/* 1. Create array of value,weight pairs, skipping NaNs */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+				continue;
+			pair[n].value    = G->data[node];
+			pair[n++].weight = W->data[node];
+		}
+		/* 2. Find the weighted lms mode */
+		wmode = (float)gmt_mode_weighted (GMT, pair, n);
+		gmt_M_free (GMT, pair);
+	}
+	else {	/* Plain median */
+		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
+		gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
+		for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
+		if (n)
+			gmt_mode_f (GMT, G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
+		else
+			wmode = GMT->session.d_NaN;
+		if (!overwrite) gmt_free_grid (GMT, &Z, true);
+		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found in the grid\n", GMT_n_multiples);
+	}
+	return wmode;
+}
+
+double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *mode, bool overwrite) {
+	/* Compute the [weighted] LMSSCL of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian]
+	 * Non-destructive: Original grid left as is unless overwrite = true.
+	 * If mode == NULL then we must first compute the mode, else use this mode */
+	uint64_t node, n = 0;
+	double wmode, lmsscl;
+	if (W) {	/* Weights provided */
+		unsigned int row, col;
+		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (mode) {	/* Already got the mode */
+			wmode = *mode;
+			/* 3. Compute the absolute deviations from this mode */
+			gmt_M_grd_loop (GMT, G, row, col, node) {
+				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+					continue;
+				pair[n].value    = (float)fabs (G->data[node] - wmode);
+				pair[n++].weight = W->data[node];
+			}
+		}
+		else {	/* Must first find the mode */
+			/* 1. Create array of value,weight pairs, skipping NaNs */
+			gmt_M_grd_loop (GMT, G, row, col, node) {
+				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
+					continue;
+				pair[n].value    = G->data[node];
+				pair[n++].weight = W->data[node];
+			}
+			/* 2. Find the weighted median */
+			wmode = (float)gmt_mode_weighted (GMT, pair, n);
+			/* 3. Compute the absolute deviations from this mode */
+			for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - wmode);
+		}
+		/* 4. Find the weighted median absolue deviation and scale it */
+		lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
+		gmt_M_free (GMT, pair);
+	}
+	else {	/* Plain LMSSCL */
+		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
+		if (mode) {	/* Already got the mode */
+			wmode = *mode;
+			n = Z->header->nm;
+		}
+		else {/* First compute the mode */
+			gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
+			for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
+			if (n)
+				gmt_mode_f (GMT, G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
+			else
+				wmode = GMT->session.d_NaN;
+		}
+		gmt_getmad_f (GMT, G->data, n, wmode, &lmsscl);
+		if (!overwrite) gmt_free_grid (GMT, &Z, true);
+		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found in the grid\n", GMT_n_multiples);
+	}
+	return lmsscl;
+}
+
+GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+	/* Calculate geographic SPHERICAL area in km^2 and place in grid G.
+	 * Integrating the area between two parallels +/- yinc/2 to either side of latitude y on a sphere
+	 * and partition it amount all cells in longitude yields the exact area (angles in radians)
+	 *     A(y) = 2 * R^2 * xinc * sin (0.5 * yinc) * cos(y)
+	 * except at the points at the pole (gridline registration) or near the pole (pixel reg).
+	 * There, the integration yields
+	 *     A(pole) = R^2 * xinc * (1.0 - cos (f * yinc))
+	 * where f = 0.5 for gridline-registered and f = 1 for pixel-registered grids.
+	 * P.Wessel, July 2016.
+	 */
+	uint64_t node;
+	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
+	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
+	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
+
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
+		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[1+GMT->current.setting.proj_aux_latitude/2]);
+	/* May need special treatment of pole points */
+	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */
+	area = R2 * (G->header->inc[GMT_X] * D2R);
+	if (doubleAlmostEqualZero (G->header->wesn[YHI], 90.0)) {	/* North pole row */
+		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
+		gmt_M_col_loop (GMT, G, first_row, col, node) {
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
+		first_row++;
+	}
+	if (doubleAlmostEqualZero (G->header->wesn[YLO], -90.0)) {	/* South pole row */
+		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
+		gmt_M_col_loop (GMT, G, last_row, col, node) {
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
+		last_row--;
+	}
+	/* Below we just use the standard graticule equation  */
+	area *= 2.0 * sind (0.5 * G->header->inc[GMT_Y]);	/* Since no longer any special cases with poles below */
+	for (row = first_row, j = first_row + G->header->pad[YHI]; row <= last_row; row++, j++) {
+		lat = gmt_M_grd_row_to_y (GMT, row, G->header);
+		lat = gmt_lat_swap (GMT, lat, GMT->current.setting.proj_aux_latitude);	/* Convert to selected auxiliary latitude */
+		row_weight = cosd (lat);
+		gmt_M_col_loop (GMT, G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
+	}
+}
+
+GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+	/* Calculate Cartesian cell areas in user units */
+	uint64_t node;
+	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
+	gmt_M_unused(GMT);
+	gmt_M_row_loop (GMT, G, row) {	/* Loop over the rows */
+		if (G->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
+		gmt_M_col_loop (GMT, G, row, col, node) {	/* Now loop over the columns */
+			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;	/* half-cells in x */
+			G->data[node] = (float)(row_weight * col_weight * area);
+		}
+	}
+}
+
+void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+	/* Calculate geographic spherical in km^2 or plain Cartesian area in suer_unit^2 and place in grid G. */
+	if (gmt_M_is_geographic (GMT, GMT_IN))
+		get_geo_cellarea (GMT, G);
+	else
+		get_cart_cellarea (GMT, G);
+}

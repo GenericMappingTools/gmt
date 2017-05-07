@@ -1004,7 +1004,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				if (err_workarray[i] > err_max) err_max=err_workarray[i];
 			}
 			gmt_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_mad);
-			err_mad *= 1.4826;
+			err_mad *= MAD_NORMALIZE;
 
 			/* calculate MEAN for each row */
 			out[0] = err_median;

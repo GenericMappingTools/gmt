@@ -2571,7 +2571,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			/* 3. Compute the absolute deviations from this mode */
 			for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmode);
 			/* 4. Find the weighted median absolue deviation and scale it */
-			lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
+			lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 		}
 	}
@@ -2584,7 +2584,7 @@ GMT_LOCAL int table_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 	/* 3. Compute the absolute deviations from this mode */
 	for (row = 0; row < k; row++) pair[row].value = (float)fabs (pair[row].value - wmode);
 	/* 4. Find the weighted median absolue deviation and scale it */
-	lmsscl = 1.4826 * gmt_median_weighted (GMT, pair, k);
+	lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
 	for (s = 0; s < info->T->n_segments; s++)

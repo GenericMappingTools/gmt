@@ -979,7 +979,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 						for (k = 0; k < Ctrl->G.n_grids; k++) {
 							for (seg = 0; seg < stacked_n[k]; seg++) dev[seg] = fabs (stack[k][seg] - stacked_val[k]);
 							gmt_median (GMT, dev, stacked_n[k], stacked_lo[k] - stacked_val[k], stacked_hi[k] - stacked_val[k], 0.5*(stacked_lo[k]+stacked_hi[k]) - stacked_val[k], &stacked_dev[k]);
-							stacked_dev[k] *= 1.4826;
+							stacked_dev[k] *= MAD_NORMALIZE;
 						}
 					}
 					else if (Ctrl->S.mode >= STACK_LOWER) {	/* Use half-range as deviation */

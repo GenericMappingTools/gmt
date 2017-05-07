@@ -340,7 +340,8 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`gmtmath` will convert all plot dimensions given on the command line
    to the prevailing length unit set via :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
    This allows you to combine measurements like 12c, 4i, and 72p. The module
-   also has a new **SORT** operator for sorting columns.
+   also has a new **SORT** operator for sorting columns and **RMSW** for weighted
+   root-mean-square.
 
 *  :doc:`gmtwhich` **-G** will download a file from the internet (as discussed
    above) before reporting the path to the file (which will then be in the
@@ -356,6 +357,8 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`grdinfo` adds option **-D** to determine the regions of all the
    smaller-size grid tiles required to cover the larger area.  It also take
    a new argument **-Ii** for reporting the exact region of an img grid.
+   Finally, we now report area-weighted statistics for geographic grids and
+   have added **-Lp** for mode (maximum-likelihood) estimate of location and scale.
 
 *  :doc:`grdmath` has a new operators **TRIM**, which will set all grid values
    that fall in the specified tails of the data distribution to NaN, and **NODE**,

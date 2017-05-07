@@ -445,6 +445,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RMS**       | 1 1   | Root-mean-square of A                                                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RMSW**      | 1 1   | Root-mean-square of A for weights in B                                                                 |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RPDF**      | 1 1   | Rayleigh probability density function for z = A                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROLL**      | 2 0   | Cyclicly shifts the top A stack items by an amount B                                                   |
@@ -599,7 +601,7 @@ Notes On Operators
 ------------------
 
 #. For Cartesian grids the operators **MEAN**, **MEDIAN**, **MODE**,
-   **LMSSCL**, **MAD**, **OQUANT**, **STD**, and **VAR** return the
+   **LMSSCL**, **MAD**, **PQUANT**, **RMS**, **STD**, and **VAR** return the
    expected value from the given matrix.  However, for geographic grids
    we perform a spherically weighted calculation where each node value
    is weighted by the geographic area represented by that node.
