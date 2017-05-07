@@ -182,7 +182,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 183 operators. "args" are the number of input
+Choose among the following 185 operators. "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -457,6 +457,8 @@ and output arguments.
 | **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RMS**         | 1 1    | Root-mean-square of A                                                                      |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RMSW**        | 1 1    | Weighted root-mean-square of A for weights in B                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RPDF**        | 1 1    | Rayleigh probability density function for z = A                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
