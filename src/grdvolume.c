@@ -288,6 +288,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.value = GMT->session.d_NaN;
+	C->S.unit = 'e';	/* Meter if geographic */
 	C->Z.scale = 1.0;
 	return (C);
 }
@@ -315,7 +316,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S For geographic grids we convert degrees to \"Flat-Earth\" distances in meters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a unit from %s to select another distance unit.\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
 	GMT_Option (API, "R,V");
@@ -437,7 +439,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdvolume (void *V_API, int mode, void *args) {
-	bool bad, cut[4];
+	bool bad, shrink, cut[4];
 	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;
 	
@@ -474,13 +476,16 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
-	if (Ctrl->S.active && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not known to be geographic */
+	shrink = gmt_M_is_geographic (GMT, GMT_IN);	/* Must deal with latitude-dependant area */
+	
+	if (Ctrl->S.active && !shrink) {	/* Not known to be geographic */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -S requires a geographic grid.\n");
 		if ((Grid->header->wesn[YLO] >= -90.0 && Grid->header->wesn[YHI] <= 90.0) && 
 			(Grid->header->wesn[XLO] >= -360.0 && Grid->header->wesn[XHI] <= 720.0) && 
 			(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) <= 360.0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "However, your grid domain is compatible with geographical grid domains.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "To make sure the grid is recognized as geographical, use the -fg option.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "However, your grid domain seems compatible with geographical grid domains.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "To make sure your Cartesian grid is recognized as geographical, use the -fg option.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, use gmt grdedit -fg to bless it as a geographic grid first.\n");
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Yours grid is recognized as Cartesian.\n");
@@ -516,7 +521,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	gmt_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
-	if (Ctrl->S.active) {
+	if (shrink) {
 		gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
 		dist_pr_deg = GMT->current.proj.DIST_M_PR_DEG;
 		dist_pr_deg *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scales meters to desired unit */
@@ -625,7 +630,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 			fact = cellsize;
 			/* Allow for shrinking of longitudes with latitude */
-			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - (row+0.5) * Work->header->inc[GMT_Y]);
+			if (shrink) fact *= cosd (Work->header->wesn[YHI] - (row+0.5) * Work->header->inc[GMT_Y]);
 
 			vol[c]  += dv * fact;
 			area[c] += da * fact;
@@ -653,7 +658,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 			fact = cellsize;
 			/* Allow for shrinking of longitudes with latitude */
-			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - row * Work->header->inc[GMT_Y]);
+			if (shrink) fact *= cosd (Work->header->wesn[YHI] - row * Work->header->inc[GMT_Y]);
 			/* Half the top and bottom row */
 			if (Work->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == Work->header->n_rows-1)) fact *= 0.5;
 
