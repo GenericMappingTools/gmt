@@ -3397,7 +3397,7 @@ GMT_LOCAL void grd_RMS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	gmt_M_unused(GMT);
 
 	if (stack[last]->constant) {	/* Trivial case */
-		rms = (float)stack[last]->factor * sqrt ((double)info->nm);
+		rms = (float)stack[last]->factor;
 		for (node = 0; node < info->size; node++) stack[last]->G->data[node] = rms;
 		return;
 	}
@@ -3422,10 +3422,13 @@ GMT_LOCAL void grd_RMSW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	float rms;
 	gmt_M_unused(GMT);
 
-	if (stack[prev]->constant)	/* Trivial case: std is undefined */
-		rms = GMT->session.f_NaN;
-	else
-		rms = (float)gmt_grd_rms (GMT, stack[prev]->G, stack[last]->G);
+	if (stack[prev]->constant) {	/* Trivial case */
+		rms = (float)stack[prev]->factor;
+		for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = rms;
+		return;
+	}
+
+	rms = (float)gmt_grd_rms (GMT, stack[prev]->G, stack[last]->G);
 
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = rms;
 }
