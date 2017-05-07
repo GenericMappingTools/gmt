@@ -202,7 +202,7 @@ GMT_LOCAL void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned
 
 	regress_lms (GMT, x, y, nvalues, stats, col);
 	/* Get LMS scale and use 2.5 of it to detect regression outliers */
-	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
+	s_0 = MAD_NORMALIZE * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
 	threshold = 2.5 * s_0;
 
 	xx = gmt_M_memory (GMT, NULL, nvalues, double);

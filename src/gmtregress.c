@@ -479,7 +479,7 @@ GMT_LOCAL double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_
 	/* LMS scale estimate as per Rousseuuw & Leroy [1987] */
 	double scale;
 	gmt_M_unused(GMT); gmt_M_unused(ey); gmt_M_unused(W);
-	scale = 1.4826 * (1.0 + 5.0 / (n - 2.0)) * sqrt (par[GMTREGRESS_MISFT]);
+	scale = MAD_NORMALIZE * (1.0 + 5.0 / (n - 2.0)) * sqrt (par[GMTREGRESS_MISFT]);
 	return (scale);
 }
 

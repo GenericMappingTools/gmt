@@ -574,5 +574,13 @@ EXTERN_MSC double gmt_psi (struct GMT_CTRL *GMT, double z[], double p[]);
 EXTERN_MSC void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsigned int *iter);
 EXTERN_MSC double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n);
 EXTERN_MSC double gmt_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n);
+EXTERN_MSC double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W);
+EXTERN_MSC double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite);
+EXTERN_MSC double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite);
+EXTERN_MSC double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W);
+EXTERN_MSC double gmt_grd_rms (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W);
+EXTERN_MSC double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *median, bool overwrite);
+EXTERN_MSC double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *mode, bool overwrite);
+EXTERN_MSC void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 #endif /* _GMT_PROTOTYPES_H */

@@ -716,7 +716,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
 				gmt_sort_array (GMT, z_tmp, nz, GMT_DOUBLE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
-				out[3] *= 1.4826;	/* This will be LMS MAD-based scale */
+				out[3] *= MAD_NORMALIZE;	/* This will be LMS MAD-based scale */
 			}
 			else
 				out[3] = GMT->session.d_NaN;

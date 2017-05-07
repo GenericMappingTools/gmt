@@ -246,7 +246,7 @@ GMT_LOCAL void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *
 	gmt_sort_array (GMT, work, n_data, GMT_DOUBLE);
 
 	if (n_data%2)
-		*scale = 1.4826 * work[n_data/2];
+		*scale = MAD_NORMALIZE * work[n_data/2];
 	else
 		*scale = 0.7413 * (work[n_data/2 - 1] + work[n_data/2]);
 
