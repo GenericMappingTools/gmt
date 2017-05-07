@@ -168,6 +168,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+
 int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2] = {0, 0};
@@ -270,6 +272,11 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 		Return (API->error);
 
+	if (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_M_is_geographic (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
+		Grid->header->grdtype = GMT_GRID_CARTESIAN;
+		strcpy (Grid->header->x_units, "x_units");
+		strcpy (Grid->header->y_units, "y_units");
+	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		Return (API->error);
 

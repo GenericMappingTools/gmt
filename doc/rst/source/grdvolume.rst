@@ -63,9 +63,9 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [*unit*]
-    Convert degrees to Flat Earth distances, append a unit from
+    For geographical grids, append a unit from
     **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
-    [Default is Cartesian].
+    [Default is meter (**e**)].
 
 .. _-T:
 
@@ -110,24 +110,24 @@ To determine the volume in km^3 under the surface hawaii_topo.nc (height in km),
 
     gmt grdvolume hawaii_topo.nc -Sk
 
-To find the volume between the surface peaks.nc and the contour z = 250, use
+To find the volume between the surface peaks.nc and the contour z = 250 m in meters, use
 
    ::
 
-    gmt grdvolume peaks.nc -Sk -C250
+    gmt grdvolume peaks.nc -Se -C250
 
 To search for the contour, between 100 and 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
    ::
 
-    gmt grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
+    gmt grdvolume peaks.nc -C0/300/10 -Th > results.d
 
 To see the areas and volumes for all the contours in the previous example, use
 
    ::
 
-    gmt grdvolume peaks.nc -Sk -C100/300/10 > results.d
+    gmt grdvolume peaks.nc -C100/300/10 > results.d
 
 To find the volume of water in a lake with its free surface at 0 and max depth of 300 meters, use
 
@@ -138,14 +138,18 @@ To find the volume of water in a lake with its free surface at 0 and max depth o
 Notes
 -----
 
-**grdvolume** distinguishes between gridline and pixel-registered grids.
-In both cases the area and volume are computed up to the grid
-boundaries. That means that in the first case the grid cells on the
-boundary only contribute half their area (and volume), whereas in the
-second case all grid cells are fully used. The exception is when the
-**-C** flag is used: since contours do not extend beyond the outermost
-grid point, both grid types are treated the same. That means the outer
-rim in pixel oriented grids is ignored when using the **-C** flag.
+#. For geographical grids we convert degrees to "Flat Earth" distances in
+   meter.  You can use **-S** to select another distance unit.  The
+   area is then reported in this unit squared while the volume is reported
+   in unit^2 * z_unit quantities.
+#. **grdvolume** distinguishes between gridline and pixel-registered grids.
+   In both cases the area and volume are computed up to the grid
+   boundaries. That means that in the first case the grid cells on the
+   boundary only contribute half their area (and volume), whereas in the
+   second case all grid cells are fully used. The exception is when the
+   **-C** flag is used: since contours do not extend beyond the outermost
+   grid point, both grid types are treated the same. That means the outer
+   rim in pixel oriented grids is ignored when using the **-C** flag.
 
 See Also
 --------

@@ -69,6 +69,8 @@ struct CELL {
 	float high;
 };
 
+EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDHISTEQ_CTRL *C = NULL;
 
@@ -102,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use with -G for quadratic intensity scaling [Default is linear].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic equalization scaling [Default is linear].\n");
 	GMT_Option (API, "R,V,h,.");
 
 	return (GMT_MODULE_USAGE);
@@ -203,10 +205,10 @@ GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, u
 	return (0.0f);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
-	/* Do basic histogram equalization */
+GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
+	/* Do basic Cartesian histogram equalization */
 	uint64_t i, j, nxy;
-	unsigned int last_cell, n_cells_m1 = 0, current_cell, pad[4];
+	unsigned int n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -228,16 +230,14 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	nxy = Grid->header->nm;
 	while (nxy > 0 && gmt_M_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
 
-	last_cell = n_cells / 2;
 	n_cells_m1 = n_cells - 1;
-
 	current_cell = 0;
 	i = 0;
 	delta_cell = ((double)nxy) / ((double)n_cells);
 
 	while (current_cell < n_cells) {
 
-		if (current_cell == (n_cells - 1))
+		if (current_cell == n_cells_m1)
 			j = nxy - 1;
 		else if (quadratic) {	/* Use y = 2x - x**2 scaling  */
 			target = (current_cell + 1.0) / n_cells;
@@ -263,6 +263,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	}
 
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
+		unsigned int last_cell = n_cells / 2;
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
@@ -272,6 +273,92 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
 	gmt_M_free (GMT, cell);
 	return (0);
+}
+
+GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
+	/* Do basic area-weighted histogram equalization */
+	uint64_t i, j, node, nxy = 0;
+	unsigned int n_cells_m1 = 0, current_cell, row, col;
+	double cell_w, delta_w, target_w, wsum = 0.0, out[3];
+	struct CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
+	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
+	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION);
+
+	/* Determine the area weights */
+	gmt_get_cellarea (GMT, W);
+	/* Fill in the observation (w,z) observation pairs and find # of points nxy */
+	gmt_M_grd_loop (GMT, Grid, row, col, node) {
+		if (gmt_M_is_fnan (Grid->data[node]) || gmt_M_is_dnan (W->data[node]))
+			continue;
+		pair[nxy].value    = Grid->data[node];
+		pair[nxy++].weight = W->data[node];
+		wsum += W->data[node];
+	}
+	gmt_free_grid (GMT, &W, true);	/* Done with the area weights grid */
+	/* Sort observations on z */
+	qsort (pair, nxy, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
+	/* Compute normalized cumulative weights */
+	wsum = 1.0 / wsum;	/* Do avoid division later */
+	pair[0].weight *= wsum;
+	for (i = 1; i < nxy; i++) {
+		pair[i].weight *= wsum;
+		pair[i].weight += pair[i-1].weight;
+	}
+	
+	/* Find the division points using the normalized 0-1 weights */
+
+	n_cells_m1 = n_cells - 1;
+	current_cell = 0;
+	i = j = 0;
+	cell_w = delta_w = 1.0 / n_cells;
+	while (current_cell < n_cells) {
+
+		if (current_cell == n_cells_m1)
+			j = nxy - 1;	/* End at the last sorted point */
+		else if (quadratic) {	/* Use y = 2x - x**2 scaling to stretch the target weight at end of box */
+			target_w = (1.0 - sqrt (1.0 - cell_w));
+			while (j < nxy && pair[j].weight < target_w) j++;
+		}
+		else	/* Use simple linear scale  */
+			while (j < nxy && pair[j].weight < cell_w) j++;
+
+		cell[current_cell].low  = pair[i].value;
+		cell[current_cell].high = pair[j].value;
+
+		if (dump_intervals) {	/* Write records to file or stdout */
+			out[GMT_X] = (double)cell[current_cell].low; out[GMT_Y] = (double)cell[current_cell].high; out[GMT_Z] = (double)current_cell;
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+		}
+
+		i = j;
+		current_cell++;
+		cell_w += delta_w;
+	}
+	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
+		gmt_M_free (GMT, cell);
+		gmt_M_free (GMT, pair);
+		return (GMT->parent->error);
+	}
+
+	if (outfile) {	/* Evaluate grid given its original values */
+		unsigned int last_cell = n_cells / 2;
+		gmt_M_grd_loop (GMT, Grid, row, col, node) {
+			Grid->data[node] = (gmt_M_is_fnan (Grid->data[node])) ? GMT->session.f_NaN : get_cell (Grid->data[node], cell, n_cells_m1, last_cell);
+		}
+	}
+
+	gmt_M_free (GMT, pair);
+	gmt_M_free (GMT, cell);
+	return (0);
+}
+
+GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
+	int err = 0;
+	if (gmt_M_is_geographic (GMT, GMT_IN))
+		err = do_hist_equalization_geo (GMT, Grid, outfile, n_cells, quadratic, dump_intervals);
+	else
+		err = do_hist_equalization_cart (GMT, Grid, outfile, n_cells, quadratic, dump_intervals);
+	return (err);
 }
 
 GMT_LOCAL int compare_indexed_floats (const void *point_1, const void *point_2) {

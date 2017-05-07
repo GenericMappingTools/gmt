@@ -936,7 +936,7 @@ GMT_LOCAL int gmtinit_parse_c_option (struct GMT_CTRL *GMT, char *arg) {
 	return (error);
 }
 
-/*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
+/*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g|c],... arguments */
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
@@ -962,7 +962,19 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* arg should NOT have a leading i|o part */
 
-	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
+	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0f,1f (Cartesian) */
+		if (both_i_and_o) {
+			gmt_set_cartesian (GMT, GMT_IN);
+			gmt_set_cartesian (GMT, GMT_OUT);
+		}
+		else {
+			col[GMT_X] = GMT_IS_FLOAT;
+			col[GMT_Y] = GMT_IS_FLOAT;
+		}
+		pos = 1;
+		start = stop = 1;
+	}
+	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
 		if (both_i_and_o) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
@@ -5875,6 +5887,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
 			gmt_message (GMT, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
 			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
+			gmt_message (GMT, "\t   -f[i|o]c means -f[i|o]0-1f (Cartesian coordinates).\n");
 			gmt_message (GMT, "\t   -fp[<unit>] means input x,y are in projected coordinates.\n");
 			break;
 

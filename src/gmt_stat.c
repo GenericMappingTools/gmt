@@ -634,7 +634,7 @@ GMT_LOCAL void gmtstat_F_to_ch1_ch2 (struct GMT_CTRL *GMT, double F, double nu1,
 	*chisq1 = F * nu1 / nu2;
 }
 
-GMT_LOCAL int gmtstat_compare_observation (const void *a, const void *b) {
+int gmtlib_compare_observation (const void *a, const void *b) {
 	const struct GMT_OBSERVATION *obs_1 = a, *obs_2 = b;
 
 	/* Sorts observations into ascending order based on obs->value */
@@ -1815,7 +1815,7 @@ double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (struct GMT_OBSERVATION), gmtstat_compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
 
 	/* Find weight sum, then get half-value */
 
@@ -1847,7 +1847,7 @@ double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, ui
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
 
 	/* First sort data on z */
-	qsort (data, n, sizeof (struct GMT_OBSERVATION), gmtstat_compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
 
 	/* Compute the total weight */
 	for (wsum = 0.0, i = 0; i < n; i++) wsum += data[i].weight;
