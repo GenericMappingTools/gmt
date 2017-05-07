@@ -357,8 +357,9 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`grdinfo` adds option **-D** to determine the regions of all the
    smaller-size grid tiles required to cover the larger area.  It also take
    a new argument **-Ii** for reporting the exact region of an img grid.
-   Finally, we now report area-weighted statistics for geographic grids and
-   have added **-Lp** for mode (maximum-likelihood) estimate of location and scale.
+   Finally, we now report area-weighted statistics for geographic grids,
+   added **-Lp** for mode (maximum-likelihood) estimate of location and scale,
+   and **-La** for requesting all of the statistical estimates.
 
 *  :doc:`grdmath` has a new operators **TRIM**, which will set all grid values
    that fall in the specified tails of the data distribution to NaN, and **NODE**,

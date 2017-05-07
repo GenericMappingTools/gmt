@@ -63,7 +63,7 @@ struct GRDINFO_CTRL {
 	struct GRDINFO_M {	/* -M */
 		bool active;
 	} M;
-	struct GRDINFO_L {	/* -L[1|2|p] */
+	struct GRDINFO_L {	/* -L[0|1|2|p] */
 		bool active;
 		unsigned int norm;
 	} L;
@@ -97,7 +97,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-D[<offx>[/<offy>][+i]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[0|1|2|p]] [-M]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-D[<offx>[/<offy>][+i]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -124,6 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L1 reports median and L1-scale of data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lp reports mode (lms) and LMS-scale of data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -La all of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If grid is geographic then we report area-weighted statistics.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
 	GMT_Option (API, "R");
@@ -213,6 +214,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 						Ctrl->L.norm |= 1; break;
 					case 'p':
 						Ctrl->L.norm |= 4; break;
+					case 'a':	/* All three */
+						Ctrl->L.norm |= (1+2+4); break;
 				}
 				break;
 			case 'M':	/* Global extrema */
@@ -466,10 +469,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			uint64_t ij_min, ij_max;
 			unsigned int col, row;
 
-			if (Ctrl->L.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
-				W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
-				gmt_get_cellarea (GMT, W);
-			}
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			ij_min = ij_max = n = 0;
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
@@ -498,6 +497,11 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				x_min = x_max = y_min = y_max = GMT->session.d_NaN;
 		}
 
+		if (Ctrl->L.norm && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must use spherical weights */
+			W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
+			gmt_get_cellarea (GMT, W);
+		}
+		
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and MAD */
 			z_median = gmt_grd_median (GMT, G, W, false);
 			z_scale = gmt_grd_mad (GMT, G, W, &z_median, false);

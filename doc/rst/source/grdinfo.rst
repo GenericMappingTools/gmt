@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ [*xoff*\ [/*yoff*][**+n**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ] ]
-[ |-L|\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**] ] [ |-M| ]
+[ |-L|\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**\ \|\ **a**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
@@ -33,7 +33,8 @@ various statistics for the (*x*,\ *y*,\ *z*) data in the grid file(s).
 The output information contains the minimum/maximum values for *x*, *y*,
 and *z*, where the min/max of *z* occur, the *x*- and *y*-increments,
 and the number of *x* and *y* nodes, and [optionally] the mean, standard
-deviation, and/or the median, median absolute deviation of *z*, and number of nodes set
+deviation, and/or the median, median absolute deviation of *z*, and/or
+the mode (LMS), LMS scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file). 
 
@@ -87,7 +88,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**]
+**-L**\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**\ \|\ **a**]
     **-L0**
         Report range of z after actually scanning the data, not just
         reporting what the header says.
@@ -98,6 +99,8 @@ Optional Arguments
         Report mean, standard deviation, and root-mean-square (rms) of *z*.
     **-Lp**
         Report mode (LMS) and LMS scale of *z*.
+    **-La**
+        All of the above.
     Note: If the grid is geographic then each node represents a physical
     area that decreases with increasing latitude.  We therefore report
     spherically weighted statistical estimates for such grids.
