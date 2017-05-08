@@ -16,7 +16,7 @@ Synopsis
 **grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*weight*] ] [ |-Z|\ [*flags*] ]
+[ |-W|\ [**a**\ \|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -70,9 +70,10 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*weight*]
-    Write out x,y,z,w, where w is the supplied *weight* (or 1 if not
-    supplied) [Default writes x,y,z only].
+**-W**\ [**a**\ \|\ *weight*]
+    Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
+    supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
+    weights equal to the area each node represents.
 
 .. _-Z:
 

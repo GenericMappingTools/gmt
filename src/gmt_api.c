@@ -860,19 +860,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, FALSE);		/* Tell libcurl to not verify the peer */
 	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
-	sprintf (local_path, "%s", user_dir[dir]);
-	if (dir == GMT_CACHE_DIR && access (local_path, F_OK)) {	/* Must create the user's cache directory first */
-        GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Create cache directory: %s\n", local_path);
-#ifndef _WIN32
-		if (mkdir (local_path, (mode_t)0777))
-#else
-		if (mkdir (local_path))
-#endif
-		{
-	        GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create cache directory in the user dir: %s\n", local_path);
-			return 0;
-		}
-	}
 	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');

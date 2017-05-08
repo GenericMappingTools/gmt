@@ -93,8 +93,8 @@ int main (int argc, char *argv[]) {
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
 	if (gmt_main && argc == 3 && !strcmp (argv[1], "clear")) {	/* Clear something. */
-		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache */
-			if (gmt_remove_dir (api_ctrl, api_ctrl->GMT->session.CACHEDIR))
+		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache, then recreate empty directory */
+			if (gmt_remove_dir (api_ctrl, api_ctrl->GMT->session.CACHEDIR, true))
 				return GMT_RUNTIME_ERROR;
 		}
 		if (!strcmp (argv[2], "history") || !strcmp (argv[2], "all")) {	/* Clear the history */

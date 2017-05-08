@@ -31,7 +31,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *type* ]
+[ |-Z|\ [*type*][**+w**] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -186,7 +186,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *type*
+**-Z**\ [*type*][**+w**]
     Choose between 6 types of histograms: 
 
     * 0 = counts [Default] 
@@ -194,7 +194,10 @@ Optional Arguments
     * 2 = log (1.0 + count) 
     * 3 = log (1.0 + frequency_percent) 
     * 4 = log10 (1.0 + count) 
-    * 5 = log10 (1.0 + frequency_percent). 
+    * 5 = log10 (1.0 + frequency_percent).
+
+    To use weights provided as a second data column instead of pure counts,
+    append **+w**.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_

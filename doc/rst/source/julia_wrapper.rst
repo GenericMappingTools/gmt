@@ -238,7 +238,7 @@ Definition of the *daset type*.
 
 .. _cpt-type:
 
-.. code-block:: c
+.. code-block:: none
 
     type GMTcpt
         colormap::Array{Float64,2}
@@ -257,7 +257,7 @@ Definition of the *cpt type* that holds a CPT paltette.
 
 .. _ps-type:
 
-.. code-block:: c
+.. code-block:: none
 
     type GMTps
         postscript::String      # Actual PS plot (text string)
