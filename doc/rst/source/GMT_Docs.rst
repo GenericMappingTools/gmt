@@ -255,7 +255,8 @@ summary of these changes:
    the sub-directory cache under the **$GMT_USERDIR** directory [~/.gmt]).
    Subsequent use of the same URL will be read from the cache (except
    if explicitly removed by the user).  An exception is CGI Get Commands
-   which will be executed anew each time.
+   which will be executed anew each time. Both the user directory and
+   the cache directory will be created if they do not exist.
 
 *  Any reference to Earth topographic/bathymetric relief files called
    **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
