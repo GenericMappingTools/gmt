@@ -379,6 +379,9 @@ Several modules have obtained new options to extend their capabilities:
    translate the plot origin after determining the lower-left corner of the
    map insert.
 
+*  :doc:`pshistogram` has a new **-Z** modifier **+w** that will
+   accumulate weights provided in the 2nd input column instead of pure counts.
+
 *  :doc:`psrose` adds option **-Q** for setting the  confidence level used
    for a Rayleigh test for uniformity of direction.  The **-C** option also
    takes a new modifier **+w**\ *modfile* for storing mode direction to file.
