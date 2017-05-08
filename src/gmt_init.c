@@ -13307,7 +13307,7 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 	return 1;
 }
 
-int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
+int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	/* Delete all files in a directory, then the directory itself */
 	unsigned int n_files, k;
 	int error = GMT_NOERROR;
@@ -13329,6 +13329,17 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
 	if (rmdir (dir)) {	/* Unable to delete the directory */
 		perror (dir);
 		error = GMT_RUNTIME_ERROR;
+	}
+	else if (recreate) {	/* Create an empty directory to replace what we deleted */
+#ifndef _WIN32
+		if (mkdir (dir, (mode_t)0777))
+#else
+		if (mkdir (dir))
+#endif
+		{
+            GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
+			error = GMT_RUNTIME_ERROR;
+		}
 	}
 	return error;
 }
@@ -13389,7 +13400,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
-			error = gmt_remove_dir (API, dir);
+			error = gmt_remove_dir (API, dir, false);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:

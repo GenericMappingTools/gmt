@@ -5563,7 +5563,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 	while ((gmt_strtok (pattern, " \t", &pos, item))) {	/* For all separate arguments */
 		flags |= (k > 1 ? GLOB_APPEND : 0);
 		ret = glob (item, flags, support_globerr, &results);
-		if (ret != 0) {
+		if (ret != 0 && ret != GLOB_NOMATCH) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_glob_list: problem with wildcard expansion of (%s), stopping early [%s]\n",
 				item,
 		/* ugly: */	(ret == GLOB_ABORTED ? "filesystem problem" :
