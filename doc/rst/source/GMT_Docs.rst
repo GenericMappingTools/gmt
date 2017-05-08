@@ -348,6 +348,9 @@ Several modules have obtained new options to extend their capabilities:
    above) before reporting the path to the file (which will then be in the
    user's cache directory).
 
+*  :doc:`grd2xyz` can now write weights equal to the area each node represents
+   via the **-Wa** option.
+
 *  :doc:`grdgradient` can now take a grid of azimuths via the **-A** option.
 
 *  :doc:`grdimage` and :doc:`grdview` can now auto-compute the intensities
