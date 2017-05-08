@@ -101,7 +101,7 @@ Optional Arguments
         Report mode (LMS) and LMS scale of *z*.
     **-La**
         All of the above.
-    
+
     Note: If the grid is geographic then each node represents a physical
     area that decreases with increasing latitude.  We therefore report
     spherically weighted statistical estimates for such grids.

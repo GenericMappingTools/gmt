@@ -195,6 +195,7 @@ Optional Arguments
     * 3 = log (1.0 + frequency_percent) 
     * 4 = log10 (1.0 + count) 
     * 5 = log10 (1.0 + frequency_percent).
+
     To use weights provided as a second data column instead of pure counts,
     append **+w**.
 
