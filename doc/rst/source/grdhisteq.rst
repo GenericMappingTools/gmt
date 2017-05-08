@@ -125,7 +125,7 @@ suitable for use with :doc:`grdimage` or :doc:`grdview`, run
 
     gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
 
-Notes:
+Notes
 ------
 
 #. For geographical grids we do a weighted histogram equalization since the

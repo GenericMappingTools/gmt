@@ -2404,6 +2404,8 @@ GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 /*! . */
 GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	char *this_c = NULL, path[PATH_MAX+1];
+	static char *how[2] = {"detected", "created"};
+	unsigned int u = 0, c = 0;
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -2461,6 +2463,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #endif
 	}
 	gmt_dos_path_fix (GMT->session.HOMEDIR);
+    GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
@@ -2474,23 +2477,48 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	else {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
+		u = 1;
 	}
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
-		/* If we cannot access this dir then we won't use it */
-		gmt_M_str_free (GMT->session.USERDIR);
+		/* If we cannot access this dir then we create it first */
+#ifndef _WIN32
+		if (mkdir (GMT->session.USERDIR, (mode_t)0777))
+#else
+		if (mkdir (GMT->session.USERDIR))
+#endif
+		{
+            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
+            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of earth_relief_##m|s.grd files has been disabled.\n");
+			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			gmt_M_str_free (GMT->session.USERDIR);
+		}
 	}
 	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
 		GMT->session.CACHEDIR = strdup (this_c);
 	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_CACHEDIR as GMT_USERDIR/cache */
 		sprintf (path, "%s/%s", GMT->session.USERDIR, "cache");
 		GMT->session.CACHEDIR = strdup (path);
+		c = 1;
 	}
-	else {	/* Only get here if user gave a bad unreadable userdir and we must place the cache in the home dir */
-		sprintf (path, "%s/%s", GMT->session.HOMEDIR, "cache");
-		GMT->session.CACHEDIR = strdup (path);
+	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
+		/* If we cannot access this dir then we create it first */
+#ifndef _WIN32
+		if (mkdir (GMT->session.CACHEDIR, (mode_t)0777))
+#else
+		if (mkdir (GMT->session.CACHEDIR))
+#endif
+		{
+            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
+            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of cache data has been disabled.\n");
+			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			gmt_M_str_free (GMT->session.CACHEDIR);
+		}
 	}
+
 	gmt_dos_path_fix (GMT->session.USERDIR);
 	gmt_dos_path_fix (GMT->session.CACHEDIR);
+    if (GMT->session.USERDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n", GMT->session.USERDIR, how[u]);
+    if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
@@ -13279,7 +13307,7 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 	return 1;
 }
 
-int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
+int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	/* Delete all files in a directory, then the directory itself */
 	unsigned int n_files, k;
 	int error = GMT_NOERROR;
@@ -13301,6 +13329,17 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir) {
 	if (rmdir (dir)) {	/* Unable to delete the directory */
 		perror (dir);
 		error = GMT_RUNTIME_ERROR;
+	}
+	else if (recreate) {	/* Create an empty directory to replace what we deleted */
+#ifndef _WIN32
+		if (mkdir (dir, (mode_t)0777))
+#else
+		if (mkdir (dir))
+#endif
+		{
+            GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
+			error = GMT_RUNTIME_ERROR;
+		}
 	}
 	return error;
 }
@@ -13361,7 +13400,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
-			error = gmt_remove_dir (API, dir);
+			error = gmt_remove_dir (API, dir, false);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:

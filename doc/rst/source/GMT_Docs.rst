@@ -255,7 +255,8 @@ summary of these changes:
    the sub-directory cache under the **$GMT_USERDIR** directory [~/.gmt]).
    Subsequent use of the same URL will be read from the cache (except
    if explicitly removed by the user).  An exception is CGI Get Commands
-   which will be executed anew each time.
+   which will be executed anew each time. Both the user directory and
+   the cache directory will be created if they do not exist.
 
 *  Any reference to Earth topographic/bathymetric relief files called
    **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
@@ -347,6 +348,9 @@ Several modules have obtained new options to extend their capabilities:
    above) before reporting the path to the file (which will then be in the
    user's cache directory).
 
+*  :doc:`grd2xyz` can now write weights equal to the area each node represents
+   via the **-Wa** option.
+
 *  :doc:`grdgradient` can now take a grid of azimuths via the **-A** option.
 
 *  :doc:`grdimage` and :doc:`grdview` can now auto-compute the intensities
@@ -377,6 +381,9 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`psbasemap` has a new map-insert (**-D**) modifier **+t** that will
    translate the plot origin after determining the lower-left corner of the
    map insert.
+
+*  :doc:`pshistogram` has a new **-Z** modifier **+w** that will
+   accumulate weights provided in the 2nd input column instead of pure counts.
 
 *  :doc:`psrose` adds option **-Q** for setting the  confidence level used
    for a Rayleigh test for uniformity of direction.  The **-C** option also
@@ -5927,10 +5934,16 @@ Variable $GMT_USERDIR
     files (e.g., an alternate ``coastline.conf`` file, preferred default
     settings in ``gmt.conf``, custom symbols and color palettes, math
     macros for :doc:`gmtmath` and :doc:`grdmath`, and shorthands for
-    gridfile extensions via ``gmt_io``). When $GMT_USERDIR is not defined,
+    gridfile extensions via ``gmt.io``). When $GMT_USERDIR is not defined,
     then the default value $HOME/.gmt will be assumed. Users may also place their own
     data files in this directory as GMT programs will search for files
     given on the command line in both DIR_DATA and $GMT_USERDIR.
+
+Variable $GMT_CACHEDIR
+    may point to a directory where the user places cached data files
+    downloaded from the GMT data server. When $GMT_CACHEDIR is not defined,
+    then the default value $HOME/.gmt/cache will be assumed. The cache
+    directory can be emptied by running gmt **gmt clear cache**.
 
 Variable $GMT_TMPDIR
     may indicate the location, where GMT will write its state parameters
