@@ -127,6 +127,9 @@
 #else
 #	define assert(e) ((void)0)
 #endif
+#ifdef HAVE_UNISTD_H_
+#	include <unistd.h>
+#endif
 
 /*
  * Windows headers
@@ -197,6 +200,8 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 #else
 #define PSL_exit(code) exit(code)
 #endif
+
+#define PSL_M_unused(x) (void)(x)
 
 /* ISO Font encodings.  Ensure that the order of PSL_ISO_names matches order of includes below */
 
@@ -1253,6 +1258,8 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 #else /* HAVE_ZLIB */
 	/* ZLIB not available */
+	PSL_M_unused(nbytes);
+	PSL_M_unused(input);
 	PSL_message (PSL, PSL_MSG_VERBOSE, "Cannot DEFLATE because ZLIB is not available.\n");
 	return NULL;
 #endif /* HAVE_ZLIB */
