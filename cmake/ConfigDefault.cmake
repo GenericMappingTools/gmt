@@ -49,7 +49,7 @@ set (GMT_PACKAGE_VERSION_PATCH 1)
 # However, when making internal releases or just an ordinary developer build, leave it
 # empty; if it is empty, the revision number is automatically populated for you on build.
 #set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "18180")
-set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "")
+set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "18203")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
