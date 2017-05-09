@@ -2748,7 +2748,7 @@ GMT_LOCAL void grd_MEDIANW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 		return;
 	}
 
-	wmed = gmt_grd_median (GMT, stack[prev]->G, stack[last]->G, true);
+	wmed = (float)gmt_grd_median (GMT, stack[prev]->G, stack[last]->G, true);
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = wmed;
 }
 

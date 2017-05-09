@@ -299,9 +299,9 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	qsort (pair, nxy, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
 	/* Compute normalized cumulative weights */
 	wsum = 1.0 / wsum;	/* Do avoid division later */
-	pair[0].weight *= wsum;
+	pair[0].weight *= (float)wsum;
 	for (i = 1; i < nxy; i++) {
-		pair[i].weight *= wsum;
+		pair[i].weight *= (float)wsum;
 		pair[i].weight += pair[i-1].weight;
 	}
 	
