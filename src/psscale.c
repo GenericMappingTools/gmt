@@ -915,6 +915,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
+				if (P->data[ii].skip) {	/* Do not paint this slice at all */
+					x0 = x1;
+					continue;
+				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
@@ -1112,6 +1116,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
+				if (P->data[ii].skip) {	/* Do not paint this slice at all */
+					x0 = x1;
+					continue;
+				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
