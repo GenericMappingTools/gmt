@@ -2469,7 +2469,7 @@ double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 			sum_zw += G->data[node];
 			n++;
 		}
-		sum_w = n;
+		sum_w = (double)n;
 	}
 	return (n == 0 || sum_w == 0.0) ? GMT->session.d_NaN : sum_zw / sum_w;
 }
@@ -2524,7 +2524,7 @@ double gmt_grd_rms (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 			n++;
 			sum_z2w += (G->data[node] * G->data[node]);
 		}
-		sum_w = n;
+		sum_w = (double)n;
 	}
 	rms = (sum_w > 0) ? sqrt (sum_z2w / sum_w) : GMT->session.d_NaN;
 	return (rms);
