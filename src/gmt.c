@@ -187,7 +187,10 @@ int main (int argc, char *argv[]) {
 
 			/* Show share directory */
 			else if (!strncmp (argv[arg_n], "--show-datadir", 11U)) {
-				fprintf (stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
+				if (api_ctrl->GMT->session.DATADIR == NULL)
+					fprintf(stdout, "Not set\n");
+				else
+					fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATADIR);
 				status = GMT_NOERROR;
 			}
 
