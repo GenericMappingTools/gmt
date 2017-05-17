@@ -367,7 +367,7 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 }
 
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
-	int j, err;
+	int j, err, has_vector;
 	int old_fill_mode;
 	double dummy[2], *xy = NULL;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[8];
@@ -546,15 +546,16 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Get information about x variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
-		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy)))
+		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[0]], xy)))
 			gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy) ||
+			!nc_get_att_double (ncid, ids[header->xy_dim[0]], "valid_range", dummy)) {
 			/* If actual range differs from end-points of vector then we have a pixel grid */
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->n_columns-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->n_columns) ?
+			header->registration = (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1)) ?
 			                       GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
-		else if (!j) {	/* Got node vector, so default to gridline registration */
+		else if (has_vector) {	/* Got node vector, so default to gridline registration */
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->n_columns-1];
 			header->registration = GMT_GRID_NODE_REG;
 		}
@@ -567,20 +568,24 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Get information about y variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[1]], header->y_units);
-		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy)))
+		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[1]], xy)))
 			gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy) ||
+			!nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_range", dummy))
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
-		else if (!j)
+		else if (has_vector)
 			header->wesn[YLO] = xy[0], header->wesn[YHI] = xy[header->n_rows-1];
 		else
 			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->n_rows-1;
+
 		/* Check for reverse order of y-coordinate */
 		if (header->wesn[YLO] > header->wesn[YHI]) {
 			header->row_order = k_nc_start_north;
 			dummy[0] = header->wesn[YHI], dummy[1] = header->wesn[YLO];
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
 		}
+		else if (has_vector && xy[0] > xy[header->n_rows-1])
+			header->row_order = k_nc_start_north;
 		else
 			header->row_order = k_nc_start_south;
 		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, header->registration);
@@ -638,6 +643,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 #ifdef NC4_DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n",
 	            header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->registration:%u\n", header->registration);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->row_order: %s\n",
 	            header->row_order == k_nc_start_south ? "S->N" : "N->S");
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
@@ -1276,6 +1282,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 #ifdef NC4_DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->registration:%u\n", header->registration);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->row_order: %s\n", header->row_order == k_nc_start_south ? "S->N" : "N->S");
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "width:    %3d     height:%3d\n", width, height);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);

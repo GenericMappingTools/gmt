@@ -152,9 +152,10 @@ GMT_LOCAL bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *
 	double a;
 	for (side = 0; side < 4; side++) {
 		way = side / 2;
-		a = fabs (fmod (g->wesn[side] - h->wesn[side], h->inc[way]));
+		a = fmod (fabs (((g->wesn[side] + g->xy_off * g->inc[way]) - (h->wesn[side] + h->xy_off * h->inc[way])) / h->inc[way]), 1.0);
 		if (a < GMT_CONV8_LIMIT) continue;
-		if (fabs (a - h->inc[way]) < GMT_CONV8_LIMIT) continue;
+		a = 1.0 - a;
+		if (a < GMT_CONV8_LIMIT) continue;
 		return true;
 	}
 	return false;
@@ -190,7 +191,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	unsigned int one_or_zero = !h->registration, n = 0, nr, do_sample;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, *V_level = "qntcvld", buffer[GMT_BUFSIZ] = {""};
-	char Targs[GMT_LEN256] = {""}, Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
+	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
 	struct BLEND_LIST {
 		char *file;
 		char *region;
@@ -280,19 +281,14 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 		/* If input grids have different spacing or registration we must resample */
 
-		Targs[0] = Iargs[0] = Rargs[0] = '\0';
+		Iargs[0] = Rargs[0] = '\0';
 		do_sample = 0;
 		if (not_supported) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
 			do_sample |= 2;
 		}
-		if (h->registration != B[n].G->header->registration) {
-			strcpy (Targs, "-T");
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s has different registration than the output grid - must resample\n", B[n].file);
-			do_sample |= 1;
-		}
-		if (!(doubleAlmostEqualZero (B[n].G->header->inc[GMT_X], h->inc[GMT_X])
-					&& doubleAlmostEqualZero (B[n].G->header->inc[GMT_Y], h->inc[GMT_Y]))) {
+		if (fabs((B[n].G->header->inc[GMT_X] - h->inc[GMT_X]) / h->inc[GMT_X]) > 0.002 ||
+			fabs((B[n].G->header->inc[GMT_Y] - h->inc[GMT_Y]) / h->inc[GMT_Y]) > 0.002) {
 			sprintf (Iargs, "-I%.12g/%.12g", h->inc[GMT_X], h->inc[GMT_Y]);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
 				B[n].file, B[n].G->header->inc[GMT_X], B[n].G->header->inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
@@ -301,13 +297,13 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		if (out_of_phase (B[n].G->header, h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
 			double wesn[4];	/* Make sure wesn is equal to or larger than B[n].G->header->wesn so all points are included */
 			unsigned int k;
-			k = (unsigned int)floor ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			k = (unsigned int)rint ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XLO] = gmt_M_grd_col_to_x (GMT, k, h);
-			k = (unsigned int)ceil  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			k = (unsigned int)rint  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, k, h);
-			k = h->n_rows - 1 - (unsigned int)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->n_rows - 1 - (unsigned int)rint ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, k, h);
-			k = h->n_rows - 1 - (unsigned int)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			k = h->n_rows - 1 - (unsigned int)rint  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YHI] = gmt_M_grd_row_to_y (GMT, k, h);
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
@@ -329,7 +325,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
+				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "", Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT->common.n.active) {	/* User changed BC/method via -n */
 					strcat (cmd, " -n");
 					strcat (cmd, GMT->common.n.string);

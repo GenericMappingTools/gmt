@@ -1885,7 +1885,7 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 		gmt_M_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = 1;
 		R->edge[1] = G->header->n_columns;
-		R->start[0] = G->header->n_rows-1;
+		R->start[0] = G->header->row_order == k_nc_start_north ? 0 : G->header->n_rows-1;
 		R->start[1] = 0;
 	}
 	else {		/* Regular binary file with/w.o standard GMT header, or Sun rasterfile */
@@ -7895,15 +7895,15 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 	else if (fmt[0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
 			R->row = abs (row_no);
-			R->start[0] = G->header->n_rows - 1 - R->row;
+			R->start[0] = G->header->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
 			return (GMT_NOERROR);
 		}
 		else if (!R->auto_advance) {
 			R->row = row_no;
-			R->start[0] = G->header->n_rows - 1 - R->row;
+			R->start[0] = G->header->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
 		}
 		gmt_M_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
-		if (R->auto_advance) R->start[0] --;	/* Advance to next row if auto */
+		if (R->auto_advance) R->start[0] -= G->header->row_order;	/* Advance to next row if auto */
 	}
 	else {			/* Get a native binary row */
 		size_t n_items;
@@ -7980,9 +7980,9 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row) {
 			if (R->auto_advance) R->start[0] += R->edge[0];
 			break;
 		case 'n':
-			if (!R->auto_advance) R->start[0] = G->header->n_rows - 1 - rec_no;
+			if (!R->auto_advance) R->start[0] = G->header->row_order = k_nc_start_north ? rec_no : G->header->n_rows - 1 - rec_no;
 			gmt_M_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
-			if (R->auto_advance) R->start[0] --;
+			if (R->auto_advance) R->start[0] -= G->header->row_order;
 			break;
 		default:
 			if (!R->auto_advance && fseek (R->fp, (off_t)(GMT_GRID_HEADER_SIZE + rec_no * R->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
