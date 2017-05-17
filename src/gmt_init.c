@@ -5335,7 +5335,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 	/* MAP settings */
 
-	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations in m */
+	gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Default distance calculations are in user units */
 
 	GMT->current.map.n_lon_nodes = 360;
 	GMT->current.map.n_lat_nodes = 180;
@@ -5925,10 +5925,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append x|X or y|Y to identify data gaps in x or y coordinates,\n");
 			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D\n");
 			gmt_message (GMT, "\t   means we first project the points (requires -J).  Append [+|-]<gap>[unit].\n");
-			gmt_message (GMT, "\t   Geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
-			gmt_message (GMT, "\t   For gaps based on mapped coordinates, choose unit from %s [%s].\n",
+			gmt_message (GMT, "\t   For geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
+			gmt_message (GMT, "\t   For gaps based on mapped coordinates: choose unit from %s [%s].\n",
 			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   Note: For x|y with time data the unit is controlled by TIME_UNIT.\n");
+			gmt_message (GMT, "\t   For time data: the unit is controlled by TIME_UNIT.\n");
+			gmt_message (GMT, "\t   For generic data: the unit is as the data implies (user units).\n");
 			gmt_message (GMT, "\t   Repeat the -g option to specify multiple criteria, and add -ga\n");
 			gmt_message (GMT, "\t   to indicate that all criteria must be met [just one must be met].\n");
 			break;
