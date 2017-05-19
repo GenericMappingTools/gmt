@@ -858,7 +858,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file_name[pos]);
 		return 0;
 	}
-	curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, FALSE);		/* Tell libcurl to not verify the peer */
+	curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
 	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
 	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
