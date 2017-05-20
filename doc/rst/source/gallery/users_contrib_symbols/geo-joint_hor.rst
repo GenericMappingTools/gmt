@@ -3,4 +3,4 @@
 Horizontal joints
 -----------------
 
-. literalinclude:: geo-joint_hor.def
+.. literalinclude:: geo-joint_hor.def

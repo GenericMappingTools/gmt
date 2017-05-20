@@ -3,4 +3,4 @@
 Strike, dip direction and dip of overturned beds
 ------------------------------------------------
 
-. literalinclude:: geo-plane_inv.def
+.. literalinclude:: geo-plane_inv.def

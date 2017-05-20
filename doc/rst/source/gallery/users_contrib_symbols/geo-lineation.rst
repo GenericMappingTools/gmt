@@ -3,4 +3,4 @@
 Trend and plunge of lineation
 -----------------------------
 
-. literalinclude:: geo-lineation.def
+.. literalinclude:: geo-lineation.def

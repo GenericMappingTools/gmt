@@ -3,4 +3,4 @@
 Strike, dip direction and dip of bed with rake of lineation
 -----------------------------------------------------------
 
-. literalinclude:: geo-plane_rake.def
+.. literalinclude:: geo-plane_rake.def

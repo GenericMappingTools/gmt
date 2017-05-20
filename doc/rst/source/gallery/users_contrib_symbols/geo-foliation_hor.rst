@@ -3,4 +3,4 @@
 Horizontal foliation
 --------------------
 
-. literalinclude:: geo-foliation_hor.def
+.. literalinclude:: geo-foliation_hor.def

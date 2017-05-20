@@ -3,4 +3,4 @@
 Horizontal cleavage
 -------------------
 
-. literalinclude:: geo-cleavage_hor.def
+.. literalinclude:: geo-cleavage_hor.def

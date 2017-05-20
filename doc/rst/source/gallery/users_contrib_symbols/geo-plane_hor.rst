@@ -3,4 +3,4 @@
 Horizontal beds
 ---------------
 
-. literalinclude:: geo-plane_hor.def
+.. literalinclude:: geo-plane_hor.def

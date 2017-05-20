@@ -3,4 +3,4 @@
 Strike and dip direction of steeply dipping beds
 ------------------------------------------------
 
-. literalinclude:: geo-plane_steep.def
+.. literalinclude:: geo-plane_steep.def
