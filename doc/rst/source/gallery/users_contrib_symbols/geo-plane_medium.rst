@@ -3,4 +3,4 @@
 Strike and dip direction of moderately dipping beds
 ---------------------------------------------------
 
-. literalinclude:: geo-plane_medium.def
+.. literalinclude:: geo-plane_medium.def

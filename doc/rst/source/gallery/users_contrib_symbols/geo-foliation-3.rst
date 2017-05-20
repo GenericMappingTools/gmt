@@ -3,4 +3,4 @@
 Strike, dip direction and dip of foliation 3
 --------------------------------------------
 
-. literalinclude:: geo-foliation-3.def
+.. literalinclude:: geo-foliation-3.def

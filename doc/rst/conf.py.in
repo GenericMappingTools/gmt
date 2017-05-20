@@ -327,6 +327,7 @@ man_pages = [
 ('supplements/meca/pscoupe', 'pscoupe', 'Plot cross-sections of focal mechanisms', '', 1),
 ('supplements/meca/psmeca', 'psmeca', 'Plot focal mechanisms on maps', '', 1),
 ('supplements/meca/pspolar', 'pspolar', 'Plot polarities on the inferior focal half-sphere on maps', '', 1),
+('supplements/meca/pssac', 'pssac', 'Plot seismograms in SAC format on maps', '', 1),
 ('supplements/meca/psvelo', 'psvelo', 'Plot velocity vectors, crosses, and wedges on maps', '', 1),
 ('supplements/mgd77/mgd77convert', 'mgd77convert', 'Convert MGD77 data to other file formats', '', 1),
 ('supplements/mgd77/mgd77header', 'mgd77header', 'Create MGD77 headers from A77 files', '', 1),

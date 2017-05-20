@@ -3,4 +3,4 @@
 Strike of vertical beds
 -----------------------
 
-. literalinclude:: geo-plane_vert.def
+.. literalinclude:: geo-plane_vert.def

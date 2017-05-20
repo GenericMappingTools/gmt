@@ -3,4 +3,4 @@
 Strike and dip direction of gently dipping beds
 -----------------------------------------------
 
-. literalinclude:: geo-plane_gentle.def
+.. literalinclude:: geo-plane_gentle.def

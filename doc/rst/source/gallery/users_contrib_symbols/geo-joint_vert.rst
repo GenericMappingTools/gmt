@@ -3,4 +3,4 @@
 Strike of vertical joints
 -------------------------
 
-. literalinclude:: geo-joint_vert.def
+.. literalinclude:: geo-joint_vert.def

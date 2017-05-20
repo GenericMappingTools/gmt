@@ -3,4 +3,4 @@
 Horizontal lineation
 --------------------
 
-. literalinclude:: geo-lineation_hor.def
+.. literalinclude:: geo-lineation_hor.def

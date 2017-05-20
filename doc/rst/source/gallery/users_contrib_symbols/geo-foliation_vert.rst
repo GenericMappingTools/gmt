@@ -3,4 +3,4 @@
 Strike of vertical foliation
 ----------------------------
 
-. literalinclude:: geo-foliation_vert.def
+.. literalinclude:: geo-foliation_vert.def
