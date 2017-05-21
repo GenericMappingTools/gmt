@@ -677,7 +677,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	float *saved_data_pointer = NULL;
 	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
-	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;
+	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
 	double *z = NULL, *v = NULL, *xx = NULL, *yy = NULL, *xval = NULL, *yval = NULL;
