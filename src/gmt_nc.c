@@ -1112,7 +1112,8 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 			}
 		}
 		else
-			assert (wesn[XLO] >= header->wesn[XLO] && wesn[XHI] <= header->wesn[XHI]);
+			assert ((wesn[XLO]+GMT_CONV8_LIMIT*header->inc[GMT_X]) >= header->wesn[XLO] && (wesn[XHI]-GMT_CONV8_LIMIT*header->inc[GMT_X]) <= header->wesn[XHI]);
+		//assert (wesn[XLO] >= header->wesn[XLO] && wesn[XHI] <= header->wesn[XHI]); /* Too harsh */
 
 		/* Get dimension of subregion */
 		*width  = urint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg;
