@@ -727,8 +727,7 @@ L100:
 
 		/* Define y variable */
 		gmtnc_put_units (ncid, ids[header->xy_dim[1]], header->y_units);
-		header->row_order = k_nc_start_south;
-		dummy[(1-header->row_order)/2] = header->wesn[YLO], dummy[(1+header->row_order)/2] = header->wesn[YHI];
+		dummy[0] = header->wesn[YLO], dummy[1] = header->wesn[YHI];
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
@@ -1303,17 +1302,17 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	gmtnc_setup_chunk_cache();
 	gmt_M_err_trap (nc_open (header->name, NC_NOWRITE, &header->ncid));
 
-	/* read grid */
+	/* Read grid */
 	if (dim2[1] == 0)
 		gmtnc_io_nc_grid (GMT, header, dim, origin, header->stride, k_get_netcdf, pgrid + header->data_offset);
 	else {
-		/* read grid in two parts */
+		/* Read grid in two parts */
 		unsigned int stride_or_width = header->stride != 0 ? header->stride : width;
 		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + header->data_offset);
 		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + header->data_offset + dim[1]);
 	}
 
-	/* if we need to shift grid */
+	/* If we need to shift grid */
 	if (n_shift) {
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtnc_right_shift_grid: %d\n", n_shift);
@@ -1321,7 +1320,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		gmtnc_right_shift_grid (pgrid, dim[1], dim[0], n_shift, sizeof(grid[0]));
 	}
 
-	/* if dim[1] + dim2[1] was < requested width: wrap-pad east border */
+	/* If dim[1] + dim2[1] was < requested width: wrap-pad east border */
 	if (gmt_M_grd_is_global(GMT, header) && width > dim[1] + dim2[1]) {
 		unsigned int fix_pad[4] = {0,0,0,0};
 		fix_pad[XHI] = width - dim[1] - dim2[1];
@@ -1330,7 +1329,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	else
 		assert (width == dim[1] + dim2[1]);
 
-	/* get stats */
+	/* Get stats */
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
@@ -1352,14 +1351,14 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 				header->has_NaNs = GMT_GRID_HAS_NANS;
 		}
 	}
-	/* check limits */
+	/* Check limits */
 	if (header->z_min > header->z_max) {
 		header->z_min = NAN;
 		header->z_max = NAN;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
 	}
 	else {
-		/* report z-range of grid (with scale and offset applied): */
+		/* Report z-range of grid (with scale and offset applied): */
 		unsigned int level;
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
@@ -1370,7 +1369,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
 	}
 
-	/* flip grid upside down */
+	/* Flip grid upside down */
 	if (header->row_order == k_nc_start_south)
 		gmtlib_grd_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
@@ -1473,11 +1472,11 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	if (header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 		gmtnc_grid_fix_repeat_col (GMT, pgrid, width, height, sizeof(grid[0]));
 
-	/* flip grid upside down */
+	/* Flip grid upside down */
 	if (header->row_order == k_nc_start_south)
 		gmtlib_grd_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
-	/* get stats */
+	/* Get stats */
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
@@ -1495,7 +1494,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		n++;
 	}
 
-	/* write grid */
+	/* Write grid */
 	dim[0]    = height,    dim[1]    = width;
 	origin[0] = first_row, origin[1] = first_col;
 	status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid);
@@ -1509,7 +1508,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
-		/* report z-range of grid (with scale and offset applied): */
+		/* Report z-range of grid (with scale and offset applied): */
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
@@ -1524,7 +1523,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
-		limit[0] = limit[1] = NAN; /* set limit to NaN */
+		limit[0] = limit[1] = NAN; /* Set limit to NaN */
 	}
 	status = nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit);
 	if (status != NC_NOERR)

@@ -624,7 +624,7 @@ GMT_LOCAL void grdio_pad_grd_off_sub (struct GMT_GRID *G, float *data) {
 GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data) {
 	/* Use G for dimensions but operate on data array which points to either the real or imaginary section */
 	uint64_t ij_new, ij_old, row, col, start_last_new_row, end_last_old_row;
-	
+
 	/* See if the index of start of last new row exceeds index of last node in old grid */
 	start_last_new_row = gmt_M_get_nm (GMT, G->header->pad[YHI] + G->header->n_rows - 1, G->header->pad[XLO] + G->header->n_columns + G->header->pad[XHI]) + G->header->pad[XLO];
 	end_last_old_row   = gmt_M_get_nm (GMT, h_old->pad[YHI] + h_old->n_rows - 1, h_old->pad[XLO] + h_old->n_columns + h_old->pad[XHI]) + h_old->pad[XLO] + h_old->n_columns - 1;
@@ -641,7 +641,7 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 		ij_new = gmt_M_ijp (G->header, G->header->n_rows-1, G->header->n_columns-1); /* Index of this row's last column in new padded grid  */
 		ij_old = gmt_M_ijp (h_old, h_old->n_rows-1, h_old->n_columns-1);     /* Index of this row's last column in old padded grid */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub: last ij_new = %d, last ij_old = %d\n", (int)ij_new, (int)ij_old);
-		
+
 		if (ij_new > ij_old) {	/* Can go back to front */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub: Must loop from end to front\n");
 			for (row = G->header->n_rows; row > 0; row--) {
@@ -1473,9 +1473,9 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 	}
 	if (error) return ((mode == 0) ? GMT_GRDIO_RI_OLDBAD : GMT_GRDIO_RI_NEWBAD);
-	
+
 	/* Final polish for geo grids that are global to ensure clean -R settings for the cases -Rg and -Rd */
-	
+
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 		if (fabs (h->wesn[XLO]) < GMT_CONV12_LIMIT) h->wesn[XLO] = 0.0;
 		else if (fabs (180.0+h->wesn[XLO]) < GMT_CONV12_LIMIT) h->wesn[XLO] = -180.0;
@@ -2522,7 +2522,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else {	/* Must infer dimension etc from wesn, inc, registration */
 		if (wesn == NULL) {	/* Must select -R setting */
 			if (!GMT->common.R.active[RSET]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No w/e/s/n given and no -R in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
@@ -2530,7 +2530,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 			gmt_M_memcpy (wesn_dup, wesn, 4, double);
 		if (inc == NULL) {	/* Must select -I setting */
 			if (!GMT->common.R.active[ISET]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No increment given and no -I in effect.  Cannot initialize new grid\n");
 				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
 			}
 		}
@@ -2841,7 +2841,7 @@ unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	/* When using subset with memory grids we cannot actually cut the grid but instead
 	 * must temporarily change the pad to match the desired inner region wesn.  This means
 	 * the pads will change and can be quite large. */
-	
+
 	gmt_M_memcpy (tmp_pad, h->pad, 4, unsigned int);	/* Initialize new pad to the original pad */
 	/* First determine which (and how many, k) of the 4 new boundaries are inside the original region and update the padding: */
 	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] += urint ((new_wesn[XLO] - h->wesn[XLO]) * h->r_inc[GMT_X]);
