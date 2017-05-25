@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] [ |-L|\ *low/high* ]
-[ |-O| ] [ |-P| ] [ |-Q|\ *cut* ]
+[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z\ ] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
@@ -160,8 +160,8 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *cut*
-    Do not draw contours with less than *cut* number of points [Draw all contours]. 
+**-Q**\ [*cut*\ ][\ **+z\ ]
+    Do not draw contours with less than *cut* number of points [Draw all contours].  Append **z** to exclude the zero contour.
 
 .. _-R:
 

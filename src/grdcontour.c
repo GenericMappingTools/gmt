@@ -70,8 +70,9 @@ struct GRDCONTOUR_CTRL {
 		bool active;
 		double low, high;
 	} L;
-	struct GRDCONTOUR_Q {	/* -Q<cut> */
+	struct GRDCONTOUR_Q {	/* -Q[<cut>][+z] */
 		bool active;
+		bool zero;	/* True if we should skip zero-contour */
 		unsigned int min;
 	} Q;
 	struct GRDCONTOUR_S {	/* -S<smooth> */
@@ -165,7 +166,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C[+]<cont_int>|<cpt> [-A[-|[+]<annot_int>][<labelinfo>] [%s ]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q[<cut>][+z]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -212,6 +213,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside this range.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to skip tracing the zero-contour.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is extent of grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Will Smooth contours by splining and resampling at\n");
@@ -403,10 +405,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->L.low, &Ctrl->L.high);
 				break;
 			case 'Q':	/* Skip small closed contours */
-				Ctrl->Q.active = true;
-				n = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
-				Ctrl->Q.min = n;
+				if ((c = strstr (opt->arg, "+z"))) {
+					Ctrl->Q.zero = true;
+					c[0] = '\0';	/* Temporarily chop off modifier */
+				}
+				if (opt->arg[0]) {
+					Ctrl->Q.active = true;
+					n = atoi (opt->arg);
+					n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+					Ctrl->Q.min = n;
+				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
@@ -1214,7 +1223,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (contour[c] < Ctrl->L.low || contour[c] > Ctrl->L.high)) continue;	/* Outside desired range */
-
+		if (Ctrl->Q.zero && gmt_M_is_zero (contour[c])) continue;	/* Skip zero-contour */
 		/* Reset markers and set up new zero-contour */
 
 		cval = contour[c];

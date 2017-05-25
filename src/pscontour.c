@@ -81,8 +81,9 @@ struct PSCONTOUR_CTRL {
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label */
 	} T;
-	struct PSCONT_Q {	/* -Q<cut> */
+	struct PSCONT_Q {	/* -Q[<cut>][+z] */
 		bool active;
+		bool zero;	/* True if we should skip zero-contour */
 		unsigned int min;
 	} Q;
 	struct PSCONT_W {	/* -W[a|c]<pen>[+c[l|f]] */
@@ -384,7 +385,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C[+]<cont_int>|<cpt> %s\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-D<template>] ", GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[-E<indextable>] [%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<cut>] [-S[p|t]] [%s]\n", GMT_CONTT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q[<cut>][+z]] [-S[p|t]] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 	             GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -430,6 +431,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to skip tracing the zero-contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S (or -Sp) Skip xyz points outside region [Default keeps all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
@@ -584,10 +586,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					Ctrl->E.active = true;
 					break;
 				}
-				Ctrl->Q.active = true;
-				n = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
-				Ctrl->Q.min = n;
+				if ((c = strstr (opt->arg, "+z"))) {
+					Ctrl->Q.zero = true;
+					c[0] = '\0';	/* Temporarily chop off modifier */
+				}
+				if (opt->arg[0]) {
+					Ctrl->Q.active = true;
+					n = atoi (opt->arg);
+					n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+					Ctrl->Q.min = n;
+				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'S':	/* Skip points outside border */
 				Ctrl->S.active = true;
@@ -955,6 +964,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		cont = gmt_M_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->data[i].skip) continue;
+			if (Ctrl->Q.zero && gmt_M_is_zero (P->data[i].z_low)) continue;	/* Skip zero-contour */
 			cont[c].val = P->data[i].z_low;
 			if (Ctrl->A.mode)
 				cont[c].type = 'C';
@@ -968,17 +978,20 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
 			c++;
 		}
-		cont[c].val = P->data[P->n_colors-1].z_high;
-		if (Ctrl->A.mode)
-			cont[c].type = 'C';
-		else if (P->data[P->n_colors-1].annot & 2)
-			cont[c].type = 'A';
-		else
-			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-		cont[c].do_tick = Ctrl->T.active;
+		if (Ctrl->Q.zero && !gmt_M_is_zero (P->data[P->n_colors-1].z_high)) {
+			cont[c].val = P->data[P->n_colors-1].z_high;
+			if (Ctrl->A.mode)
+				cont[c].type = 'C';
+			else if (P->data[P->n_colors-1].annot & 2)
+				cont[c].type = 'A';
+			else
+				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
+			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].do_tick = Ctrl->T.active;
+			c++;
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
-		n_contours = c + 1;
+		n_contours = c;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
@@ -1010,6 +1023,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			if (c == c_alloc) cont = gmt_M_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
+			if (Ctrl->Q.zero && gmt_M_is_zero (cont[c].val)) continue;	/* Skip zero-contour */
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;
 			cont[c].angle = (got == 3) ? tmp : GMT->session.d_NaN;
@@ -1054,6 +1068,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			if (c == c_alloc) cont = gmt_M_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
+			if (Ctrl->Q.zero && gmt_M_is_zero (cont[c].val)) {	/* Skip zero-contour */
+				c--;	/* Since gets incremented each time */
+				continue;
+			}
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
