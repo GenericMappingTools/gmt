@@ -841,47 +841,61 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	FILE *fp = NULL;
 	static char *ftp_dir[2] = {"/cache", ""};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
-	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL;
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
 	
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
-	if (gmt_M_file_is_cache (file_name)) pos = 1;	/* A leading '@' was found */
-	else if (gmt_M_file_is_url (file_name)) pos = gmtlib_get_pos_of_filename (file_name);	/* Start of file in URL (> 0) */
-	/* else pos == 0 */
+	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
+		pos = 1;
+		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
+			c[0] = '\0';
+	}
+	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
+		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+			c[0] = '\0';
+	}
+	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */
+		c[0] = '\0';	/* and pos = 0 */
 	
 	/* Return immediately if cannot be downloaded (for various reasons) */
-	if (!gmtlib_file_is_downloadable (GMT, file_name, &kind))
+	if (!gmtlib_file_is_downloadable (GMT, file, &kind)) {
+		gmt_M_str_free (file);
 		return (pos);
-	
+	}
 	/* Here we will try to download a file */
 	
   	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file_name[pos]);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
+		gmt_M_str_free (file);
 		return 0;
 	}
 	curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
 	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
-	sprintf (local_path, "%s/%s", user_dir[dir], &file_name[pos]);
+	sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
 	if ((fp = fopen (local_path, "wb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
+		gmt_M_str_free (file);
 		return 0;
 	}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_CMD)	/* General URL given */
-		sprintf (url, "%s", file_name);
+		sprintf (url, "%s", file);
 	else			/* Use GMT ftp dir, possible from subfolder cache */
-		sprintf (url, "%s%s/%s", GMT_DATA_URL, ftp_dir[dir], &file_name[pos]);
+		sprintf (url, "%s%s/%s", GMT_DATA_URL, ftp_dir[dir], &file[pos]);
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
 		fclose (fp);
+		gmt_M_str_free (file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
 		fclose (fp);
+		gmt_M_str_free (file);
 		return 0;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
@@ -907,6 +921,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		else
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
+	gmt_M_str_free (file);
 
 	return (pos);
 }
@@ -6788,7 +6803,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
 	family -= module_input;
 	API->module_input = (module_input) ? true : false;
-	if (infile && strpbrk (infile, "*?[]") && !api_file_with_netcdf_directive (API, infile)) {	/* Gave a wildcard filename */
+	if (!gmt_M_file_is_cache(infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !api_file_with_netcdf_directive (API, infile)) {	/* Gave a wildcard filename */
 		uint64_t n_files;
 		unsigned int k;
 		char **filelist = NULL;
