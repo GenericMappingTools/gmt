@@ -3746,8 +3746,7 @@ void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
 	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[dir][GMT_Y] = GMT_IS_LAT;
-	if (dir == GMT_IN) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance
-	calculations are in meters */
+	if (dir == GMT_IN) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations are in meters */
 }
 
 /*! . */
