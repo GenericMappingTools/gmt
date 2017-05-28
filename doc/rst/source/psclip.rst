@@ -177,12 +177,12 @@ Optional Arguments
 Examples
 --------
 
-To make an overlay PostScript file that will set up a complex clip
+To make an clipping PostScript file that will set up a complex clip
 area to which subsequent plotting will be confined, run:
 
    ::
 
-    gmt psclip my_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip_mask_on.ps
+    gmt psclip my_region.xy -R0/40/0/40 -Jm0.3i -K > clip_mask_on.ps
 
 To deactivate the clipping in an existing plotfile, run:
 
