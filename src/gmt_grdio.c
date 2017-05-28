@@ -2553,7 +2553,9 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else
 		gmt_M_memcpy (header->inc, inc_dup, 2, double);
 	header->registration = registration;
-	/* mode may contain complex mode information */
+	/* Copy row-order from R.row_order, if set */
+	if (GMT->common.R.row_order) header->row_order = GMT->common.R.row_order;
+	/* Mode may contain complex mode information */
 	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmtlib_get_grdtype (GMT, header);
 	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set n_columns, n_rows in case of meter units etc. */
