@@ -514,6 +514,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
 				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 				size_t i, j;
+				unsigned int range = GMT->current.io.geo.range;	/* Old setting */
+				if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+					GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+				else
+					GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
@@ -537,6 +542,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 					return (API->error);
 				}
+				GMT->current.io.geo.range = range;	/* Reset to what it was */
 				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
 			}
 		}
