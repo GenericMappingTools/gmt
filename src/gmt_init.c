@@ -13354,7 +13354,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
+#if 0
 	char t_file[GMT_LEN256] = {""};
+#endif
 	int err = 0, error = GMT_NOERROR;
     struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
@@ -13362,7 +13364,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
-			GMT_Report (API, GMT_MSG_NORMAL, "Creating workflow directory %s\n", API->gwf_dir);
+			GMT_Report (API, GMT_MSG_NORMAL, "Creating a workflow directory %s\n", API->gwf_dir);
 			/* We only get here when gmt begin is called */
 			if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Already exists, but path is not a directory */
 				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
