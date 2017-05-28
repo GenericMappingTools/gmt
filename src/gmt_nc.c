@@ -783,6 +783,8 @@ L100:
 		xy = gmt_M_memory (GMT, NULL,  MAX (header->n_columns,header->n_rows), double);
 		for (col = 0; col < header->n_columns; col++) xy[col] = gmt_M_grd_col_to_x (GMT, col, header);
 		gmt_M_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
+
+		/* Depending on row_order, write y-coordinate array bottom-to-top or top-to-bottom */
 		if (header->row_order == k_nc_start_south) {
 			for (row = 0; row < header->n_rows; row++) xy[row] = (double) gmt_M_col_to_x (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->n_rows);
 		}
