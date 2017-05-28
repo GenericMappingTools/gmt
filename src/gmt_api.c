@@ -9664,8 +9664,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   the primary input and hence we read that as well.
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
-	 *   will produce whatever output is specified by the primary setting, but if the "-Z" option is given the primary
-	 *   output will be changed to the given type Y.  Also, modifiers may be involved. 	The full syntax for this is
+	 *   will expect/produce whatever input/output is specified by the primary setting, but if the "-Z" option is given the primary
+	 *   input/output will be changed to the given type Y.  Also, modifiers may be involved. The full syntax for this is
 	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
 	 *      1. -Z is given
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
