@@ -108,13 +108,13 @@ int main (int argc, char *argv[]) {
 		return GMT_NOERROR;
 	}
 #ifdef TEST_MODERN
-	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
+	if (gmt_main && argc <= 3 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
 		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
-	else if (gmt_main && argc == 2 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
+	else if (gmt_main && argc <= 3 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
 		gmt_manage_workflow (api_ctrl, GMT_END_WORKFLOW);
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;

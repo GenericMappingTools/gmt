@@ -13362,13 +13362,13 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
-			GMT_Report (API, GMT_MSG_NORMAL, "Asked to create a workflow directory %s\n", API->gwf_dir);
+			GMT_Report (API, GMT_MSG_NORMAL, "Creating workflow directory %s\n", API->gwf_dir);
 			/* We only get here when gmt begin is called */
 			if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Already exists, but path is not a directory */
 				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
-			else if (err == 0 && S_ISDIR (S.st_mode))	/* Direcetory already exists, give warning */
+			else if (err == 0 && S_ISDIR (S.st_mode))	/* Directory already exists, give warning */
 				GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
 		    else {	/* Create the new directory */
 				/* To avoid the weird CID 167015 that says:
@@ -13381,15 +13381,24 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 				if (mkdir (dir))
 #endif
 				{
-	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT WorkFlow directory : %s\n", API->gwf_dir);
+	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
+#if 0
+			/* I (Remko) do not understand why you need to start clean. At least ~/.gmt/gmt.conf could be needed for local configuration */
+
 			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
 				gmtinit_conf (API->GMT);		/* Get the original system defaults */
 				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 				gmt_putdefaults (API->GMT, dir);
 			}
+#else
+			gmtinit_conf (API->GMT);		/* Get the original system defaults */
+			gmt_getdefaults (API->GMT, NULL);	/* Get user defaults */
+			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
+			gmt_putdefaults (API->GMT, dir);
+#endif
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			break;
 		case GMT_USE_WORKFLOW:
@@ -13400,6 +13409,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
 			error = gmt_remove_dir (API, dir, false);
+			GMT_Report (API, GMT_MSG_NORMAL, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
