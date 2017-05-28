@@ -839,7 +839,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	int curl_err = 0;
 	CURL *Curl = NULL;
 	FILE *fp = NULL;
-	static char *ftp_dir[2] = {"/cache", ""};
+	static char *ftp_dir[2] = {"/cache", ""}, *name[2] = {"CACHE", "USER"};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
 	
@@ -862,6 +862,11 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return (pos);
 	}
+	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
+	if (user_dir[dir] == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The GMT_%s directory is not defined - download file to current directory\n", name[dir]);
+		sprintf (local_path, "%s", &file[pos]);
+	}
 	/* Here we will try to download a file */
 	
   	if ((Curl = curl_easy_init ()) == NULL) {
@@ -869,9 +874,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
-	dir = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Only GMT datasets should go data dir; all else in cache */
-	sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
+	curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
+	if (user_dir[dir]) sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
