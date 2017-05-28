@@ -97,7 +97,7 @@ Optional Arguments
 **-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere; this simply affects the
-    ambient light.  If no argument is given then we derive an intensity
+    ambient light.  If just **+** is given then we derive an intensity
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
     using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
     append **+a**\ *azimuth and **+n**\ *args* to override those values.  If you want

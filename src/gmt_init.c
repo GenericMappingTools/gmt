@@ -2281,9 +2281,12 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
 		sprintf (hfile, "%s", GMT_HISTORY_FILE);
-	else	/* Try home directory instead */
+	else if (GMT->session.HOMEDIR)	/* Try home directory instead */
 		sprintf (hfile, "%s/%s", GMT->session.HOMEDIR, GMT_HISTORY_FILE);
-
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No writable directory found for gmt history - skipping it.\n");
+		return (GMT_NOERROR);
+	}
 	if ((fp = fopen (hfile, "r+")) == NULL) /* In order to place an exclusive lock, fp must be open for writing */
 		return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
 
@@ -2365,9 +2368,12 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
 		sprintf (hfile, "%s", GMT_HISTORY_FILE);
-	else	/* Try home directory instead */
+	else if (GMT->session.HOMEDIR)	/* Try home directory instead */
 		sprintf (hfile, "%s/%s", GMT->session.HOMEDIR, GMT_HISTORY_FILE);
-
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Unable to determine a writeable directory - gmt history not updated.\n");
+		return (GMT_NOERROR);
+	}
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
 	/* When we get here the file is open */
@@ -2474,7 +2480,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.USERDIR = strdup (GMT_USER_DIR_DEBUG);
 #endif
-	else {	/* Use default path for GMT_USERDIR (~/.gmt) */
+	else if (GMT->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
 		u = 1;
@@ -2517,7 +2523,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	gmt_dos_path_fix (GMT->session.USERDIR);
 	gmt_dos_path_fix (GMT->session.CACHEDIR);
-    if (GMT->session.USERDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n", GMT->session.USERDIR, how[u]);
+    if (GMT->session.USERDIR)  GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
     if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
 
 	if (gmt_M_compat_check (GMT, 4)) {
