@@ -6859,33 +6859,36 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 }
 
 /*! . */
-int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
+int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false;
-	char text[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL;
+	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL;
 	double p[6];
 
-	if (!item || !item[0]) return (GMT_PARSE_ERROR);	/* Got nothing */
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* Got nothing */
+	strncpy (item, arg, GMT_BUFSIZ-1);	/* Copy locally */
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Must handle any internal history regarding incs and registration */
-		/* Here, item may be of the form <region>[+I<incs>][+GP|G] if -R was given to a non-plotting module */
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Must handle any internal history regarding increments and registration */
+		/* Here, item may be of the form <region>[+I<incs>][+G[P|G][B|T]] if -R was given to a non-plotting module */
 		if ((c = strstr (item, "+G")) != NULL) {	/* Got grid registration */
 			GMT->common.R.active[GSET] = true;
-			GMT->common.R.registration = (c[2] == 'P') ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid registration %c from RG history\n", c[2]);
-			c[0] = '\0';	/* Chop off this modifier */
+			GMT->common.R.registration = strchr(&c[2], 'P') != NULL || strchr(&c[2], 'p') != NULL ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
+			GMT->common.R.row_order = strchr(&c[2], 'T') != NULL || strchr(&c[2], 't') != NULL ? k_nc_start_north : k_nc_start_south;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid registration and/or row order from -R%s\n", item);
 		}
-		if ((c = strstr (item, "+I")) != NULL) {	/* Got grid increments */
-			if (gmt_getinc (GMT, &c[2], GMT->common.R.inc)) {
+		if ((d = strstr (item, "+I")) != NULL) {	/* Got grid increments */
+			if (gmt_getinc (GMT, &d[2], GMT->common.R.inc)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT modern: Error parsing the grid spacing.\n");
 				return (GMT_PARSE_ERROR);
 			}
 			GMT->common.R.active[ISET] = true;
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid spacing %s from RG history\n", &c[2]);
-			c[0] = '\0';	/* Chop off this modifier also */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT modern: Obtained grid spacing from -R%s\n", item);
 		}
+		/* Chop off modifiers. This has to be after the above ifs, to allow +I and +G in any order */
+		if (c) c[0] = '\0';
+		if (d) d[0] = '\0';
 	}
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
@@ -6973,6 +6976,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 			if (GMT->common.R.active[ISET] == false) gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);	/* Do not override settings given via -I */
 			GMT->common.R.registration = (GMT->common.R.active[GSET]) ? !G->header->registration : G->header->registration;	/* Set, or toggle registration if -r was set */
+			GMT->common.R.row_order = G->header->row_order;	/* Copy the row order */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG,
 			            "-R<grdfile> converted to -R%.16g/%.16g/%.16g/%.16g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 #if 0
@@ -11350,8 +11354,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 			strcat (RG, tmp);
 		}
 		if (GMT->common.R.active[GSET]) {	/* Also want grid registration saved */
-			char *type = "GP";
-			sprintf (tmp, "+G%c", type[GMT->common.R.registration]);
+			sprintf (tmp, "+G%c%c", GMT->common.R.registration == GMT_GRID_PIXEL_REG ? 'P' : 'G', GMT->common.R.row_order == k_nc_start_north ? 'T' : 'B');
 			strcat (RG, tmp);
 		}
 		GMT->init.history[id] = strdup (RG);
@@ -13354,7 +13357,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
+#if 0
 	char t_file[GMT_LEN256] = {""};
+#endif
 	int err = 0, error = GMT_NOERROR;
     struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
@@ -13362,13 +13367,13 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
-			GMT_Report (API, GMT_MSG_NORMAL, "Asked to create a workflow directory %s\n", API->gwf_dir);
+			GMT_Report (API, GMT_MSG_NORMAL, "Creating a workflow directory %s\n", API->gwf_dir);
 			/* We only get here when gmt begin is called */
 			if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Already exists, but path is not a directory */
 				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
-			else if (err == 0 && S_ISDIR (S.st_mode))	/* Direcetory already exists, give warning */
+			else if (err == 0 && S_ISDIR (S.st_mode))	/* Directory already exists, give warning */
 				GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
 		    else {	/* Create the new directory */
 				/* To avoid the weird CID 167015 that says:
@@ -13381,15 +13386,24 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 				if (mkdir (dir))
 #endif
 				{
-	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT WorkFlow directory : %s\n", API->gwf_dir);
+	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
+#if 0
+			/* I (Remko) do not understand why you need to start clean. At least ~/.gmt/gmt.conf could be needed for local configuration */
+
 			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
 				gmtinit_conf (API->GMT);		/* Get the original system defaults */
 				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 				gmt_putdefaults (API->GMT, dir);
 			}
+#else
+			gmtinit_conf (API->GMT);		/* Get the original system defaults */
+			gmt_getdefaults (API->GMT, NULL);	/* Get user defaults */
+			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
+			gmt_putdefaults (API->GMT, dir);
+#endif
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			break;
 		case GMT_USE_WORKFLOW:
@@ -13400,6 +13414,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
 			error = gmt_remove_dir (API, dir, false);
+			GMT_Report (API, GMT_MSG_NORMAL, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
