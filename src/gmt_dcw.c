@@ -241,6 +241,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
+	struct GMT_QUAD *Q = NULL;
 
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
@@ -255,6 +256,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			return NULL;
 		}
 		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
+		Q = gmt_quad_init (GMT, 1);
 	}
 
 	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
@@ -409,6 +411,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
+			gmt_quad_add (GMT, &Q[GMT_X], west);
+			gmt_quad_add (GMT, &Q[GMT_X], east);
 			if (west < wesn[XLO])  wesn[XLO] = west;
 			if (east > wesn[XHI])  wesn[XHI] = east;
 			if (south < wesn[YLO]) wesn[YLO] = south;
@@ -494,6 +498,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	gmt_M_free (GMT, GMT_DCW_state);
 
 	if (mode & GMT_DCW_REGION) {
+		j = gmt_quad_finalize (GMT, &Q[GMT_X]);
+		GMT->current.io.geo.range = Q[GMT_X].range[j];		/* Override this setting explicitly */
+		wesn[XLO] = Q[GMT_X].min[j];	wesn[XHI] = Q[GMT_X].max[j];
+		gmt_M_free (GMT, Q);
 		if (F->adjust) {
 			if (F->extend) {	/* Extend the region by increments */
 				wesn[XLO] -= F->inc[XLO];
