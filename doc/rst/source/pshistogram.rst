@@ -24,7 +24,7 @@ Synopsis
 [ |-I|\ [**o**\ \|\ **O**] ]
 [ |-K| ] [ |-L|\ *pen* ] 
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
-[ |-O| ] [|-P| ] [ |-Q| ]
+[ |-O| ] [|-P| ] [ |-Q|\ **r** ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-U| ]
@@ -154,8 +154,9 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
-    Draw a cumulative histogram. 
+**-Q**\ **r**
+    Draw a cumulative histogram. Append **r** to instead compute the
+    reverse cumulative histogram.
 
 .. _-R:
 

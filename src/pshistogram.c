@@ -73,8 +73,9 @@ struct PSHISTOGRAM_CTRL {
 		bool selected[3];
 		struct GMT_PEN pen[3];
 	} N;
-	struct Q {	/* -Q */
+	struct Q {	/* -Q[r] */
 		bool active;
+		int mode;
 	} Q;
 	struct S {	/* -S */
 		bool active;
@@ -117,8 +118,9 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	double *boxh;
 	uint64_t n_boxes;
 	uint64_t n_counted;
-	bool center_box, cumulative, weights;
+	bool center_box, weights;
 	unsigned int hist_type;
+	int cumulative;
 	enum Pshistogram_extreme extremes;
 };
 
@@ -189,6 +191,10 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 			F->boxh[ibox] = count_sum;
 		}
 		b1 = count_sum;
+		if (F->cumulative == -1) {	/* Reverse cumulative */
+			for (ibox = 0; ibox < F->n_boxes; ibox++)
+				F->boxh[ibox] = count_sum - F->boxh[ibox];
+		}
 	}
 	else {
 		b0 = F->sum_w;
@@ -424,7 +430,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width>[+l|h|b] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", GMT_Jx_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q[r]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT);
@@ -457,7 +463,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   2 = LMS mode and scale\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -N option may be repeated to draw several of these curves.\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram; append r for reverse cumulative histogram.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
 	GMT_Option (API, "U,V,X");
@@ -574,6 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
+				Ctrl->Q.mode = (opt->arg[0] == 'r') ? -1 : +1;
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -688,7 +695,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_M_memset (stats, 6, double);
 	F.hist_type  = Ctrl->Z.mode;
 	F.box_width  = Ctrl->W.inc;
-	F.cumulative = Ctrl->Q.active;
+	F.cumulative = Ctrl->Q.mode;
 	F.center_box = Ctrl->F.active;
 	F.extremes = Ctrl->W.mode;
 	F.weights = Ctrl->Z.weights;
@@ -999,8 +1006,10 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (Ctrl->Q.active)	/* Want cumulative curve */
+				if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
+					if (Ctrl->Q.mode == -1) yp[k] = f - yp[k];
+				}
 				else
 					yp[k] = f * exp (-0.5 * z * z);
 				switch (F.hist_type) {	/* Must adjust yp[k] accordingly */
