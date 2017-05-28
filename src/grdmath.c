@@ -3204,12 +3204,12 @@ GMT_LOCAL void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		gmt_free_grid (GMT, &W, true);
 	}
 	else {
-		gmt_M_memcpy (pad, stack[last]->G->header->pad, 4U, unsigned int);	/* Save original pad */
-		gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+		gmt_M_memcpy (pad, stack[prev]->G->header->pad, 4U, unsigned int);	/* Save original pad */
+		gmt_grd_pad_off (GMT, stack[prev]->G);				/* Undo pad if one existed so we can sort */
 		gmt_sort_array (GMT, stack[prev]->G->data, info->nm, GMT_FLOAT);
 		p = (float) gmt_quantile_f (GMT, stack[prev]->G->data, stack[last]->factor, info->nm);
-		gmt_M_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
-		gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+		gmt_M_memset (stack[prev]->G->data, info->size, float);	/* Wipes everything */
+		gmt_grd_pad_on (GMT, stack[prev]->G, pad);		/* Reinstate the original pad */
 	}
 
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = p;
