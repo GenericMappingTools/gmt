@@ -315,9 +315,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdvector (void *V_API, int mode, void *args) {
-	unsigned int row, col, col_0, row_0, d_col, d_row, k, n_warn[3] = {0, 0, 0}, warn;
+	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[3] = {0, 0, 0}, warn;
 	int error = 0;
-	bool justify, Geographic;
+	bool Geographic;
 	
 	uint64_t ij;
 
