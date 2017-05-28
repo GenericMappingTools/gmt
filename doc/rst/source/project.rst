@@ -242,7 +242,7 @@ azimuth 30 and covering a full 360, try:
 
    ::
 
-    gmt project -C10W/30N -A30 -G1 --L-180/180 > great_circle.txt
+    gmt project -C10W/30N -A30 -G1 -L-180/180 > great_circle.txt
 
 To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 

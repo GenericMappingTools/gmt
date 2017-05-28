@@ -170,7 +170,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i: integral\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   q: square\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: remove mean value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i|q|r can repeat multiple times. -Frii will convert accerate to displacement.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i|q|r can repeat multiple times. -Frii will convert acceleration to displacement.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The order of i|q|r controls the order of the data processing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint positive or negative portion of traces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only -G is used, default to fill the positive portion black.\n");

@@ -168,7 +168,7 @@ Plot the day-night and civil twilight
 
     gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000 -P -K > terminator.ps
 
-    gmt pssolar -R -JX -W1p -Tdc -O >> terminator.ps
+    gmt pssolar -R -J -W1p -Tdc -O >> terminator.ps
 
 Set up a clip path overlay based on the day/night terminator: 
 

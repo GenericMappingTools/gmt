@@ -39,7 +39,7 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<off[GMT_X]>[/<dy>]][+r<dpi>] */
+	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					p_fail = true;
 					n_errors++;
 				}
-				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
+				else {	/* args are now [+j<justify>][+o<dx>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
 					/* Required modifier +w OR +r */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {

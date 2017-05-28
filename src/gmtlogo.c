@@ -165,14 +165,14 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
 		double width;
 		int justify;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<off[GMT_X]>/<dy>/][<shade>]][+d] */
+	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
