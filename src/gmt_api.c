@@ -848,10 +848,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		pos = 1;
 		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
 			c[0] = '\0';
+		else if ((c = strchr (file, '=')))	/* Grid attributes */
+			c[0] = '\0';
 	}
 	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+			c[0] = '\0';
+		else if ((c = strchr (file, '=')))	/* Grid attributes */
 			c[0] = '\0';
 	}
 	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */

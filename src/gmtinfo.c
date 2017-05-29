@@ -171,7 +171,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 	 */
 
 	int j;
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0, k, pos[2];
 	bool special = false;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
