@@ -18,23 +18,23 @@ Synopsis
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
-[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
-[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] 
+[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
+[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z\ ] ]
+[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
-[ |SYN_OPT-U| ] 
+[ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
-[ |SYN_OPT-X| ] 
-[ |SYN_OPT-Y| ] 
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
-[ |SYN_OPT-i| ] 
-[ |SYN_OPT-p| ] 
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 
@@ -52,7 +52,7 @@ provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the CPT.
 Alternatively, the x/y/z positions of the contour lines may be saved to
-one or more output files (or stdout) and no plot is produced. 
+one or more output files (or stdout) and no plot is produced.
 
 Required Arguments
 ------------------
@@ -146,7 +146,7 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Color the triangles using the CPT. 
+    Color the triangles using the CPT.
 
 .. include:: explain_-Jz.rst_
 
@@ -164,7 +164,7 @@ Optional Arguments
 
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
-    to fit inside region **-R**]. 
+    to fit inside region **-R**].
 
 .. _-O:
 
@@ -176,7 +176,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ ][\ **+z\ ]
+**-Q**\ [*cut*\ ][\ **+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].  Append **z** to exclude the zero contour.
 
 .. _-S:
@@ -202,7 +202,7 @@ Optional Arguments
     labels, separate the low and hight label strings with a comma (e.g.,
     **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
     then only contours marked with upper case C or A will have tick marks
-    [and annotations]. 
+    [and annotations].
 
 .. _-U:
 
@@ -228,10 +228,10 @@ Optional Arguments
 
 .. include:: explain_-XY.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**). 
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**).
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 3 output columns]. 
+.. |Add_-bo| replace:: [Default is 3 output columns].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

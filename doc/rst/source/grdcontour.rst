@@ -18,9 +18,9 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
-[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] [ |-L|\ *low/high* ]
-[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z\ ] ]
+[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
@@ -45,7 +45,7 @@ Description
 tracing each contour through the grid. PostScript code is generated
 and sent to standard output. Various options that affect the plotting
 are available. Alternatively, the x/y/z positions of the contour lines
-may be saved to one or more output files (or stdout) and no plot is produced. 
+may be saved to one or more output files (or stdout) and no plot is produced.
 
 Required Arguments
 ------------------
@@ -84,7 +84,7 @@ Required Arguments
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour
-    values have the same units as the grid. 
+    values have the same units as the grid.
 
 .. _-J:
 
@@ -112,7 +112,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *template* 
+**-D**\ *template*
     Dump contours as data line segments; no plotting takes place.
     Append filename template which may contain C-format specifiers.
     If no filename template is given we write all lines to stdout.
@@ -134,7 +134,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* 
+**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
 
 .. include:: explain_contlabel.rst_
 
@@ -148,7 +148,7 @@ Optional Arguments
 
 **-L**\ *low/high*
     Limit range: Do not draw contours for data values below *low* or
-    above *high*. 
+    above *high*.
 
 .. _-O:
 
@@ -160,7 +160,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ ][\ **+z\ ]
+**-Q**\ [*cut*\ ][\ **+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].  Append **z** to exclude the zero contour.
 
 .. _-R:
@@ -192,7 +192,7 @@ Optional Arguments
     labels, separate the low and hight label strings with a comma (e.g.,
     **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
     then only contours marked with upper case C or A will have tick marks
-    [and annotations]. 
+    [and annotations].
 
 .. _-U:
 
@@ -227,7 +227,7 @@ Optional Arguments
     **+p** to indicate that this grid file contains z-values that are
     periodic in 360 degrees (e.g., phase data, angular distributions)
     and that special precautions must be taken when determining
-    0-contours. 
+    0-contours.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
