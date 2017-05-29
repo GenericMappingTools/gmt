@@ -594,8 +594,8 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	gmt_M_unused(API);
 #if defined(WIN32) || defined(DEBUG_MODERN)
 	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
-	   gmt_get_ppid returns different values for each call, and this completely breaks the idea
-	   using the PPID (parent PID) to create unique file names. 
+	   api_get_ppid returns different values for each call, and this completely breaks the idea
+	   using the PPID (parent PID) to create unique file names.
 	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
 	   we are forcing PPID = 0 in all Windows variants. */
 	ppid = 0;
@@ -842,7 +842,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	static char *ftp_dir[2] = {"/cache", ""}, *name[2] = {"CACHE", "USER"};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
-	
+
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
@@ -856,7 +856,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */
 		c[0] = '\0';	/* and pos = 0 */
-	
+
 	/* Return immediately if cannot be downloaded (for various reasons) */
 	if (!gmtlib_file_is_downloadable (GMT, file, &kind)) {
 		gmt_M_str_free (file);
@@ -868,7 +868,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		sprintf (local_path, "%s", &file[pos]);
 	}
 	/* Here we will try to download a file */
-	
+
   	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
 		gmt_M_str_free (file);
@@ -913,7 +913,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	curl_easy_cleanup (Curl);
 
 	if (fp) fclose (fp);
-	
+
 	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
@@ -1426,7 +1426,7 @@ GMT_LOCAL unsigned int api_determine_dimension (struct GMTAPI_CTRL *API, char *t
 	/* Examine greenspline's -R option to learn the dimensionality of the domain (1, 2, or 3) */
 	unsigned int n_slashes = 0;
 	size_t k;
-	const size_t s_length = strlen(text); 
+	const size_t s_length = strlen(text);
 
 	/* First catch the simple -R? which means a grid is passed by the API, hence dimension is 2 */
 	if (text[0] == '?' && text[1] == '\0') return 2;	/* A marker means a grid only, so done */
@@ -3527,7 +3527,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : M_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
-				S = D_obj->table[D_obj->n_tables]->segment[0] = 
+				S = D_obj->table[D_obj->n_tables]->segment[0] =
 				    GMT_Alloc_Segment (API, GMT_IS_DATASET, M_obj->n_rows, n_columns, NULL, NULL);
 				GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				api_get_val = api_select_get_function (API, M_obj->type);
@@ -5442,7 +5442,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned int 
 	if (!(pch = strchr (*str, ','))) {	/* No comma so presumably a regular CPT name, but check for single color entry */
 		bool gray = true;
 		size_t k;
-		const size_t s_length = strlen(*str); 
+		const size_t s_length = strlen(*str);
 		 /* Since "gray" is both a master CPT and a shade we must let the CPT take precedence */
 		if (!strcmp (*str, "gray"))
 			return (0);
@@ -5856,7 +5856,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	}
 
 	/* Set temp directory used by GMT */
-	
+
 #ifdef WIN32
 	if ((dir = getenv ("TEMP")))	/* Standard Windows temp directory designation */
 		API->tmp_dir = strdup (dir);
@@ -6750,7 +6750,7 @@ void *GMT_Read_VirtualFile_ (char *string, int len) {
  /*! . */
 int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 	/* Reset a virtual file back to its original configuration so that it can be
-	 * repurposed for reading or writing again. 
+	 * repurposed for reading or writing again.
 	 */
 	int object_ID = GMT_NOTSET, item;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
@@ -7617,7 +7617,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 						D_obj->n_columns = T_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 					else {
 						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Error: GMT_Put_Record does not know the number of columns\n");
-						return_error (API, GMT_N_COLS_NOT_SET); 
+						return_error (API, GMT_N_COLS_NOT_SET);
 					}
 				}
 				count = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
