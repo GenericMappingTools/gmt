@@ -425,7 +425,7 @@ GMT_LOCAL void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, 
 			model[i] = 0.0;
 			for (j = 0; j < n_model; j++) {
 				temp_inverse_ij = 0.0;
-				for (k = 0; k <  rank; k++) {
+				for (k = 0; k < rank; k++) {
 					temp_inverse_ij += (v[i + k*mp] * v[j + k*mp] / lambda[k]);
 				}
 				model[i] += (temp_inverse_ij * gtd[j]);
@@ -446,18 +446,19 @@ GMT_LOCAL void unscale_polynomial (struct GMT_CTRL *GMT, double c[], unsigned in
 		c[j] *= fac;
 		fac *= cnst;
 	}
+	if (n < 2) return;	/* To avoid n-2 becoming huge since unsigned */
 	cnst = 0.5 * (a + b);
 	for (j = 0; j <= n - 2; j++) {
 		for (k = n - 1; k > j; k--) c[k-1] -= cnst * c[k];
 	}
 }
 
-GMT_LOCAL void cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b, unsigned int denorm) {
+GMT_LOCAL void cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int un, double a, double b, unsigned int denorm) {
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */
 
-	 unsigned int j, k;
+	 int j, k, n = (int)un;
 	 double sv, *d, *dd;
 
 	 d  = gmt_M_memory (GMT, NULL, n, double);
@@ -483,11 +484,11 @@ GMT_LOCAL void cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, do
 	/* Next step is to undo the scaling so we can use coefficients with the user's x */
 
 	if (denorm)
-		unscale_polynomial (GMT, d, n, a, b);
+		unscale_polynomial (GMT, d, un, a, b);
 
 	/* Return the new coefficients via c */
 
-	gmt_M_memcpy (c, d, n, double);
+	gmt_M_memcpy (c, d, un, double);
 
 	gmt_M_free (GMT, d);
 	gmt_M_free (GMT, dd);
