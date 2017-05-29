@@ -1,0 +1,519 @@
+>sL # name: Alpine Sub. # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Africa AFR_001_000 # use_reverse: no # identity: GPlates-553c2beb-65d7-488f-88ab-aa920e89c83d
+  23.730763      40.306158
+  25.944206      37.749683
+>sL # name: Mediterranean Subduction, DB 04-2007 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Africa AFR_001_000 # use_reverse: no # identity: GPlates-13e843b1-bc1f-4898-b3ab-7b926f07df48
+  35.542080      36.348729
+  35.829900      36.382500
+  35.872542      36.354533
+>sL # name: Mediterranean Subduction, DB 04-2007 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Arabia ARB_001_000 # use_reverse: yes # identity: GPlates-13e843b1-bc1f-4898-b3ab-7b926f07df48
+  35.872542      36.354533
+  36.403700      36.003200
+  37.178600      36.633100
+  37.939600      37.137700
+  38.920478      37.293434
+  39.681164      37.311199
+  41.157384      37.059407
+  42.536045      36.688657
+  43.756063      36.276165
+  45.400977      35.523419
+  47.910600      33.625300
+  50.850700      32.134900
+  52.485000      30.840100
+  54.319200      29.152500
+  57.384800      27.627900
+  59.922800      26.500700
+  61.709100      25.729200
+  64.036100      25.081700
+  66.374900      25.207700
+  66.838970      25.208232
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Capricorn Plate (Kremeer et al 2003 AT) # use_reverse: no # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  91.642221       9.416791
+  92.064400       7.100300
+  93.434800       4.525800
+  95.745000       1.458500
+  98.050900      -1.790500
+  100.038000      -4.494900
+  101.669000      -6.345200
+  104.180000      -7.276700
+  104.932891      -7.622278
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Caribbean CAR_003_000 # use_reverse: yes # identity: GPlates-86a9c637-96b9-4844-b097-31fb09447c46
+  -78.744727       6.750788
+  -78.661062       5.800261
+  -78.808524       4.523870
+  -78.661913       3.834058
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Caribbean CAR_003_000 # use_reverse: yes # identity: GPlates-0a111e55-122e-4903-b53b-cc38c8d6bc9f
+  -78.744727       6.750788
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Caribbean CAR_003_000 # use_reverse: yes # identity: GPlates-86a9c637-96b9-4844-b097-31fb09447c46
+  -78.744727       6.750788
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Caribbean CAR_003_000 # use_reverse: yes # identity: GPlates-0a111e55-122e-4903-b53b-cc38c8d6bc9f
+  -81.778567       7.123142
+  -79.985831       6.738446
+  -78.744727       6.750788
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Caribbean CAR_003_000 # use_reverse: yes # identity: GPlates-db008443-5bff-4ed9-86bb-ad822823affc
+  -96.037232      15.129905
+  -94.833775      14.500329
+  -91.579734      12.892172
+  -89.232037      11.868882
+  -87.788394      10.668370
+  -85.747131       9.373992
+  -81.778567       7.123142
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Cocos COC_001_000 # use_reverse: yes # identity: GPlates-db008443-5bff-4ed9-86bb-ad822823affc
+  -96.037232      15.129905
+  -94.833775      14.500329
+  -91.579734      12.892172
+  -89.232037      11.868882
+  -87.788394      10.668370
+  -85.747131       9.373992
+  -82.757315       7.684143
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  102.875432      -6.794815
+  104.180000      -7.276700
+  106.920224      -8.525356
+>sL # name: Java SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-3114b9a8-511b-4874-9715-2321b2db62a6
+  106.920224      -8.525356
+  107.018901      -8.521333
+  109.630905      -8.881733
+  111.819331      -8.950025
+  114.036373      -9.314183
+  115.416946      -9.563566
+>sL # name: Flores Banda SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-c1fe18a6-b145-450b-97bd-b58ad3e3ec48
+  115.416946      -9.563566
+  118.770407      -9.316645
+  121.313457      -9.295345
+>sL # name: Luzon subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Eurasia_1_0 # use_reverse: yes # identity: GPlates-1b759278-426a-481c-bdf7-dd9860cdf5a2
+  120.967393      23.308052
+  120.427007      20.836896
+  120.360223      18.696922
+  119.489806      17.280259
+  119.542315      15.100704
+  119.999756      13.651513
+  120.101300      13.593669
+>sL # name: Okinawa Trough (Ryuku) from EarthByte cob MG 4-20-07 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-ee916c15-5755-4e50-8976-c2b8d1e5fe86
+  120.967393      23.308052
+  121.236899      23.272506
+  123.569465      23.197697
+  125.530152      23.510723
+  126.610499      23.987131
+  128.462157      25.516932
+  129.731461      26.672278
+  130.214000      27.245500
+  130.730421      28.000698
+  131.126638      28.805965
+  131.723635      29.558401
+  132.030606      29.966909
+>sL # name: Alpine Sub. # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-553c2beb-65d7-488f-88ab-aa920e89c83d
+  26.093393      45.679347
+  22.263699      43.063535
+  22.245092      41.926213
+  23.730763      40.306158
+  25.944206      37.749683
+>sL # name: Mediterranean Subduction, DB 04-2007 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-13e843b1-bc1f-4898-b3ab-7b926f07df48
+  35.542080      36.348729
+  35.829900      36.382500
+  35.872542      36.354533
+>sL # name: Mediterranean Subduction, DB 04-2007 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Eurasia_1_0 # use_reverse: no # identity: GPlates-13e843b1-bc1f-4898-b3ab-7b926f07df48
+  35.872542      36.354533
+  36.403700      36.003200
+  37.178600      36.633100
+  37.939600      37.137700
+  38.920478      37.293434
+  39.681164      37.311199
+  41.157384      37.059407
+  42.536045      36.688657
+  43.756063      36.276165
+  45.400977      35.523419
+  47.910600      33.625300
+  50.850700      32.134900
+  52.485000      30.840100
+  54.319200      29.152500
+  57.384800      27.627900
+  59.922800      26.500700
+  61.709100      25.729200
+  64.036100      25.081700
+  66.374900      25.207700
+  66.838970      25.208232
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: India from PB03 GS # use_reverse: no # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  91.450000      10.461600
+  91.642221       9.416791
+>sL # name: Izu Bonin Trench # subductionZoneAge:      55.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Izu IZU_005_000 # use_reverse: no # identity: GPlates-ebf98b96-cdd6-4d49-a1a7-6c7c6933e8b7
+  142.980755      24.585785
+  143.000000      25.000000
+  143.000000      26.000000
+  143.200000      27.000000
+  143.200000      28.000000
+  142.800000      29.000000
+  142.500000      30.000000
+  142.200000      31.000000
+  142.000000      33.000000
+  142.000000      34.000000
+  142.000000      35.000000
+  141.970627      35.212333
+>sL # name: Marianas Trench-NUVEL # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth:  900.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Mariana MAR_005_000 # use_reverse: no # identity: GPlates-bc22e122-07b7-462c-8a5b-b2a01d4a9181
+  142.558158      11.314990
+  144.800000      12.300000
+  146.600000      13.900000
+  147.300000      15.600000
+  147.300000      17.500000
+  147.300000      18.800000
+  147.300000      20.000000
+  147.000000      21.000000
+  146.200000      22.000000
+  145.000000      23.000000
+  144.000000      24.000000
+  143.370184      24.632439
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Nazca Plate # use_reverse: no # identity: GPlates-db008443-5bff-4ed9-86bb-ad822823affc
+  -82.757315       7.684143
+  -81.778567       7.123142
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Nazca Plate # use_reverse: no # identity: GPlates-0a111e55-122e-4903-b53b-cc38c8d6bc9f
+  -81.778567       7.123142
+  -79.985831       6.738446
+  -78.744727       6.750788
+>sL # name:  # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Nazca Plate # use_reverse: no # identity: GPlates-b29a7054-6e23-4cee-bc83-1654ab5bd2f4
+  -78.744727       6.750788
+  -78.661062       5.800261
+  -78.808524       4.523870
+  -78.661913       3.834058
+>sL # name: NewHebrides VanuatuTrench DiCaprio # subductionZoneAge:      17.5 # subductionZoneConvergence:       4.0 # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: NFB # use_reverse: yes # identity: GPlates-27a146c8-acf8-4ff5-9ed8-54cf1bc67de1
+  165.294160      -11.694206
+  165.889000      -13.684000
+  166.653000      -16.280500
+  167.594000      -18.339900
+  168.556000      -20.243600
+  169.536000      -21.383200
+  170.274000      -21.682900
+  170.555968      -21.940001
+>sL # name: West Molucca Sea Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: North and Central Sulawesi # use_reverse: yes # identity: GPlates-42d139d5-089d-4ce5-97bb-b6fac1bcf179
+  126.329264      -0.987481
+  126.002072      -0.326337
+  125.734268       0.510413
+  125.739800       1.608087
+  125.763156       1.836416
+>sL # name: Sandwich Trench # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: SAM_010_000 # use_reverse: yes # identity: GPlates-d9fe50f5-d074-49c1-ac29-36d6b32130c6
+  -25.965255      -60.401429
+  -25.068800      -59.973300
+  -24.455900      -59.385800
+  -23.990700      -58.920900
+  -23.819400      -58.195000
+  -24.130200      -57.425300
+  -24.232700      -57.173600
+  -24.696300      -56.733600
+  -25.149200      -56.292000
+  -25.720500      -55.839600
+  -26.414000      -55.424400
+  -26.994900      -55.231900
+  -27.604400      -55.094800
+  -28.646600      -55.004900
+  -29.488500      -55.033400
+  -29.737031      -54.869369
+>sL # name: Luzon subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Celebes Sea # use_reverse: no # identity: GPlates-1b759278-426a-481c-bdf7-dd9860cdf5a2
+  123.092723       8.393972
+  123.403642       8.091413
+  123.584010       7.889245
+>sL # name: East Sunda subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Celebes Sea # use_reverse: yes # identity: GPlates-9510dc8b-c9d1-45ec-ad96-3bf83a0fe173
+  126.124190       4.075944
+  125.856881       4.517045
+  125.016453       5.163817
+  123.958903       6.131732
+  123.598677       7.786707
+  123.584010       7.889245
+>sL # name: West Molucca Sea Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Celebes Sea # use_reverse: yes # identity: GPlates-42d139d5-089d-4ce5-97bb-b6fac1bcf179
+  125.763156       1.836416
+  125.880000       2.977680
+  126.124190       4.075944
+>sL # name: Luzon subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Palawan # use_reverse: no # identity: GPlates-1b759278-426a-481c-bdf7-dd9860cdf5a2
+  120.101300      13.593669
+  120.776647      13.207205
+  121.345940      12.879095
+  121.736131      11.733625
+  122.060859      10.772576
+>sL # name: Luzon subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: South Sulu Sea # use_reverse: no # identity: GPlates-1b759278-426a-481c-bdf7-dd9860cdf5a2
+  122.060859      10.772576
+  122.101800      10.650936
+  122.168359       9.712659
+  122.638613       8.834582
+  123.092723       8.393972
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: West Burma # use_reverse: yes # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  91.450000      10.461600
+  92.064400       7.100300
+  92.468168       6.344636
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Sumatra Forearc # use_reverse: yes # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  92.468168       6.344636
+  93.434800       4.525800
+  95.745000       1.458500
+  98.050900      -1.790500
+  100.038000      -4.494900
+  101.669000      -6.345200
+  102.875432      -6.794815
+>sL # name: Indonesian bndy w AUS-mg # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Australia AUS_002_000 # use_reverse: no # identity: GPlates-95db56b0-1b97-43f8-91ca-9bcc77225908
+  104.932891      -7.622278
+  106.920224      -8.525356
+>sL # name: Java SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Australia AUS_002_000 # use_reverse: no # identity: GPlates-3114b9a8-511b-4874-9715-2321b2db62a6
+  106.920224      -8.525356
+  107.018901      -8.521333
+  109.630905      -8.881733
+  111.819331      -8.950025
+  114.036373      -9.314183
+  115.416946      -9.563566
+>sL # name: Flores Banda SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Australia AUS_002_000 # use_reverse: no # identity: GPlates-c1fe18a6-b145-450b-97bd-b58ad3e3ec48
+  115.416946      -9.563566
+  118.770407      -9.316645
+  122.361296      -9.281331
+  125.415697      -8.526405
+  128.914586      -7.806589
+  130.476850      -7.356198
+  131.535371      -6.456892
+  132.304005      -5.597570
+  132.454559      -4.037474
+>sL # name: NewHebrides VanuatuTrench DiCaprio # subductionZoneAge:      17.5 # subductionZoneConvergence:       4.0 # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Australia AUS_002_000 # use_reverse: no # identity: GPlates-27a146c8-acf8-4ff5-9ed8-54cf1bc67de1
+  165.009453      -10.700035
+  165.134000      -11.153100
+  165.889000      -13.684000
+  166.653000      -16.280500
+  167.594000      -18.339900
+  168.556000      -20.243600
+  169.536000      -21.383200
+  170.274000      -21.682900
+  170.555968      -21.940001
+>sL # name: Hikurangi& Kermadec TR # subductionZoneAge:      46.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Australia AUS_002_000 # use_reverse: yes # identity: GPlates-e366264d-90b8-4799-ba5b-2182cbb8bcc6
+  170.615628      -42.739707
+  171.270000      -42.730000
+  171.860000      -42.610000
+  172.600000      -42.480000
+  173.130000      -42.390000
+  173.720000      -42.290000
+  174.310000      -42.200000
+  174.980000      -42.120000
+  175.500000      -42.060000
+  176.080000      -41.910000
+  176.680000      -41.750000
+  177.120000      -41.660000
+  177.600000      -41.500000
+  178.020000      -41.190000
+  178.290000      -40.800000
+  178.560000      -40.420000
+  178.790000      -40.090000
+  178.950000      -39.680000
+  179.004000      -39.207600
+  -179.093000      -35.781100
+  -176.512000      -28.237900
+  -176.421699      -27.821638
+>sL # name: Alpine Sub. # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Eastern Dinaride accretionary Wedge # use_reverse: yes # identity: GPlates-553c2beb-65d7-488f-88ab-aa920e89c83d
+  26.093393      45.679347
+  22.263699      43.063535
+  22.245092      41.926213
+  23.730763      40.306158
+>sL # name: Flores Banda SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Southeast Sulawesi # use_reverse: no # identity: GPlates-c1fe18a6-b145-450b-97bd-b58ad3e3ec48
+  121.313457      -9.295345
+  122.361296      -9.281331
+  125.415697      -8.526405
+  128.914586      -7.806589
+  129.026234      -7.774620
+>sL # name: Halmahera Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: East Philippines # use_reverse: no # identity: GPlates-ea208c2b-af6e-44d5-98cc-6dcc9d22725a
+  127.862431       3.362991
+  127.659413       2.970112
+>sL # name: West Molucca Sea Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: East Philippines # use_reverse: yes # identity: GPlates-42d139d5-089d-4ce5-97bb-b6fac1bcf179
+  126.124190       4.075944
+  126.196000       4.398370
+  126.202682       4.938681
+>sL # name: East Sunda subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: East Philippines # use_reverse: no # identity: GPlates-9510dc8b-c9d1-45ec-ad96-3bf83a0fe173
+  126.124190       4.075944
+  125.856881       4.517045
+  125.016453       5.163817
+  123.958903       6.131732
+  123.598677       7.786707
+  123.584010       7.889245
+>sL # name: Luzon subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      85.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: East Philippines # use_reverse: yes # identity: GPlates-1b759278-426a-481c-bdf7-dd9860cdf5a2
+  120.967393      23.308052
+  120.427007      20.836896
+  120.360223      18.696922
+  119.489806      17.280259
+  119.542315      15.100704
+  119.999756      13.651513
+  120.776647      13.207205
+  121.345940      12.879095
+  121.736131      11.733625
+  122.101800      10.650936
+  122.168359       9.712659
+  122.638613       8.834582
+  123.403642       8.091413
+  123.584010       7.889245
+>sL # name: Okinawa Trough (Ryuku) from EarthByte cob MG 4-20-07 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: East Philippines # use_reverse: no # identity: GPlates-ee916c15-5755-4e50-8976-c2b8d1e5fe86
+  120.967393      23.308052
+  121.236899      23.272506
+  122.068715      23.249788
+>sL # name: Luzon East subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: East Philippines # use_reverse: yes # identity: GPlates-5c7562fe-42c1-4e1d-8db3-1d165fcc4839
+  123.007942      17.076359
+  123.119370      17.405757
+  122.292710      21.595881
+  122.062348      23.090678
+  122.068715      23.249788
+>sL # name: West Molucca Sea Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Molucca Sea # use_reverse: no # identity: GPlates-42d139d5-089d-4ce5-97bb-b6fac1bcf179
+  126.329264      -0.987481
+  126.002072      -0.326337
+  125.734268       0.510413
+  125.739800       1.608087
+  125.880000       2.977680
+  126.196000       4.398370
+  126.202682       4.938681
+>sL # name: Halmahera Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Molucca Sea # use_reverse: no # identity: GPlates-ea208c2b-af6e-44d5-98cc-6dcc9d22725a
+  127.659413       2.970112
+  127.396000       2.459890
+  127.046000       1.147350
+  126.873000       0.054935
+  126.919374      -1.029128
+>sL # name: Marianas Trench-NUVEL # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth:  900.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Pacific PAC_000_000 # use_reverse: no # identity: GPlates-bc22e122-07b7-462c-8a5b-b2a01d4a9181
+  138.288770       9.039456
+  138.496571       9.413061
+  138.949898      10.812506
+  140.732821      10.845668
+  142.300000      11.200000
+  144.800000      12.300000
+  146.600000      13.900000
+  147.300000      15.600000
+  147.300000      17.500000
+  147.300000      18.800000
+  147.300000      20.000000
+  147.000000      21.000000
+  146.200000      22.000000
+  145.000000      23.000000
+  144.000000      24.000000
+  143.370184      24.632439
+>sL # name: Izu Bonin Trench # subductionZoneAge:      55.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Pacific PAC_000_000 # use_reverse: no # identity: GPlates-ebf98b96-cdd6-4d49-a1a7-6c7c6933e8b7
+  142.980755      24.585785
+  143.000000      25.000000
+  143.000000      26.000000
+  143.200000      27.000000
+  143.200000      28.000000
+  142.800000      29.000000
+  142.500000      30.000000
+  142.200000      31.000000
+  142.000000      33.000000
+  142.000000      34.000000
+  142.000000      35.000000
+  141.970627      35.212333
+>sL # name: NAM subduction COB # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      20.0 # subductionZoneDepth:  300.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V=REDUC=1e-5 # polygon: Pacific PAC_000_000 # use_reverse: no # identity: GPlates-547b7426-7926-49e2-87b0-ce6a40e4e074
+  -125.172491      40.346412
+  -125.129495      39.578221
+>sL # name: Hikurangi& Kermadec TR # subductionZoneAge:      46.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Pacific PAC_000_000 # use_reverse: no # identity: GPlates-e366264d-90b8-4799-ba5b-2182cbb8bcc6
+  170.615628      -42.739707
+  171.270000      -42.730000
+  171.860000      -42.610000
+  172.600000      -42.480000
+  173.130000      -42.390000
+  173.720000      -42.290000
+  174.310000      -42.200000
+  174.980000      -42.120000
+  175.500000      -42.060000
+  176.080000      -41.910000
+  176.680000      -41.750000
+  177.120000      -41.660000
+  177.600000      -41.500000
+  178.020000      -41.190000
+  178.290000      -40.800000
+  178.560000      -40.420000
+  178.790000      -40.090000
+  178.950000      -39.680000
+  179.004000      -39.207600
+  -179.093000      -35.781100
+  -176.512000      -28.237900
+>sL # name: NewHebrides VanuatuTrench DiCaprio # subductionZoneAge:      17.5 # subductionZoneConvergence:       4.0 # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Pacific PAC_000_000 # use_reverse: yes # identity: GPlates-27a146c8-acf8-4ff5-9ed8-54cf1bc67de1
+  165.009453      -10.700035
+  165.134000      -11.153100
+  165.294160      -11.694206
+>sL # name: NAM subduction COB # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      20.0 # subductionZoneDepth:  300.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V=REDUC=1e-5 # polygon: NAM_001_000 # use_reverse: no # identity: GPlates-547b7426-7926-49e2-87b0-ce6a40e4e074
+  -130.114921      50.785619
+  -129.725736      50.521515
+  -128.574570      49.776408
+  -127.821990      49.080177
+  -127.175449      48.429925
+  -126.367755      47.716765
+  -125.975954      46.680834
+  -125.559597      45.485605
+  -125.541573      44.621398
+  -125.691260      43.518852
+  -125.541241      42.098954
+  -125.194249      40.728592
+  -125.129495      39.578221
+>sL # name: Sandwich Trench # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Sandwich plate NW15 # use_reverse: no # identity: GPlates-d9fe50f5-d074-49c1-ac29-36d6b32130c6
+  -25.951313      -60.394902
+  -25.068800      -59.973300
+  -24.455900      -59.385800
+  -23.990700      -58.920900
+  -23.819400      -58.195000
+  -24.130200      -57.425300
+  -24.232700      -57.173600
+  -24.696300      -56.733600
+  -25.149200      -56.292000
+  -25.720500      -55.839600
+  -26.414000      -55.424400
+  -26.994900      -55.231900
+  -27.604400      -55.094800
+  -28.646600      -55.004900
+  -29.488500      -55.033400
+  -29.749765      -54.860914
+>sL # name: Sandwich Trench # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Scotia plate NW15 # use_reverse: no # identity: GPlates-d9fe50f5-d074-49c1-ac29-36d6b32130c6
+  -29.737031      -54.869369
+  -29.749765      -54.860914
+>sL # name: Flores Banda SZ # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: South Banda Sea # use_reverse: yes # identity: GPlates-c1fe18a6-b145-450b-97bd-b58ad3e3ec48
+  129.026234      -7.774620
+  130.476850      -7.356198
+  131.535371      -6.456892
+  132.304005      -5.597570
+  132.454559      -4.037474
+>sL # name: Marianas Trench-NUVEL # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth:  900.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Caroline Plate # use_reverse: no # identity: GPlates-bc22e122-07b7-462c-8a5b-b2a01d4a9181
+  134.641439       6.977067
+  134.709654       6.971431
+  136.668751       7.255929
+  137.346977       7.648981
+  137.855721       8.258046
+  138.288770       9.039456
+>sL # name: Marianas Trench-NUVEL # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth:  900.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Philippine Sea Plate # use_reverse: yes # identity: GPlates-bc22e122-07b7-462c-8a5b-b2a01d4a9181
+  134.641439       6.977067
+  134.709654       6.971431
+  136.668751       7.255929
+  137.346977       7.648981
+  137.855721       8.258046
+  138.496571       9.413061
+  138.949898      10.812506
+  140.732821      10.845668
+  142.300000      11.200000
+  142.558158      11.314990
+>sL # name: Halmahera Subduction # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Philippine Sea Plate # use_reverse: yes # identity: GPlates-ea208c2b-af6e-44d5-98cc-6dcc9d22725a
+  127.862431       3.362991
+  127.396000       2.459890
+  127.046000       1.147350
+  126.873000       0.054935
+  126.919374      -1.029128
+>sL # name: Luzon East subduction # subductionZoneAge:      16.0 # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      80.0 # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: Unknown # polygon: Philippine Sea Plate # use_reverse: no # identity: GPlates-5c7562fe-42c1-4e1d-8db3-1d165fcc4839
+  123.007942      17.076359
+  123.119370      17.405757
+  122.292710      21.595881
+  122.062348      23.090678
+  122.068715      23.249788
+>sL # name: Okinawa Trough (Ryuku) from EarthByte cob MG 4-20-07 # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip: Unknown # subductionZoneDepth: Unknown # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V_REDUC=1e-5 # polygon: Philippine Sea Plate # use_reverse: no # identity: GPlates-ee916c15-5755-4e50-8976-c2b8d1e5fe86
+  122.068715      23.249788
+  123.569465      23.197697
+  125.530152      23.510723
+  126.610499      23.987131
+  128.462157      25.516932
+  129.731461      26.672278
+  130.214000      27.245500
+  130.730421      28.000698
+  131.126638      28.805965
+  131.723635      29.558401
+  132.030606      29.966909
+>sL # name: NAM subduction COB # subductionZoneAge: Unknown # subductionZoneConvergence: Unknown # subductionZoneDeepDip:      20.0 # subductionZoneDepth:  300.0 # subductionZoneSystem: Unknown # subductionZoneSystemOrder: Unknown # rheaFault: OFF=0,0 S_DIP=15,15 DEPTH=10,10 I_DIP=25,25 V=REDUC=1e-5 # polygon: JUAN_DE_FUCA_11Ma_0Ma # use_reverse: no # identity: GPlates-547b7426-7926-49e2-87b0-ce6a40e4e074
+  -130.114921      50.785619
+  -129.725736      50.521515
+  -128.574570      49.776408
+  -127.821990      49.080177
+  -127.175449      48.429925
+  -126.367755      47.716765
+  -125.975954      46.680834
+  -125.559597      45.485605
+  -125.541573      44.621398
+  -125.691260      43.518852
+  -125.541241      42.098954
+  -125.194249      40.728592
+  -125.172491      40.346412
+>
