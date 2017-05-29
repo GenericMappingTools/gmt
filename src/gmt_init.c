@@ -13185,7 +13185,7 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
 #ifdef DEBUG
-	static char *fkind[4] = {"Regular File", "Cache File", "URL File", "CGI Get Command"};
+	static char *fkind[5] = {"Regular File", "Cache File", "Data File", "URL File", "URL Query"};
 #endif
 	unsigned int pos = 0;	/* Start of actual filename in the file string */
 	*kind = GMT_REGULAR_FILE;	/* Default is a regular file */
@@ -13199,13 +13199,13 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 		if (strchr (file, '?') == NULL)
 			*kind = GMT_URL_FILE;
 		else
-			*kind = GMT_URL_CMD;	/* These we will never check for access and must rerun each time */
+			*kind = GMT_URL_QUERY;	/* These we will never check for access and must rerun each time */
 		pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 	}
 #ifdef DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s: Type is %s\n", file, fkind[*kind]);
 #endif
-	if (*kind != GMT_URL_CMD && !gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
+	if (*kind != GMT_URL_QUERY && !gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
 	/* Here the file does not yet exist locally, so we will try to download if it matches one of three criteria.
 	 * Otherwise, it is just a file that does not exist and will yield an error upstream */
 	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
