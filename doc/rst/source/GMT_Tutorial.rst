@@ -272,7 +272,7 @@ to another module.  This is achieved with *pipes*:
 
    ::
 
-    Someprogram | gmt module1 | gmt module1 > OutputFile (or | lp) 
+    Someprogram | gmt module1 | gmt module1 > OutputFile (or | lp)
 
 Standard error (*stderr*)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -381,9 +381,9 @@ no data set yet but we will
 imagine that the raw *x* data range from 3 to 9613 and that *y*
 ranges from 3.2 10^20 to 6.8 10^24.  One possibility is
 
-   :: 
+   ::
 
-    gmt psbasemap -R1/10000/1e20/1e25 -JX9il/6il -Bxa2+l"Wavelength (m)" -Bya1pf3+l"Power (W)" -BWS > GMT_tut_2.ps 
+    gmt psbasemap -R1/10000/1e20/1e25 -JX9il/6il -Bxa2+l"Wavelength (m)" -Bya1pf3+l"Power (W)" -BWS > GMT_tut_2.ps
 
 Make sure your plot looks like :ref:`our example 2 below <gmt_tut_2>`
 
@@ -447,7 +447,7 @@ example is from Latin America:
 
    ::
 
-    gmt pscoast -R-90/-70/0/20 -JM6i -P -Ba -Gchocolate > GMT_tut_3.ps 
+    gmt pscoast -R-90/-70/0/20 -JM6i -P -Ba -Gchocolate > GMT_tut_3.ps
 
 Your plot should look like :ref:`our example 3 below <gmt_tut_3>`
 
@@ -592,7 +592,7 @@ GMT map projections as well as how to select a data domain
 and boundary annotations.
 
   +-------------+----------------------------------------------------------------------+
-  | Program     |   Purpose                                                            | 
+  | Program     |   Purpose                                                            |
   +=============+======================================================================+
   |             |   **BASEMAPS**                                                       |
   +-------------+----------------------------------------------------------------------+
@@ -651,7 +651,7 @@ depending on what action has been selected.  These circumstances make
 shows a abbreviated list of the options:
 
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
-  | Option                                                                     | Purpose                                                           | 
+  | Option                                                                     | Purpose                                                           |
   +============================================================================+===================================================================+
   | **-A**                                                                     | Suppress line interpolation along great circles                   |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -679,7 +679,7 @@ symbols may also be provided by the input data.  The main symbols available to
 us are shown in the table below:
 
 +-----------------------------------+-------------------------------------------------------------------------------------------+
-| Option                            | Symbol                                                                                    | 
+| Option                            | Symbol                                                                                    |
 +===================================+===========================================================================================+
 | **-S-**\ *size*                   | horizontal dash; *size* is length of dash                                                 |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
@@ -693,7 +693,7 @@ us are shown in the table below:
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 | **-Sd**\ *size*                   | **d**\ iamond; *size* is its side                                                         |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
-| **-Se**                           | **e**\ llipse; *direction* (CCW from horizontal), *major*, and *minor* axes               |    
+| **-Se**                           | **e**\ llipse; *direction* (CCW from horizontal), *major*, and *minor* axes               |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 |                                   | are read from the input file                                                              |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
@@ -709,7 +709,7 @@ us are shown in the table below:
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 | **-Sk**\ *symbol*/*size*          | **k**\ ustom symbol; *size* is its side                                                   |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
-| **-Sl**\ *size*\ **+t**\ *string* | **l**\ etter; *size* is fontsize. The *string* can be a letter or a text string          |
+| **-Sl**\ *size*\ **+t**\ *string* | **l**\ etter; *size* is fontsize. The *string* can be a letter or a text string           |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 |                                   | Append **+f**\ *font* to set font and **+j**\ *just* for justification                    |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
@@ -847,7 +847,7 @@ Symbols, on the other hand, can be plotted one at the time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:
 
-   :: 
+   ::
 
     gmt psxy @some_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
     gmt psxy some_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
@@ -921,7 +921,7 @@ This color table was generated as part of the script (below).
 
 We may now complete our example using the Mercator projection:
 
-   :: 
+   ::
 
     gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
     gmt pscoast -R130/150/35/50 -JM6i -B5 -P -Ggray -K > GMT_tut_9.ps
@@ -954,7 +954,7 @@ in GMT this is done using :doc:`pstext`.  Apart from the common
 switches, there are 9 options that are particularly useful.
 
   +-------------------+----------------------------------------------------+
-  | Option            | Purpose                                            | 
+  | Option            | Purpose                                            |
   +===================+====================================================+
   | **-C**\ *dx*/*dy* | Spacing between text and the text box (see **-W**) |
   +-------------------+----------------------------------------------------+
@@ -996,25 +996,25 @@ fonts. The escape sequences that are recognized by GMT are given below:
   +----------------+--------------------------------------------------------------+
   | Code           |  Effect                                                      |
   +================+==============================================================+
-  | @\~	           | Turns symbol font on or off                                  | 
+  | @\~	           | Turns symbol font on or off                                  |
   +----------------+--------------------------------------------------------------+
-  | @+	           | Turns superscript on or off                                  | 
+  | @+	           | Turns superscript on or off                                  |
   +----------------+--------------------------------------------------------------+
-  | @-	           | Turns subscript on or off                                    | 
+  | @-	           | Turns subscript on or off                                    |
   +----------------+--------------------------------------------------------------+
-  | @\#	           | Turns small caps on or off                                   | 
+  | @\#	           | Turns small caps on or off                                   |
   +----------------+--------------------------------------------------------------+
-  | @\_	           | Turns underline on or off                                    | 
+  | @\_	           | Turns underline on or off                                    |
   +----------------+--------------------------------------------------------------+
-  | @\%\ *font*\ % | Switches to another font; @\%\% resets to previous font      | 
+  | @\%\ *font*\ % | Switches to another font; @\%\% resets to previous font      |
   +----------------+--------------------------------------------------------------+
-  | @:\ *size*:	   | Switches to another font size; @:: resets to previous size   | 
+  | @:\ *size*:	   | Switches to another font size; @:: resets to previous size   |
   +----------------+--------------------------------------------------------------+
   | @;\ *color*;   | Switches to another font color; @;; resets to previous color |
   +----------------+--------------------------------------------------------------+
-  | @!	           | Creates one composite character of the next two characters   | 
+  | @!	           | Creates one composite character of the next two characters   |
   +----------------+--------------------------------------------------------------+
-  | @@	           | Prints the @ sign itself                                     | 
+  | @@	           | Prints the @ sign itself                                     |
   +----------------+--------------------------------------------------------------+
 
 Note that these escape sequences (as well as octal codes) can be
@@ -1025,7 +1025,7 @@ set :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to ISOLatin1 in your :doc:`gmt.co
 
 We will demonstrate :doc:`pstext` with the following script:
 
-   :: 
+   ::
 
     gmt pstext -R0/7/0/5 -Jx1i -P -Ba -F+f30p,Times-Roman,DarkOrange+jBL << EOF > GMT_tut_10.ps
     1  1  It's P@al, not Pal!
@@ -1082,7 +1082,7 @@ Contouring gridded data sets
 
 GMT comes with several utilities that can create gridded data
 sets; we will discuss two such modules later this session.  First,
-we will assume that we already have gridded data sets.  
+we will assume that we already have gridded data sets.
 Among these data are ETOPO5, crustal ages, gravity and geoid,
 and DEM for the continental US.  Here, we will use :doc:`grdcut`
 to extract a GMT-ready grid that we will next use for contouring:
@@ -1103,7 +1103,7 @@ installation.  Feel free to open it in any other program and compare results wit
 
 We first use the GMT module :doc:`grdinfo` to see what's in this file:
 
-   :: 
+   ::
 
     gmt grdinfo @bermuda.nc
 
@@ -1120,7 +1120,7 @@ spin on this situation by touting its flexibility.  Here are the most
 useful options:
 
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
-  | Option                                                               |  Purpose                                                             | 
+  | Option                                                               |  Purpose                                                             |
   +======================================================================+======================================================================+
   | **-A**\ *annot\_int*                                                 | Annotation interval and attributes                                   |
   +----------------------------------------------------------------------+----------------------------------------------------------------------+
@@ -1224,7 +1224,7 @@ The GMT module :doc:`nearneighbor` implements a simple
 "nearest neighbor" averaging operation.  It is the preferred
 way to grid data when the data density is high.  :doc:`nearneighbor`
 is a local procedure which means it will only consider the control
-data that is close to the desired output grid node.  
+data that is close to the desired output grid node.
 Only data points inside a specified search radius will
 be used, and we may also impose the condition that each of the *n*
 sectors must have at least one data point in order to assign the nodal
@@ -1305,7 +1305,7 @@ and we do not have the time to explain it all here, please see
 switches for this module are indicated below.
 
   +-------------------+-----------------------------------------------------------+
-  | Option            | Purpose                                                   | 
+  | Option            | Purpose                                                   |
   +===================+===========================================================+
   | **-A**\ *aspect*  | Sets aspect ratio for anisotropic grids.                  |
   +-------------------+-----------------------------------------------------------+
@@ -1330,7 +1330,7 @@ to the required **-R** and **-I** switches, these preprocessors
 all take the same options shown below:
 
   +----------------------------+--------------------------------------------------------------------+
-  | Option                     | Purpose                                                            | 
+  | Option                     | Purpose                                                            |
   +============================+====================================================================+
   | **-r**                     | Choose pixel node registration [Default is gridline]               |
   +----------------------------+--------------------------------------------------------------------+
@@ -1429,7 +1429,7 @@ shown if you run the module with no arguments) and the equidistant
 *z*-values to go with it.  The main options are given below.
 
   +---------+----------------------------------------------+
-  | Option  | Purpose                                      | 
+  | Option  | Purpose                                      |
   +=========+==============================================+
   | **-C**  | Set the name of the master CPT to use        |
   +---------+----------------------------------------------+
@@ -1458,7 +1458,7 @@ and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.)
 
   +--------------------------------------------------------+------------------------------------------------+
-  | Option                                                 | Purpose                                        | 
+  | Option                                                 | Purpose                                        |
   +========================================================+================================================+
   | **-C**\ *cpt*                                          | The required CPT                               |
   +--------------------------------------------------------+------------------------------------------------+
@@ -1565,7 +1565,7 @@ common command options (by default the **-R** is taken from the data set)
 and a CPT; the main other options are:
 
   +---------------------+-----------------------------------------------------------------------+
-  | Option              | Purpose                                                               | 
+  | Option              | Purpose                                                               |
   +=====================+=======================================================================+
   | **-E**\ *dpi*       | Sets the desired resolution of the image [Default is data resolution] |
   +---------------------+-----------------------------------------------------------------------+
@@ -1600,7 +1600,7 @@ topography in the N90ºE direction using :doc:`grdgradient`.  Other than the
 required input and output filenames, the available options are
 
   +------------------------------------------------------------------+-------------------------------------------------------------------+
-  | Option                                                           | Purpose                                                           | 
+  | Option                                                           | Purpose                                                           |
   +==================================================================+===================================================================+
   | **-A**\ *azimuth*                                                | Azimuthal direction for gradients                                 |
   +------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -1675,7 +1675,7 @@ slices (spanning latitude and longitude) of such grids without much effort.
 
 As an example we will download the Seasonal Analysed Mean Temperature from the
 World Ocean Atlas 1998 (http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html).
-The file in question is named 
+The file in question is named
 otemp.anal1deg.nc (ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc).
 
 You can look at the information pertained in this file using the program ncdump and
@@ -1750,7 +1750,7 @@ Regardless of plot type, some arguments must be specified; these are
 In addition, some options may be required:
 
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | Option                  | Purpose                                                                                                     | 
+  | Option                  | Purpose                                                                                                     |
   +=========================+=============================================================================================================+
   | **-C**\ *cpt*           | The *cpt* is required for color-coded surfaces and for contoured mesh plots                                 |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
@@ -1760,7 +1760,7 @@ In addition, some options may be required:
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
   | **-Qm**                 | Selects mesh plot                                                                                           |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
-  | **-Qs**\ [**+m**]       | Surface plot using polygons; append **+m** to show mesh.  This option allows for **-W**                      |
+  | **-Qs**\ [**+m**]       | Surface plot using polygons; append **+m** to show mesh.  This option allows for **-W**                     |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
   | **-Qi**\ *dpi*\ [**g**] | Image by scan-line conversion.  Specify *dpi*; append **g** to force gray-shade image.  **-B** is disabled. |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
