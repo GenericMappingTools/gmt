@@ -2822,14 +2822,13 @@ bool gmtlib_check_url_name (char *fname) {
 	/* File names starting as below should not be tested for existence or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns true. All cases are read via GDAL support or other. */
-	if ( !strncmp(fname,"http:",5)        ||
-		!strncmp(fname,"https:",6)    ||
-		!strncmp(fname,"ftp:",4)      ||
-		!strncmp(fname,"/vsizip/",8)  ||
-		!strncmp(fname,"/vsigzip/",9) ||
-		!strncmp(fname,"/vsicurl/",9) ||
-		!strncmp(fname,"/vsimem/",8)  ||
-		!strncmp(fname,"/vsitar/",8) )
+	if (gmt_M_file_is_url (fname)) return (true);	/* Standard http[s], ftp URL */
+	/* Check for virtual file systems for GDAL */
+	if (!strncmp(fname,"/vsizip/", 8)  ||
+		!strncmp(fname,"/vsigzip/",9)  ||
+		!strncmp(fname,"/vsicurl/",9)  ||
+		!strncmp(fname,"/vsimem/", 8)  ||
+		!strncmp(fname,"/vsitar/", 8) )
 
 		return (true);
 	else
