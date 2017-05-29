@@ -848,10 +848,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		pos = 1;
 		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
 			c[0] = '\0';
+		else if ((c = strchr (file, '=')))	/* Grid attributes */
+			c[0] = '\0';
 	}
 	else if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+			c[0] = '\0';
+		else if ((c = strchr (file, '=')))	/* Grid attributes */
 			c[0] = '\0';
 	}
 	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */
@@ -876,7 +880,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
 	if (user_dir[dir]) sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
-	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in filename */
+	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
@@ -885,7 +889,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	if (kind == GMT_URL_FILE || kind == GMT_URL_CMD)	/* General URL given */
+	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
 	else			/* Use GMT ftp dir, possible from subfolder cache */
 		sprintf (url, "%s%s/%s", GMT_DATA_URL, ftp_dir[dir], &file[pos]);
@@ -914,7 +918,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (fp) fclose (fp);
 
-	if (kind == GMT_URL_CMD) {	/* Cannot have ?para=value etc in local filename */
+	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}

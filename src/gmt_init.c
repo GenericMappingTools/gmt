@@ -13188,7 +13188,7 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 	/* Returns true if file is a known GMT-distributable file and download is enabled */
 	/* Return immediately if no auto-download is disabled */
 #ifdef DEBUG
-	static char *fkind[4] = {"Regular File", "Cache File", "URL File", "CGI Get Command"};
+	static char *fkind[5] = {"Regular File", "Cache File", "Data File", "URL File", "URL Query"};
 #endif
 	unsigned int pos = 0;	/* Start of actual filename in the file string */
 	*kind = GMT_REGULAR_FILE;	/* Default is a regular file */
@@ -13202,13 +13202,13 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 		if (strchr (file, '?') == NULL)
 			*kind = GMT_URL_FILE;
 		else
-			*kind = GMT_URL_CMD;	/* These we will never check for access and must rerun each time */
+			*kind = GMT_URL_QUERY;	/* These we will never check for access and must rerun each time */
 		pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 	}
 #ifdef DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s: Type is %s\n", file, fkind[*kind]);
 #endif
-	if (*kind != GMT_URL_CMD && !gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
+	if (*kind != GMT_URL_QUERY && !gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
 	/* Here the file does not yet exist locally, so we will try to download if it matches one of three criteria.
 	 * Otherwise, it is just a file that does not exist and will yield an error upstream */
 	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
@@ -13429,6 +13429,87 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
 	return error;
+}
+#endif
+
+#if 0	/* Maybe use later - things seems to work OK for now with what we have */
+
+/*! Codes from gmt file types */
+enum GMT_enum_ftypes {
+	GMT_IS_URL = 1,
+	GMT_IS_QUERY = 2,
+	GMT_IS_CDF_ATTR = 4,
+	GMT_IS_GRD_ATTR = 8,
+	GMT_IS_GDAL_ATTR = 16,
+	GMT_IS_CACHE = 32,
+	GMT_IS_DATA = 64};
+
+unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int pos[]) {
+	/* Determine what kind of file argument was given.  Return a code
+	 * that reflects a sum of several bit flags:
+	 * 1:	Gave an URL, 0 otherwise
+	 * 2:	Gave an URL that is a query, 0 otherwise
+	 * 4:	Specified a netCDF slice/layer attribute, 0 otherwise
+	 * 8:	Specified a GMT grid format =<id>[<modifiers>] attribute, 0 otherwise
+	 * 16:	GDAL file called via =gd[...]
+	 * 32:	Special earth_relief grid to be downloaded if not found
+	 */
+	unsigned int code = 0;
+	char *a = NULL, *c = NULL, *e = NULL, *p = NULL, *q = NULL, *s = NULL;
+	
+	pos[0] = pos[1] = 0;	/* Initialize */
+	if (file == NULL) return 0;	/* Nada */
+	a = strchr  (file, '&');	/* Address of the first ? or NULL */
+	e = strchr  (file, '=');	/* Address of the first = or NULL */
+	p = strrchr (file, '+');	/* Address of the last + or NULL */
+	q = strchr  (file, '?');	/* Address of the first ? or NULL */
+	s = strrchr (file, '/');	/* Address of the last / or NULL */
+	/* First distinguish between cache, urls, and special data files from the GMT server */
+	if (gmt_M_file_is_cache (file)) {	/* Special @<filename> syntax for GMT cache files */
+		code |= GMT_CACHE_FILE;
+		pos[0] = 1;	/* Must skip the first character to find the file name */
+	}
+	else if (gmt_M_file_is_url (file))	/* Full URL given */
+		code |= GMT_IS_URL;
+	else if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
+		code |= GMT_IS_DATA;
+	
+	/* Now try to detect subtleries like netcdf slices and grid attributes */
+	
+	if ((c = strstr (file, "=gd"))) {
+		code |= GMT_IS_GDAL_ATTR;	/* Only GDAL references would have these characters */
+		pos[1] = (unsigned int) (c - file);
+	}
+	else if ((code & GMT_IS_URL) && q && (a || (e && e > s))) {	/* Only URL quieries have ampersands in them */
+		code |= GMT_IS_QUERY;
+		pos[1] = (unsigned int) (q - file);
+	}
+	else if (q) {	/* Question-mark is more complicated */
+		if (strchr (file, '[') || strchr (file, '('))	/* Assume netCDF slicing: file.nc?pressure[2,1] or file.nc?pressure(24,10) */
+			code |= GMT_IS_CDF_ATTR;
+		else if (s && s > q)	/* Assume netCDF variable selections: file.nc?time/lat/lon */
+			code |= GMT_IS_CDF_ATTR;
+		else if (e && (s == NULL || s > e))	/* Must be a GMT grid with old-style attributes: junk.grd=bf/0/1/32767 */
+			code |= GMT_IS_GRD_ATTR;
+		else if (e && p && p > e)	/* Must be a GMT grid with new-style attributes: junk.grd=bf+s<scale>+o<scale>+n<nan> */
+			code |= GMT_IS_GRD_ATTR;
+		else 	/* Assume netCDF variable selection: file.nc?slp */
+			code |= GMT_IS_CDF_ATTR;
+		pos[1] = (unsigned int) (q - file);
+	}
+	else if (e)	{
+		pos[1] = (unsigned int) (e - file);
+		if (s == NULL || s > e)	/* Must be a GMT grid with old-style attributes: junk.grd=bf/0/1/32767 */
+			code |= GMT_IS_GRD_ATTR;
+		else if (p && p > e)	/* Must be a GMT grid with new-style attributes: junk.grd=bf+s<scale>+o<scale>+n<nan> */
+			code |= GMT_IS_GRD_ATTR;
+		else if (strlen (e) == 3)	/* Must be a GMT grid with format only: junk.grd=bf */
+			code |= GMT_IS_GRD_ATTR;
+		else	/* Weird file with = in the name? */
+			pos[1] = 0;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_file_type: File %s returning code = %u, with pos[0] = %u and pos[1] = %u\n", file, code, pos[0], pos[1]);
+	return code;
 }
 #endif
 

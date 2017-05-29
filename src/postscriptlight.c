@@ -1252,7 +1252,8 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	/* Return number of output bytes and output buffer */
 	olen = olen - strm.avail_out; /* initial size - size left */
-	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "DEFLATE compressed %" PRIu64 " to %" PRIu64 " bytes (%.1f%% savings at compression level %d)\n", ilen, olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
+	PSL_message (PSL, PSL_MSG_LONG_VERBOSE, "DEFLATE compressed %" PRIu64 " to %" PRIu64 " bytes (%.1f%% savings at compression level %d)\n",
+		(uint64_t)ilen, (uint64_t)olen, 100.0f*(1.0f-(float)olen/ilen), level == Z_DEFAULT_COMPRESSION ? 6 : level);
 	*nbytes = olen;
 	return output;
 
@@ -3379,7 +3380,7 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 		return (NULL);
 	}
 
-	PSL_message (PSL, PSL_MSG_VERBOSE, "Colormap of %" PRIu64 " colors created\n", colormap->ncolors);
+	PSL_message (PSL, PSL_MSG_VERBOSE, "Colormap of %" PRIu64 " colors created\n", (uint64_t)colormap->ncolors);
 	return (image);
 }
 
@@ -3759,7 +3760,7 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 		nbits = psl_bitreduce (PSL, image->buffer, nx, ny, image->colormap->ncolors);
 
 		PSL_comment (PSL, "Start of indexed %s image [%d bit]\n", colorspace[id], nbits);
-		PSL_command (PSL, "V N %d %d T %d %d scale [/Indexed /Device%s %" PRIu64 " <\n", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize), colorspace[id], image->colormap->ncolors - 1);
+		PSL_command (PSL, "V N %d %d T %d %d scale [/Indexed /Device%s %" PRIu64 " <\n", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize), colorspace[id], (uint64_t)(image->colormap->ncolors - 1));
 		psl_stream_dump (PSL, &image->colormap->colors[0][0], (int)image->colormap->ncolors, 1, 24, 0, PSL_HEX, 2);
 		PSL_command (PSL, ">] setcolorspace\n<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
 		psl_stream_dump (PSL, image->buffer, nx, ny, nbits, PSL->internal.compress, PSL_ASCII85, 0);
