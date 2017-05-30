@@ -563,8 +563,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
-
 	if (Ctrl->C.active) {
 		n_errors += gmt_M_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
 	}

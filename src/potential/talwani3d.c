@@ -209,7 +209,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 		}
 	}
 	if (GMT->common.R.active[RSET]) {
-		//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET],
 		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
 	}

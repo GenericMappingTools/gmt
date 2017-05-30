@@ -271,8 +271,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
-
 	if (missing_equal) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
 		n_errors++;

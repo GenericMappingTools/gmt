@@ -198,8 +198,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 		}
 	}
 
-	//gmt_check_lattice (GMT, Ctrl->D.inc, &GMT->common.R.registration, &Ctrl->D.active);
-
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");

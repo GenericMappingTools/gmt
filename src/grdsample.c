@@ -213,8 +213,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 		}
 	}
 
-	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
-
 	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active && !GMT->common.R.active[FSET], 

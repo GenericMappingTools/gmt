@@ -706,7 +706,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 	}
 
 	/* Check that arguments were valid */
-	//gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
