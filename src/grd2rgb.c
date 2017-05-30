@@ -345,8 +345,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 
 	/* Check that the options selected are mutually consistent */
 
-	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
-
 	if (!Ctrl->C.active) {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] == 0.0 || GMT->common.R.inc[GMT_Y] == 0.0), "Syntax error: increments must be positive\n");
