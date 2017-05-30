@@ -106,8 +106,10 @@ Optional Arguments
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
     (see UNITS). If *radius* is given as **z** then we instead read
-    individual radii from the 3rd input column. If **-S** is not set
-    then we consider the input data to define closed polygon(s) instead.
+    individual radii from the 3rd input column.  Unless Cartesian data,
+    specify the unit of these radii by appending it after **-Sz**.
+    If **-S** is not set then we consider the input data to define
+    one or more closed polygon(s) instead.
  
 .. _-V:
 
