@@ -1377,6 +1377,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
+
 int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
@@ -1497,6 +1499,19 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
+		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
+			char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
+			unsigned int pos = 0;
+			group_sep[0] = GMT_ASCII_GS;
+			GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
+			for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
+				if (!GMT->common.B.active[i]) continue;
+				tmp = strdup (GMT->common.B.string[i]);
+				while (gmt_strtok (tmp, group_sep, &pos, p))
+					gmtlib_parse_B_option (GMT, p);
+				gmt_M_str_free (tmp);
+			}
+		}
 	}
 
 	if (Ctrl->Z.active) {
