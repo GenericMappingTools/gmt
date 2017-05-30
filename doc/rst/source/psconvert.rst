@@ -242,6 +242,11 @@ Optional Arguments
     within a KML folder of the specified name. See the KML documentation
     for further explanation
     (http://code.google.com/apis/kml/documentation/).
+    Note: If any of your titles or names contain a plus symbol next to
+    a letter it can be confused with an option modifier. Escape such
+    plus signs by placing a backslash in front of it.  Alternatively,
+    enclose the string in double quotes and then the entire **-W**
+    argument in single-quotes (or vice versa).
 
     Further notes on the creation of georeferenced rasters.
     **psconvert** can create a georeferenced raster image with a world
