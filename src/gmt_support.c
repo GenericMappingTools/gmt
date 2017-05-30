@@ -11879,6 +11879,21 @@ void gmt_testing (struct GMT_CTRL *GMT, char *string) {
 #endif
 
 /*! . */
+char *gmt_assign_text (struct GMT_CTRL *GMT, char *p) {
+	/* Deals with duplicating a string and skipping any enclosing quotes.
+	 * Note: p is expected to be the result from gmt_getmodopt, hence the p[1] stuff */
+	char *txt = NULL;
+	gmt_M_unused(GMT);
+	if (strchr ("\"\'", p[1]) && p[1] == p[strlen(p)-1]) { /* Eliminate quotes */
+		txt = strdup (&p[2]);
+		txt[strlen(txt)-1] = '\0';
+	}
+	else	/* Normal title */
+		txt = strdup (&p[1]);
+	return (txt);
+}
+
+/*! . */
 unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char *string, const char *sep, unsigned int *pos, char *token, unsigned int *err) {
 	/* Breaks string into tokens separated by one of more modifier separator
 	 * characters (in sep) following a "+".  E.g., if you are looking for a
