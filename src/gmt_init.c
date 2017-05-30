@@ -3368,7 +3368,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	}
 	no = (GMT->current.map.frame.primary) ? 0 : 1;
 	if (GMT->common.B.string[no][0]) {	/* Append this option */
-		strcat (GMT->common.B.string[no], " ");
+		char group_sep[2] = {" "};
+		group_sep[0] = GMT_ASCII_GS;
+		strcat (GMT->common.B.string[no], group_sep);
 		strncat (GMT->common.B.string[no], in, GMT_LEN256-1);
 	}
 	else
@@ -3493,10 +3495,10 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_parse_B_option (struct GMT_CTRL *GMT, char *in) {
+int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	int error = 0;
 	if (GMT->common.B.mode == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: Calling gmtinit_parse_B_option before gmt_check_b_options somehow\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: Calling gmtlib_parse_B_option before gmt_check_b_options somehow\n");
 		error = 1;
 	}
 	else if (GMT->common.B.mode == -1) {
@@ -3769,6 +3771,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.pars[0] = GMT->session.u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
 			else
 				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, args_cp);	/* x-scale */
+			GMT->current.proj.xyz_projection[GMT_X] = GMT_LINEAR;
 			if (l_pos[GMT_X] > 0)
 				GMT->current.proj.xyz_projection[GMT_X] = GMT_LOG10;
 			else if (p_pos[GMT_X] > 0) {
@@ -3799,6 +3802,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				else
 					GMT->current.proj.pars[1] = gmt_M_to_inch (GMT, args_cp);	/* y-scale */
 
+				GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
 				if (l_pos[GMT_Y] > 0)
 					GMT->current.proj.xyz_projection[GMT_Y] = GMT_LOG10;
 				else if (p_pos[GMT_Y] > 0) {
@@ -3855,6 +3859,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				args_cp[t_pos[GMT_Z]] = 0;
 			GMT->current.proj.z_pars[0] = gmt_M_to_inch (GMT, args_cp);	/* z-scale */
 
+			GMT->current.proj.xyz_projection[GMT_Z] = GMT_LINEAR;
 			if (l_pos[GMT_Z] > 0)
 				GMT->current.proj.xyz_projection[GMT_Z] = GMT_LOG10;
 			else if (p_pos[GMT_Z] > 0) {
@@ -12634,9 +12639,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			if (!error) {
 				if (GMT->current.setting.run_mode == GMT_MODERN && item[0] == '\0')
-					error = gmtinit_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+					error = gmtlib_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
 				else
-					error = gmtinit_parse_B_option (GMT, item);
+					error = gmtlib_parse_B_option (GMT, item);
 			}
 			break;
 
