@@ -346,17 +346,6 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	return (error);
 }
 
-GMT_LOCAL char *assign_text (char *p) {
-	char *txt = NULL;
-	if (strchr ("\"\'", p[1]) && p[1] == p[strlen(p)-1]) { /* Eliminate quotes */
-		txt = strdup (&p[2]);
-		txt[strlen(txt)-1] = '\0';
-	}
-	else	/* Normal title */
-		txt = strdup (&p[1]);
-	return (txt);
-}
-
 GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C) {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 
@@ -407,20 +396,20 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 				break;
 			case 'n':	/* Set KML document layer name */
 				gmt_M_str_free (C->W.overlayname);	/* Already set, free then reset */
-				C->W.overlayname = assign_text (p);
+				C->W.overlayname = gmt_assign_text (GMT, p);
 				break;
 			case 'o':	/* Produce a KML overlay as a folder subset */
 				C->W.folder = true;
 				gmt_M_str_free (C->W.foldername);	/* Already set, free then reset */
-				C->W.foldername = assign_text (p);
+				C->W.foldername = gmt_assign_text (GMT, p);
 				break;
 			case 't':	/* Set KML document title */
 				gmt_M_str_free (C->W.doctitle);	/* Already set, free then reset */
-				C->W.doctitle = assign_text (p);
+				C->W.doctitle = gmt_assign_text (GMT, p);
 				break;
 			case 'u':	/* Specify a remote address for image */
 				gmt_M_str_free (C->W.URL);	/* Already set, free then reset */
-				C->W.URL = assign_text (p);
+				C->W.URL = gmt_assign_text (GMT, p);
 				break;
 			default:
 				GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -W+<opt>: Unrecognized option selection %c\n", p[1]);
