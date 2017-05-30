@@ -208,6 +208,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if (Ctrl->S.mode && !gmt_M_is_geographic (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
+		gmt_parse_common_options (GMT, "f", 'f', "g");
+		
 	//gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.R.registration, &Ctrl->I.active);
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
@@ -227,9 +230,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 
 int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
+	bool wrap_180, replicate_x, replicate_y;
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0, col_0, row_0;
-	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
-	int row, col, n_columns, n_rows, error = 0;
+	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
+	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0;
 	
 	uint64_t ij, k, seg;
 	
@@ -301,6 +305,11 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	}
 
 	n_columns = Grid->header->n_columns;	n_rows = Grid->header->n_rows;	/* Signed versions */
+	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
+	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
+	x_wrap = Grid->header->n_columns - 1;				/* Add to node index to go to right column */
+	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
+
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
@@ -360,7 +369,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
-			S = D->table[tbl]->segment[seg];		/* Current segment */
+			S = D->table[tbl]->segment[seg];		/* Current data segment */
 			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constraints */
 				for (k = 0; k < S->n_rows; k++) {
 					if (gmt_M_y_is_outside (GMT, S->data[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
@@ -418,22 +427,45 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						last_radius = radius;
 					}
 					
+					row_end = row_0 + d_row;
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,ij,distance) shared(Grid,row_0,d_row,n_rows,col_0,d_col,n_columns,xtmp,S,grd_x0,grd_y0,radius,mask_val)
+#pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
 #endif
-					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
-						if (row < 0 || row >= n_rows) continue;
-						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
-							if (col < 0 || col >= n_columns) continue;
-							ij = gmt_M_ijp (Grid->header, row, col);
-							distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[col], grd_y0[row]);
+					for (row = row_0 - d_row; row <= row_end; row++) {
+						jj = row;
+						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
+						rowu = jj;
+						col_end = col_0 + d_col[jj];
+						for (col = col_0 - d_col[row]; col <= col_end; col++) {
+							ii = col;
+							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+							colu = ii;
+							ij = gmt_M_ijp (Grid->header, rowu, colu);
+							distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[colu], grd_y0[rowu]);
 							if (distance > radius) continue;	/* Clearly outside */
 							Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
+							/* With periodic, gridline-registered grids there are duplicate rows and/or columns
+							   so we may have to assign the point to more than one node.  The next section deals
+							   with this situation.
+							*/
+
+							if (replicate_x) {	/* Must check if we have to replicate a column */
+								if (colu == 0) 	/* Must replicate left to right column */
+									Grid->data[ij+x_wrap] = Grid->data[ij];
+								else if (colu == Grid->header->nxp)	/* Must replicate right to left column */
+									Grid->data[ij-x_wrap] = Grid->data[ij];
+							}
+							if (replicate_y) {	/* Must check if we have to replicate a row */
+								if (rowu == 0)	/* Must replicate top to bottom row */
+									Grid->data[ij+y_wrap] = Grid->data[ij];
+								else if (rowu == Grid->header->nyp)	/* Must replicate bottom to top row */
+									Grid->data[ij-y_wrap] = Grid->data[ij];
+							}
 						}
 					}
 				}
 			}
-			else if (S->n_rows > 2) {	/* Assign 'inside' to nodes if they are inside any of the given polygons */
+			else if (S->n_rows > 2) {	/* Assign 'inside' to nodes if they are inside any of the given polygons (Need at least 3 vertices) */
 				if (gmt_M_polygon_is_hole (S)) continue;	/* Holes are handled within gmt_inonout */
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
 					if (S->ogr)	/* OGR data */
@@ -448,7 +480,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
 
-				for (row = 0; row < n_rows; row++) {
+				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
 
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 					
@@ -477,7 +509,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(col,xx,side,ij) shared(Grid,n_columns,do_test,known_side,yy,S,row,Ctrl,z_value,mask_val)
 #endif
-					for (col = 0; col < n_columns; col++) {
+					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
