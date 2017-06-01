@@ -143,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");   
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute propagated uncertainty via CURVE algorighm. Give name of input slope grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid (in degrees) also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requres -G and annot be used with -D, -M, -N, -Q, -S, or -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
@@ -676,7 +676,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				Return (API->error);
 			if ((CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL)
 				Return (API->error);
-			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (Slopes->data[p]);	/* Take tan or slopes here instead of later */
+			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {
