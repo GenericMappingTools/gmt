@@ -2625,7 +2625,7 @@ letter, and number or string. *Do* space between options. Example:
 
    ::
 
-    gmt pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P > map.ps
+    gmt pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -P > map.ps
 
 Standardized command line options
 ---------------------------------

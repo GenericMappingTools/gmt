@@ -107,16 +107,14 @@ Tutorial setup
    if not they are always available from the main GMT site.
 
 #. We recommend you create a sub-directory called *tutorial*,
-   cd into that directory, and copy all the tutorial files directly
-   there. Depending on your installation the tutorial files are likely
-   in a directory like /usr/share/doc/gmt/tutorial.
+   cd into that directory, and run the commands there to keep things tidy.
 
 #. As we discuss GMT principles it may be a good idea to
    consult the GMT Technical Reference and Cookbook for more
    detailed explanations.
 
 #. The tutorial data sets are distributed via the GMT cache server.
-   You will therefore find that all those files have @ prepended to
+   You will therefore find that all the data files have a "@" prepended to
    their names.  This will ensure the file is copied from the server
    before being used, hence you do not need to download any of the
    data manually.  The downside is that you need an Internet

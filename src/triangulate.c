@@ -27,7 +27,7 @@
  * details.  That function is far faster than Watson's method and also allows
  * for Voronoi polygon output.
  *
- * Author:	Paul Wessel
+ * Author:	Paul Wessel w/ CURVE addition by Samantha Zambo (-C)
  * Date:	1-JAN-2010
  * Version:	5 API
  */
@@ -37,7 +37,7 @@
 #define THIS_MODULE_NAME	"triangulate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
-#define THIS_MODULE_KEYS	"<D{,>D},GG)"
+#define THIS_MODULE_KEYS	"<D{,CG(,>D},GG)"
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-:>JRVbdefhirs" GMT_OPT("Hm")
 
@@ -46,6 +46,10 @@ struct TRIANGULATE_CTRL {
 		bool active;
 		char *file;
 	} Out;
+	struct C {	/* -C<input_slope_grid> */
+		bool active;
+		char *file;
+	} C;
 	struct D {	/* -Dx|y */
 		bool active;
 		unsigned int dir;
@@ -88,6 +92,12 @@ struct TRIANGULATE_EDGE {
 	unsigned int begin, end;
 };
 
+enum curve_enum {	/* Indices for coeff array for normalization */
+	GMT_H = GMT_Z + 1	,	/* Index into input/output rows */
+	GMT_V,
+	GMT_U = GMT_H
+};
+
 GMT_LOCAL int compare_edge (const void *p1, const void *p2) {
 	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
@@ -110,6 +120,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->C.file);	
 	gmt_M_str_free (C->F.file);	
 	gmt_M_str_free (C->G.file);	
 	gmt_M_free (GMT, C);	
@@ -118,7 +129,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: triangulate [<table>] [-Dx|y] [-C<slopegrid>] [-E<empty>] [-G<outgrid>]\n");
 #ifdef NNN_MODE
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q[n]]\n", GMT_I_OPT, GMT_J_OPT);
 #else
@@ -131,9 +142,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");   
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute propagated uncertainty via CURVE algorighm. Give name of input slope grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Requres -G and annot be used with -D, -M, -N, -Q, -S, or -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Grid data. Give name of output grid file and specify -R -I [-r].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is used then output grids will hold propagated uncertainties and no -R -I [-r] is requred.\n");
 #ifdef NNN_MODE
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Qn for natural nearest neighbors [Default is linear triangulation]\n");
 #endif
@@ -185,6 +200,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
+			case 'C':	/* CURVE input slope grid */
+				if ((Ctrl->C.active = gmt_check_filearg (GMT, 'C', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
+					Ctrl->C.file = strdup (opt->arg);
+				break;
 			case 'D':
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
@@ -263,11 +282,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, Ctrl->G.active || Ctrl->Q.active);
+	n_errors += gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, (Ctrl->G.active && !Ctrl->C.active) || Ctrl->Q.active);
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must append file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Must append slope grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
 	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && GMT->common.R.active[ISET], "Warning: -I not needed when -G is not set\n");
 	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active[RSET], "Warning: -R not needed when -G or -Q are not set\n");
@@ -276,6 +296,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Syntax error -Q option: Requires -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuk triangulation algorithm\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]), "Syntax error -C option: No -R -I [-r] allowed, domain given by slope grid\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->D.active || Ctrl->F.active || Ctrl->M.active || Ctrl->N.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->T.active), "Syntax error -C option: Cannot use -D, -F, -M, -N, -Q, -S, T\n");
 	if (!(Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) Ctrl->N.active = !Ctrl->G.active;	/* The default action */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -294,15 +316,16 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	size_t n_alloc;
 	
+	double hj, hk, hl, vj, vk, vl, d, uv1, uv2, uv3, dv1, dv2, dv3, distv1, distv2, distv3;
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL, *zpol = NULL;
-	double *xf = NULL, *yf = NULL;
+	double *xf = NULL, *yf = NULL, *uu = NULL, *hh = NULL, *vv = NULL;
 
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 	char record[GMT_BUFSIZ];
 
-	struct GMT_GRID *Grid = NULL, *F = NULL;
+	struct GMT_GRID *Grid = NULL, *F = NULL, *Slopes = NULL;
 	struct GMT_DATASET *V = NULL;
 	struct GMT_DATASEGMENT *P = NULL;
 
@@ -335,8 +358,14 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	
-	if (Ctrl->G.active) {
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
+	if (Ctrl->G.active) {	/* Need to build an output grid */
+		if (Ctrl->C.active) {	/* Read slope grid and use its domain to set -R -I [-r] for output grid */
+			if ((Slopes = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->C.file, NULL)) == NULL)
+				Return (API->error);
+			if ((Grid = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Slopes)) == NULL)
+				return (API->error);
+		}
+		else if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
@@ -346,8 +375,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active && !Ctrl->T.active) do_output = false;	/* If gridding then we require -T to also output the spatial files */
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
-	triplets[GMT_IN] = (n_input == 3);
 	if (n_output > n_input) triplets[GMT_OUT] = false;	/* No can do. */
+	if (Ctrl->C.active) n_input += 2;	/* Curve requires the horizontal and vertical uncertainties */
+	triplets[GMT_IN] = (n_input == 3 || n_input == 5);	/* Either x,y,z or x,y,z,h,v input */
 	
 	if (Ctrl->G.active && GMT->common.R.active[RSET] && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;
@@ -360,6 +390,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	xx = gmt_M_memory (GMT, NULL, n_alloc, double);
 	yy = gmt_M_memory (GMT, NULL, n_alloc, double);
 	if (triplets[GMT_IN]) zz = gmt_M_memory (GMT, NULL, n_alloc, double);
+	if (Ctrl->C.active) {
+		hh = gmt_M_memory (GMT, NULL, n_alloc, double);
+		vv = gmt_M_memory (GMT, NULL, n_alloc, double);
+	}
 	n = 0;
 
 	if (get_input) {	/* Read primary input */
@@ -372,11 +406,13 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 		Return (API->error);
 	}
 
@@ -384,7 +420,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-				gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -396,6 +433,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		xx[n] = in[GMT_X];	yy[n] = in[GMT_Y];
 		if (triplets[GMT_IN]) zz[n] = in[GMT_Z];
+		if (Ctrl->C.active) {
+			hh[n] = fabs(in[GMT_H]);
+			vv[n] = fabs(in[GMT_V]);
+		}
 		n++;
 
 		if (n == n_alloc) {	/* Get more memory */
@@ -403,12 +444,17 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			xx = gmt_M_memory (GMT, xx, n_alloc, double);
 			yy = gmt_M_memory (GMT, yy, n_alloc, double);
 			if (triplets[GMT_IN]) zz = gmt_M_memory (GMT, zz, n_alloc, double);
+			if (Ctrl->C.active) {
+				hh = gmt_M_memory (GMT, hh, n_alloc, double); 
+				vv = gmt_M_memory (GMT, vv, n_alloc, double);
+			}
 		}
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-		gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 		Return (API->error);
 	}
 
@@ -417,7 +463,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		double xnoise, ynoise, rx, ry, percent = 5.0, fraction = 0.01 * percent;
 		if ((F = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->F.file, NULL)) == NULL) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-			gmt_M_free (GMT, xx);		gmt_M_free (GMT, yy);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);//CURVE
 			Return (API->error);	/* Get subset if exceeding desired grid */
 		}
 		xf = gmt_grd_coord (GMT, F->header, GMT_X);
@@ -425,7 +472,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		xnoise = fraction * F->header->inc[GMT_X];
 		ynoise = fraction * F->header->inc[GMT_Y];
 		gmt_M_grd_loop (GMT, F, row, col, ij) {
-			if (gmt_M_is_fnan (F->data[ij]))	continue;	/* Only add real data to the input list */
+			if (gmt_M_is_fnan (F->data[ij])) continue;	/* Only add real data to the input list */
 			rx = xnoise * gmt_nrand (GMT);
 			ry = ynoise * gmt_nrand (GMT);
 			xx[n] = xf[col] + rx;	yy[n] = yf[row] + ry;
@@ -445,12 +492,17 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+		gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	xx = gmt_M_memory (GMT, xx, n, double);
 	yy = gmt_M_memory (GMT, yy, n, double);
 	if (triplets[GMT_IN]) zz = gmt_M_memory (GMT, zz, n, double);
+	if (Ctrl->C.active) {
+		hh = gmt_M_memory (GMT, hh, n, double);
+		vv = gmt_M_memory (GMT, vv, n, double);
+	}
 
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
@@ -519,6 +571,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 			Return (API->error);
 		}
 		if (Ctrl->F.active && F->data) {	/* Not the same area, must copy over pregrid node values */
@@ -609,10 +662,21 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->G.active && !Ctrl->Q.active) {	/* Grid via planar triangle segments */
 		int n_columns = Grid->header->n_columns, n_rows = Grid->header->n_rows;	/* Signed versions */
+		double inv_delta_min = 1.0 / GMT->common.R.inc[GMT_X];
+		double s_H = 1.0, distSum = 0.0, sigma = 0.0;
+		double *CoordsX = NULL, *CoordsY = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Perform Delaunay triangle gridding\n");
 		if (!Ctrl->F.active) {
 			if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 			for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
+		}
+
+		if (Ctrl->C.active) {	/* CURVE needs grid coordinates */
+			if ((CoordsX = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid)) == NULL)
+				Return (API->error);
+			if ((CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL)
+				Return (API->error);
+			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (Slopes->data[p])	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {
@@ -665,11 +729,38 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 						Grid->data[p] = (float)a;
 					else if (Ctrl->D.dir == GMT_Y)
 						Grid->data[p] = (float)b;
-					else
+					else if (Ctrl->C.active) {	/* CURVE propagated uncertainty prediction */
+						distv1 = sqrt (pow (CoordsX[col] - vx[0],2.0) + pow (CoordsY[row] - vy[0], 2.0));
+						distv2 = sqrt (pow (CoordsX[col] - vx[1],2.0) + pow (CoordsY[row] - vy[1], 2.0));
+						distv3 = sqrt (pow (CoordsX[col] - vx[2],2.0) + pow (CoordsY[row] - vy[2], 2.0));
+						uv1 = pow (vj, 2.0) * (1.0 + pow ((distv1 + s_H * hj) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hj, 2.0);
+						uv2 = pow (vk, 2.0) * (1.0 + pow ((distv2 + s_H * hk) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hk, 2.0);
+						uv3 = pow (vl, 2.0) * (1.0 + pow ((distv3 + s_H * hl) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hl, 2.0);
+						if (fabs (distv1) < DBL_EPSILON)
+							sigma = sqrt (uv1);
+						else if (fabs (distv2) < DBL_EPSILON)
+							sigma = sqrt (uv2);
+						else if (fabs (distv3) < DBL_EPSILON)
+							sigma = sqrt (uv3);
+						else {
+							dv1 = uv1/distv1;
+							dv2 = uv2/distv2;
+							dv3 = uv3/distv3;
+							distSum = 1.0 / distv1 + 1.0 / distv2 + 1.0 / distv3;
+							sigma = sqrt ((dv1 + dv2 + dv3) / distSum);
+						}
+						Grid->data[p] = (float)(sigma);
+					}
+					else	/* Planar prediction */
 						Grid->data[p] = (float)(a * xp + b * yp + c);
 				}
 			}
 		}
+		if (Ctrl->C.active) {
+			gmt_M_free (GMT, CoordsX);
+			gmt_M_free (GMT, CoordsY);
+		}
+		
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
@@ -789,6 +880,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, yy);
 	if (zpol) gmt_M_free (GMT, zpol);
 	if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+	if (Ctrl->C.active) {
+		gmt_M_free (GMT, hh);
+		gmt_M_free (GMT, vv);
+	}
 	if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
