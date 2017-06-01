@@ -5238,7 +5238,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		op = decode_gmt_argument (GMT, opt->arg, &value, &dimension, localhashnode);
 
-		if (op != GMTMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!\n", opt->arg, opt->arg);
+		if (op != GMTMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!  The file will be ignored.\n", opt->arg, opt->arg);
 
 		if (op < GMTMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 
