@@ -683,13 +683,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 			/* Find equation for the plane as z = ax + by + c */
 
-			vx[0] = vx[3] = xx[link[ij]];	vy[0] = vy[3] = yy[link[ij]];	zj = zz[link[ij++]];
-			vx[1] = xx[link[ij]];	vy[1] = yy[link[ij]];	zk = zz[link[ij++]];
-			vx[2] = xx[link[ij]];	vy[2] = yy[link[ij]];	zl = zz[link[ij++]];
+			vx[0] = vx[3] = xx[link[ij]];	vy[0] = vy[3] = yy[link[ij]];	zj = zz[link[ij++]];	hj = hh[link[ij-1]];	vj = vv[link[ij-1]];
+			vx[1] = xx[link[ij]];		vy[1] = yy[link[ij]];		zk = zz[link[ij++]];	hk = hh[link[ij-1]];	vk = vv[link[ij-1]];
+			vx[2] = xx[link[ij]];		vy[2] = yy[link[ij]];		zl = zz[link[ij++]];	hl = hh[link[ij-1]];	vl = vv[link[ij-1]];
 
-			xkj = vx[1] - vx[0];	ykj = vy[1] - vy[0];
-			zkj = zk - zj;	xlj = vx[2] - vx[0];
-			ylj = vy[2] - vy[0];	zlj = zl - zj;
+			xkj = vx[1] - vx[0];	ykj = vy[1] - vy[0];	zkj = zk - zj;
+			xlj = vx[2] - vx[0];	ylj = vy[2] - vy[0];	zlj = zl - zj;
 
 			f = 1.0 / (xkj * ylj - ykj * xlj);
 			a = -f * (ykj * zlj - zkj * ylj);
