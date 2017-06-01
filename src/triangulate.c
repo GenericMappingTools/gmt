@@ -316,11 +316,11 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	size_t n_alloc;
 	
-	double hj, hk, hl, vj, vk, vl, d, uv1, uv2, uv3, dv1, dv2, dv3, distv1, distv2, distv3;
+	double hj, hk, hl, vj, vk, vl, uv1, uv2, uv3, dv1, dv2, dv3, distv1, distv2, distv3;
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL, *zpol = NULL;
-	double *xf = NULL, *yf = NULL, *uu = NULL, *hh = NULL, *vv = NULL;
+	double *xf = NULL, *yf = NULL, *hh = NULL, *vv = NULL;
 
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 	char record[GMT_BUFSIZ];
@@ -676,7 +676,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				Return (API->error);
 			if ((CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL)
 				Return (API->error);
-			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (Slopes->data[p])	/* Take tan or slopes here instead of later */
+			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {

@@ -261,8 +261,8 @@ summary of these changes:
 *  Any reference to Earth topographic/bathymetric relief files called
    **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
    from the GMT data server.  The resolution *res* allows a choice among
-   13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 6m, 5m, 4m, 3m, 2m,
-   1m, 30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb,
+   13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m,
+   01m, 30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb,
    7.5 Mb, 11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).
    Once one of these have been downloaded any future reference will simply
    obtain the file from **$GMT_USERDIR** (except if explicitly
@@ -3935,7 +3935,7 @@ Three classes of files are given special treatment in GMT.
    files called **earth_relief_**\ *res*\ **.grd** on a command line then
    that grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 6m, 5m, 4m, 3m, 2m, 1m,
+   13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively). Once
    one of these have been downloaded any future reference will simply obtain the
