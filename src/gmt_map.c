@@ -7210,7 +7210,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, k, np, n_sections;
- 	bool inside;
+ 	bool last_inside = false, this_inside, cartesian = !gmt_M_is_geographic (GMT, GMT_IN);
 	unsigned int sides[4];
 	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
@@ -7223,16 +7223,17 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
 		GMT->current.plot.x[0] = last_x;	GMT->current.plot.y[0] = last_y;
 		GMT->current.plot.pen[np++] = PSL_MOVE;
+		last_inside = true;
 	}
 	for (j = 1; j < n; j++) {
 		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);
-		inside = !gmt_map_outside (GMT, lon[j], lat[j]);
+		this_inside = !gmt_map_outside (GMT, lon[j], lat[j]);
 		if (gmt_M_is_dnan (lon[j]) || gmt_M_is_dnan (lat[j])) continue;	/* Skip NaN point now */
 		if (gmt_M_is_dnan (lon[j-1]) || gmt_M_is_dnan (lat[j-1])) {		/* Point after NaN needs a move */
 			GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
 			GMT->current.plot.pen[np++] = PSL_MOVE;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
-			last_x = this_x;	last_y = this_y;
+			last_x = this_x;	last_y = this_y;	last_inside = this_inside;
 			continue;
 		}
 		if ((nx = map_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Nothing */ }
@@ -7240,18 +7241,22 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {	/* inside-outside or outside-inside */
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
-			GMT->current.plot.pen[np++] = (inside) ? PSL_MOVE : PSL_DRAW;
+			GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE : PSL_DRAW;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
 		else if (nx == 2) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
-			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
-			GMT->current.plot.pen[np++] = (inside) ? PSL_DRAW : PSL_MOVE;
-			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
-			GMT->current.plot.x[np] = xx[1];	GMT->current.plot.y[np] = yy[1];
-			GMT->current.plot.pen[np++] = (inside) ? PSL_MOVE : PSL_DRAW;
-			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+			/* PW: I will be working on things here to solve the polygon wrap problem reported by Nicky */
+			//double dy = fabs (yy[0] - yy[1]);
+			//if ((this_inside && last_inside) || cartesian || dy > 0.1) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
+				GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
+				GMT->current.plot.pen[np++] = (this_inside) ? PSL_DRAW : PSL_MOVE;
+				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+				GMT->current.plot.x[np] = xx[1];	GMT->current.plot.y[np] = yy[1];
+				GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE : PSL_DRAW;
+				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+			//}
 		}
-		if (inside) {
+		if (this_inside) {
 			if ( np >= GMT->current.plot.n_alloc ) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "bad access: cannot access current.plot.x[%" PRIu64 "], np=%" PRIu64 ", GMT->current.plot.n=%" PRIu64 "\n", np, np, GMT->current.plot.n);
 			}
@@ -7261,7 +7266,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			}
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
-		last_x = this_x;	last_y = this_y;
+		last_x = this_x;	last_y = this_y;	last_inside = this_inside;
 	}
 	if (np) GMT->current.plot.pen[0] = PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
 

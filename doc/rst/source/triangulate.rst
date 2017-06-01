@@ -14,6 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **triangulate** [ *table* ]
+[ |-C|\ *slpfile* ]
 [ |-D|\ **x**\ \|\ **y** ]
 [ |-E|\ *empty* ]
 [ |-G|\ *grdfile* ]
@@ -69,6 +70,16 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-C:
+
+**-C**\ *slpfile*
+    Read a slope grid (in radians) and compute the propagated uncertainty in the
+	bathymetry using the CURVE algorithm [Zambo et al, 20xx].  Requires the **-G**
+	option to specify the output grid.  Note that the *slpgrid* sets the domain
+	for the output grid so **-R**, **-I**, [**-r**\ ] are not required.
+	Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
+	**-S** and **-T**.
 
 .. _-D:
 
@@ -215,11 +226,19 @@ according to their ID, try
     gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
         gmt psxy -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L > polygons.ps
 
-To grid the data using the natural nearest neighbor algorothm, try
+To grid the data using the natural nearest neighbor algorithm, try
 
    ::
 
     gmt triangulate samples.xyz -Gnnn.nc -Qn -R-100/-90/30/34 -I0.5
+
+Notes
+-----
+
+The uncertainty propagation for bathymetric grids requires both horizontal
+and vertical uncertainties and these are weighted given the local slope.
+See the references for more details.
+
 
 See Also
 --------

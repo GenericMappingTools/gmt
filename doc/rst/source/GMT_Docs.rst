@@ -569,7 +569,7 @@ as well. For specific enhancements, we have:
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
    **STDW**, and **VARW**.  In addition it gains a new
-   **AREA** operator which computes the gridcell area (in km^2 if the
+   **AREA** operator which computes the gridcell area (in km\ :sup:`2` if the
    grid is geographic).  Finally, operators **MEAN**, **MEDIAN**, etc.,
    when working on a geographic grid, will weight the result using the
    **AREA** function for proper spherical statistics.
@@ -9308,7 +9308,7 @@ Dampier. The edges of the map are all 9000 km true distance from the
 projection center. At this scale (and for global maps) the crude
 resolution data will usually be adequate to capture the main geographic
 features. To avoid cluttering the map with insignificant detail we only
-plot features (i.e., polygons) that exceed 500 km^2 in area.
+plot features (i.e., polygons) that exceed 500 km\ :sup:`2` in area.
 Smaller features would only occupy a few pixels on the plot and make the
 map look "dirty". We also add national borders to the plot. The crude
 database is heavily decimated and simplified by the DP-routine: The
@@ -9341,7 +9341,7 @@ We have now reduced the map area by zooming in on the map center. Now,
 the edges of the map are all 2000 km true distance from the projection
 center. At this scale we choose the low resolution data that faithfully
 reproduce the dominant geographic features in the region. We cut back on
-minor features less than 100 km^2 in area. We still add
+minor features less than 100 km\ :sup:`2` in area. We still add
 national borders to the plot. The low database is less decimated and
 simplified by the DP-routine: The total file size of the coastlines,
 rivers, and borders combined grows to 907 kbytes; it is the default
@@ -9368,7 +9368,7 @@ map are all 500 km true distance from the projection center. We abandon
 the low resolution data set as it would look too jagged at this scale
 and instead employ the intermediate resolution data that faithfully
 reproduce the dominant geographic features in the region. This time, we
-ignore features less than 20 km^2 in area. Although the script
+ignore features less than 20 km\ :sup:`2` in area. Although the script
 still asks for national borders none exist within our region. The
 intermediate database is moderately decimated and simplified by the
 DP-routine: The combined file size of the coastlines, rivers, and
@@ -9398,7 +9398,7 @@ The relentless zooming continues! Now, the edges of the map are all 100
 km true distance from the projection center. We step up to the high
 resolution data set as it is needed to accurately portray the detailed
 geographic features within the region. Because of the small scale we
-only ignore features less than 1 km^2 in area. The high
+only ignore features less than 1 km\ :sup:`2` in area. The high
 resolution database has undergone minor decimation and simplification by
 the DP-routine: The combined file size of the coastlines, rivers, and
 borders now swells to 12.3 Mbytes. The map and the final outline box are
@@ -10393,6 +10393,7 @@ so that the label is more readable. We choose the place the labels every
 are placed normal to the line:
 
     ::
+
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
      -T+l"-+" >> GMT_App_O_6.ps
@@ -10636,7 +10637,7 @@ OGC SFS specification). This specification provides for non-topological
 point, line and polygon (area) features, as well as multipoint,
 multiline and multipolygon features, and was written by
 `Brent Wood <http://www.niwa.co.nz/key-contacts/brent-wood/>`_
-based on input from Paul Wessel and others on the GMT list.
+based on input from Paul Wessel and others on the GMT team.
 
 The OGR/GMT format
 ------------------
