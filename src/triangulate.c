@@ -672,12 +672,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->C.active) {	/* CURVE needs grid coordinates */
-			if ((CoordsX = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid)) == NULL) {
-				gmt_M_free (GMT, zz);
-				Return (API->error);
+			if ((CoordsX = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid)) == NULL || (CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL) {
+				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 			}
-			if ((CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL)
-				Return (API->error);
 			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
