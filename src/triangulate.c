@@ -781,12 +781,14 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (API->error);
 			}
 		}
