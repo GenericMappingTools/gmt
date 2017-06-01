@@ -292,6 +292,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
 		gmt_M_free (GMT, order);
+		gmt_M_free (GMT, Q);
 		return NULL;
 	}
 
@@ -305,6 +306,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create empty dataset for DCW polygons\n");
 			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, Q);
+			gmt_M_free (GMT, order);
 			return NULL;
 		}
 	}
@@ -313,6 +316,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
 		gmt_free_segment (GMT, &P);
 		gmt_M_free (GMT, order);
+		gmt_M_free (GMT, Q);
 		return NULL;
 	}
 
@@ -323,6 +327,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute version\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
+			gmt_M_free (GMT, Q);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {

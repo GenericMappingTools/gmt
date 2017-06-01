@@ -935,6 +935,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
 			gmt_M_free (GMT, data);
+			if (F.weights) gmt_M_free (GMT, weights);	
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -971,6 +972,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	else {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) {
 			gmt_M_free (GMT, data);
+			if (F.weights) gmt_M_free (GMT, weights);	
 			Return (GMT_PROJECTION_ERROR);
 		}
 	}
