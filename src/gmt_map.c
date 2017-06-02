@@ -235,6 +235,7 @@ EXTERN_MSC double gmt_right_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For 
 EXTERN_MSC double gmt_left_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
 EXTERN_MSC double gmt_right_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
 EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
+EXTERN_MSC double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /*! CCW order of side in some tests */
@@ -5925,6 +5926,11 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 	GMT->current.map.dist[type].scale = 1.0;	/* Default scale */
 
 	switch (mode) {	/* Set pointers to distance functions */
+		case GMT_CARTESIAN_DIST_PERIODIC:	/* Cartesian 2-D x,y data but with one or two periodic dimensions */
+			GMT->current.map.dist[type].func = &gmt_cartesian_dist_periodic;
+			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian [periodic]\n", type_name[type]);
+			break;
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
 			GMT->current.map.dist[type].func = &gmt_cartesian_dist;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
@@ -6268,6 +6274,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
+	
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -6731,6 +6739,15 @@ bool gmt_near_a_line (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg
 }
 
 /* Specific functions that are accessed via pointer only */
+
+/*! . */
+double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
+	/* Calculates the good-old straight line distance in users units */
+	double dx = x1 - x0, dy = y1 - y0;
+	if (GMT->common.n.periodic[GMT_X] && (dx = fabs (dx)) > GMT->common.n.half_range[GMT_X]) dx = GMT->common.n.range[GMT_X] - dx;
+	if (GMT->common.n.periodic[GMT_Y] && (dy = fabs (dy)) > GMT->common.n.half_range[GMT_Y]) dy = GMT->common.n.range[GMT_Y] - dy;
+	return (hypot (dx, dy));
+}
 
 /*! . */
 double gmt_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
@@ -8851,7 +8868,10 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
+			if (GMT->common.n.periodic[GMT_X] || GMT->common.n.periodic[GMT_Y])
+				map_set_distaz (GMT, GMT_CARTESIAN_DIST_PERIODIC, type, "");
+			else	
+				map_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			break;
 		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J */
 			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type, "");

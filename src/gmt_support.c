@@ -10192,6 +10192,16 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		if (h->nyp != 0) h->nyp = (h->registration == GMT_GRID_PIXEL_REG) ? h->n_rows : h->n_rows - 1;
 	}
 
+	if (h->BC[XLO] == GMT_BC_IS_PERIODIC && h->BC[XHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for x-periodic, non-geographic grids */
+		GMT->common.n.periodic[GMT_X] = true;
+		GMT->common.n.range[GMT_X] = h->wesn[XHI] - h->wesn[XLO];
+		GMT->common.n.half_range[GMT_X] = 0.5 * GMT->common.n.range[GMT_X];
+	}
+	if (h->BC[YLO] == GMT_BC_IS_PERIODIC && h->BC[YHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for y-periodic, non-geographic grids */
+		GMT->common.n.periodic[GMT_Y] = true;
+		GMT->common.n.range[GMT_Y] = h->wesn[YHI] - h->wesn[YLO];
+		GMT->common.n.half_range[GMT_Y] = 0.5 * GMT->common.n.range[GMT_Y];
+	}
 	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] != h->BC[i-1]) same = false;
 
 	if (same)

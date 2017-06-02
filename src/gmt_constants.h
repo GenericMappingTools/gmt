@@ -354,6 +354,7 @@ enum GMT_enum_stairpath {GMT_STAIRS_OFF = 0,	/* Default: No stairclimbing */
 	GMT_STAIRS_X};	/* Move horizontally (parallel) to next point along x, then vertically along y */
 
 enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hypot */
+	GMT_CARTESIAN_DIST_PERIODIC,		/* Cartesian 2-D x,y data,but with periodic BCs */
 	GMT_CARTESIAN_DIST2,		/* Cartesian 2-D x,y data, return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */
 	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot */

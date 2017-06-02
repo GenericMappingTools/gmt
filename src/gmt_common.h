@@ -186,8 +186,10 @@ struct GMT_COMMON {
 		bool truncate;	/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;	/* true if +b was parsed */
+		bool periodic[2];	/* For periodic non-geographic grids */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
+		double range[2], half_range[2];	/* For periodic non-geographic grids */
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o<col>|<colrange>,... */
