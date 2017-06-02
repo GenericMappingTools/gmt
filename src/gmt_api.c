@@ -878,7 +878,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0);		/* Tell libcurl to not verify the peer */
+	curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L);		/* Tell libcurl to not verify the peer */
 	if (user_dir[dir]) sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');

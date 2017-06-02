@@ -840,6 +840,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
+				if (F.weights) gmt_M_free (GMT, weights);	
 				Return (API->error);
 			}
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) {
