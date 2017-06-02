@@ -26,6 +26,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-n| ]
 [ **-r** ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
@@ -135,6 +136,13 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+   Append **+b**\ *BC* to set any boundary conditions to be used,
+   adding **g** for geographic, **p** for periodic, or **n** for
+   natural boundary conditions. For the latter two you may append **x**
+   or **y** to specify just one direction, otherwise both are assumed.
+   [Default is geographic if grid is geographic]. 
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
