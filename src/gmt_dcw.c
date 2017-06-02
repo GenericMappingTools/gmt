@@ -333,13 +333,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute title\n");
 			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, Q);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute source\n");
 			gmt_free_segment (GMT, &P);
-			if (F.weights) gmt_M_free (GMT, weights);	
+			gmt_M_free (GMT, Q);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
