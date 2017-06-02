@@ -8700,10 +8700,10 @@ way:
    ::
 
      gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
-        -sDEVICE=pswrite -sFONTPATH="/path/to/fontdir" \
+        -sDEVICE=ps2write -sFONTPATH="/path/to/fontdir" \
         -sOutputFile=mapWithOutlinedFonts.ps map.ps
 
-Note, that this only works with the *pswrite* device. If you need
+Note, that this only works with the *ps2write* device. If you need
 outlined fonts in PDF, create the PDF from the converted
 *PostScript* file. Also, :doc:`psconvert`
 cannot correctly crop Ghostscript converted *PostScript* files

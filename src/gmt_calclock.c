@@ -276,7 +276,8 @@ int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 	int day_offset, yearm1;
 
 	if (gm < 1 || gm > 12 || gd < 1 || gd > 31) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: gmt_rd_from_gymd given bad month or day.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: gmt_rd_from_gymd given bad month (%d) or day (%d).\n", gm, gd);
+		return 0;
 	}
 
 	if (gm <= 2)
