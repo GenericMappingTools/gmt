@@ -92,6 +92,8 @@ struct TRIANGULATE_EDGE {
 	unsigned int begin, end;
 };
 
+#define CUBE_ALPHA 2.0	/* Factor from original CUBE algorithm and it adjusts for relative distances; here set to 2.0 */
+
 enum curve_enum {	/* Indices for coeff array for normalization */
 	GMT_H = GMT_Z + 1	,	/* Index into input/output rows */
 	GMT_V,
@@ -662,7 +664,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->G.active && !Ctrl->Q.active) {	/* Grid via planar triangle segments */
 		int n_columns = Grid->header->n_columns, n_rows = Grid->header->n_rows;	/* Signed versions */
-		double inv_delta_min = 1.0 / GMT->common.R.inc[GMT_X];
+		double inv_delta_min = 1.0 / MIN (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]);	/* Inverse minimum spacing */
 		double s_H = 1.0, distSum = 0.0, sigma = 0.0;
 		double *CoordsX = NULL, *CoordsY = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Perform Delaunay triangle gridding\n");
@@ -677,6 +679,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
+				Return (API->error);
 			}
 			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
@@ -726,17 +729,17 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					xp = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 					if (!gmt_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
 
-					if (Ctrl->D.dir == GMT_X)
+					if (Ctrl->D.dir == GMT_X)	/* d/dx of solution */
 						Grid->data[p] = (float)a;
-					else if (Ctrl->D.dir == GMT_Y)
+					else if (Ctrl->D.dir == GMT_Y)	/* d/dy of solution */
 						Grid->data[p] = (float)b;
 					else if (Ctrl->C.active) {	/* CURVE propagated uncertainty prediction */
-						distv1 = sqrt (pow (CoordsX[col] - vx[0],2.0) + pow (CoordsY[row] - vy[0], 2.0));
-						distv2 = sqrt (pow (CoordsX[col] - vx[1],2.0) + pow (CoordsY[row] - vy[1], 2.0));
-						distv3 = sqrt (pow (CoordsX[col] - vx[2],2.0) + pow (CoordsY[row] - vy[2], 2.0));
-						uv1 = pow (vj, 2.0) * (1.0 + pow ((distv1 + s_H * hj) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hj, 2.0);
-						uv2 = pow (vk, 2.0) * (1.0 + pow ((distv2 + s_H * hk) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hk, 2.0);
-						uv3 = pow (vl, 2.0) * (1.0 + pow ((distv3 + s_H * hl) * inv_delta_min, 2.0)) + pow (Slopes->data[p] * hl, 2.0);
+						distv1 = sqrt (pow (CoordsX[col] - vx[0], 2.0) + pow (CoordsY[row] - vy[0], 2.0));
+						distv2 = sqrt (pow (CoordsX[col] - vx[1], 2.0) + pow (CoordsY[row] - vy[1], 2.0));
+						distv3 = sqrt (pow (CoordsX[col] - vx[2], 2.0) + pow (CoordsY[row] - vy[2], 2.0));
+						uv1 = pow (vj, 2.0) * (1.0 + pow ((distv1 + s_H * hj) * inv_delta_min, CUBE_ALPHA)) + pow (Slopes->data[p] * hj, 2.0);
+						uv2 = pow (vk, 2.0) * (1.0 + pow ((distv2 + s_H * hk) * inv_delta_min, CUBE_ALPHA)) + pow (Slopes->data[p] * hk, 2.0);
+						uv3 = pow (vl, 2.0) * (1.0 + pow ((distv3 + s_H * hl) * inv_delta_min, CUBE_ALPHA)) + pow (Slopes->data[p] * hl, 2.0);
 						if (fabs (distv1) < DBL_EPSILON)
 							sigma = sqrt (uv1);
 						else if (fabs (distv2) < DBL_EPSILON)
@@ -744,9 +747,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 						else if (fabs (distv3) < DBL_EPSILON)
 							sigma = sqrt (uv3);
 						else {
-							dv1 = uv1/distv1;
-							dv2 = uv2/distv2;
-							dv3 = uv3/distv3;
+							dv1 = uv1 / distv1;
+							dv2 = uv2 / distv2;
+							dv3 = uv3 / distv3;
 							distSum = 1.0 / distv1 + 1.0 / distv2 + 1.0 / distv3;
 							sigma = sqrt ((dv1 + dv2 + dv3) / distSum);
 						}

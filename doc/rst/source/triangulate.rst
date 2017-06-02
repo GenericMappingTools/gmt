@@ -74,8 +74,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *slpfile*
-    Read a slope grid (in radians) and compute the propagated uncertainty in the
-	bathymetry using the CURVE algorithm [Zambo et al, 20xx].  Requires the **-G**
+    Read a slope grid (in degrees) and compute the propagated uncertainty in the
+	bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
 	option to specify the output grid.  Note that the *slpgrid* sets the domain
 	for the output grid so **-R**, **-I**, [**-r**\ ] are not required.
 	Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
@@ -237,7 +237,7 @@ Notes
 
 The uncertainty propagation for bathymetric grids requires both horizontal
 and vertical uncertainties and these are weighted given the local slope.
-See the references for more details.
+See the *Zambo et al.* [2014] and *Zhou and Liu* [2004] references for more details.
 
 
 See Also
@@ -255,11 +255,17 @@ See Also
 References
 ----------
 
-Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
-Geosci.*, **8**, 97-101.
-
 Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational
 Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
+
+Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
+Geosci.*, **8**, 97-101.
+
+Zambo, S., Elmore, P. A., Bourgeois, B. S., and Perkins, A. L., 2016,
+Uncertainty estimation for sparse data gridding algorithms,
+
+Zhou, Q., and Liu, X., 2004, Error analysis on grid-based slope and aspect
+algorithms, *Photogrammetric Eng. & Remote Sensing*, **70** (8), 957-962.
 
 `Shewchuk's Homepage <http://www.cs.cmu.edu/~quake/triangle.html>`_
