@@ -149,9 +149,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "di,e,f,h,i");
 	if (gmt_M_showusage (API)) {
 		GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic boundary conditions, or one or both of\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   x for periodic boundary conditions on x,\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   y for periodic boundary conditions on y.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic, p for periodic, and n for natural boundary conditions.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   For p and n you may optionally append x or y [default is both]:\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t     x applies the boundary condition for x only\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t     y applies the boundary condition for y only\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
 	}
 	GMT_Option (API, "r,s,:,.");

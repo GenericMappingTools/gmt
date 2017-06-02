@@ -1807,7 +1807,7 @@ GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 				gmt_strncpy (GMT->common.n.BC, &p[1], 4U);
 				for (j = 0; j < MIN (4,strlen (GMT->common.n.BC)); j++) {
 					switch (GMT->common.n.BC[j]) {
-						case 'g': case 'x': case 'y': break;
+						case 'g': case 'p': case 'x': case 'y': break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -n: +b<BC> requires <BC> to be g or p[x|y], n[x|y]\n");
 							break;
@@ -5970,9 +5970,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
 			gmt_message (GMT, "\t   Append +a to switch off antialiasing (except for l) [Default: on].\n");
 			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
-			gmt_message (GMT, "\t     g for geographic boundary conditions, or one or both of\n");
-			gmt_message (GMT, "\t     x for periodic boundary conditions on x,\n");
-			gmt_message (GMT, "\t     y for periodic boundary conditions on y.\n");
+			gmt_message (GMT, "\t     g for geographic, p for periodic, and n for natural boundary conditions.\n");
+			gmt_message (GMT, "\t     For p and n you may optionally append x or y [default is both]:\n");
+			gmt_message (GMT, "\t       x for periodic boundary conditions on x,\n");
+			gmt_message (GMT, "\t       y for periodic boundary conditions on y.\n");
 			gmt_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
 			gmt_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
 			gmt_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
