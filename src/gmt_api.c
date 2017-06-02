@@ -832,6 +832,21 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
  * this check by first calling gmt_download_file_if_not_found.
  */
 
+struct FtpFile {
+	const char *filename;
+	FILE *stream;
+};
+
+static size_t my_fwrite (void *buffer, size_t size, size_t nmemb, void *stream) {
+	struct FtpFile *out = (struct FtpFile *)stream;
+	if (out && !out->stream) { /* open file for writing */
+		out->stream = fopen (out->filename, "wb");
+		if (!out->stream)
+			return -1; /* failure, can't open file to write */
+	}
+	return fwrite (buffer, size, nmemb, out->stream);
+}
+
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). */
@@ -842,6 +857,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	static char *ftp_dir[2] = {"/cache", ""}, *name[2] = {"CACHE", "USER"};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
+	struct FtpFile ftpfile = {NULL, NULL};
 
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
@@ -884,11 +900,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
-	if ((fp = fopen (local_path, "wb")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
-		gmt_M_str_free (file);
-		return 0;
-	}
+	ftpfile.filename = local_path;
+	//if ((fp = fopen (local_path, "wb")) == NULL) {
+	//	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
+	//	gmt_M_str_free (file);
+	//	return 0;
+	//}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
 	else			/* Use GMT ftp dir, possible from subfolder cache */
@@ -900,12 +917,16 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
-		fclose (fp);
-		gmt_M_str_free (file);
-		return 0;
-	}
+	/* Define our callback to get called when there's data to be written */
+	curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, my_fwrite);
+	/* Set a pointer to our struct to pass to the callback */
+	curl_easy_setopt(Curl, CURLOPT_WRITEDATA, &ftpfile);
+	//if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
+	//	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
+	//	fclose (fp);
+	//	gmt_M_str_free (file);
+	//	return 0;
+	//}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -915,8 +936,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
 	curl_easy_cleanup (Curl);
+	if (ftpfile.stream)
+		fclose (ftpfile.stream); /* close the local file */
 
-	if (fp) fclose (fp);
+	//if (fp) fclose (fp);
 
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
