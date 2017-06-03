@@ -790,21 +790,21 @@ with the examples below.
 
 Examples:
 
-We will start off using the file some_data.txt in your directory.
+We will start off using the file tut_data.txt in your directory.
 Using the GMT utility :doc:`gmtinfo` we find the extent of the
 data region:
 
    ::
 
-    gmt info @some_data.txt
+    gmt info @tut_data.txt
 
 which returns
 
    ::
 
-    some_data.txt: N = 7   <1/5>   <1/5>
+    tut_data.txt: N = 7   <1/5>   <1/5>
 
-telling us that the file some_data.txt has 7 records and gives the
+telling us that the file tut_data.txt has 7 records and gives the
 minimum and maximum values for the first two columns.  Given our
 knowledge of how to set up linear projections with **-R** and **-JX**,
 try the following:
@@ -820,7 +820,7 @@ To simply plot the data as a line we choose no symbol and specify a pen thicknes
 
    ::
 
-    gmt psxy @some_data.txt -R0/6/0/6 -Jx1i -P -Baf -Wthinner > GMT_tut_7.ps
+    gmt psxy @tut_data.txt -R0/6/0/6 -Jx1i -P -Baf -Wthinner > GMT_tut_7.ps
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
@@ -849,8 +849,8 @@ symbols with a line we must use the overlay approach:
 
    ::
 
-    gmt psxy @some_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
-    gmt psxy some_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
+    gmt psxy @tut_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
+    gmt psxy tut_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
 two-step procedure also makes it easy to plot the line over the symbols
@@ -868,10 +868,8 @@ Our final :doc:`psxy` example involves a more complicated scenario
 in which we want to plot the epicenters of several earthquakes over
 the background of a coastline basemap.  We want the symbols to have a
 size that reflects the magnitude of the earthquakes, and that their
-color should reflect the depth of the hypocenter.  You will find the
-two files quakes.ngdc and quakes.cpt in your
-directory.  The first few lines in the quakes.ngdc looks
-like this:
+color should reflect the depth of the hypocenter.  The first few
+lines in the tut_quakes.ngdc looks like this:
 
    ::
 
@@ -925,7 +923,7 @@ We may now complete our example using the Mercator projection:
 
     gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
     gmt pscoast -R130/150/35/50 -JM6i -B5 -P -Ggray -K > GMT_tut_9.ps
-    gmt psxy -R -J -O @quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt >> GMT_tut_9.ps
+    gmt psxy -R -J -O @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt >> GMT_tut_9.ps
 
 where the **c** appended to the **-Sc** option ensures that symbols
 sizes are interpreted to be in cm.  Your plot should look like :ref:`our example 9 below <gmt_tut_9>`
@@ -1089,7 +1087,7 @@ to extract a GMT-ready grid that we will next use for contouring:
 
    ::
 
-    gmt grdcut earth_relief_05m.grd -R-66/-60/30/35 -Gbermuda.nc -V
+    gmt grdcut earth_relief_05m.grd -R-66/-60/30/35 -Gtut_bathy.nc -V
 
 Here we use the file extension .nc instead of the generic .grd
 to indicate that this is a netCDF file. It is good form, but not essential,
@@ -1098,14 +1096,14 @@ other programs installed on your system to recognize these files and might
 give it an identifiable icon in your file browser.
 Learn about other programs that read netCDF files at the
 netCDF website (http://www.unidata.ucar.edu/software/netcdf/)
-You can find bermuda.nc also in the *tutorial* directory of your GMT
-installation.  Feel free to open it in any other program and compare results with GMT.
+You can also obtain tut_bathy.nc from the GMT cache server as we are doing below.
+Feel free to open it in any other program and compare results with GMT.
 
 We first use the GMT module :doc:`grdinfo` to see what's in this file:
 
    ::
 
-    gmt grdinfo @bermuda.nc
+    gmt grdinfo @tut_bathy.nc
 
 The file contains bathymetry for the Bermuda region and has depth
 values from -5475 to -89 meters.  We want to make a contour map of
@@ -1151,7 +1149,7 @@ Mercator plot and annotate the borders every 2º:
 
    ::
 
-    gmt grdcontour @bermuda.nc -JM7i -C250 -A1000 -P -Ba > GMT_tut_11.ps
+    gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -P -Ba > GMT_tut_11.ps
 
 Your plot should look like :ref:`our example 11 below <gmt_tut_11>`
 
@@ -1245,20 +1243,20 @@ The most important switches are listed below.
   | **-W**                    | Read relative weights from the 4th column of input data                          |
   +---------------------------+----------------------------------------------------------------------------------+
 
-We will grid the data in the file ship.xyz which contains
+We will grid the data in the file tut_ship.xyz which contains
 ship observations of bathymetry off Baja California.  You can find the
 file in the sub-directory for example 15.
 We desire to make a 5' by 5' grid.  Running gmt info on the file yields
 
    ::
 
-    ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
+    tut_ship.xyz: N = 82970     <245/254.705>   <20/29.99131>   <-7708/-9>
 
 so we choose the region accordingly, and get a view of the contour map using
 
    ::
 
-    gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @ship.xyz
+    gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @tut_ship.xyz
     gmt grdcontour ship.nc -JM6i -P -Ba -C250 -A1000 > GMT_tut_12.ps
 
 
@@ -1341,7 +1339,7 @@ With respect to our ship data we preprocess it using the median method:
 
    ::
 
-    gmt blockmedian -R245/255/20/30 -I5m -V @ship.xyz > ship_5m.xyz
+    gmt blockmedian -R245/255/20/30 -I5m -V @tut_ship.xyz > ship_5m.xyz
 
 The output data can now be used with surface:
 
@@ -1551,7 +1549,7 @@ global 30" DEM called SRTM30+:
 
    ::
 
-    gmt grdcut earth_relief_30s.grd -R-108/-103/35/40 -Gus.nc
+    gmt grdcut earth_relief_30s.grd -R-108/-103/35/40 -Gtut_relief.nc
 
 Using :doc:`grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we make a CPT accordingly:
@@ -1579,8 +1577,8 @@ the plot.  We try
 
    ::
 
-    gmt grdimage @us.nc -JM6i -P -Ba -Ctopo.cpt -V -K > GMT_tut_15.ps
-    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rus.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
+    gmt grdimage @tut_relief.nc -JM6i -P -Ba -Ctopo.cpt -V -K > GMT_tut_15.ps
+    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
 
@@ -1638,15 +1636,15 @@ we prefer to use the **-Ne** option; the value of
 
     ::
 
-     gmt grdgradient @us.nc -Ne0.8 -A100 -fg -Gus_i.nc
+     gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
 
 Given the CPT and the two gridded data sets we can
 create the shaded relief image:
 
    ::
 
-    gmt grdimage @us.nc -Ius_i.nc -JM6i -P -Ba -Ctopo.cpt -K > GMT_tut_16.ps
-    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rus.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
+    gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -P -Ba -Ctopo.cpt -K > GMT_tut_16.ps
+    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
 
@@ -1776,13 +1774,13 @@ CPT:
 
    ::
 
-    gmt grd2cpt @bermuda.nc -Cocean > bermuda.cpt
+    gmt grd2cpt @tut_bathy.nc -Cocean > bermuda.cpt
 
 A simple mesh plot can therefore be obtained with
 
    ::
 
-    gmt grdview @bermuda.nc -JM5i -P -JZ2i -p135/30 -Ba -Cbermuda.cpt > GMT_tut_18.ps
+    gmt grdview @tut_bathy.nc -JM5i -P -JZ2i -p135/30 -Ba -Cbermuda.cpt > GMT_tut_18.ps
 
 Your plot should look like :ref:`our example 18 below <gmt_tut_18>`
 
@@ -1806,7 +1804,7 @@ from the southeast.  This is done using
 
    ::
 
-    gmt grdview @us.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -Ba -JZ0.5i > GMT_tut_19.ps
+    gmt grdview @tut_relief.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -Ba -JZ0.5i > GMT_tut_19.ps
 
 
 Your plot should look like :ref:`our example 19 below <gmt_tut_19>`
