@@ -834,17 +834,17 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 
 struct FtpFile {
 	const char *filename;
-	FILE *stream;
+	FILE *fp;
 };
 
-static size_t my_fwrite (void *buffer, size_t size, size_t nmemb, void *stream) {
+static size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
 	struct FtpFile *out = (struct FtpFile *)stream;
-	if (out && !out->stream) { /* open file for writing */
-		out->stream = fopen (out->filename, "wb");
-		if (!out->stream)
+	if (out && !out->fp) { /* open file for writing */
+		out->fp = fopen (out->filename, "wb");
+		if (!out->fp)
 			return -1; /* failure, can't open file to write */
 	}
-	return fwrite (buffer, size, nmemb, out->stream);
+	return fwrite (buffer, size, nmemb, out->fp);
 }
 
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name) {
@@ -853,7 +853,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	unsigned int kind = 0, dir = 0, pos = 0;
 	int curl_err = 0;
 	CURL *Curl = NULL;
-	FILE *fp = NULL;
 	static char *ftp_dir[2] = {"/cache", ""}, *name[2] = {"CACHE", "USER"};
 	char *user_dir[2] = {GMT->session.CACHEDIR, GMT->session.USERDIR};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
@@ -894,18 +893,16 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L);		/* Tell libcurl to not verify the peer */
+	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option tonot verify the peer\n");
+		gmt_M_str_free (file);
+		return 0;
+	}
 	if (user_dir[dir]) sprintf (local_path, "%s/%s", user_dir[dir], &file[pos]);
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
-	ftpfile.filename = local_path;
-	//if ((fp = fopen (local_path, "wb")) == NULL) {
-	//	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create file %s\n", local_path);
-	//	gmt_M_str_free (file);
-	//	return 0;
-	//}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
 	else			/* Use GMT ftp dir, possible from subfolder cache */
@@ -913,34 +910,33 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
-		fclose (fp);
 		gmt_M_str_free (file);
 		return 0;
 	}
+	ftpfile.filename = local_path;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
-	curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, my_fwrite);
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
+		gmt_M_str_free (file);
+		return 0;
+	}
 	/* Set a pointer to our struct to pass to the callback */
-	curl_easy_setopt(Curl, CURLOPT_WRITEDATA, &ftpfile);
-	//if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, fp)) {	/* Set output file */
-	//	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
-	//	fclose (fp);
-	//	gmt_M_str_free (file);
-	//	return 0;
-	//}
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &ftpfile)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
+		gmt_M_str_free (file);
+		return 0;
+	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-		fclose (fp);
-		fp = NULL;
+		fclose (ftpfile.fp);
+		ftpfile.fp = NULL;
 		if (gmt_remove_file (GMT, local_path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
 	curl_easy_cleanup (Curl);
-	if (ftpfile.stream)
-		fclose (ftpfile.stream); /* close the local file */
-
-	//if (fp) fclose (fp);
-
+	if (ftpfile.fp) /* close the local file */
+		fclose (ftpfile.fp);
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
