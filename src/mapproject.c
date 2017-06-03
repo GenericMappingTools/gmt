@@ -1228,16 +1228,16 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 							d = GMT->session.d_NaN;
 						else {
 							d = gmt_az_backaz (GMT, lon_prev, lat_prev, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
-							if (Ctrl->A.orient) {	/* Want orientations in -90/90 instead */
-								d = fmod (2.0 * d, 360.0) * 0.5;	/* Get orientation */
-								if (d > 90.0) d-= 180.0;
-							}
 						}
 						lon_prev = in[GMT_X];	/* Update previous point */
 						lat_prev = in[GMT_Y];
 					}
 					else	/* Azimuths with respect to a fixed point */
 						d = gmt_az_backaz (GMT, Ctrl->A.lon, Ctrl->A.lat, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
+					if (Ctrl->A.orient) {	/* Want orientations in -90/90 instead */
+						d = fmod (2.0 * d, 360.0) * 0.5;	/* Get orientation */
+						if (d > 90.0) d-= 180.0;
+					}
 					extra[MP_COL_AZ] = d;
 				}
 				if (Ctrl->Z.active) {	/* Time calculations */
