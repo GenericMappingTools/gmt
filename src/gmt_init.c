@@ -3417,7 +3417,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							error++;
 						}
 						else {
-							strcpy (GMT->current.map.frame.axis[no].label, &p[1]);
+							strncpy (GMT->current.map.frame.axis[no].label, &p[1], GMT_LEN256-1);
 							gmt_handle5_plussign (GMT, GMT->current.map.frame.axis[no].label, NULL, 1);	/* Recover any non-modifier plus signs */
 							gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].label, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
@@ -3428,7 +3428,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							error++;
 						}
 						else {
-							strcpy (GMT->current.map.frame.axis[no].prefix, &p[1]);
+							strncpy (GMT->current.map.frame.axis[no].prefix, &p[1], GMT_LEN64-1);
 							gmt_handle5_plussign (GMT, GMT->current.map.frame.axis[no].prefix, NULL, 1);	/* Recover any non-modifier plus signs */
 							gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
@@ -3439,7 +3439,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							error++;
 						}
 						else {
-							strcpy (GMT->current.map.frame.axis[no].unit, &p[1]);
+							strncpy (GMT->current.map.frame.axis[no].unit, &p[1], GMT_LEN64-1);
 							gmt_handle5_plussign (GMT, GMT->current.map.frame.axis[no].unit, NULL, 1);	/* Recover any non-modifier plus signs */
 							gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].unit, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}

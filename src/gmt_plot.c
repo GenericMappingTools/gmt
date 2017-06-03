@@ -5619,14 +5619,16 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	if (GMT->current.ps.map_logo_label[0] == 'c' && GMT->current.ps.map_logo_label[1] == 0) {
 		char txt[4] = {' ', '-', 'X', 0};
-		struct GMT_OPTION *opt;
+		struct GMT_OPTION *opt = NULL;
+		size_t len = strlen (GMT->init.module_name);
 		/* -Uc was given as shorthand for "plot current command line" */
 		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
-			strcat (GMT->current.ps.map_logo_label, txt);
-			strcat (GMT->current.ps.map_logo_label, opt->arg);
+			strncat (GMT->current.ps.map_logo_label, txt, GMT_LEN256-len);
+			len += 3;
+			strncat (GMT->current.ps.map_logo_label, opt->arg, GMT_LEN256-len);
 		}
 	}
 	if (GMT->current.setting.map_logo)

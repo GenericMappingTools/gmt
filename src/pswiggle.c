@@ -462,12 +462,6 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
-	/* Allocate memory */
-
-	xx  = gmt_M_memory (GMT, NULL, n_alloc, double);
-	yy  = gmt_M_memory (GMT, NULL, n_alloc, double);
-	zz  = gmt_M_memory (GMT, NULL, n_alloc, double);
-
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
@@ -481,6 +475,12 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
+
+	/* Allocate memory */
+
+	xx  = gmt_M_memory (GMT, NULL, n_alloc, double);
+	yy  = gmt_M_memory (GMT, NULL, n_alloc, double);
+	zz  = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
