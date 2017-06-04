@@ -2932,11 +2932,9 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 		if (gmt_same_longitude (plon, lon1)) {	/* Line goes through the 1st node */
 			/* Must check that the two neighboring points are on either side; otherwise it is just a tangent line */
 			ip = support_getprevpoint (plon, P->data[GMT_X], P->n_rows, i);	/* Index of previous point != plon */
-			dx1 = P->data[GMT_X][ip] - lon1;
-			if (fabs (dx1) > 180.0) dx1 += copysign (360.0, -dx1);	/* Allow for jumps across discontinuous 0 or 180 boundary */
+			gmt_M_set_delta_lon (lon1, P->data[GMT_X][ip], dx1);	/* Allow for jumps across discontinuous 0 or 180 boundary */
 			if (dx1 == 0.0) continue;	/* Points ip and i forms a meridian, we a tangent line */
-			dx2 = lon2 - lon1;
-			if (fabs (dx2) > 180.0) dx2 += copysign (360.0, -dx2);	/* Allow for jumps across discontinuous 0 or 180 boundary */
+			gmt_M_set_delta_lon (lon1, lon2, dx2);				/* Allow for jumps across discontinuous 0 or 180 boundary */
 			if (dx1*dx2 > 0.0) continue;	/* Both on same side since signs are the same */
 			cut = (P->data[GMT_Y][i] > plat) ? 0 : 1;	/* node is north (0) or south (1) of P */
 			count[cut]++;
