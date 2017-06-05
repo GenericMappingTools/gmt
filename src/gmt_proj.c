@@ -1173,9 +1173,7 @@ void gmt_tm (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
 		sincos (2.0 * lat, &s2, &c2);
 		tan_lat = s / c;
 		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + c2 * (P->current.proj.t_c3 + c2 * P->current.proj.t_c4)));
-		dlon = lon - P->current.proj.central_meridian;
-		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+		gmt_M_set_delta_lon (P->current.proj.central_meridian, lon, dlon);
 		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
 		T = tan_lat * tan_lat;
 		T2 = T * T;
@@ -1231,10 +1229,7 @@ void gmt_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	/* Convert lon/lat to TM x/y by spherical formula */
 	double dlon, b, clat, slat, clon, slon, xx, yy;
 
-	dlon = lon - GMT->current.proj.central_meridian;
-	if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-	if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
-
+	gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon, dlon);
 	if (fabs (lat) > 90.0) {
 		/* Invalid latitude.  Treat as in gmt_merc_sph(), but transversely:  */
 		*x = copysign (1.0e100, dlon);

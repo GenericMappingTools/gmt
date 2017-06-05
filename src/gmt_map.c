@@ -1116,9 +1116,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 		double last_lon, this_lon, dummy, dlon;
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
-		dlon = this_lon - last_lon;
-		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-
+		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
 		if (fabs (dlon) < 180.0) /* Not going the long way so we judge this to be no jump */
 			return (0);
 		/* Jump it is */
@@ -7221,13 +7219,27 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	return (n);
 }
 
+GMT_LOCAL bool accept_the_jump (struct GMT_CTRL *GMT, double lon1, double lon0, double xx[], bool cartesian) {
+	/* Carefully examine if we really want to draw line from left to right boundary.
+	 * We want to avoid E-W wrapping lines for near-global areas where points simply move
+	 * from being > 180 degres from the map area to < -180 even though the points do not
+	 * really reflect motion across the area */
+	double dlon;
+	if (!cartesian) return true;	/* No wrap issues if Cartesian x,y */
+	if (cartesian) return true;	/* No wrap issues if Cartesian x,y */
+	gmt_M_set_delta_lon (lon1, lon0, dlon);
+	fprintf (stderr, "lon0 = %g lon1 = %g dlon = %g xx0 = %g xx1 = %g\n", lon0, lon1, dlon, xx[0], xx[1]);
+	if (fabs (dlon) > 1.0 && fabs (dlon) < 90.0) return true;
+	return false;
+}
+
 /*! . */
 uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, k, np, n_sections;
- 	bool last_inside = false, this_inside, cartesian = !gmt_M_is_geographic (GMT, GMT_IN);
+ 	bool last_inside = false, this_inside, jump, cartesian = !gmt_M_is_geographic (GMT, GMT_IN);
 	unsigned int sides[4];
 	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
@@ -7253,8 +7265,8 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			last_x = this_x;	last_y = this_y;	last_inside = this_inside;
 			continue;
 		}
-		if ((nx = map_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Nothing */ }
-		else if (GMT->current.map.is_world)
+		if ((nx = map_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
+		else if (GMT->current.map.is_world)	/* Check global wrapping if 360 range */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {	/* inside-outside or outside-inside */
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
@@ -7263,7 +7275,8 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		}
 		else if (nx == 2) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
 			/* PW: I will be working on things here to solve the polygon wrap problem reported by Nicky */
-			//double dy = fabs (yy[0] - yy[1]);
+			jump = accept_the_jump (GMT, lon[j], lon[j-1], xx, cartesian);
+			if (jump) {
 			//if ((this_inside && last_inside) || cartesian || dy > 0.1) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
 				GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
 				GMT->current.plot.pen[np++] = (this_inside) ? PSL_DRAW : PSL_MOVE;
@@ -7271,7 +7284,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 				GMT->current.plot.x[np] = xx[1];	GMT->current.plot.y[np] = yy[1];
 				GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE : PSL_DRAW;
 				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
-			//}
+			}
 		}
 		if (this_inside) {
 			if ( np >= GMT->current.plot.n_alloc ) {

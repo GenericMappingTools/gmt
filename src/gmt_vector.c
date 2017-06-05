@@ -1412,8 +1412,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			boost = 1.0;
 
 		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
-			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
-			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than 180 to next point */
+			gmt_M_set_delta_lon (lon[i-1], lon[i], dlon);	/* Beware of jumps due to sign differences */
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
 			theta = fabs (dlon) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
@@ -1446,8 +1445,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_new++;
 			}
-			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
-			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than  180 to next point */
+			gmt_M_set_delta_lon (lon[i-1], lon[i], dlon);	/* Beware of jumps due to sign differences */
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
 			theta = fabs (dlon) * cosd(lat[i]);
 			n_step = lrint (theta / step);
