@@ -836,8 +836,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		return (GMT_NOERROR);
 	}
 
-	if (!strcmp(getenv("GDAL_HTTP_UNSAFESSL"), "YES"))	/* The fact that it exist is not enough. It might be from a GMT process only. */
-		CPLSetConfigOption ("GDAL_HTTP_UNSAFESSL", "YES");
+	if (getenv("GDAL_HTTP_UNSAFESSL"))	/* The fact that it exist is not enough. It might be from a GMT process only. */
+		CPLSetConfigOption ("GDAL_HTTP_UNSAFESSL", getenv("GDAL_HTTP_UNSAFESSL"));
 	if (getenv("CURL_CA_BUNDLE"))		/* And the same for this one. */
 		CPLSetConfigOption ("CURL_CA_BUNDLE", getenv("CURL_CA_BUNDLE"));
 
