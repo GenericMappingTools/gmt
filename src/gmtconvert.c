@@ -67,6 +67,7 @@ struct GMTCONVERT_CTRL {
 	} D;
 	struct E {	/* -E */
 		bool active;
+		bool end;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
 	struct F {	/* -F<mode> */
@@ -116,7 +117,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -142,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +o<t_orig>/<s_orig> to start numbering at <t_orig> for tables and <s_orig> for segments [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extract first and last point per segment only [Output all points].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f for first only or l for last only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m<stride> to pass every <stride> records; use -EM to include the last point.\n");
 	gmt_segmentize_syntax (API->GMT, 'F', 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t: reverse the order of input tables on output.\n");
@@ -243,6 +244,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 						Ctrl->E.mode = -1; break;
 					case 'l':		/* Get last point only */
 						Ctrl->E.mode = -2; break;
+					case 'M':		/* Set modulo step */
+						Ctrl->E.end = true;	/* Include last point; fall through to set the step */
 					case 'm':		/* Set modulo step */
 						Ctrl->E.mode = atoi (&opt->arg[1]); break;
 					default:		/* Get first and last point only */
@@ -497,8 +500,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 					if (row == 0 && !(-Ctrl->E.mode & 1)) continue;		/* First record, but we are to skip it */
 					if (row == last_row && !(-Ctrl->E.mode & 2)) continue;	/* Last record, but we are to skip it */
 				}
-				else {	/* Only pass modulo E.mode records */
-					if (row % Ctrl->E.mode != 0) continue;
+				else {	/* Only pass modulo E.mode records (this always includes the first row), if -EM then make sure we also write the last row */
+					if ((row % Ctrl->E.mode) != 0) {	/* Check if last row and -EM was used */
+						if (!Ctrl->E.end || row < last_row) continue;
+					}
 				}
 				/* Pull out current virtual row (may consist of a single or many (-A) table rows) */
 				for (tbl_hor = out_col = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */

@@ -15,7 +15,7 @@ Synopsis
 
 **gmtconvert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
-[ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ |-L| ]
+[ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
 [ |-I|\ [**tsr**] ] [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
@@ -101,11 +101,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]
+**-E**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*]
     Only extract the first and last record for each segment of interest
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
-    Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
+    Alternatively, append **m**\ *stride* to extract every *stride* records;
+    use **M** to also include the last record.
 
 .. _-F:
 
