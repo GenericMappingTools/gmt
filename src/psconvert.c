@@ -460,7 +460,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+		GMT_Message (API, GMT_TIME_NONE, "\t[-Z]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -578,7 +581,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Escape any +? modifier inside strings with \\.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+		GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -728,7 +732,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 
 			case 'Z':
-				Ctrl->Z.active = true;
+				if (GMT->current.setting.run_mode == GMT_CLASSIC)
+					Ctrl->Z.active = true;
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: The -Z option is not available in MODERN mode!\n");
+					n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
