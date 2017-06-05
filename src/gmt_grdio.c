@@ -2824,17 +2824,23 @@ bool gmtlib_check_url_name (char *fname) {
 	/* File names starting as below should not be tested for existence or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns true. All cases are read via GDAL support or other. */
-	if (gmt_M_file_is_url (fname)) return (true);	/* Standard http[s], ftp URL */
-	/* Check for virtual file systems for GDAL */
-	if (!strncmp(fname,"/vsizip/", 8)  ||
-		!strncmp(fname,"/vsigzip/",9)  ||
-		!strncmp(fname,"/vsicurl/",9)  ||
-		!strncmp(fname,"/vsimem/", 8)  ||
-		!strncmp(fname,"/vsitar/", 8) )
-
-		return (true);
+	if (gmt_M_file_is_url (fname) ||
+	    !strncmp(fname,"/vsizip/", 8)  ||
+	    !strncmp(fname,"/vsigzip/",9)  ||
+	    !strncmp(fname,"/vsicurl/",9)  ||
+	    !strncmp(fname,"/vsimem/", 8)  ||
+	    !strncmp(fname,"/vsitar/", 8)) {
+#ifdef WIN32
+		/* On Windows libcurl does not care about the cerificates file (see https://github.com/curl/curl/issues/1538)
+		   and would fail, so no choice but prevent certificates verification.
+		   However, a CURL_CA_BUNDLE=/path/to/curl-ca-bundle.crt will overcome this and will consult the crt file. */
+		if (!getenv ("GDAL_HTTP_UNSAFESSL") && !getenv("CURL_CA_BUNDLE"))
+			putenv ("GDAL_HTTP_UNSAFESSL=YES");
+#endif
+		return true;
+	}
 	else
-		return (false);
+		return false;
 }
 
 unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
