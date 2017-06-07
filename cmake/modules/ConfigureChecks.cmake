@@ -159,6 +159,7 @@ check_function_exists (strncasecmp      HAVE_STRNCASECMP)
 check_function_exists (stricmp          HAVE_STRICMP)
 check_function_exists (strnicmp         HAVE_STRNICMP)
 check_function_exists (strdup           HAVE_STRDUP)
+check_function_exists (strndup          HAVE_STRNDUP)
 check_function_exists (strsep           HAVE_STRSEP)
 check_function_exists (strtod           HAVE_STRTOD)
 # Note: trailing underscore = GDAL workaround
