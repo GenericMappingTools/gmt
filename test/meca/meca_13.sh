@@ -10,7 +10,7 @@ ps=meca_13.ps
 #If dip \delta is neither 0 nor \pi/2, and lambda is within the range (0, \pi), the fault is termed a reverse fault or a thrust fault. 
 #However, if \lambda is within the range (-\pi, 0), the fault is termed a normal fault.
 #Since both ranges for \lambda include 0, the situation seems ambiguous. 
-#In this case, we have dip = 90 for the second plane, so the first part of the conjunctive condition in the “if” statement is not satisfied.
+#In this case, we have dip = 90 for the second plane, so the first part of the conjunctive condition in the "if" statement is not satisfied.
 #The Centroid Moment Tensor (CMT) shown in red is a normal faulting mechanism, with white (dilatational arrivals) in the center, arguing for a negative value of lambda. 
 #Since zero is neither positive nor negative, we can only appeal to consistency. Using the script below, I find the attached figure. I agree, that Case B is plotting incorrectly. It should look like Case D. If you have the time to hunt for the bug, that would be great.
 

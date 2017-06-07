@@ -1349,7 +1349,7 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 		}
 		else if (!strchr ("{}()-", s[k][K_DIR])) {	/* Key letter Z not in {|(|}|)|-: which means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >X} to >D} only when -M is used.  Also, modifiers may be involved.
-			   e.g, gmtspatial : New key “”>TN+r” means if -N+r is given then set >T}.  Just giving -N will not trigger the change.
+			   e.g, gmtspatial : New key ">TN+r" means if -N+r is given then set >T}.  Just giving -N will not trigger the change.
 			   e.g., pscoast ">TE+w-rR" means if -E is given with modifier +w _and_ one of +r or +R is then set to >T}.
 			   If X is not - then we will find the other KEY with X and select that as the one to change; this could
 			   be used to change the primary INPUT type.  For instance, grdimage expects grid input (<G{+) but with
@@ -9707,7 +9707,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   3. grdcontour normally writes PostScript but grdcontour -D will instead export data to a file set by -D, so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
-	 *   4. gmtspatial : New key “”>TN+r” means if -N[...]+r is given then set >T}.  Just giving -N without the given
+	 *   4. gmtspatial : New key ">TN+r" means if -N[...]+r is given then set >T}.  Just giving -N without the given
 	 *      modifier +r will not trigger the change.
 	 *   5. pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R are then set to >T}.
 	 *

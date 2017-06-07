@@ -11,7 +11,7 @@ set ps=example_29.ps
 
 REM This example uses 370 radio occultation data for Mars to grid the topography.
 REM Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
-REM Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184–187.
+REM Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.
 
 REM Make Mars PROJ_ELLIPSOID given their three best-fitting axes:
 set a=3399.472
