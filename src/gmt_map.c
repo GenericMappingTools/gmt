@@ -366,6 +366,16 @@ GMT_LOCAL void map_set_polar (struct GMT_CTRL *GMT) {
 	}
 }
 
+GMT_LOCAL bool central_meridian_not_set (struct GMT_CTRL *GMT) {
+	/* Just to make it clearer to understand the code.  If NaN then we were never given a central meridian */
+	return (gmt_M_is_dnan (GMT->current.proj.pars[0]));
+}
+
+GMT_LOCAL void set_default_central_meridian (struct GMT_CTRL *GMT) {
+	GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
+}
+
 /*! . */
 GMT_LOCAL void map_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Make sure that for global (360-range) cylindrical projections, the central meridian is neither west nor east.
@@ -373,8 +383,8 @@ GMT_LOCAL void map_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 	 * mode == 0: <clon> should be reset based on w/e mid-point
 	 * mode == 1: -J<clon> is firm so w/e is centered on <c.lon>
 	 */
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0]))
-		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	else if (GMT->current.map.is_world && (GMT->current.proj.pars[0] == GMT->common.R.wesn[XLO] || GMT->current.proj.pars[0] == GMT->common.R.wesn[XHI])) {
 		/* Reset central meridian since cannot be 360 away from one of the boundaries since that gives xmin == xmax below */
 		if (mode == 1) {	/* Change -R to fit central meridian */
@@ -4113,7 +4123,8 @@ GMT_LOCAL bool map_init_mollweide (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4169,7 +4180,8 @@ GMT_LOCAL bool map_init_hammer (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4223,7 +4235,8 @@ GMT_LOCAL bool map_init_grinten (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4278,7 +4291,8 @@ GMT_LOCAL bool map_init_winkel (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4330,7 +4344,8 @@ GMT_LOCAL bool map_init_eckert4 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4383,7 +4398,8 @@ GMT_LOCAL bool map_init_eckert6 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4435,7 +4451,8 @@ GMT_LOCAL bool map_init_robinson (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4488,7 +4505,8 @@ GMT_LOCAL bool map_init_sinusoidal (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
@@ -4543,7 +4561,8 @@ GMT_LOCAL bool map_init_cassini (struct GMT_CTRL *GMT) {
 	bool too_big;
 	double xmin, xmax, ymin, ymax;
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
 		GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
@@ -4710,7 +4729,8 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (central_meridian_not_set (GMT))
+		set_default_central_meridian (GMT);
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
@@ -6273,7 +6293,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
 	
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

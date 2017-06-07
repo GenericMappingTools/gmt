@@ -597,7 +597,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
 	int this_just, p_val;
 	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
-	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active;
+	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""};
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
@@ -711,6 +711,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		use_image = P->is_continuous;
 	else	/* Auto mode */
 		use_image = (!P->has_pattern && gap <= 0.0 && (Ctrl->L.active || const_width || P->is_continuous));
+	/* So if CPT has pattern AND continuous color sections then use_image is false but we still need to do an image later */
+	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
 
 	if ((gap >= 0.0 || Ctrl->L.interval) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
@@ -724,8 +726,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	}
 	if (gap < 0.0) gap = 0.0;
 
-	if (use_image || Ctrl->I.active) {	/* Make bitimage for colorbar using Ctrl->N.dpi */
-		bool resample;
+	if (use_image || Ctrl->I.active || need_image) {	/* Make bitimage for colorbar using Ctrl->N.dpi */
+		bool resample, skip;
+		int index;
 		if (Ctrl->N.mode == N_FAVOR_IMAGE) {	/* Honor the given image dpi */
 			nx = (!use_image && gap > 0.0) ? P->n_colors : urint (length * Ctrl->N.dpi);
 			ny = urint (width * Ctrl->N.dpi);
@@ -746,12 +749,13 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 		for (i = 0; i < nx; i++) {
 			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
-			gmt_get_rgb_from_z (GMT, P, z, rrggbb);
+			index = gmt_get_rgb_from_z (GMT, P, z, rrggbb);
+			skip = gmt_M_skip_cptslice (P, index);	/* Don't what intensity shading if slice is to be skipped */
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
 				gmt_M_rgb_copy (rgb, rrggbb);
 				k = j * nx + ii;
-				if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
+				if (Ctrl->I.active && !skip) gmt_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
 				if (P->is_gray)	/* All gray, pick red */
 					bar[k] = gmt_M_u255 (rgb[0]);
 				else if (Ctrl->M.active)	/* Convert to gray using the gmt_M_yiq transformation */
@@ -908,9 +912,24 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 	depth = (Ctrl->M.active || P->is_gray) ? 8 : 24;
 	if (Ctrl->D.horizontal) {
-		if (use_image)	/* Must plot as image */
+		if (use_image)	/* Must plot entire bar as image */
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
-		else {			/* Plot as rectangles */
+		else if (need_image) {	/* Some parts require image, we overwrite where patterns are needed */
+			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			x0 = x1 = 0.0;
+			for (i = 0; i < P->n_colors; i++) {
+				ii = (reverse) ? P->n_colors - i - 1 : i;
+				x1 += z_width[ii];
+				if (P->data[ii].skip || (f = P->data[ii].fill) == NULL) {	/* Do not paint this slice at all */
+					x0 = x1;
+					continue;
+				}
+				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
+				PSL_plotbox (PSL, x0+gap, 0.0, x1-gap, width);
+				x0 = x1;
+			}
+		}
+		else {			/* Plot all slices as rectangles */
 			x0 = x1 = 0.0;
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
@@ -1111,7 +1130,25 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		PSL_setorigin (PSL, width, 0.0, 90.0, PSL_FWD);
 		if (use_image)	/* Must plot with image */
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
-		else {			/* Plot as rectangles */
+		else if (need_image) {	/* Sme parts require image, overwrite the rest */
+			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			x0 = x1 = 0.0;
+			for (i = 0; i < P->n_colors; i++) {
+				ii = (reverse) ? P->n_colors - i - 1 : i;
+				x1 += z_width[ii];
+				if (P->data[ii].skip || (f = P->data[ii].fill) == NULL) {	/* Do not paint this slice at all */
+					x0 = x1;
+					continue;
+				}
+				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
+				/* Must undo rotation so patterns remain aligned with original setup */
+				PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
+				PSL_plotbox (PSL, -width, 0.0, 0.0, x1 - x0 - 2.0 * gap);
+				PSL_setorigin (PSL, -(x0 + gap), 0.0, 90.0, PSL_INV);
+				x0 = x1;
+			}
+		}
+		else {			/* Plot all slices as rectangles */
 			x0 = x1 = 0.0;
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
