@@ -3194,11 +3194,11 @@ support for Fortran 77. This API is limited to help you inquire, read and write
 GMT grids directly from Fortran 77.
 To inquire about the range of information in a grid, use
 
-.. _GMT_F77_readgrdinfo:
+.. _gmt_f77_readgrdinfo:
 
   ::
 
-    int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
+    int gmt_f77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
     	                       char *title, char *remark, const char *file)
 
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
@@ -3209,11 +3209,11 @@ Note that you must declare your variables so that ``limits`` has at least 6 elem
 
 To actually read the grid, we use
 
-.. _GMT_F77_readgrd:
+.. _gmt_f77_readgrd:
 
   ::
 
-    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[],
+    int gmt_f77_readgrd (float *array, unsigned int dim[], double wesn[],
     	                   double inc[], char *title, char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
@@ -3226,11 +3226,11 @@ the array from C-style row-major array order to Fortran column-major array order
 
 Finally, to write a grid to file you can use
 
-.. _GMT_F77_writegrd:
+.. _gmt_f77_writegrd:
 
   ::
 
-    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[],
+    int gmt_f77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[],
     	                    const char *title, const char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
