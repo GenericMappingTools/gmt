@@ -32,6 +32,18 @@
 
 /* Local functions */
 
+GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
+	char *file = NULL, path[PATH_MAX] = {""};
+	if (gmtlib_check_url_name (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
+		//file = gdal_filename;
+		strcpy (path, gdal_filename);
+	else if ((file = gmt_getdatapath (GMT, gdal_filename, path, R_OK)) == NULL) {	/* Local file not found */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find %s.\n", gdal_filename);
+		return (NULL);
+	}
+	return (GDALOpen (path, GA_ReadOnly));
+}
+
 GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col) {
 	unsigned int n = 0, i, start, stop, pos = 0;
 	char p[GMT_BUFSIZ];
@@ -337,7 +349,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
 	/* ------------------------------------------------------------------------- */
-	hDataset = GDALOpen (gdal_filename, GA_ReadOnly);
+	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open %s.\n", gdal_filename);
 		GDALDestroyDriverManager();
@@ -662,7 +674,7 @@ int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
 
 	GDALAllRegister();
-	hDataset = GDALOpen(header->name, GA_ReadOnly);
+	hDataset = gdal_open (GMT, header->name);
 
 	if (hDataset == NULL)
 		return (GMT_GRDIO_BAD_VAL);
@@ -853,7 +865,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		return (GMT_NOERROR);
 	}
 
-	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
+	hDataset = gdal_open (GMT, gdal_filename);
 
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());

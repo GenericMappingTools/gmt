@@ -894,7 +894,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option tonot verify the peer\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to not verify the peer\n");
+		gmt_M_str_free (file);
+		return 0;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to follow redirects\n");
 		gmt_M_str_free (file);
 		return 0;
 	}
