@@ -307,7 +307,8 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 			}
 			else if (cpt) {
 				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
-				if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))	/* Pattern */
+				f = gmt_M_get_cptslice_pattern (P,index);
+				if (f)	/* Pattern */
 					gmt_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);

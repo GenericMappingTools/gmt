@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13760 [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.4.2_r18319 [64-bit] Document from psxy
 %%Creator: GMT5
-%%For: pwessel
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Dec  1 17:41:45 2014
+%%CreationDate: Sun Jun  4 10:49:17 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -424,7 +424,8 @@ end
   } for
 } def
 
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Curved Baseline Text Placement Functions
+
 /PSL_curved_path_labels
 { /psl_bits exch def				% 4 on/of bit settings as indicated below
   /PSL_placetext psl_bits 2 and 2 eq def		% true to place text, false to just make space
@@ -713,7 +714,7 @@ end
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for	% Lay down the rest of the path
 } def
 
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Draw Baseline Text Segment Lines
 % PSL_draw_path_lines will draw the lines that have been stored in the concatenated
 % PSL_path_x and PSL_path_y arrays using the pen attributes in the PSL_path_pen array
 
@@ -743,7 +744,7 @@ end
   U
 } def
 
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Straight Baseline Text Placement Functions
 % PSL_straight_path_labels deals with straight text labels w/wo textboxes (rect or rounded).
 % Only the (x,y) location of each label is needed.
 % Use <flags> PSL_straight_path_labels to paint|draw textboxes and place text
@@ -884,8 +885,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxy -Rg -JG-10/30/6i -i0-1,2s5000,3,4s5000 -P -Bafg -Ct.cpt -S=0.15i+jc+e+n300+p0.25p -W1.5p --MAP_VECTOR_SHAPE=0.5 --PS_COMMENTS=true
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
+%@GMT: psxy -Rg -JG-10/30/6i -i0:1,2+s5000,3,4+s5000 -P -Bafg -Ct.cpt -S=0.15i+jc+e+n300+p0.25p+h0.5 -W1.5p --PS_COMMENTS=true
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1222,7 +1223,7 @@ FO
 U
 V
 4 W
-{0.989 0.0788 0 C} FS
+{1 0.0689 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1353,7 +1354,7 @@ FO
 U
 V
 4 W
-{0.371 0.993 0.144 C} FS
+{0.344 0.999 0.125 C} FS
 O1
 2 setlinecap
 O0
@@ -1415,7 +1416,7 @@ FO
 U
 V
 4 W
-{1 0.707 0 C} FS
+{1 0.708 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1471,7 +1472,7 @@ FO
 U
 V
 4 W
-{1 0.138 0 C} FS
+{1 0.139 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1530,7 +1531,7 @@ FO
 U
 V
 4 W
-{0.995 0.0982 0 C} FS
+{1 0.0941 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1597,7 +1598,7 @@ FO
 U
 V
 4 W
-{1 0.324 0 C} FS
+{1 0.325 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1664,7 +1665,7 @@ FO
 U
 V
 4 W
-{1 0.795 0 C} FS
+{1 0.796 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1722,7 +1723,7 @@ FO
 U
 V
 4 W
-{1 0.684 0 C} FS
+{1 0.685 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1800,7 +1801,7 @@ FO
 U
 V
 4 W
-{1 0.46 0 C} FS
+{1 0.461 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1856,7 +1857,7 @@ FO
 U
 V
 4 W
-{0.979 0.0456 0 C} FS
+{1 0.0258 0 C} FS
 O1
 2 setlinecap
 O0
@@ -1909,7 +1910,7 @@ FO
 U
 V
 4 W
-{0.8 0 0 C} FS
+{0.801 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2023,7 +2024,7 @@ FO
 U
 V
 4 W
-{1 0.541 0 C} FS
+{1 0.542 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2152,7 +2153,7 @@ FO
 U
 V
 4 W
-{1 0.332 0 C} FS
+{1 0.333 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2208,7 +2209,7 @@ FO
 U
 V
 4 W
-{1 0.264 0 C} FS
+{1 0.265 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2278,7 +2279,7 @@ FO
 U
 V
 4 W
-{0.506 1 0.0898 C} FS
+{0.507 1 0.0896 C} FS
 O1
 2 setlinecap
 O0
@@ -2344,7 +2345,7 @@ FO
 U
 V
 4 W
-{1 0.486 0 C} FS
+{1 0.487 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2464,7 +2465,7 @@ FO
 U
 V
 4 W
-{0.998 0.107 0 C} FS
+{1 0.106 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2604,7 +2605,7 @@ FO
 U
 V
 4 W
-{0 0.408 0.89 C} FS
+{0 0.394 0.928 C} FS
 O1
 2 setlinecap
 O0
@@ -2669,7 +2670,7 @@ FO
 U
 V
 4 W
-{1 0.287 0 C} FS
+{1 0.288 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2731,7 +2732,7 @@ FO
 U
 V
 4 W
-{1 0.245 0 C} FS
+{1 0.246 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2798,7 +2799,7 @@ FO
 U
 V
 4 W
-{0.971 1 0.00522 C} FS
+{1 1 0 C} FS
 O1
 2 setlinecap
 O0
@@ -2945,7 +2946,7 @@ FO
 U
 V
 4 W
-{0 0.611 0.73 C} FS
+{0 0.613 0.729 C} FS
 O1
 2 setlinecap
 O0
@@ -3009,7 +3010,7 @@ FO
 U
 V
 4 W
-{1 0.36 0 C} FS
+{1 0.361 0 C} FS
 O1
 2 setlinecap
 O0
@@ -3152,7 +3153,7 @@ FO
 U
 V
 4 W
-{0.641 1 0.0653 C} FS
+{0.642 1 0.0652 C} FS
 O1
 2 setlinecap
 O0
@@ -3226,7 +3227,7 @@ FO
 U
 V
 4 W
-{0.224 0.978 0.233 C} FS
+{0.224 0.979 0.232 C} FS
 O1
 2 setlinecap
 O0
@@ -3297,7 +3298,7 @@ FO
 U
 V
 4 W
-{0.925 1 0.0136 C} FS
+{0.948 1 0.00944 C} FS
 O1
 2 setlinecap
 O0
@@ -3493,7 +3494,7 @@ FO
 U
 V
 4 W
-{1 0.652 0 C} FS
+{1 0.653 0 C} FS
 O1
 2 setlinecap
 O0
@@ -3561,7 +3562,7 @@ FO
 U
 V
 4 W
-{1 0.52 0 C} FS
+{1 0.521 0 C} FS
 O1
 2 setlinecap
 O0
@@ -3627,7 +3628,7 @@ FO
 U
 V
 4 W
-{1 0.431 0 C} FS
+{1 0.432 0 C} FS
 O1
 2 setlinecap
 O0
@@ -3830,7 +3831,7 @@ FO
 U
 V
 4 W
-{1 0.462 0 C} FS
+{1 0.463 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4052,7 +4053,7 @@ FO
 U
 V
 4 W
-{1 0.462 0 C} FS
+{1 0.463 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4118,7 +4119,7 @@ FO
 U
 V
 4 W
-{1 0.506 0 C} FS
+{1 0.507 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4251,7 +4252,7 @@ FO
 U
 V
 4 W
-{1 0.651 0 C} FS
+{1 0.652 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4317,7 +4318,7 @@ FO
 U
 V
 4 W
-{1 0.399 0 C} FS
+{1 0.4 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4388,7 +4389,7 @@ FO
 U
 V
 4 W
-{1 0.69 0 C} FS
+{1 0.691 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4444,7 +4445,7 @@ FO
 U
 V
 4 W
-{0.992 0.0871 0 C} FS
+{1 0.0797 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4693,7 +4694,7 @@ FO
 U
 V
 4 W
-{1 0.539 0 C} FS
+{1 0.54 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4752,7 +4753,7 @@ FO
 U
 V
 4 W
-{1 0.202 0 C} FS
+{1 0.203 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4805,7 +4806,7 @@ FO
 U
 V
 4 W
-{0.96 0 0 C} FS
+{0.961 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4864,7 +4865,7 @@ FO
 U
 V
 4 W
-{1 0.791 0 C} FS
+{1 0.792 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4926,7 +4927,7 @@ FO
 U
 V
 4 W
-{1 0.23 0 C} FS
+{1 0.231 0 C} FS
 O1
 2 setlinecap
 O0
@@ -4988,7 +4989,7 @@ FO
 U
 V
 4 W
-{1 0.47 0 C} FS
+{1 0.471 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5060,7 +5061,7 @@ FO
 U
 V
 4 W
-{1 0.912 0 C} FS
+{1 0.917 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5122,7 +5123,7 @@ FO
 U
 V
 4 W
-{0.978 0.0414 0 C} FS
+{1 0.0203 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5382,7 +5383,7 @@ FO
 U
 V
 4 W
-{1 0.18 0 C} FS
+{1 0.181 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5581,7 +5582,7 @@ FO
 U
 V
 4 W
-{1 0.401 0 C} FS
+{1 0.402 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5652,7 +5653,7 @@ FO
 U
 V
 4 W
-{0.769 1 0.0419 C} FS
+{0.773 1 0.0412 C} FS
 O1
 2 setlinecap
 O0
@@ -5788,7 +5789,7 @@ FO
 U
 V
 4 W
-{0.742 1 0.0469 C} FS
+{0.743 1 0.0467 C} FS
 O1
 2 setlinecap
 O0
@@ -5848,7 +5849,7 @@ FO
 U
 V
 4 W
-{1 0.461 0 C} FS
+{1 0.462 0 C} FS
 O1
 2 setlinecap
 O0
@@ -5988,7 +5989,7 @@ FO
 U
 V
 4 W
-{0.673 1 0.0595 C} FS
+{0.673 1 0.0594 C} FS
 O1
 2 setlinecap
 O0
@@ -6185,7 +6186,7 @@ FO
 U
 V
 4 W
-{1 0.263 0 C} FS
+{1 0.264 0 C} FS
 O1
 2 setlinecap
 O0
@@ -6413,7 +6414,7 @@ FO
 U
 V
 4 W
-{1 0.98 0 C} FS
+{1 0.994 0 C} FS
 O1
 2 setlinecap
 O0
@@ -6549,7 +6550,7 @@ FO
 U
 V
 4 W
-{0.534 1 0.0847 C} FS
+{0.535 1 0.0846 C} FS
 O1
 2 setlinecap
 O0
@@ -6677,7 +6678,7 @@ FO
 U
 V
 4 W
-{1 0.743 0 C} FS
+{1 0.744 0 C} FS
 O1
 2 setlinecap
 O0
@@ -6753,7 +6754,7 @@ FO
 U
 V
 4 W
-{1 0.934 0 C} FS
+{1 0.942 0 C} FS
 O1
 2 setlinecap
 O0
@@ -6823,7 +6824,7 @@ FO
 U
 V
 4 W
-{0.95 1 0.00915 C} FS
+{0.976 1 0.00439 C} FS
 O1
 2 setlinecap
 O0
@@ -7032,7 +7033,7 @@ FO
 U
 V
 4 W
-{1 0.949 0 C} FS
+{1 0.959 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7091,7 +7092,7 @@ FO
 U
 V
 4 W
-{1 0.184 0 C} FS
+{1 0.185 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7224,7 +7225,7 @@ FO
 U
 V
 4 W
-{1 0.555 0 C} FS
+{1 0.556 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7498,7 +7499,7 @@ FO
 U
 V
 4 W
-{0.745 1 0.0464 C} FS
+{0.746 1 0.0461 C} FS
 O1
 2 setlinecap
 O0
@@ -7654,7 +7655,7 @@ FO
 U
 V
 4 W
-{1 0.77 0 C} FS
+{1 0.771 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7717,7 +7718,7 @@ FO
 U
 V
 4 W
-{1 0.434 0 C} FS
+{1 0.435 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7782,7 +7783,7 @@ FO
 U
 V
 4 W
-{1 0.258 0 C} FS
+{1 0.259 0 C} FS
 O1
 2 setlinecap
 O0
@@ -7843,7 +7844,7 @@ FO
 U
 V
 4 W
-{1 0.299 0 C} FS
+{1 0.3 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8100,7 +8101,7 @@ FO
 U
 V
 4 W
-{1 0.431 0 C} FS
+{1 0.432 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8232,7 +8233,7 @@ FO
 U
 V
 4 W
-{0.993 0.0934 0 C} FS
+{1 0.0878 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8288,7 +8289,7 @@ FO
 U
 V
 4 W
-{1 0.139 0 C} FS
+{1 0.14 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8558,7 +8559,7 @@ FO
 U
 V
 4 W
-{0.988 1 0.0022 C} FS
+{1 1 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8735,7 +8736,7 @@ FO
 U
 V
 4 W
-{1 0.338 0 C} FS
+{1 0.339 0 C} FS
 O1
 2 setlinecap
 O0
@@ -8864,7 +8865,7 @@ FO
 U
 V
 4 W
-{0.326 0.989 0.168 C} FS
+{0.309 0.993 0.157 C} FS
 O1
 2 setlinecap
 O0
@@ -8929,7 +8930,7 @@ FO
 U
 V
 4 W
-{0.775 1 0.041 C} FS
+{0.779 1 0.0401 C} FS
 O1
 2 setlinecap
 O0
@@ -8987,7 +8988,7 @@ FO
 U
 V
 4 W
-{1 0.336 0 C} FS
+{1 0.337 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9046,7 +9047,7 @@ FO
 U
 V
 4 W
-{1 0.223 0 C} FS
+{1 0.224 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9187,7 +9188,7 @@ FO
 U
 V
 4 W
-{0.473 1 0.0959 C} FS
+{0.474 1 0.0957 C} FS
 O1
 2 setlinecap
 O0
@@ -9324,7 +9325,7 @@ FO
 U
 V
 4 W
-{1 0.306 0 C} FS
+{1 0.307 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9377,7 +9378,7 @@ FO
 U
 V
 4 W
-{1 0.195 0 C} FS
+{1 0.196 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9498,7 +9499,7 @@ FO
 U
 V
 4 W
-{0.774 1 0.0412 C} FS
+{0.778 1 0.0403 C} FS
 O1
 2 setlinecap
 O0
@@ -9691,7 +9692,7 @@ FO
 U
 V
 4 W
-{1 0.528 0 C} FS
+{1 0.529 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9749,7 +9750,7 @@ FO
 U
 V
 4 W
-{1 0.45 0 C} FS
+{1 0.451 0 C} FS
 O1
 2 setlinecap
 O0
@@ -9938,7 +9939,7 @@ FO
 U
 V
 4 W
-{1 0.202 0 C} FS
+{1 0.203 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10003,7 +10004,7 @@ FO
 U
 V
 4 W
-{0.926 0 0 C} FS
+{0.927 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10057,7 +10058,7 @@ FO
 U
 V
 4 W
-{1 0.318 0 C} FS
+{1 0.319 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10123,7 +10124,7 @@ FO
 U
 V
 4 W
-{0.969 1 0.00564 C} FS
+{0.998 1 0.000451 C} FS
 O1
 2 setlinecap
 O0
@@ -10192,7 +10193,7 @@ FO
 U
 V
 4 W
-{1 0.495 0 C} FS
+{1 0.496 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10304,7 +10305,7 @@ FO
 U
 V
 4 W
-{0.968 0.00955 0 C} FS
+{0.979 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10371,7 +10372,7 @@ FO
 U
 V
 4 W
-{1 0.497 0 C} FS
+{1 0.498 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10464,7 +10465,7 @@ FO
 U
 V
 4 W
-{0.468 1 0.0968 C} FS
+{0.469 1 0.0966 C} FS
 O1
 2 setlinecap
 O0
@@ -10529,7 +10530,7 @@ FO
 U
 V
 4 W
-{1 0.988 0 C} FS
+{1 1 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10593,7 +10594,7 @@ FO
 U
 V
 4 W
-{1 0.408 0 C} FS
+{1 0.409 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10646,7 +10647,7 @@ FO
 U
 V
 4 W
-{0.998 0.11 0 C} FS
+{1 0.11 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10702,7 +10703,7 @@ FO
 U
 V
 4 W
-{0.947 0 0 C} FS
+{0.948 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10772,7 +10773,7 @@ FO
 U
 V
 4 W
-{0 0.8 0.559 C} FS
+{0 0.802 0.558 C} FS
 O1
 2 setlinecap
 O0
@@ -10844,7 +10845,7 @@ FO
 U
 V
 4 W
-{0.982 1 0.00335 C} FS
+{1 1 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10903,7 +10904,7 @@ FO
 U
 V
 4 W
-{0.958 0 0 C} FS
+{0.959 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -10954,7 +10955,7 @@ FO
 U
 V
 4 W
-{0.946 0 0 C} FS
+{0.947 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11003,7 +11004,7 @@ FO
 U
 V
 4 W
-{1 0.132 0 C} FS
+{1 0.133 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11076,7 +11077,7 @@ FO
 U
 V
 4 W
-{0.338 0.99 0.162 C} FS
+{0.319 0.994 0.148 C} FS
 O1
 2 setlinecap
 O0
@@ -11147,7 +11148,7 @@ FO
 U
 V
 4 W
-{1 0.959 0 C} FS
+{1 0.97 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11212,7 +11213,7 @@ FO
 U
 V
 4 W
-{1 0.221 0 C} FS
+{1 0.222 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11268,7 +11269,7 @@ FO
 U
 V
 4 W
-{1 0.181 0 C} FS
+{1 0.182 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11324,7 +11325,7 @@ FO
 U
 V
 4 W
-{1 0.213 0 C} FS
+{1 0.214 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11399,7 +11400,7 @@ FO
 U
 V
 4 W
-{0.467 1 0.0969 C} FS
+{0.468 1 0.0967 C} FS
 O1
 2 setlinecap
 O0
@@ -11606,7 +11607,7 @@ FO
 U
 V
 4 W
-{0.959 0 0 C} FS
+{0.96 0 0 C} FS
 O1
 2 setlinecap
 O0
@@ -11657,7 +11658,7 @@ FO
 U
 V
 4 W
-{1 0.271 0 C} FS
+{1 0.272 0 C} FS
 O1
 2 setlinecap
 O0
@@ -13608,987 +13609,118 @@ S
 % Lat = 60
 %
 3913 5414 M
-9 1 D
-10 0 D
-9 1 D
-10 1 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-9 2 D
-10 1 D
-9 1 D
-10 1 D
-9 1 D
-10 2 D
-9 1 D
-10 1 D
-9 2 D
-9 1 D
-10 1 D
-9 2 D
-10 1 D
-9 2 D
-9 1 D
-10 2 D
-9 1 D
-9 2 D
-9 1 D
-10 2 D
-9 2 D
-9 1 D
-9 2 D
-10 2 D
-9 1 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 1 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-9 2 D
-8 3 D
-9 2 D
-9 2 D
-9 2 D
-8 2 D
-9 3 D
-9 2 D
-8 2 D
-9 3 D
-8 2 D
-9 2 D
-9 3 D
-8 2 D
-9 3 D
-8 2 D
-8 3 D
-9 2 D
-8 3 D
-9 2 D
-8 3 D
-8 3 D
-8 2 D
-9 3 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 3 D
-8 2 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-8 3 D
-7 3 D
-8 3 D
-7 3 D
-8 3 D
-7 4 D
-8 3 D
-7 3 D
-7 3 D
-8 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-7 4 D
-7 3 D
-6 4 D
-7 4 D
-7 3 D
-6 4 D
-7 3 D
-6 4 D
-7 4 D
-6 3 D
-7 4 D
-6 4 D
-6 4 D
-7 3 D
-6 4 D
-6 4 D
-6 4 D
-7 4 D
-6 3 D
-6 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-6 4 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 5 D
-5 4 D
-5 4 D
-6 4 D
-5 4 D
-5 5 D
-4 4 D
-5 4 D
-5 4 D
-5 5 D
-5 4 D
-4 4 D
-5 4 D
-5 5 D
-4 4 D
-5 5 D
-9 8 D
-8 9 D
-9 9 D
-8 9 D
-8 9 D
-8 9 D
-8 9 D
-8 9 D
-7 9 D
-7 9 D
-7 9 D
-7 9 D
-6 9 D
-7 10 D
-6 9 D
-6 9 D
-5 10 D
-6 9 D
-5 10 D
-5 9 D
-5 10 D
-5 9 D
-4 10 D
-5 9 D
-4 10 D
-4 9 D
-3 10 D
-4 10 D
-3 9 D
-3 10 D
-3 10 D
-2 9 D
-3 10 D
-2 10 D
-2 10 D
-2 9 D
-1 10 D
-2 10 D
-1 10 D
-1 10 D
-0 9 D
-1 10 D
-0 10 D
-0 10 D
-0 10 D
--1 9 D
-0 10 D
--1 10 D
--1 10 D
--1 9 D
--2 10 D
--1 10 D
--2 10 D
--2 10 D
--3 9 D
--2 10 D
--3 10 D
--3 9 D
--3 10 D
--3 10 D
--4 9 D
--4 10 D
--4 10 D
--4 9 D
--4 10 D
--5 9 D
--5 10 D
--5 9 D
--5 10 D
--5 9 D
--6 9 D
--6 10 D
--6 9 D
--6 9 D
--6 10 D
--7 9 D
--7 9 D
--7 9 D
--7 9 D
--8 9 D
--7 9 D
--8 9 D
--8 9 D
--8 9 D
--9 9 D
--8 9 D
--9 9 D
--5 4 D
--4 4 D
--5 5 D
--4 4 D
--5 4 D
--5 5 D
--5 4 D
--4 4 D
--5 4 D
--5 5 D
--5 4 D
--5 4 D
--5 4 D
--5 4 D
--5 5 D
--5 4 D
--6 4 D
--5 4 D
--5 4 D
--6 4 D
--5 4 D
--5 5 D
--6 4 D
--5 4 D
--6 4 D
--6 4 D
--5 4 D
--6 4 D
--6 4 D
--5 4 D
--6 4 D
--6 3 D
--6 4 D
--6 4 D
--6 4 D
--6 4 D
--6 4 D
--6 4 D
--6 3 D
--7 4 D
--6 4 D
--6 4 D
--7 3 D
--6 4 D
--6 4 D
--7 4 D
--6 3 D
--7 4 D
--6 4 D
--7 3 D
--7 4 D
--6 3 D
--7 4 D
--7 3 D
--7 4 D
--7 3 D
--6 4 D
--7 3 D
--7 4 D
--7 3 D
--7 4 D
--7 3 D
--8 4 D
--7 3 D
--7 3 D
--7 4 D
--7 3 D
--8 3 D
--7 3 D
--7 4 D
--8 3 D
--7 3 D
--8 3 D
--7 3 D
--8 3 D
--7 4 D
--8 3 D
--7 3 D
--8 3 D
--8 3 D
--8 3 D
--7 3 D
--8 3 D
--8 3 D
--8 3 D
--8 3 D
--8 2 D
--8 3 D
--8 3 D
--8 3 D
--8 3 D
--8 3 D
--8 2 D
--8 3 D
--8 3 D
--8 2 D
--9 3 D
--8 3 D
--8 2 D
--8 3 D
--9 2 D
--8 3 D
--9 3 D
--8 2 D
--8 3 D
--9 2 D
--8 2 D
--9 3 D
--8 2 D
--9 3 D
--9 2 D
--8 2 D
--9 3 D
--9 2 D
--8 2 D
--9 2 D
--9 2 D
--9 3 D
--8 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 2 D
--9 1 D
--9 2 D
--9 2 D
--10 2 D
--9 1 D
--9 2 D
--9 2 D
--9 1 D
--10 2 D
--9 1 D
--9 2 D
--9 2 D
--10 1 D
--9 2 D
--10 1 D
--9 1 D
--9 2 D
--10 1 D
--9 2 D
--10 1 D
--9 1 D
--9 2 D
--10 1 D
--9 1 D
--10 1 D
--9 1 D
--10 2 D
--9 1 D
--10 1 D
--10 1 D
--9 1 D
--10 1 D
--9 1 D
--10 1 D
--10 1 D
--9 1 D
--10 1 D
--10 0 D
--9 1 D
--10 1 D
--10 1 D
--9 1 D
--10 0 D
--10 1 D
--9 1 D
--10 0 D
--10 1 D
--9 1 D
--10 0 D
--10 1 D
--10 0 D
--9 1 D
--10 0 D
--10 1 D
--10 0 D
--9 0 D
--10 1 D
--10 0 D
--10 0 D
--10 1 D
--9 0 D
--10 0 D
--10 0 D
--10 1 D
--10 0 D
--9 0 D
--10 0 D
--10 0 D
--18 0 D
-3599 7200 M
--9 0 D
--10 0 D
--10 0 D
--10 0 D
--10 0 D
--9 0 D
--10 -1 D
--10 0 D
--10 0 D
--9 0 D
--10 -1 D
--10 0 D
--10 0 D
--10 -1 D
--9 0 D
--10 0 D
--10 -1 D
--10 0 D
--9 -1 D
--10 0 D
--10 -1 D
--10 0 D
--9 -1 D
--10 -1 D
--10 0 D
--10 -1 D
--9 -1 D
--10 0 D
--10 -1 D
--9 -1 D
--10 -1 D
--10 -1 D
--9 -1 D
--10 0 D
--9 -1 D
--10 -1 D
--10 -1 D
--9 -1 D
--10 -1 D
--9 -1 D
--10 -1 D
--10 -1 D
--9 -2 D
--10 -1 D
--9 -1 D
--10 -1 D
--9 -1 D
--10 -2 D
--9 -1 D
--10 -1 D
--9 -2 D
--9 -1 D
--10 -1 D
--9 -2 D
--10 -1 D
--9 -2 D
--9 -1 D
--10 -2 D
--9 -1 D
--9 -2 D
--9 -1 D
--10 -2 D
--9 -2 D
--9 -1 D
--9 -2 D
--10 -2 D
--9 -1 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -1 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--9 -2 D
--8 -3 D
--9 -2 D
--9 -2 D
--9 -2 D
--8 -2 D
--9 -3 D
--9 -2 D
--8 -2 D
--9 -3 D
--8 -2 D
--9 -2 D
--9 -3 D
--8 -2 D
--9 -3 D
--8 -2 D
--8 -3 D
--9 -2 D
--8 -3 D
--9 -2 D
--8 -3 D
--8 -3 D
--8 -2 D
--9 -3 D
--8 -3 D
--8 -2 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -2 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -3 D
--8 -3 D
--7 -3 D
--8 -3 D
--8 -3 D
--7 -3 D
--8 -3 D
--8 -3 D
--7 -3 D
--8 -3 D
--7 -3 D
--8 -3 D
--7 -4 D
--8 -3 D
--7 -3 D
--7 -3 D
--8 -4 D
--7 -3 D
--7 -3 D
--7 -4 D
--7 -3 D
--7 -3 D
--7 -4 D
--7 -3 D
--7 -3 D
--7 -4 D
--7 -3 D
--7 -4 D
--7 -3 D
--7 -4 D
--7 -3 D
--6 -4 D
--7 -4 D
--7 -3 D
--6 -4 D
--7 -3 D
--6 -4 D
--7 -4 D
--6 -3 D
--7 -4 D
--6 -4 D
--6 -4 D
--7 -3 D
--6 -4 D
--6 -4 D
--6 -4 D
--7 -4 D
--6 -3 D
--6 -4 D
--6 -4 D
--6 -4 D
--5 -4 D
--6 -4 D
--6 -4 D
--6 -4 D
--6 -4 D
--5 -4 D
--6 -4 D
--6 -4 D
--5 -4 D
--6 -4 D
--5 -4 D
--6 -4 D
--5 -4 D
--5 -4 D
--6 -4 D
--5 -4 D
--5 -5 D
--5 -4 D
--5 -4 D
--6 -4 D
--5 -4 D
--5 -5 D
--4 -4 D
--5 -4 D
--5 -4 D
--5 -5 D
--5 -4 D
--4 -4 D
--5 -4 D
--5 -5 D
--4 -4 D
--5 -5 D
--9 -8 D
--8 -9 D
--9 -9 D
--8 -9 D
--8 -9 D
--8 -9 D
--8 -9 D
--8 -9 D
--7 -9 D
--7 -9 D
--7 -9 D
--7 -9 D
--6 -9 D
--7 -10 D
--6 -9 D
--6 -9 D
--5 -10 D
--6 -9 D
--5 -10 D
--5 -9 D
--5 -10 D
--5 -9 D
--4 -10 D
--5 -9 D
--4 -10 D
--4 -9 D
--3 -10 D
--4 -10 D
--3 -9 D
--3 -10 D
--3 -10 D
--2 -9 D
--3 -10 D
--2 -10 D
--2 -10 D
--2 -9 D
--1 -10 D
--2 -10 D
--1 -10 D
--1 -10 D
-0 -9 D
--1 -10 D
-0 -10 D
-0 -10 D
-0 -10 D
-1 -9 D
-0 -10 D
-1 -10 D
-1 -10 D
-1 -9 D
-2 -10 D
-1 -10 D
-2 -10 D
-2 -10 D
-3 -9 D
-2 -10 D
-3 -10 D
-3 -9 D
-3 -10 D
-3 -10 D
-4 -9 D
-4 -10 D
-4 -10 D
-4 -9 D
-4 -10 D
-5 -9 D
-5 -10 D
-5 -9 D
-5 -10 D
-5 -9 D
-6 -9 D
-6 -10 D
-6 -9 D
-6 -9 D
-6 -10 D
-7 -9 D
-7 -9 D
-7 -9 D
-7 -9 D
-8 -9 D
-7 -9 D
-8 -9 D
-8 -9 D
-8 -9 D
-9 -9 D
-8 -9 D
-9 -9 D
-5 -4 D
-4 -4 D
-5 -5 D
-4 -4 D
-5 -4 D
-5 -5 D
-5 -4 D
-4 -4 D
-5 -4 D
-5 -5 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -4 D
-5 -5 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -4 D
-6 -4 D
-5 -4 D
-5 -5 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -4 D
-5 -4 D
-6 -4 D
-6 -3 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -4 D
-6 -3 D
-7 -4 D
-6 -4 D
-6 -4 D
-7 -3 D
-6 -4 D
-6 -4 D
-7 -4 D
-6 -3 D
-7 -4 D
-6 -4 D
-7 -3 D
-7 -4 D
-6 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-6 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-7 -4 D
-7 -3 D
-8 -4 D
-7 -3 D
-7 -3 D
-7 -4 D
-7 -3 D
-8 -3 D
-7 -3 D
-7 -4 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-7 -4 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-7 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-8 -3 D
-8 -2 D
-9 -3 D
-8 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -3 D
-9 -3 D
-8 -2 D
-8 -3 D
-9 -2 D
-8 -2 D
-9 -3 D
-8 -2 D
-9 -3 D
-9 -2 D
-8 -2 D
-9 -3 D
-9 -2 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -3 D
-8 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-10 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-9 -1 D
-10 -2 D
-9 -1 D
-9 -2 D
-9 -2 D
-10 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-9 -2 D
-10 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -2 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 -1 D
-10 0 D
-9 -1 D
-10 -1 D
-10 -1 D
-9 -1 D
-10 0 D
-10 -1 D
-9 -1 D
-10 0 D
-10 -1 D
-9 -1 D
-10 0 D
-10 -1 D
-10 0 D
-9 -1 D
-10 0 D
-10 -1 D
-10 0 D
-9 0 D
-10 -1 D
-10 0 D
-10 0 D
-10 -1 D
-9 0 D
-10 0 D
-10 0 D
-10 -1 D
-10 0 D
-9 0 D
-10 0 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 0 D
-10 0 D
-10 0 D
-10 0 D
-9 0 D
-10 1 D
-10 0 D
-10 0 D
-9 0 D
-10 1 D
-10 0 D
-10 0 D
-10 1 D
-9 0 D
-10 0 D
-10 1 D
-10 0 D
-9 1 D
-10 0 D
-10 1 D
-10 0 D
-9 1 D
-10 1 D
-10 0 D
-10 1 D
-9 1 D
-10 0 D
-10 1 D
-9 1 D
-10 1 D
-10 1 D
-S
+96 9 D
+141 20 D
+111 20 D
+126 27 D
+129 35 D
+99 32 D
+126 47 D
+81 35 D
+84 41 D
+65 37 D
+62 38 D
+73 52 D
+47 38 D
+42 38 D
+14 13 D
+57 63 D
+34 45 D
+19 28 D
+31 57 D
+17 38 D
+16 49 D
+11 48 D
+6 59 D
+-1 49 D
+-8 59 D
+-13 48 D
+-10 29 D
+-16 39 D
+-25 47 D
+-30 47 D
+-43 54 D
+-41 45 D
+-46 43 D
+-40 34 D
+-27 20 D
+-16 13 D
+-40 28 D
+-48 30 D
+-19 12 D
+-13 7 D
+-46 26 D
+-83 42 D
+-65 29 D
+-92 37 D
+-88 31 D
+-92 28 D
+-86 23 D
+-134 31 D
+-138 25 D
+-104 14 D
+-115 13 D
+-145 10 D
+-157 4 D
+-117 -1 D
+-127 -6 D
+-88 -7 D
+-96 -9 D
+-141 -20 D
+-111 -20 D
+-126 -27 D
+-129 -35 D
+-99 -32 D
+-126 -47 D
+-81 -35 D
+-84 -41 D
+-65 -37 D
+-62 -38 D
+-73 -52 D
+-47 -38 D
+-42 -38 D
+-14 -13 D
+-57 -63 D
+-34 -45 D
+-19 -28 D
+-31 -57 D
+-17 -38 D
+-16 -49 D
+-11 -48 D
+-6 -59 D
+1 -49 D
+8 -59 D
+13 -48 D
+10 -29 D
+16 -39 D
+25 -47 D
+30 -47 D
+43 -54 D
+41 -45 D
+46 -43 D
+40 -34 D
+27 -20 D
+16 -13 D
+40 -28 D
+48 -30 D
+19 -12 D
+13 -7 D
+46 -26 D
+83 -42 D
+65 -29 D
+92 -37 D
+88 -31 D
+92 -28 D
+86 -23 D
+134 -31 D
+138 -25 D
+104 -14 D
+115 -13 D
+145 -10 D
+157 -4 D
+117 1 D
+127 6 D
+P S
 %
 % Lat = 75
 %

@@ -123,6 +123,15 @@
  * New: Either start with pattern 1-88 or a file which should have an extension */
 #define gmt_M_is_pattern(txt) ((txt[0] == 'p' || txt[0] == 'P') && (isdigit((int)txt[1]) || strchr(txt,'.')))
 
+/* Determine if this CPT slice requires a pattern */
+#define gmt_M_cptslice_is_pattern(P,index) ((index >= 0 && P->data[index].fill != NULL) || (index < 0 && P->bfn[index+3].fill != NULL))
+
+/* Determine if this CPT slice requires a pattern */
+#define gmt_M_get_cptslice_pattern(P,index) ((index >= 0) ? P->data[index].fill : P->bfn[index+3].fill)
+
+/* Determine if we should skip this CPT slice */
+#define gmt_M_skip_cptslice(P,index) ((index >= 0 && P->data[index].skip) || (index < 0 && P->bfn[index+3].skip))
+
 /*! Copy two RGB[T] arrays (a = b) */
 #define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 
