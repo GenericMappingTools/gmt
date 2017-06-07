@@ -1,5 +1,5 @@
 # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
-# Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184–187.
+# Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.
 # Courtesy of Gregory Neumann, MIT/NASA-GSFC
 # lon lat radius(m)
 -81.7690 -40.0590 3393858.000
