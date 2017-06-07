@@ -587,3 +587,18 @@ double yn (int n, double x) {
 	return (by);
 }
 #endif /* HAVE_YN */
+
+#ifndef HAVE_STRNDUP
+char *strndup(char *str, int chars) {
+	char *buffer;
+	int n;
+
+	buffer = (char *) malloc(chars +1);
+	if (buffer) {
+		for (n = 0; ((n < chars) && (str[n] != 0)) ; n++) buffer[n] = str[n];
+		buffer[n] = 0;
+	}
+
+	return buffer;
+}
+#endif /* HAVE_STRNDUP */
