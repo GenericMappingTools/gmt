@@ -111,9 +111,9 @@
  *
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *
- * GMT_F77_readgrdinfo_	  : Read the header of a GMT grid
- * GMT_F77_readgrd_		  : Read a GMT grid from file
- * GMT_F77_writegrd_	  : Write a GMT grid to file
+ * gmt_f77_readgrdinfo_	  : Read the header of a GMT grid
+ * gmt_f77_readgrd_		  : Read a GMT grid from file
+ * gmt_f77_writegrd_	  : Write a GMT grid to file
  *
  * --------------------------------------------------------------------------------------------
  * Guru notes on memory management: Paul Wessel, June 2013.
@@ -10440,7 +10440,9 @@ int GMT_Get_Values_ (char *arg, double par[], int len) {
 
 /* Here lies the very basic F77 support for grid read and write only. It is assumed that no grid padding is required */
 
-int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name) {
+#define F_STRNCPY(dst,src,ldst,lsrc) { int l = MIN(ldst-1, lsrc); strncpy (dst, src, l); dst[l] = '\0'; }
+
+int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name, int ltitle, int lremark, int lname) {
 	/* Note: When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
 	 * limit[4-5] holds zmin/zmax. limit must thus at least have a length of 6.
 	 */
@@ -10454,10 +10456,11 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 		return GMT_ARG_IS_NULL;
 	}
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
-	file = strdup (name);
+	file = strndup (name, lname);
 
 	/* Read the grid header */
 
+	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
@@ -10473,14 +10476,14 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	limit[ZLO] = header.z_min;
 	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
-	if (title) strncpy (title, header.title, GMT_GRID_TITLE_LEN80);
-	if (remark) strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160);
+	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
+	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
 
-int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name) {
+int gmt_f77_readgrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name, int ltitle, int lremark, int lname) {
 	/* Note: When called, dim[2] is 1 we allocate the array, otherwise we assume it has enough space
 	 * Also, if dim[3] == 1 then we transpose the array before writing.
 	 * When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
@@ -10498,10 +10501,10 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 		return GMT_ARG_IS_NULL;
 	}
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
-	file = strdup (name);
+	file = strndup (name, lname);
 
 	/* Read the grid header */
-	memset (&header, 0, sizeof(struct GMT_GRID_HEADER));	/* To convince Coverity that header->index_function has been initialized */
+	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
@@ -10529,14 +10532,14 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	limit[ZLO] = header.z_min;
 	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
-	if (title) strncpy (title, header.title, GMT_GRID_TITLE_LEN80);
-	if (remark) strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160);
+	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
+	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
 
-int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double inc[], const char *title, const char *remark, const char *name) {
+int gmt_f77_writegrd_ (float *array, unsigned int dim[], double limit[], double inc[], const char *title, const char *remark, const char *name, int ltitle, int lremark, int lname) {
 	/* Note: When called, dim[2] holds the registration (0 = gridline, 1 = pixel).
 	 * Also, if dim[3] == 1 then we transpose the array before writing.  */
  	unsigned int no_pad[4] = {0, 0, 0, 0};
@@ -10553,9 +10556,9 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 		return GMT_ARG_IS_NULL;
 	}
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
-	file = strdup (name);
+	file = strndup (name, lname);
 
-	memset (&header, 0, sizeof(struct GMT_GRID_HEADER));	/* To convince Coverity that header->index_function has been initialized */
+	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
@@ -10577,8 +10580,8 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	header.n_columns = dim[GMT_X];	header.n_rows = dim[GMT_Y];
 	header.registration = dim[GMT_Z];
 	gmt_set_grddim (API->GMT, &header);
-	if (title) strncpy (header.title, title, GMT_GRID_TITLE_LEN80-1);
-	if (remark) strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160-1);
+	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
+	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
 
 	if (dim[3] == 1) gmtlib_inplace_transpose (array, header.n_rows, header.n_columns);
 
@@ -10595,6 +10598,32 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_MEMORY_ERROR;
 	return GMT_NOERROR;
 }
+
+/* wrappers for several Fortran compilers */
+#define F77_ARG1 unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name, int ltitle, int lremark, int lname
+#define F77_ARG2 dim, limit, inc, title, remark, name, ltitle, lremark, lname
+int gmt_f77_readgrdinfo__(F77_ARG1) { return gmt_f77_readgrdinfo_ (F77_ARG2); }
+int gmt_f77_readgrdinfo  (F77_ARG1) { return gmt_f77_readgrdinfo_ (F77_ARG2); }
+int GMT_F77_READGRDINFO_ (F77_ARG1) { return gmt_f77_readgrdinfo_ (F77_ARG2); }
+int GMT_F77_READGRDINFO  (F77_ARG1) { return gmt_f77_readgrdinfo_ (F77_ARG2); }
+#undef  F77_ARG1
+#undef  F77_ARG2
+
+#define F77_ARG1 float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name, int ltitle, int lremark, int lname
+#define F77_ARG2 array, dim, limit, inc, title, remark, name, ltitle, lremark, lname
+int gmt_f77_readgrd__ (F77_ARG1) { return gmt_f77_readgrd_ (F77_ARG2); }
+int gmt_f77_readgrd   (F77_ARG1) { return gmt_f77_readgrd_ (F77_ARG2); }
+int GMT_F77_READGRD_  (F77_ARG1) { return gmt_f77_readgrd_ (F77_ARG2); }
+int GMT_F77_READGRD   (F77_ARG1) { return gmt_f77_readgrd_ (F77_ARG2); }
+#undef  F77_ARG1
+
+#define F77_ARG1 float *array, unsigned int dim[], double limit[], double inc[], const char *title, const char *remark, const char *name, int ltitle, int lremark, int lname
+int gmt_f77_writegrd__ (F77_ARG1) { return gmt_f77_writegrd_ (F77_ARG2); }
+int gmt_f77_writegrd   (F77_ARG1) { return gmt_f77_writegrd_ (F77_ARG2); }
+int GMT_F77_WRITEGRD_  (F77_ARG1) { return gmt_f77_writegrd_ (F77_ARG2); }
+int GMT_F77_WRITEGRD   (F77_ARG1) { return gmt_f77_writegrd_ (F77_ARG2); }
+#undef  F77_ARG1
+#undef  F77_ARG2
 
 char *GMT_Duplicate_String (void *API, const char* string) {
 	/* Duplicate a string. The interest of this function is to make the memory allocation

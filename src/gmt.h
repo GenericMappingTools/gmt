@@ -159,9 +159,9 @@ EXTERN_MSC int          GMT_FFT_2D         (void *API, float *data, unsigned int
 
 /* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 
-EXTERN_MSC int GMT_F77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file);
-EXTERN_MSC int GMT_F77_readgrd_	    (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file);
-EXTERN_MSC int GMT_F77_writegrd_    (float *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file);
+EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
+EXTERN_MSC int gmt_f77_readgrd_	    (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
+EXTERN_MSC int gmt_f77_writegrd_    (float *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
 /* 2 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
