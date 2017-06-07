@@ -10476,8 +10476,8 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	limit[ZLO] = header.z_min;
 	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
-	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
-	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
+	if (title) F_STRNCPY (title, header.title, ltitle, GMT_GRID_TITLE_LEN80);
+	if (remark) F_STRNCPY (remark, header.remark, lremark, GMT_GRID_REMARK_LEN160);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -10532,8 +10532,8 @@ int gmt_f77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	limit[ZLO] = header.z_min;
 	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
-	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
-	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
+	if (title) F_STRNCPY (title, header.title, ltitle, GMT_GRID_TITLE_LEN80);
+	if (remark) F_STRNCPY (remark, header.remark, lremark, GMT_GRID_REMARK_LEN160);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
