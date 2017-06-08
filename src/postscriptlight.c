@@ -131,6 +131,12 @@
 #	include <unistd.h>
 #endif
 
+#ifdef __CYGWIN__	/* See http://gmt.soest.hawaii.edu/boards/1/topics/5428 */
+#ifdef __x86_64
+#define lrint(x) ((long int)(int)lrint(x))
+#endif
+#endif
+
 /*
  * Windows headers
  */

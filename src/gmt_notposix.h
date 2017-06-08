@@ -37,7 +37,9 @@
 
 /* HAVE_<func> is undefined or defined as 1 depending on
  * whether or not <func> is available on this system.
- * The definitions are stored in gmt_config.h */
+ * The definitions are stored in gmt_config.h.
+ * For adding more HAVE_**** checks see ConfigureChecks.cmake.
+ */
 #include "gmt_config.h"
 
 /* Declaration modifiers for DLL support (MSC et al) */

@@ -66,6 +66,12 @@ extern "C" {
 #	define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
 #endif
 
+#ifdef __CYGWIN__	/* See http://gmt.soest.hawaii.edu/boards/1/topics/5428 */
+#ifdef __x86_64
+#define lrint(x) ((long int)(int)lrint(x))
+#endif
+#endif
+
 	/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
 #define irint(x) ((int)lrint(x))
 #define urint(x) ((unsigned int)lrint(x))

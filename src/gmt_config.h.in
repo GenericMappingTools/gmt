@@ -30,6 +30,8 @@
  * HAVE_<func> is undefined or defined as 1 depending on
  * whether or not <func> is available on this system.
  *
+ * For adding more HAVE_**** checks, see ConfigureChecks.cmake.
+ *
  * Version: @GMT_VERSION_STRING@
  */
 
@@ -135,6 +137,7 @@
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRNICMP
 #cmakedefine HAVE_STRDUP
+#cmakedefine HAVE_STRNDUP
 #cmakedefine HAVE_STRSEP
 #cmakedefine HAVE_STRTOD
 #cmakedefine HAVE_STRTOF_
