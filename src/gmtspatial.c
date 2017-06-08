@@ -43,6 +43,7 @@
 #define POL_CLIP		3
 #define POL_SPLIT		4
 #define POL_JOIN		5
+#define POL_HOLE		6
 
 #define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
@@ -959,6 +960,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				}
 				else if (opt->arg[0] == 's')
 					Ctrl->S.mode = POL_SPLIT;
+				else if (opt->arg[0] == 'h')
+					Ctrl->S.mode = POL_HOLE;
 				else if (opt->arg[0] == 'j') {
 					Ctrl->S.mode = POL_JOIN;
 					GMT_Report (API, GMT_MSG_NORMAL, "Sj not implemented yet\n");
@@ -1078,7 +1081,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 	
-	if (Ctrl->S.active && Ctrl->S.mode != POL_SPLIT) external = 1;
+	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
 	
 	gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
 	
@@ -1923,6 +1926,56 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
+	}
+	if (Ctrl->S.active && Ctrl->S.mode == POL_HOLE) {	/* Flag polygons that are holes of others */
+		uint64_t n_holes = 0, tbl1, seg1, tbl2, seg2, first_seg;
+		struct GMT_DATATABLE *T1 = NULL, *T2 = NULL;
+		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
+		
+		for (tbl1 = 0; tbl1 < D->n_tables; tbl1++) {
+			T1 = D->table[tbl1];
+			for (seg1 = 0; seg1 < T1->n_segments; seg1++) {
+				S1 = D->table[tbl1]->segment[seg1];	/* Current input segment */
+				if (S1->n_rows == 0) continue;	/* Just skip empty segments */
+				if (S1->header && strcmp (S1->header, "-Ph")) continue;	/* Marked as a hole already */
+				for (tbl2 = tbl1; tbl2 < D->n_tables; tbl2++) {
+					T2 = D->table[tbl2];
+					first_seg = (tbl1 == tbl2) ? seg1 + 1 : 0;
+					for (seg2 = first_seg; seg2 < T2->n_segments; seg2++) {
+						S2 = D->table[tbl2]->segment[seg2];	/* Current input segment */
+						if (S2->n_rows == 0) continue;	/* Just skip empty segments */
+						if (S2->header && strcmp (S2->header, "-Ph")) continue;	/* Marked as a hole already */
+						/* Here we determine if S1 is inside S2 or vice versa */
+						if (gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2) == 1) {	/* S1 is inside S2 */
+							if (S1->header) {
+								char *tmp = malloc (strlen (S1->header) + 4);
+								sprintf (tmp, "%s -Ph", S1->header);
+								gmt_M_str_free (S1->header);
+								S1->header = tmp;
+							}
+							else
+								S1->header = strdup ("-Ph");
+							n_holes++;
+						}
+						else if (gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1) == 1) {	/* S2 is inside S1 */
+							if (S2->header) {
+								char *tmp = malloc (strlen (S2->header) + 4);
+								sprintf (tmp, "%s -Ph", S2->header);
+								gmt_M_str_free (S2->header);
+								S2->header = tmp;
+							}
+							else
+								S2->header = strdup ("-Ph");
+							n_holes++;
+						}
+					}
+				}
+			}
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
 	}
 	
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
