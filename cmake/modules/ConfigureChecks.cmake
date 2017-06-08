@@ -419,26 +419,6 @@ if (WIN32)
 	check_symbol_exists (_isnan    "${_math_h}" HAVE__ISNAN)
 endif (WIN32)
 
-# test if sincos is buggy
-if (HAVE_SINCOS)
-	check_c_source_runs (
-		"
-		#define _GNU_SOURCE
-		#define __EXTENSIONS__
-		#include <math.h>
-		int main () {
-		double s = 0.1, c = 0.2;
-		double s1, c1;
-		s1 = s; c1 = c;
-		sincos (0.5, &s, &c);
-		return !(s == s1 || c == c1);} /* return TRUE if sincos fails */
-		"
-		HAVE_BUGGY_SINCOS)
-	if (HAVE_BUGGY_SINCOS)
-		set (HAVE_SINCOS "" CACHE INTERNAL "disable sincos because it is buggy" FORCE)
-	endif (HAVE_BUGGY_SINCOS)
-endif (HAVE_SINCOS)
-
 # restore state of CMAKE_REQUIRED_*
 cmake_pop_check_state()
 
