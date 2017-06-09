@@ -22,7 +22,7 @@ Synopsis
 [ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ |-Q|\ [[**-**\ \|\ **+**\ ]\ *unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
+[ |-S|\ **h**\ \|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -178,8 +178,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
-    Spatial processing of polygons. Choose from **-Si** which returns
+**-S**\ **h**\ \|\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
+    Spatial processing of polygons. Choose from **-Sh** which identifies
+    perimeter and hole polygons (and flags/reverses them), **-Si** which returns
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that

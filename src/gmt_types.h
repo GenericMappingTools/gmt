@@ -76,6 +76,12 @@ struct GMT_OBSERVATION {
 	float weight;
 };
 
+/*! For keeping table,segment IDs in a 1-D array */
+struct GMT_TBLSEG {
+	uint64_t tbl, seg;
+};
+
+
 /*! For trend-fitting models */
 struct GMT_MODEL_TERM {	/* A single model term */
 	unsigned int kind;	/* GMT_POLYNOMIAL | GMT_COSINE | GMT_SINE | GMT_FOURIER */

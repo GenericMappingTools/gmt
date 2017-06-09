@@ -132,7 +132,7 @@ struct GMTSPATIAL_CTRL {
 		double limit[2];	/* Min and max area or length for output segments */
 		char unit;
 	} Q;
-	struct S {	/* -S[u|i|c|j] */
+	struct S {	/* -S[u|i|c|j|h] */
 		bool active;
 		unsigned int mode;
 	} S;
@@ -684,7 +684,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[[-|+]<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]]\n", GMT_DIST_OPT);
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sh|i|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -739,6 +739,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h for detecting holes and reversing them relative to perimeters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     j for joining polygons that were split by the Dateline [Not implemented yet].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     s for splitting polygons that straddle the Dateline.\n");
@@ -1059,6 +1060,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.active) geometry = Ctrl->Q.mode;	/* May be lines, may be polygons... */
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
 	else if (Ctrl->F.active) geometry = Ctrl->F.geometry;	/* Forcing polygon or line mode */
+	else if (Ctrl->S.active) geometry = GMT_IS_POLY;	/* Forcing polygon mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -1928,51 +1930,119 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_HOLE) {	/* Flag polygons that are holes of others */
-		uint64_t n_holes = 0, tbl1, seg1, tbl2, seg2, first_seg;
+		uint64_t n_holes = 0, tbl1, seg1, tbl2, seg2, first_seg, seg_out, k1, k2;
+		uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* Only one output table */
+		unsigned int side, *inside = NULL, *kase = NULL;
+		int P_handedness, H_handedness;
+		bool geo;
+		double out[3];
+		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATATABLE *T1 = NULL, *T2 = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
+		struct GMT_TBLSEG *K = NULL;
 		
-		for (tbl1 = 0; tbl1 < D->n_tables; tbl1++) {
+		inside = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
+		kase = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
+		K = gmt_M_memory (GMT, NULL, D->n_segments, struct GMT_TBLSEG);
+		geo = gmt_M_is_geographic (GMT, GMT_IN);
+
+		for (tbl1 = k1 = 0; tbl1 < D->n_tables; tbl1++) {
 			T1 = D->table[tbl1];
-			for (seg1 = 0; seg1 < T1->n_segments; seg1++) {
+			for (seg1 = 0; seg1 < T1->n_segments; seg1++, k1++) {
+				K[k1].tbl = tbl1;	K[k1].seg = seg1;	/* Fill out the K loopup array */
 				S1 = D->table[tbl1]->segment[seg1];	/* Current input segment */
 				if (S1->n_rows == 0) continue;	/* Just skip empty segments */
-				if (S1->header && strcmp (S1->header, "-Ph")) continue;	/* Marked as a hole already */
-				for (tbl2 = tbl1; tbl2 < D->n_tables; tbl2++) {
+				if (S1->header && !strcmp (S1->header, "-Ph")) continue;	/* Marked as a hole already */
+				for (tbl2 = k2 = 0; tbl2 < D->n_tables; tbl2++) {
 					T2 = D->table[tbl2];
 					first_seg = (tbl1 == tbl2) ? seg1 + 1 : 0;
-					for (seg2 = first_seg; seg2 < T2->n_segments; seg2++) {
+					for (seg2 = 0; seg2 < T2->n_segments; seg2++, k2++) {
+						if (tbl2 < tbl1) continue;	/* Avoid duplication */
+						if (tbl2 == tbl1 && seg2 <= seg1) continue;	/* Avoid duplication */
 						S2 = D->table[tbl2]->segment[seg2];	/* Current input segment */
 						if (S2->n_rows == 0) continue;	/* Just skip empty segments */
-						if (S2->header && strcmp (S2->header, "-Ph")) continue;	/* Marked as a hole already */
+						if (S2->header && !strcmp (S2->header, "-Ph")) continue;	/* Marked as a hole already */
 						/* Here we determine if S1 is inside S2 or vice versa */
-						if (gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2) == 1) {	/* S1 is inside S2 */
-							if (S1->header) {
-								char *tmp = malloc (strlen (S1->header) + 4);
-								sprintf (tmp, "%s -Ph", S1->header);
-								gmt_M_str_free (S1->header);
-								S1->header = tmp;
-							}
-							else
-								S1->header = strdup ("-Ph");
-							n_holes++;
+						side = gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2);	/* Is S1 inside S2? */
+						if (side == GMT_ONEDGE) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 "). Skipping\n", tbl1, seg1, tbl2, seg2);
+							continue;
 						}
-						else if (gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1) == 1) {	/* S2 is inside S1 */
-							if (S2->header) {
-								char *tmp = malloc (strlen (S2->header) + 4);
-								sprintf (tmp, "%s -Ph", S2->header);
-								gmt_M_str_free (S2->header);
-								S2->header = tmp;
-							}
-							else
-								S2->header = strdup ("-Ph");
+						else if (side == GMT_INSIDE) {	/* S1 is inside S2 */
 							n_holes++;
+							kase[k1]++;
+							inside[k1] = k2 + 1;	/* So 0 means not inside anything (a perimeter) */
+						}
+						side = gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1);	/* Is S2 inside S1? */
+						if (side == GMT_ONEDGE) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 "). Skipping\n", tbl2, seg2, tbl1, seg1);
+							continue;
+						}
+						else if (side == GMT_INSIDE) {	/* S2 is inside S1 */
+							n_holes++;
+							kase[k2]++;
+							inside[k2] = k1 + 1;	/* So 0 means not inside anything (a perimeter) */
 						}
 					}
 				}
 			}
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
+		for (k1 = 0; k1 < D->n_segments; k1++) {	/* Make sure no polygon is inside more than one other polygon */
+			if (kase[k1] > 1) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon # %d inside more than one other polygon or is both inside and contains other polygons\n", k1);
+				gmt_M_free (GMT, kase);
+				Return (API->error);
+			}
+		}
+		
+		/* Create an output dataset with unallocated segments since rows = 0 */
+		
+		dim[GMT_COL] = D->n_columns;
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+		T1 = Dout->table[0];	/* Only one table used for output */
+		T1->segment = gmt_M_memory (GMT, NULL, D->n_segments, struct GMT_DATASEGMENT *);	/* Need this many segments */
+		Dout->n_segments = T1->n_segments = D->n_segments;
+		/* Shuffle segments so perimeters (inside[] == 0) are listed before their holes (inside[] > 0) */
+		for (k1 = seg_out = 0; k1 < D->n_segments; k1++) {	/* Loop over all polygons */
+			if (inside[k1] == 0) {	/* Perimeter polygon */
+				tbl1 = K[k1].tbl;	seg1 = K[k1].seg;	/* Get the (tbl,seg) indices for the perimeter */
+				S1 = D->table[tbl1]->segment[seg1];		/* Current input segment */
+				/* Duplicate this polygon as next output polygon perimeter */
+				T1->segment[seg_out++] = gmt_duplicate_segment (GMT, S1);
+				/* Get perimeter handedness */
+				P_handedness = area_size (GMT, S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows, out, geo);
+				for (k2 = 0; k2 < D->n_segments; k2++) {	/* Loop over all polygons */
+					if (k2 == k1 || inside[k2] != (k1+1)) continue;	/* Not a hole inside this perimeter */
+					tbl2 = K[k2].tbl;	seg2 = K[k2].seg;	/* Get the (tbl,seg) indices for the hole */
+					/* Duplicate this polygon as next output polygon hole */
+					T1->segment[seg_out++] = S2 = gmt_duplicate_segment (GMT, D->table[tbl2]->segment[seg2]);
+					/* Get hole handedness */
+					H_handedness = area_size (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows, out, geo);
+					/* If same handedness then reverse order of polygon */
+					if (H_handedness == P_handedness) {
+						uint64_t row_f, row_l, col;
+						for (row_f = 0, row_l = S2->n_rows - 1; row_f < S2->n_rows/2; row_f++, row_l--) {
+							for (col = 0; col < S2->n_columns; col++) gmt_M_double_swap (S2->data[col][row_f], S2->data[col][row_l]);
+						}
+					}
+					if (S2->header) {	/* Must append -Ph to existing header - need to allocate more space */
+						S2->header = realloc (S2->header, strlen (S2->header) + 5U);
+						strncat (S2->header, " -Ph", 4U);
+					}
+					else
+						S2->header = strdup ("-Ph");
+					S2->pol_mode = GMT_IS_HOLE;
+				}
+			}
+		}
+		
+		gmt_M_free (GMT, kase);
+		gmt_M_free (GMT, inside);
+		gmt_M_free (GMT, K);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
