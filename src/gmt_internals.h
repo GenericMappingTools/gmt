@@ -49,6 +49,8 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode);
+EXTERN_MSC int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
 EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);
 EXTERN_MSC bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word);

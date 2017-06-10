@@ -13123,7 +13123,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	}
 
 #ifdef TEST_MODERN
-	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW)) {
+	if (gmtlib_manage_workflow (API, GMT_USE_WORKFLOW)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
@@ -13361,8 +13361,43 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 }
 
 #ifdef TEST_MODERN
+GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
+        GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process figure queue\n");
+	char line[GMT_LEN256] = {""}, name[GMT_LEN256] = {""}, formats[GMT_LEN256] = {""}, options[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
+	int n, ID, error;
+	FILE *fp = NULL;
+	
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (line, "%s/gmt.figures", API->gwf_dir);	/* Path to gmt.figures */
+	if ((fp = fopen (line, "r"))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open %s for reading\n", line);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	while (fgets (line, GMT_BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '\n')
+			continue;
+		n = sscanf (line, "%d %s %s %s", &ID, name, formats, options);
+		if (!strcmp (name, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls */
+		sprintf (cmd, "%s/gmt_%d.ps -Tf%s -F%s", API->gwf_dir, ID, formats, name);
+		if (n == 4 && options[0]) {
+			strcat (cmd, " ");
+			strcat (cmd, options);
+		}
+		if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
+			fclose (fp);
+			return error;
+		}
+	}
+	fclose (fp);
+	return GMT_NOERROR;
+}
+
 /*! . */
-int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
+int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	/* Manage the GMT workflow.  Mode can take the following values:
 	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
 	 *   GMT_USE_WORKFLOW:	Continue using the current work flow directory
@@ -13373,7 +13408,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
 	char t_file[GMT_LEN256] = {""};
 	int err = 0, error = GMT_NOERROR;
-    struct stat S;
+	struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
@@ -13395,7 +13430,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
-		    else {	/* Create the new workflow directory */
+			else {	/* Create the new workflow directory */
 				/* To avoid the weird CID 167015 that says:
 				toctou: Calling function mkdir that uses API->gwf_dir after a check function.
 				This can cause a time-of-check, time-of-use race condition.
@@ -13406,7 +13441,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 				if (mkdir (dir))
 #endif
 				{
-	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
+					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
@@ -13433,18 +13468,38 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
+			if ((error = process_figures (API)))
+				return error;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			error = gmt_remove_dir (API, dir, false);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Exiting Modern Mode\n");
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
-        	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmt_manage_workflow\n", mode);
+        	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmtlib_manage_workflow\n", mode);
 			break;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
 	return error;
 }
+
+int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
+	/* Add another figure to the gmt.figure queue */
+#if 0
+	char file[GMT_LEN256] = {""};
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMNAL, "No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (file, "%s/gmt.figures", API->gwf_dir);	/* Path to gmt.figures */
+	if ((fp = fopen (file, "a"))) {
+		GMT_Report (API, GMT_MSG_NORMNAL, "Unable to open gmt.figures file\n");
+		return GMT_ERROR_ON_FOPEN;
+	}
+#endif
+	return GMT_NOERROR;
+}
+
 #endif
 
 #if 0	/* Maybe use later - things seems to work OK for now with what we have */

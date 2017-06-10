@@ -72,6 +72,7 @@ EXTERN_MSC void * GMT_Read_Data       (void *API, unsigned int family, unsigned 
                                           unsigned int mode, double wesn[], const char *input, void *data);
 EXTERN_MSC void * GMT_Duplicate_Data  (void *API, unsigned int family, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Get_Record      (void *API, unsigned int mode, int *retval);
+EXTERN_MSC int GMT_Manage_Session     (void *API, unsigned int mode, void *args);
 EXTERN_MSC int GMT_Destroy_Session    (void *API);
 EXTERN_MSC int GMT_Register_IO        (void *API, unsigned int family, unsigned int method, unsigned int geometry,
                                           unsigned int direction, double wesn[], void *resource);

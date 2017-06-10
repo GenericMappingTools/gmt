@@ -93,29 +93,30 @@ int main (int argc, char *argv[]) {
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
 	if (gmt_main && argc == 3 && !strcmp (argv[1], "clear")) {	/* Clear something. */
-		if (!strcmp (argv[2], "cache") || !strcmp (argv[2], "all")) {	/* Clear the cache, then recreate empty directory */
-			if (gmt_remove_dir (api_ctrl, api_ctrl->GMT->session.CACHEDIR, true))
-				return GMT_RUNTIME_ERROR;
-		}
-		if (!strcmp (argv[2], "history") || !strcmp (argv[2], "all")) {	/* Clear the history */
-			if (gmt_remove_file (api_ctrl->GMT, "gmt.history"))
-				return GMT_RUNTIME_ERROR;
-		}
-		if (!strcmp (argv[2], "conf") || !strcmp (argv[2], "all")) {	/* Clear the configuration */
-			if (gmt_remove_file (api_ctrl->GMT, "gmt.conf"))
-				return GMT_RUNTIME_ERROR;
-		}
+		char *ptr = (!strcmp (argv[2], "all")) ? argv[2] : NULL;	/* For all we pass NULL */
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_CLEAR, ptr))
+			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
 #ifdef TEST_MODERN
 	if (gmt_main && argc <= 3 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
-		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_BEGIN, NULL))
+			return GMT_RUNTIME_ERROR;
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
 	else if (gmt_main && argc <= 3 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
-		gmt_manage_workflow (api_ctrl, GMT_END_WORKFLOW);
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_END, NULL))
+			return GMT_RUNTIME_ERROR;
+		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
+			return GMT_RUNTIME_ERROR;
+		return GMT_NOERROR;
+	}
+	else if (gmt_main && !strcmp (argv[1], "figure")) {	/* Adding a figure entry to the queue. */
+		void *ptr = (argc >= 2) ? argv+2 : NULL;
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_FIGURE, ptr))
+			return GMT_RUNTIME_ERROR;
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;

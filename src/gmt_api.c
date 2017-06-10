@@ -5932,6 +5932,68 @@ struct GMTAPI_CTRL *GMT_Create_Session_ (const char *tag, unsigned int *pad, uns
 }
 #endif
 
+
+/*! ===>  Manage a registered GMT Session */
+
+int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
+	/* GMT_Manage_Session performs various session management tasks.
+	 * Returns false if all is well and true if there were errors. */
+	char *text = arg;
+	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
+
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	
+	switch (mode) {
+#ifdef TEST_MODERN
+		case GMT_SESSION_BEGIN:
+			if (gmtlib_manage_workflow (API, GMT_BEGIN_WORKFLOW))
+				return GMT_RUNTIME_ERROR;
+			break;
+		case GMT_SESSION_END:
+			if (gmtlib_manage_workflow (API, GMT_END_WORKFLOW))
+				return GMT_RUNTIME_ERROR;
+			break;
+		case GMT_SESSION_FIGURE:
+			/* Add another figure to the queue */
+			if (gmtlib_add_figure (API, arg))
+				return GMT_RUNTIME_ERROR;
+			break;
+#endif
+		case GMT_SESSION_CLEAR:
+			if (text == NULL) {	/* Clear all */
+				if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+					return GMT_RUNTIME_ERROR;
+				if (gmt_remove_file (API->GMT, "gmt.history"))
+					return GMT_RUNTIME_ERROR;
+				if (gmt_remove_file (API->GMT, "gmt.conf"))
+					return GMT_RUNTIME_ERROR;
+			}
+			else if (!strcmp (text, "cache")) {	/* Clear the cache */
+				if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+					return GMT_RUNTIME_ERROR;
+			}
+			else if (!strcmp (text, "history")) {	/* Clear the history */
+				if (gmt_remove_file (API->GMT, "gmt.history"))
+					return GMT_RUNTIME_ERROR;
+			}
+			else if (!strcmp (text, "conf")) {	/* Clear the configuration */
+				if (gmt_remove_file (API->GMT, "gmt.conf"))
+					return GMT_RUNTIME_ERROR;
+			}
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Manage_Session (clear): Unrecognized option %s\n", text);
+				return_value (API, GMT_NOT_A_VALID_PARAMETER, GMT_NOTSET);
+			}
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Manage_Session: Unrecognized mode %d\n", mode);
+			return_value (API, GMT_NOT_A_VALID_MODE, GMT_NOTSET);
+		break;
+	}
+	
+	return (GMT_NOERROR);
+}
+
 /*! ===>  Destroy a registered GMT Session */
 
 int GMT_Destroy_Session (void *V_API) {
