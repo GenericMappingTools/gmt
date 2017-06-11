@@ -205,6 +205,10 @@
 #	define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR) 	/* Copied from linux libc sys/stat.h */
 #endif
 
+#ifndef S_IWUSR
+#	define S_IWUSR _S_IWRITE		/* From a VS sys/stat.h file */
+#endif
+
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
  * These functions are available on many platforms and we
  * seek to use them.  If not available then we compile in
@@ -564,6 +568,10 @@
 
 #ifndef DECLARED_STRDUP
 	EXTERN_MSC char *strdup(const char *s);
+#endif
+
+#ifndef HAVE_STRNDUP
+	EXTERN_MSC char *strndup(const char *s, size_t chars);
 #endif
 
 #ifndef HAVE_STRTOD
