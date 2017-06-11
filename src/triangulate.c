@@ -681,7 +681,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (API->error);
 			}
-			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = tanf (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
+			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = (float)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {
