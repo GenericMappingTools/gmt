@@ -1965,7 +1965,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						/* Here we determine if S1 is inside S2 or vice versa */
 						side = gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2);	/* Is S1 inside S2? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 "). Skipping\n", tbl1, seg1, tbl2, seg2);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl1, seg1, tbl2, seg2, S1->data[GMT_X][0], S1->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S1 is inside S2 */
@@ -1975,7 +1975,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						}
 						side = gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1);	/* Is S2 inside S1? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 "). Skipping\n", tbl2, seg2, tbl1, seg1);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl2, seg2, tbl1, seg1, S2->data[GMT_X][0], S2->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S2 is inside S1 */
@@ -1989,7 +1989,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		for (k1 = 0; k1 < D->n_segments; k1++) {	/* Make sure no polygon is inside more than one other polygon */
 			if (kase[k1] > 1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon # %d inside more than one other polygon or is both inside and contains other polygons\n", k1);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon # %d is inside more than one polygon or is both inside and contains other polygons\n", k1);
 				gmt_M_free (GMT, kase);
 				Return (API->error);
 			}

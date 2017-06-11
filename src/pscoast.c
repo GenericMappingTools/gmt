@@ -729,6 +729,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	/* Check and interpret the command line arguments */
 
+	if (GMT->current.setting.run_mode == GMT_MODERN && !Ctrl->D.active)
+		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	fill[0] = Ctrl->S.fill;

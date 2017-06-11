@@ -596,7 +596,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, mode;
 	int j;
-	bool grayscale;
+	bool grayscale, halfbaked = false;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -604,8 +604,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+					if (!strstr (opt->arg, ".ps-") && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				}
+				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				Ctrl->In.n_files++;
 				break;
 
@@ -766,7 +767,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (GMT->current.setting.run_mode == GMT_MODERN),
 	                                   "Error: Cannot use -L for list file under modern GMT mode\n");
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && (GMT->current.setting.run_mode == GMT_MODERN),
+	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_MODERN && !(Ctrl->In.n_files == 0 || (Ctrl->In.n_files == 1 && halfbaked)),
 	                                   "Syntax error: No listed input files allowed under modern GMT mode\n");
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && (GMT->current.setting.run_mode == GMT_MODERN),
@@ -1353,22 +1354,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 #endif
 	}
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Finalize hidden PS file first */
-		if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for PS */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, "a")) == NULL) {	/* Must open inside PSL DLL */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", GMT->current.ps.filename);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
-		if (PSL_fclose (GMT->PSL)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
-			Return (GMT_RUNTIME_ERROR);
-		}
-	}
-	
 	/* Parameters for all the formats available */
 
 	if (gsVersion.major >= 9 && gsVersion.minor >= 21)
@@ -1422,10 +1407,42 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			ps_names[j++] = strdup (opt->arg);
 		}
 	}
-	else if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Just that one hidden PS file */
-		ps_names = gmt_M_memory (GMT, NULL, 1, char *);
-		ps_names[0] = strdup (GMT->current.ps.filename);
-		Ctrl->In.n_files = 1;
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
+		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
+			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for PS */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
+			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
+			ps_names[0] = strdup (GMT->current.ps.filename);
+			Ctrl->In.n_files = 1;
+		}
+		if (access (ps_names[0], F_OK) == 0) {	/* File exist, so complete it */
+			char *new_name = strdup (ps_names[0]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Complete partial PS file %s\n", ps_names[0]);
+			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", ps_names[0]);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
+			if (PSL_fclose (GMT->PSL)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", ps_names[0]);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			/* Rename from *.ps- to *.ps+ so we dont complete the file more than once */
+			new_name[strlen(new_name)-1] = '+';
+			if (gmt_rename_file (GMT, ps_names[0], new_name))
+				Return (GMT_RUNTIME_ERROR);
+			ps_names[0][strlen(ps_names[0])-1] = '+';
+			gmt_M_str_free (new_name);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Renamed partial PS file to %s\n", ps_names[0]);
+		}
+		else {	/* Check if we already completed the file */
+			ps_names[0][strlen(ps_names[0])-1] = '+';
+			if (access (ps_names[0], F_OK))	/* File does not exist - error; else we have changed the name */
+				Return (GMT_RUNTIME_ERROR);
+		}
 	}
 
 	/* -------------------- Special case of in-memory PS. Process it and return ------------------- */
@@ -2135,10 +2152,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", GMT->current.ps.filename, out_file);
 				if (gmt_rename_file (GMT, GMT->current.ps.filename, out_file))
-					Return (GMT_RUNTIME_ERROR);
-			}
-			else {	/* Delete it, no -Z needed */
-				if (gmt_remove_file (GMT, GMT->current.ps.filename))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}

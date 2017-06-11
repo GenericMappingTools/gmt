@@ -14554,6 +14554,23 @@ char * gmt_memory_use (size_t bytes, int width) {
 	return mem_report;
 }
 
+char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]) {
+	/* Consolidate all args into a string */
+	int k;
+	size_t len = argc;	/* Space for spaces and final 0 */
+	char *string = NULL;
+	gmt_M_unused(GMT);
+	if (argc == 0 || argv == NULL) return NULL;
+	for (k = 0; k < argc; k++) len += strlen (argv[k]);
+	string = calloc (len, sizeof (char));
+	strcat (string, argv[0]);
+	for (k = 1; k < argc; k++) {
+		strcat (string, " ");
+		strcat (string, argv[k]);
+	}
+	return string;
+}
+
 #if 0	/* Probably not needed after alll */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

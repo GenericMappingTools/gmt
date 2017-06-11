@@ -114,9 +114,10 @@ int main (int argc, char *argv[]) {
 		return GMT_NOERROR;
 	}
 	else if (gmt_main && !strcmp (argv[1], "figure")) {	/* Adding a figure entry to the queue. */
-		void *ptr = (argc >= 2) ? argv+2 : NULL;
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_FIGURE, ptr))
+		char *cmd = gmt_argv2str (api_ctrl->GMT, argc-2, argv+2);	/* Consolidate all args into a string */
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_FIGURE, cmd))
 			return GMT_RUNTIME_ERROR;
+		gmt_M_str_free (cmd);
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;

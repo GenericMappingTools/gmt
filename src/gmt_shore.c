@@ -424,7 +424,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 	char *choice = "fhilc";
 
 	switch (*res) {
-		case 'a':	/* Automatic selection via -J or -R, of possible */
+		case 'a':	/* Automatic selection via -J or -R, if possible */
 			if (GMT->common.J.active) {	/* Use map scale xxxx as in 1:xxxx */
 				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
 				if (i_scale > GMT_CRUDE_THRESHOLD)

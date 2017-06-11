@@ -13361,37 +13361,170 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 }
 
 #ifdef TEST_MODERN
-GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
-        GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process figure queue\n");
-	char line[GMT_LEN256] = {""}, name[GMT_LEN256] = {""}, formats[GMT_LEN256] = {""}, options[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
-	int n, ID, error;
+
+/* List ps at end since it causes a renaming only */
+static char *out_format_ext[] = {"pdf", "jpg", "png", "ppm", "tif", "bmp", "eps", "ps", NULL};
+static char out_format_code[] = { 'f',   'j',   'G',   'm',   't',   'b',   'e',  'p'};
+
+GMT_LOCAL FILE *open_figure_file (struct GMTAPI_CTRL *API, unsigned int mode, int *err) {
+	char line[PATH_MAX] = {""}, *opt[2] = {"r", "a"};
 	FILE *fp = NULL;
-	
-	if (API->gwf_dir == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No workflow directory set\n");
-		return GMT_NOT_A_VALID_DIRECTORY;
-	}
 	sprintf (line, "%s/gmt.figures", API->gwf_dir);	/* Path to gmt.figures */
-	if ((fp = fopen (line, "r"))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open %s for reading\n", line);
-		return GMT_ERROR_ON_FOPEN;
+	*err = 0;	/* No error yet */
+	if (mode == 0 && access (line, F_OK)) {
+		GMT_Report (API, GMT_MSG_DEBUG, "No figure file %s - nothing to do\n", line);
+		return NULL;
 	}
+	/* Here the file gmt.figures exists and we must read in the entries */
+	if ((fp = fopen (line, opt[mode])) == NULL) {
+		if (mode == 1) {	/* Failure to open existing or create new gmt.figures file */
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open/create %s with mode %s\n", line, opt[mode]);
+			*err = 1;	/* No error yet */
+		}
+	}
+	return fp;
+}
+
+/*! . */
+int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIGURE **figs) {
+	/* Load or count any figures stored in the queue file gmt.figures.
+	 * mode = 0:	Count how many figures in the queue.
+	 * mode = 1:	Also return array of GMT_FIGURE structs.
+	 * If there are errors encountered then report them and return -1.
+	 * Else we return how many found and the pointer figs. */
+	char line[PATH_MAX] = {""};
+	unsigned int n_alloc = GMT_TINY_CHUNK, k = 0;
+	int err, n;
+	struct GMT_FIGURE *fig = NULL;
+	FILE *fp = NULL;
+
+	if ((fp = open_figure_file (GMT->parent, 0, &err)) == NULL) {	/* No such file, nothing to do */
+		return 0;
+	}
+	/* Here the file gmt.figures exists and we must read in the entries */
+	if (mode == 1) fig = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FIGURE);
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n')
 			continue;
-		n = sscanf (line, "%d %s %s %s", &ID, name, formats, options);
-		if (!strcmp (name, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls */
-		sprintf (cmd, "%s/gmt_%d.ps -Tf%s -F%s", API->gwf_dir, ID, formats, name);
-		if (n == 4 && options[0]) {
-			strcat (cmd, " ");
-			strcat (cmd, options);
+		if (mode == 1) {
+			gmt_chop (line);
+			n = sscanf (line, "%d %s %s %[^\0]", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+			if (++k >= n_alloc) {
+				n_alloc += GMT_TINY_CHUNK;
+				fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE);
+			}
 		}
-		if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
-			fclose (fp);
-			return error;
+		else	/* Just count them */
+			k++;
+	}
+	fclose (fp);
+	if (mode == 1) {
+		if (k == 0)	/* Blank file, nothing to report */
+			gmt_M_free (GMT, fig);
+		else if (k < n_alloc)
+			fig = gmt_M_memory (GMT, fig, k, struct GMT_FIGURE);
+		*figs = fig;	/* Pass out what we found */
+	}
+	return (k);
+}
+
+GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""};
+	struct GMT_FIGURE *fig = NULL;
+	int error, k, f, nf, n_figs;
+	
+ 	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	if ((n_figs = gmtlib_read_figures (API->GMT, 1, &fig)) == -1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
+		return GMT_ERROR_ON_FOPEN;
+	}
+	if (n_figs == 0) return GMT_NOERROR;	/* No gmt figures in the queue */
+	
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process GMT figure queue: %d figures found\n", n_figs);
+	for (k = 0; k < n_figs; k++) {
+		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+		f = nf = 0;
+		while (out_format_ext[f]) {	/* Go through the list and build array for -T arguments */
+			if (strstr (fig[k].formats, out_format_ext[f])) fmt[nf++] = out_format_code[f];
+			f++;
+		}
+		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
+			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			if (fig[k].options[0]) {
+				strcat (cmd, " ");
+				strcat (cmd, fig[k].options);
+			}
+			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
+				gmt_M_free (API->GMT, fig);
+				return error;
+			}
 		}
 	}
+	gmt_M_free (API->GMT, fig);
+	return GMT_NOERROR;
+}
+
+int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
+	/* Add another figure to the gmt.figure queue.
+	 * arg = "[prefix] [format] [options]"
+	 * Rules: No prefix may start with a hyphen
+	 *		  prefix is required on the command line
+	 *		  format defaults to pdf on command line
+	 * The hidden gmt_###.ps- file starts numbering at 1 to
+	 * indicate it was set via gmt figure.  Scripts that are
+	 * not using gmt figure just builds gmt_0.ps-.
+	 */
+	int n, n_figs, err;
+	size_t k, end;
+	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""};
+	FILE *fp = NULL;
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	if (API->external) {	/* For external calls, if no args we supply - - */
+		if (arg == NULL)	/* This means the external API will call psconvert directly */
+			prefix[0] = formats[0] = '-';
+	}
+	else {	/* For regular comand line use, the figure prefix is required */
+		if (arg == NULL || arg[0] == '-') {	/* This is clearly not allowed */
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No argument given\n");
+			return GMT_ARG_IS_NULL;
+		}
+		/* Chop off any options and determine prefix [and format] arguments */
+		for (k = end = 0; end == 0 && k < strlen (arg); k++) {
+			if (k && arg[k] == '-' && strchr (GMT_TOKEN_SEPARATORS, arg[k-1]))
+				end = k;	/* Mark the hyphen at start of an option string */
+		}
+		if (end) arg[end] = '\0';	/* Chop off options for now */
+		n = sscanf (arg, "%s %s", prefix, formats);
+		if (n == 1) {	/* Determine if we incorrectly just gave a recognized format */
+			k = 0;
+			while (out_format_ext[k] && strcmp (prefix, out_format_ext[k])) k++;	/* Go through the list */
+			if (out_format_ext[k]) {	/* This means prefix actually matched a known format */
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: No file prefix given, just a format\n");
+				return GMT_ARG_IS_NULL;
+			}
+			/* Set default pdf format */
+			strcpy (formats, "pdf");
+		}
+	}
+	/* OK, here we have a valid new entry */
+	n_figs = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
+	if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
+		return GMT_ERROR_ON_FOPEN;
+	/* Append the new entry */
+	fprintf (fp, "%d\t%s\t%s", n_figs+1, prefix, formats);
+	if (end) {	/* Restore options and append it */
+		arg[end] = '-';
+		fprintf (fp, "\t%s", &arg[end]);
+	}
+	fprintf (fp, "\n");
 	fclose (fp);
 	return GMT_NOERROR;
 }
@@ -13481,23 +13614,6 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
 	return error;
-}
-
-int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
-	/* Add another figure to the gmt.figure queue */
-#if 0
-	char file[GMT_LEN256] = {""};
-	if (API->gwf_dir == NULL) {
-		GMT_Report (API, GMT_MSG_NORMNAL, "No workflow directory set\n");
-		return GMT_NOT_A_VALID_DIRECTORY;
-	}
-	sprintf (file, "%s/gmt.figures", API->gwf_dir);	/* Path to gmt.figures */
-	if ((fp = fopen (file, "a"))) {
-		GMT_Report (API, GMT_MSG_NORMNAL, "Unable to open gmt.figures file\n");
-		return GMT_ERROR_ON_FOPEN;
-	}
-#endif
-	return GMT_NOERROR;
 }
 
 #endif

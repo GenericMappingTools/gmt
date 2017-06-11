@@ -5767,11 +5767,13 @@ FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode) {
 
 int PSL_fclose (struct PSL_CTRL *C) {
 	/* Close except if stdout */
+	int err = 0;
 	if (C->internal.fp != stdout)
-		return (fclose (C->internal.fp));
-	else
-		return 0;
+		err = fclose (C->internal.fp);
+	C->internal.fp = NULL;
+	return (err);
 }
+
 #ifndef HAVE_RINT
 #include "s_rint.c"
 #endif

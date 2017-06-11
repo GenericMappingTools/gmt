@@ -6424,13 +6424,15 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
-	int k;
+	int k, fig;
+	fig = gmtlib_read_figures (GMT, 0, NULL);	/* Number of figures so far equals the ID of the current figure PS file [0] */
+	
 	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set??? Writing to current dir instead\n");
-		strcpy (GMT->current.ps.filename, "gmt.ps0");
+		sprintf (GMT->current.ps.filename, "gmt_%d.ps-", fig);
 	}
 	else
-		sprintf (GMT->current.ps.filename, "%s/gmt.ps0", GMT->parent->gwf_dir);
+		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, fig);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
 	GMT->current.ps.initialize = (k == 0);	/* False means it is an overlay and -R -J may come from history */
 	return k;
