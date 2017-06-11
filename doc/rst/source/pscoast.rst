@@ -323,9 +323,9 @@ gridded topography is only seen over land, using a Mercator map at scale
 
    ::
 
-    gmt pscoast  -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
+    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
     gmt grdimage -Jm0.1i etopo5.nc -Ccolors.cpt -O -K >> africa.ps
-    gmt pscoast  -Q -O >> africa.ps
+    gmt pscoast -Q -O >> africa.ps
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
@@ -333,7 +333,7 @@ domain form the extents of these countries, use
 
    ::
 
-    gmt pscoast  -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red+r -EES,PT,GR+gyellow > map.ps
+    gmt pscoast -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow > map.ps
 
 To extract a high-resolution coastline data table for Iceland to be used
 in your analysis, try
