@@ -2151,7 +2151,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", GMT->current.ps.filename, out_file);
-				if (gmt_rename_file (GMT, GMT->current.ps.filename, out_file))
+				if (gmt_rename_file (GMT, ps_names[0], out_file))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
