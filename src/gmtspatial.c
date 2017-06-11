@@ -1971,7 +1971,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else if (side == GMT_INSIDE) {	/* S1 is inside S2 */
 							n_holes++;
 							kase[k1]++;
-							inside[k1] = k2 + 1;	/* So 0 means not inside anything (a perimeter) */
+							inside[k1] = (unsigned int)k2 + 1;	/* So 0 means not inside anything (a perimeter) */
 						}
 						side = gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1);	/* Is S2 inside S1? */
 						if (side == GMT_ONEDGE) {
@@ -1981,7 +1981,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else if (side == GMT_INSIDE) {	/* S2 is inside S1 */
 							n_holes++;
 							kase[k2]++;
-							inside[k2] = k1 + 1;	/* So 0 means not inside anything (a perimeter) */
+							inside[k2] = (unsigned int)k1 + 1;	/* So 0 means not inside anything (a perimeter) */
 						}
 					}
 				}
