@@ -65,6 +65,8 @@
 
 #define NOT_REALLY_AN_ERROR -999
 
+EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
+
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {
@@ -510,25 +512,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -E option: The -R option overrides the region found via -E.\n");
 		else {	/* Pick up region from chosen polygons */
 			unsigned int range = GMT->current.io.geo.range;	/* Old setting */
-			(void) gmt_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
+			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
+			size_t i, j;
+			(void) gmt_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
+			if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+			else
+				GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			/* Remove any white space due to selected formatting */
+			for (i = j = 2; i < strlen (record); i++) {
+				if (record[i] == ' ') continue;	/* Skip spaces */
+				record[j++] = record[i];
+			}
+			record[j] = '\0';
 			GMT->common.R.active[RSET] = true;
 			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
-				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
-				size_t i, j;
-				if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
-					GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-				else
-					GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
-				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				/* Remove any white space due to selected formatting */
-				for (i = j = 2; i < strlen (record); i++) {
-					if (record[i] == ' ') continue;	/* Skip spaces */
-					record[j++] = record[i];
-				}
-				record[j] = '\0';
 				if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 					return (API->error);
 				}
@@ -544,6 +546,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 				GMT->current.io.geo.range = range;	/* Reset to what it was */
 				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
+			}
+			else {
+				strncpy (GMT->common.R.string, &record[2], GMT_LEN256-1);	/* Verbatim copy */
+				j = gmtlib_get_option_id (0, "R");		/* The -R history item */
+				if (!GMT->init.history[j]) GMT->init.history[j] = strdup (GMT->common.R.string);
 			}
 			GMT->current.io.geo.range = range;	/* Reset to what it was */
 		}
