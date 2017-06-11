@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
 
 #define THIS_MODULE_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
