@@ -2699,7 +2699,7 @@ Data domain or map region: The **-R** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-R** option defines the map region or data domain of interest. It
-may be specified in one of four ways, two of which are shown in Figure
+may be specified in one of five ways, two of which are shown in Figure
 :ref:`Map region <gmt_region>`:
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
@@ -2718,6 +2718,21 @@ may be specified in one of four ways, two of which are shown in Figure
    calling program, this mechanism will also set grid spacing and
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
+
+#. **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]]. This indirectly supplies
+   the region by consulting the DCW (Digital Chart of the World) database and derives
+   the bounding regions for one or more countries given by the codes.
+   Simply append one or more comma-separated countries using the two-character
+   ISO 3166-1 alpha-2 convention (e.g., https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+   To select a state within a country (if available), append .state, e.g, US.TX for Texas.
+   To specify a whole continent, prepend = to any of the continent codes AF (Africa),
+   AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA
+   (South America).  Append **+r** to modify exact bounding box coordinates obtained from
+   the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
+   final region boundaries to be multiples of these steps [default is no adjustment].
+   Alternatively, use **+R** to extend the region outward by adding these increments
+   instead [default is no extension].  As an example, **-R**\ *FR*\ **+r**\ 1 will select
+   the national bounding box of France rounded to nearest integer degree.
 
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
    grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,

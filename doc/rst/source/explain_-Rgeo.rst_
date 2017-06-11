@@ -6,6 +6,17 @@
     and upper right map coordinates are given instead of w/e/s/n. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
+    Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+    **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]] instead:
+    Append one or more comma-separated countries using the 2-character
+    ISO 3166-1 alpha-2 convention.  To select a state of a country
+    (if available), append .state, e.g, US.TX for Texas.  To specify a
+    whole continent, prepend = to any of the continent codes AF (Africa),
+    AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+    NA (North America), or SA (South America).  Use **+r** to modify the bounding box coordinates from the polygon(s):
+    Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
+    region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
+    outward by adding these increments instead [no extension].
     Alternatively for grid creation, give **R**\ *code*\ *lon*/*lat*/*nx*/*ny*, where
     *code* is a 2-character combination of L, C, R (for left, center, or right)
     and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
