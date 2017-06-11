@@ -49,6 +49,7 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode);
 EXTERN_MSC int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg);

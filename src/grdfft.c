@@ -470,12 +470,6 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	return (1);	/* Number of parameters used */
 }
 
-GMT_LOCAL unsigned int count_slashes (char *txt) {
-	unsigned int i, n;
-	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
-	return (n);
-}
-
 GMT_LOCAL bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c) {
 	unsigned int i, j, n_tokens, pos;
 	bool descending;
@@ -729,7 +723,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'F':	/* Filter */
 				Ctrl->F.active = true;
 				if (!(f_info->set_already)) {
-					filter_type = count_slashes (opt->arg);
+					filter_type = gmtlib_count_slashes (GMT, opt->arg);
 					f_info->kind = GRDFFT_FILTER_EXP + (filter_type - 1);
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);

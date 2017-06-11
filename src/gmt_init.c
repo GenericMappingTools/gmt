@@ -1617,15 +1617,14 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 /*! Parse the -U option.  Full syntax: -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
-	int i, just, n = 0, n_slashes, error = 0;
+	int just, n = 0, n_slashes, error = 0;
 	char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
 
 	GMT->current.setting.map_logo = true;
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
-	for (i = n_slashes = 0; item[i]; i++) {
-		if (item[i] == '/') n_slashes++;	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
-	}
+	n_slashes = gmtlib_count_slashes (GMT, item);	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
+
 	if (n_slashes >= 2) {	/* Probably gave -U[<just>]/<dx>/<dy>[/<string>] */
 		if (item[0] == '/') { /* No justification given */
 			n = sscanf (&item[1], "%[^/]/%[^/]/%[^\n]", txt_x, txt_y, GMT->current.ps.map_logo_label);
@@ -3697,7 +3696,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	}
 	if (mod_flag > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
 
-	for (j = 0; args[j]; j++) if (args[j] == '/') n_slashes++;
+	n_slashes = gmtlib_count_slashes (GMT, args);	/* Count slashes to distinguis args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
@@ -6878,7 +6877,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
-	bool inv_project = false, scale_coord = false;
+	bool inv_project = false, scale_coord = false, got_r, got_country;
 	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL;
 	double p[6];
 
@@ -6908,11 +6907,13 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
-	for (i = 0; i < length; i++) if (item[i] == '/') n_slash++;
+	n_slash = gmtlib_count_slashes (GMT, item);
+	got_r = (!strstr (item, "+r"));
+	got_country = (got_r || !strstr (item, "+R"));
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
-	if ((strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) || (strchr ("LCRlcr", item[1]) && strchr ("TMBtmb", item[0]))) {	/* Extended -R option using coordinate codes and grid increments */
+	if (n_slash == 3 && !got_country && ((strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) || (strchr ("LCRlcr", item[1]) && strchr ("TMBtmb", item[0])))) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2];
 		int n_columns, n_rows, just, part;
@@ -7027,6 +7028,19 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			scale_coord = true;
 		else
 			inv_project = true;
+	}
+	else if ((isupper ((int)item[0]) && isupper ((int)item[1])) || item[0] == '=' || strchr (item, ',')) {
+		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
+		struct GMT_DCW_SELECT info;
+		if ((error = gmt_DCW_parse (GMT, 'R', item, &info))) return error;
+		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
+		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+		else
+			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		gmt_set_geographic (GMT, GMT_IN);
+		gmt_DCW_free (GMT, &info);
+		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
@@ -13701,6 +13715,13 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	return code;
 }
 #endif
+
+unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt) {
+	unsigned int i, n;
+	gmt_M_unused (GMT);
+	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
+	return (n);
+}
 
 /*! Return the number of CPU cores */
 int gmtlib_get_num_processors() {
