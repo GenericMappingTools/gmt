@@ -112,7 +112,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*]
     Select painting or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the 2-character
@@ -123,16 +123,11 @@ Optional Arguments
     NA (North America), or SA (South America).  Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, and the US.
-    Use **+r** to obtain the bounding box coordinates from the polygon(s).
-    Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-    region to be a multiple of these steps [no adjustment]. Use **+R** to extend the region
-    outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-E** option can be given.
-    You may repeat **-E** to give different groups of items separate pen/fill settings.
-    If modifiers **+r** or **+R** are used and neither **-J** nor **-M** is set then
-    we just print the **-R**\ *wesn* string.
+    specified unless **-M** is in effect, in which case only one **-E** option can be given.
+    Otherwise, you may repeat **-E** to give different groups of items their own pen/fill settings.
+    If neither **-J** nor **-M** are set then we just print the **-R**\ *wesn* string.
 
 .. _-F:
 

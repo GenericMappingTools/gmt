@@ -5418,6 +5418,28 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
  * crazy cases below.\n
  * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
  */
+
+GMT_LOCAL void explain_R_geo (struct GMT_CTRL *GMT) {
+	gmt_message (GMT, "\t-R Specify the min/max coordinates of your data region in user units.\n");
+	gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds].\n");
+	gmt_message (GMT, "\t   Use -R<xmin/xmax/ymin/ymax>+<unit> for regions given in projected coordinates.\n");
+	gmt_message (GMT, "\t     with <unit> selected from %s.\n", GMT_LEN_UNITS2_DISPLAY);
+	gmt_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
+	gmt_message (GMT, "\t   Append +r if -R specifies the coordinates of the lower left and\n");
+	gmt_message (GMT, "\t     upper right corners of a rectangular area.\n");
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+	gmt_message (GMT, "\t   Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable).\n");
+	gmt_message (GMT, "\t   Use -R<gridfile> to use its limits (and increments if applicable).\n");
+	gmt_message (GMT, "\t   Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
+	gmt_message (GMT, "\t   Derive region from closed polygons from the Digital Chart of the World (DCW):\n");
+	gmt_message (GMT, "\t     Append a comma-separated list of ISO 3166 codes for countries to set region, i.e.,\n");
+	gmt_message (GMT, "\t     <code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list).\n");
+	gmt_message (GMT, "\t     To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
+	gmt_message (GMT, "\t     To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
+	gmt_message (GMT, "\t     Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
+	gmt_message (GMT, "\t     to round region to these multiples; use +R to extend region by those increments instead [0].\n");
+}
+
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
@@ -5767,31 +5789,15 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'G':	/* Geographic Region option */
 
-			gmt_message (GMT, "\t-R Specify the west/east/south/north coordinates of map region.\n");
-			gmt_message (GMT, "\t   Use decimal degrees or ddd[:mm[:ss]] degrees [ and minutes [and seconds]].\n");
-			gmt_message (GMT, "\t   Use -R<unit>... for regions given in projected coordinates.\n");
-			gmt_message (GMT, "\t   Append r if -R specifies the coordinates of the lower left and\n");
-			gmt_message (GMT, "\t   upper right corners of a rectangular map area.\n");
-			gmt_message (GMT, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
-			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			explain_R_geo (GMT);
 			break;
 
 		case 'R':	/* Generic [Default] Region option */
 
-			gmt_message (GMT, "\t-R Specify the min/max coordinates of data region in user units.\n");
-			gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
-			gmt_message (GMT, "\t   Use -R<unit>... for regions given in projected coordinates.\n");
-			gmt_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
-			gmt_message (GMT, "\t   Append r if -R specifies the coordinates of the lower left and\n");
-			gmt_message (GMT, "\t   upper right corners of a rectangular area.\n");
-			gmt_message (GMT, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
+			explain_R_geo (GMT);
 			gmt_message (GMT, "\t   Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where\n");
 			gmt_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
 			gmt_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
-			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
-			if (GMT->current.setting.run_mode == GMT_MODERN) {
-				gmt_message (GMT, "\t   -Re and -Ra get exact or approximate regions from your data (if given).\n");
-			}
 			break;
 
 		case 'z':	/* Region addition for 3-D */
@@ -7032,6 +7038,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	else if ((isupper ((int)item[0]) && isupper ((int)item[1])) || item[0] == '=' || strchr (item, ',')) {
 		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
 		struct GMT_DCW_SELECT info;
+		gmt_M_memset (&info, 1, struct GMT_DCW_SELECT);	/* To ensure it is all NULL, 0 */
 		if ((error = gmt_DCW_parse (GMT, 'R', item, &info))) return error;
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
@@ -11220,9 +11227,29 @@ struct GMT_CTRL *gmt_init_module_OLD (struct GMTAPI_CTRL *API, const char *lib_n
 }
 #endif
 
+GMT_LOCAL void strip_R_from_E (struct GMT_CTRL *GMT, const char *arg, char e_code[], char r_code[]) {
+	/* Separate out any region-specific parts of -E arguments and
+	 * pass those to -R instead (if -R not given). */
+	char p[GMT_LEN256] = {""}, *c = strchr (arg, '+');	/* Find start of any modifiers */
+	unsigned int pos = 0, n_errors = 0;
+	if ((c = strchr (arg, '+')))
+		c[0] = '\0';	/* Temporarily chop off the modifiers */
+	strcpy (r_code, arg);	/* Start with country codes only */
+	strcpy (e_code, arg);	/* Start with country codes only */
+	if (c) {
+		c[0] = '+';		/* Restore the modifiers */
+		while (gmt_getmodopt (GMT, 'E', c, "lLgprRw", &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'r': case 'R':	strcat (r_code, "+"); strcat (r_code, p); break;
+				case 'w': break;	/* Do nothing with defunct +w */
+				default: strcat (r_code, "+"); strcat (e_code, p); break;
+			}
+		}
+	}
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
-	API->error = GMT_NOERROR;
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
@@ -11246,16 +11273,39 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
+	struct GMT_OPTION *E = NULL, *opt = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+	API->error = GMT_NOERROR;
+
+	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
+	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
+	
+	if (gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
+		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
+		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
+		char e_code[GMT_LEN256] = {""}, r_code[GMT_LEN256] = {""};
+		bool add_R = true;
+		strip_R_from_E (GMT, E->arg, e_code, r_code);
+		if (GMT->current.setting.run_mode == GMT_MODERN && strstr (E->arg, "+r") == NULL && strstr (E->arg, "+R") == NULL) {	/* Just country codes and plot settings, no region specs */
+			int id = gmtlib_get_option_id (0, "R");		/* The -R history item */
+			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
+		}
+		if (add_R) {	/* Need to add a specific -R option that carries the information set via -E */
+			if ((opt = GMT_Make_Option (API, 'R', r_code)) == NULL) return NULL;	/* Failure to make -R option */
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
+		}
+		gmt_M_str_free (E->arg);	E->arg = strdup (e_code);	/* Update -E arguments */
+	}
+	
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
 		int id;
 		bool got_R = false, got_J = false;
-		struct GMT_OPTION *opt = NULL;
 
-		API->GMT->current.ps.initialize = false;	/* Start from scratch */
-		API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+		GMT->current.ps.initialize = false;	/* Start from scratch */
+		GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
 
-		if (API->GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
+		if (GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
 			if ((opt = GMT_Find_Option (API, 'O', *options))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for modern GMT mode.\n");
@@ -11273,7 +11323,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					n_errors++;
 				}
 				else if (!strncmp (opt->arg, "auto", 4U) || (opt->arg[0] == 'a' && opt->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
-					if (API->GMT->current.ps.active) {
+					if (GMT->current.ps.active) {
 						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, false, options);
 					}
@@ -11283,7 +11333,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 				}
 				else if (!strncmp (opt->arg, "exact", 5U) || (opt->arg[0] == 'e' && opt->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
-					if (API->GMT->current.ps.active) {
+					if (GMT->current.ps.active) {
 						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, true, options);
 					}
@@ -11307,15 +11357,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				return NULL;
 			}
 
-			if (API->GMT->current.ps.active)	/* true if module will produce PS */
-				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
+			if (GMT->current.ps.active)	/* true if module will produce PS */
+				(void)gmt_set_psfilename (GMT);	/* Sets GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
 		}
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
 			id = gmtlib_get_option_id (0, "R");		/* The -R history item */
-			if (!API->GMT->current.ps.active) id++;	/* Examine -RG history if not a plotter */
-			if (API->GMT->init.history[id]) {	/* There is history for -R */
+			if (!GMT->current.ps.active) id++;	/* Examine -RG history if not a plotter */
+			if (GMT->init.history[id]) {	/* There is history for -R */
 				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
@@ -11327,12 +11377,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 		if (got_J == false && strchr (required, 'J')) {	/* Need a projection but no -J was set */
-			if ((id = gmtlib_get_option_id (0, "J")) >= 0 && API->GMT->init.history[id]) {	/* There is history for -J */
+			if ((id = gmtlib_get_option_id (0, "J")) >= 0 && GMT->init.history[id]) {	/* There is history for -J */
 				/* Must now search for actual option since -J only has the code (e.g., -JM) */
 				/* Continue looking for -J<code> */
 				char str[3] = {"J"};
-				str[1] = API->GMT->init.history[id][0];
-				if ((id = gmtlib_get_option_id (id + 1, str)) >= 0 && API->GMT->init.history[id]) {	/* There is history for this -J */
+				str[1] = GMT->init.history[id][0];
+				if ((id = gmtlib_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
 					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
@@ -13139,13 +13189,11 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
-#ifdef TEST_MODERN
 	if (gmtlib_manage_workflow (API, GMT_USE_WORKFLOW)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
-#endif
 
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 	PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
@@ -13376,8 +13424,6 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	}
 	return error;
 }
-
-#ifdef TEST_MODERN
 
 /* List ps at end since it causes a renaming only */
 static char *out_format_ext[] = {"pdf", "jpg", "png", "ppm", "tif", "bmp", "eps", "ps", NULL};
@@ -13632,8 +13678,6 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
 	return error;
 }
-
-#endif
 
 #if 0	/* Maybe use later - things seems to work OK for now with what we have */
 

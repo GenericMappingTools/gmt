@@ -514,7 +514,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			unsigned int range = GMT->current.io.geo.range;	/* Old setting */
 			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 			size_t i, j;
-			(void) gmt_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 			if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 			else
@@ -546,11 +545,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 				GMT->current.io.geo.range = range;	/* Reset to what it was */
 				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
-			}
-			else {
-				strncpy (GMT->common.R.string, &record[2], GMT_LEN256-1);	/* Verbatim copy */
-				j = gmtlib_get_option_id (0, "R");		/* The -R history item */
-				if (!GMT->init.history[j]) GMT->init.history[j] = strdup (GMT->common.R.string);
 			}
 			GMT->current.io.geo.range = range;	/* Reset to what it was */
 		}

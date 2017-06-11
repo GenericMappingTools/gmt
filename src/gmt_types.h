@@ -81,7 +81,6 @@ struct GMT_TBLSEG {
 	uint64_t tbl, seg;
 };
 
-#ifdef TEST_MODERN
 /*! For keeping track of GMT figures under modern mode */
 struct GMT_FIGURE {
 	int ID;	/* Figure number [0] */
@@ -89,7 +88,6 @@ struct GMT_FIGURE {
 	char formats[GMT_LEN64];	/* List of comma-separated extensions(formats) */
 	char options[GMT_LEN256];	/* Optional arguments to psconvert (e.g., -A, -E, ...) */
 };
-#endif
 
 /*! For trend-fitting models */
 struct GMT_MODEL_TERM {	/* A single model term */

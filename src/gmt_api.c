@@ -5944,7 +5944,6 @@ int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	
 	switch (mode) {
-#ifdef TEST_MODERN
 		case GMT_SESSION_BEGIN:
 			if (gmtlib_manage_workflow (API, GMT_BEGIN_WORKFLOW))
 				return GMT_RUNTIME_ERROR;
@@ -5958,7 +5957,6 @@ int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
 			if (gmtlib_add_figure (API, arg))
 				return GMT_RUNTIME_ERROR;
 			break;
-#endif
 		case GMT_SESSION_CLEAR:
 			if (text == NULL) {	/* Clear all */
 				if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
