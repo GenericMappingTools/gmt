@@ -603,10 +603,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files [Allow for file "=" under API calls] */
-				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!strstr (opt->arg, ".ps-") && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
-				}
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
+				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
+					if (!halfbaked && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				}
 				Ctrl->In.n_files++;
 				break;
 

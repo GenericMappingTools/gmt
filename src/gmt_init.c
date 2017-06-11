@@ -5790,6 +5790,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
 			gmt_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
 			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			if (GMT->current.setting.run_mode == GMT_MODERN) {
+				gmt_message (GMT, "\t   -Re and -Ra get exact or approximate regions from your data (if given).\n");
+			}
 			break;
 
 		case 'z':	/* Region addition for 3-D */
