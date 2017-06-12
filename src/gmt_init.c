@@ -11112,140 +11112,48 @@ GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION 
 	return (ptr);	/* NULL if not found */
 }
 
-#if 0
-/*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module_OLD (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
-	API->error = GMT_NOERROR;
-	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
-	 * We must consult the required string.  It may contain options that we need to set implicitly.
-	 * Possible letters in the required string are:
-	 *	R  The -R option is required for this program and if missing we will hunt for the last region in the history.
-	 *	r  The -R option may be required depending on other settings.  If it becomes required and no -R<region> was
-	 *     given then we hunt for one in the history.
-	 *  g  The region is required but if none is given the we simply use -R<grid>.  This applies to those modules that
-	 *     have a required grid for input (e.g., modules like grdimage).
-	 *  d  If no -R<region> is given AND there are no region in the history, then determine a suitable region
-	 *     from the input dataset.  This enables automatic region determination via gmtinfo.
-	 *  J  The -J option is required and if missing we will hunt for the last region in the history.
-	 *  j  The -J option may be required depending on other settings.  If it becomes required and no -J<info> was
-	 *     given then we hunt for one in the history.
-	 *
-	 * Note: 1. If no -J can be found in the history we provide either -JQ15c (geographic data) or -JX15c (Cartesian).
-	 * Note: 2. Some modules accept grids (-R via "g") but can also accept -R.  To simplify the situations when a user
-	 *          wants to use the previous -R from history we will accept -R+ to mean ("add previous -R setting").
-	 *
-	 * Modules like pslegend has "rj" since -R -J are not required if -Dx is used but required for other settings.
-	 * Modules like blockmean, surface has "R" since it is never cool to autodetermine grid domains as this also
-	 *  depends on grid spacing, for instance.
-	 * Modules like grdview has "g" since they always have a grid domain to fall back on in the absence of -R.
-	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
+GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char r_code[]) {
+	/* Separate out any region-specific parts from one or more -E arguments and
+	 * pass those separately to a new -R instead (if -R not given).
+	 * Return code is bitflags:
+	 * 	1 : Found a region-modifying modifier +r or +R 
+	 *  2 : Found a list-request +l or +L.  Not plotting or region desired.
 	 */
-
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
-		unsigned int k, n_errors = 0;
-		struct GMT_OPTION *opt = NULL;
-
-		API->GMT->current.ps.initialize = false;	/* Start from scratch */
-
-		if (API->GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
-			/* 1. No -O -K are allowed */
-			if ((opt = GMT_Find_Option (API, 'O', *options))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -O not allowed for modern GMT mode.\n");
-				n_errors++;
-			}
-			if ((opt = GMT_Find_Option (API, 'K', *options))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Option -K not allowed for modern GMT mode.\n");
-				n_errors++;
-			}
-			/* 2. No -R -J without arguments are allowed at top module to reach here (we later may add -R -J if history is needed) */
-			if ((opt = GMT_Find_Option (API, 'R', *options))) {	/* Got -R */
-				bool OK = (strchr (required, 'R') != NULL);	/* Only plotters can use -Re or -Ra */
-				if (opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for modern GMT mode.\n");
-					n_errors++;
-				}
-				else if (!strncmp (opt->arg, "auto", 4U) || (opt->arg[0] == 'a' && opt->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
-					if (OK) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
-						n_errors += gmtinit_determine_R_option_from_data (API, required, false, options);
-					}
-					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -Ra[uto] not allowed for non-plotting modules.\n");
-						n_errors++;
-					}
-				}
-				else if (!strncmp (opt->arg, "exact", 5U) || (opt->arg[0] == 'e' && opt->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
-					if (OK) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
-						n_errors += gmtinit_determine_R_option_from_data (API, required, true, options);
-					}
-					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -Re[xact] not allowed for non-plotting modules.\n");
-						n_errors++;
-					}
+	char p[GMT_LEN256] = {""}, *c = NULL;
+	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
+	unsigned int pos, n_errors = 0, answer = 0;
+	struct GMT_OPTION *E = options;
+	
+	while ((E = GMT_Find_Option (GMT->parent, 'E', E))) {	/* For all -E options */
+		c = NULL;
+		if ((c = strchr (E->arg, '+')))
+			c[0] = '\0';	/* Temporarily hide the modifiers */
+		if (r_code[0]) strcat (r_code, ",");	/* Accumulate all codes across multiple -E options */
+		strcat (r_code, E->arg);	/* Append country codes only */
+		strcpy (e_code, E->arg);	/* Duplicate country codes only */
+		if (c) {	/* Now process the modifiers */
+			c[0] = '+';	/* Unhide the modifiers */
+			pos = 0;	/* Initialize position counter for this string */
+			while (gmt_getmodopt (GMT, 'E', c, "lLgprRw", &pos, p, &n_errors) && n_errors == 0) {
+				switch (p[0]) {
+					case 'r': case 'R':
+						if (r_opt[0] == 0) {	/* Only set this once */
+							r_opt[0] = '+';	strcat (r_opt, p);
+						}
+						break;
+					case 'w': break;	/* Do nothing with defunct +w that was never documented anyway */
+					case 'l': case 'L':
+						answer |= 2;	/* Set this flag then fall through on purpose */
+					default: strcat (e_code, "+"); strcat (e_code, p); break;	/* Append as is */
 				}
 			}
-			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for modern GMT mode.\n");
-				n_errors++;
-			}
-			if (n_errors) {	/* Oh, well, live and learn */
-				API->error = GMT_OPTION_NOT_ALLOWED;
-				return NULL;
-			}
-
-			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
-			if (API->GMT->current.ps.active)	/* true if module will produce PS */
-				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
 		}
-		if (!API->GMT->current.ps.active || API->GMT->current.ps.initialize) {	/* Start of a new plot so any -R -J history cannot be used */
-			/* 2. If -R is missing it may be derived from the data (grid or dataset) for some modules depending on required:
-			 *    g: May append a -R<grid> option if the input grid implicitly sets -R in this module
-			 *    d: May append a -R<region> option by obtaining <region> from the input datasets via gmt info. */
-			k = gmtinit_determine_R_option_from_data (API, required, false, options);
-		}
-		else {	/* Not the first plot so history contains -R -J that we can use, if needed */
-			char code;
-			/* 3. Next we add blank -R or -J options if these are required but not provided on command line.
-		 	 *    However, we cannot do this at the start of a plot since the history may not be relevant. */
-
-			for (k = 0; k < strlen (required); k++) {
-				if (strchr ("rj", required[k])) continue;	/* Premature to handle modules that may require -R -J depending on other things */
-				code = (required[k] == 'd' || required[k] == 'g') ? 'R' : required[k];
-				opt = (code == 'J') ? gmt_find_J_option (API, *options) : GMT_Find_Option (API, code, *options);
-				if (opt) continue;	/* Got this one already */
-				if ((opt = GMT_Make_Option (API, code, "")) == NULL) return NULL;	/* Failure to make option */
-				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -%c to options.\n", code);
-			}
-		}
+		gmt_M_str_free (E->arg);	E->arg = strdup (e_code);	/* Update -E argument */
+		E = E->next;	/* Go to next option so that GMT_Find_Option will get the next -E or NULL */
 	}
-
-	/* Here we can call the rest of the initialization */
-
-	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
-}
-#endif
-
-GMT_LOCAL void strip_R_from_E (struct GMT_CTRL *GMT, const char *arg, char e_code[], char r_code[]) {
-	/* Separate out any region-specific parts of -E arguments and
-	 * pass those to -R instead (if -R not given). */
-	char p[GMT_LEN256] = {""}, *c = strchr (arg, '+');	/* Find start of any modifiers */
-	unsigned int pos = 0, n_errors = 0;
-	if ((c = strchr (arg, '+')))
-		c[0] = '\0';	/* Temporarily chop off the modifiers */
-	strcpy (r_code, arg);	/* Start with country codes only */
-	strcpy (e_code, arg);	/* Start with country codes only */
-	if (c) {
-		c[0] = '+';		/* Restore the modifiers */
-		while (gmt_getmodopt (GMT, 'E', c, "lLgprRw", &pos, p, &n_errors) && n_errors == 0) {
-			switch (p[0]) {
-				case 'r': case 'R':	strcat (r_code, "+"); strcat (r_code, p); break;
-				case 'w': break;	/* Do nothing with defunct +w */
-				default: strcat (r_code, "+"); strcat (e_code, p); break;
-			}
-		}
-	}
+	if (r_opt[0]) strcat (r_code, r_opt);	/* This string is returned back for possible use by -R */
+	if (r_opt[0]) answer |= 1;	/* answer & 1 set if +r or +R was used */
+	return (answer);
 }
 
 /*! Prepare options if missing and initialize module */
@@ -11283,20 +11191,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
-		char e_code[GMT_LEN256] = {""}, r_code[GMT_LEN256] = {""};
+		char r_code[GMT_LEN256] = {""};
 		bool add_R = true;
-		strip_R_from_E (GMT, E->arg, e_code, r_code);
-		if (GMT->current.setting.run_mode == GMT_MODERN && strstr (E->arg, "+r") == NULL && strstr (E->arg, "+R") == NULL) {	/* Just country codes and plot settings, no region specs */
+		unsigned int E_flags;
+		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
+		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
 			int id = gmtlib_get_option_id (0, "R");		/* The -R history item */
 			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
 		}
+		if (E_flags & 2) add_R = false;	/* No -R should be set since we want a country code listing only */
 		if (add_R) {	/* Need to add a specific -R option that carries the information set via -E */
 			if ((opt = GMT_Make_Option (API, 'R', r_code)) == NULL) return NULL;	/* Failure to make -R option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
 		}
-		gmt_M_str_free (E->arg);	E->arg = strdup (e_code);	/* Update -E arguments */
 	}
-	
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
 		int id;
@@ -13543,16 +13452,16 @@ int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	 * not using gmt figure just builds gmt_0.ps-.
 	 */
 	int n, n_figs, err;
-	size_t k, end;
+	size_t k, end = 0;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
 	}
-	if (API->external) {	/* For external calls, if no args we supply - - */
-		if (arg == NULL)	/* This means the external API will call psconvert directly */
-			prefix[0] = formats[0] = '-';
+	if (API->external && arg == NULL) {	/* For external calls, if no args we supply - - */
+		/* This means the external API will call psconvert directly */
+		prefix[0] = formats[0] = '-';
 	}
 	else {	/* For regular comand line use, the figure prefix is required */
 		if (arg == NULL || arg[0] == '-') {	/* This is clearly not allowed */

@@ -498,58 +498,51 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	/* If no -E modes were selected then we default to dump provided -M was given */
-	if (Ctrl->E.info.mode == 0 && Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
-	
-	if (gmt_DCW_list (GMT, Ctrl->E.info.mode)) return 1;
+	if (gmt_DCW_list (GMT, Ctrl->E.info.mode)) return 1;	/* If +l|L was given we list countries and return */
+
+	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
+		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
+		else Ctrl->E.info.region = true;
+	}
+
+	if (Ctrl->E.info.region) {	/* Must report region from chosen polygons */
+		unsigned int range = GMT->current.io.geo.range;	/* Old setting */
+		char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
+		size_t i, j;
+		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+		else
+			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+		/* Remove any white space due to selected formatting */
+		for (i = j = 2; i < strlen (record); i++) {
+			if (record[i] == ' ') continue;	/* Skip spaces */
+			record[j++] = record[i];
+		}
+		record[j] = '\0';
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+			return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+			return (API->error);
+		}
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			return (API->error);
+		}
+		GMT->current.io.geo.range = range;	/* Reset to what it was */
+		return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
+	}
 
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-	if (!GMT->common.R.active[RSET] && Ctrl->E.active && Ctrl->M.active && !Ctrl->E.info.region) Ctrl->E.info.region = true;	/* For -M and -E with no plotting, get -R from pols */
-	if (Ctrl->E.info.region) {	/* Must pick up region from chosen polygons */
-		if (GMT->common.R.active[RSET])
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -E option: The -R option overrides the region found via -E.\n");
-		else {	/* Pick up region from chosen polygons */
-			unsigned int range = GMT->current.io.geo.range;	/* Old setting */
-			char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
-			size_t i, j;
-			if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
-				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-			else
-				GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
-			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-			gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			/* Remove any white space due to selected formatting */
-			for (i = j = 2; i < strlen (record); i++) {
-				if (record[i] == ' ') continue;	/* Skip spaces */
-				record[j++] = record[i];
-			}
-			record[j] = '\0';
-			GMT->common.R.active[RSET] = true;
-			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
-				if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-					return (API->error);
-				}
-				if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
-					return (API->error);
-				}
-				if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-					return (API->error);
-				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
-				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-					return (API->error);
-				}
-				GMT->current.io.geo.range = range;	/* Reset to what it was */
-				return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
-			}
-			GMT->current.io.geo.range = range;	/* Reset to what it was */
-		}
-	}
-
 	/* Check that the options selected are mutually consistent */
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
