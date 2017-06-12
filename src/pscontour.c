@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"pscontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
-#define THIS_MODULE_KEYS	"<D{,AT)=t,CC(,ED(,DDD,G?(=1,>X}"
+#define THIS_MODULE_KEYS	"<D{,AT)=t,CC(,ED(,DDD,G?(=1,>X}@<D{,AT)=t,CC(,ED(,DD),G?(=1"
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("EMmc")
 

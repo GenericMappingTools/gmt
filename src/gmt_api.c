@@ -1316,8 +1316,10 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 			n--;
 			continue;
 		}
-		if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (next, ">X}", 3U))	/* Modern mode cannot have PS redirection */
+		if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (next, ">X}", 3U)) {	/* Modern mode cannot have PS redirection */
+			n--;
 			continue;
+		}
 		s[k] = strdup (next);
 		if (next[K_DIR] == API_PRIMARY_OUTPUT) {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
