@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"psternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
+#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-(@<D{,MD),C-("
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy"
 

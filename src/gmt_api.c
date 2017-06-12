@@ -1263,6 +1263,18 @@ GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometr
 	return ((key[K_DIR] == API_SECONDARY_OUTPUT || key[K_DIR] == API_PRIMARY_OUTPUT) ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o */
 }
 
+GMT_LOCAL char *api_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
+	char *tmp = NULL, *c = NULL;
+	if ((c = strchr (string, '@'))) {	/* Split KEYS: classic@modern, must get the relevant half */
+		c[0] = '\0';	/* Chop into two */
+		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (c);
+		c[0] = '@';	/* Restore */
+	}
+	else	/* Only one set of KEYS */
+		tmp = strdup (string);		/* Get a working copy of string */
+	return (tmp);
+}
+
 GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, struct GMT_OPTION *head, int *n_to_add, unsigned int *n_items) {
 	/* Turn the comma-separated list of 3-char codes in string into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
@@ -1280,7 +1292,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 	if (!string) return NULL;	/* Got NULL, so just give up */
 	len = strlen (string);		/* Get the length of this item */
 	if (len == 0) return NULL;	/* Got no characters, so give up */
-	tmp = strdup (string);		/* Get a working copy of string */
+	tmp = api_prepare_keys (API, string);	/* Get the correct KEYS if there are separate ones for Classic and Modern mode */
 	/* Replace unknown types (marked as ?) in tmp with selected type give by input variable "type" */
 	if (type) {	/* Got a nonzero type */
 		for (k = 0; k < strlen (tmp); k++)
@@ -1304,13 +1316,13 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 			n--;
 			continue;
 		}
-		if (API->GMT->current.setting.run_mode == GMT_MODERN && next[K_FAMILY] == 'X')	/* No PostScript redirection used in modern mode */
+		if (API->GMT->current.setting.run_mode == GMT_MODERN && !strncmp (next, ">X}", 3U))	/* Modern mode cannot have PS redirection */
 			continue;
 		s[k] = strdup (next);
 		if (next[K_DIR] == API_PRIMARY_OUTPUT) {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
 				GMT_Report (API, GMT_MSG_NORMAL,
-				            "api_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
+				            "api_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", tmp);
 			else
 				o_id = (int)k;
 		}
@@ -9826,13 +9838,26 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 
-	/* 1a. Check if this is the write special module, which has flagged its output file as input... */
-	if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
-		/* Found a -<"file" option; this is actually the output file so we simply change the option to output */
-		opt->option = GMT_OPT_OUTFILE;
-		deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
+	/* 1a. Check if this is the pscoast module, where output type is either PS, Dataset, or Textset... */
+	if (!strncmp (module, "pscoast", 7U)) {
+		/* Potential problem under modern mode: No -J -R set but will be provided later, and we are doing -E for coloring or lines */
+		if (GMT_Find_Option (API, 'M', *head)) type = 'D';	/* -M means dataset dump */
+		else if (GMT_Find_Option (API, 'C', *head) || GMT_Find_Option (API, 'G', *head) || GMT_Find_Option (API, 'I', *head) || GMT_Find_Option (API, 'N', *head) || GMT_Find_Option (API, 'W', *head)) type = 'X';	/* Clearly plotting GSHHG */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+g") || strstr (opt->arg, "+p"))) type = 'X';	/* Clearly plotting DCW polygons */
+		else if (!GMT_Find_Option (API, 'J', *head)) type = 'T';	/* No -M and no -J means -Rstring as textset */
+		else type = 'X';	/* Otherwise we are still most likely plotting PostScript */
 	}
-	/* 1b. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
+	/* 1b. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with ! */
+	else if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
+		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
+		/* If not f|x then we don't want this at all and set type = ! */
+		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : ((opt->arg[1] == 'x') ? 'D' : 'T');
+		strip_colon = (type && strchr (opt->arg, ':'));
+		strip_colon_opt = opt->option;
+		if (strip_colon)
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
+	}
+	/* 1c. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
 	else if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
 		struct GMT_OPTION *delete = NULL;
 		for (opt = *head; opt && opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
@@ -9845,26 +9870,32 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		}
 		if (delete != *head) GMT_Delete_Option (API, delete);
 	}
-	/* 1c. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
+	/* 1d. Check if this is the write special module, which has flagged its output file as input... */
+	else if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
+		/* Found a -<"file" option; this is actually the output file so we simply change the option to output */
+		opt->option = GMT_OPT_OUTFILE;
+		deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
+	}
+	/* 1e. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
 	else if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
 		/* Found a -<"file" option; this is indeed the input file but the 2nd "input" is actually output */
 		if (opt->next && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, opt->next)))	/* Found the next input file option */
 			opt->option = GMT_OPT_OUTFILE;	/* Switch it to an output option */
 	}
-	/* 1d. Check if this is the greenspline module, where output type is grid for dimension == 2 else it is dataset */
+	/* 1f. Check if this is the greenspline module, where output type is grid for dimension == 2 else it is dataset */
 	else if (!strncmp (module, "greenspline", 11U) && (opt = GMT_Find_Option (API, 'R', *head))) {
 		/* Found the -R"domain" option; determine the dimensionality of the output */
 		unsigned dim = api_determine_dimension (API, opt->arg);
 		type = (dim == 2) ? 'G' : 'D';
 	}
-	/* 1e. Check if this is the triangulate module, where primary dataset output should be turned off if -G given without -M,N,Q,S */
+	/* 1g. Check if this is the triangulate module, where primary dataset output should be turned off if -G given without -M,N,Q,S */
 	else if (!strncmp (module, "triangulate", 11U) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G<grid> option; determine if any of -M,N,Q,S are also set */
 		if (!((opt = GMT_Find_Option (API, 'M', *head)) || (opt = GMT_Find_Option (API, 'N', *head))
 			|| (opt = GMT_Find_Option (API, 'Q', *head)) || (opt = GMT_Find_Option (API, 'S', *head))))
 				deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
-	/* 1f. Check if this is the mgd77list module, which writes text or data depending on -F choices */
+	/* 1h. Check if this is the mgd77list module, which writes text or data depending on -F choices */
 	else if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
 		/* Found the -F option, check if any strings are requested */
 		type = 'D';	/* Default is dataset output unless any of the below were requested */
@@ -9872,23 +9903,13 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		    || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
 			type = 'T';
 	}
-	/* 1g. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
+	/* 1i. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
 	else if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we don't want this at all and set type = ! */
 		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : '!');
 	}
-	/* 1h. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with ! */
-	else if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
-		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
-		/* If not f|x then we don't want this at all and set type = ! */
-		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : ((opt->arg[1] == 'x') ? 'D' : 'T');
-		strip_colon = (type && strchr (opt->arg, ':'));
-		strip_colon_opt = opt->option;
-		if (strip_colon)
-			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
-	}
-	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
+	/* 1j. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
 		/* If we find the -N option, we set type to D, else G */
 		type = (GMT_Find_Option (API, 'N', *head)) ? 'D' : 'G';

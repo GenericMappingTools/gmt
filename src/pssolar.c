@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pssolar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
-#define THIS_MODULE_KEYS	">X},>DI,>DM"
+#define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"
 #define THIS_MODULE_NEEDS	"RJ"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 
