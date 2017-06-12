@@ -278,7 +278,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					order[n_items] = j;	/* So we know which color/pen to apply for this item */
 					n_items++;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
+				if (n_items)
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
+				else
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code =%s unrecognized\n", code);
 			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
@@ -288,7 +291,16 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
+	if (n_items)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No countries selected\n");
+		gmt_M_free (GMT, order);
+		gmt_M_free (GMT, Q);
+		gmt_M_free (GMT, GMT_DCW_country);
+		gmt_M_free (GMT, GMT_DCW_state);
+		return NULL;
+	}
 
 	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
 		gmt_M_free (GMT, order);

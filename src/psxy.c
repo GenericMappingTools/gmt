@@ -1548,21 +1548,29 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			S.method = SEGM_REFPOINT;	S.level = SEGM_RECORD;
-			D = gmt_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the original data */
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
-				Return (API->error);
+			if (Dtmp->n_records) {
+				S.method = SEGM_REFPOINT;	S.level = SEGM_RECORD;
+				D = gmt_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the original data */
+				if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
+					Return (API->error);
+				}
 			}
+			else
+				D = Dtmp;	/* To avoid issues in the loop over no records */
 		}
 		else if (Ctrl->F.active) {
 			struct GMT_DATASET *Dtmp = NULL;	/* Pointer to GMT multisegment table(s) */
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			D = gmt_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
-				Return (API->error);
+			if (Dtmp->n_records) {
+				D = gmt_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
+				if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {	/* Be gone with the original */
+					Return (API->error);
+				}
 			}
+			else
+				D = Dtmp;	/* To avoid issues in the loop over no records */
 		}
 		else if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
