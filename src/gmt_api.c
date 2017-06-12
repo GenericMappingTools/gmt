@@ -23,15 +23,16 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 66 documented functions.  For a full
+ * The API presently consists of 67 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
  *
- * There are 2 public functions used for GMT API session handling.
+ * There are 3 public functions used for GMT API session handling.
  * This part of the API helps the developer create and delete GMT sessions:
  *
  * GMT_Create_Session	  : Initialize a new GMT session
+ * GMT_Manage_Session	  : Manage the session workflow and mode
  * GMT_Destroy_Session	  : Destroy a GMT session
  *
  * There is 2 public functions for common error reporting.
@@ -70,7 +71,7 @@
  * GMT_Write_Data	      : Place data set from program memory to selected destination
  * GMT_Encode_Options	  : Used by external APIs to fill out options from implicit rules
 
- * The above 28 functions deal with registration of input sources (files,
+ * The above 27 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
  * (same flavors as input), the setup of the i/o, and generic functions
  * to access the data either in one go (GMT_Get|Put_Data) or on a
@@ -87,7 +88,7 @@
  *
  * One function handles the listing of modules and the calling of any GMT module:
  *
- * GMT_Call_Module	: Call the specified GMT module
+ * GMT_Call_Module		  : Call the specified GMT module
  *
  * Four functions are used to get grid index from row, col, and to obtain coordinates
  *
@@ -5992,6 +5993,13 @@ int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
 	return (GMT_NOERROR);
 }
 
+#ifdef FORTRAN_API
+int GMT_Manage_Session_ (unsigned int *mode, void *arg) {
+	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
+	return (GMT_Manage_Session (GMT_FORTRAN, *mode, arg));
+}
+#endif
+
 /*! ===>  Destroy a registered GMT Session */
 
 int GMT_Destroy_Session (void *V_API) {
@@ -6021,7 +6029,7 @@ int GMT_Destroy_Session (void *V_API) {
 
 #ifdef FORTRAN_API
 int GMT_Destroy_Session_ () {
-	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
+	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Destroy_Session (GMT_FORTRAN));
 }
 #endif
