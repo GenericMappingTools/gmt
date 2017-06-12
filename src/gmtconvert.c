@@ -400,6 +400,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (D[GMT_IN]->n_records == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No data records provided\n");
+		Return (GMT_NOERROR);
+	}
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
 		Return (GMT_RUNTIME_ERROR);
