@@ -53,7 +53,6 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	bool region;		/* Determine region from polygons instead of -R */
 	bool adjust;		/* Round/adjust the region from polygons using the incs */
 	bool extend;		/* Extend region rather than quantize it */
-	bool report;		/* Report region as -Rw/e/s/n rather than dumping/plotting data */
 	double inc[4];		/* Increments for rounded region */
 	unsigned int mode;	/* 1 get countries, 2 get countries and states */
 	unsigned int n_items;	/* Number of items (times) -F was given */

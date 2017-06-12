@@ -666,7 +666,6 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					this_item->mode |= DCW_DO_FILL;
                     F->mode |= GMT_DCW_PLOT;
 					break;
-				case 'w':  F->report = true;  break;	/* Report region only */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;

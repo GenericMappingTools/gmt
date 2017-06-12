@@ -5958,7 +5958,7 @@ int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
 				return GMT_RUNTIME_ERROR;
 			break;
 		case GMT_SESSION_CLEAR:
-			if (text == NULL) {	/* Clear all */
+			if (text == NULL || !strcmp (text, "all")) {	/* Clear all */
 				if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
 					return GMT_RUNTIME_ERROR;
 				if (gmt_remove_file (API->GMT, "gmt.history"))
