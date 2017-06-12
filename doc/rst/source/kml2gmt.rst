@@ -74,6 +74,16 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+Notes
+-----
+
+If polygons are digitized you can enter them in any order. If you have both perimeters
+and holes we suggest you run the output through **gmt spatial -Sh** which will
+determine which polygons are perimeters and holes and organize them so that
+any holes immediately will follow their perimeters and that their segment headers will
+contain the **-Ph** flag and have the reverse handedness.  This output may be
+plotted by :doc:`psxy` and the holes will be honored.
+
 Examples
 --------
 
@@ -93,4 +103,4 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`psconvert`, :doc:`gmt2kml`
+:doc:`psconvert`, :doc:`gmt2kml`, :doc:`gmtspatial`
