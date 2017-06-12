@@ -1263,7 +1263,7 @@ GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometr
 	return ((key[K_DIR] == API_SECONDARY_OUTPUT || key[K_DIR] == API_PRIMARY_OUTPUT) ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o */
 }
 
-GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, int *n_to_add, unsigned int *n_items) {
+GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, struct GMT_OPTION *head, int *n_to_add, unsigned int *n_items) {
 	/* Turn the comma-separated list of 3-char codes in string into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
 	 * We return the array of strings and its number (n_items). */
@@ -1272,6 +1272,8 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 	bool change_type = false;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
+	
 	*n_items = 0;	/* No keys yet */
 
 	for (k = 0; k < GMT_N_FAMILIES; k++) n_to_add[k] = GMT_NOTSET;	/* Initially no input counts */
@@ -1302,6 +1304,8 @@ GMT_LOCAL char **api_process_keys (void *API, const char *string, char type, str
 			n--;
 			continue;
 		}
+		if (API->GMT->current.setting.run_mode == GMT_MODERN && next[K_FAMILY] == 'X')	/* No PostScript redirection used in modern mode */
+			continue;
 		s[k] = strdup (next);
 		if (next[K_DIR] == API_PRIMARY_OUTPUT) {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
