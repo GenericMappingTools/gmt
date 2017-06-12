@@ -13119,14 +13119,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
-#ifdef TEST_MODERN
-	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW)) {
-		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
-		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
-		return NULL;
-	}
-#endif
-
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 	PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
@@ -13356,93 +13348,6 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	}
 	return error;
 }
-
-#ifdef TEST_MODERN
-/*! . */
-int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
-	/* Manage the GMT workflow.  Mode can take the following values:
-	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
-	 *   GMT_USE_WORKFLOW:	Continue using the current work flow directory
-	 *   GMT_END_WORKFLOW:	Finalize the workflow.
-	 */
-
-	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
-	char t_file[GMT_LEN256] = {""};
-	int err = 0, error = GMT_NOERROR;
-    struct stat S;
-	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
-	API->gwf_dir = strdup (dir);
-	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
-	
-	switch (mode) {
-		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Enter Modern Mode\n");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Creating a workflow directory %s\n", API->gwf_dir);
-			/* We only get here when gmt begin is called */
-			if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Path already exists, but it is not a directory */
-				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
-				error = GMT_RUNTIME_ERROR;
-			}
-			else if (err == 0 && S_ISDIR (S.st_mode)) {	/* Directory already exists, give warning or error (if not writeable) */
-				if (S.st_mode & S_IWUSR)
-					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist and is writeable (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist but is not writeable\n", API->gwf_dir);
-					error = GMT_RUNTIME_ERROR;
-				}
-			}
-		    else {	/* Create the new workflow directory */
-				/* To avoid the weird CID 167015 that says:
-				toctou: Calling function mkdir that uses API->gwf_dir after a check function.
-				This can cause a time-of-check, time-of-use race condition.
-				we will use "dir" instead of "API->gwf_dir" below  */
-#ifndef _WIN32
-				if (mkdir (dir, (mode_t)0777))
-#else
-				if (mkdir (dir))
-#endif
-				{
-	                GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
-					error = GMT_RUNTIME_ERROR;
-				}
-			}
-#if 0
-			gmtinit_conf (API->GMT);		/* Get the original system defaults */
-			gmt_getdefaults (API->GMT, NULL);	/* Get user defaults */
-			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
-			gmt_putdefaults (API->GMT, dir);
-#else
-			/* I (Remko) do not understand why you need to start clean. At least ~/.gmt/gmt.conf could be needed for local configuration */
-
-			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
-				gmtinit_conf (API->GMT);		/* Get the original system defaults */
-				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
-				gmt_putdefaults (API->GMT, dir);
-			}
-#endif
-			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
-			break;
-		case GMT_USE_WORKFLOW:
-			/* We always get here except when gmt begin | end are called. */
-			/* If the workflow directory exists then we are in modern mode, else in classic */
-			API->GMT->current.setting.run_mode = (err == 0) ? GMT_MODERN : GMT_CLASSIC;
-			break;
-		case GMT_END_WORKFLOW:
-			/* We only get here when gmt end is called */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
-			error = gmt_remove_dir (API, dir, false);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Exiting Modern Mode\n");
-			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
-			break;
-		default:
-        	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmt_manage_workflow\n", mode);
-			break;
-	}
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
-	return error;
-}
-#endif
 
 #if 0	/* Maybe use later - things seems to work OK for now with what we have */
 

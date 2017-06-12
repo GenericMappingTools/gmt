@@ -107,20 +107,6 @@ int main (int argc, char *argv[]) {
 		}
 		return GMT_NOERROR;
 	}
-#ifdef TEST_MODERN
-	if (gmt_main && argc <= 3 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
-		gmt_manage_workflow (api_ctrl, GMT_BEGIN_WORKFLOW);
-		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
-	else if (gmt_main && argc <= 3 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
-		gmt_manage_workflow (api_ctrl, GMT_END_WORKFLOW);
-		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
-#endif
 	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
 		module = argv[1];	/* Name of module that does not exist, but will give reasonable message */
@@ -239,10 +225,6 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "Session management:\n");
-#ifdef TEST_MODERN
-		fprintf (stderr, "  gmt begin         Initiate a new GMT session.\n");
-		fprintf (stderr, "  gmt end           Terminate the current GMT session.\n\n");
-#endif
 		fprintf (stderr, "  gmt clear history | conf | cache | all\n");
 		fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
 		fprintf (stderr, "options:\n");

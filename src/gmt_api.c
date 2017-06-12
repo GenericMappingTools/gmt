@@ -592,7 +592,7 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
 	int ppid = -1;
 	gmt_M_unused(API);
-#if defined(WIN32) || defined(DEBUG_MODERN)
+#if defined(WIN32)
 	/* OK, the trouble is the following. On Win if the executables are run from within MSYS
 	   api_get_ppid returns different values for each call, and this completely breaks the idea
 	   using the PPID (parent PID) to create unique file names.
