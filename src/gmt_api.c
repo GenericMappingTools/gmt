@@ -1267,7 +1267,7 @@ GMT_LOCAL char *api_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
 	char *tmp = NULL, *c = NULL;
 	if ((c = strchr (string, '@'))) {	/* Split KEYS: classic@modern, must get the relevant half */
 		c[0] = '\0';	/* Chop into two */
-		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (c);
+		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (string);
 		c[0] = '@';	/* Restore */
 	}
 	else	/* Only one set of KEYS */
