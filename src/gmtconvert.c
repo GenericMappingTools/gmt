@@ -89,8 +89,8 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
-	struct T {	/* -T */
-		bool active;
+	struct T {	/* -T[sd] */
+		bool active[2];
 	} T;
 };
 
@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -163,7 +163,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   extended regular expressions use -S[~]/regexp/[i] (i for insensitive).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give +f<file> for a file list with such patterns, one per line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To give a single pattern starting with +f, escape it with \\+f.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Skip certain types of records.  Append one or both of d and h [h].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h: Prevent the writing of segment headers [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
 	GMT_Option (API, "V,a,bi,bo,d,e,f,g,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -294,8 +296,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				Ctrl->S.active = true;
 				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
 				break;
-			case 'T':	/* Do not write segment headers */
-				Ctrl->T.active = true;
+			case 'T':	/* -T[h]: Do not write segment headers, -Td: Skip duplicate records */
+				if (strchr (opt->arg, 'd')) /* Skip duplicates */
+					Ctrl->T.active[1] = true;
+				if (!opt->arg[0] || strchr (opt->arg, 'h')) /* Skip duplicates */
+					Ctrl->T.active[0] = true;	/* Skip segment headers */
 				break;
 
 			default:	/* Report bad options */
@@ -352,6 +357,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
+	uint64_t col;
+	/* Loop over all columns and compare the two records, if differ then return false.
+	 * If passes all columns then they are the same and we return true. */
+	for (col = 0; col < S->n_columns; col++)
+		if (!doubleAlmostEqualZero (S->data[col][row], S->data[col][row-1])) return false;
+	return true;
+}
+
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
@@ -369,6 +383,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	struct GMTCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL};	/* Pointer to GMT multisegment table(s) in and out */
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -416,7 +431,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (Ctrl->T.active && !gmt_M_file_is_memory (Ctrl->Out.file))
+	if (Ctrl->T.active[0] && !gmt_M_file_is_memory (Ctrl->Out.file))
 		prevent_seg_headers = true;
 
 	if (prevent_seg_headers)	/* Turn off segment headers on file output */
@@ -484,21 +499,24 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	for (tbl_ver = 0; tbl_ver < n_vertical_tbls; tbl_ver++) {	/* Number of tables to place vertically */
 		D[GMT_OUT]->table[tbl_ver]->n_records = 0;	/* Reset record count per table since we may return fewer than the original */
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
+			S = D[GMT_IN]->table[tbl_ver]->segment[seg];	/* Current segment */
 			if (Ctrl->L.active) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, D[GMT_IN]->table[tbl_ver]->segment[seg], match);
+				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, match);
 				if (Ctrl->S.select->invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && !gmt_get_int_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			if (Ctrl->C.active) {	/* See if the number of records in this segment passes our test for output */
-				match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows >= Ctrl->C.min && D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows <= Ctrl->C.max);
+				match = (S->n_rows >= Ctrl->C.min && S->n_rows <= Ctrl->C.max);
 				if (Ctrl->C.invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
-			last_row = D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows - 1;
+			last_row = S->n_rows - 1;
 			for (row = n_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
-				if (!Ctrl->E.active) { /* Skip this section */ }
+				if (!Ctrl->E.active) {
+					if (Ctrl->T.active[1] && row && is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
+				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
 					if (row == 0 && !(-Ctrl->E.mode & 1)) continue;		/* First record, but we are to skip it */
@@ -526,7 +544,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			D[GMT_OUT]->table[tbl_ver]->segment[seg]->n_rows = n_rows;	/* Possibly shorter than originally allocated if -E is used */
 			D[GMT_OUT]->table[tbl_ver]->n_records += n_rows;
 			D[GMT_OUT]->n_records = D[GMT_OUT]->table[tbl_ver]->n_records;
-			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr) gmt_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], D[GMT_IN]->table[tbl_ver]->segment[seg]);
+			if (S->ogr) gmt_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], S);
 		}
 		D[GMT_OUT]->table[tbl_ver]->id = tbl_ver;
 	}
@@ -585,7 +603,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}
 
-	if (Ctrl->T.active && gmt_M_file_is_memory (Ctrl->Out.file) && D[GMT_OUT]->n_segments > 1) {
+	if (Ctrl->T.active[0] && gmt_M_file_is_memory (Ctrl->Out.file) && D[GMT_OUT]->n_segments > 1) {
 		/* Since no file is written we must physically collate segments into a single segment per table first */
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;

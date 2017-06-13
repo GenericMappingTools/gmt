@@ -19,7 +19,7 @@ Synopsis
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
 [ |-I|\ [**tsr**] ] [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
-[ |-T| ]
+[ |-T|\ [**h**\ \|\ **d**\ ] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
@@ -178,8 +178,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**
-    Suppress the writing of segment headers on output. 
+**-T**\ [**h**\ \|\ **d**\ ]
+    Suppress the writing of certain records on output.  Append **h** to
+    suppress segment headers [Default] or **d** to suppress duplicate
+    data records.  Use **-Thd** to suppress both types of records. 
 
 .. _-V:
 
