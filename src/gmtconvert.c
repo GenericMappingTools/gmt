@@ -74,13 +74,18 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
-	struct L {	/* -L */
-		bool active;
-	} L;
 	struct I {	/* -I[ast] */
 		bool active;
 		unsigned int mode;
 	} I;
+	struct L {	/* -L */
+		bool active;
+	} L;
+	struct N {	/* -N[+|-]<col> sorting */
+		bool active;
+		int dir;	/* +1 ascending [default], -1 descending */
+		uint64_t col;
+	} N;
 	struct Q {	/* -Q<selections> */
 		bool active;
 		struct GMT_INT_SELECTION *select;
@@ -118,7 +123,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N[+|-]<col>] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -151,6 +156,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     r: reverse the order of records within each segment on output [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Output only segment headers and skip all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires ASCII input data [Output headers and data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Numerically sort all records per segment based on data in column <col>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to <col> for descending order [ascending].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output specified segment numbers in <selection> [All].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), start:step:stop (for stepped range),\n");
@@ -288,6 +295,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			case 'L':	/* Only output segment headers */
 				Ctrl->L.active = true;
 				break;
+			case 'N':	/* Sort per segment on specified column */
+				Ctrl->N.active = true;
+				value = atol (opt->arg);
+				Ctrl->N.dir = (value < 0 || opt->arg[0] == '-') ? -1 : +1;
+				Ctrl->N.col = labs (value);
+				break;
 			case 'Q':	/* Only report for specified segment numbers */
 				Ctrl->Q.active = true;
 				Ctrl->Q.select = gmt_set_int_selection (GMT, opt->arg);
@@ -352,6 +365,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	                                 "Syntax error: -D Output template must contain %%d\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
 	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
+	                                 "Syntax error: The -N option cannot be used with -F\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -616,7 +631,37 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		}
 		D[GMT_OUT] = D2;	/* Hook up the reformatted dataset */
 	}
-
+	if (Ctrl->N.active) {	/* Sort the output data on selected column before writing */
+		struct GMT_ORDER *Z = NULL;
+		uint64_t max_len = 0;
+		bool do_it = true;
+		if (Ctrl->N.col >= D[GMT_OUT]->n_columns) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
+			do_it = false;
+		}
+		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
+			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
+				S = D[GMT_OUT]->table[tbl]->segment[seg];	/* Current segment */
+				if (S->n_rows > max_len) {	/* (Re-)allocate memory for sort order array */
+					Z = gmt_M_memory (GMT, Z, S->n_rows, struct GMT_ORDER);
+					max_len =  S->n_rows;
+				}
+				for (row = 0; row < S->n_rows; row++) {	/* Load up value/order struct array */
+					Z[row].value = S->data[Ctrl->N.col][row];
+					Z[row].order = row;
+				}
+				gmt_sort_order (GMT, Z, S->n_rows, Ctrl->N.dir);	/* Sort per segment */
+				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
+				for (col = 0; col < S->n_columns; col++) {
+					for (row = 0; row < S->n_rows; row++) /* Do the shuffle via a temp vector */
+						GMT->hidden.mem_coord[GMT_X][row] = S->data[col][Z[row].order];
+					gmt_M_memcpy (S->data[col], GMT->hidden.mem_coord[GMT_X], S->n_rows, double);
+				}
+			}
+		}
+		if (do_it) gmt_M_free (GMT, Z);
+	}
+	
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}

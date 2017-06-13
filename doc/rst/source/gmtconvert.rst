@@ -17,7 +17,9 @@ Synopsis
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
-[ |-I|\ [**tsr**] ] [ |-Q|\ [**~**]\ *selection*]
+[ |-I|\ [**tsr**] ]
+[ |-N|\ [**-** \|\ **+**\ ]\ *col* ]
+[ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
 [ |-T|\ [**h**\ \|\ **d**\ ] ]
 [ |SYN_OPT-V| ]
@@ -145,6 +147,16 @@ Optional Arguments
 **-L**
     Only output a listing of all segment header records and no data
     records (requires ASCII data).
+
+.. _-N:
+
+**-N**\ [**-** \|\ **+**\ ]\ *col*
+    Numerically sort each segment based on values in column *col*.
+    The data records will be sorted such that the chosen column will
+    fall into ascending order [Default].  Give a negative column number
+    to sort into descending order instead.  The **-N** option can be
+    combined with any other ordering scheme except **-F** (segmentation)
+    and is applied at the end.
 
 .. _-Q:
 
