@@ -794,10 +794,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 					angle += 90.0;
 				else
 					angle -= 90.0;
-				if (annot_tick[ANNOT] & 1) {	/* Time mark */
-					gmtlib_gcal_from_dt (GMT, annot_time[ANNOT], &calendar);			/* Convert t to a complete calendar structure */
+				if (annot_tick[ANNOT] & 1) {	/* Time mark: Must subtack the annot_int_time since we already incremented it above */
+					gmtlib_gcal_from_dt (GMT, annot_time[ANNOT]-info[ANNOT]->annot_int_time, &calendar);	/* Convert t to a complete calendar structure */
 					gmt_format_calendar (GMT, the_date, the_clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock,
-					                     false, 1, annot_time[ANNOT]);
+					                     false, 1, annot_time[ANNOT]-info[ANNOT]->annot_int_time);
 					this_julian = calendar.day_y;
 					if (this_julian != last_julian) {
 						mrk = MGD77TRACK_MARK_NEWDAY;
