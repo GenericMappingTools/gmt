@@ -7041,12 +7041,18 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_M_memset (&info, 1, struct GMT_DCW_SELECT);	/* To ensure it is all NULL, 0 */
 		if ((error = gmt_DCW_parse (GMT, 'R', item, &info))) return error;
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
+		gmt_DCW_free (GMT, &info);
+		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
+		if (strstr (item, "=AN")) {	/* Antarctica is the only polar cap polygon so w,e,s must be reset */
+			GMT->common.R.wesn[XLO] = -180.0;
+			GMT->common.R.wesn[XHI] = +180.0;
+			GMT->common.R.wesn[YLO] = -90.0;
+		}
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		else
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
-		gmt_DCW_free (GMT, &info);
 		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
@@ -12899,7 +12905,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 	if (error) {
 		gmt_syntax (GMT, option);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Offending option %s\n", item);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Offending option -%c%s\n", option, item);
 	}
 
 	return (error);

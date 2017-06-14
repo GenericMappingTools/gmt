@@ -281,7 +281,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				if (n_items)
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 				else
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code =%s unrecognized\n", code);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Continent code %s unrecognized\n", code);
 			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
