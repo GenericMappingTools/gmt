@@ -51,14 +51,14 @@
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 
-    [**a**\ \|\ **f**\ \|\ **g**]\ *stride*\ [*+-phase*][**u**].
+    [**a**\ \|\ **f**\ \|\ **g**]\ *stride*\ [**+**\ \|\ **-**\ *phase*][**u**].
 
     The leading **a** is used to specify the annotation and major tick
     spacing [Default], **f** for minor tick spacing, and **g** for
     gridline spacing. *stride* is the desired stride interval. The
     optional *phase* shifts the annotation interval by that amount
     (positive or negative). The optional *unit* indicates the unit of
-    the *stride* and can be any of
+    the *stride* and can be any of the ones listed below:
 
     - **Y** (year, plot with 4 digits)
     - **y** (year, plot with 2 digits)

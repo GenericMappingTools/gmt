@@ -112,6 +112,7 @@ The Common GMT Options
 |SYN_OPT-a|
 |SYN_OPT-b|
 |SYN_OPT-d|
+|SYN_OPT-e|
 |SYN_OPT-f|
 |SYN_OPT-g|
 |SYN_OPT-h|

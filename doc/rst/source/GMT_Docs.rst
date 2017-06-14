@@ -36,7 +36,7 @@
 
    The five horsemen of the GMT apocalypse:
    Joaquim Luis, Walter H.F. Smith, Remko Scharroo, Florian Wobbe, and Paul Wessel
-   at the GMT Developer Summit in La Jolla, Cailifornia, during August 15--19, 2016.
+   at the GMT Developer Summit in La Jolla, California, during August 15--19, 2016.
 
 
 Acknowledgments
