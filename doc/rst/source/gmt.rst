@@ -28,7 +28,7 @@ Synopsis
 **gmt** module module-options
 
 where module is the name of a GMT module and the options are those
-that pertain to that particular module.  A few special modules
+that pertain to that particular module.  A few special commands
 are also available:
 
 **gmt clear** *items*
@@ -37,6 +37,26 @@ while delete the user's history.  Choose between *history* (deletes the
 gmt.history file in the current directory), *conf* (deletes the gmt.conf
 file in the current directory), *cache* (deletes the user's cache directory
 and all of its content), or *all* (does all of the above).
+
+**gmt begin**
+
+Initializes a new GMT session under modern mode [Default is classic mode].
+This is experimental; see http://gmt.soest.hawaii.edu/projects/gmt/wiki/Modernization
+for the current description.  All work is performed in a temporary work directory.
+
+** gmt figure** [*prefix*] [*format*] [*options*]
+
+Specifies the desired name, output format(s) and any custom arguments that should
+be passed to :doc:`psconvert` for this figure.  All plotting will be directed to this
+current figure unless another **gmt figure** command is issued.  The *prefix* is
+used to build final figure names when extensions are automatically appended.
+The *format* setting is a comma-separated list of extensions (e.g., pdf, png).
+
+**gmt end**
+
+Terminates a GMT modern mode session and automatically converts the registered
+illustrations to the specified formats, then eliminates the temporary work
+directory.
 
 If no module is given then
 several other options are available:

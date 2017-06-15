@@ -239,8 +239,9 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "Session management:\n");
-		fprintf (stderr, "  gmt begin         Initiate a new GMT session.\n");
-		fprintf (stderr, "  gmt end           Terminate the current GMT session.\n\n");
+		fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
+		fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n\n");
+		fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n\n");
 		fprintf (stderr, "  gmt clear history | conf | cache | all\n");
 		fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
 		fprintf (stderr, "options:\n");
