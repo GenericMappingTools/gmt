@@ -107,6 +107,7 @@
 
 #define USER_MEDIA_OFFSET 1000
 #define GMT_HISTORY_FILE	"gmt.history"
+#define GMT_SESSION_NAME	"gmtsession"
 
 #define GMT_def(case_val) * GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)], GMT->current.setting.given_unit[case_val]
 
@@ -13104,7 +13105,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
-	if (gmtlib_manage_workflow (API, GMT_USE_WORKFLOW)) {
+	if (gmtlib_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
@@ -13406,8 +13407,44 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 	return (k);
 }
 
+GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
+	/* Write the session name to file gmt.session unless default */
+	FILE *fp;
+	char file[GMT_LEN128] = {""};
+	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do */
+	GMT_Report (API, GMT_MSG_DEBUG, "Set session name to be %s\n", arg);
+	sprintf (file, "%s/gmt.session", API->gwf_dir);
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create session file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	fprintf (fp, "%s\n", arg);
+	fclose (fp);
+	return GMT_NOERROR;
+}
+
+GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API) {
+	/* Write the session name to file gmt.session */
+	static char *default_name = GMT_SESSION_NAME;
+	char file[GMT_LEN128] = {""}, txt[GMT_LEN128] = {""};
+	FILE *fp;
+	sprintf (file, "%s/gmt.session", API->gwf_dir);
+	if (access (file, F_OK)) return (strdup (default_name));	/* Use default session name */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open session file %s\n", file);
+		return NULL;
+	}
+	if (fscanf (fp, "%s\n", txt) != 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to read from session file %s\n", file);
+		return NULL;
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s\n", txt);
+	fclose (fp);
+	return (strdup (txt));	/* Use the given session name */
+}
+
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""};
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, *session = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	int error, k, f, nf, n_figs;
 	
@@ -13419,9 +13456,9 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
-	if (n_figs == 0) return GMT_NOERROR;	/* No gmt figures in the queue */
 	
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process GMT figure queue: %d figures found\n", n_figs);
+	if (n_figs) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process GMT figure queue: %d figures found\n", n_figs);
+	
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
@@ -13444,6 +13481,24 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		}
 	}
 	gmt_M_free (API->GMT, fig);
+	
+	/* Check for a single unconverted plot file when gmt figure was not used and no psconvert call has claimed it */
+	sprintf (cmd, "%s/gmt_0.ps-", API->gwf_dir);
+	if (access (cmd, F_OK)) return GMT_NOERROR;	/* No hidden PS file left to process - just return happily */
+
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process unclaimed GMT figure #0\n");
+	if ((session = get_session_name (API)) == NULL) {	/* Read in the session name */
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to obtain session name\n");
+		return GMT_ERROR_ON_FOPEN;
+	}
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s PDF %s]\n", session, "PS_CONVERT");
+	sprintf (cmd, "%s/gmt_0.ps- -Tf -F%s", API->gwf_dir, session);
+	gmt_M_str_free (session);
+	if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
+		return error;
+	}
+	
 	return GMT_NOERROR;
 }
 
@@ -13508,7 +13563,7 @@ int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 }
 
 /*! . */
-int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
+int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
 	/* Manage the GMT workflow.  Mode can take the following values:
 	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
 	 *   GMT_USE_WORKFLOW:	Continue using the current work flow directory
@@ -13570,6 +13625,7 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode) {
 				gmt_putdefaults (API->GMT, dir);
 			}
 #endif
+			error = put_session_name (API, text);				/* Store session name */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			break;
 		case GMT_USE_WORKFLOW:

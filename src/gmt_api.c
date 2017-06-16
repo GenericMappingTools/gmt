@@ -5964,11 +5964,11 @@ int GMT_Manage_Session (void *V_API, unsigned int mode, void *arg) {
 	
 	switch (mode) {
 		case GMT_SESSION_BEGIN:
-			if (gmtlib_manage_workflow (API, GMT_BEGIN_WORKFLOW))
+			if (gmtlib_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
 				return GMT_RUNTIME_ERROR;
 			break;
 		case GMT_SESSION_END:
-			if (gmtlib_manage_workflow (API, GMT_END_WORKFLOW))
+			if (gmtlib_manage_workflow (API, GMT_END_WORKFLOW, NULL))
 				return GMT_RUNTIME_ERROR;
 			break;
 		case GMT_SESSION_FIGURE:

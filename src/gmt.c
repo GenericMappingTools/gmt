@@ -98,8 +98,9 @@ int main (int argc, char *argv[]) {
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
-	if (gmt_main && argc == 2 && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_BEGIN, NULL))
+	if (gmt_main && (argc == 2 || argc == 3) && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
+		char *ptr = (argc == 3) ? argv[2] : NULL;
+		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_BEGIN, ptr))
 			return GMT_RUNTIME_ERROR;
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
 			return GMT_RUNTIME_ERROR;
