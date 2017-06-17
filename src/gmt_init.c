@@ -106,8 +106,18 @@
 #endif
 
 #define USER_MEDIA_OFFSET 1000
+
 #define GMT_HISTORY_FILE	"gmt.history"
+#define GMT_SESSION_FILE	"gmt.session"
+
+/* Session settings for default plot file prefix and format (extension) */
+
 #define GMT_SESSION_NAME	"gmtsession"
+#define GMT_SESSION_FORMAT	0	/* Default entry into gmt_session_format|code arrays -> PDF */
+
+/* List ps at end since it causes a renaming of ps- to ps only */
+static char *gmt_session_format[] = {"pdf", "jpg", "png", "ppm", "tif", "bmp", "eps", "ps", NULL};
+static char gmt_session_code[] =    { 'f',   'j',   'G',   'm',   't',   'b',   'e',  'p'};
 
 #define GMT_def(case_val) * GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)], GMT->current.setting.given_unit[case_val]
 
@@ -13341,10 +13351,6 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	return error;
 }
 
-/* List ps at end since it causes a renaming only */
-static char *out_format_ext[] = {"pdf", "jpg", "png", "ppm", "tif", "bmp", "eps", "ps", NULL};
-static char out_format_code[] = { 'f',   'j',   'G',   'm',   't',   'b',   'e',  'p'};
-
 GMT_LOCAL FILE *open_figure_file (struct GMTAPI_CTRL *API, unsigned int mode, int *err) {
 	char line[PATH_MAX] = {""}, *opt[2] = {"r", "a"};
 	FILE *fp = NULL;
@@ -13408,12 +13414,12 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 }
 
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
-	/* Write the session name to file gmt.session unless default */
-	FILE *fp;
-	char file[GMT_LEN128] = {""};
-	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do */
+	/* Write the session name to file GMT_SESSION_FILE unless default */
+	FILE *fp = NULL;
+	char file[PATH_MAX] = {""};
+	if (arg == NULL) return GMT_NOERROR;	/* Nothing to do, which means we accept the defaults */
 	GMT_Report (API, GMT_MSG_DEBUG, "Set session name to be %s\n", arg);
-	sprintf (file, "%s/gmt.session", API->gwf_dir);
+	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create session file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
@@ -13423,30 +13429,41 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API) {
-	/* Write the session name to file gmt.session */
+GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API, unsigned int *code) {
+	/* Read the session name [and graphics format] from file GMT_SESSION_FILE */
+	int n;
 	static char *default_name = GMT_SESSION_NAME;
-	char file[GMT_LEN128] = {""}, txt[GMT_LEN128] = {""};
-	FILE *fp;
-	sprintf (file, "%s/gmt.session", API->gwf_dir);
-	if (access (file, F_OK)) return (strdup (default_name));	/* Use default session name */
+	char file[PATH_MAX] = {""}, prefix[GMT_LEN256] = {""}, format[GMT_LEN16] = {""};
+	FILE *fp = NULL;
+	*code = GMT_SESSION_FORMAT; /* Set default graphics format */
+	sprintf (file, "%s/%s", API->gwf_dir, GMT_SESSION_FILE);
+	if (access (file, F_OK)) return (strdup (default_name));	/* Use default session name and format */
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to open session file %s\n", file);
 		return NULL;
 	}
-	if (fscanf (fp, "%s\n", txt) != 1) {
+	if ((n = fscanf (fp, "%s %s\n", prefix, format)) < 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to read from session file %s\n", file);
 		return NULL;
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s\n", txt);
+	if (n == 2) {	/* Go through the list of valid extensions and determine chosen format */
+		while (gmt_session_format[*code] && strcmp (format, gmt_session_format[*code]))
+			(*code)++;
+		if (!gmt_session_format[*code]) {	/* Trouble */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized graphics format %s, default to %s\n", format, gmt_session_format[GMT_SESSION_FORMAT]);
+			*code = GMT_SESSION_FORMAT; 
+		}
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s and default graphics format as %s\n", prefix, gmt_session_format[*code]);
 	fclose (fp);
-	return (strdup (txt));	/* Use the given session name */
+	return (strdup (prefix));	/* Use the given session name */
 }
 
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, *session = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	int error, k, f, nf, n_figs;
+	unsigned int code;
 	
  	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
@@ -13463,8 +13480,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		f = nf = 0;
-		while (out_format_ext[f]) {	/* Go through the list and build array for -T arguments */
-			if (strstr (fig[k].formats, out_format_ext[f])) fmt[nf++] = out_format_code[f];
+		while (gmt_session_format[f]) {	/* Go through the list and build array for -T arguments */
+			if (strstr (fig[k].formats, gmt_session_format[f])) fmt[nf++] = gmt_session_code[f];
 			f++;
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
@@ -13487,12 +13504,12 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	if (access (cmd, F_OK)) return GMT_NOERROR;	/* No hidden PS file left to process - just return happily */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process unclaimed GMT figure #0\n");
-	if ((session = get_session_name (API)) == NULL) {	/* Read in the session name */
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to obtain session name\n");
+	if ((session = get_session_name (API, &code)) == NULL) {	/* Read in the session name and plot format*/
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to obtain session name and plot format\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s PDF %s]\n", session, "PS_CONVERT");
-	sprintf (cmd, "%s/gmt_0.ps- -Tf -F%s", API->gwf_dir, session);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s %x %s]\n", session, gmt_session_format[code], "PS_CONVERT");
+	sprintf (cmd, "%s/gmt_0.ps- -T%c -F%s", API->gwf_dir, gmt_session_code[code], session);
 	gmt_M_str_free (session);
 	if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
@@ -13538,8 +13555,8 @@ int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		n = sscanf (arg, "%s %s", prefix, formats);
 		if (n == 1) {	/* Determine if we incorrectly just gave a recognized format */
 			k = 0;
-			while (out_format_ext[k] && strcmp (prefix, out_format_ext[k])) k++;	/* Go through the list */
-			if (out_format_ext[k]) {	/* This means prefix actually matched a known format */
+			while (gmt_session_format[k] && strcmp (prefix, gmt_session_format[k])) k++;	/* Go through the list */
+			if (gmt_session_format[k]) {	/* This means prefix actually matched a known format */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: No file prefix given, just a format\n");
 				return GMT_ARG_IS_NULL;
 			}
