@@ -145,6 +145,7 @@ PS_SCALE_X			# Overall x scale modification
 PS_SCALE_Y			# Overall y scale modification
 PS_TRANSPARENCY			# Set transparency mode for PDF only
 PS_COMMENTS			# Write comments to the PS file?
+PS_CONVERT			# psconvert options for implicit calls in modern mode
 #-------------------------------------------------------
 # TIME Group:	Time settings
 #-------------------------------------------------------

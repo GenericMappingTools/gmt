@@ -1044,6 +1044,14 @@ fonts can be found in the :doc:`gmt` man page.
     to edit the file and make changes; otherwise you can set it to false
     which yields a somewhat slimmer PostScript file [false].
 
+.. _PS_CONVERT:
+
+**PS_CONVERT**
+    Comma-separated list of optional module arguments that we should
+    supply when :doc:`psconvert` is called implicitly under modern mode [].
+    Ignored when psconvert is called on the command line explicitly.
+	The option arguments must be listed without their leading option hyphen.
+
 .. _PS_IMAGE_COMPRESS:
 
 **PS_IMAGE_COMPRESS**

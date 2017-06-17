@@ -106,7 +106,7 @@ int main (int argc, char *argv[]) {
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
-	else if (gmt_main && argc == 2 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
+	else if (gmt_main && argc >= 2 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
 		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_END, NULL))
 			return GMT_RUNTIME_ERROR;
 		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */

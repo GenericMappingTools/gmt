@@ -251,6 +251,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "PS_CHAR_ENCODING"},
 	{ 0, "PS_COLOR_MODEL"},
 	{ 0, "PS_COMMENTS"},
+	{ 0, "PS_CONVERT"},
 	{ 0, "PS_IMAGE_COMPRESS"},
 	{ 0, "PS_LINE_CAP"},
 	{ 0, "PS_LINE_JOIN"},
@@ -4956,6 +4957,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.ps_magnify[GMT_Y] = 1;
 	/* PS_TRANSPARENCY */
 	strcpy (GMT->current.setting.ps_transpmode, "Normal");
+	/* PS_CONVERT */
+	gmt_M_memset (GMT->current.setting.ps_convert, GMT_LEN256, char);
 	/* PS_COMMENTS */
 	if (GMT->PSL) GMT->PSL->internal.comments = 0;	/* Only when using PSL in this session */
 
@@ -8691,7 +8694,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_PS_TRANSPARENCY:
-			strncpy (GMT->current.setting.ps_transpmode, value, 15U);
+			strncpy (GMT->current.setting.ps_transpmode, value, GMT_LEN16-1);
+			break;
+		case GMTCASE_PS_CONVERT:
+			strncpy (GMT->current.setting.ps_convert, value, GMT_LEN256-1);
 			break;
 		case GMTCASE_PS_VERBOSE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9895,7 +9901,10 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_PS_TRANSPARENCY:
-			strncpy (value, GMT->current.setting.ps_transpmode, 15U);
+			strncpy (value, GMT->current.setting.ps_transpmode, GMT_LEN16-1);
+			break;
+		case GMTCASE_PS_CONVERT:
+			strncpy (value, GMT->current.setting.ps_convert, GMT_LEN256-1);
 			break;
 		case GMTCASE_PS_VERBOSE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10376,8 +10385,15 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 
 	if (this_file)	/* Defaults file is specified */
 		gmt_loaddefaults (GMT, this_file);
-	else if (gmtlib_getuserpath (GMT, "gmt.conf", file))
-		gmt_loaddefaults (GMT, file);
+	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
+		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
+			char path[PATH_MAX] = {""};
+			sprintf (path, "%s/gmt.conf", GMT->parent->gwf_dir);
+			gmt_loaddefaults (GMT, path);
+		}
+		else if (gmtlib_getuserpath (GMT, "gmt.conf", file))
+			gmt_loaddefaults (GMT, file);
+	}
 }
 
 /*! Creates the name (if equivalent) or the string r[/g/b] corresponding to the RGB triplet or a pattern.
@@ -13460,10 +13476,11 @@ GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API, unsigned int *code) 
 }
 
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, *session = NULL;
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
+	char *session = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	int error, k, f, nf, n_figs;
-	unsigned int code;
+	unsigned int code, pos = 0;
 	
  	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
@@ -13486,6 +13503,13 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+			if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+				pos = 0;	/* Reset position counter */
+				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+					sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
+					strcat (cmd, option);
+				}
+			}
 			if (fig[k].options[0]) {
 				strcat (cmd, " ");
 				strcat (cmd, fig[k].options);
@@ -13508,9 +13532,17 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to obtain session name and plot format\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s %x %s]\n", session, gmt_session_format[code], "PS_CONVERT");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s %s options = (%s)]\n", session, gmt_session_format[code], API->GMT->current.setting.ps_convert);
 	sprintf (cmd, "%s/gmt_0.ps- -T%c -F%s", API->gwf_dir, gmt_session_code[code], session);
+	if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+		pos = 0;	/* Reset position counter */
+		while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+			sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
+			strcat (cmd, option);
+		}
+	}
 	gmt_M_str_free (session);
+	GMT_Report (API, GMT_MSG_DEBUG, "Run psconvert %s\n", cmd);
 	if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
 		return error;
