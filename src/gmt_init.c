@@ -11138,7 +11138,7 @@ struct GMT_CTRL *gmt_init_module_OLD (struct GMTAPI_CTRL *API, const char *lib_n
 				}
 				else if (!strncmp (opt->arg, "auto", 4U) || (opt->arg[0] == 'a' && opt->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
 					if (OK) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, false, options);
 					}
 					else {
@@ -11148,7 +11148,7 @@ struct GMT_CTRL *gmt_init_module_OLD (struct GMTAPI_CTRL *API, const char *lib_n
 				}
 				else if (!strncmp (opt->arg, "exact", 5U) || (opt->arg[0] == 'e' && opt->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
 					if (OK) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, true, options);
 					}
 					else {
@@ -11253,7 +11253,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 				else if (!strncmp (opt->arg, "auto", 4U) || (opt->arg[0] == 'a' && opt->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
 					if (API->GMT->current.ps.active) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, false, options);
 					}
 					else {
@@ -11263,7 +11263,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 				else if (!strncmp (opt->arg, "exact", 5U) || (opt->arg[0] == 'e' && opt->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
 					if (API->GMT->current.ps.active) {
-						if (GMT_Delete_Option (API, opt)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, true, options);
 					}
 					else {

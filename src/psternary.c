@@ -250,7 +250,7 @@ GMT_LOCAL unsigned int prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION 
 		if ((boptions[GMT_Y] = GMT_Make_Option (API, 'B', string)) == NULL) return (GMT_PARSE_ERROR);
 		string[0] = 'c';	/* Finally -Bc */
 		if ((boptions[GMT_Z] = GMT_Make_Option (API, 'B', string)) == NULL) return (GMT_PARSE_ERROR);
-		GMT_Delete_Option (API, bopt);	/* Remove the single -B setting now that we added 3 separate */
+		GMT_Delete_Option (API, bopt, options);	/* Remove the single -B setting now that we added 3 separate */
 		return GMT_NOERROR;
 	}
 	else if (n_axis != 3) {

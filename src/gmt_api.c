@@ -9772,7 +9772,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				}
 			}
 		}
-		if (delete != *head) GMT_Delete_Option (API, delete);
+		GMT_Delete_Option (API, delete, head);
 	}
 	/* 1c. Check if this is the grdconvert module, which uses the syntax "infile outfile" without any option flags */
 	else if (!strncmp (module, "grdconvert", 10U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {

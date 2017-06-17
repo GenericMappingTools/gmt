@@ -142,7 +142,7 @@ EXTERN_MSC int    GMT_Destroy_Args                  (void *API, int argc, char *
 EXTERN_MSC int    GMT_Destroy_Cmd                   (void *API, char **cmd);
 EXTERN_MSC int    GMT_Update_Option                 (void *API, struct GMT_OPTION *current, const char *arg);
 EXTERN_MSC int    GMT_Free_Option                   (void *API, struct GMT_OPTION **current);
-EXTERN_MSC int    GMT_Delete_Option                 (void *API, struct GMT_OPTION *current);
+EXTERN_MSC int    GMT_Delete_Option                 (void *API, struct GMT_OPTION *current, struct GMT_OPTION **head);
 EXTERN_MSC int    GMT_Parse_Common                  (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char  *GMT_Duplicate_String              (void *API, const char* string);
 
