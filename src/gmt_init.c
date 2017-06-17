@@ -11328,7 +11328,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
+					got_J = true;
 				}
+			}
+			if (got_J == false) {	/* No history, apply default projection */
+				static char *arg[2] = {"X15c", "Q15c"};
+				unsigned int geo = gmt_M_is_geographic (GMT, GMT_IN);
+				if ((opt = GMT_Make_Option (API, 'J', arg[geo])) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", arg[geo]);
 			}
 		}
 	}
