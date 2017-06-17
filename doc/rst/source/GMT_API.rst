@@ -2912,7 +2912,7 @@ You may use GMT_Delete_Option_ to remove the ``current`` option from the linked
 
   ::
 
-    int GMT_Delete_Option (void *API, struct GMT_OPTION *current);
+    int GMT_Delete_Option (void *API, struct GMT_OPTION *current, struct GMT_OPTION **head);
 
 We return 1 if the option is not found in the list and set
 ``API->error`` accordingly. Note: Only the first occurrence of the
