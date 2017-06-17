@@ -811,7 +811,7 @@ struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, s
 }
 
 /*! . */
-int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current) {
+int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current, struct GMT_OPTION **head) {
 	/* Remove the specified entry from the linked list.  It is assumed that current
 	 * points to the correct option in the linked list. */
 	struct GMTAPI_CTRL *API = NULL;
@@ -820,9 +820,12 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current) {
 	if (!current) return_error (V_API, GMT_OPTION_IS_NULL);		/* No option was passed */
 	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
-	/* Remove the current option and bypass via the enx/prev pointers in the linked list */
-	if (current->previous) current->previous->next = current->next;
+	/* Remove the current option and bypass via the next/prev pointers in the linked list */
 	if (current->next) current->next->previous = current->previous;
+	if (current->previous)	/* Reset pointer from previous entry to current's next entry */
+		current->previous->next = current->next;
+	else	/* current == *head so there is no previous; must update head */
+		*head = current->next;
 	gmt_M_str_free (current->arg);	/* Option arguments were created by strdup, so we must use free */
 	gmt_M_free (API->GMT, current);		/* Option structure was created by gmt_M_memory, hence gmt_M_free */
 

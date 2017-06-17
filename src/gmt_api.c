@@ -9870,7 +9870,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				}
 			}
 		}
-		if (delete != *head) GMT_Delete_Option (API, delete);
+		GMT_Delete_Option (API, delete, head);
 	}
 	/* 1d. Check if this is the write special module, which has flagged its output file as input... */
 	else if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
