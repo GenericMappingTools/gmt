@@ -98,7 +98,7 @@ int main (int argc, char *argv[]) {
 			return GMT_RUNTIME_ERROR;
 		return GMT_NOERROR;
 	}
-	if (gmt_main && (argc >= 2 || argc <= 4) && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
+	if (gmt_main && (argc >= 2 && argc <= 4) && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
 		char *cmd = gmt_argv2str (api_ctrl->GMT, argc-2, argv+2);	/* Consolidate all optional args into a string */
 		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_BEGIN, cmd))
 			return GMT_RUNTIME_ERROR;
