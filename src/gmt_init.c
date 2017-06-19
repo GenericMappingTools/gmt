@@ -4958,7 +4958,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* PS_TRANSPARENCY */
 	strcpy (GMT->current.setting.ps_transpmode, "Normal");
 	/* PS_CONVERT */
-	gmt_M_memset (GMT->current.setting.ps_convert, GMT_LEN256, char);
+	strcpy (GMT->current.setting.ps_convert, "A,P");
 	/* PS_COMMENTS */
 	if (GMT->PSL) GMT->PSL->internal.comments = 0;	/* Only when using PSL in this session */
 

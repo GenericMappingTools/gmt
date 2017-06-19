@@ -1048,7 +1048,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **PS_CONVERT**
     Comma-separated list of optional module arguments that we should
-    supply when :doc:`psconvert` is called implicitly under modern mode [].
+    supply when :doc:`psconvert` is called implicitly under modern mode [A,P].
     Ignored when psconvert is called on the command line explicitly.
 	The option arguments must be listed without their leading option hyphen.
 
