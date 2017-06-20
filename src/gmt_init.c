@@ -10855,7 +10855,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
 	struct GMT_OPTION *opt = NULL;
 
-	if (strstr (keys, ">X}") == NULL) return false;	/* Never produces PostScript */
+	if (strstr (keys, ">X}") == NULL && strstr (keys, ">X?") == NULL) return false;	/* Can never produce PostScript */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
@@ -10865,6 +10865,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 		if ((opt = GMT_Find_Option (API, 'M', options))) return false;	/* -M writes dataset */
 		if ((opt = GMT_Find_Option (API, 'J', options))) return true;	/* -J writes PS regardless of -E */
 		if ((opt = GMT_Find_Option (API, 'E', options)) == NULL) return true;	/* Without -E writes PS */
+		if (strstr (opt->arg, "+g") || strstr (opt->arg, "+p")) return true;	/* -E...+g|p writes PS */
 		if (strstr (opt->arg, "+r") || strstr (opt->arg, "+R")) return false;	/* -E...+r|R writes textset */
 	}
 	else if (!strncmp (name, "grdimage", 8U)) {	/* Check for -A option */
