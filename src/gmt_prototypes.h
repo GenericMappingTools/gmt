@@ -102,8 +102,8 @@ EXTERN_MSC unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION
 EXTERN_MSC int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd);
 EXTERN_MSC int gmt_message (struct GMT_CTRL *GMT, char *format, ...);
-EXTERN_MSC void gmt_disable_i_opt (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_reenable_i_opt (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_disable_ih_opts (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_reenable_ih_opts (struct GMT_CTRL *GMT);
 #ifdef WIN32
 EXTERN_MSC void gmt_setmode (struct GMT_CTRL *GMT, int direction);
 #endif
