@@ -3170,22 +3170,29 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 }
 #endif
 
+GMT_LOCAL bool at_pole (double *lat, uint64_t n) {
+	return (lat[0] == lat[n-1] && fabs (lat[0]) == 90.0);
+}
+
 GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment) {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. */
 
 	uint64_t n = S->n_rows, k;
-	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y];
-
+	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
+	bool ap = at_pole (plat, n);
+	if (ap) plon[n-1] = plon[0];
 	if (add_pole) {
 		if ((n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
 			n = S->n_rows + 2;	/* Add new first and last point to connect to the pole */
 			plon = gmt_M_memory (GMT, NULL, n, double);
 			plat = gmt_M_memory (GMT, NULL, n, double);
-			plat[0] = plat[n-1] = S->pole * 90.0;
+			t_lat = S->pole * 90.0;	/* This is presumably the correct pole, but could fail if just touching the pole */
+			if (S->data[GMT_Y][0] * t_lat < 0.0) t_lat = -t_lat;	/* Well, I'll be damned... */
+			plat[0] = plat[n-1] = t_lat;
 			plon[0] = S->data[GMT_X][0];
 			plon[n-1] = S->data[GMT_X][S->n_rows-1];
 			gmt_M_memcpy (&plon[1], S->data[GMT_X], S->n_rows, double);
@@ -5726,13 +5733,16 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	double *x_perim = NULL, *y_perim = NULL, *plon = NULL, *plat = NULL;
 	static char *pole = "S N";
 	int type;
+	bool ap;
 #if 0
 	FILE *fp;
 #endif
 	if (GMT->common.R.oblique) return 0;	/* Algorithm assumes meridian boundaries */
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
-
+	ap = at_pole (S->data[GMT_Y], S->n_rows);
+	//if (ap) return S->n_rows;
+	fprintf (stderr, "INSIDE\n");
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
