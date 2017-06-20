@@ -1,9 +1,9 @@
 .. _-h_full:
 
 **-h**\ [**i**\ \|\ **o**][*n*][\ **+c**][\ **+d**][\ **+r**\ *remark*][\ **+t**\ *title*]
-    Input file(s) has header record(s). If used, the default number of
+    Primary input file(s) has header record(s). If used, the default number of
     header records is :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` [1]. Use **-hi** if only
-    input data should have header records [Default will write out header
+    the primary input data should have header records [Default will write out header
     records if the input data have them]. Blank lines and lines starting
     with # are always skipped. For output you may request additional headers
     to be written via the option modifiers, and use **+d** to remove existing

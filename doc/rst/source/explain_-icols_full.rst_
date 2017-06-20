@@ -1,7 +1,7 @@
 .. _-icols_full:
 
 **-i**\ *cols*\ [**+l**\ ][\ **+s**\ *scale*][\ **+o**\ *offset*][,\ *...*]
-    Select specific data columns for input, in arbitrary order. Columns
+    Select specific data columns for primary input, in arbitrary order. Columns
     not listed will be skipped. Give individual columns (or column ranges
     in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
     not specified) separated by commas [Default reads all columns in order,
