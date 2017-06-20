@@ -434,7 +434,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) {	/* Get hotspot motion file */
-		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -442,7 +442,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 3 are needed\n", Ctrl->F.file, (int)F->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 		for (row = 0; row < H->n_rows; row++) H->data[GMT_Y][row] = gmt_lat_swap (GMT, H->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
