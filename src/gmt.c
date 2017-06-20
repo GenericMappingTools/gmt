@@ -92,6 +92,8 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+	
+	/* First we handle the special command "clear", "begin", "end" and "figure" */
 	if (gmt_main && (argc == 2 || argc == 3) && !strcmp (argv[1], "clear")) {	/* Clear something. */
 		char *ptr = (argc == 3 && !strcmp (argv[2], "all")) ? argv[2] : NULL;	/* For all we pass NULL */
 		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_CLEAR, ptr))
@@ -131,7 +133,7 @@ int main (int argc, char *argv[]) {
 		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
-		module = argv[1];	/* Try this module name (Note: GMT_Call_Module will also check "gmt"<module> if <module> fails) */
+		module = argv[1];	/* Try this module name (Note: GMT_Call_Module will also check "gmt" <module> if just <module> fails) */
 		status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL);
 	}
 
@@ -241,8 +243,8 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "Session management:\n");
 		fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
-		fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n\n");
-		fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n\n");
+		fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
+		fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
 		fprintf (stderr, "  gmt clear history | conf | cache | all\n");
 		fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
 		fprintf (stderr, "options:\n");

@@ -5497,7 +5497,10 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden PS0 file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
-		k = gmt_set_psfilename (GMT);	/* Get hidden file name for PS */
+		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
+			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s hidden PS file %s\n", verb[k], GMT->current.ps.filename);
 		if ((fp = PSL_fopen (PSL, GMT->current.ps.filename, mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, mode[k]);
@@ -6425,11 +6428,12 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	int k, fig;
+	/* Returns 0 or 1 if successful and -1 if failure */
 	fig = gmtlib_read_figures (GMT, 0, NULL);	/* Number of figures so far equals the ID of the current figure PS file [0] */
 	
 	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set??? Writing to current dir instead\n");
-		sprintf (GMT->current.ps.filename, "gmt_%d.ps-", fig);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set!\n");
+		return GMT_NOTSET;
 	}
 	else
 		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, fig);

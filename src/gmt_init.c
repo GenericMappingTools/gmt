@@ -2355,8 +2355,11 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	char hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 
-	if (!(GMT->current.setting.history & k_history_write))
+	if (!(GMT->current.setting.history & k_history_write)) {
+		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == k_history_off)
+			GMT->current.setting.history = GMT->current.setting.history_orig;
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
+	}
 
 	/* This is called once per GMT Session by gmt_end via GMT_Destroy_Session.
 	 * It writes out the known shorthands to the gmt.history file
@@ -13629,7 +13632,6 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *te
 
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
-	char t_file[GMT_LEN256] = {""};
 	int err = 0, error = GMT_NOERROR;
 	struct stat S;
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
@@ -13668,22 +13670,14 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *te
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
-#if 0
-			gmtinit_conf (API->GMT);		/* Get the original system defaults */
-			gmt_getdefaults (API->GMT, NULL);	/* Get user defaults */
+			gmtinit_conf (API->GMT);			/* Get the original system defaults */
+			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			gmt_putdefaults (API->GMT, dir);
-#else
-			/* I (Remko) do not understand why you need to start clean. At least ~/.gmt/gmt.conf could be needed for local configuration */
-
-			if (gmtlib_getuserpath (API->GMT, "gmt.conf", t_file)) {	/* If there is a gmt.conf in ~ or ~/.gmt be sure to start clean */
-				gmtinit_conf (API->GMT);		/* Get the original system defaults */
-				sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
-				gmt_putdefaults (API->GMT, dir);
-			}
-#endif
-			error = put_session_name (API, text);				/* Store session name */
+			error = put_session_name (API, text);			/* Store session name */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
+			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
+			API->GMT->current.setting.history = k_history_off;	/* Turn off so that no history is copied into the workflow directory */
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */

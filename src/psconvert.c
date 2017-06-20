@@ -770,7 +770,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_MODERN && !(Ctrl->In.n_files == 0 || (Ctrl->In.n_files == 1 && halfbaked)),
 	                                   "Syntax error: No listed input files allowed under modern GMT mode\n");
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && (GMT->current.setting.run_mode == GMT_MODERN),
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && GMT->current.setting.run_mode == GMT_MODERN,
 	                                   "Syntax error: Modern GMT mode requires the -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
