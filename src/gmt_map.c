@@ -7245,10 +7245,12 @@ GMT_LOCAL bool accept_the_jump (struct GMT_CTRL *GMT, double lon1, double lon0, 
 	 * from being > 180 degres from the map area to < -180 even though the points do not
 	 * really reflect motion across the area */
 	double dlon;
+	gmt_M_unused(GMT);
+	gmt_M_unused(xx);
 	if (!cartesian) return true;	/* No wrap issues if Cartesian x,y */
 	if (cartesian) return true;	/* No wrap issues if Cartesian x,y */
 	gmt_M_set_delta_lon (lon1, lon0, dlon);
-	fprintf (stderr, "lon0 = %g lon1 = %g dlon = %g xx0 = %g xx1 = %g\n", lon0, lon1, dlon, xx[0], xx[1]);
+	//fprintf (stderr, "lon0 = %g lon1 = %g dlon = %g xx0 = %g xx1 = %g\n", lon0, lon1, dlon, xx[0], xx[1]);
 	if (fabs (dlon) > 1.0 && fabs (dlon) < 90.0) return true;
 	return false;
 }
