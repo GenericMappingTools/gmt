@@ -38,25 +38,29 @@ gmt.history file in the current directory), *conf* (deletes the gmt.conf
 file in the current directory), *cache* (deletes the user's cache directory
 and all of its content), or *all* (does all of the above).
 
-**gmt begin**
+**gmt begin** [*session-prefix*] [*format*]
 
-Initializes a new GMT session under modern mode [Default is classic mode].
+Initializes a new GMT session under *modern* mode [Default is *classic* mode].
 This is experimental; see http://gmt.soest.hawaii.edu/projects/gmt/wiki/Modernization
 for the current description.  All work is performed in a temporary work directory.
+The optional *session-prefix* assigns a name to the session, and this may be used
+as figure name for single-figure sessions [gmtsession].  Likewise, the optional
+*format* can be used to override the default graphics format [PDF].
 
-** gmt figure** [*prefix*] [*format*] [*options*]
+** gmt figure** [*prefix*] [*format(s)*] [*options*]
 
 Specifies the desired name, output format(s) and any custom arguments that should
-be passed to :doc:`psconvert` for this figure.  All plotting will be directed to this
-current figure unless another **gmt figure** command is issued.  The *prefix* is
-used to build final figure names when extensions are automatically appended.
-The *format* setting is a comma-separated list of extensions (e.g., pdf, png).
+be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
+will be directed to this current figure until another **gmt figure** command is issued
+or the session ends.  The *prefix* is used to build final figure names when extensions
+are automatically appended. The *format* setting is a comma-separated list of desired
+extensions (e.g., pdf,png). 
 
 **gmt end**
 
 Terminates a GMT modern mode session and automatically converts the registered
-illustrations to the specified formats, then eliminates the temporary work
-directory.
+illustration(s) to the specified formats, then eliminates the temporary work
+directory.  The figures are placed in the current directory.
 
 If no module is given then
 several other options are available:

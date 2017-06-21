@@ -115,9 +115,9 @@
 #define GMT_SESSION_NAME	"gmtsession"
 #define GMT_SESSION_FORMAT	0	/* Default entry into gmt_session_format|code arrays -> PDF */
 
-/* List ps at end since it causes a renaming of ps- to ps only */
-static char *gmt_session_format[] = {"pdf", "jpg", "png", "ppm", "tif", "bmp", "eps", "ps", NULL};
-static char gmt_session_code[] =    { 'f',   'j',   'G',   'm',   't',   'b',   'e',  'p'};
+/* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
+static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
+static char gmt_session_code[] =    { 'f',   'j',    'j',   'G',   'm',   't',    't',   'b',   'e',  'p'};
 
 #define GMT_def(case_val) * GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)], GMT->current.setting.given_unit[case_val]
 
@@ -11196,6 +11196,36 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	return (answer);
 }
 
+GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Determine of -R<args> imply geographic or Cartesian domain */
+	struct GMT_OPTION *opt = NULL;
+	unsigned int n_slashes;
+	size_t len;
+	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
+	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
+		struct GMT_GRID *G = NULL;
+		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)	/* Read header */
+			return (false);
+		if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK)
+			return (false);
+		return (gmt_M_is_geographic (GMT, GMT_IN));
+	}
+	n_slashes = gmtlib_count_slashes (GMT, opt->arg);	/* Distinguies -Rw/e/s/n from other things */
+	len = strlen (opt->arg);
+	if (n_slashes == 0) {	/* Giving continent or country code(s) or -Rg|d */
+		if (len == 1 && strchr ("dg", opt->arg[0])) return true;	/* Gave -Rg or -Rd */
+		else if (len == 2 || opt->arg[0] == '=' || strchr (opt->arg, ',')) return true;	/* Giving continent or country code(s) or a list of them */
+		else if (len == 5 && opt->arg[2] == '.') return true;	/* Gave a single state, e.g., US.TX */
+	}
+	else if (n_slashes == 3) {
+		if (strchr (opt->arg, 'T')) return false;	/* Giving dateTclock or similar */
+		else if (strchr (opt->arg, ':')) return true;	/* Giving ddd:mm or similar */
+		else if (strchr (opt->arg, 'W') || strchr (opt->arg, 'E') || strchr (opt->arg, 'S')|| strchr (opt->arg, 'N')) return true;	/* Giving ddd:mm or similar */
+		else if (strstr (opt->arg, "+r")) return true;	/* Gave oblique region so geographic */
+	}
+	return false;	/* Default to Cartesian */
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -11340,7 +11370,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if (got_J == false) {	/* No history, apply default projection */
 				static char *arg[2] = {"X15c", "Q15c"};
-				unsigned int geo = gmt_M_is_geographic (GMT, GMT_IN);
+				unsigned int geo = is_region_geographic (GMT, *options);
 				if ((opt = GMT_Make_Option (API, 'J', arg[geo])) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", arg[geo]);

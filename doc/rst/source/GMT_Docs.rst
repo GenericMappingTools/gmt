@@ -490,7 +490,9 @@ simplifies scripting by eliminating needless repetition of options and output fi
 modern mode is activated and deactivated by the new commands **gmt begin** and **gmt end**,
 respectively.  Since these are not part of the classic repertoire one cannot
 accidentally execute a classic mode script in modern mode (or vice versa).
-We will discuss these two commands later.
+We will discuss these two commands later.  Finally, there are some new features in GMT that
+are only accessible under modern mode, such as new ways to specify the map domain and to
+get multiple output formats from the same plot.
 
 
 GMT Overview and Quick Reference
