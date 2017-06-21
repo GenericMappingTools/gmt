@@ -448,7 +448,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		int min;
 		double lat = 0.0;
 		struct stat buf;
-		if (stat (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+		if (stat (infile, &buf)) Return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 		switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72 or 80 */
 			case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
