@@ -652,8 +652,14 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 	bm_ny = irint (ypix);
 	nm = bm_nx * bm_ny;
 
-	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;}
-	if ((check = segy_get_binhd (fpi, &binhead)) != true) {GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;}
+	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
+		fclose (fpi);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+	}
+	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
+		fclose (fpi);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+	}
 
 	if (Ctrl->A.active) {
 /* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
@@ -680,7 +686,7 @@ use a few of these*/
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples is %d\n", n_samp);
@@ -697,7 +703,7 @@ use a few of these*/
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, no sample interval in reel header\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
 	}
 
 	bitmap = gmt_M_memory (GMT, NULL, nm, unsigned char);
