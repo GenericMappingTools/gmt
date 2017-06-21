@@ -7905,8 +7905,8 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		}
 	}
 
-	work_x = gmt_M_memory (GMT, NULL, np, double);
-	work_y = gmt_M_memory (GMT, NULL, np, double);
+	work_x = gmt_M_memory (GMT, NULL, np+1, double);	/* Add one for manual closure */
+	work_y = gmt_M_memory (GMT, NULL, np+1, double);
 
 	if (GMT->common.R.oblique) {
 		work_x[0] = work_x[3] = GMT->current.proj.rect[XLO];	work_y[0] = work_y[1] = GMT->current.proj.rect[YLO];
@@ -8062,6 +8062,10 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		}
 	}
 
+	/* CLose the clipping polygon */
+	work_x[np] = work_x[0];
+	work_y[np] = work_y[0];
+	np++;
 	if (!(*donut)) np = gmt_compact_line (GMT, work_x, work_y, np, false, NULL);
 
 	*x = work_x;
