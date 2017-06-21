@@ -245,7 +245,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	gmt_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
-		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1;
+		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1, eo_flag = 0;
 		bool duplicate;
 		uint64_t row, seg, n_new;
 		struct GMT_DATASET *D = NULL;
@@ -258,7 +258,10 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 #endif
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
+		if (Ctrl->N.active) {	/* Must clip map */
+			eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
+			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
+		}
 		if (!Ctrl->T.active) {
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				Return (API->error);	/* Register data input */
@@ -303,7 +306,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		}
 
 		/* Finalize the composite polygon clip path */
-		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first);
+		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first + eo_flag);
 	}
 
 	gmt_plane_perspective (GMT, -1, 0.0);

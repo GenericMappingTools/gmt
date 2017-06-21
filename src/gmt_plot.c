@@ -4473,7 +4473,12 @@ void gmt_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	 * inside the map area will be drawn on paper. map_setup
 	 * must have been called first.  If r >= 0, the map area will
 	 * first be painted in the r,g,b colors specified.  flag can
-	 * be 0-3, as described in PSL_beginclipping().
+	 * be 0-3, as described in PSL_beginclipping():
+	 * flag : 0 = continue adding pieces to the curent clipping path
+	 *        1 = start new clipping path (more must follows)
+	 *        2 = end clipping path (this is the last segment added)
+	 *        3 = this is the complete clipping path (start to end)
+	 * 	  Add 4 to select even-odd clipping [nonzero-winding rule].
 	 */
 
 	uint64_t np;
