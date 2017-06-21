@@ -373,6 +373,8 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_SYMBOL_FONT		12
 #define PSL_CHUNK		2048
 
+#define PSL_CLOSE_INTERIOR	16
+
 /* Indices for use with PSL->current.sup_up[] */
 #define PSL_LC	0
 #define PSL_UC	1
@@ -3701,13 +3703,16 @@ int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double
 	 *        3 = this is the complete clipping path (start to end)
 	 * 	  Add 4 to omit use even-odd clipping [nonzero-winding rule].
 	 */
-
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
 		PSL_comment (PSL, "Start of polygon clip path\n");
 		PSL_command (PSL, "clipsave\n");
 	}
 
-	if (n > 0) PSL_plotline (PSL, x, y, n, PSL_MOVE);	/* Must not close path since first point not given ! */
+	if (n > 0) {
+		int close_interior = 0;
+		if ((flag & 3) != 3) close_interior = PSL_CLOSE_INTERIOR;
+		PSL_plotline (PSL, x, y, n, PSL_MOVE | close_interior);	/* Must not close path since first point not given ! */
+	}
 
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
@@ -4105,7 +4110,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	 * (but only if this segment runs start to finish)
 	 */
 
-	if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1])) {n--; type |= PSL_CLOSE;}
+	if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1]) && (type & PSL_CLOSE_INTERIOR) == 0) {n--; type |= PSL_CLOSE;}
 
 	if (type & PSL_MOVE) {
 		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);

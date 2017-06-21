@@ -311,6 +311,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = gmt_M_grd_is_global (GMT, Grid->header);
+	double_dip = (wrap && Grid->header->registration == GMT_GRID_NODE_REG);	/* Must duplicate the west nodes to east */
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	gmt_set_geographic (GMT, GMT_OUT);
 	/* All data nodes are thus initialized to 0 */
@@ -465,7 +466,6 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
 #endif
-	double_dip = (wrap && Grid->header->registration == GMT_GRID_NODE_REG);	/* Must duplicate the west nodes to east */
 	
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
