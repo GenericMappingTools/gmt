@@ -18,7 +18,8 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
 [ |-D|\ *resolution*\ [**+**] ]
-[ |-N|\ *maskvalues*\ [**o**] ]
+[ |-N| ]
+[ |-N|\ *maskvalues* ]
 [ |-V|\ [*level*] ] [ **-r** ]
 [ |SYN_OPT-x| ]
 
@@ -74,11 +75,17 @@ Optional Arguments
     one resolution is not guaranteed to remain inside [or outside] when
     a different resolution is selected.
 
+.. _-E:
+
+**-E**
+    Indicate that nodes that fall exactly on a polygon boundary should be
+    considered to be outside the polygon [Default considers them to be inside].
+
 .. _-N:
 
-**-N**\ *maskvalues*\ [**o**]
+**-N**\ *maskvalues*
     Sets the values that will be assigned to nodes. Values can be any
-    number, including the textstring NaN. Append **o** to let nodes
+    number, including the textstring NaN. Also select **-E** to let nodes
     exactly on feature boundaries be considered outside [Default is
     inside]. Specify this information using 1 of 2 formats:
 
