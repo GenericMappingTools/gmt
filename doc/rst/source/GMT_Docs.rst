@@ -2103,37 +2103,37 @@ Introduction
 Most scientists are familiar with the sequence: *raw data* →
 *processing* → *final illustration*.
 In order to finalize papers for submission to scientific journals,
-prepare proposals, and create overheads and slides for various
+prepare proposals, and create illustrations for various
 presentations, many scientists spend large amounts of time and money to
-create camera-ready figures. This process can be tedious and is often
+create high-quality figures. This process can be tedious and is often
 done manually, since available commercial or in-house software usually
 can do only part of the job. To expedite this process we introduce the
-Generic Mapping Tools (GMT for short), which is a free [2]_, software
+Generic Mapping Tools (GMT for short), which is a free [2]_ software
 package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
-of forms ranging from simple *x*--*y* plots to maps and color,
+of forms ranging from simple *x*--*y* plots to maps and color-coded,
 perspective, and shaded-relief illustrations. GMT uses the
 *PostScript* page description language [*Adobe Systems Inc.*, 1990].
 With *PostScript*, multiple plot files can easily be superimposed to
-create arbitrarily complex images in gray tones or 24-bit true color.
+create arbitrarily complex images in gray tones or full color.
 Line drawings, bitmapped images, and text can be easily combined in one
 illustration. *PostScript* plot files are device-independent: The same
-file can be printed at 300 dots per inch (dpi) on an ordinary
-laserwriter or at 2470 dpi on a phototypesetter when ultimate quality is
-needed. GMT software is written as a set of UNIX tools [3]_ and is
+file can be printed at 300 dots per inch (dpi) on a cheap
+printer or converted to a high-resolution PNG image for online usage.
+GMT software is written as a set of UNIX tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
-of charge and is distributed over the computer network (Internet)
-[*Wessel and Smith, 1991; 1995; 1998*].
+of charge and is distributed over the Internet
+[*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*].
 
 The original version 1.0 of GMT was released in the summer of 1988
 when the authors were graduate students at Lamont-Doherty Earth
 Observatory of Columbia University. During our tenure as graduate
-students, L-DEO changed its computing environment to a distributed
+students, LDEO changed its computing environment to a distributed
 network of UNIX workstations, and we wrote GMT to run in this
-environment. It became a success at L-DEO, and soon spread to numerous
+environment. It became a success at LDEO, and soon spread to numerous
 other institutions in the US, Canada, Europe, and Japan. The current
 version benefits from the many suggestions contributed by users of the
-earlier versions, and now includes more than 50 tools, more than 30
+earlier versions, and now includes more than 100 tools, more than 30
 projections, and many other new, more flexible features. GMT provides
 scientists with a variety of tools for data manipulation and display,
 including routines to sample, filter, compute spectral estimates, and
@@ -2150,8 +2150,8 @@ and 3-D perspective illustrations.
 
 GMT is written in the highly portable ANSI C programming language
 [*Kernighan and Ritchie*, 1988], is fully POSIX compliant [*Lewine*,
-1991], has no Year 2000 problems, and may be used with any hardware
-running some flavor of UNIX, possibly with minor modifications. In
+1991], and may be used with any hardware
+running some flavor of UNIX. In
 writing GMT, we have followed the modular design philosophy of UNIX:
 The *raw data* → *processing* → *final illustration* flow is broken
 down to a series of elementary steps; each
@@ -2168,24 +2168,6 @@ formats. To use GMT with custom data bases, one has only to write a
 data extraction tool which will put out data in a form readable by
 GMT (discussed below). After writing the extractor, all other
 GMT modules will work as they are.
-
-GMT makes full use of the *PostScript* page description language, and
-can produce color illustrations if a color *PostScript* device is
-available. One does not necessarily have to have access to a
-top-of-the-line color printer to take advantage of the color
-capabilities offered by GMT: Several companies offer imaging services
-where the customer provides a *PostScript* plot file and gets color
-slides or hardcopies in return. Furthermore, general-purpose
-*PostScript* raster image processors (RIPs) are now becoming available,
-letting the user create raster images from *PostScript* and plot these
-bitmaps on raster devices like computer screens, dot-matrix printers,
-large format raster plotters, and film writers [4]_. Because the
-publication costs of color illustrations are high, GMT offers 90
-common bit and hachure patterns, including many geologic map symbol
-types, as well as complete graytone shading operations. Additional bit
-and hachure patterns may also be designed by the user. With these tools,
-it is possible to generate publication-ready monochrome originals on a
-common laserwriter.
 
 GMT is thoroughly documented and comes with a technical reference and
 cookbook which explains the purpose of the package and its many
@@ -2205,18 +2187,18 @@ The processing and display routines within GMT are completely general
 and will handle any (*x,y*) or (*x,y,z*) data as input. For many
 purposes the (*x,y*) coordinates will be (longitude, latitude) but in
 most cases they could equally well be any other variables (e.g.,
-wavelength, power spectral density). Since the GMT\ plot tools will
+wavelength, power spectral density). Since the GMT plot tools will
 map these (*x,y*) coordinates to positions on a plot or map using a
 variety of transformations (linear, log-log, and several map
 projections), they can be used with any data that are given by two or
 three coordinates. In order to simplify and standardize input and
-output, GMT uses two file formats only. Arbitrary sequences of (*x,y*)
+output, by default GMT uses two file formats only. Arbitrary sequences of (*x,y*)
 or (*x,y,z*) data are read from multi-column ASCII tables, i.e., each
 file consists of several records, in which each coordinate is confined
 to a separate column [5]_. This format is straightforward and allows the
 user to perform almost any simple (or complicated) reformatting or
-processing task using standard UNIX utilities such as **cut**,
-**paste**, **grep**, **sed** and **awk**. Two-dimensional data
+processing task using GMT processing tools (and in a pinch standard UNIX utilities such as **cut**,
+**paste**, **grep**, **sed** and **awk**). Two-dimensional data
 that have been sampled on an equidistant grid are read and written by
 GMT in a binary grid file using the functions provided with the netCDF
 library (a free, public-domain software library available separately
@@ -2227,7 +2209,9 @@ binary data files from one computer system to another [6]_.
 GMT contains programs that will read ASCII (*x,y,z*) files and produce
 grid files. One such program, :doc:`surface`,
 includes new modifications to the gridding algorithm developed by *Smith
-and Wessel* [1990] using continuous splines in tension.
+and Wessel* [1990] using continuous splines in tension. Optionally, GMT
+can also read various binary and netCDF tables, as well as a variety of
+grid formats, especially if built with GDAL support.
 
 Most of the programs will produce some form of output, which falls into
 four categories. Several of the programs may produce more than one of
@@ -2256,14 +2240,8 @@ these types of output:
 
 GMT is available over the Internet at no charge. To obtain a copy,
 goto GMT home page http://gmt.soest.hawaii.edu/ and follow instructions.
-We also maintain two electronic
-mailing lists you may subscribe to in order to stay informed about bug
-fixes and upgrades.
-
-For those without net-access that need to obtain GMT: Geoware makes
-and distributes CD-R and DVD-R media with the GMT package, compatible
-supplements, and several Gb of useful Earth and ocean science data sets.
-For more information send e-mail to geoware@geoware-online.com.
+We also maintain user forums and a bug and feature tracking system on
+the same page.
 
 GMT has served a multitude of scientists very well, and their
 responses have prompted us to develop these programs even further. It is
