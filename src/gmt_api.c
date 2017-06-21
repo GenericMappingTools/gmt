@@ -840,7 +840,8 @@ struct FtpFile {
 
 static size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
 	struct FtpFile *out = (struct FtpFile *)stream;
-	if (out && !out->fp) { /* open file for writing */
+	if (out == NULL) return 0;	/* This cannot happen but Coverity fusses */
+	if (!out->fp) { /* open file for writing */
 		out->fp = fopen (out->filename, "wb");
 		if (!out->fp)
 			return -1; /* failure, can't open file to write */

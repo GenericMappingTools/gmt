@@ -11170,7 +11170,7 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 			c[0] = '\0';	/* Temporarily hide the modifiers */
 		if (r_code[0]) strcat (r_code, ",");	/* Accumulate all codes across multiple -E options */
 		strcat (r_code, E->arg);	/* Append country codes only */
-		strcpy (e_code, E->arg);	/* Duplicate country codes only */
+		strncpy (e_code, E->arg, GMT_LEN256-1);	/* Duplicate country codes only */
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
@@ -11178,7 +11178,7 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 				switch (p[0]) {
 					case 'r': case 'R':
 						if (r_opt[0] == 0) {	/* Only set this once */
-							r_opt[0] = '+';	strcat (r_opt, p);
+							r_opt[0] = '+';	strncat (r_opt, p, GMT_LEN128-2);
 						}
 						break;
 					case 'w': break;	/* Do nothing with defunct +w that was never documented anyway */
@@ -13419,7 +13419,7 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 	}
 	/* Here the file gmt.figures exists and we must read in the entries */
 	if (mode == 1) fig = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FIGURE);
-	while (fgets (line, GMT_BUFSIZ, fp)) {
+	while (fgets (line, PATH_MAX, fp)) {
 		if (line[0] == '#' || line[0] == '\n')
 			continue;
 		if (mode == 1) {
@@ -13475,6 +13475,7 @@ GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API, unsigned int *code) 
 	}
 	if ((n = fscanf (fp, "%s %s\n", prefix, format)) < 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to read from session file %s\n", file);
+		fclose (fp);
 		return NULL;
 	}
 	if (n == 2) {	/* Go through the list of valid extensions and determine chosen format */
@@ -13674,6 +13675,7 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *te
 					error = GMT_RUNTIME_ERROR;
 				}
 			}
+			if (error) return (error);			/* Bail at this point */
 			gmtinit_conf (API->GMT);			/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */

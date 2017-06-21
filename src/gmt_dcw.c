@@ -259,7 +259,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		Q = gmt_quad_init (GMT, 1);
 	}
 
-	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
+	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) {	/* Something went wrong */
+		gmt_M_free (GMT, Q);
+		return NULL;
+	}
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 

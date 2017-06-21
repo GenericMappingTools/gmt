@@ -1423,17 +1423,21 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Complete partial PS file %s\n", ps_names[0]);
 			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", ps_names[0]);
+				gmt_M_str_free (new_name);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
 			if (PSL_fclose (GMT->PSL)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", ps_names[0]);
+				gmt_M_str_free (new_name);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			/* Rename from *.ps- to *.ps+ so we dont complete the file more than once */
 			new_name[strlen(new_name)-1] = '+';
-			if (gmt_rename_file (GMT, ps_names[0], new_name))
+			if (gmt_rename_file (GMT, ps_names[0], new_name)) {
+				gmt_M_str_free (new_name);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			ps_names[0][strlen(ps_names[0])-1] = '+';
 			gmt_M_str_free (new_name);
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Renamed partial PS file to %s\n", ps_names[0]);
