@@ -239,9 +239,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
 	bool wrap_180, replicate_x, replicate_y;
-	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0, col_0, row_0;
+	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
-	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0;
+	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
 	
 	uint64_t ij, k, seg;
 	
@@ -416,13 +416,15 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					/* OK, not a pole and this point is within bounds, but may be exactly on the border */
 
-					col_0 = (unsigned int)gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
-					if (col_0 == Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S->data[GMT_Y][k], Grid->header);
-					if (row_0 == Grid->header->n_rows) row_0--;	/* Was exactly on the ymin edge */
+					col_0 = gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
+					if (col_0 == (int)Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
+					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+					row_0 = gmt_M_grd_y_to_row (GMT, S->data[GMT_Y][k], Grid->header);
+					if (row_0 == (int)Grid->header->n_rows) row_0--;	/* Was exactly on the ymin edge */
+					if (gmt_y_out_of_bounds (GMT, &row_0, Grid->header, &wrap_180)) continue;	/* Outside y-range */
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
-					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (Grid->header->n_columns-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
+					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (int)(Grid->header->n_columns-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
 						col = (col_0 == 0) ? Grid->header->n_columns-1 : 0;
 						ij = gmt_M_ijp (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
