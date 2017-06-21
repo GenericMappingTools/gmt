@@ -1,6 +1,7 @@
 #!/bin/bash
 # Testing vertical psscale panel sizing if -+e +n and reverse scale.
 ps=versclpanel.ps
+gmt set FONT_ANNOT_PRIMARY 9p,Helvetica,black
 gmt makecpt -T-200/1000/100 -Crainbow -Z > t.cpt
 gmt psxy -R0/25/0/30 -Jx1c -P -K -X0 << EOF > $ps
 0	12
