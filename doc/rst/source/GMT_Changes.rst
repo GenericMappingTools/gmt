@@ -895,8 +895,7 @@ implemented by a series of new lower-case GMT common options:
 *  Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These can be produced by
    **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
-   format. See Chapter `The GMT Vector Data Format for OGR Compatibility`_
-   for an explanation of the OGR/GMT file format.
+   format. See Chapter :ref:`OGR_compat` for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via GMT comment lines these
    files can also be used in GMT 4 (the GIS metadata is simply
    skipped).
@@ -934,7 +933,7 @@ Some of the established GMT common options have seen significant
 improvements; these include:
 
 *  The completely revised **-B** option can now handle irregular and custom annotations
-   (see Section `Custom axes`_). It also has a new automatic mode which
+   (see Section :ref:`custom_axes`). It also has a new automatic mode which
    will select optimal intervals given data range and plot size. The 3-D base maps can now have
    horizontal gridlines on xz and yz back walls.
 

@@ -1546,6 +1546,8 @@ least half of a full interval.
 
    Cartesian time axis, example 7
 
+.. _custom_axes:
+
 Custom axes
 ^^^^^^^^^^^
 
@@ -8850,6 +8852,7 @@ simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to the single commands **gmt_init_tmpdir** and
 **gmt_remove_tmpdir**, respectively.
 
+.. _OGR_compat:
 
 The GMT Vector Data Format for OGR Compatibility
 ================================================

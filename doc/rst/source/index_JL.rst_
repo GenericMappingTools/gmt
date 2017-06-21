@@ -67,12 +67,19 @@ Gallery
 The CookBook
 ============
 
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    cookbook        |
-+--------------------+
++-----------------+
+| .. toctree::    |
+|    :maxdepth: 2 |
+|                 |
+|    cookbook     |
++-----------------+
+
++-----------------+-------------------+---------------------+
+| .. toctree::    | .. toctree::      | .. toctree::        |
+|    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1     |
+|                 |                   |                     |
+|    changes      |    compatibility  |    switching        |
++-----------------+-------------------+---------------------+
 
 The Tutorial
 ============
