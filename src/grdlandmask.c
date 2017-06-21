@@ -216,11 +216,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdlandmask (void *V_API, int mode, void *args) {
-	bool temp_shift = false, wrap, used_polygons;
+	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
 	
-	uint64_t ij;
+	uint64_t ij, count[GRDLANDMASK_N_CLASSES];
 
 	char line[GMT_LEN256] = {""};
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
@@ -272,6 +272,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
+	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
 	
 	if (Ctrl->N.mode) {
 		Ctrl->N.mask[3] = Ctrl->N.mask[1];
@@ -464,12 +465,16 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
 #endif
+	double_dip = (wrap && Grid->header->registration == GMT_GRID_NODE_REG);	/* Must duplicate the west nodes to east */
+	
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
+		count[k]++;
+		if (col == 0 && double_dip) count[k]++;	/* CoOunt these guys twice */
 	}
 
-	if (wrap && Grid->header->registration == GMT_GRID_NODE_REG) { /* Copy over values to the repeating right column */
+	if (double_dip) { /* Copy over values to the repeating right column */
 		unsigned int row_l;
 		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
@@ -486,6 +491,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		for (k = 0; k < GRDLANDMASK_N_CLASSES; k++)
+			if (count[k]) GMT_Report (API, GMT_MSG_VERBOSE, "Level %d contained %" PRIu64 " nodes\n", k, count[k]);
+	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
