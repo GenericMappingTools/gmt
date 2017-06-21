@@ -10855,10 +10855,10 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 }
 
 /*! Determine if the current module is a PostScript-producing module that writes PostScript */
-GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
+GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
 	struct GMT_OPTION *opt = NULL;
 
-	if (strstr (keys, ">X}") == NULL && strstr (keys, ">X?") == NULL) return false;	/* Can never produce PostScript */
+	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
@@ -11282,7 +11282,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		bool got_R = false, got_J = false;
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
-		GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+		GMT->current.ps.active = is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
 
 		if (GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
