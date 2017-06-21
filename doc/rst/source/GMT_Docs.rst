@@ -464,16 +464,12 @@ and the general workflow of adding overlays to existing PostScript files have
 remained unchanged, and thousands of GMT scripts written in c-shell, bash shell, DOS batch,
 and other environments exist and their maintainers expect them to run in the future.
 This requirement of backwards compatibility has to some extent stifled our drive to
-make GMT easier and safer to use.  Starting with GMT 6 we specifically address this
-conundrum by introducing a new operating *mode* for GMT named *modern*.  In contrast
-to the *classic* (and only) mode available in earlier versions 1-5, the *modern* mode
-was designed to eliminate some of the hardest aspects of learning and using GMT.  Having
-run dozens of classes introducing GMT to students and staff, and helping hundreds of
-practitioners via email or forums over the years, we have a pretty clear idea of what
-is difficult.
+make GMT easier and safer to use.  Having run dozens of classes introducing GMT to students
+and staff, and helped hundreds of practitioners via email or forums over the years, we
+have a pretty clear idea of what is difficult.
 
-Given its almost limitless capabilities, GMT has always had a pretty steep learning curve.
-The hardest aspects that have risen to the top of the "rookie error" list include
+Given its almost limitless capabilities, GMT has always had a fairly steep learning curve.
+The hardest aspects that have percolated to the top of the "rookie error" list include
 
 #. The GMT "cake-baking": Handling the use of **-O** and **-K** to manage *PostScript* overlays.
 #. The *PostScript* redirection: Creating a new file versus appending to an existing file.
@@ -483,8 +479,12 @@ The hardest aspects that have risen to the top of the "rookie error" list includ
 While pondering these facts, we have also started to gain experience with the MATLAB and Octave
 toolboxes and the preliminary design of the Python package. We were noticing that
 the resulting scripts looked too much like the GMT shell command-line versions, setting
-users up for a continuation of the same rookie errors.  The solution to this was to introduce
-different run modes: Depending on how GMT is started it will either be running in *classic*  or *modern* mode.
+users up for a continuation of the same rookie errors. 
+The solution to this conundrum was to introduce different run modes:
+Starting with GMT 6 we introduce a new operating *mode* for GMT named *modern*.  In contrast
+to the *classic* (and only) mode available in earlier versions 1-5, the *modern* mode
+was designed to eliminate some of the hardest aspects of learning and using GMT.
+Depending on how GMT is started it will either be running in *classic*  or *modern* mode.
 Classic mode is the GMT scripting in use for decades and it will remain the default mode for
 command-line work. The *modern* mode invokes simpler rules that eliminate the possibility
 of the listed rookie errors and simplify scripting considerably across all interfaces.
@@ -495,8 +495,8 @@ modern mode.
 
 To defeat the rookie errors listed above, here are the features of *modern* mode:
 
-#. The **-O** and **-K** options are disabled in modern mode.
-#. Modules no longer write *PostScript* to standard output for redirection to files.
+#. The **-O** and **-K** options are not available in modern mode.
+#. Modules no longer write *PostScript* to standard output for the users to redirect to files.
    Instead, they write to hidden temporary files.  Checking the status of these files
    is what allows us to know if *PostScript* should be appended or if we are starting
    a new plot.
@@ -508,11 +508,11 @@ To defeat the rookie errors listed above, here are the features of *modern* mode
    and converted to the chosen graphics format [Default is PDF for command-line work].
 
 Not only does the new rules remove the greatest obstacles to GMT learning, it greatly
-simplifies scripting by eliminating needless repetition and output filenames.  The
+simplifies scripting by eliminating needless repetition of options and output filenames.  The
 modern mode is activated and deactivated by the new commands **gmt begin** and **gmt end**,
-respectively, and since there are not part of the classic repertoire once cannot
-accidentally end up running a classic mode script in modern mode.  We will discuss
-these two commands later.
+respectively.  Since these are not part of the classic repertoire one cannot
+accidentally execute a classic mode script in modern mode (or vice versa).
+We will discuss these two commands later.
 
 
 GMT Overview and Quick Reference
