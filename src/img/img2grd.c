@@ -453,12 +453,16 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72 or 80 */
 			case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+				min = 1;
+				break;
 			case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_72*GMT_IMG_ITEMSIZE:
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
 				min = 1;
 				break;
 			case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE:
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+				min = 2;
+				break;
 			case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_72*GMT_IMG_ITEMSIZE:
 				if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
 				min = 2;
@@ -507,7 +511,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	else if (Ctrl->N.value && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
+	else if (Ctrl->N.active && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}

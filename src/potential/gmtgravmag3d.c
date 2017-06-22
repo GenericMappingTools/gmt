@@ -459,12 +459,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
 		if ((retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
-			return (GMT_ERROR_ON_FOPEN);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		/* read vertex file */
 		if ((retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.t_file);
-			return (GMT_ERROR_ON_FOPEN);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_t = retval;
 
@@ -476,7 +476,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
 		if ( (retval = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.stl_file);
-			return (GMT_ERROR_ON_FOPEN);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_s = retval;
 		/*n_swap = check_triang_cw (ndata_s, 1);*/
@@ -484,7 +484,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
 		if ( (retval = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.raw_file);
-			return (GMT_ERROR_ON_FOPEN);
+			Return (GMT_ERROR_ON_FOPEN);
 		}
 		ndata_r = retval;
 		/*n_swap = check_triang_cw (ndata_r, 1);*/

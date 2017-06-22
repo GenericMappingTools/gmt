@@ -236,6 +236,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, k, n, n_use, n_tracks;
 	uint64_t p, np, nx, Tnx = 0;
+	size_t len;
 	unsigned int coe_kind;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
@@ -366,14 +367,22 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	sprintf (record, " Command: %s", THIS_MODULE_NAME);
-	if (!Ctrl->In.file) strcat (record, " [stdin]");
+	len = GMT_BUFSIZ - strlen (record) - 1;
+	if (!Ctrl->In.file) {
+		strncat (record, " [stdin]", len);
+		len -= 8;
+	}
 	for (opt = options; opt; opt = opt->next) {
-		strcat (record, " ");
-		if (opt->option == GMT_OPT_INFILE) 
-			strcat (record, opt->arg);
+		strncat (record, " ", len);
+		len--;
+		if (opt->option == GMT_OPT_INFILE) {
+			strncat (record, opt->arg, len);
+			len -= strlen (opt->arg);
+		}
 		else {
 			sprintf (word, "-%c%s", opt->option, opt->arg);
-			strcat (record, word);
+			strncat (record, word, len);
+			len -= strlen (word);
 		}
 	}
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);

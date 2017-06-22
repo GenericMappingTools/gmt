@@ -223,7 +223,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
-	if (n_paths == 0) {
+	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		if (fp) gmt_fclose (GMT, fp);
 		Return (GMT_NO_INPUT);
@@ -274,11 +274,11 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			tvalue[i] = (char *)D->values[i];
 		}
 
-        /* Set up tendeg identifier array */
-        for (tenx = 0; tenx < 36; tenx++) {
-        	for (teny = 0; teny < 18; teny++)
-            	tendeg[tenx][teny] = 0;
-        }
+		/* Set up tendeg identifier array */
+		for (tenx = 0; tenx < 36; tenx++) {
+			for (teny = 0; teny < 18; teny++)
+				tendeg[tenx][teny] = 0;
+		}
 
 		/* Start processing data */
 		for (rec = 0; rec < D->H.n_records; rec++) {		/* While able to read a data record */
@@ -295,7 +295,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			last_lon  = this_lon;
 			last_lat  = this_lat;
 			lon_w = dvalue[x_col][rec];
-            this_lon = lon_w;
+			this_lon = lon_w;
 			this_lat  = dvalue[y_col][rec];
 			if (this_lon < 0.0) this_lon += 360.0;	/* Start off with everything in 0-360 range */
 			xmin1 = MIN (this_lon, xmin1);
@@ -318,17 +318,17 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 			ymin = MIN (this_lat, ymin);
 			ymax = MAX (this_lat, ymax);
 
-            /* Determine 10x10 degree boxes crossed */
-            teny = (int)(floor ((this_lat/10)+9));
-            if (this_lon > 180) tenx = (int)(ceil (((this_lon-360)/10)+18));
-            else tenx = (int)(floor (this_lon/10)+18);
+			/* Determine 10x10 degree boxes crossed */
+			teny = (int)(floor ((this_lat/10)+9));
+			if (this_lon > 180) tenx = (int)(ceil (((this_lon-360)/10)+18));
+			else tenx = (int)(floor (this_lon/10)+18);
 			if (!tendeg[tenx][teny]) {
 				tendeg[tenx][teny] = 1;
 #if 0
-                if (this_lon > 180)
-                	fprintf (stderr,"lon: %.5f lat: %.5f\ttendeg[%d][%d] = %d\n",this_lon-360,this_lat,tenx,teny,tendeg[tenx][teny]);
-                else
-                    fprintf (stderr,"lon: %.5f lat: %.5f\ttendeg[%d][%d] = %d\n",this_lon,this_lat,tenx,teny,tendeg[tenx][teny])
+ 			if (this_lon > 180)
+				fprintf (stderr,"lon: %.5f lat: %.5f\ttendeg[%d][%d] = %d\n",this_lon-360,this_lat,tenx,teny,tendeg[tenx][teny]);
+			else
+				fprintf (stderr,"lon: %.5f lat: %.5f\ttendeg[%d][%d] = %d\n",this_lon,this_lat,tenx,teny,tendeg[tenx][teny])
 #endif
 				nten++;
 			}
@@ -406,11 +406,11 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 		id = MGD77_Get_Header_Item (GMT, &M, name);
 		strncpy (MGD77_Header_Lookup[id].ptr[MGD77_M77_SET],value,MGD77_Header_Lookup[id].length);
 		value[0] = '\0';
-        i = 0;
+		i = 0;
 		for (tenx = 0; tenx < 36; tenx++) {
 			for (teny = 0; teny < 18; teny++) {
 				if (tendeg[tenx][teny]) {
-                    i++;
+					i++;
 					if (tenx >= 18) {
 						tquad = 3;
 						if (teny >= 9)
@@ -421,15 +421,15 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 							tquad = 7;
 					}
 					if (teny > 8) sprintf (value,"%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-9.0),fabs(tenx-18.0));
-                    else sprintf (value,"%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-8.0),fabs(tenx-18.0));
+					else sprintf (value,"%s%.1d%01.0f%02.0f,",value,tquad,fabs(teny-8.0),fabs(tenx-18.0));
 				}
 			}
-        }
-        sprintf (value, "%s9999", value); i++;
-        while (i < 30) { /* MGD77 format can store up to this many 10x10 identifiers */
-            sprintf (value,"%s,   0",value);
-            i++;
-        }
+		}
+		sprintf (value, "%s9999", value); i++;
+		while (i < 30) { /* MGD77 format can store up to this many 10x10 identifiers */
+ 			sprintf (value,"%s,   0",value);
+			i++;
+		}
 		sprintf (name,"Ten_Degree_Identifier");
 		id = MGD77_Get_Header_Item (GMT, &M, name);
 		strncpy (MGD77_Header_Lookup[id].ptr[MGD77_M77_SET],value,MGD77_Header_Lookup[id].length);
@@ -526,7 +526,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 		MGD77_Free_Dataset (GMT, &D);
 	}
 
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
 	if (fp) gmt_fclose (GMT, fp);

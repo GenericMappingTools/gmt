@@ -319,7 +319,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
-	if (n_paths == 0) {
+	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
@@ -557,7 +557,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		MGD77_Free_Dataset (GMT, &D);
 	}
 		
-	MGD77_Path_Free (GMT, n_paths, list);
+	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
 

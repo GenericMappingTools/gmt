@@ -1889,7 +1889,9 @@ int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned in
 
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***filelist, bool *cmdline) {
 	/* Return list of track names given on command line or via =list mechanism.
-	 * The names do not have the track extension. */
+	 * The names do not have the track extension.
+	 * Returns -1 if it cannot open the list,
+	 * otherwise returns number of tracks. */
 	unsigned int i, A, first;
 	size_t n_alloc, add_chunk;
 	char **file = NULL, *p = NULL;
@@ -1932,7 +1934,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 			file[i][(size_t)(p-file[i])] = '\0';
 	}
 
-	return (A);
+	return ((int)A);
 }
 
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
@@ -1994,7 +1996,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 	}
 	for (i = missing = 0; i < n_items; i++) {
 		if (MGD77_Match_List (GMT, item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
-			if ((ks = MGD77_Match_List (GMT, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
+			if (aux_name == NULL || (ks = MGD77_Match_List (GMT, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxiliary columns\n", ctable, item_names[i]);
 				missing++;
 			}

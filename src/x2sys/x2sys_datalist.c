@@ -228,8 +228,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
-	unsigned int ocol, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0, o_mode;
-	uint64_t row;
+	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0, o_mode;
+	uint64_t row, trk_no, n_tracks;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
@@ -269,10 +269,11 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the x2sys_datalist main code ----------------------------*/
 
-	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
+	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
+	n_tracks = (uint64_t)error;
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);

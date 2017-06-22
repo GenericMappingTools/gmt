@@ -1517,7 +1517,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
-				if (delete) gmt_remove_file (GMT, ps_file);	/* Since we created a temporary file from the memdata */
+				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+					Return (GMT_RUNTIME_ERROR);
 				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
 					for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);

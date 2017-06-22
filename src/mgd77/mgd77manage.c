@@ -563,14 +563,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
 
-	if (n_paths == 0) {
+	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
 
 	if (got_table && n_paths != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
-		MGD77_Path_Free (GMT, n_paths, list);
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_PARSE_ERROR);
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
@@ -638,7 +638,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		else {
 			if ((fp = gmt_fopen (GMT, Ctrl->A.file, GMT->current.io.r_mode)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->A.file);
-				MGD77_Path_Free (GMT, n_paths, list);
+				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 		}
@@ -648,7 +648,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
 					if (fp != GMT->session.std[GMT_IN]) gmt_fclose (GMT, fp);
-					MGD77_Path_Free (GMT, n_paths, list);
+					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (GMT_DATA_READ_ERROR);
 				}
 			}
@@ -692,7 +692,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %d\n",
 				            n_fields, n_expected_fields, n);
-				MGD77_Path_Free (GMT, n_paths, list);
+				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				MGD77_end (GMT, &In);
 				gmt_M_free (GMT, colvalue);
 				if (two_cols) gmt_M_free (GMT, coldnt);
@@ -1622,7 +1622,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled data for %d MGD77 files\n", n_changed);
 	
-	MGD77_Path_Free (GMT, n_paths, list);
+	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &In);
 	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 

@@ -368,10 +368,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
+	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Must give at least one data set!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
+	n_tracks = (uint64_t)error;
 	
 	GMT->current.setting.interpolant = Ctrl->I.mode;
 	if (Ctrl->Q.active) {
@@ -534,21 +535,25 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
 		gmt_M_free (GMT, duplicate);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		if (fpC) fclose (fpC);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		gmt_M_free (GMT, duplicate);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		if (fpC) fclose (fpC);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, duplicate);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		if (fpC) fclose (fpC);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		gmt_M_free (GMT, duplicate);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		if (fpC) fclose (fpC);
 		Return (API->error);
 	}
 
@@ -558,6 +563,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (s->x_col < 0 || s->y_col < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
 			x2sys_free_list (GMT, trk_name, n_tracks);
+			if (fpC) fclose (fpC);
 			Return (GMT_RUNTIME_ERROR);
 		}
 

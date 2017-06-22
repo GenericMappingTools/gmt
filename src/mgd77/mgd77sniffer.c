@@ -927,6 +927,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
+	if (n_paths <= 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises found\n");
+		Return (GMT_NO_INPUT);
+	}
+
 	/* NAUTICAL CONVERSION FACTORS */
 	if (nautical) {
 		distance_factor = 1.0 / MGD77_METERS_PER_NM; /* meters to nm */
@@ -1121,7 +1126,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			sprintf (outfile,"%s.e77",M.NGDC_id);
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
-				MGD77_Path_Free (GMT, n_paths, list);
+				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				Return (API->error);
 			}
 	 	}
@@ -1829,6 +1834,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (m == 1 && !gmt_M_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
+				}
+				if (n < 2) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Not enough points, skipping faa regression\n");
+					continue;
 				}
 				if (m == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
 				else GMT_Report (API, GMT_MSG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
@@ -3006,7 +3015,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, iMaxDiff);
 	}
 
-	MGD77_Path_Free (GMT, n_paths, list);
+	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);
 	MGD77_end (GMT, &Out);
 	Return (GMT_NOERROR);

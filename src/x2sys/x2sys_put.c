@@ -329,11 +329,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
 					GMT_Report (API, GMT_MSG_NORMAL, "Error processing record for track %s [%s]\n", track, line);
-					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+					Return (GMT_DATA_READ_ERROR);
 				}
 				else if (flag > max_flag) {
 					GMT_Report (API, GMT_MSG_NORMAL, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
-					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+					Return (GMT_DATA_READ_ERROR);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
 					B.base[index].first_track = x2sys_bix_make_track (GMT, 0, 0);
@@ -396,7 +396,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		fprintf (ftrack,"%s %d %d\n",this_info->trackname, this_info->track_id, this_info->flag);
 
 	fclose (ftrack);
-	chmod (track_file, (mode_t)S_RDONLY);
+	if (chmod (track_file, (mode_t)S_RDONLY))
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", track_file);
 
 	for (index = 0; index < B.nm_bin; index++) {
 		if (B.base[index].n_tracks == 0) continue;
@@ -425,7 +426,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		}
 	}
 	fclose (fbin);
-	chmod (index_file, (mode_t)S_RDONLY);
+	if (chmod (index_file, (mode_t)S_RDONLY))
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", index_file);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
