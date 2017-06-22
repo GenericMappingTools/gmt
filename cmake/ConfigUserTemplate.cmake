@@ -231,6 +231,7 @@ set (DO_MODERN_TESTS TRUE)
 #if ( CMAKE_GENERATOR STREQUAL "Xcode" )
 ##	So Xcode can find the supplemental plug-ins during debug sessions
 #	add_definitions(-DXCODER)
+#   add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
 #	message("Add Xcode definition for GMT")
 #endif()
 #add_definitions(-DDEBUG)
