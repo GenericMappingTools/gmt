@@ -191,6 +191,7 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
+set (DO_MODERN_TESTS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
