@@ -142,7 +142,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77path (void *V_API, int mode, void *args) {
-	unsigned int i, n_cruises = 0, n_paths;
+	uint64_t n_cruises = 0, i, n_paths;
 	int error = 0;
 	
 	char path[GMT_BUFSIZ] = {""}, **list = NULL;
@@ -182,12 +182,13 @@ int GMT_mgd77path (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
+	error = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
-	if (n_paths == 0) {
+	if (error <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No cruises found\n");
 		Return (GMT_NO_INPUT);
 	}
+	n_paths = (uint64_t)error;
 	
 	for (i = 0; i < n_paths; i++) {		/* Process each ID */
  		if (MGD77_Get_Path (GMT, path, list[i], &M))
@@ -202,7 +203,7 @@ int GMT_mgd77path (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %d cruises\n", n_cruises);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " cruises\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);

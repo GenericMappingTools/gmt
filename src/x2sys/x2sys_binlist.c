@@ -176,8 +176,8 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
 
-	uint64_t this_bin_index, index, last_bin_index, row, col;
-	unsigned int trk, curr_x_pt, prev_x_pt, n_tracks;
+	uint64_t this_bin_index, index, last_bin_index, row, col, trk, n_tracks;
+	unsigned int curr_x_pt, prev_x_pt;
 	int ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
 	int this_bin_col;	/* This col node for bin */
 	int this_bin_row;	/* This row node for bin */
@@ -218,11 +218,12 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 
-	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
+	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) <= 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
-
+	n_tracks = (uint64_t)error;
+	
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	if (Ctrl->E.active && !s->geographic) {

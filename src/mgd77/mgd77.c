@@ -4261,7 +4261,9 @@ GMT_LOCAL int compare_L (const void *p1, const void *p2) {
 }
 
 int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list) {
-	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
+	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none).
+	 * Returns -1 if unable to open a list file,
+	 * otherwise returns number of paths found */
 
 	int i;
 	unsigned int n = 0, n_dig, j, k;
@@ -4291,7 +4293,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, flist, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Unable to open file list %s\n", flist);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to open file list %s\n", flist);
 			return (-1);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
