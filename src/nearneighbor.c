@@ -425,13 +425,13 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		for (row = row_0 - d_row; row <= row_end; row++) {
 
 			jj = row;
-			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
+			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 			rowu = jj;
 			col_end = col_0 + d_col[jj];
 			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
-				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */  
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;
