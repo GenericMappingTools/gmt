@@ -418,10 +418,10 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					row_0 = gmt_M_grd_y_to_row (GMT, S->data[GMT_Y][k], Grid->header);
 					if (row_0 == (int)Grid->header->n_rows) row_0--;	/* Was exactly on the ymin edge */
-					if (gmt_y_out_of_bounds (GMT, &row_0, Grid->header, &wrap_180)) continue;	/* Outside y-range */
+					if (gmt_y_out_of_bounds (GMT, &row_0, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 					col_0 = gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == (int)Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
-					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
 					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (int)(Grid->header->n_columns-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
@@ -443,12 +443,12 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 #endif
 					for (row = row_0 - d_row; row <= row_end; row++) {
 						jj = row;
-						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
+						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 						rowu = jj;
 						col_end = col_0 + d_col[jj];
 						for (col = col_0 - d_col[row]; col <= col_end; col++) {
 							ii = col;
-							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
 							colu = ii;
 							ij = gmt_M_ijp (Grid->header, rowu, colu);
 							distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[colu], grd_y0[rowu]);
