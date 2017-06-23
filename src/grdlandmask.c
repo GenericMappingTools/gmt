@@ -61,12 +61,6 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		float mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
-#ifdef DEBUG
-	struct DBG {	/* -+<bin> */
-		bool active;
-		unsigned int bin;
-	} debug;
-#endif
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -95,11 +89,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]%s", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT);
-#ifdef DEBUG
-	GMT_Message (API, GMT_TIME_NONE, " [-+<bin>]");
-#endif
-	GMT_Message (API, GMT_TIME_NONE, "\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]%s\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -122,9 +112,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,x.");
-#ifdef DEBUG
-	GMT_Message (API, GMT_TIME_NONE, "\t-+ Print only a single bin (debug option).\n");
-#endif
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -192,12 +179,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-#ifdef DEBUG
-			case '+':
-				Ctrl->debug.active = true;
-				Ctrl->debug.bin = atoi (opt->arg);
-				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -333,9 +314,6 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
-#ifdef DEBUG
-		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
-#endif
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
 
 		if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
