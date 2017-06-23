@@ -5890,6 +5890,8 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	char *dir = NULL;
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
+	API->start = (mode & GMT_SESSION_START);	/* 1 if calling gmt begin, 0 otherwise */
+	if (API->start) mode -= GMT_SESSION_START;	/* Remove this special flag */
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? api_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
@@ -5918,6 +5920,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 #endif
 	if ((len = strlen (API->tmp_dir)) > 2 && API->tmp_dir[len-1] == '/') API->tmp_dir[len-1] = '\0';	/* Chop off trailing slash */
 	API->PPID = api_get_ppid (API);		/* Save PPID for the rest of the session */
+	GMT_Report (API, GMT_MSG_DEBUG, "Obtained PPID = %d\n", API->PPID);
 
 	/* gmt_begin initializes, among other things, the settings in the user's (or the system's) gmt.conf file */
 	if (gmt_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */

@@ -20,4 +20,3 @@ EOF
 gmt psbasemap -JX15c/9c -R0/25/0/3 -P -Bafg -B+glightgray+t"psbasemap sets -B, pslegend sets -B (bar)" -K -Xc > $ps
 gmt pslegend leg -Dn0.5/0.5+w12c/4.5c+jCM -J -R -P -O -K -F+p+glightyellow >> $ps
 gmt pslegend leg -Dn0.5/0.5+w12c/4.5c+jCM -J -R -O -F+p+glightyellow -Bafg -B+glightgray+t"pslegend sets both frame/bar -B" -Y12c >> $ps
-gmt psconvert -Tf -P $ps

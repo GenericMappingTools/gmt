@@ -81,10 +81,7 @@ int main (int argc, char *argv[]) {
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
 	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
-	/* Initialize new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
-		return GMT_RUNTIME_ERROR;
-	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */
+	
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example by the MSYS shell when executing gmt via symlinks */
 	gmt_chop_ext (progname);
@@ -92,7 +89,12 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
+	if (gmt_main && (argc >= 2 && argc <= 4) && !strcmp (argv[1], "begin")) mode |= GMT_SESSION_START;
 	
+	/* Initialize new GMT session */
+	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
+		return GMT_RUNTIME_ERROR;
+	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */
 	/* First we handle the special command "clear", "begin", "end" and "figure" */
 	if (gmt_main && (argc == 2 || argc == 3) && !strcmp (argv[1], "clear")) {	/* Clear something. */
 		char *ptr = (argc == 3 && !strcmp (argv[2], "all")) ? argv[2] : NULL;	/* For all we pass NULL */

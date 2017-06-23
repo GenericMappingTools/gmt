@@ -13675,13 +13675,20 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *te
 	 */
 
 	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""}, *type[2] = {"classic", "modern"};
-	int err = 0, error = GMT_NOERROR;
+	char dir[GMT_LEN256] = {""};
+	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[2] = {"found", "not found"}, *feel[2] = {"good", "bad"};
+	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
+	
+	if (API->start && mode == GMT_USE_WORKFLOW) return GMT_NOERROR;	/* Premature to check for workflow directory */
+	
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
-	
+	k1 = (err) ? 1 : 0;
+	k2 = (mode == GMT_BEGIN_WORKFLOW) ? 1 - k1 : k1;
+	GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.  This is %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[k1], feel[k2]);
+
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Enter Modern Mode\n");

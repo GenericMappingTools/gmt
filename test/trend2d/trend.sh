@@ -18,5 +18,5 @@ gmt pscontour -R trend.txt -Cz.cpt -J -Baf -B+tTrend -I -O -K -X-3.5i -Y-5i -i0,
 gmt psscale -Cz.cpt -D1.5i/-0.5i+w3i/0.1i+h+jTC -O -K -Ba >> $ps
 gmt pscontour -R trend.txt -Cw.cpt -J -Baf -B+tWeights -I -O -K -X3.5i -i0,1,4 >> $ps
 gmt psscale -Cw.cpt -D1.5i/-0.5i+w3i/0.1i+h+jTC -O -K -Ba >> $ps
-gmt psxy -R$Rp -J -O -T >> $ps
+gmt psxy -R -J -O -T >> $ps
 

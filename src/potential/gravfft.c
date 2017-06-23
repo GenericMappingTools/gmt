@@ -563,8 +563,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.active) {
 		if (((Ctrl->T.active && !Ctrl->T.moho) && Ctrl->E.n_terms > 1) || (Ctrl->S.active && Ctrl->E.n_terms > 1)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Due to a bug, or a method limitation (I didn't figure that yet)\n"
-				"with the selected options, the number of terms in Parker expansion is reset to one\n"
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Due to a bug, or a method limitation (I didn't figure that yet)\n" \
+				"with the selected options, the number of terms in Parker expansion is reset to one\n" \
 				"See examples in the manual if you want to compute with higher order expansion\n\n");
 			Ctrl->E.n_terms = 1;
 		}
