@@ -49,7 +49,7 @@ diff grid_ij.d  "${src:-.}"/grid_ij.d --strip-trailing-cr  >> fail
 
 # Connect the original point and the corresponding tile center
 paste pixel_xy.d pixel_ij.d | $AWK '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
-	| gmt psxy -R0/5/0/5 -JX4.5 -P -B1g1 -BWSne -Wdefault -K -Y0.5i -X2i > $ps
+	| gmt psxy -R0/5/0/5 -JX4.5i -P -B1g1 -BWSne -Wdefault -K -Y0.5i -X2i > $ps
 # Plot and label the points
 gmt psxy -R -J pixel.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 gmt pstext -R -J pixel.d -F+f8p -O -K -N >> $ps

@@ -20,7 +20,7 @@ gmt gmtconvert ascii_i.txt -bo8d > bin_i.b
 
 # 2. do basic gmt blockmean ASCII/bin i/o with no -i/-o
 gmt blockmean -R0/5/0/5 -I1 -r ascii_i.txt > ascii_o.txt
-gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -bod | gmt gmtconvert -bi3d > bin_o.txt
+gmt blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -bo3d | gmt gmtconvert -bi3d > bin_o.txt
 gmt gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = io_answer.txt
 
 # 3. Same as 2, but with selecting cols 3:5 via -i

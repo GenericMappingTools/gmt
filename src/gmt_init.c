@@ -11281,9 +11281,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int n_errors = 0;
 		int id;
 		bool got_R = false, got_J = false;
+		struct GMT_OPTION *opt_R = NULL, *opt_J = NULL;
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
 		GMT->current.ps.active = is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+
+		opt_R = GMT_Find_Option (API, 'R', *options);
+		opt_J = gmt_find_J_option (API, *options);
 
 		if (GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
@@ -11297,14 +11301,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				n_errors++;
 			}
 			/* 3. No -R option without arguments is allowed at top module to reach here (we may add -R later if history is available) */
-			if ((opt = GMT_Find_Option (API, 'R', *options))) {	/* Gave -R option */
-				if (opt->arg[0] == '\0') {
+			if (opt_R) {	/* Gave -R option */
+				if (opt_R->arg[0] == '\0') {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -R not allowed for modern GMT mode.\n");
 					n_errors++;
 				}
-				else if (!strncmp (opt->arg, "auto", 4U) || (opt->arg[0] == 'a' && opt->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
+				else if (!strncmp (opt_R->arg, "auto", 4U) || (opt_R->arg[0] == 'a' && opt_R->arg[1] == '\0'))	{	/* -Ra[uto] determines smart -R from data */
 					if (GMT->current.ps.active) {
-						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt_R, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, false, options);
 					}
 					else {
@@ -11312,9 +11316,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						n_errors++;
 					}
 				}
-				else if (!strncmp (opt->arg, "exact", 5U) || (opt->arg[0] == 'e' && opt->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
+				else if (!strncmp (opt_R->arg, "exact", 5U) || (opt_R->arg[0] == 'e' && opt_R->arg[1] == '\0'))	{	/* -Re[xact] determines exact -R from data */
 					if (GMT->current.ps.active) {
-						if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
+						if (GMT_Delete_Option (API, opt_R, options)) n_errors++;	/* Must remove old -R so next function can add a complete -R */
 						n_errors += gmtinit_determine_R_option_from_data (API, required, true, options);
 					}
 					else {
@@ -11325,8 +11329,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				got_R = true;
 			}
 			/* 4. No -J without arguments are allowed at top module to reach here (we may add -J later if history is available) */
-			if ((opt = gmt_find_J_option (API, *options))) {
-				if (opt->arg[0] == '\0') {
+			if (opt_J) {
+				if (opt_J->arg[0] == '\0') {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for modern GMT mode.\n");
 					n_errors++;
 				}
@@ -11339,6 +11343,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 			if (GMT->current.ps.active)	/* true if module will produce PS */
 				(void)gmt_set_psfilename (GMT);	/* Sets GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
+		}
+		else {	/* Not top-level, meaning these are modules called by other modules and they better have set -R -J if required */
+			if (opt_R) got_R = true;
+			if (opt_R) got_J = true;
 		}
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
