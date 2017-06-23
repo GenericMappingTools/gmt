@@ -11196,11 +11196,12 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	return (answer);
 }
 
-GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options, const char *module) {
 	/* Determine of -R<args> imply geographic or Cartesian domain */
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n_slashes;
 	size_t len;
+	if (!strncmp (module, "pscoast", 7U)) return true;	/* pscoast only does geographic */
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
 		struct GMT_GRID *G = NULL;
@@ -11370,7 +11371,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if (got_J == false) {	/* No history, apply default projection */
 				static char *arg[2] = {"X15c", "Q15c"};
-				unsigned int geo = is_region_geographic (GMT, *options);
+				unsigned int geo = is_region_geographic (GMT, *options, mod_name);
 				if ((opt = GMT_Make_Option (API, 'J', arg[geo])) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", arg[geo]);

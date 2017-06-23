@@ -5885,6 +5885,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	 */
 
 	struct GMTAPI_CTRL *API = NULL;
+	size_t len;
 	static char *unknown = "unknown";
 	char *dir = NULL;
 
@@ -5915,6 +5916,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	else	/* Set standard temporary directory under *nix */
 		API->tmp_dir = strdup ("/tmp");
 #endif
+	if ((len = strlen (API->tmp_dir)) > 2 && API->tmp_dir[len-1] == '/') API->tmp_dir[len-1] = '\0';	/* Chop off trailing slash */
 	API->PPID = api_get_ppid (API);		/* Save PPID for the rest of the session */
 
 	/* gmt_begin initializes, among other things, the settings in the user's (or the system's) gmt.conf file */
