@@ -132,7 +132,6 @@ struct GMTAPI_CTRL {
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
-	bool start;				/* true for gmt begin, false otherwise */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */

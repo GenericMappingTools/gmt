@@ -13677,8 +13677,6 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
 	
-	if (API->start && mode == GMT_USE_WORKFLOW) return GMT_NOERROR;	/* Premature to check for workflow directory */
-	
 	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
