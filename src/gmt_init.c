@@ -13315,7 +13315,7 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 
 int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	/* Delete all files in a directory, then the directory itself.
-	 * It is assumed that we created the directory so taht there is only
+	 * It is assumed that we created the directory so that there is only
 	 * onle level, i.e., there are no sub-directories inside the directory. */
 	unsigned int n_files, k;
 	int error = GMT_NOERROR;

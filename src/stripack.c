@@ -844,7 +844,7 @@ L4:
     d__2 = (d__1 = x[n0] * xp + y[n0] * yp + z__[n0] * zp, fabs(d__1));
     if (store_(&d__2) < 1. - eps * 4.) {
 
-/*   All points are collinear iff P Left NB->N0 for all */
+/*   All points are collinear if P Left NB->N0 for all */
 /*     neighbors NB of N0.  Search the neighbors of N0. */
 /*     Note:  N1 = NL and LP points to NL. */
 
@@ -1290,8 +1290,8 @@ GMT_LOCAL logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4, do
     dz2 = z__[*n2] - z4;
     dz3 = z__[*n3] - z4;
 
-/* N4 lies above the plane of (N1,N2,N3) iff N3 lies above */
-/*   the plane of (N2,N1,N4) iff Det(N3-N4,N2-N4,N1-N4) = */
+/* N4 lies above the plane of (N1,N2,N3) if N3 lies above */
+/*   the plane of (N2,N1,N4) if Det(N3-N4,N2-N4,N1-N4) = */
 /*   (N3-N4,N2-N4 X N1-N4) > 0. */
 
     ret_val = dx3 * (dy2 * dz1 - dy1 * dz2) - dy3 * (dx2 * dz1 - dx1 * dz2) + 
@@ -1983,7 +1983,7 @@ GMT_LOCAL integer crlist_(integer *n, integer *ncol, doublereal *x, doublereal *
 /* NN =        Local copy of N */
 /* NT =        Number of pseudo-triangles:  NB-2 */
 /* SWP =       Logical variable set to true in each optimiza- */
-/*               tion loop (loop on pseudo-arcs) iff a swap */
+/*               tion loop (loop on pseudo-arcs) if a swap */
 /*               is performed */
 /* V1,V2,V3 =  Vertices of triangle KT = (N1,N2,N3) sent to */
 /*               Subroutine CIRCUM */
@@ -2457,7 +2457,7 @@ GMT_LOCAL logical left_(doublereal *x1, doublereal *y1, doublereal *z1, doublere
 
 /* *********************************************************** */
 
-/* LEFT = true iff <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
+/* LEFT = true if <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
 
     ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) + 
 	    *z0 * (*x1 * *y2 - *x2 * *y1) >= 0.;
@@ -2555,7 +2555,7 @@ GMT_LOCAL integer trlist_(integer *n, integer *list, integer *lptr, integer *len
 
 /* Local parameters: */
 
-/* ARCS =     Logical variable with value true iff are */
+/* ARCS =     Logical variable with value true if are */
 /*              indexes are to be stored */
 /* I,J =      LTRI row indexes (1 to 3) associated with */
 /*              triangles KT and KN, respectively */
@@ -2592,7 +2592,7 @@ if (*n < 3 || (*nrow != 6 && *nrow != 9)) {
 /* Initialize parameters for loop on triangles KT = (N1,N2, */
 /*   N3), where N1 < N2 and N1 < N3. */
 
-/*   ARCS = true iff arc indexes are to be stored. */
+/*   ARCS = true if arc indexes are to be stored. */
 /*   KA,KT = Numbers of currently stored arcs and triangles. */
 /*   NM2 = Upper bound on candidates for N1. */
 
