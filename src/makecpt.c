@@ -470,7 +470,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.mode & GMT_CPT_C_REVERSE, Ctrl->Q.mode, Ctrl->W.active);
 	}
 
-	gmt_M_free (GMT, z);	/* It may also have been allocated inside gmtlib_log_array() */
+	if (!Ctrl->T.file) gmt_M_free (GMT, z);	/* It may also have been allocated inside gmtlib_log_array() */
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
