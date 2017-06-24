@@ -6906,7 +6906,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
-	if ((strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) || (strchr ("LCRlcr", item[1]) && strchr ("TMBtmb", item[0]))) {	/* Extended -R option using coordinate codes and grid increments */
+	if (n_slash == 3 && ((strchr ("LCR", item[0]) && strchr ("TMB", item[1])) || (strchr ("LCR", item[1]) && strchr ("TMB", item[0])))) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2];
 		int n_columns, n_rows, just, part;
