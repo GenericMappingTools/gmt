@@ -119,6 +119,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 
 #include "gmt_constants.h"      /* All basic constant definitions */
+#include "gmt_modern.h"         /* Modern mode constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
 #include "gmt_dimensions.h"     /* Constant definitions created by configure */
 #include "gmt_time.h"           /* Declarations of structures for dealing with time */

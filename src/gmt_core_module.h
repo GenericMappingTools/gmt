@@ -24,9 +24,13 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT core library */
+EXTERN_MSC int GMT_begin (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmean (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmedian (void *API, int mode, void *args);
 EXTERN_MSC int GMT_blockmode (void *API, int mode, void *args);
+EXTERN_MSC int GMT_clear (void *API, int mode, void *args);
+EXTERN_MSC int GMT_end (void *API, int mode, void *args);
+EXTERN_MSC int GMT_figure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_filter1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_fitcircle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmt2kml (void *API, int mode, void *args);

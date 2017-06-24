@@ -733,7 +733,6 @@ struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION
 	struct GMT_OPTION *current = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	if (head == NULL)  return_null (V_API, GMT_OPTION_LIST_NULL);	/* Hard to find something in a non-existent list */
 	
 	for (current = head; current && current->option != option; current = current->next);	/* Linearly search for the specified option */
 	return (current);	/* NULL if not found */

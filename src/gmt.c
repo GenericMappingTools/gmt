@@ -89,43 +89,11 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a valid module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-	if (gmt_main && (argc >= 2 && argc <= 4) && !strcmp (argv[1], "begin")) mode |= GMT_SESSION_START;
 	
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
 	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */
-	/* First we handle the special command "clear", "begin", "end" and "figure" */
-	if (gmt_main && (argc == 2 || argc == 3) && !strcmp (argv[1], "clear")) {	/* Clear something. */
-		char *ptr = (argc == 3 && !strcmp (argv[2], "all")) ? argv[2] : NULL;	/* For all we pass NULL */
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_CLEAR, ptr))
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
-	if (gmt_main && (argc >= 2 && argc <= 4) && !strcmp (argv[1], "begin")) {	/* Initiating a GMT Work Flow. */
-		char *cmd = gmt_argv2str (api_ctrl->GMT, argc-2, argv+2);	/* Consolidate all optional args into a string */
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_BEGIN, cmd))
-			return GMT_RUNTIME_ERROR;
-		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
-	else if (gmt_main && argc >= 2 && !strcmp (argv[1], "end")) {	/* Terminating a GMT Work Flow. */
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_END, NULL))
-			return GMT_RUNTIME_ERROR;
-		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
-	else if (gmt_main && argc > 1 && !strcmp (argv[1], "figure")) {	/* Adding a figure entry to the queue. */
-		char *cmd = gmt_argv2str (api_ctrl->GMT, argc-2, argv+2);	/* Consolidate all args into a string */
-		if (GMT_Manage_Session (api_ctrl, GMT_SESSION_FIGURE, cmd))
-			return GMT_RUNTIME_ERROR;
-		gmt_M_str_free (cmd);
-		if (GMT_Destroy_Session (api_ctrl))	/* Destroy GMT session */
-			return GMT_RUNTIME_ERROR;
-		return GMT_NOERROR;
-	}
 	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
 		/* Cannot call [gmt]read or [gmt]write module from the command-line - only external APIs can do that. */
 		module = argv[1];	/* Name of module that does not exist, but will give reasonable message */

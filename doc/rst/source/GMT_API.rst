@@ -800,8 +800,6 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Make_Option_         | Create an option structure                            |
     +--------------------------+-------------------------------------------------------+
-    | GMT_Manage_Session_      | Enter/exit GMT Modern mode and manage figure queue    |
-    +--------------------------+-------------------------------------------------------+
     | GMT_Message_             | Issue a message, optionally with time stamp           |
     +--------------------------+-------------------------------------------------------+
     | GMT_Open_VirtualFile_    | Select memory location as input or output for module  |
@@ -1952,55 +1950,6 @@ following code snippet will visit all text records and print them out with some 
         }
       }
     }
-
-Manipulate Session Workflow
----------------------------
-
-Because the GMT must support both the classic and modern GMT syntax we have
-added a function to the API that handles some of these tasks:
-
-.. _GMT_Manage_Session:
-
-  ::
-
-    int GMT_Manage_Session (void *API, unsigned int mode, void *arg);
-
-This function takes a ``mode`` and in some cases a non-NULL argument ``arg``
-to manage GMT modern workflows.  The ``mode`` can be one of these four values
-to solve specific situations:
-
-#. GMT_SESSION_BEGIN: Pass ``arg`` = NULL.  This starts a new GMT workflow.
-   This involves creating a temporary directory where all hidden files are
-   kept, thus implicitly supporting isolation mode where many workflows can
-   run simultaneously on multi-core computers.  The GMT workflow will remain
-   in modern mode until specifically ended.  On the command line this is
-   equivalent to running **gmt begin**.
-#. GMT_SESSION_END: Pass ``arg`` = NULL.  This exits the modern mode and
-   returns GMT to classic mode.  In the process, GMT will compete processing
-   any figures added to the figure queue.  On the command line this is
-   equivalent to running **gmt end**.
-#. GMT_SESSION_FIGURE: This sets the current figure in modern mode and
-   directs all plot output to this hidden *PostScript* figure.  Each call
-   with this mode increments a figure number and sets the current figure.
-   There is no provision of moving back and forth in the queue.  On the
-   command line this is equivalent to running **gmt figure** *prefix* *formats* *options*.
-   When using the API function all the arguments to **gmt figure** must
-   be passed as a single string via ``arg``.  The ``prefix`` is the desired
-   name prefix for this figure.  The extension of the figure is controlled
-   by how many comma-separated extensions are found in ``formats``, while
-   the optional ``options`` consists of any **psconvert** settings that affects
-   the creation of a figure, such as **-A**, **-E** and many others. As an
-   example on the command line, this command would specify that the current figure
-   should be produced as both PDF and PNG  with prefix "map" and using default settings: 
-   gmt figure map pdf,png.
-#. GMT_SESSION_CLEAR: This removes the setting files associated with the
-   current workflow.  These are stored in the temporary workflow directory
-   and are the familiar gmt.history and gmt.conf, as well as the entire
-   cache directory in the users GMT directory for holding files downloaded
-   by GMT.  The ``arg`` controls what will be removed.  If NULL (or "all")
-   then all the files are removed, otherwise you can pass any of the strings
-   "cache", "conf" or "history" to just remove the corresponding items.
-
 
 Message and Verbose Reporting
 -----------------------------

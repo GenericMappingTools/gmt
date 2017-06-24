@@ -46,9 +46,13 @@ struct Gmt_moduleinfo {
 
 static struct Gmt_moduleinfo g_core_module[] = {
 #ifdef BUILD_SHARED_LIBS
+	{"begin", "core", "Initiate a new GMT session using modern mode [classic]", ""},
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}"},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}"},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}"},
+	{"clear", "core", "Delete gmt.history, gmt.conf, the user cache dir, or all of them", ""},
+	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", ""},
+	{"figure", "core", "Set figure format specifics under a GMT modern mode session", ""},
 	{"filter1d", "core", "Time domain filtering of 1-D data tables", "<D{,>D},FD(1"},
 	{"fitcircle", "core", "Find mean position and great [or small] circle fit to points on sphere", "<D{,>T},>DF"},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", "<D{,>T},CC("},
@@ -133,9 +137,13 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"xyz2grd", "core", "Convert data table to a grid file", "<D{,SD),GG}"},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #else
+	{"begin", "core", "Initiate a new GMT session using modern mode [classic]", "", &GMT_begin},
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}", &GMT_blockmean},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}", &GMT_blockmedian},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}", &GMT_blockmode},
+	{"clear", "core", "Delete gmt.history, gmt.conf, the user cache dir, or all of them", "", &GMT_clear},
+	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", "", &GMT_end},
+	{"figure", "core", "Set figure format specifics under a GMT modern mode session", "", &GMT_figure},
 	{"filter1d", "core", "Time domain filtering of 1-D data tables", "<D{,>D},FD(1", &GMT_filter1d},
 	{"fitcircle", "core", "Find mean position and great [or small] circle fit to points on sphere", "<D{,>T},>DF", &GMT_fitcircle},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", "<D{,>T},CC(", &GMT_gmt2kml},

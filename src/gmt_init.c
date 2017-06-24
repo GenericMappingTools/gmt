@@ -107,18 +107,6 @@
 
 #define USER_MEDIA_OFFSET 1000
 
-#define GMT_HISTORY_FILE	"gmt.history"
-#define GMT_SESSION_FILE	"gmt.session"
-
-/* Session settings for default plot file prefix and format (extension) */
-
-#define GMT_SESSION_NAME	"gmtsession"
-#define GMT_SESSION_FORMAT	0	/* Default entry into gmt_session_format|code arrays -> PDF */
-
-/* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
-static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
-static char gmt_session_code[] =    { 'f',   'j',    'j',   'G',   'm',   't',    't',   'b',   'e',  'p'};
-
 #define GMT_def(case_val) * GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)], GMT->current.setting.given_unit[case_val]
 
 #define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Warning: Option -%c given more than once\n", option))
@@ -4961,7 +4949,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* PS_TRANSPARENCY */
 	strcpy (GMT->current.setting.ps_transpmode, "Normal");
 	/* PS_CONVERT */
-	strcpy (GMT->current.setting.ps_convert, "A,P");
+	strcpy (GMT->current.setting.ps_convert, GMT_SESSION_CONVERT);
 	/* PS_COMMENTS */
 	if (GMT->PSL) GMT->PSL->internal.comments = 0;	/* Only when using PSL in this session */
 
@@ -13185,7 +13173,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
-	if (gmtlib_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
+	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
@@ -13440,6 +13428,14 @@ GMT_LOCAL FILE *open_figure_file (struct GMTAPI_CTRL *API, unsigned int mode, in
 	return fp;
 }
 
+int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
+	int code = 0;
+	gmt_M_unused(GMT);
+	while (gmt_session_format[code] && strcmp (format, gmt_session_format[code]))
+		code++;
+	return (gmt_session_format[code]) ? code : -1;
+}
+
 /*! . */
 int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIGURE **figs) {
 	/* Load or count any figures stored in the queue file gmt.figures.
@@ -13518,12 +13514,13 @@ GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API, unsigned int *code) 
 		return NULL;
 	}
 	if (n == 2) {	/* Go through the list of valid extensions and determine chosen format */
-		while (gmt_session_format[*code] && strcmp (format, gmt_session_format[*code]))
-			(*code)++;
-		if (!gmt_session_format[*code]) {	/* Trouble */
+		int k = gmt_get_graphics_id (API->GMT, format);
+		if ((k = gmt_get_graphics_id (API->GMT, format)) == GMT_NOTSET) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized graphics format %s, default to %s\n", format, gmt_session_format[GMT_SESSION_FORMAT]);
 			*code = GMT_SESSION_FORMAT; 
 		}
+		else
+			*code = (unsigned int)k; 
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Got session name as %s and default graphics format as %s\n", prefix, gmt_session_format[*code]);
 	fclose (fp);
@@ -13606,7 +13603,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
-int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
+int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* Add another figure to the gmt.figure queue.
 	 * arg = "[prefix] [format] [options]"
 	 * Rules: No prefix may start with a hyphen
@@ -13667,7 +13664,7 @@ int gmtlib_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 }
 
 /*! . */
-int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
+int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
 	/* Manage the GMT workflow.  Mode can take the following values:
 	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
 	 *   GMT_USE_WORKFLOW:	Continue using the current work flow directory
@@ -13746,7 +13743,7 @@ int gmtlib_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *te
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
-        	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmtlib_manage_workflow\n", mode);
+        	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmt_manage_workflow\n", mode);
 			break;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
