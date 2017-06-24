@@ -47,6 +47,7 @@ EXTERN_MSC int GMT_gmtselect (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtset (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtsimplify (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtspatial (void *API, int mode, void *args);
+EXTERN_MSC int GMT_gmttiling (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtvector (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtwhich (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtwrite (void *API, int mode, void *args);

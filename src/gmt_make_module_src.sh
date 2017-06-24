@@ -235,6 +235,21 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 };
 EOF
 fi
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+
+/* Function to exclude some special core modules from being reported by gmt --help|show-modules */
+GMT_LOCAL int skip_this_module (const char *name) {
+	if (!strncmp (name, "end", 3U)) return 1;	/* Skip the end module */
+	if (!strncmp (name, "begin", 5U)) return 1;	/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;	/* Skip the clear module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
+	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
+	return 0;	/* Display this one */
+}
+EOF
+fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Pretty print all GMT ${L_TAG} module names and their purposes for gmt --help */
@@ -259,7 +274,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite"))) {
+		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].name)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -277,6 +292,9 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 	}
 }
 
+EOF
+
+cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-modules */
 void gmt_${L_TAG}_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
@@ -295,7 +313,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite")))
+		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].name))
 			printf ("%s\n", g_${L_TAG}_module[module_id].name);
 EOF
 else

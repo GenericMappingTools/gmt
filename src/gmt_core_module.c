@@ -69,6 +69,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtset", "core", "Change individual GMT default parameters", ""},
 	{"gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}"},
 	{"gmtspatial", "core", "Geospatial operations on lines and polygons", "<D{,DD(=f,ND(=,TD(,>D},>TD,>TI,>TN+r"},
+	{"gmttiling", "core", "Tiling polygons", "<D{,>D}"},
 	{"gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}"},
 	{"gmtwhich", "core", "Find full path to specified files", ">T}"},
 	{"gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}"},
@@ -160,6 +161,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtset", "core", "Change individual GMT default parameters", "", &GMT_gmtset},
 	{"gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}", &GMT_gmtsimplify},
 	{"gmtspatial", "core", "Geospatial operations on lines and polygons", "<D{,DD(=f,ND(=,TD(,>D},>TD,>TI,>TN+r", &GMT_gmtspatial},
+	{"gmttiling", "core", "Tiling polygons", "<D{,>D}", &GMT_gmttiling},
 	{"gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}", &GMT_gmtvector},
 	{"gmtwhich", "core", "Find full path to specified files", ">T}", &GMT_gmtwhich},
 	{"gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}", &GMT_gmtwrite},
@@ -230,6 +232,17 @@ static struct Gmt_moduleinfo g_core_module[] = {
 #endif
 };
 
+/* Function to exclude some special core modules from being reported by gmt --help|show-modules */
+GMT_LOCAL int skip_this_module (const char *name) {
+	if (!strncmp (name, "end", 3U)) return 1;	/* Skip the end module */
+	if (!strncmp (name, "begin", 5U)) return 1;	/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;	/* Skip the clear module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
+	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
+	return 0;	/* Display this one */
+}
+
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmt_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
@@ -243,7 +256,7 @@ void gmt_core_module_show_all (void *V_API) {
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-		if (API->external || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite"))) {
+		if (API->external || !skip_this_module (g_core_module[module_id].name)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_core_module[module_id].name, g_core_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -257,7 +270,7 @@ void gmt_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].name != NULL) {
-		if (API->external || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite")))
+		if (API->external || !skip_this_module (g_core_module[module_id].name))
 			printf ("%s\n", g_core_module[module_id].name);
 		++module_id;
 	}

@@ -40,7 +40,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose from:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose on of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache    Deletes the user\'s cache directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   conf     Deletes the user\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   history  Deletes the user\'s gmt.history file.\n");

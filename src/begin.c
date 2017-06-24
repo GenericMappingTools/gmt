@@ -43,15 +43,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for unnamed figures [%s].\n", GMT_SESSION_NAME);
 	GMT_Message (API, GMT_TIME_NONE, "\t<format> sets the default plot format [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Choose one of these valid extensions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose one of these valid extensions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
 	GMT_Option (API, "V");
 	
 	return (GMT_MODULE_USAGE);
