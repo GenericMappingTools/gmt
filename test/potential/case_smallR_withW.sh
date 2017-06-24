@@ -16,4 +16,4 @@ G=0.01
 D=10
 #  Select weights:
 W="-W"
-${src:-.}/run_GPS_case.sub $data $R $I $G $D $W > $ps
+${src:-.}/run_GPS_case_sub.sh $data $R $I $G $D $W > $ps

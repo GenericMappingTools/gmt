@@ -1222,7 +1222,7 @@ if ((d1d2 == 0. && s1 != s2) || (s == 0. && s1 * s2 > 0.)) {
 	}
 
 /* Test for SIGMA = 0 sufficient.  The data satisfies convex- */
-/*   ity iff D1D2 .GE. 0, and D1D2 = 0 implies S1 = S = S2. */
+/*   ity if D1D2 .GE. 0, and D1D2 = 0 implies S1 = S = S2. */
 
 	sig = 0.;
 	if (d1d2 < 0.) {
@@ -1295,7 +1295,7 @@ if (fabs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || fabs(f) <= rtol)
 	goto L3;
 
 /* Convexity cannot be satisfied.  Monotonicity can be satis- */
-/*   fied iff S1*S .GE. 0 and S2*S .GE. 0 since S .NE. 0. */
+/*   fied if S1*S .GE. 0 and S2*S .GE. 0 since S .NE. 0. */
 
 L4:
 	if (s1 * s < 0. || s2 * s < 0.) {
@@ -1304,7 +1304,7 @@ L4:
 	t0 = s * 3. - s1 - s2;
 	d0 = t0 * t0 - s1 * s2;
 
-/* SIGMA = 0 is sufficient for monotonicity iff S*T0 .GE. 0 */
+/* SIGMA = 0 is sufficient for monotonicity if S*T0 .GE. 0 */
 /*   or D0 .LE. 0. */
 
 	if (d0 <= 0. || s * t0 >= 0.) {
@@ -1386,7 +1386,7 @@ L5:
 	    c1 = sig * scm * d2 - ssm * d1pd2;
 	    c2 = sig * ssinh * d2 - scm * d1pd2;
 
-/*   R is in (0,1) and well-defined iff HPP(T1)*HPP(T2) < 0. */
+/*   R is in (0,1) and well-defined if HPP(T1)*HPP(T2) < 0. */
 
 	    f = fmax;
 	    if (c1 * (sig * scm * d1 - ssm * d1pd2) >= 0.) {
