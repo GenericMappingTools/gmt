@@ -109,6 +109,18 @@ Optional Arguments
 
 .. include:: explain_grd_output.rst_
 
+Notes
+-----
+
+A grid produced by grdlandmask is a *categorical* dataset.  As such,
+one has to be careful not to interpolate it with standard methods,
+such as splines.  However, if you make a map of this grid using
+a map projection the grid will be reprojected to yield a rectangular
+matrix in the projected coordinates.  This interpolation is done
+using splines by default and thus may yield artifacts in your map.
+We recommend you use :doc:`grdimage` **-nn** to instead use a nearest
+neighbor interpolation for such cases.
+
 Examples
 --------
 
