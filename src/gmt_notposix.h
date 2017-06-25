@@ -566,6 +566,10 @@
 	EXTERN_MSC char *strdup(const char *s);
 #endif
 
+#ifndef HAVE_STRNDUP
+	EXTERN_MSC char *strndup(const char *s, size_t chars);
+#endif
+
 #ifndef HAVE_STRTOD
 	EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
