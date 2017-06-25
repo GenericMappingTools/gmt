@@ -35,7 +35,13 @@
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-VRr" GMT_ADD_x_OPT GMT_OPT("F")
 
-#define GRDLANDMASK_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
+#define GRDLANDMASK_N_CLASSES	(2*GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
+/* There are 4 GSHHG levels, but we may find points exactly on the border between levels.
+ * To handle these cases we must double the number of levels.  The N.mask[] array will hold the
+ * data values we wish to assign to each of these 9 potential cases.  As we determine where a
+ * node fits into this hierarchy we assign values 0-9 to the grid.  Then, at the end we replace
+ * these values with the corresponding entries in N.mask[].
+ */
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is true if the option has been activated */
@@ -48,8 +54,9 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-	struct GRDLNDM_E {	/* -E */
+	struct GRDLNDM_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
 		bool active;
+		bool linetrace;	/* True if -E was given arguments as we must trace the lines through the grid */
 		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct GRDLNDM_G {	/* -G<maskfile> */
@@ -74,7 +81,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
 	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, float);		/* Default "wet" value = 0 */
-	C->N.mask[1] = C->N.mask[3] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
+	C->N.mask[2] = C->N.mask[6] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
 	
 	return (C);
 }
@@ -106,6 +113,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t   lines to the indicated values [no tracing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
@@ -148,6 +158,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 				break;
 			case 'E':	/* On-boundary setting */
 				Ctrl->E.active = true;
+				if (opt->arg[0]) {	/* Trace lines through grid */
+					Ctrl->E.linetrace = true;
+					j = pos = 0;
+					strncpy (line, opt->arg,  GMT_LEN256);
+					while (j < 4 && (gmt_strtok (line, "/", &pos, ptr))) {
+						Ctrl->N.mask[2*j+1] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
+						j++;
+					}
+					if (!(j == 1 || j == 4)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Specify 1 or 4 border-value arguments\n");
+						n_errors++;
+					}
+					if (j == 1) Ctrl->N.mask[3] = Ctrl->N.mask[5] = Ctrl->N.mask[7] = Ctrl->N.mask[1];	/* Duplicate border values */
+				}
 				Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
@@ -170,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 				}
 				j = pos = 0;
 				while (j < 5 && (gmt_strtok (line, "/", &pos, ptr))) {
-					Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
+					Ctrl->N.mask[2*j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
@@ -255,9 +279,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
 	
-	if (Ctrl->N.mode) {
-		Ctrl->N.mask[3] = Ctrl->N.mask[1];
-		Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
+	if (Ctrl->N.mode) {	/* Must duplicate wet/dry settings */
+		Ctrl->N.mask[6] = Ctrl->N.mask[2];
+		Ctrl->N.mask[4] = Ctrl->N.mask[8] = Ctrl->N.mask[0];
 	}
 
 	if ((err = gmt_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info))) {
@@ -361,7 +385,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				/* So row_min is in range [0,?] */
 				row_max = MIN (ny1, irint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV8_LIMIT)));
 				/* So row_max is in range [?,ny1] */
-				f_level = (float)p[k].level;
+				f_level = (float)(2*p[k].level);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,side,ij) shared(row_min,row_max,col_min,col_max,GMT,x,y,p,k,Ctrl,Grid,f_level)
@@ -375,7 +399,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 						/* Here, point is inside, we must assign value */
 
 						ij = gmt_M_ijp (Grid->header, row, col);
-						if (p[k].level > Grid->data[ij]) Grid->data[ij] = f_level;
+						if (f_level > Grid->data[ij]) Grid->data[ij] = f_level;
 					}
 				}
 			}
@@ -396,7 +420,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			/* If k is still INT_MAX we must assume this patch should have the min level of the bin */
 
 			if (k == INT_MAX) k = MIN (MIN (c.node_level[0], c.node_level[1]) , MIN (c.node_level[2], c.node_level[3]));
-			f_level = (float)k;
+			f_level = (float)(2*k);
 
 			/* Determine nodes to initialize */
 
@@ -449,7 +473,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
 		count[k]++;
-		if (col == 0 && double_dip) count[k]++;	/* CoOunt these guys twice */
+		if (col == 0 && double_dip) count[k]++;	/* Count these guys twice */
 	}
 
 	if (double_dip) { /* Copy over values to the repeating right column */
@@ -470,8 +494,13 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		for (k = 0; k < GRDLANDMASK_N_CLASSES; k++)
-			if (count[k]) GMT_Report (API, GMT_MSG_VERBOSE, "Level %d contained %" PRIu64 " nodes\n", k, count[k]);
+		for (k = 0; k < GRDLANDMASK_N_CLASSES; k++) {
+			if (count[k] == 0) continue;
+			if (k%2 == 0)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Level %d set for %" PRIu64 " nodes\n", k/2, count[k]);
+			else
+				GMT_Report (API, GMT_MSG_VERBOSE, "Border between Levels %d-%d set for %" PRIu64 " nodes\n", (k-1)/2, (k+1)/2, count[k]);
+		}
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
