@@ -9856,6 +9856,11 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		/* If we find the -N option, we set type to D, else G */
 		type = (GMT_Find_Option (API, 'N', *head)) ? 'D' : 'G';
 	}
+	/* 1k. Check if this is the gmtinfo module, where output type is text except with -C and -Ib it is dataset */
+	else if (!strncmp (module, "gmtinfo", 7U)) {
+		/* If we find the -C or -Ib options, we set type to D, else T */
+		type = (GMT_Find_Option (API, 'C', *head) || ((opt = GMT_Find_Option (API, 'I', *head)) && opt->arg[0] == 'b')) ? 'D' : 'T';
+	}
 
 	gmt_M_str_free (module);
 

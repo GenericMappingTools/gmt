@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [*dx*\ [/*dy*\ ]] ]
 [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
 [ |-F|\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
-[ |-I|\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
+[ |-I|\ [**b**\ \|\ **p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ |-L| ]
 [ |-S|\ [**x**\ ][**y**] ]
 [ |-T|\ *dz*\ [\ **+c**\ *col*] ]
@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...]
+**-I**\ [**b**\ \|\ **p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...]
     Report the min/max of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes),
     and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
@@ -120,6 +120,7 @@ Optional Arguments
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
+    Use **-Ib** to report the bounding box of the data table or segments (see **-A**).
     If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
 
 .. _-L:
