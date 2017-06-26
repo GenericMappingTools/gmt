@@ -70,6 +70,18 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} N;
 };
 
+struct BINCROSS {
+	double x, y, d;
+};
+
+GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
+	const struct BINCROSS *a = p1, *b = p2;
+
+	if (a->d < b->d) return (-1);
+	if (a->d > b->d) return (+1);
+	return (0);
+}
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
 	
@@ -96,7 +108,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]%s\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E[<bordervalues>]]\n\t[-N<maskvalues>] [%s] [%s]%s\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -113,9 +125,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t   lines to the indicated values [no tracing].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the lines to the indicated values [Deafault is no line tracing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
@@ -159,6 +171,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 			case 'E':	/* On-boundary setting */
 				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Trace lines through grid */
+					GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E<values> is presently being tested and is considered experimental\n");
 					Ctrl->E.linetrace = true;
 					j = pos = 0;
 					strncpy (line, opt->arg,  GMT_LEN256);
@@ -167,12 +180,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 						j++;
 					}
 					if (!(j == 1 || j == 4)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Specify 1 or 4 border-value arguments\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Specify 1 or 4 border values\n");
 						n_errors++;
 					}
 					if (j == 1) Ctrl->N.mask[3] = Ctrl->N.mask[5] = Ctrl->N.mask[7] = Ctrl->N.mask[1];	/* Duplicate border values */
 				}
-				Ctrl->E.inside = GMT_INSIDE;
+				else
+					Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -198,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 mask values\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -217,6 +231,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x, double y) {
+	/* Return true if this point is inside the grid */
+	int row, col;
+	gmt_M_unused(GMT);
+	row = gmt_M_grd_y_to_row (GMT, y, C);
+	if (row < 0 || row > (int)C->n_rows) return false;
+	col = gmt_M_grd_x_to_col (GMT, x, C);
+	if (col < 0 || col > (int)C->n_columns) return false;
+	return true;
+}
+
+GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, float f_level, int64_t *ij) {
+	/* Set node value and return node index if this point is inside the grid */
+	int row, col;
+	gmt_M_unused(GMT);
+	row = gmt_M_grd_y_to_row (GMT, y, C);
+	if (row < 0 || row > (int)C->n_rows) return;
+	col = gmt_M_grd_x_to_col (GMT, x, C);
+	if (col < 0 || col > (int)C->n_columns) return;
+	*ij = gmt_M_ijp (G->header, row, col);
+	G->data[*ij] = f_level;
+	if (*ij == 82)
+		f_level = 0.0;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -225,19 +264,24 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
 	
-	uint64_t ij, count[GRDLANDMASK_N_CLASSES];
+	int64_t ij;
+	uint64_t count[GRDLANDMASK_N_CLASSES];
+	
+	size_t nx_alloc = GMT_SMALL_CHUNK;
 
 	char line[GMT_LEN256] = {""};
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
-	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch;
+	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch, inc_inch[2];
 	double dummy, *x = NULL, *y = NULL;
 	
 	float f_level = 0.0f;
 
 	struct GMT_SHORE c;
-	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID *Grid = NULL, *Cart = NULL;
+	struct GMT_GRID_HEADER *C = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
+	struct BINCROSS *X = NULL;
 	struct GRDLANDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -312,7 +356,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
+	//gmt_parse_common_options (GMT, "J", 'J', "x1id");	/* Fake linear projection so the shore machinery will work */
+	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work */
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = gmt_M_grd_is_global (GMT, Grid->header);
@@ -322,6 +367,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	/* All data nodes are thus initialized to 0 */
 	x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
 	y = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
+	if (Ctrl->E.linetrace)
+		X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
 
 	nx1 = Grid->header->n_columns - 1;	ny1 = Grid->header->n_rows - 1;
 
@@ -329,9 +376,15 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	for (col = 0; col <= nx1; col++) gmt_geo_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
 	for (row = 0; row <= ny1; row++) gmt_geo_to_xy (GMT, 0.0, gmt_M_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
-	i_dx_inch = 1.0 / fabs (x[1] - x[0]);
-	i_dy_inch = 1.0 / fabs (y[1] - y[0]);
+	inc_inch[GMT_X] = fabs (x[1] - x[0]);
+	inc_inch[GMT_Y] = fabs (y[1] - y[0]);
+	i_dx_inch = 1.0 / inc_inch[GMT_X];
+	i_dy_inch = 1.0 / inc_inch[GMT_Y];
 
+	if ((Cart = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, GMT->current.proj.rect, inc_inch, \
+		Grid->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	C = Cart->header;
+	
 	west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 	
@@ -406,6 +459,114 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 			gmt_free_shore_polygons (GMT, p, np_new);
 			gmt_M_free (GMT, p);
+
+			if (Ctrl->E.linetrace) {	/* Deal with tracing the lines and resetting gridnodes */
+				int64_t last_ij;
+				uint64_t nx;
+				unsigned int curr_x_pt, prev_x_pt, pt;
+				int last_col, last_row, start_col, end_col, brow, bcol;
+				double dx, del_x, del_y, xc, yc, xb, yb;
+				bool last_not_set;
+				
+				if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {	/* Just get segments */
+					gmt_free_shore (GMT, &c);
+					continue;
+				}
+				for (k = 0; k < np; k++) {
+					if (p[k].n == 0) continue;
+					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {	/* Convert geo coordinates to inches */
+						gmt_geo_to_xy (GMT, p[k].lon[pt], p[k].lat[pt], &xc, &yc);
+						p[k].lon[pt] = xc;		p[k].lat[pt] = yc;
+					}
+					f_level = (float)(2*p[k].level-1);	/* Border index is half-way between the two levels */
+					last_ij = UINT_MAX;
+					last_not_set = true;
+					last_col = last_row = -1;
+
+					/* TO handle lines that exit the grid we pursue the entire line even if outside.
+					 * We only check if (row,col) is inside when filling in between points and assigning nodes */
+					
+					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {
+						/* Get (row,col) and index to nearest node for this point */
+						row = gmt_M_grd_y_to_row (GMT, p[k].lat[pt], C);
+						col = gmt_M_grd_x_to_col (GMT, p[k].lon[pt], C);
+						ij = gmt_M_ijp (Grid->header, row, col);
+
+						if (last_not_set) {	/* Initialize last node to this node the first time */
+							last_ij = ij;
+							last_not_set = false;
+						}
+
+						if (ij != last_ij) {	/* Crossed into another cell */
+							start_col = MIN (last_col, col) + 1;
+							end_col = MAX (last_col, col);
+							dx = p[k].lon[pt] - p[k].lon[pt-1];
+
+							/* Find all the bin-line intersections - modified from x2sys_binlist */
+
+							/* Add the start and stop coordinates to the xc/yc arrays so we can get mid-points of each interval */
+
+							nx = 0;
+							if (inside (GMT, C, last_row, last_col)) {	/* Previous point is inside, add it to our list with zero distance */
+								X[nx].x = p[k].lon[pt-1];	X[nx].y = p[k].lat[pt-1];	X[nx++].d = 0.0;
+							}
+							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
+								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
+							}
+							
+							/* Now add all crossings between this line segment and the gridlines outlining the cells centered on the nodes */
+							
+							for (brow = MIN (last_row, row) + 1; brow <= MAX (last_row, row); brow++) {	/* If we go in here we know dy is non-zero */
+								if (brow < 0 || brow > (int)C->n_rows) continue;	/* Outside grid */
+								/* Determine intersections between the line segment and parallels */
+								yb = gmt_M_grd_row_to_y (GMT, brow, C) + 0.5 * inc_inch[GMT_Y];
+								del_y = yb - p[k].lat[pt-1];
+								del_x = del_y * dx / (p[k].lat[pt] - p[k].lat[pt-1]);
+								xc = p[k].lon[pt-1] + del_x;
+								X[nx].x = xc;	X[nx].y = yb;	X[nx].d = hypot (del_x , del_y);
+								nx++;
+								if (nx == nx_alloc) {
+									nx_alloc <<= 1;
+									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+								}
+							}
+							for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
+								if (bcol < 0 || bcol > (int)C->n_columns) continue;
+								/* Determine intersections between the line segment and meridians */
+								xb = gmt_M_grd_col_to_x (GMT, bcol, C) - 0.5 * inc_inch[GMT_X];
+								del_x = xb - p[k].lon[pt-1];
+								del_y = (dx == 0.0) ? 0.5 * (p[k].lat[pt] - p[k].lat[pt-1]) : del_x * (p[k].lat[pt] - p[k].lat[pt-1]) / dx;
+								yc = p[k].lat[pt-1] + del_y;
+								X[nx].x = xb;	X[nx].y = yc;	X[nx].d = hypot (del_x, del_y);
+								nx++;
+								if (nx == nx_alloc) {
+									nx_alloc <<= 1;
+									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+								}
+							}
+
+							if (nx) {	/* Here we have intersections */
+								qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);	/* Sort on distances along the line segment */
+								assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+								for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
+									assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+									/* Add mid-point between the cuts */
+									xc = 0.5 * (X[curr_x_pt].x + X[prev_x_pt].x);
+									yc = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
+									assign_node (GMT, Grid, C, xc, yc, f_level, &ij);	/* Possibly assign f_level to nearest node */
+								}
+							}
+						}
+						/* Update last row/col and index */
+						last_ij = ij;
+						last_col = col;
+						last_row = row;
+					}
+
+				}
+				gmt_free_shore_polygons (GMT, p, np);
+				gmt_M_free (GMT, p);
+			}
 		}
 
 		if (!used_polygons) {	/* Lack of polygons or clipping etc resulted in no polygons after all, must deal with background */
@@ -464,6 +625,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	gmt_shore_cleanup (GMT, &c);
 	gmt_M_free (GMT, x);
 	gmt_M_free (GMT, y);
+	if (Ctrl->E.linetrace) gmt_M_free (GMT, X);
+	if (GMT_Destroy_Data (API, &Cart) != GMT_NOERROR) {
+		Return (API->error);
+	}
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
