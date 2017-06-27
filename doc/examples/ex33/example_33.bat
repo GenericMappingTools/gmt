@@ -12,16 +12,16 @@ set ps=example_33.ps
 REM Extract a subset of ETOPO1m for the East Pacific Rise
 REM gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
 gmt makecpt -Crainbow -T-5000/-2000 > z.cpt
-gmt grdimage spac.nc -I+a15+ne0.75 -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > %ps%
+gmt grdimage @spac.nc -I+a15+ne0.75 -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > %ps%
 REM Select two points along the ridge
 echo -111.6 -43.0 > ridge.txt
 echo -113.3 -47.5 >> ridge.txt
 REM Plot ridge segment and end points
-gmt psxy -Rspac.nc -J -O -K -W2p,blue ridge.txt >> %ps%
+gmt psxy -R@spac.nc -J -O -K -W2p,blue ridge.txt >> %ps%
 gmt psxy -R -J -O -K -Sc0.1i -Gblue ridge.txt >> %ps%
 REM Generate cross-profiles 400 km long, spaced 10 km, sampled every 2km
 REM and stack these using the median, write stacked profile
-gmt grdtrack ridge.txt -Gspac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
+gmt grdtrack ridge.txt -G@spac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 gmt psxy -R -J -O -K -W0.5p table.txt >> %ps%
 REM Show upper/lower values encountered as an envelope
 gmt convert stack.txt -o0,5 > env.txt

@@ -11337,8 +11337,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
-			id = gmtlib_get_option_id (0, "R");		/* The -R history item */
-			if (!GMT->current.ps.active) id++;	/* Examine -RG history if not a plotter */
+			id = gmtlib_get_option_id (0, "R");	/* The -RP history item */
+			if (GMT->current.ps.active) {	/* A plotting module; first check -RP history */
+				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
+			}
+			else id++;	/* Only examine -RG history if not a plotter */
 			if (GMT->init.history[id]) {	/* There is history for -R */
 				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */

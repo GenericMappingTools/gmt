@@ -28,10 +28,10 @@ gmt psbasemap %R% -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RH
 REM Plot main window with open price as red line over yellow envelope of low/highs
 
 gmt set FORMAT_DATE_OUT dd-o-yy
-gmt convert -o0,2 -f0T RHAT_price.csv > RHAT.env
-gmt convert -o0,3 -f0T -I -T RHAT_price.csv >> RHAT.env
+gmt convert -o0,2 -f0T @RHAT_price.csv > RHAT.env
+gmt convert -o0,3 -f0T -I -T @RHAT_price.csv >> RHAT.env
 gmt psxy -R -J -Gyellow -O -K RHAT.env >> %ps%
-gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> %ps%
+gmt psxy -R -J @RHAT_price.csv -Wthin,red -O -K >> %ps%
 
 REM Draw P Wessel's purchase price as line and label it.  Note we temporary switch
 REM back to default yyyy-mm-dd format since that is what gmt info gave us.
@@ -70,7 +70,7 @@ gmt psbasemap --TIME_LANGUAGE=fi %R% -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glig
 REM Again, plot close price as red line over yellow envelope of low/highs
 
 gmt psxy -R -J -Gyellow -O -K RHAT.env >> %ps%
-gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> %ps%
+gmt psxy -R -J @RHAT_price.csv -Wthin,red -O -K >> %ps%
 
 REM Draw P Wessel's purchase price as dashed line
 

@@ -15,7 +15,7 @@ gmt set FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format
 
-wesn=(`gmt info -fT -I50 -C RHAT_price.csv --FORMAT_DATE_IN=dd-o-yy`)
+wesn=(`gmt info -fT -I50 -C @RHAT_price.csv --FORMAT_DATE_IN=dd-o-yy`)
 R="-R${wesn[0]}/${wesn[1]}/${wesn[2]}/${wesn[3]}"
 
 # Lay down the basemap:
@@ -26,10 +26,10 @@ gmt psbasemap $R -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " \
 # Plot main window with open price as red line over yellow envelope of low/highs
 
 gmt set FORMAT_DATE_OUT dd-o-yy
-gmt convert -o0,2 -f0T RHAT_price.csv > RHAT.env
-gmt convert -o0,3 -f0T -I -T RHAT_price.csv >> RHAT.env
+gmt convert -o0,2 -f0T @RHAT_price.csv > RHAT.env
+gmt convert -o0,3 -f0T -I -T @RHAT_price.csv >> RHAT.env
 gmt psxy -R -J -Gyellow -O -K RHAT.env >> $ps
-gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
+gmt psxy -R -J @RHAT_price.csv -Wthin,red -O -K >> $ps
 
 # Draw P Wessel's purchase price as line and label it.  Note we temporary switch
 # back to default yyyy-mm-dd format since that is what gmt info gave us.
@@ -69,7 +69,7 @@ gmt psbasemap --GMT_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glight
 # Again, plot close price as red line over yellow envelope of low/highs
 
 gmt psxy -R -J -Gyellow -O -K RHAT.env >> $ps
-gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
+gmt psxy -R -J @RHAT_price.csv -Wthin,red -O -K >> $ps
 
 # Draw P Wessel's sales price as dashed line
 

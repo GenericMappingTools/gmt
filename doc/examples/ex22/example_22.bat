@@ -16,19 +16,20 @@ gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 REM Get the data (-q quietly) from USGS using the wget (comment out in case
 REM your system does not have wget or curl)
 
-REM wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.txt
-REM curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes.txt
+REM wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes_22.txt
+REM curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes_22.txt
 
 REM Count the number of events (to be used in title later. one less due to header)
 
-REM n=`cat neic_quakes.txt | wc -l`
+gmt which @neic_quakes_22.txt -Gl
+REM n=`cat neic_quakes_22.txt | wc -l`
 REM n=`expr $n - 1`
 set n=77
 
 REM Pull out the first and last timestamp to use in legend title
 
-REM first=`sed -n 2p neic_quakes.txt | awk -F, '{printf "%s %s\n", $1, $2}'`
-REM last=`sed -n '$p' neic_quakes.txt | awk -F, '{printf "%s %s\n", $1, $2}'`
+REM first=`sed -n 2p neic_quakes_22.txt | awk -F, '{printf "%s %s\n", $1, $2}'`
+REM last=`sed -n '$p' neic_quakes_22.txt | awk -F, '{printf "%s %s\n", $1, $2}'`
 set first=04/04/19 00:04:33
 set last=04/04/25 11:11:33
 
@@ -45,7 +46,7 @@ gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
 gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue -Dc -A1000 -K -Y2.75i > %ps%
-gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wthin -h -i3,2,5,4+s0.02 neic_quakes.txt >> %ps%
+gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wthin -h -i3,2,5,4+s0.02 neic_quakes_22.txt >> %ps%
 
 REM Create legend input file for NEIS quake plot
 
@@ -79,7 +80,7 @@ echo T @_http://neic/usgs.gov @_.  Interested users may also receive email alert
 echo T from the USGS. >> neis.legend
 echo T This script can be called daily to update the latest information. >> neis.legend
 echo G 0.4i >> neis.legend
-echo I USGS.ras 1i RT >> neis.legend
+echo I @USGS.ras 1i RT >> neis.legend
 echo G -0.3i >> neis.legend
 echo L 12 6 LB %me% >> neis.legend
 

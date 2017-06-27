@@ -14,7 +14,7 @@ ps=example_32.ps
 # GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 # for a ratio of 3x2.
 # Because GDAL support will not be standard for most users, we have stored
-# the result, euflag.nc in this directory.
+# the result, @euflag.nc in this directory.
 
 Rflag=-R3/9/50/54
 # gmt grdconvert \
@@ -22,11 +22,11 @@ Rflag=-R3/9/50/54
 #   euflag.nc=ns
 # gmt grdedit euflag.nc -fg $Rflag
 
-# Now get the topography for the same area from GTOPO30 and store it as topo.nc.
+# Now get the topography for the same area from GTOPO30 and store it as@topo_32.nc.
 # The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
 # We make a gradient grid as well, which we will use to "illuminate" the flag.
 
-# gmt grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
+# gmt grdcut W020N90.DEM $Rflag -Gtopo_32.nc=ns
 
 # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 # "Yellow" to the upper half.
@@ -37,12 +37,12 @@ gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N > euflag.cpt
 # the shading.
 
 Rplot=$Rflag/-10/790
-gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30 -P -K > $ps
+gmt grdview @topo_32.nc -JM13c $Rplot -Ceuflag.cpt -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30 -P -K > $ps
 
 # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 # So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
 
-gmt pscoast $Rflag -Df -M -N1 | gmt grdtrack -Gtopo.nc -sa | gmt psxyz $Rplot -J -JZ -p -W1p,white \
+gmt pscoast $Rflag -Df -M -N1 | gmt grdtrack -G@topo_32.nc -sa | gmt psxyz $Rplot -J -JZ -p -W1p,white \
 	-O -K >> $ps
 
 # Finally, we add dots and names for three cities.
@@ -54,7 +54,7 @@ cat << EOF > cities.txt
 07:07:03 50:43:09 Bonn
 EOF
 
-gmt grdtrack -Gtopo.nc cities.txt | gmt psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred \
+gmt grdtrack -G@topo_32.nc cities.txt | gmt psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred \
 	-K -O >> $ps
 gmt pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0 -O cities.txt >> $ps
 

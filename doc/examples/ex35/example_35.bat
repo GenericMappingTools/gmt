@@ -12,7 +12,7 @@ set ps=example_35.ps
 REM Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 REM gshhs gshhs_c.b | gawk '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
 REM Get Voronoi polygons
-gmt sphtriangulate gshhs_c.txt -Qv -D > tt.pol
+gmt sphtriangulate @gshhs_c.txt -Qv -D > tt.pol
 REM Compute distances in km
 gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
 gmt makecpt -Chot -T0/3500 > t.cpt

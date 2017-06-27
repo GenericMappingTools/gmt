@@ -11,8 +11,8 @@ ps=example_37.ps
 # Testing gmt grdfft coherence calculation with Karen Marks example data
 # Prefix of two .nc files
 
-G=grav.V18.par.surf.1km.sq
-T=mb.par.surf.1km.sq
+G=@grav.V18.par.surf.1km.sq
+T=@mb.par.surf.1km.sq
 gmt set FONT_TITLE 14p GMT_FFT kiss
 
 gmt makecpt -Crainbow -T-5000/-3000 > z.cpt

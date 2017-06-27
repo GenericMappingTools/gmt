@@ -19,7 +19,7 @@ gmt makecpt -T-120/120 -Crainbow > grav.cpt
 
 REM Since this is a Mercator grid we use a linear gmt projection
 
-gmt grdimage tasman_grav.nc=ns+s0.1 -I+a45+nt1 -Jx0.25i -Cgrav.cpt -P -K > %ps%
+gmt grdimage @tasman_grav.nc=ns+s0.1 -I+a45+nt1 -Jx0.25i -Cgrav.cpt -P -K > %ps%
 
 REM Then use gmt pscoast to plot land; get original -R from grid info
 REM and use Mercator gmt projection with same scale as above on a spherical Earth

@@ -15,9 +15,9 @@ REM File truncated from http://www.ipgp.fr/~wieczor/SH/VenusTopo180.txt.zip
 REM Wieczorek, M. A., Gravity and topography of the terrestrial planets,
 REM   Treatise on Geophysics, 10, 165-205, doi:10.1016/B978-044452748-6/00156-5, 2007
 
-gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv1.nc -F1/1/25/30
-gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv2.nc -F1/1/85/90
-gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
+gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv1.nc -F1/1/25/30
+gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv2.nc -F1/1/85/90
+gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
 gmt grd2cpt v3.nc -Crainbow -E > t.cpt
 gmt grdimage v1.nc -I+a45+nt0.75 -JG90/30/5i -P -K -Bg -Ct.cpt -X3i -Y1.1i > %ps%
 echo 4 4.5 L = 30 | gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N >> %ps%

@@ -14,10 +14,10 @@ cat << END > dateline.txt
 180	0
 180	-90
 END
-R=`gmt info -I10 oz_quakes.txt`
+R=`gmt info -I10 @oz_quakes_24.txt`
 gmt pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn > $ps
-gmt psxy -R -J -O -K oz_quakes.txt -Sc0.05i -Gred >> $ps
-gmt select oz_quakes.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -R -Il \
+gmt psxy -R -J -O -K @oz_quakes_24.txt -Sc0.05i -Gred >> $ps
+gmt select @oz_quakes_24.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -R -Il \
 	| gmt psxy -R -JM -O -K -Sc0.05i -Ggreen >> $ps
 gmt psxy point.txt -R -J -O -K -SE- -Wfat,white >> $ps
 gmt pstext point.txt -R -J -F+f14p,Helvetica-Bold,white+jLT+tHobart \

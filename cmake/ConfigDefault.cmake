@@ -57,7 +57,7 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 # The API version (SOVERSION) of the GMT libraries.
 # Increment this when more or fewer functions are included in the
 # library, the function prototype changes, or data type changes.
-set (GMT_LIB_SOVERSION 5)
+set (GMT_LIB_SOVERSION 6)
 
 # The build version (VERSION) of the GMT libraries.
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")

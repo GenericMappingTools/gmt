@@ -11,7 +11,7 @@ ps=example_35.ps
 # Get the crude GSHHS data, select GMT format, and decimate to ~20%:
 # gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | $AWK '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
 # Get Voronoi polygons
-gmt sphtriangulate gshhs_c.txt -Qv -D > tt.pol
+gmt sphtriangulate @gshhs_c.txt -Qv -D > tt.pol
 # Compute distances in km
 gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
 gmt makecpt -Chot -T0/3500 > t.cpt
