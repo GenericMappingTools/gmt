@@ -4423,11 +4423,18 @@ GMT_LOCAL int support_decode_arg (char *txt, int column, struct GMT_CUSTOM_SYMBO
 
 /*! . */
 GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
+	/* Load in an initialize a new custom symbol.  These files can live in many places:
+	 * 1. In the current directory
+	 * 2. In the user dir [~/.gmt]
+	 * 3. In the user cache dir [~/.gmt/cache]
+	 * 4. In the user data dir [~/.gmt/data]
+	 * 5. In the system share/custom dir
+	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
 	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
+	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
@@ -4436,16 +4443,17 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	bool got_EPS = false;
 	struct stat buf;
 
+	/* Determine if in_name ends in ".def" or not */
 	length = strlen (in_name);
 	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
 		strncpy (name, in_name, length-4);
 	else	/* Use as is */
 		strcpy (name, in_name);
 	
-	sprintf (file, "%s.def", name);	/* Full name of def file */
-	pos = gmt_download_file_if_not_found (GMT, name, 0);	/* Deal with downloadable GMT data sets first */
+	sprintf (file, "%s.def", name);	/* Full name of potential def file */
+	pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
 	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
-	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", file, R_OK)) {	/* No *.def file found */
+	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[pos], path)) {	/* No *.def file found */
 		/* See if we got EPS macro */
 		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
 			strncpy (name, in_name, length-4);
@@ -4453,11 +4461,11 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			strcpy (name, in_name);
 		/* First check for eps macro */
 		sprintf (file, "%s.eps", name);	/* Full name of eps file */
-		pos = gmt_download_file_if_not_found (GMT, name, 0);	/* Deal with downloadable GMT data sets first */
-		if (gmt_getsharepath (GMT, "custom", &name[pos], ".eps", file, R_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", file);
-			if (stat (file, &buf)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of EPS macro %s\n", name);
+		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
+		if (gmt_getsharepath (GMT, "custom", &name[pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[pos], path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", path);
+			if (stat (path, &buf)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of EPS macro %s\n", path);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			got_EPS = true;
@@ -4466,9 +4474,9 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find either custom symbol or EPS macro %s\n", name);
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", path);
 
-	if ((fp = fopen (file, "r")) == NULL) {
+	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", &name[pos]);
 		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 	}

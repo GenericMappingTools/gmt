@@ -40,9 +40,9 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 set (GMT_VERSION_YEAR "2017")
 
 # The GMT package version.
-set (GMT_PACKAGE_VERSION_MAJOR 5)
-set (GMT_PACKAGE_VERSION_MINOR 5)
-set (GMT_PACKAGE_VERSION_PATCH 1)
+set (GMT_PACKAGE_VERSION_MAJOR 6)
+set (GMT_PACKAGE_VERSION_MINOR 0)
+set (GMT_PACKAGE_VERSION_PATCH 0)
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.

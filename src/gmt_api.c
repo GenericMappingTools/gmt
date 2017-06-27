@@ -860,9 +860,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	CURL *Curl = NULL;
 	static char *ftp_dir[2] = {"/cache", ""}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
-	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = strdup (file_name);
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
 
+    if (!file_name) return 0;   /* Got nutin' */
+    
+    file = strdup (file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;

@@ -294,7 +294,7 @@ GMT_LOCAL int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STO
 	int k = 0;
 	gmt_M_unused(GMT);
 	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
-	return (k == n_stored ? -1 : k);
+	return (k == n_stored ? GMT_NOTSET : k);
 }
 
 /* -----------------------------------------------------------------
@@ -4489,8 +4489,9 @@ GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
-GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H) {
+GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H, struct GRDMATH_STORE *recall[], int n_stored) {
 	int i, expect, check = GMT_IS_NAN;
+	unsigned int first;
 	bool possible_number = false;
 	double tmp = 0.0;
 
@@ -4511,7 +4512,13 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (!strncmp (opt->arg, GRDMATH_STORE_CMD, strlen(GRDMATH_STORE_CMD))) return GRDMATH_ARG_IS_STORE;	/* store into mem location @<label> */
 	if (!strncmp (opt->arg, GRDMATH_CLEAR_CMD, strlen(GRDMATH_CLEAR_CMD))) return GRDMATH_ARG_IS_CLEAR;	/* clear mem location @<label> */
 	if (!strncmp (opt->arg, GRDMATH_RECALL_CMD, strlen(GRDMATH_RECALL_CMD))) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
-	if (opt->arg[0] == '@') return GRDMATH_ARG_IS_RECALL;							/* load from mem location @<label> */
+	if (opt->arg[0] == '@') {	/* Requires more checking to know what this means */
+		/* First check if it is a registered memory reference set via @STO: */
+		if ((i = grdmath_find_stored_item (GMT, recall, n_stored, &opt->arg[1])) != GMT_NOTSET) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
+		/* If not then we must assume it is a cache file that needs to be downloaded */
+		first = gmt_download_file_if_not_found (GMT, opt->arg, 0);
+		return GRDMATH_ARG_IS_FILE;
+	}				
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!(strcmp (opt->arg, "F_EPS") && strcmp (opt->arg, "EPS"))) return GRDMATH_ARG_IS_F_EPS;
@@ -4627,7 +4634,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 }
 
 int GMT_grdmath (void *V_API, int mode, void *args) {
-	int k, op = 0, new_stack = -1, rowx, colx, status, start, error = 0;
+	int k, op = 0, new_stack = GMT_NOTSET, rowx, colx, status, start, error = 0;
 	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, pos;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool subset;
@@ -4711,7 +4718,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output file */
 		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
-		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
+		status = decode_grd_argument (GMT, opt, &value, localhashnode, recall, n_stored);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		in_file = opt->arg;
@@ -4831,7 +4838,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 
-		op = decode_grd_argument (GMT, opt, &value, localhashnode);
+		op = decode_grd_argument (GMT, opt, &value, localhashnode, recall, n_stored);
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
@@ -4899,7 +4906,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != GMT_NOTSET) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 					if (!stack[last]->constant) {	/* Must copy over the grid - and allocate if not yet done */
 						if (recall[k]->stored.G == NULL) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, stack[last]->G);
@@ -4923,7 +4930,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			else if (op == GRDMATH_ARG_IS_RECALL) {
 				/* Add to stack from stored memory location */
 				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == GMT_NOTSET) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -4944,7 +4951,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			else if (op == GRDMATH_ARG_IS_CLEAR) {
 				/* Free stored memory location */
 				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == GMT_NOTSET) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (GMT_RUNTIME_ERROR);
 				}

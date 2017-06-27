@@ -303,29 +303,37 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
+GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
        Returns -1 on read error */
 	FILE *fp = NULL;
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
+	char *F = *file;
 	int j;
+	unsigned int first = 0;
 
-	if (file == NULL || file[0] == '\0') return -1;	/* Nothing given */
-	if (gmt_M_file_is_memory (file)) return (0);	/* Special passing of image */
-	j = (int)strlen(file) - 1;
-	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
-	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if (F == NULL || F[0] == '\0') return GMT_NOTSET;	/* Nothing given */
+	if (gmt_M_file_is_memory (F)) return (0);	/* Special passing of image */
+	if (gmt_M_file_is_cache (F)) {	/* Must download, then modify the name */
+		char *tmp = strdup (&F[1]);
+		first = gmt_download_file_if_not_found (GMT, F, 0);
+		gmt_M_str_free (*file);
+		*file = F = tmp;
+	}
+	j = (int)strlen(F) - 1;
+	while (j && F[j] && F[j] != '+') j--;	/* See if we have a band request */
+	if (j && F[j+1] == 'b') F[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
 
-	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
-		return (-1);
+	if ((fp = gmt_fopen (GMT, F, "rb")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", F);
+		return (GMT_NOTSET);
 	}
 	if (gmt_M_fread (c, 1U, 4U, fp) != 4U) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", F);
 		gmt_fclose (GMT, fp);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	gmt_fclose (GMT, fp);
-	if (j) file[j] = '+';			/* Reset the band request string */
+	if (j) F[j] = '+';			/* Reset the band request string */
 	/* Note: cannot use gmt_M_same_rgb here, because that requires doubles */
 	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
 	if (c[0] == magic_ras[0] && c[1] == magic_ras[1] && c[2] == magic_ras[2] && c[3] == magic_ras[3]) return(2);
@@ -390,7 +398,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"};
+	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"}, *file = NULL;
 
 	struct imageinfo header;
 
@@ -425,21 +433,25 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
-	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
+	file = strdup (Ctrl->In.file);
+	known = file_is_known (GMT, &file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
+		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (known) {	/* Read an EPS or Sun raster file */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
-		if (gmt_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", Ctrl->In.file);
+		if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
+			gmt_M_str_free (file);
 			Return (GMT_FILE_NOT_FOUND);
 		}
 		if (PSL_loadimage (PSL, path, &header, &picture)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], path);
+			gmt_M_str_free (file);
 			Return (GMT_IMAGE_READ_ERROR);
 		}
 	}
@@ -447,7 +459,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	else  {	/* Read a raster image */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input raster via GDAL\n");
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, NULL)) == NULL) {
+			gmt_M_str_free (file);
 			Return (API->error);
 		}
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
@@ -497,7 +510,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #else
 	else {	/* Without GDAL we can only read EPS and Sun raster */
-		GMT_Report (API, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", file);
+		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
@@ -511,6 +525,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 #ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
+				gmt_M_str_free (file);
 				Return (API->error);
 			}
 		}
@@ -530,6 +545,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
+			gmt_M_str_free (file);
 			Return (API->error);
 		}
 #else
@@ -559,6 +575,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
+			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
@@ -566,6 +583,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
+			gmt_M_str_free (file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -576,6 +594,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
+			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
@@ -585,6 +604,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
+			gmt_M_str_free (file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -600,6 +620,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
+			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
 		}
 	}
@@ -635,6 +656,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
+	gmt_M_str_free (file);
 
 #ifdef HAVE_GDAL
 	if (I && GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
