@@ -8,7 +8,7 @@
 #
 ps=example_10.ps
 gmt pscoast -Rd -JX8id/5id -Dc -Sazure2 -Gwheat -Wfaint -A5000 -p200/40 -K > $ps
-gmt which languages_10.txt -Gl
+gmt which @languages_10.txt -Gl
 $AWK '{print $1, $2, $3+$4+$5+$6+$7}' languages_10.txt \
 	| gmt pstext -R -J -O -K -p -Gwhite@30 -D-0.25i/0 \
 	-F+f30p,Helvetica-Bold,firebrick=thinner+jRM >> $ps

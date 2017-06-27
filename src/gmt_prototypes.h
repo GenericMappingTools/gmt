@@ -515,7 +515,7 @@ EXTERN_MSC void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *thet
 EXTERN_MSC struct GMTAPI_CTRL *gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC void gmt_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
 EXTERN_MSC bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr);
-EXTERN_MSC unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name);
+EXTERN_MSC unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode);
 EXTERN_MSC struct GMT_DATASEGMENT *api_alloc_datasegment(void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin);
 
 /* From gmt_stat.c */

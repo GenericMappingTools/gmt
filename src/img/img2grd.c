@@ -437,7 +437,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		imgrange.maxlat = Ctrl->D.max;
 	}
 
-	first = gmt_download_file_if_not_found (GMT, Ctrl->In.file);	/* Deal with downloadable GMT data sets first */
+	first = gmt_download_file_if_not_found (GMT, Ctrl->In.file, 0);	/* Deal with downloadable GMT data sets first */
 
 	if (!gmt_getdatapath (GMT, &Ctrl->In.file[first], infile, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", &Ctrl->In.file[first]);

@@ -4429,7 +4429,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		strcpy (name, in_name);
 	
 	sprintf (file, "%s.def", name);	/* Full name of def file */
-	pos = gmt_download_file_if_not_found (GMT, name);	/* Deal with downloadable GMT data sets first */
+	pos = gmt_download_file_if_not_found (GMT, name, 0);	/* Deal with downloadable GMT data sets first */
 	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
 	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", file, R_OK)) {	/* No *.def file found */
 		/* See if we got EPS macro */
@@ -4439,7 +4439,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			strcpy (name, in_name);
 		/* First check for eps macro */
 		sprintf (file, "%s.eps", name);	/* Full name of eps file */
-		pos = gmt_download_file_if_not_found (GMT, name);	/* Deal with downloadable GMT data sets first */
+		pos = gmt_download_file_if_not_found (GMT, name, 0);	/* Deal with downloadable GMT data sets first */
 		if (gmt_getsharepath (GMT, "custom", &name[pos], ".eps", file, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", file);
 			if (stat (file, &buf)) {

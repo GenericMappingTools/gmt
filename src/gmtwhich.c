@@ -44,8 +44,9 @@ struct GMTWHICH_CTRL {	/* All control options for this program (except common ar
 	struct D {	/* -D */
 		bool active;
 	} D;
-	struct G {	/* -G */
+	struct G {	/* -G[c|l|u] */
 		bool active;
+		unsigned int mode;
 	} G;
 };
 
@@ -67,7 +68,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-A] [-C] [-D] [-G] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-A] [-C] [-D] [-G[c|l|u]] [%s]\n\n", GMT_V_OPT);
      
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -76,6 +77,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place in the cache directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place in the current local directory [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place in the user\'s data directory.\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -109,8 +113,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 			case 'D':	/* Want directory instead */
 				Ctrl->D.active = true;
 				break;
-			case 'G':	/* Want directory instead */
+			case 'G':	/* Download file first, if required */
 				Ctrl->G.active = true;
+				switch (opt->arg[0]) {
+					case 'c': Ctrl->G.mode = GMT_CACHE_DIR;		break;
+					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
+					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download mode %s not recognized\n", opt->arg);
+						n_errors++;
+						break;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -178,7 +191,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
 		if (Ctrl->G.active)
-			first = gmt_download_file_if_not_found (GMT, opt->arg);
+			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 
 		if (gmt_getdatapath (GMT, &opt->arg[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
