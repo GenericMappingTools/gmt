@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtwhich** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G| ] [ |SYN_OPT-V| ]
+**gmtwhich** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ]
 
 |No-spaces|
 
@@ -60,10 +60,12 @@ Optional Arguments
 
 .. _-G:
 
-**-G**
-    If a file argument is a downloadable file (either a full UR, a @file for
+**-G**\ [**c**\ \|\ **l**\ \|\ **u**]
+    If a file argument is a downloadable file (either a full URL, a @file for
     downloading from the GMT Site Cache, or earth_relief_*.grd) we will try
-    to download the file if not found in your local data or cache dirs.
+    to download the file if it is not found in your local data or cache dirs.
+    By default [**-Gl**] we download to the current directory. Append **c** to place
+    in the user cache directory or **u** user data directory instead.
 
 .. _-V:
 
@@ -85,7 +87,7 @@ To download the 10 arc-minute global relief file from the GMT data site, use
 
    ::
 
-    gmt which -G earth_relief_10m.grd
+    gmt which -Gu earth_relief_10m.grd
 
 which will print the path (after downloading if not already present).  The file will
 be placed in the user's GMT_USER_DIR.  To obtain a GMT example or test file from the
@@ -93,7 +95,7 @@ GMT cache site, try
 
    ::
 
-    gmt which -G @hotspots.txt
+    gmt which -Gc @hotspots.txt
 
 which will print the path (after downloading if not already present).  The file will
 be placed in the user's GMT_CACHE_DIR directory.
