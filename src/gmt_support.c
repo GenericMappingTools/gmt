@@ -7360,7 +7360,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
 	struct GMT_PALETTE *P = NULL;
-	unsigned int continuous = (file && strchr(file,','));
+	unsigned int continuous = (file && strchr(file,',')), first;
 	char *c = NULL;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
@@ -7376,11 +7376,13 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   For 2 & 3 we take the master table and linearly stretch the z values to fit the range, or honor default range for dynamic CPTs.
 	*/
 
+	first = gmt_download_file_if_not_found (GMT, file, 0);
+
 	if (file && (c = gmt_first_modifier (GMT, file, "uUw")))
 		c[0] = '\0';	/* Must chop off modifiers for access to work */
-	if (gmt_M_file_is_memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT was given and exists or is memory location */
+	if (gmt_M_file_is_memory (file) || (file && file[first] && !gmt_access (GMT, &file[first], R_OK))) {	/* A CPT was given and exists or is memory location */
 		if (c) c[0] = '+';	/* Restore the string */
-		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
+		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
 	}
 	else {	/* Take master cpt and stretch to fit data range using continuous colors */
 		char *master = NULL;
