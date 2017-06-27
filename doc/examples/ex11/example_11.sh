@@ -88,7 +88,7 @@ gmt pstext -J -R -O -F+f+a >> $ps << END
 128 128 12p 135 120\217
 26  102 12p 180 0.4
 26  204 12p 180 0.8
-200 200 16p 225 GMT 5
+200 200 16p 225 GMT
 END
 
 rm -f *.nc gmt.conf

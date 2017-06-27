@@ -34,7 +34,7 @@ command: (but refer to Julia's `package manager <http://docs.julialang.org/en/re
 
     Pkg.add("GMT")
 
-Now you are ready to start using the **GMT** wrapper and the only condition for it to work is that the GMT5.2 shared libs
+Now you are ready to start using the **GMT** wrapper and the only condition for it to work is that the GMT shared libs
 are listed in your path. On Windows the **GMT** installer takes care of that but be careful that no other previous version
 is found first.
 
@@ -149,7 +149,7 @@ Julia variables holding the data in matrices or structures or cell arrays depend
 return we get the computed result stored in variables that we gave as output arguments.
 Things only complicate a little more for the cases where we can have more than one *input* or
 *output* arguments. The file *gallery.jl* in *test* directory, that reproduces the examples in the
-Gallery section of the **GMT** documentation, has many (not so trivial) examples on usage of the Julia GMT5.2 API.
+Gallery section of the **GMT** documentation, has many (not so trivial) examples on usage of the Julia/GMT API.
 
 To run the examples in *gallery.jl* we have to load the file first, which is located in your .julia directory.
 For me it lives in *C:/j/.julia/v0.4/GMT/test/gallery.jl* and we have to edit it to set the path to the **GMT**

@@ -39,7 +39,7 @@
  * are used to build the netCDF file [svn://gmtserver.soest.hawai.edu/DCW].
  */
 
-#define DCW_SITE 			"ftp://ftp.soest.hawaii.edu/gmt5"
+#define DCW_SITE 			"ftp://ftp.soest.hawaii.edu/gmt"
 #define GMT_DCW_N_CONTINENTS		8
 
 #define DCW_GET_COUNTRY			1	/* Extract countries only */

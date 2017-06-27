@@ -179,7 +179,7 @@ For the purpose of this documentation a few definitions are needed:
    command-line executables known to all GMT users, e.g.,
    :doc:`blockmean`, :doc:`psxy`,
    :doc:`grdimage`, etc. Prior to version 5,
-   these were the only GMT executables available.  In GMT 5, these are
+   these were the only GMT executables available.  In GMT 5 and up, these are
    accessed via the :doc:`gmt` executable.
 
 #. "\ GMT module" refers to the function in the GMT API library that

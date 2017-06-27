@@ -1,6 +1,6 @@
 #	$Id$
 #
-# List of all GMT 5 defaults parameters.
+# List of all GMT defaults parameters.
 #
 # Used by GNUmakefile to generate gmt_keywords.h and gmt_keycases.h.
 # gmt_keywords.h has quoted parameter names for text comparisons

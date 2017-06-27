@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #	$Id$
-# GMT 5 test script for plot placement on some gmt projections. By Ken McLean.
+# GMT test script for plot placement on some gmt projections. By Ken McLean.
 # Create triplicate plots of each.
 
 ps=placement.ps

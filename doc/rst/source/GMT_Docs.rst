@@ -8851,7 +8851,7 @@ mapping packages. While **ogr2ogr** has had the capability to write
 this new format since 2009, GMT 4 did not have the capability to use
 the extra information.
 
-GMT 5 now allows for more advanced vector data, including donut
+GMT now allows for more advanced vector data, including donut
 polygons (polygons with holes) and aspatial attribute data. At the same
 time, the spatial data implementation will not disrupt older GMT 4
 programs since all the new information are written via comments.
@@ -8883,7 +8883,7 @@ Several key properties of the OGR/GMT format is summarized below:
 -  Standard UNIX "\\" escaping is used, such as \\n for newline in a string.
 
 -  All new data are stored before the spatial data (coordinates) in the
-   file, so when any GMT 5 program is processing the coordinate data
+   file, so when any GMT program is processing the coordinate data
    for a feature, it will already have parsed any non-spatial
    information for each feature, which may impact on how the spatial
    data is treated (e.g., utilizing the aspatial attribute data for a

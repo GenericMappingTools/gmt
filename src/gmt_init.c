@@ -2293,7 +2293,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 
 	/* When we get here the file exists */
 	gmtinit_file_lock (GMT, fileno(fp));
-	/* Format of GMT 5 gmt.history is as follow:
+	/* Format of GMT gmt.history is as follow:
 	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
 	 * where OPT is a 1- or 2-char code, e.g., R, X, JM, JQ, Js.  ARG is the argument.
@@ -2382,7 +2382,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (!gmtinit_file_lock (GMT, fileno(fp)))
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: %s is not locked for exclusive access. Multiple gmt processes running at once could corrupt history file.\n", hfile);
 
-	fprintf (fp, "# GMT 5 Session common arguments shelf\n");
+	fprintf (fp, "# GMT %d Session common arguments shelf\n", GMT_MAJOR_VERSION);
 	fprintf (fp, "BEGIN GMT " GMT_PACKAGE_VERSION "\n");
 	for (id = 0; id < GMT_N_UNIQUE; id++) {
 		if (!GMT->init.history[id]) continue;	/* Not specified */
@@ -11849,7 +11849,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
+				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);
 				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
@@ -11860,7 +11860,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->size_x = p->given_size_x = p->v.h_length;
 			}
 			else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);
 				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				k = 2;
 				strncpy (arg, &text[2], GMT_LEN64-1);
@@ -13137,6 +13137,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 */
 
 	struct GMT_CTRL *GMT = NULL;
+	char version[8] = {""};
 
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -13168,7 +13169,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT = gmtinit_new_GMT_ctrl (API, session, pad);	/* Allocate and initialize a new common control structure */
 	API->GMT = GMT;
 
-	GMT->PSL = New_PSL_Ctrl ("GMT5");		/* Allocate a PSL control structure */
+	sprintf (version, "GMT%d", GMT_MAJOR_VERSION);
+	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
 	if (!GMT->PSL) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
@@ -13202,7 +13204,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation */
 
-	/* There is no longer a -m option in GMT 5 so multi segments are now always true.
+	/* There is no longer a -m option in GMT so multi segments are now always true.
 	   However, in GMT_COMPAT mode the -mi and -mo options WILL turn off multi in the other direction. */
 	gmt_set_segmentheader (GMT, GMT_IN, true);
 	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Will be turned true when either of two situation arises: */
@@ -13679,7 +13681,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
 	
-	sprintf (dir, "%s/gmt5.%d", API->tmp_dir, API->PPID);
+	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	k1 = (err) ? 1 : 0;

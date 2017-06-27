@@ -71,7 +71,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to a gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The original file is retained.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Modify the default settings based on the GMT system defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
@@ -106,7 +106,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf */
+			case 'C':	/* Convert GMT4 .gmtdefaults4 to gmt.conf */
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Get GMT system-wide defaults settings */

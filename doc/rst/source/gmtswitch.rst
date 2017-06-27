@@ -17,8 +17,7 @@ Introduction
 ------------
 
 **gmtswitch** helps you modify your environment to allow for the
-switching back and forth between several installed GMT versions, in
-particular GMT 5 and versions from the GMT 4 series. It works by
+switching back and forth between several installed GMT versions. It works by
 maintaining a list of directories to GMT installations in a file in your
 home directory, then manipulates a symbolic link to point to the GMT
 directory whose executables we wish to use [The Windows version works a
@@ -48,7 +47,7 @@ Setup
 
 If you have official versions installed then running gmtswitch the very
 first time will examine your hard disk starting at / and look for
-directories with GMT4 or GMT5 in the name. This will fail to find the
+directories with GMT4, GMT5, etc., in the names. This will fail to find the
 subversion directories and possibly others you have placed elsewhere.
 The fastest way to get up and running is this:
 

@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Demonstration program for how GMT5 may handle i/o and passing data
+ * Demonstration program for how GMT may handle i/o and passing data
  * from one GMT_* module to another.
  *
  * Currently shows how "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" is obtained

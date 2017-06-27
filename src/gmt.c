@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Launcher for any GMT5 module via the corresponding function.
+ * Launcher for any GMT module via the corresponding function.
  * Modules are loaded dynamically from the GMT core library, the
  * optional supplemental library, and any number of custom libraries
  * listed via GMT_CUSTOM_LIBS in gmt.conf.  Note: GMT_Call_Module checks

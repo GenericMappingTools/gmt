@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Demonstration program for how GMT5 may receive PS output directly
+ * Demonstration program for how GMT may receive PS output directly
  * from GMT modules in memory, then write its own output file
  *
  * Version:	5

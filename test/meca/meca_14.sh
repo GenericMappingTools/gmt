@@ -2,7 +2,7 @@
 #	$Id$
 #
 #	Test psvelo with either old and new-style vector arguments
-#	The V4 vector is selected when -A is not in GMT5 format.
+#	The V4 vector is selected when -A is in old GMT4 format.
 ps=meca_14.ps
 cat << EOF > record.txt
 0     0     5.0    5.0     2.0    4.0  0.500  3x3

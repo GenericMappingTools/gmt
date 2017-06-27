@@ -4,7 +4,7 @@ A Vertical slice
 ------------------------
 
 This is an example of how to graph a function p=f(x, y, z)
-and include in the graph a slice of it using GMT 5.
+and include in the graph a slice of it using GMT.
 
 In this case, my function is f(latitude, longitude, height) and to make
 the example self-contained I make the grid and the slice in the script.

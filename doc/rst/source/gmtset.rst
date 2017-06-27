@@ -49,7 +49,7 @@ Optional Arguments
 
 **-C**
     Convert a .gmtdefaults4 file created by GMT4 to a :doc:`gmt.conf` file
-    used by GMT5. The original file is retained.
+    used by modern GMT. The original file is retained.
 
 .. _-D:
 

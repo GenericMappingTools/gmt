@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GMT 5 test script for pseudo perspective on some gmt projections. By Ken McLean.
+# GMT test script for pseudo perspective on some gmt projections. By Ken McLean.
 # Create normal plot, 180 deg rotation, and oblique pseudo perspective of each.
 
 ps=pseudo.ps

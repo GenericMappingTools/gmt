@@ -148,9 +148,9 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
 	if (!custom && n_slashes) gmt4++;		/* Presumably / to separate axis in GMT4 style */
 	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: GMT4 = %d vs. GMT5 = %d\n", gmt4, gmt5);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: GMT4 = %d vs. GMT = %d\n", gmt4, gmt5);
 	if (gmt5 && !gmt4) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT 5 style elements in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT >=5 style elements in -B option\n");
 		return (5);
 	}
 	else if (gmt4 && !gmt5) {
@@ -158,13 +158,13 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Error: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
 		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
 		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Assume GMT 5 style format in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Assume new GMT style format in -B option\n");
 		return (9);
 	}
 }
