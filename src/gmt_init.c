@@ -13076,7 +13076,7 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 	char str[3] = {""};
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOERROR;	/* Do nothing */
-	if (GMT->current.ps.initialize) return GMT_NOERROR;	/* Cannot use history unless overlay */
+	if (GMT->current.ps.active && GMT->current.ps.initialize) return GMT_NOERROR;	/* Cannot use history unless overlay */
 
 	assert (options);	/* Should never be NULL */
 
@@ -13088,6 +13088,7 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 		gmt_M_memset (str, 3, char);
 		str[0] = options[j];
 		if ((id = gmtlib_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
+		if (options[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
 		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		if (options[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
 			/* Continue looking for -J<code> */
