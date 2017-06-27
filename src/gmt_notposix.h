@@ -574,6 +574,10 @@
 	EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
 
+#ifndef HAVE_STRNDUP
+	EXTERN_MSC char *strndup(const char *s, size_t chars);
+#endif
+
 #ifndef HAVE_STRTOF_
 	static inline float strtof(const char *nptr, char **endptr) {
 		return (float)strtod(nptr, endptr);
