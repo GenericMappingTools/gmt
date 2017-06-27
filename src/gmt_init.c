@@ -2477,11 +2477,6 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
 		GMT->session.USERDIR = strdup (this_c);
-#ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( running_in_bindir_src && access (GMT_USER_DIR_DEBUG, R_OK|X_OK) == 0 )
-		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
-		GMT->session.USERDIR = strdup (GMT_USER_DIR_DEBUG);
-#endif
 	else if (GMT->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
@@ -6885,7 +6880,7 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 
 /*! . */
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
-	unsigned int i, icol, pos, error = 0, n_slash = 0;
+	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false, got_r, got_country;
@@ -6982,9 +6977,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	if (!gmt_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
+	if (!gmt_M_file_is_memory (item) && item[0] == '@') {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, item, 0);
+	}
+	if (!gmt_access (GMT, &item[first], R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
-		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
+		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, &item[first], NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */

@@ -543,7 +543,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
-				else if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
+				else if (!gmt_access (GMT, opt->arg, R_OK) || gmt_M_file_is_cache (opt->arg)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					gmt_M_str_free (Ctrl->C.file);

@@ -173,6 +173,7 @@ static char *GMT_CPT_master[GMT_N_CPT_MASTERS] = {
 GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	/* Parse the fill pattern syntax: p|P<pattern>[+r<dpi>][+b<color>|-][+f<color>|-] */
 	char *c = NULL;
+	unsigned int first = 1;
 	double fb_rgb[4];
 
 	fill->dpi = irint (PSL_DOTS_PER_INCH);
@@ -223,7 +224,10 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	
 	/* Copy name (or number) of pattern */
 	if (c) c[0] = '\0';	/* Chop off the modifiers */
-	strncpy (fill->pattern, &line[1], GMT_BUFSIZ-1);
+	if (!gmt_M_file_is_memory (&line[1]) && line[1] == '@') {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, &line[1], 0) + 1;	/* Add one since we started at 1 */
+	}
+	strncpy (fill->pattern, &line[first], GMT_BUFSIZ-1);
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
@@ -247,6 +251,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	/* Parse the old-style pattern syntax */
 	int n, i, len, pos, end;
+	unsigned int first = 1;
 	char f, word[GMT_LEN256] = {""};
 	double fb_rgb[4];
 
@@ -254,11 +259,20 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	 * However, if user gave -Gp1image.jpg then we will fail trying to parse as old.  So we do a check
 	 * here if the argument can be accessed as a file and if so we call the new parser and return */
 
-	if (!gmt_access (GMT, &line[1], F_OK))
+	if (!gmt_M_file_is_memory (&line[1]) && line[1] == '@') {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, &line[1], 0) + 1;	/* Add one since we started at 1 */
+	}
+	if (!gmt_access (GMT, &line[first], F_OK))
 		return (gmtsupport_parse_pattern_new (GMT, line, fill));
 
 	n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
 	if (n != 2) return (1);
+	if (!gmt_M_file_is_memory (fill->pattern) && fill->pattern[0] == '@') {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, fill->pattern, 0);
+		/* Shuffle pattern name to skip the leading @ */
+		for (i = 1; fill->pattern[i]; i++) fill->pattern[i-1] = fill->pattern[i];
+		fill->pattern[i-1] = '\0';
+	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)strlen (fill->pattern);
 	for (i = 0, pos = -1; i < ((int)strlen (fill->pattern)-1) && fill->pattern[i] && pos == -1; i++)

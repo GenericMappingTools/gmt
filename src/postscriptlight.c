@@ -1578,6 +1578,8 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 	if (PSL->internal.USERDIR) {
 		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
+        sprintf (path, "%s/cache/%s%s", PSL->internal.USERDIR, stem, suffix);
+        if (!access (path, R_OK)) return (path);
 	}
 
 	/* Try to get file from PSL->internal.SHAREDIR/subdir */

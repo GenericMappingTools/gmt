@@ -10,17 +10,17 @@ ps=example_17.ps
 
 # First generate geoid image w/ shading
 
-gmt grd2cpt india_geoid.nc -Crainbow > geoid.cpt
-gmt grdimage india_geoid.nc -I+a45+nt1 -JM6.5i -Cgeoid.cpt -P -K > $ps
+gmt grd2cpt @india_geoid.nc -Crainbow > geoid.cpt
+gmt grdimage @india_geoid.nc -I+a45+nt1 -JM6.5i -Cgeoid.cpt -P -K > $ps
 
 # Then use gmt pscoast to initiate clip path for land
 
-gmt pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> $ps
+gmt pscoast -R@india_geoid.nc -J -O -K -Dl -Gc >> $ps
 
 # Now generate topography image w/shading
 
 gmt makecpt -C150 -T-10000,10000 -N > shade.cpt
-gmt grdimage india_topo.nc -I+a45+nt1 -J -Cshade.cpt -O -K >> $ps
+gmt grdimage @india_topo.nc -I+a45+nt1 -J -Cshade.cpt -O -K >> $ps
 
 # Finally undo clipping and overlay basemap
 

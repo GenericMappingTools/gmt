@@ -9,7 +9,7 @@ REM DOS calls:	echo, del
 REM
 echo GMT EXAMPLE 15
 set ps=example_15.ps
-gmt convert ship.xyz -bo > ship.b
+gmt convert @ship_15.xyz -bo > ship.b
 set region=-R245/255/20/30
 gmt nearneighbor %region% -I10m -S40k -Gship.nc ship.b -bi
 gmt grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K > %ps%

@@ -4854,6 +4854,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	if (!txt) return (GMTMATH_ARG_IS_BAD);
 
 	if (gmt_M_file_is_memory (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with memory references first */
+	if (gmt_M_file_is_cache (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with cache file first */
 
 	/* Check if argument is operator */
 
@@ -4865,7 +4866,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	if (!strncmp (txt, GMTMATH_STORE_CMD, strlen(GMTMATH_STORE_CMD))) return GMTMATH_ARG_IS_STORE;		/* store into mem location @<label>*/
 	if (!strncmp (txt, GMTMATH_CLEAR_CMD, strlen(GMTMATH_CLEAR_CMD))) return GMTMATH_ARG_IS_CLEAR;		/* free mem location @<label>*/
 	if (!strncmp (txt, GMTMATH_RECALL_CMD, strlen(GMTMATH_RECALL_CMD))) return GMTMATH_ARG_IS_RECALL;	/* load from mem location @<label>*/
-	if (txt[0] == '@') return GMTMATH_ARG_IS_RECALL;							/* load from mem location @<label> */
+	//if (txt[0] == '@') return GMTMATH_ARG_IS_RECALL;		/* load from mem location @<label> [PW: Interferes with cache files] */
 	if (!(strcmp (txt, "PI") && strcmp (txt, "pi"))) return GMTMATH_ARG_IS_PI;
 	if (!(strcmp (txt, "E") && strcmp (txt, "e"))) return GMTMATH_ARG_IS_E;
 	if (!strcmp (txt, "F_EPS")) return GMTMATH_ARG_IS_F_EPS;

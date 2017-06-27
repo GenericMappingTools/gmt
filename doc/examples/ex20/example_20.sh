@@ -24,6 +24,6 @@ cat > cities.txt << END
 56.16W	34.9S	0.5
 END
 
-gmt psxy -R -J cities.txt -Skbullseye -O >> $ps
+gmt psxy -R -J cities.txt -Sk@bullseye -O >> $ps
 
 rm -f cities.txt

@@ -23,7 +23,7 @@ echo 31.15E 30.03N 0.5 >> cities.txt
 echo 115.49E 31.58S 0.5 >> cities.txt
 echo 56.16W 34.9S 0.5 >> cities.txt
 
-gmt psxy -R -J cities.txt -Skbullseye -O >> %ps%
+gmt psxy -R -J cities.txt -Sk@bullseye -O >> %ps%
 
 del cities.txt
 del .gmt*

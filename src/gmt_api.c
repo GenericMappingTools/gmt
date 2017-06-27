@@ -6921,12 +6921,13 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
-				size_t len = strlen (file);
+				size_t len = strlen (file), elen;
 				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt";
-				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containing +u|U */
+				elen = strlen (ext);
+				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
-				else	/* Use name as is */
-					strncpy (CPT_file, file, GMT_LEN256-1);
+				else if (!gmtlib_getuserpath (API->GMT, file, CPT_file)) /* Use name.cpt as is but look for it */
+					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
 			}
 			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, GMT_LEN256-1);

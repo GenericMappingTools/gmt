@@ -11,9 +11,9 @@ REM First draw network and label the nodes
 echo GMT EXAMPLE 14
 set ps=example_14.ps
 gmt set MAP_GRID_PEN_PRIMARY thinnest,-
-gmt psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1 -BWSNe -Sc0.05i -Gblack -P -K -Y6.45i > %ps%
-gmt pstext table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> %ps%
-gmt blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
+gmt psxy @table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1 -BWSNe -Sc0.05i -Gblack -P -K -Y6.45i > %ps%
+gmt pstext @table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> %ps%
+gmt blockmean @table_5.11 -R0/7/0/7 -I1 > mean.xyz
 REM Then draw blocmean cells
 gmt psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> %ps%
 gmt psxy -R0/7/0/7 -J -B2f1 -BeSNw mean.xyz -Ss0.05i -Gblack -O -K >> %ps%
