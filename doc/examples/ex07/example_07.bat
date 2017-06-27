@@ -9,10 +9,10 @@ REM
 echo GMT EXAMPLE 07
 set ps=example_07.ps
 gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest -B10 --FORMAT_GEO_MAP=dddF > %ps%
-gmt psxy -R -J -O -K fz.xy -Wthinner,- >> %ps%
-gmt psxy quakes.xym -R -J -O -K -h1 -Sci -i,1,2s0.01 -Gred -Wthinnest >> %ps%
-gmt psxy -R -J -O -K isochron.xy -Wthin,blue >> %ps%
-gmt psxy -R -J -O -K ridge.xy -Wthicker,orange >> %ps%
+gmt psxy -R -J -O -K fz_07.txt -Wthinner,- >> %ps%
+gmt psxy quakes_07.txt -R -J -O -K -h1 -Sci -i,1,2s0.01 -Gred -Wthinnest >> %ps%
+gmt psxy -R -J -O -K isochron_07.txt -Wthin,blue >> %ps%
+gmt psxy -R -J -O -K ridge_07.txt -Wthicker,orange >> %ps%
 echo S 0.1i c 0.08i red thinnest 0.3i ISC Earthquakes > tmp
 gmt pslegend -R -J -O -K -DjTR+w2.2i+o0.2i -F+pthick+ithinner+gwhite --FONT_ANNOT_PRIMARY=18p,Times-Italic tmp >> %ps%
 echo -43 -5 SOUTH > tmp

@@ -9,16 +9,17 @@ REM
 echo GMT EXAMPLE 10
 set ps=example_10.ps
 gmt pscoast -Rd -JX8id/5id -Dc -Sazure2 -Gwheat -Wfaint -A5000 -p200/40 -K > %ps%
+gmt which languages_10.txt -G
 echo {print $1, $2, $3+$4+$5+$6+$7} > awk.txt
-gawk -f awk.txt languages.txt | gmt pstext -R -J -O -K -p -Gwhite@30 -D-0.25i/0 -F+f30p,Helvetica-Bold,firebrick=thinner+jRM >> %ps%
-gmt psxyz languages.txt -R-180/180/-90/90/0/2500 -J -JZ2.5i -So0.3i -Gpurple -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i -O -K -p --FORMAT_GEO_MAP=dddF -Bx60 -By30 -Bza500+lLanguages -BWSneZ+t"World Languages By Continent" >> %ps%
+gawk -f awk.txt languages_10.txt | gmt pstext -R -J -O -K -p -Gwhite@30 -D-0.25i/0 -F+f30p,Helvetica-Bold,firebrick=thinner+jRM >> %ps%
+gmt psxyz languages_10.txt -R-180/180/-90/90/0/2500 -J -JZ2.5i -So0.3i -Gpurple -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i -O -K -p --FORMAT_GEO_MAP=dddF -Bx60 -By30 -Bza500+lLanguages -BWSneZ+t"World Languages By Continent" >> %ps%
 echo '{print $1, $2, $3+$4, $3}' > awk.txt
-gawk -f awk.txt languages.txt | gmt psxyz -R -J -JZ -So0.3ib -Gblue -Wthinner -O -K -p >> %ps%
+gawk -f awk.txt languages_10.txt | gmt psxyz -R -J -JZ -So0.3ib -Gblue -Wthinner -O -K -p >> %ps%
 echo '{print $1, $2, $3+$4+$5, $3+$4}' > awk.txt
-gawk -f awk.txt languages.txt | gmt psxyz -R -J -JZ -So0.3ib -Gdarkgreen -Wthinner -O -K -p >> %ps%
+gawk -f awk.txt languages_10.txt | gmt psxyz -R -J -JZ -So0.3ib -Gdarkgreen -Wthinner -O -K -p >> %ps%
 echo '{print $1, $2, $3+$4+$5+$6, $3+$4+$5}' > awk.txt
-gawk -f awk.txt languages.txt | gmt psxyz -R -J -JZ -So0.3ib -Gyellow -Wthinner -O -K -p >> %ps%
+gawk -f awk.txt languages_10.txt | gmt psxyz -R -J -JZ -So0.3ib -Gyellow -Wthinner -O -K -p >> %ps%
 echo '{print $1, $2, $3+$4+$5+$6+$7, $3+$4+$5+$6}' > awk.txt
-gawk -f awk.txt languages.txt | gmt psxyz -R -J -JZ -So0.3ib -Gred -Wthinner -O -K -p >> %ps%
-gmt pslegend -R -J -JZ -DjLB+o0.2i+w1.35i/0+jBL -O --FONT=Helvetica-Bold -F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p legend.txt >> %ps%
+gawk -f awk.txt languages_10.txt | gmt psxyz -R -J -JZ -So0.3ib -Gred -Wthinner -O -K -p >> %ps%
+gmt pslegend -R -J -JZ -DjLB+o0.2i+w1.35i/0+jBL -O --FONT=Helvetica-Bold -F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p @legend_10.txt >> %ps%
 del awk.txt .gmt*

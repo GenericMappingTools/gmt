@@ -8,16 +8,16 @@ set ps=example_03.ps
 REM This version of example 3 is short and ugly.  We simply do not
 REM have access to all the UNIX tools needed. See job03.sh for details.
 REM First, we use "gmt fitcircle" to find the parameters of a great circle
-REM most closely fitting the x,y points in "sat.xyg":
+REM most closely fitting the x,y points in "sat_03.xyg":
 REM We find that center is 330.169/-18.4207 and pole is 52.7452/21.204
 REM
-REM Now we use "gmt project" to project the data in both sat.xyg and ship.xyg
+REM Now we use "gmt project" to project the data in both sat_03.xyg and ship_03.xyg
 REM into data.pg, where g is the same and p is the oblique longitude around
 REM the great circle.  We use -Q to get the p distance in kilometers, and -S
 REM to sort the output into increasing p values.
 REM
-gmt project  sat.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > sat.pg
-gmt project ship.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > ship.pg
+gmt project  @sat_03.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > sat.pg
+gmt project @ship_03.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > ship.pg
 REM Now we can use sampr in gawk to make a sampling points file for gmt sample1d:
 gmt math -T-1167/1169/1 -N1/0 = samp.x
 REM
@@ -33,7 +33,7 @@ gmt filter1d ship.pg -Fm1 -T-1167/1169/1 -E | gmt sample1d -Nsamp.x > samp_ship.
 REM Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 REM data, we do this:
 REM 
-gmt spectrum1d -S256 -D1 -W -C shipsat.dos -T
+gmt spectrum1d -S256 -D1 -W -C @shipsat_03.dos -T
 REM 
 REM Now we want to plot the spectra.  The following commands will plot the ship and sat 
 REM power in one diagram and the coherency on another diagram,  both on the same page.  
