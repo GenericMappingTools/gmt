@@ -3753,6 +3753,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			strncpy (args_cp, args, GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
 			if (slash) args_cp[slash] = 0;	/* Chop off y part */
+			if (!strcmp (args_cp, "0") || !strcmp (args_cp, "+0"))
+				GMT->current.proj.autoscl[GMT_X] = 1;	/* Want same scale as for y; compute width from x-range */
+			else if (!strcmp (args_cp, "-0"))
+				GMT->current.proj.autoscl[GMT_X] = -1;	/* Want same scale as for y but reverse direction; compute width from x-range */
 			k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with 1:xxx scale */
 			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
 				if (l_pos[GMT_X] || p_pos[GMT_X] || t_pos[GMT_X] || d_pos[GMT_X]) error++;
@@ -3784,6 +3788,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
+				if (!strcmp (args_cp, "0") || !strcmp (args_cp, "+0"))
+					GMT->current.proj.autoscl[GMT_Y] = 1;	/* Want same scale as for x; compute height from y-range */
+				else if (!strcmp (args_cp, "-0"))
+					GMT->current.proj.autoscl[GMT_Y] = -1;	/* Want same scale as for x but reverse direction; compute height from y-range */
 				k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with separate 1:xxx scale for y-axis */
 				if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
 					if (l_pos[GMT_Y] || p_pos[GMT_Y] || t_pos[GMT_Y] || d_pos[GMT_Y]) error++;
@@ -3819,7 +3827,6 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				/* Assume -JX<width>[unit]d means a linear geographic plot so x = lon and y = lat */
 				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 			}
-
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
 			if (GMT->current.proj.pars[GMT_X] == 0.0 && GMT->current.proj.pars[GMT_Y] == 0.0) error++;
 			break;

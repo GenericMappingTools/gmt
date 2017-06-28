@@ -2612,12 +2612,55 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 
 	/* If either is zero, adjust width or height to the other */
 
-	if (GMT->current.proj.scale[GMT_X] == 0) {
-		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y];
+	if (GMT->current.proj.scale[GMT_X] == 0) {	/* Must redo x-scaling by using y-scale */
+		GMT->current.proj.scale[GMT_X] = GMT->current.proj.autoscl[GMT_X] * GMT->current.proj.scale[GMT_Y];
+		if (GMT->current.proj.autoscl[GMT_X] == -1) GMT->current.proj.xyz_pos[GMT_X] = !GMT->current.proj.xyz_pos[GMT_Y];
+		switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+			case GMT_LINEAR:	/* Regular scaling */
+				if (GMT->current.proj.xyz_pos[GMT_X]) {
+					(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XLO], &xmin);
+					(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XHI], &xmax);
+				}
+				else {
+					(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XHI], &xmin);
+					(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XLO], &xmax);
+				}
+				break;
+			case GMT_LOG10:	/* Log10 transformation */
+				xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
+				xmax = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XHI]) : d_log10 (GMT, GMT->common.R.wesn[XLO]);
+				break;
+			case GMT_POW:	/* x^y transformation */
+				positive = !((GMT->current.proj.xyz_pos[GMT_X] + (GMT->current.proj.xyz_pow[GMT_X] > 0.0)) % 2);
+				xmin = (positive) ? pow (GMT->common.R.wesn[XLO], GMT->current.proj.xyz_pow[GMT_X]) : pow (GMT->common.R.wesn[XHI], GMT->current.proj.xyz_pow[GMT_X]);
+				xmax = (positive) ? pow (GMT->common.R.wesn[XHI], GMT->current.proj.xyz_pow[GMT_X]) : pow (GMT->common.R.wesn[XLO], GMT->current.proj.xyz_pow[GMT_X]);
+				break;
+		}
 		GMT->current.proj.pars[0] = GMT->current.proj.scale[GMT_X] * fabs (xmin - xmax);
 	}
-	if (GMT->current.proj.scale[GMT_Y] == 0) {
-		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.scale[GMT_X];
+	else if (GMT->current.proj.scale[GMT_Y] == 0) {	/* Must redo y-scaling by using x-scale */
+		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.autoscl[GMT_Y] * GMT->current.proj.scale[GMT_X];
+		if (GMT->current.proj.autoscl[GMT_Y] == -1) GMT->current.proj.xyz_pos[GMT_Y] = !GMT->current.proj.xyz_pos[GMT_X];
+		switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+			case GMT_LINEAR:	/* Regular scaling */
+				if (GMT->current.proj.xyz_pos[GMT_Y]) {
+					(*GMT->current.proj.fwd_y) (GMT, GMT->common.R.wesn[YLO], &ymin);
+					(*GMT->current.proj.fwd_y) (GMT, GMT->common.R.wesn[YHI], &ymax);
+				}
+				else {
+					(*GMT->current.proj.fwd_y) (GMT, GMT->common.R.wesn[YHI], &ymin);
+					(*GMT->current.proj.fwd_y) (GMT, GMT->common.R.wesn[YLO], &ymax);
+				}
+				break;
+			case GMT_LOG10:	/* Log10 transformation */
+				ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);
+				ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YHI]) : d_log10 (GMT, GMT->common.R.wesn[YLO]);
+				break;
+			case GMT_POW:	/* x^y transformation */
+				positive = !((GMT->current.proj.xyz_pos[GMT_Y] + (GMT->current.proj.xyz_pow[GMT_Y] > 0.0)) % 2);
+				ymin = (positive) ? pow (GMT->common.R.wesn[YLO], GMT->current.proj.xyz_pow[GMT_Y]) : pow (GMT->common.R.wesn[YHI], GMT->current.proj.xyz_pow[GMT_Y]);
+				ymax = (positive) ? pow (GMT->common.R.wesn[YHI], GMT->current.proj.xyz_pow[GMT_Y]) : pow (GMT->common.R.wesn[YLO], GMT->current.proj.xyz_pow[GMT_Y]);
+		}
 		GMT->current.proj.pars[1] = GMT->current.proj.scale[GMT_Y] * fabs (ymin - ymax);
 	}
 
