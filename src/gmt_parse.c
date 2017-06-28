@@ -247,7 +247,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	 *    Also, a single -B in the options may expand to several
 	 *    separate -B<args> so the linked options list may grow.
 	 */
-	int id = 0, k, n_B = 0, B_id;
+	int id = 0, k, n_B = 0, B_id, update_id;
 	unsigned int pos = 0, B_replace = 1;
 	bool update, remember;
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
@@ -261,7 +261,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			n_B++;
 		}
 	}
-	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++)
+	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 
 	for (opt = options; opt; opt = opt->next) {
@@ -273,7 +273,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
-			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* No -J found at all - nothing more to do */
+			if ((id = gmtlib_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
@@ -288,7 +288,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 				str[1] = GMT->init.history[id][0];
 			}
 			/* Continue looking for -J<code> */
-			if ((id = gmtlib_get_option_id (id + 1, str)) == -1) Return;	/* No -J<code> found */
+			if ((id = gmtlib_get_option_id (id + 1, str)) == GMT_NOTSET) Return;	/* No -J<code> found */
+			update_id = id;
 		}
 		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
 			if (B_replace) {                    /* Only -B is given and we want to use the history */
@@ -313,23 +314,37 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			}
 		}
 		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
-			if ((id = gmtlib_get_option_id (0, str)) == -1) Return;	/* Error: user gave shorthand option but there is no record in the history */
-			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R' && !GMT->current.ps.active)	/* Check RG instead */
-				id++;	/* RG follows R in gmt_unique.h order [Modern mode only] */
+			update_id = id = gmtlib_get_option_id (0, str);	/* If -R then we get id for RP */
+			if (id == GMT_NOTSET) Return;	/* Error: user gave shorthand option but there is no record in the history */
+			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R') {	/* Must deal with both RP and RG under modern mode */
+				if (GMT->current.ps.active) {	/* Plotting module: First check RP if it exists */
+					if (!GMT->init.history[id]) id++;	/* No RP in the history, try RG next */
+				}
+				else {	/* Only try RG for non-plotting modules. RG follows RP in gmt_unique.h order [Modern mode only] */
+					id++;	/* Go to RG */
+					update_id = id;	/* We want to update the RG history since it is not a plotter */
+				}
+			}
 			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
 		}
 		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
 			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
 			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
 				if (remember) {
-					gmt_M_str_free (GMT->init.history[id]);
-					GMT->init.history[id] = strdup (opt->arg);
+					gmt_M_str_free (GMT->init.history[update_id]);
+					GMT->init.history[update_id] = strdup (opt->arg);
 				}
 			}
 			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
 				if (!GMT->init.history[id]) Return;
 				gmt_M_str_free (opt->arg);   /* Free previous pointer to arg */
 				opt->arg = strdup (GMT->init.history[id]);
+				if (id != update_id) {	/* Happens for -R when we need the RG settings as first-time RP setting via -R */
+					char *c = NULL;
+					if ((c = strstr (opt->arg, "+I")) || (c = strstr (opt->arg, "+G")))	/* Strip off increment/node setting when used for plot domain */
+						c[0] = '\0';
+					if (remember) GMT->init.history[update_id] = strdup (opt->arg);
+				}
 			}
 		}
 	}
