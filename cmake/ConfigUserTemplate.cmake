@@ -191,7 +191,7 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
-# Convert classic script so modern during testing:
+# Auto-convert classic scripts to modern during testing:
 #set (MODERNIZE_TESTS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
