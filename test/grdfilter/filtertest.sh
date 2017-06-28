@@ -17,7 +17,7 @@ fi
 
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
-DATA=${GMT_SOURCE_DIR}/doc/examples/ex48/etopo10m.nc # Test on ETOP10 data
+DATA=@etopo10m_48.nc # Test on ETOP10 data
 lon=150
 lat=-80
 D=5000

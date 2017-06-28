@@ -3,7 +3,7 @@
 #       $Id$
 
 ps=sph_1.ps
-mars370=${src}/../../doc/examples/ex36/mars370.txt
+mars370=@mars370d.txt
 
 gmt makecpt -Crainbow -T-7000/15000 > tt.cpt
 gmt sphinterpolate ${mars370} -Rg -I1 -Q0 -Gtt.nc

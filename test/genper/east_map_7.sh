@@ -5,7 +5,6 @@ ps=east_map_7.ps
 
 EARTH_MODEL=e
 DEBUG=
-COLORMAP="${src:-.}"/topo.cpt 
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
@@ -23,8 +22,9 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 # first generate a gmt grdimage
 
-GRDFILE=${GMT_SOURCE_DIR}/doc/examples/ex48/etopo10m.nc
+GRDFILE=@etopo10m_48.nc
+gmt makecpt -Cearth > t.cpt
 
-gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
+gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
 gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 

@@ -5,7 +5,6 @@ ps=pacific_map_2.ps
 
 EARTH_MODEL=e
 DEBUG=
-COLORMAP="${src:-.}"/topo.cpt 
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
@@ -24,7 +23,8 @@ Height=2.0
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitude}/${vp_latitude}/${twist}/${Width}/${Height}/7i+
 
 GRDFILE=etopo2-hawaii.nc
+gmt makecpt -Cglobe > t.cpt
 
-gmt grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
+gmt grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
 gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 

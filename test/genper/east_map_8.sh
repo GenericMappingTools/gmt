@@ -5,7 +5,6 @@ ps=east_map_8.ps
 
 EARTH_MODEL=e
 DEBUG=
-COLORMAP="${src:-.}"/topo.cpt 
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
@@ -22,7 +21,7 @@ Height=30.0
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
 GRDFILE=etopo2-chesapeake.nc
-
-gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
+gmt makecpt -Cglobe > t.cpt
+gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
 gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 

@@ -5,7 +5,7 @@
 ps=gfilter.ps
 gmt set GMT_FFT kiss
 
-topo="${src:-.}"/../../doc/examples/ex38/topo.nc
+topo=@topo_38.nc
 
 # Do a 100 km Gaussian filter on some topography
 gmt grdfft ${topo} -fg -F-/100000 -Glow.nc -N+l
