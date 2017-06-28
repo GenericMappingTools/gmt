@@ -322,7 +322,7 @@ GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, stru
 
 int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
-	unsigned int tbl, pos;
+	unsigned int tbl, pos, first = 0;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false;
 	bool drawn = false, b_cpt = false;
@@ -466,12 +466,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'I':	/* Image record [use GMT_psimage] */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						if (gmt_getdatapath (GMT, image, path, R_OK) == NULL) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
+						first = gmt_download_file_if_not_found (GMT, image, GMT_CACHE_DIR);
+						if (gmt_getdatapath (GMT, &image[first], path, R_OK) == NULL) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
 							continue;
 						}
 						if (PSL_loadimage (PSL, path, &header, &dummy)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", image);
+							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
 						height += gmt_M_to_inch (GMT, size) * (double)header.height / (double)header.width;
@@ -798,12 +799,13 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'I':	/* Image record [use GMT_psimage]: I imagefile width justification */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						if (gmt_getdatapath (GMT, image, path, R_OK) == NULL) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
+						first = gmt_download_file_if_not_found (GMT, image, GMT_CACHE_DIR);
+						if (gmt_getdatapath (GMT, &image[first], path, R_OK) == NULL) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
 							Return (GMT_FILE_NOT_FOUND);
 						}
 						if (PSL_loadimage (PSL, path, &header, &dummy)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", image);
+							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
 						PSL_free (dummy);
@@ -812,7 +814,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						x_off = Ctrl->D.refpoint->x;
 						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? Ctrl->D.dim[GMT_X] - Ctrl->C.off[GMT_X] : 0.5 * Ctrl->D.dim[GMT_X]);
-						sprintf (buffer, "-O -K %s -Dx%gi/%gi+j%s+w%s --GMT_HISTORY=false", image, x_off, row_base_y, key, size);
+						sprintf (buffer, "-O -K %s -Dx%gi/%gi+j%s+w%s --GMT_HISTORY=false", &image[first], x_off, row_base_y, key, size);
 						GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: gmt psimage %s\n", buffer);
 						status = GMT_Call_Module (API, "psimage", GMT_MODULE_CMD, buffer);	/* Plot the image */
 						if (status) {

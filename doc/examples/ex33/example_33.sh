@@ -9,20 +9,20 @@
 ps=example_33.ps
 
 # Extract a subset of ETOPO1m for the East Pacific Rise
-# gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
+# gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac_33.nc
 gmt makecpt -Crainbow -T-5000/-2000 > z.cpt
-gmt grdimage @spac.nc -I+a15+ne0.75 -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > $ps
+gmt grdimage @spac_33.nc -I+a15+ne0.75 -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > $ps
 # Select two points along the ridge
 cat << EOF > ridge.txt
 -111.6	-43.0
 -113.3	-47.5
 EOF
 # Plot ridge segment and end points
-gmt psxy -R@spac.nc -J -O -K -W2p,blue ridge.txt >> $ps
+gmt psxy -R@spac_33.nc -J -O -K -W2p,blue ridge.txt >> $ps
 gmt psxy -R -J -O -K -Sc0.1i -Gblue ridge.txt >> $ps
 # Generate cross-profiles 400 km long, spaced 10 km, samped every 2km
 # and stack these using the median, write stacked profile
-gmt grdtrack ridge.txt -G@spac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
+gmt grdtrack ridge.txt -G@spac_33.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 gmt psxy -R -J -O -K -W0.5p table.txt >> $ps
 # Show upper/lower values encountered as an envelope
 gmt convert stack.txt -o0,5 > env.txt
