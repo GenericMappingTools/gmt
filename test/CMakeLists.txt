@@ -18,40 +18,23 @@
 
 # run tests
 if (DO_TESTS)
+	if (MODERNIZE_TESTS)
+		set (SCRIPT_MODE "M")
+	else (MODERNIZE_TESTS)
+		set (SCRIPT_MODE "C")
+	endif (MODERNIZE_TESTS)
+	
 	# list of test dirs
-	if (DO_MODERN_TESTS)
-		set (GMT_TEST_DIRS
-		        modern_api modern_blockmean modern_blockmedian modern_blockmode
-		        modern_byteswap modern_filter1d modern_fitcircle modern_gdal
-		        modern_genper modern_gmtconnect modern_gmtconvert modern_gmt_core
-		        modern_gmtlogo modern_gmtmath modern_gmtregress modern_gmtselect
-		        modern_gmtsimplify modern_gmtspatial modern_gmtvector modern_grd2cpt
-		        modern_grd2rgb modern_grd2xyz modern_grdblend modern_grdclip
-		        modern_grdcontour modern_grdconvert modern_grdcut modern_grdedit
-		        modern_grdfft modern_grdfilter modern_grdgradient modern_grdimage
-		        modern_grdlandmask modern_grdmask modern_grdmath modern_grdpaste
-		        modern_grdproject modern_grdsample modern_grdtrack modern_grdtrend
-		        modern_grdvector modern_grdview modern_grdvolume modern_greenspline
-		        modern_gshhg modern_img modern_kml modern_mapproject modern_meca
-		        modern_mgd77 modern_nearneighbor modern_ogr modern_postscriptlight
-		        modern_psclip modern_potential modern_project modern_psbasemap modern_pscoast
-		        modern_pscontour modern_pshistogram modern_psimage modern_pslegend
-		        modern_psmask modern_psrose modern_pssac modern_psscale modern_pssolar
-		        modern_psternary modern_pstext modern_pswiggle modern_psxy modern_psxyz
-		        modern_sample1d modern_segy modern_spectrum1d modern_sph modern_sph2grd
-		        modern_splitxyz modern_spotter modern_surface modern_time
-		        modern_trend1d modern_trend2d modern_triangulate modern_x2sys)
-	else (DO_MODERN_TESTS)
-		set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
-			genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify gmtspatial
-			gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour grdcut
-			grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
-			grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack
-			grdtrend grdvector grdview grdvolume greenspline gshhg kml mapproject nearneighbor ogr
-			project psbasemap pscoast pscontour pshistogram psimage pslegend psmask postscriptlight psclip
-			psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz sample1d segy spectrum1d sph sph2grd
-			splitxyz surface time trend1d trend2d triangulate img meca mgd77 potential spotter x2sys)
-	endif (DO_MODERN_TESTS)
+	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
+		genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify
+		gmtspatial gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour
+		grdcut grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
+		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
+		grdvector grdview grdvolume greenspline gshhg kml mapproject nearneighbor ogr
+		postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
+		pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz
+		sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
+		triangulate img meca mgd77 potential spotter x2sys)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
@@ -81,7 +64,7 @@ if (DO_TESTS)
 		foreach (_test ${_test_scripts})
 			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND ${BASH} gmtest ${_test})
+				COMMAND ${BASH} gmtest ${_test} ${SCRIPT_MODE})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)

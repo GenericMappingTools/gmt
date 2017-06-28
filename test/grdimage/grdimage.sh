@@ -3,7 +3,7 @@
 #	$Id$
 
 ps=grdimage.ps
-
+# GMT CLASSIC
 image="gmt grdimage t.nc -Ct.cpt -JX1i -B1 -BWeSn --FONT_ANNOT_PRIMARY=10p"
 contour="gmt grdcontour t.nc -Ct.cpt -J -R -O"
 
