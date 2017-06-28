@@ -3,9 +3,9 @@
 # $Id$
 # Makes the data for GMT_App_O_[1-9].sh
 #
-gmt grdcut ../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
+gmt grdcut @osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
 # Complex line algorithm points
-cat << EOF > cross.d
+cat << EOF > cross.txt
 > 1st branch
 59	-12
 62	-7
@@ -32,6 +32,6 @@ y1=`echo $info | cut -f15 -d ' '`
 gmt project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
 dist=`gmt gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`gmt info -I1 tt.d`
-echo "# Geoid Extrema Separation is $dist km" > transect.d
-gmt grdtrack tt.d -Ggeoid.nc | gmt grdtrack -GGMT_App_O.nc >> transect.d
+echo "# Geoid Extrema Separation is $dist km" > transect.txt
+gmt grdtrack tt.d -Ggeoid.nc | gmt grdtrack -GGMT_App_O.nc >> transect.txt
 rm -f tt.d gmt.history

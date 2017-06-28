@@ -26,5 +26,5 @@ GRDFILE=@etopo10m_48.nc
 gmt makecpt -Cglobe > t.cpt
 
 gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
-gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
+gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Ia -Na -Wfaint -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 
