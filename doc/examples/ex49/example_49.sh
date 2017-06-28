@@ -10,17 +10,17 @@
 ps=example_49.ps
 
 # Convert coarser age grid to pixel registration to match bathymetry grid
-gmt grdsample age_gridline.nc -T -Gage_pixel.nc
+gmt grdsample @age_gridline.nc -T -Gage_pixel.nc
 # Image depths with color-coded age contours
 gmt makecpt -Cabyss -T-7000/0 > depth.cpt
-gmt grdimage depth_pixel.nc -Cdepth.cpt -JM6i -P -Baf -BWSne -X1.5i -K --FORMAT_GEO_MAP=dddF > $ps
-gmt psxy -Rdepth_pixel.nc -J -O -K -W1p ridge.gmt >> $ps
+gmt grdimage @depth_pixel.nc -Cdepth.cpt -JM6i -P -Baf -BWSne -X1.5i -K --FORMAT_GEO_MAP=dddF > $ps
+gmt psxy -R@depth_pixel.nc -J -O -K -W1p @ridge_49.gmt >> $ps
 gmt makecpt -Chot -T0/100/10 > age.cpt
 gmt grdcontour age_pixel.nc -J -O -K -A+f14p -Cage.cpt -Wa0.1p+c -GL30W/22S/5E/13S >> $ps
-gmt psscale -Rdepth_pixel.nc -J -DjTR+w2i/0.15i+h+o0.3i/0.15i -Cdepth.cpt -Baf+u" km" -W0.001 -F+p1p+gbeige -O -K >> $ps
+gmt psscale -R@depth_pixel.nc -J -DjTR+w2i/0.15i+h+o0.3i/0.15i -Cdepth.cpt -Baf+u" km" -W0.001 -F+p1p+gbeige -O -K >> $ps
 # Obtain depth, age pairs by dumping grids and pasting results
 gmt grd2xyz age_pixel.nc   -bof > age.bin
-gmt grd2xyz depth_pixel.nc -bof > depth.bin
+gmt grd2xyz @depth_pixel.nc -bof > depth.bin
 gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f > depth-age.bin
 # Create and map density grid of (age,depth) distribution
 gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc

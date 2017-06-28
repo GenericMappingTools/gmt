@@ -16,7 +16,7 @@ REM gunzip bedelev.asc.gz
 REM grdconvert bedelev.asc BEDMAP_elevation.nc=ns -V
 
 gmt makecpt -Cearth -T-7000/4000 > z.cpt
-gmt grdimage -Cz.cpt BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > %ps%
+gmt grdimage -Cz.cpt @BEDMAP_elevation.nc -Jx1:60000000 -Q -P -K > %ps%
 gmt pscoast -R-180/180/-90/-60 -Js0/-90/-71/1:60000000 -Bafg -Di -W0.25p -O -K >> %ps%
 gmt psscale -Cz.cpt -DJRM+w2.5i/0.2i+o0.5i/0+mc -R -J -O -K -F+p+i -Bxa1000+lELEVATION -By+lm >> %ps%
 REM GSHHG

@@ -9,6 +9,7 @@ REM
 echo GMT EXAMPLE 43
 set ps=example_43.ps
 
+gmt which -Gl @bb_weights.asc
 gmt regress -Ey -Nw -i0-1l bb_weights.asc > model.txt
 gmt regress -Ey -Nw -i0-1l bb_weights.asc -Fxmc -T-2/6/0.1 > rls_line.txt
 gmt regress -Ey -N2 -i0-1l bb_weights.asc -Fxm -T-2/6/8 > ls_line.txt

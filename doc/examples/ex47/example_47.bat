@@ -7,6 +7,7 @@ REM GMT progs:    gmtregress, psxy
 echo GMT EXAMPLE 47
 set ps=example_47.ps
 
+gmt which -Gl @hertzsprung-russell.txt
 REM Make a sub-function for plotting one panel
 echo "gmt regress data -Fxm %1 %2 -T2.85/5.25/0.1 > tmp" > plot_one.bat
 echo "gmt psxy -R -J -Bxafg -Byafg -B%3+gbisque -O -K %4 %5 data -Sc0.05i -Gblue" >> plot_one.bat

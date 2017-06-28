@@ -19,7 +19,7 @@ EOF
 gmt makecpt -Ccategorical -T0/6/1 -N > t.cpt
 gmt makecpt -Clightgray -T-12000,12000 -N > g.cpt
 gmt sphtriangulate airports.txt -Qv > near_area.txt
-gmt grdimage etopo10m.nc -I+a45+nt2 -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps
+gmt grdimage @etopo10m_48.nc -I+a45+nt2 -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc > $ps
 gmt psxy -R -J -O -K near_area.txt -L -Ct.cpt -t65 >> $ps
 gmt psxy -R -J -O -K -SW2000k -Gwhite@40 airports.txt >> $ps
 gmt pscoast -R -J -Gblack -A500 -O -K -Bafg >> $ps
