@@ -91,7 +91,7 @@ if [ "X$script_mode" = "XM" ]; then
 	# Test a modernized version of the script instead
 	classic=$(grep "GMT CLASSIC" "$script" -c)
 	if [ $classic -eq 0 ]; then
-		echo "Modernizing $script"
+		echo "Modernizing $script before testing"
 		local_script=$(basename "${script_name}")
 		gmtmodernize "$script" > ./${local_script}
 	else

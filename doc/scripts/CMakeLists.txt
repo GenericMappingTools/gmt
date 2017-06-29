@@ -159,6 +159,12 @@ add_depend_to_target (docs_depends _docs_scripts_fig _docs_scripts_verbatim)
 # run tests
 if (DO_TESTS)
 	# this file takes care of setting up the test environment
+	if (MODERNIZE_TESTS)
+		set (SCRIPT_MODE "M")
+	else (MODERNIZE_TESTS)
+		set (SCRIPT_MODE "C")
+	endif (MODERNIZE_TESTS)
+
 	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
@@ -172,7 +178,7 @@ if (DO_TESTS)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND ${BASH} gmtest ${_job})
+			COMMAND ${BASH} gmtest ${_job} ${SCRIPT_MODE})
 	endforeach (_job)
 endif (DO_TESTS)
 
@@ -186,7 +192,7 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	endforeach (_fig ${_install_pdf})
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
-# Install target for realease documentation
+# Install target for release documentation
 if (SVN AND HAVE_SVN_VERSION)
 	foreach (_fig ${_install_pdf})
 		add_custom_target (_${_fig}_release
