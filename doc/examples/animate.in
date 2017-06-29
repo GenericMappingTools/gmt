@@ -89,15 +89,15 @@ gmt set -Du FORMAT_TIME_STAMP "Version 6"
 
 if [ "X$script_mode" = "XM" ]; then
 	# Test a modernized version of the script instead
-	classic=$(grep "GMT CLASSIC" "$script" -c)
-	if [ $classic -eq 0 ]; then
+	#classic=$(grep "GMT CLASSIC" "$script" -c)
+	#if [ $classic -eq 0 ]; then
 		echo "Modernizing $script before testing"
 		local_script=$(basename "${script_name}")
 		gmtmodernize "$script" > ./${local_script}
-	else
-		echo "error: Cannot modernize classic GMT script ${script}." >&2
-		exit 1
-	fi
+	#else
+	#	echo "error: Cannot modernize classic GMT script ${script}." >&2
+	#	exit 1
+	#fi
 	. "${local_script}" animate
 else
 	# Now run the original script
