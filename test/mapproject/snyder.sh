@@ -4,22 +4,14 @@
 #	Testing GMT gmt mapproject on examples in Snyder.
 #
 #
-#	usage:  snyder.sh [-v]
+#	usage:  snyder.sh
 #
-#	-v will report values for each gmt project.
 #	scipt will report trouble if we do not match Snyder (+- 360 degrees for longitudes)
 #	Slop is 0.11 m for gmt projected values
 
 blabber () {
 	gf=(`echo "${sf[*]}" | gmt mapproject $* -F -C`)
 	gi=(`echo "${gf[*]}" | gmt mapproject $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
-	if [ $blabber -gt 0 ] ; then
-		echo "-------------------"
-		echo $p
-		echo "-------------------"
-		echo "Snyder  x=${sf[0]}, y=${sf[1]} X=${si[0]} Y=${si[1]}"
-		echo "GMT     x=${gi[0]}, y=${gi[1]} X=${gf[0]} Y=${gf[1]}"
-	fi
 	echo "${sf[*]} ${gi[*]} ${si[*]} ${gf[*]} $p" | $AWK -f test.awk
 }
 
@@ -63,8 +55,6 @@ cat << EOF > test.awk
 	}
 }
 EOF
-
-blabber=$#
 
 gmt gmtset PROJ_SCALE_FACTOR 1
 
