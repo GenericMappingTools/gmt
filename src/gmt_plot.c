@@ -5751,8 +5751,6 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
 	ap = at_pole (S->data[GMT_Y], S->n_rows);
-	//if (ap) return S->n_rows;
-	fprintf (stderr, "INSIDE\n");
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
