@@ -4,7 +4,7 @@
 
 ps=pattern.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 10p
+gmt set FONT_ANNOT_PRIMARY 10p
 
 cat << EOF > patt.cpt
 0	p144/9	5	-

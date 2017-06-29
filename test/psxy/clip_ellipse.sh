@@ -5,7 +5,7 @@
 
 ps=clip_ellipse.ps
 
-gmt gmtset MAP_FRAME_TYPE plain
+gmt set MAP_FRAME_TYPE plain
 
 echo 180 0 0 4000 4000 > ellipse.d
 gmt psxy ellipse.d -P -K -JM3i -R-180/180/-60/60 -Bg180 -Wthin -SE -Gred -X1i -Y0.75i > $ps 

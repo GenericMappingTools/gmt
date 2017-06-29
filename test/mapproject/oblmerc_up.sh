@@ -3,14 +3,14 @@
 #
 # Tests mapproject for oblique Mercator -R-20/40/-15/65r -Joa-30/60/105/1:30000000 
 
-gmt gmtset MAP_ANNOT_OBLIQUE 0 FORMAT_GEO_MAP dddF
+gmt set MAP_ANNOT_OBLIQUE 0 FORMAT_GEO_MAP dddF
 ps=oblmerc_up.ps
 lon=-30
 lat=60
 az_x=105
-az_y=`gmt gmtmath -Q $az_x 90 SUB =`
-plon=`gmt gmtvector -A$lon/$lat -Tp$az_x} | cut -f1`
-plat=`gmt gmtvector -A$lon/$lat -Tp$az_x} | cut -f2`
+az_y=`gmt math -Q $az_x 90 SUB =`
+plon=`gmt vector -A$lon/$lat -Tp$az_x} | cut -f1`
+plat=`gmt vector -A$lon/$lat -Tp$az_x} | cut -f2`
 scale=1:30000000
 scale_km=1:30000
 LL_lon=-56
@@ -25,14 +25,14 @@ echo $UR_lon $UR_lat | gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -J
 UR_x=`cut -f1 tmp`
 UR_y=`cut -f2 tmp`
 # Create rectangle in these gmt projected units
-xstart=`gmt gmtmath -Q $LL_x $UR_x MIN =`
-xstop=`gmt gmtmath -Q $LL_x $UR_x MAX =`
-ystart=`gmt gmtmath -Q $LL_y $UR_y MIN =`
-ystop=`gmt gmtmath -Q $LL_y $UR_y MAX =`
-gmt gmtmath -T$xstart/$xstop/101+ $LL_y = > box.xy
-gmt gmtmath -o1,0 -T$ystart/$ystop/101+ $UR_x = >> box.xy
-gmt gmtmath -I -T$xstart/$xstop/101+ $UR_y = >> box.xy
-gmt gmtmath -I -o1,0 -T$ystart/$ystop/101+ $LL_x = >> box.xy
+xstart=`gmt math -Q $LL_x $UR_x MIN =`
+xstop=`gmt math -Q $LL_x $UR_x MAX =`
+ystart=`gmt math -Q $LL_y $UR_y MIN =`
+ystop=`gmt math -Q $LL_y $UR_y MAX =`
+gmt math -T$xstart/$xstop/101+ $LL_y = > box.xy
+gmt math -o1,0 -T$ystart/$ystop/101+ $UR_x = >> box.xy
+gmt math -I -T$xstart/$xstop/101+ $UR_y = >> box.xy
+gmt math -I -o1,0 -T$ystart/$ystop/101+ $LL_x = >> box.xy
 # Get back degrees
 gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$scale -I -Fk box.xy > box.d
 # Use -Joa to set origin and azimuth.

@@ -7,7 +7,7 @@ ps=zlegend.ps
 
 gmt makecpt -Ccopper -T0/10/1 > a.cpt
 gmt makecpt -Cpolar  -T-5/5/1 > b.cpt
-gmt gmtset FONT_ANNOT_PRIMARY 12p
+gmt set FONT_ANNOT_PRIMARY 12p
 
 gmt psbasemap -R0/1/0/1 -JX6i/9i -B0 -B+gbisque -P -K -Xc > $ps
 gmt pslegend -R -J -DjMC+w4i+jMC+l1.25 -C0.1i/0.1i -F+p+i+gwhite -O >> $ps <<EOF

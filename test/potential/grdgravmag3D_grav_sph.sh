@@ -27,11 +27,11 @@ gmt grdmath bot_g.grd top_g.grd ADD = sphere_g.grd
 # Compute the effect of the two hemi-spheres alog XX axis and add them
 gmt grdgravmag3d top_half.grd -C$rho -Zb -Fli1.dat > tt.dat 
 gmt grdgravmag3d bot_half.grd -C$rho -Zt -Fli1.dat > tb.dat 
-gmt gmtmath tt.dat tb.dat ADD = t.dat
+gmt math tt.dat tb.dat ADD = t.dat
 
 
 # Profile of analytic anomaly
-gmt gmtmath -T-50/50/1 T $z0 HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $r 3 POW MUL $rho MUL $z0 ABS MUL = ztmp.dat
+gmt math -T-50/50/1 T $z0 HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $r 3 POW MUL $rho MUL $z0 ABS MUL = ztmp.dat
 gmt psxy ztmp.dat -R-50/50/0/0.125 -JX14c/8c -Bx10f5 -By.01 -BWSne+t"Anomaly (mGal)" -W1p,200/0/0 -P -K > $ps
 
 gmt psxy t.dat -i0,2 -R -JX -Sc.15c -Gblue -O -K >> $ps

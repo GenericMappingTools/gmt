@@ -4,7 +4,7 @@
 
 ps=psscale.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 10p FONT_LABEL 14p PROJ_LENGTH_UNIT cm
+gmt set FONT_ANNOT_PRIMARY 10p FONT_LABEL 14p PROJ_LENGTH_UNIT cm
 
 gmt makecpt -T-6/6/1 -Cseis -D > tmp.cpt
 

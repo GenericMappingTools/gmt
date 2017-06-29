@@ -6,7 +6,7 @@
 ps=vector.ps
 
 gmt psbasemap -R0/6/0/3 -Jx1i -P -B1g1 -BWSne -K -Xc > $ps
-gmt gmtset MAP_VECTOR_SHAPE 0.5
+gmt set MAP_VECTOR_SHAPE 0.5
 # Center justified vectors
 gmt psxy -R -J -O -K -W1p -Gred -S << EOF >> $ps
 0.5	0.5	30	1i	v0.2i+jc
@@ -35,7 +35,7 @@ gmt psxy -R -J -O -K -W1p -S << EOF >> $ps
 5.9	2.8	30	1i	v0.2i+je+er
 EOF
 # Then with -SV and Mercator
-gmt gmtset MAP_VECTOR_SHAPE 1
+gmt set MAP_VECTOR_SHAPE 1
 gmt psbasemap -R0/6/0/3 -Jm1i -P -B1g1 -BWSne -O -K -Y4i >> $ps
 # Center justified vectors
 gmt psxy -R -J -O -K -W1p -Gred -S << EOF >> $ps

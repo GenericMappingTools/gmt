@@ -21,7 +21,7 @@ rm -f total_dump
 gmt psbasemap -R$R2D/$Z -JX6/3 -JZ2.5 -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+b -P -K > $ps
 gmt psxyz -R -JX -JZ -p$view -O -K $T -Su0.05i -Gblack -Wfaint >> $ps
 while [ $k -lt 22 ]; do
-	z=`gmt gmtmath -Q 5 $k $dz MUL ADD =`
+	z=`gmt math -Q 5 $k $dz MUL ADD =`
 #	echo "Doing z = $z"
 	$AWK '{if ($3 == '$z') print $1, $2, $4}' 3D.xyzw | gmt xyz2grd -R$R2D -I0.25/0.5 -Gslice_$k.nc
 	gmt grdcontour $Rcut slice_$k.nc -JX -C10 -L9/11 -S8 -Ddump

@@ -1,6 +1,6 @@
 #!/bin/bash
 #	$Id$
-# Test gmt gmtconvert with both -o and -b
+# Test gmt convert with both -o and -b
 echo 1 2 3 4 5 > t.txt
 gmt convert t.txt -o0,1,4 -bo3d > d.b
 gmt convert t.txt -o0,1,4 -bo3f > s.b

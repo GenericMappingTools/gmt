@@ -4,7 +4,7 @@
 
 ps=meca_07.ps
 
-gmt gmtset PROJ_LENGTH_UNIT inch MAP_VECTOR_SHAPE 0.4 MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i 
+gmt set PROJ_LENGTH_UNIT inch MAP_VECTOR_SHAPE 0.4 MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i 
 
 #     The example should plot some residual rates of  rotation  in
 #     the  Western Transverse Ranges, California.  The wedges will
@@ -52,7 +52,7 @@ gmt psvelo -Y-4.5i -R-10/10/-10/10 -Wthin,red \
 EOF
 
 # simpler colors, labeled with following font
-gmt gmtset FONT_ANNOT_PRIMARY Helvetica
+gmt set FONT_ANNOT_PRIMARY Helvetica
 gmt psvelo -Se0.2/0.39/18 -R -J -A0.25c+p0.25p+e -O -Umeca_4 << EOF >> $ps    
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)

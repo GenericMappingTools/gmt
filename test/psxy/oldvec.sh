@@ -5,7 +5,7 @@
 
 ps=oldvec.ps
 
-gmt gmtset MAP_VECTOR_SHAPE 0.5
+gmt set MAP_VECTOR_SHAPE 0.5
 # Center justified vectors
 gmt psxy -R0/6/-1/1 -Jx1i -P -K -W2p -Gred -S -B0g1 -B+t"GMT5 Vectors" << EOF > $ps
 1	0	45	1.5i	v18p+jc+b+e+p4p,blue+a45

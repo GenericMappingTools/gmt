@@ -4,7 +4,7 @@
 
 ps=meca_02.ps
 
-gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
+gmt set PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
 # This is a strike-slip CMT mechanism in red
 # Best double couple overlays moment tensor
@@ -14,7 +14,7 @@ gmt psmeca -X2i -Y5i -R238.5/242/32.5/35.5 -Jm1.3i -B2 -BWeSn+tpsmeca -Sm0.4i/12
 EOF
 
 # Focal mechanisms are labeled with following font
-gmt gmtset FONT_ANNOT_PRIMARY Times-Roman
+gmt set FONT_ANNOT_PRIMARY Times-Roman
 # Here are several thrusting mechanisms in Aki and Richards convention
 # New second argument -Sa is font size in points
 # Old gmt psvelomeca format is used

@@ -5,7 +5,7 @@
 
 ps=GMT_legend.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 12p  FONT_LABEL 12p
+gmt set FONT_ANNOT_PRIMARY 12p  FONT_LABEL 12p
 
 cat <<EOF > table.txt
 #G 0.04i

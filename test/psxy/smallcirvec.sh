@@ -4,7 +4,7 @@
 # Check geovector symbols for small circle vectors
 
 ps=smallcirvec.ps
-gmt gmtset PROJ_ELLIPSOID Sphere
+gmt set PROJ_ELLIPSOID Sphere
 # Vector from point with head at end
 cat << EOF > t.txt
 0 0 8000	red	0	45	b+e+b

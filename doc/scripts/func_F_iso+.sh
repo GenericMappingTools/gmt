@@ -7,7 +7,7 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with gmt pstext, including the header row and left column
 
-gmt gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
+gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First chart for standard font
 
@@ -69,7 +69,7 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 # Chart ISOLatin1+ font
-gmt gmtset PS_CHAR_ENCODING ISOLatin1+
+gmt set PS_CHAR_ENCODING ISOLatin1+
 
 # First the uncoded ones
 gmt psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tISOLatin1++ -P -K -Glightred -Y0.0 << EOF

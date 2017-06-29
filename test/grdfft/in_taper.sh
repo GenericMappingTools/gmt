@@ -15,10 +15,10 @@ cat << EOF > box
 EOF
 
 scl=0.01
-x=`gmt gmtmath -Q 512 2 DIV $scl MUL =`
-xoff=`gmt gmtmath -Q 512 300 SUB 2 DIV $scl MUL NEG =`
-yoff=`gmt gmtmath -Q 200 $scl MUL 0.5 ADD =`
-yoffe=`gmt gmtmath -Q 384 $scl MUL 0.5 ADD =`
+x=`gmt math -Q 512 2 DIV $scl MUL =`
+xoff=`gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =`
+yoff=`gmt math -Q 200 $scl MUL 0.5 ADD =`
+yoffe=`gmt math -Q 384 $scl MUL 0.5 ADD =`
 gmt makecpt -Cpolar -T-1/1 > t.cpt
 gmt grdimage t.nc -Jx${scl}i -Ct.cpt -P -Ba -BWSne -K -X1.75i > $ps
 echo "350 100 Original Data" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps

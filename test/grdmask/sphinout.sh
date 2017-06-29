@@ -21,7 +21,7 @@ gmt grdimage mask.nc -R295/345/59/82 -Jx0.108i -Cmask.cpt -B10g1 -BWSne -O -K -Y
 gmt psxy -R -J -O -K 2k.dat -W0.5p,blue >> $ps
 # Now we truncate the coordinates to be all integers, meaning the mask grid
 # should have a yellow halo from all those nodes that lie on the perimeter.
-gmt gmtmath -T 2k.dat FLOOR = tmp.txt
+gmt math -T 2k.dat FLOOR = tmp.txt
 gmt grdmask -Gmask.nc -N0/0.5/1 -I1 -Rg -fg tmp.txt -A
 gmt grdimage mask.nc -R295/345/59/82 -Jx0.108i -Cmask.cpt -B10g1 -BWSne -O -K -Y2.9i >> $ps
 gmt psxy -R -J -O tmp.txt -W0.5p,blue >> $ps

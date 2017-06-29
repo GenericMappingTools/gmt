@@ -40,7 +40,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
 
  #!/bin/bash
  #
- gmt gmtset GMT_COMPATIBILITY=5 MAP_FRAME_TYPE=plain
+ gmt set GMT_COMPATIBILITY=5 MAP_FRAME_TYPE=plain
  #
  #  f(x,y,z) = sin(x+y)*e(-(x+y)*(3 - (z/1e4)))
  #

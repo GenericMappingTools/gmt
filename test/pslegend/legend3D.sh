@@ -6,7 +6,7 @@
 ps=legend3D.ps
 
 gmt makecpt -Cpanoply -T-8/8/1 > tt.cpt
-gmt gmtset FONT_ANNOT_PRIMARY 12p
+gmt set FONT_ANNOT_PRIMARY 12p
 
 gmt pslegend -R0/10/0/9 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1+r -B5f1 -P -p200/25 -X0.5i > $ps <<EOF
 # Legend test for gmt pslegend

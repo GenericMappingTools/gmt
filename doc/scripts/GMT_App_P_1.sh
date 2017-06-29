@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Illustrates the use of isolation mode
-# GMT progs:	gmt gmtset, gmt grdimage, gmt grdmath, gmt makecpt, gmt pscoast
+# GMT progs:	gmt set, gmt grdimage, gmt grdmath, gmt makecpt, gmt pscoast
 # Unix progs:	mktemp, rm
 #
 ps=GMT_App_P_1.ps
@@ -14,7 +14,7 @@ export GMT_TMPDIR=`mktemp -d /tmp/gmt.XXXXXX`
 
 # These settings will be local to this script only since it writes to
 # $GMT_TMPDIR/gmt.conf
-gmt gmtset COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
+gmt set COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
 
 # Make grid file and color map in temporary directory
 gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc

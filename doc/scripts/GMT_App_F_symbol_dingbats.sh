@@ -6,10 +6,10 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with gmt pstext, including the header row and left column
 
-gmt gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
+gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # Chart for Symbols font
-gmt gmtset PS_CHAR_ENCODING ISOLatin1+
+gmt set PS_CHAR_ENCODING ISOLatin1+
 
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
@@ -158,7 +158,7 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 # Chart for ZapfDingbats
-gmt gmtset PS_CHAR_ENCODING ISOLatin1+
+gmt set PS_CHAR_ENCODING ISOLatin1+
 
 gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -O -K -Glightgreen -X3.2i -Y2.58i << EOF >> GMT_App_F_symbol_dingbats.ps
 >

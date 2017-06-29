@@ -2,7 +2,7 @@
 #	$Id$
 #
 ps=GMT_Defaults_1c.ps
-gmt gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
+gmt set MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 gmt psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il -Bpxa6Hf1hg6h+l"x-axis label" -Bpya1g3p+l"y-axis label" -BWSne \
 	-X2i -Bsxa1D -P -K -UL/-0.75i/-0.85i/"Dazed and Confused" --GMT_LANGUAGE=pt \
 	--FORMAT_TIME_STAMP="2011 Jun 13 22:10:02" > $ps

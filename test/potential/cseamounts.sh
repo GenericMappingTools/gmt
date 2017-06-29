@@ -3,7 +3,7 @@
 #
 # Test the output of gmt grdseamount for conical shapes
 ps=cseamounts.ps
-gmt gmtset MAP_FRAME_TYPE plain
+gmt set MAP_FRAME_TYPE plain
 # 4 panels of bathymetry:
 # Left column is Cartesian, right column is Geographic
 # Top row is elliptical, bottom row is circular

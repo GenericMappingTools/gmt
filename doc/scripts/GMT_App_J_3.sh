@@ -585,7 +585,7 @@ EOF
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-gmt gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
+gmt set FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 cut -f1,2 tt.r_tr_fns | gmt psxy -R0/5/-0.3/1 -JX4i/2i -P -Bxa1f0.2+l"Frequency (cycles per filter width)" -Bya0.2f0.1g1+l"Gain" -BWeSn -K -Wthick > GMT_App_J_3.ps
 cut -f1,3 tt.r_tr_fns | gmt psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
 cut -f1,4 tt.r_tr_fns | gmt psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps

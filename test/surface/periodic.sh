@@ -8,10 +8,10 @@ ps=periodic.ps
 G=-Gl-90/90/-90/-90,90/90/90/-90
 # Make global synthetic grid
 gmt grdmath -Rg -I1 X SIND Y 3 MUL COSD MUL 100 MUL = t.nc
-gmt gmtmath -T-45/45/1 0 = path.txt
+gmt math -T-45/45/1 0 = path.txt
 # Sample this at ~200 places randomly; save random in svn sp repeatable
-#gmt gmtmath -T0/200/1 -o1 0 360 RAND = x
-#gmt gmtmath -T0/200/1 -o1 -90 90 RAND = y
+#gmt math -T0/200/1 -o1 0 360 RAND = x
+#gmt math -T0/200/1 -o1 -90 90 RAND = y
 #paste x y > random_xy.txt
 # Sample synthetic grid at random locations
 gmt grdtrack -Gt.nc random_xy.txt | gmt blockmean -Rg -I1 -fg > data.txt

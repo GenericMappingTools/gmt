@@ -25,6 +25,6 @@ cat << EOF > tt4.answer
 1969-07-24T14:56:00	0.875
 1969-07-25T02:56:00	1
 EOF
-gmt gmtconvert tt4.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > tt4.result
+gmt convert tt4.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > tt4.result
 
 diff tt4.result tt4.answer --strip-trailing-cr > fail

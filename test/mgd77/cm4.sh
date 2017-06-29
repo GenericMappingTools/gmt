@@ -5,7 +5,7 @@
 
 ps=cm4.ps
 
-gmt gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
+gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
 dia="${src:-.}"/clf20010501d.min
 
 # Get Station location
@@ -29,9 +29,9 @@ y2_max=`echo ${m2[2]} $max_Y | $AWK '{print $1 + $2}'`
 gmt psxy zz1.dat -R${m1[0]}/${m1[1]}/${m1[2]}/$y1_max -JX16c/6c -Bpxa6Hf1h -By10 -BWSn -W1p -Y5.0c -P -K > $ps
 gmt psxy zz2.dat -R${m2[0]}/${m2[1]}/${m2[2]}/$y2_max -J -Bpxa6Hf1h -By10 -BE -W1p,red --MAP_DEFAULT_PEN=+1p,red -O -K >> $ps
 
-gmt gmtmath zz1.dat zz2.dat SUB -o1 -f0T = dif_T.dat
-std=`gmt gmtmath dif_T.dat STD -S = | $AWK '{printf "%.2f\n", $1}'`
-mean=`gmt gmtmath dif_T.dat MEAN -S = | $AWK '{printf "%.2f\n", $1}'`
+gmt math zz1.dat zz2.dat SUB -o1 -f0T = dif_T.dat
+std=`gmt math dif_T.dat STD -S = | $AWK '{printf "%.2f\n", $1}'`
+mean=`gmt math dif_T.dat MEAN -S = | $AWK '{printf "%.2f\n", $1}'`
 
 # Write Date, MEAN & STD
 t=(`echo ${m2[2]} | $AWK '{print $1 + 4, $1 + 7, $1+12}'`)
@@ -46,5 +46,5 @@ IGRF=`echo $lon $lat $alt $data | gmt mgd77magref -Ft/0 | $AWK '{printf "%.2f\n"
 echo ${m1[0]} ${t[0]} IGRF = $IGRF | gmt pstext -F+f15p,Bookman-Demi+jCT -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
 
 # Plot histogram of differences with mean removed
-gmt gmtmath dif_T.dat $mean SUB = | gmt pshistogram -F -W2 -G0 -JX4c/3c -Bx5 -By100 -BWN -Xa11.5c -O >> $ps
+gmt math dif_T.dat $mean SUB = | gmt pshistogram -F -W2 -G0 -JX4c/3c -Bx5 -By100 -BWN -Xa11.5c -O >> $ps
 

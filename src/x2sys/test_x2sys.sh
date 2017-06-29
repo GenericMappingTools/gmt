@@ -75,9 +75,9 @@ gv $PS &
 # Test 1: Add some constant shifts and try to resolve them
 #---------------------------------------------------------
 
-gmt gmtmath trackA.xydz -C3 0.2 ADD -Ca = trackAc.xydz
-gmt gmtmath trackB.xydz -C3 0.1 SUB -Ca = trackBc.xydz
-gmt gmtmath trackC.xydz -C3 0.05 ADD -Ca = trackCc.xydz
+gmt math trackA.xydz -C3 0.2 ADD -Ca = trackAc.xydz
+gmt math trackB.xydz -C3 0.1 SUB -Ca = trackBc.xydz
+gmt math trackC.xydz -C3 0.05 ADD -Ca = trackCc.xydz
 
 # Obtain all external crossovers
 

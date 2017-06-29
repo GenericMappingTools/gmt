@@ -4,7 +4,7 @@
 
 ps=seis.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
+gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
 gmt makecpt -T-6/6/1 -Cseis -D > tmp.cpt
 gmt psscale -Ctmp.cpt -D00/04+w8/0.5+jML -K           > $ps

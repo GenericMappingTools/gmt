@@ -32,7 +32,7 @@ cat << EOF > answer1.txt
 -9	-9
 -9	-9
 EOF
-gmt gmtconvert data.txt -Sjunk > result1.txt
+gmt convert data.txt -Sjunk > result1.txt
 diff answer1.txt result1.txt >> fail
 # 2. This test should yield answer2.txt
 cat << EOF > answer2.txt
@@ -55,7 +55,7 @@ cat << EOF > answer2.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S~junk > result2.txt
+gmt convert data.txt -S~junk > result2.txt
 diff answer2.txt result2.txt >> fail
 # 3. This test should yield answer3.txt
 cat << EOF > answer3.txt
@@ -72,7 +72,7 @@ cat << EOF > answer3.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S/"Segment 1[02]0"/ > result3.txt
+gmt convert data.txt -S/"Segment 1[02]0"/ > result3.txt
 diff answer3.txt result3.txt >> fail
 # 4. This test should yield answer4.txt
 cat << EOF > answer4.txt
@@ -83,7 +83,7 @@ cat << EOF > answer4.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S/"Segment 1[02]0-B"/ > result4.txt
+gmt convert data.txt -S/"Segment 1[02]0-B"/ > result4.txt
 diff answer4.txt result4.txt >> fail
 # 5. This test should yield answer5.txt
 cat << EOF > answer5.txt
@@ -103,7 +103,7 @@ cat << EOF > answer5.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S~/"Segment 1[02]0-B"/ > result5.txt
+gmt convert data.txt -S~/"Segment 1[02]0-B"/ > result5.txt
 diff answer5.txt result5.txt >> fail
 cat << EOF > list
 /"Segment 1[02]0-B"/
@@ -124,7 +124,7 @@ cat << EOF > answer6.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S~+flist > result6.txt
+gmt convert data.txt -S~+flist > result6.txt
 diff answer6.txt result6.txt >> fail
 # 7. This test should yield answer7.txt
 cat << EOF > answer7.txt
@@ -138,5 +138,5 @@ cat << EOF > answer7.txt
 0	0
 1	1
 EOF
-gmt gmtconvert data.txt -S+flist > result7.txt
+gmt convert data.txt -S+flist > result7.txt
 diff answer7.txt result7.txt >> fail

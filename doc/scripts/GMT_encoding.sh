@@ -24,6 +24,8 @@ cat << EOF > tt.awk
 	printf "\n"
 }
 EOF
+# Need access to PS source files for this plot
+GMT_SHAREDIR=`gmt --show-sharedir`
 egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/postscriptlight/$1.ps | $AWK -f tt.awk > tt.chart
 cat << EOF > tt.awk
 # This awk script creates a file for gmt psxy to plot a rectangle for undefined entries
@@ -53,7 +55,7 @@ BEGIN {
 }
 EOF
 
-gmt gmtset PS_CHAR_ENCODING $1
+gmt set PS_CHAR_ENCODING $1
 gmt psxy -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -P -K -Ggray -X3i -Sri tt.empty
 $AWK -f tt.awk tt.chart | gmt pstext -R -J -O -K -F+f10p,Times-Roman
 gmt psxy -R -J -O -Wthick << EOF

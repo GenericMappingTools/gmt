@@ -4,9 +4,9 @@
 
 ps=hovmuller.ps
 
-gmt gmtset TIME_EPOCH 2000-01-01T00 TIME_UNIT y
-gmt gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP c FONT_ANNOT_PRIMARY 10p FONT_ANNOT_SECONDARY 12p
-gmt gmtset MAP_ANNOT_ORTHO ""
+gmt set TIME_EPOCH 2000-01-01T00 TIME_UNIT y
+gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP c FONT_ANNOT_PRIMARY 10p FONT_ANNOT_SECONDARY 12p
+gmt set MAP_ANNOT_ORTHO ""
 
 gmt makecpt -Crainbow -T-1/1/0.05 > tmp.cpt
 # Make a fake longitude/time grid

@@ -6,7 +6,7 @@
 ps=fancy.ps
 
 gmt makecpt -Cpanoply -T-8/8/1 > tt.cpt
-gmt gmtset FONT_ANNOT_PRIMARY 12p
+gmt set FONT_ANNOT_PRIMARY 12p
 cat << EOF > tt.txt
 # Legend test for gmt pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,

@@ -22,7 +22,7 @@ cat <<% > tt7.txt
 2012-11-24T00:00:00
 2012-12-24T00:00:00
 %
-gmt gmtconvert --TIME_SYSTEM=rata -f0T --FORMAT_DATE_IN=yy-o-dd <<% > tt7.d
+gmt convert --TIME_SYSTEM=rata -f0T --FORMAT_DATE_IN=yy-o-dd <<% > tt7.d
 12-JAN-24
 12-FEB-24
 12-MAR-24

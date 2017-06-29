@@ -33,7 +33,7 @@ orsout=	# ORS output work folder
 dim=	# Final output DiM-based regional grid
 err= 	# Final output DiM-based MAD uncertainty grid
 
-gmt gmtset ELLIPSOID Sphere
+gmt set ELLIPSOID Sphere
 
 # A) ORS analysis first
 # if ORS does not give you the reasonable range of filter widths,
@@ -53,7 +53,7 @@ if [ ! -f $ors ]; then
 	level=  # Base contour used to compute the volume and area of the residual (e.g., 300m)
 	#------stop A.1. editing here--------------------------------------
 
-	STEP=`gmt gmtmath -T$minW/$maxW/$intW -N1/0 =`
+	STEP=`gmt math -T$minW/$maxW/$intW -N1/0 =`
 
 	for width in $STEP
 	do
@@ -77,7 +77,7 @@ if [ ! -f $dim ]; then
 	intW= 	# Filter width step (e.g., 5) in km
 	alldepth= 	# for MAD analysis
 	#------stop B.1. editing here--------------------------------------
-	width=`gmt gmtmath -N1/0 -T$minW/$maxW/$intW =`
+	width=`gmt math -N1/0 -T$minW/$maxW/$intW =`
 	let n_widths=0
 	for i in $width
 	do

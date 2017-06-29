@@ -10,8 +10,8 @@ BYTES=$((1024*1024)) # 1 MiB
 head -c $BYTES /dev/urandom > data.b
 
 # these won't work because of GMT's internal double representation:
-#gmt gmtconvert -bi1L -bo1Lw data.b | gmt gmtconvert -bi1Lw -bo1L > out.u
-#gmt gmtconvert -bi1l -bo1lw data.b | gmt gmtconvert -bi1lw -bo1l > out.d
+#gmt convert -bi1L -bo1Lw data.b | gmt convert -bi1Lw -bo1L > out.u
+#gmt convert -bi1l -bo1lw data.b | gmt convert -bi1lw -bo1l > out.d
 
 # swap using gmt xyz2grd
 gmt xyz2grd -S8 -Gswapped_tmp.b data.b

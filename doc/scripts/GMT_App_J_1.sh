@@ -74,13 +74,13 @@
 #---------------------------------------------------
 RJ="-R-0.6/0.6/-0.1/1.1 -JX4i/2i"
 echo "-0.5	0" > tt.tmp
-gmt gmtmath -T-0.5/0.5/0.01 1 = >> tt.tmp
+gmt math -T-0.5/0.5/0.01 1 = >> tt.tmp
 echo "0.5	0" >> tt.tmp
 
-gmt gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
+gmt set FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 gmt psxy tt.tmp $RJ -P -Bxa0.5f0.1+l"Distance (units of filter width)" -Bya0.2f0.1g1+l"Relative amplitude" -BWeSn -K -Wthick > GMT_App_J_1.ps
-gmt gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | gmt psxy $RJ -O -K -Wthick,- >> GMT_App_J_1.ps
-gmt gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | gmt psxy $RJ -O -K -Wthick,. >> GMT_App_J_1.ps
+gmt math -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | gmt psxy $RJ -O -K -Wthick,- >> GMT_App_J_1.ps
+gmt math -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | gmt psxy $RJ -O -K -Wthick,. >> GMT_App_J_1.ps
 gmt pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_1.ps
 -0.2	0.3	LM	Solid Line:
 -0.2	0.2	LM	Dotted Line:

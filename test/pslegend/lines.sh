@@ -5,7 +5,7 @@
 
 ps=lines.ps
 
-gmt gmtset FONT_ANNOT_PRIMARY 12p
+gmt set FONT_ANNOT_PRIMARY 12p
 
 gmt pslegend -R0/10/0/7 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.75 -F+p1p -C0.1i/0.1i -B5f1 -P -Xc > $ps <<EOF
 # Legend test for gmt pslegend

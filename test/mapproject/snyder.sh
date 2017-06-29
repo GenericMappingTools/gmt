@@ -56,7 +56,7 @@ cat << EOF > test.awk
 }
 EOF
 
-gmt gmtset PROJ_SCALE_FACTOR 1
+gmt set PROJ_SCALE_FACTOR 1
 
 # Make ellipsoids (spheres) of radius 1 and 3:
 unit=1.0

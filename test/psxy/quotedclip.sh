@@ -30,7 +30,7 @@ gmt psbasemap -R -J -O -K -Y12c -B+t"Clip path from curved text"+ggray70 --MAP_T
 cat << EOF > t.txt
 > "In the Future, the Present will look like Today"
 EOF
-gmt gmtmath -T200/335/5 -N3/0 -o1,2 T -C1 COSD -C2 SIND -Ca 5 MUL 10 ADD -C1 5 SUB = >> t.txt
+gmt math -T200/335/5 -N3/0 -o1,2 T -C1 COSD -C2 SIND -Ca 5 MUL 10 ADD -C1 5 SUB = >> t.txt
 gmt psxy -R -J -W1p,red -Sqn1:+Lh+c0+f18p+v+e -O -K t.txt >> $ps
 
 gmt psxy -R -J -L -Gorange -W0.5p -O -K box.txt >> $ps

@@ -8,7 +8,7 @@ data=2000.08700533
 
 rm -f test_cm4.dat
 for val in 1 2 3 4 5 6 7; do
-	echo -30 45 0 $data | gmt mgd77magref -A+y -Fxyz/$val -Sc1/15 | gmt gmtconvert --FORMAT_FLOAT_OUT=%20.10f >> test_cm4.dat
+	echo -30 45 0 $data | gmt mgd77magref -A+y -Fxyz/$val -Sc1/15 | gmt convert --FORMAT_FLOAT_OUT=%20.10f >> test_cm4.dat
 done
 
 # Output from the Fortran version

@@ -32,7 +32,7 @@ makeaxis () {
 gmt project -N -C$cx/$cy -A-$1 -Fpq $2
 }
 
-gmt gmtset PS_CHAR_ENCODING ISOLatin1+
+gmt set PS_CHAR_ENCODING ISOLatin1+
 
 gmt pstext -R0/8.5/0/11 -Jx1i -F+jCB -P -Xa0 -Ya0 -K > $ps \
 <<< "4.25 10.25 [x,y] (black dot). 2nd pair is (p,q) and third is (r,s) [plotted as red dot]"
@@ -40,7 +40,7 @@ ypos=1.25
 By=Sn
 for az in 30 135 200 290 ; do
 	xpos=0.75
-	az90=`gmt gmtmath -Q $az 90 ADD =`
+	az90=`gmt math -Q $az 90 ADD =`
 	Bx=We
 	while read x y; do
 		makeaxis $az axes.tt > tt.a
@@ -64,10 +64,10 @@ for az in 30 135 200 290 ; do
 		printf "0 2 [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n" $x $y `cat tt.d` | \
 			gmt pstext -R -J -F+f8p+jCB -O -K -Xa$xpos -Ya$ypos -N -D0/0.2i >> $ps
 		gmt pstext -R -J -O -K -Xa$xpos -Ya$ypos -N -D-0.05i/0.05i -Gwhite -W -F+f8p+jBR >> $ps <<< "2 -2 @~a@~ = $az\\232"
-		xpos=`gmt gmtmath -Q $xpos 1.9 ADD =`
+		xpos=`gmt math -Q $xpos 1.9 ADD =`
 		Bx=we
 	done < pts.tt
-	ypos=`gmt gmtmath -Q $ypos 2.25 ADD =`
+	ypos=`gmt math -Q $ypos 2.25 ADD =`
 	By=sn
 done
 gmt psxy -R -J -O -T >> $ps

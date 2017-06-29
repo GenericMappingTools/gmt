@@ -21,7 +21,7 @@ cat << EOF > tt.z.d
 0	90
 0	84
 EOF
-gmt gmtmath -T-174/174/6 T 0 MUL = tt.x.d
+gmt math -T-174/174/6 T 0 MUL = tt.x.d
 echo '-90' > tt.L.d
 let s=-80
 rm -f tt.y.d
@@ -40,7 +40,7 @@ while [ $s -lt 72 ]; do
 		cat tt.x.d > tt.sp.d
 	fi
 	$AWK '{printf "> \n%s\t%s\n%s\t%s\n", $1, "'$s'", $1, "'$n'"}' tt.sp.d >> tt.z.d
-	gmt gmtmath -Q $s $n ADD 2 DIV = >> tt.y.d
+	gmt math -Q $s $n ADD 2 DIV = >> tt.y.d
 	s=$n
 done
 echo $n >> tt.L.d
@@ -91,8 +91,8 @@ gmt pstext -R -J -O -K -N -F+f10p,Helvetica-Bold << EOF >> GMT_utm_zones.ps
 -90	87	Y
 +90	87	Z
 EOF
-gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{printf "%s -90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
-gmt gmtmath -T-180/174/6 T 3 ADD = | $AWK '{printf "%s 90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
+gmt math -T-180/174/6 T 3 ADD = | $AWK '{printf "%s -90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
+gmt math -T-180/174/6 T 3 ADD = | $AWK '{printf "%s 90 %d\n", $2, NR}' | gmt pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
 gmt pstext -R -J -O -K -D0/0.025i -F+f8p,Times-Italic+jCB << EOF >> GMT_utm_zones.ps
 4.5	72	31X
 15	72	33X

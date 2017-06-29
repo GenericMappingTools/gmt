@@ -4,7 +4,7 @@
 
 ps=power1D.ps
 # Single sinusoid of unit amplitude
-gmt gmtmath -T0/10239/1 T 10240 DIV 360 MUL 400 MUL COSD = t.txt
+gmt math -T0/10239/1 T 10240 DIV 360 MUL 400 MUL COSD = t.txt
 gmt psxy -R4992/5504/-1.25/1.25 t.txt -JX6i/2i -B64f32 -BWSne+t"Sinusoid @~l@~ = 25.6 from 0 to 10239" -W2p -P -K -Xc > $ps
 echo "4992 -1.25 ..." | gmt pstext -R -J -O -K -F+jRM+f12p -D-0.3i/-0.18i -N >> $ps
 echo "5504 -1.25 ..." | gmt pstext -R -J -O -K -F+jLM+f12p -D+0.3i/-0.18i -N >> $ps

@@ -169,8 +169,6 @@ LANG=C
 # Define variables that are needed *within* test scripts
 export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
-export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
 export GMT_SRCDIR="$src"
 export GSHHG_DIR="@GSHHG_PATH@"

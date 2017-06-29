@@ -6,7 +6,7 @@ ps=position1.ps
 
 font=Helvetica
 
-gmt gmtset FONT_ANNOT_PRIMARY 24p,$font
+gmt set FONT_ANNOT_PRIMARY 24p,$font
 
 gmt psbasemap -JX8i/5i -R0/12/0/12 -B1g1 -BSW -K > $ps
 gmt pstext -F+j -R -J -O -K >> $ps <<%

@@ -28,20 +28,20 @@ gmt grd2xyz tt.nc > tt.xyz
 D=1
 # Old behavior
 gmt psxy -R0/5/0/5 -JX3.25i -P -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X0.75i -Y1i > $ps
-gmt gmtselect tt.xyz -Ltt.d+d${D} | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+gmt select tt.xyz -Ltt.d+d${D} | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 gmt psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
 gmt psxy -R -J -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
-gmt gmtselect tt.xyz -Ltt.d+d${D}+p | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+gmt select tt.xyz -Ltt.d+d${D}+p | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 gmt psxy -R -J -O -K tt.d -W1p >> $ps
 # SPHERICAL DATA (-fg): distance D = 1 degree
 D=1d
 # Old behavior
 gmt psxy -R -JM3.25i -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X-3.75i -Y4i >> $ps
-gmt gmtselect tt.xyz -Ltt.d+d${D} -fg | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+gmt select tt.xyz -Ltt.d+d${D} -fg | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 gmt psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
 gmt psxy -R -J -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
-gmt gmtselect tt.xyz -Ltt.d+d${D}+p -fg | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
+gmt select tt.xyz -Ltt.d+d${D}+p -fg | gmt psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 gmt psxy -R -J -O tt.d -W1p >> $ps
 

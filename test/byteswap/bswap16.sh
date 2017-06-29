@@ -9,8 +9,8 @@ BYTES=$((1024*1024)) # 1 MiB
 head -c $BYTES /dev/urandom > data.b
 
 # swap
-gmt gmtconvert -bi1H -bo1Hw data.b | gmt gmtconvert -bi1Hw -bo1H > out.u
-gmt gmtconvert -bi1h -bo1hw data.b | gmt gmtconvert -bi1hw -bo1h > out.d
+gmt convert -bi1H -bo1Hw data.b | gmt convert -bi1Hw -bo1H > out.u
+gmt convert -bi1h -bo1hw data.b | gmt convert -bi1hw -bo1h > out.d
 
 # compare result
 diff -q data.b out.u

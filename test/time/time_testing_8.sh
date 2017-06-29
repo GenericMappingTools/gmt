@@ -22,7 +22,7 @@ cat <<% > tt8.txt
 2010-11-22T00:00:00
 2010-12-22T00:00:00
 %
-gmt gmtconvert --TIME_SYSTEM=rata -f0T --FORMAT_DATE_IN=yyodd <<% > tt8.d
+gmt convert --TIME_SYSTEM=rata -f0T --FORMAT_DATE_IN=yyodd <<% > tt8.d
 10jan22
 10feb22
 10mar22

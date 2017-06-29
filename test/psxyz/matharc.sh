@@ -6,7 +6,7 @@
 ps=matharc.ps
 
 gmt psbasemap -R0/6/0/3 -Jx1i -P -B1g1 -BWSne -K -Xc -p155/35 > $ps
-gmt gmtset MAP_VECTOR_SHAPE 1
+gmt set MAP_VECTOR_SHAPE 1
 # Math angle vectors
 gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 0	0	0	1i	30	80	m0.2i

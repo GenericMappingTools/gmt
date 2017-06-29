@@ -11,7 +11,7 @@
 # and convert to relative time using the new TIME_SYSTEM rata.  The values
 # should match the new rata die + day fraction for each epoch.
 
-( gmt gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --FORMAT_FLOAT_OUT=%.12g | grep -v ">" | $AWK '{if ($1 != $2) print $0}' > fail ) <<%
+( gmt convert --TIME_SYSTEM=rata -fi0T -fo0t --FORMAT_FLOAT_OUT=%.12g | grep -v ">" | $AWK '{if ($1 != $2) print $0}' > fail ) <<%
  2000-01-01T12:00:00    730120.5
 -4713-11-25T12:00:00  -1721423.5
  1858-11-17T00:00:00    678576.0

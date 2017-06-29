@@ -34,7 +34,7 @@ rects=$GMT_TMPDIR/rects.tmp
 whitetags=$GMT_TMPDIR/whitetags.tmp
 blacktags=$GMT_TMPDIR/blacktags.tmp
 labels=$GMT_TMPDIR/labels.tmp
-gmt gmtset PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
+gmt set PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
 W=`gmt math -Q $WIDTH $COL DIV 0.95 MUL =`

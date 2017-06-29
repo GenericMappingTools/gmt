@@ -5,7 +5,7 @@
 # Create triplicate plots of each.
 
 ps=placement.ps
-gmt gmtdefaults > save.conf
+gmt defaults > save.conf
 
 coast () {
 gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c $*
@@ -66,4 +66,3 @@ coast -Rg -JE-100/40/3c -Bg15 -A10000 -Xf20c >> $ps
 coast -Rg -JV3c -Bg15 -A10000 -Xf24c >> $ps
 
 gmt psxy -R -J -T -O >> $ps
-

@@ -3,7 +3,7 @@
 
 ps=meca_06.ps
 
-gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i FONT_TITLE 18p
+gmt set PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i FONT_TITLE 18p
 
 # this is Harvard CMT for tibethan earthquake (1997)
 gmt psmeca -Fo -R85/89/25/50 -JX7i -P -M -Sm4i -N  -L -K -G150 -T0 << EOF > $ps

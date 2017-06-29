@@ -11,12 +11,12 @@ function Ugly {
 	z=$1
 	b=$2
 	c=$3
-	beta2=`gmt gmtmath -Q 1.0 $b $b MUL ADD =`
-	beta=`gmt gmtmath -Q $beta2 SQRT =`
-	beta3=`gmt gmtmath -Q $beta2 $beta MUL =`
-	P1=`gmt gmtmath -Q $z $z MUL 2 $b MUL $c MUL $z MUL $c $c MUL ADD $beta2 DIV ADD SQRT $beta DIV =`
-	P2=`gmt gmtmath -Q $z $b $c MUL $beta2 ADD DIV $z $z MUL 2 $b MUL $c MUL $z MUL $c $c MUL ADD $beta2 DIV ADD SQRT ADD LOG =`
-	gmt gmtmath -Q $z $P1 SUB $b $c MUL $P2 MUL $beta3 DIV ADD =
+	beta2=`gmt math -Q 1.0 $b $b MUL ADD =`
+	beta=`gmt math -Q $beta2 SQRT =`
+	beta3=`gmt math -Q $beta2 $beta MUL =`
+	P1=`gmt math -Q $z $z MUL 2 $b MUL $c MUL $z MUL $c $c MUL ADD $beta2 DIV ADD SQRT $beta DIV =`
+	P2=`gmt math -Q $z $b $c MUL $beta2 ADD DIV $z $z MUL 2 $b MUL $c MUL $z MUL $c $c MUL ADD $beta2 DIV ADD SQRT ADD LOG =`
+	gmt math -Q $z $P1 SUB $b $c MUL $P2 MUL $beta3 DIV ADD =
 #	v = z - sqrt (z * z + (2.0 * b * c * z  + c * c) / beta2) / beta + ...
 #		b * c * log (z + b * c / beta2 + sqrt (z * z + (2.0 * b * c * z  + c * c) / beta2)) / beta3;
 #	  = z - P1 + b *c * P2 / beta3
@@ -49,15 +49,15 @@ echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO >> 
 gmt gravfft smt.nc+uk -D1670 -Nf+a -Ff -E$order -Gfaa.nc
 # Compute the exact analytical result for peak amplitude at center
 r0=10000
-z0=`gmt gmtmath -Q 5084 3751 SUB =`
+z0=`gmt math -Q 5084 3751 SUB =`
 r1=35000
 z1=5084
-rho=`gmt gmtmath -Q 2800 1030 SUB =`
-b=`gmt gmtmath -Q $r1 $r0 SUB $z1 $z0 SUB DIV =`
-c=`gmt gmtmath -Q $r0 $b $z0 MUL SUB =`
+rho=`gmt math -Q 2800 1030 SUB =`
+b=`gmt math -Q $r1 $r0 SUB $z1 $z0 SUB DIV =`
+c=`gmt math -Q $r0 $b $z0 MUL SUB =`
 I1=`Ugly $z1 $b $c`
 I2=`Ugly $z0 $b $c`
-gmax=`gmt gmtmath -Q 2 PI MUL 6.673e-6 MUL $rho MUL $I1 $I2 SUB MUL =`
+gmax=`gmt math -Q 2 PI MUL 6.673e-6 MUL $rho MUL $I1 $I2 SUB MUL =`
 echo "Max FAA should be $gmax mGal"
 # ML plot the FAA anomaly
 gmt makecpt -Crainbow -T-50/250 > t.cpt

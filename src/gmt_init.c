@@ -2454,6 +2454,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
+    GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
 

@@ -2,7 +2,7 @@
 #	$Id$
 #
 ps=GMT_Defaults_1b.ps
-gmt gmtset MAP_FRAME_TYPE plain FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0i \
+gmt set MAP_FRAME_TYPE plain FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0i \
 	FONT_ANNOT_PRIMARY +8p MAP_ANNOT_OBLIQUE 1
 gmt psbasemap -X1.5i -R-90/20/-55/25r -JOc-80/25.5/2/69/2.25i -Ba10f5g5 -P -K > $ps
 gmt pstext -R0/2.25/0/2 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> $ps

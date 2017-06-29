@@ -4,7 +4,7 @@
 # Check wedges and geowedges
 
 ps=wedges.ps
-gmt gmtset PROJ_ELLIPSOID Sphere
+gmt set PROJ_ELLIPSOID Sphere
 
 # Cartesian
 gmt psbasemap -R0/6/0/3 -Jx1i -P -Xc -Bafg -K > $ps
