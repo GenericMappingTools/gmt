@@ -10965,10 +10965,10 @@ bool geo;
 				int fd = 0;
 #endif
 
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Must save stdin to temporary file.\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Must save stdin to a temporary file.\n");
 				if (API->tmp_dir)			/* Have a recognized temp directory */
 					sprintf (tmpfile, "%s/", API->tmp_dir);
-				strcat (tmpfile, "gmt_saved_stdin.XXXXXX");
+				strcat (tmpfile, "gmt_saved_stdin.XXXXXX");	/* The XXXXXX will be replaced by mktemp */
 #ifdef _WIN32
 				if ((file = mktemp (tmpfile)) == NULL) {
 					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_region_from_data: Could not create temporary file name.\n");
@@ -13543,6 +13543,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 	char *session = NULL;
 	struct GMT_FIGURE *fig = NULL;
+	bool not_PS;
 	int error, k, f, nf, n_figs;
 	unsigned int code, pos = 0;
 	
@@ -13550,7 +13551,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
 	}
-	if ((n_figs = gmtlib_read_figures (API->GMT, 1, &fig)) == -1) {
+	if ((n_figs = gmtlib_read_figures (API->GMT, 1, &fig)) == GMT_NOTSET) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
@@ -13567,16 +13568,22 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
-			if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
-				pos = 0;	/* Reset position counter */
-				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
-					sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
-					strcat (cmd, option);
+			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
+			if (not_PS) {	/* Append psconvert optional settings */
+				if (fig[k].options[0]) {	/* Append figure-specific settings */
+					pos = 0;	/* Reset position counter */
+					while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
+						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
+						strcat (cmd, option);
+					}
 				}
-			}
-			if (fig[k].options[0]) {
-				strcat (cmd, " ");
-				strcat (cmd, fig[k].options);
+				else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+					pos = 0;	/* Reset position counter */
+					while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
+						strcat (cmd, option);
+					}
+				}
 			}
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
@@ -13587,7 +13594,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	}
 	gmt_M_free (API->GMT, fig);
 	
-	/* Check for a single unconverted plot file when gmt figure was not used and no psconvert call has claimed it */
+	/* Check for a single unconverted plot file when gmt figure was not used and no manual psconvert call has claimed it */
 	sprintf (cmd, "%s/gmt_0.ps-", API->gwf_dir);
 	if (access (cmd, F_OK)) return GMT_NOERROR;	/* No hidden PS file left to process - just return happily */
 
@@ -13596,9 +13603,10 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to obtain session name and plot format\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
+	not_PS = (gmt_session_code[code] != 'p');	/* Do not add convert options if plain PS */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #0 [%s %s options = (%s)]\n", session, gmt_session_format[code], API->GMT->current.setting.ps_convert);
 	sprintf (cmd, "%s/gmt_0.ps- -T%c -F%s", API->gwf_dir, gmt_session_code[code], session);
-	if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+	if (not_PS && API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 		pos = 0;	/* Reset position counter */
 		while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
 			sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -13685,7 +13693,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""};
-	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[2] = {"found", "not found"}, *feel[2] = {"good", "bad"};
+	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"}, *feel[2] = {"good", "bad"};
 	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
 	
@@ -13694,11 +13702,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	k1 = (err) ? 1 : 0;
 	k2 = (mode == GMT_BEGIN_WORKFLOW) ? 1 - k1 : k1;
-	GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.  This is %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[k1], feel[k2]);
 
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Enter Modern Mode\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Creating a workflow directory %s\n", API->gwf_dir);
 			/* We only get here when gmt begin is called */
 			if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Path already exists, but it is not a directory */
@@ -13737,6 +13743,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = k_history_off;	/* Turn off so that no history is copied into the workflow directory */
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[2]);
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */
@@ -13745,18 +13752,18 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
 				return error;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			error = gmt_remove_dir (API, dir, false);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Exiting Modern Mode\n");
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
         	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmt_manage_workflow\n", mode);
 			break;
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode\n", type[API->GMT->current.setting.run_mode]);
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [PPID = %d]\n", type[API->GMT->current.setting.run_mode], API->PPID);
 	return error;
 }
 

@@ -6,6 +6,7 @@
 # GMT modules:  gmtset, grdgradient, grdimage, makecpt, project, pstext, psxy, psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
+# GMT CLASSIC mode only
 #
 # 1. Initialization
 # 1a) Assign movie parameters

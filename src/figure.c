@@ -28,7 +28,7 @@
 
 #define THIS_MODULE_NAME	"figure"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Set figure format specifics under a GMT modern mode session"
+#define THIS_MODULE_PURPOSE	"Set figure attributes under a GMT modern mode session"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"

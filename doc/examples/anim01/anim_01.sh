@@ -6,6 +6,7 @@
 # GMT modules:  gmtmath, psbasemap, pstext, psxy, psconvert
 # Unix progs:   printf, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
+# GMT CLASSIC mode only
 #
 # 1. Initialization
 # 1a) Assign movie parameters
