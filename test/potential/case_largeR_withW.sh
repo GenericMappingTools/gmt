@@ -2,7 +2,7 @@
 #	$Id$
 #	Testing gpsgridder for large region with weights
 #	Work is being done by run_GPS_case.sh
-#
+# GMT CLASSIC mode
 ps=case_largeR_withW.ps
 # Use real GPS data with uncertainties
 data=wus_gps_final_crowell.dat 
