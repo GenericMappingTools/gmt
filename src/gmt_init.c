@@ -13471,7 +13471,7 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 			continue;
 		if (mode == 1) {
 			gmt_chop (line);
-			n = sscanf (line, "%d %s %s %[^\0]", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+			n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 			if (++k >= n_alloc) {
 				n_alloc += GMT_TINY_CHUNK;
 				fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE);
@@ -13567,6 +13567,12 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 			f++;
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
+			sprintf (cmd, "%s/gmt_%d.ps-", API->gwf_dir, fig[k].ID);	/* Check if the file exists */
+			if (access (cmd, F_OK)) {	/* No such file, give warning */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Figure # %d was registered but no matching PostScript- file found - skipping\n", fig[k].ID, cmd);
+				continue;
+			}
+			/* Here the file exists and we can call psconvert */
 			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			if (not_PS) {	/* Append psconvert optional settings */
@@ -13632,10 +13638,11 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	 * The hidden gmt_###.ps- file starts numbering at 1 to
 	 * indicate it was set via gmt figure.  Scripts that are
 	 * not using gmt figure just builds gmt_0.ps-.
+	 * Since gmt_add_figure is called by figure.c and arguments
+	 * have been vetted we dont need to check much here.
 	 */
 	int n, n_figs, err;
-	size_t k, end = 0;
-	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""};
+	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
 	FILE *fp = NULL;
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No workflow directory set\n");
@@ -13645,28 +13652,16 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		/* This means the external API will call psconvert directly */
 		prefix[0] = formats[0] = '-';
 	}
-	else {	/* For regular comand line use, the figure prefix is required */
-		if (arg == NULL || arg[0] == '-') {	/* This is clearly not allowed */
+	else {	/* For regular comand line use, the figure prefix is required; the rest is optional */
+		if (arg == NULL || arg[0] == '\0') {	/* This is clearly not allowed */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No argument given\n");
 			return GMT_ARG_IS_NULL;
 		}
-		/* Chop off any options and determine prefix [and format] arguments */
-		for (k = end = 0; end == 0 && k < strlen (arg); k++) {
-			if (k && arg[k] == '-' && strchr (GMT_TOKEN_SEPARATORS, arg[k-1]))
-				end = k;	/* Mark the hyphen at start of an option string */
-		}
-		if (end) arg[end] = '\0';	/* Chop off options for now */
-		n = sscanf (arg, "%s %s", prefix, formats);
-		if (n == 1) {	/* Determine if we incorrectly just gave a recognized format */
-			k = 0;
-			while (gmt_session_format[k] && strcmp (prefix, gmt_session_format[k])) k++;	/* Go through the list */
-			if (gmt_session_format[k]) {	/* This means prefix actually matched a known format */
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: No file prefix given, just a format\n");
-				return GMT_ARG_IS_NULL;
-			}
-			/* Set default pdf format */
-			strcpy (formats, "pdf");
-		}
+		/* Separate prefix, format, and convert arguments.  We know n >= 1 here */
+		
+		n = sscanf (arg, "%s %s %s", prefix, formats, options);
+		if (n == 1) /* Must set the default pdf format */
+			strncpy (formats, gmt_session_format[GMT_SESSION_FORMAT], GMT_LEN64-1);
 	}
 	/* OK, here we have a valid new entry */
 	n_figs = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
@@ -13674,9 +13669,8 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		return GMT_ERROR_ON_FOPEN;
 	/* Append the new entry */
 	fprintf (fp, "%d\t%s\t%s", n_figs+1, prefix, formats);
-	if (end) {	/* Restore options and append it */
-		arg[end] = '-';
-		fprintf (fp, "\t%s", &arg[end]);
+	if (options[0]) {	/* Append the options string */
+		fprintf (fp, "\t%s", options);
 	}
 	fprintf (fp, "\n");
 	fclose (fp);
@@ -13693,7 +13687,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""};
-	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"}, *feel[2] = {"good", "bad"};
+	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
 	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
 	

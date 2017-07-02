@@ -82,11 +82,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		return GMT_PARSE_ERROR;
 	}
 	/* Gave a figure prefix so can go on to check optional items */
+	
+	opt = opt->next;	/* Skip the figure prefix since we dont need to check it here */
+	
 	while (opt) {
+		arg_category = GMT_NOTSET;	/* We know noothing */
 		pos = 0;
-		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what this is */
+		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what kind it is */
 			if (arg_category == GMT_NOTSET)
-				arg_category = (strlen (p) == 1 || isupper (p[0])) ? GMT_IS_FMT : GMT_IS_OPT;
+				arg_category = (strlen (p) == 1 || strchr (p, '+') || isupper (p[0])) ? GMT_IS_OPT : GMT_IS_FMT;
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
@@ -104,6 +108,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		opt = opt->next;
 		if (opt && opt->option == 'V') opt = opt->next;	/* Skip the verbose option */
 	}
+	
+	/* If we get here without errors then we know the input arguments are all valid */
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
