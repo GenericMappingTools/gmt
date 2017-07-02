@@ -21,7 +21,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt figure sets name, formats and options for current figure.
- *	gmt figure [<prefix>] [<formats>] [<convertoptions>]
+ *	gmt figure <prefix> [<formats>] [<psconvertoptions>]
  */
 
 #include "gmt_dev.h"
@@ -36,11 +36,11 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: figure <prefix> [<formats>] [<convertoptions] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: figure <prefix> [<formats>] [<psconvertoptions] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for the next figure name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for the registered figure\'s name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<formats> contains one or more comma-separated formats [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from these valid extensions:\n");
@@ -52,10 +52,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<convertoptions> contains one or more comma-separated options [%s]\n", GMT_SESSION_CONVERT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   that will be passed to psconvert when preparing the figures.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The subset of valid options are:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<psconvertoptions> contains one or more comma-separated options that\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing this figure [%s].\n", GMT_SESSION_CONVERT);
+	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,P,Q<args>,S\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
 	GMT_Option (API, "V");
 	
 	return (GMT_MODULE_USAGE);
