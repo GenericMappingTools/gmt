@@ -1084,10 +1084,13 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	int n;
 
 	/* Returns true if we are sure the word is a style string - else false.
-	 * style syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>] */
+	 * style syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>]
+	 * Also recognized "dashed" for -, "dotted" for . as well as "solid" */
 
 	n = (int)strlen (word);
 	if (n == 0) return (false);
+
+	if (!strncmp (word, "dashed", 6U) || !strncmp (word, "dotted", 6U) || !strncmp (word, "solid", 5U)) return (true);
 
 	n--;
 	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
