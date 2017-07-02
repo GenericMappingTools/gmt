@@ -78,10 +78,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	if ((opt = options) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified\n");
+	if ((opt = options) == NULL) {	/* Gave no arguments */
+		if (GMT->parent->external) return GMT_NOERROR;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
+	
 	/* Gave a figure prefix so can go on to check optional items */
 	
 	opt = opt->next;	/* Skip the figure prefix since we dont need to check it here */
@@ -131,7 +133,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options) {
+	if (options && !API->external) {
 		if (options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
