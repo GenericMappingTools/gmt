@@ -7379,6 +7379,17 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
+bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
+	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
+	char *c = NULL;
+	if (cpt == NULL) return true;	/* No cpt given means use rainbow master */
+	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
+	if ((c = gmt_first_modifier (GMT, cpt, "uUw")))
+		c[0] = '\0';	/* Must chop off modifiers for access to work */
+	if (cpt[0] && !access (cpt, R_OK)) return false;	/* A CPT was given and exists */
+	return true;	/* Acting as if it is a master table */
+}
+
 /*! . */
 struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
@@ -7386,7 +7397,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 
 	struct GMT_PALETTE *P = NULL;
 	unsigned int continuous = (file && strchr(file,',')), first;
-	char *c = NULL;
+	bool is_cpt_master = false;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
@@ -7402,14 +7413,9 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	*/
 
 	first = gmt_download_file_if_not_found (GMT, file, 0);
-
-	if (file && (c = gmt_first_modifier (GMT, file, "uUw")))
-		c[0] = '\0';	/* Must chop off modifiers for access to work */
-	if (gmt_M_file_is_memory (file) || (file && file[first] && !gmt_access (GMT, &file[first], R_OK))) {	/* A CPT was given and exists or is memory location */
-		if (c) c[0] = '+';	/* Restore the string */
-		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
-	}
-	else {	/* Take master cpt and stretch to fit data range using continuous colors */
+	if (first == 0)	/* Check if given a master or a real file */
+		is_cpt_master = gmt_is_cpt_master (GMT, file);
+	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
 		char *master = NULL;
 		double noise;
 
@@ -7432,6 +7438,9 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 			zmin -= noise;	zmax += noise;
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
+	}
+	else {	/* Gave a file */
+		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
 	}
 	return (P);
 }
