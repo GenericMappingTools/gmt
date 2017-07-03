@@ -196,6 +196,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+EXTERN_MSC int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item);
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -373,6 +375,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
+	
+	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
+		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
+		n_errors += gmtinit_parse_n_option (GMT, "b+c");
+	
 #if 0	/* Want this to be in modern mode only and done centrally instead */
 	if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
 		gmt_parse_common_options (GMT, "J", 'J', "X15c");
