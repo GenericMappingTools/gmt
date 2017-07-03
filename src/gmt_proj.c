@@ -2236,6 +2236,11 @@ void gmt_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 	y *= P->current.proj.i_EQ_RAD;
 	*lat = y / M_PI;	/* Initial guesses for lon and lat */
 	*lon = x / M_PI;
+	if (fabs (y) < GMT_PROJ_CONV_LIMIT && fabs (x) < GMT_PROJ_CONV_LIMIT) {	/* At ~origin, C is ~zero so no division */
+		*lon *= R2D;
+		*lon += P->current.proj.central_meridian;
+		return;
+	}
 	do {
 		phi0 = *lat;
 		lambda0 = *lon;
