@@ -1164,7 +1164,6 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	I->type = GMT_CHAR;
 	I->header->n_columns = (uint32_t)dim[GMT_X];	I->header->n_rows = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
 	I->header->registration = GMT_GRID_PIXEL_REG;
-	gmt_M_memcpy (I->header->mem_layout, "TCBa", 4, char);  /* Signal that data is Band interleaved */
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);          /* Copy the no pad to the header */
 	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
