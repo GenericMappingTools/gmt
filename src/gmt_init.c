@@ -156,8 +156,10 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "FONT Parameters"},
 	{ 0, "FONT_ANNOT_PRIMARY"},
 	{ 0, "FONT_ANNOT_SECONDARY"},
+	{ 0, "FONT_HEADING"},
 	{ 0, "FONT_LABEL"},
 	{ 0, "FONT_LOGO"},
+	{ 0, "FONT_TAG"},
 	{ 0, "FONT_TITLE"},
 	{ 1, "FORMAT Parameters"},
 	{ 0, "FORMAT_CLOCK_IN"},
@@ -214,6 +216,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "MAP_GRID_CROSS_SIZE_SECONDARY"},
 	{ 0, "MAP_GRID_PEN_PRIMARY"},
 	{ 0, "MAP_GRID_PEN_SECONDARY"},
+	{ 0, "MAP_HEADING_OFFSET"},
 	{ 0, "MAP_LABEL_OFFSET"},
 	{ 0, "MAP_LINE_STEP"},
 	{ 0, "MAP_LOGO"},
@@ -4804,12 +4807,18 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* FONT_ANNOT_SECONDARY */
 	error += gmt_getfont (GMT, "14p,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
+	/* FONT_HEADING */
+	error += gmt_getfont (GMT, "36p,Helvetica,black", &GMT->current.setting.font_heading);
+	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
 	/* FONT_LABEL */
 	error += gmt_getfont (GMT, "16p,Helvetica,black", &GMT->current.setting.font_label);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LABEL] = 'p';
+	/* FONT_TAG */
+	error += gmt_getfont (GMT, "20p,Helvetica,black", &GMT->current.setting.font_tag);
+	GMT->current.setting.given_unit[GMTCASE_FONT_TAG] = 'p';
 	/* FONT_LOGO */
 	error += gmt_getfont (GMT, "8p,Helvetica,black", &GMT->current.setting.font_logo);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LOGO] = 'p';
@@ -4853,6 +4862,9 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 	/* MAP_GRID_PEN_SECONDARY */
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
+	/* MAP_HEADING_OFFSET */
+	GMT->current.setting.map_heading_offset = 24 * pt;	/* 24p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
 	/* MAP_LABEL_OFFSET */
 	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
@@ -7901,6 +7913,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
 			/* if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true; */
 			break;
 		case GMTCASE_ANNOT_FONT_PRIMARY:
@@ -7914,15 +7928,17 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
-				double scale;
-				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
+				double scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
 				if (gmt_getfont (GMT, &value[1], &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
 				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size / scale;
 				GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale;
 				GMT->current.setting.font_label.size *= scale;
+				GMT->current.setting.font_heading.size *= scale;
+				GMT->current.setting.font_tag.size *= scale;
 				GMT->current.setting.font_title.size *= scale;
 				GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale;
 				GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale;
+				GMT->current.setting.map_heading_offset *= scale;
 				GMT->current.setting.map_label_offset *= scale;
 				GMT->current.setting.map_title_offset *= scale;
 				GMT->current.setting.map_frame_width *= scale;
@@ -7964,6 +7980,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT_ANNOT_SECONDARY:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 			break;
+		case GMTCASE_FONT_HEADING:
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
+			break;
 		case GMTCASE_HEADER_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
 				GMT_COMPAT_CHANGE ("FONT_TITLE");
@@ -7971,6 +7990,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
+			break;
+		case GMTCASE_FONT_TAG:
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
 			break;
 		case GMTCASE_LABEL_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -8240,6 +8262,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
+			break;
+		case GMTCASE_MAP_HEADING_OFFSET:
+			GMT->current.setting.map_heading_offset = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -9426,12 +9451,18 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_FONT_ANNOT_SECONDARY:
 			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_SECONDARY]), GMT_LEN256-1);
 			break;
+		case GMTCASE_FONT_HEADING:
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_heading), GMT_LEN256-1);
+			break;
 		case GMTCASE_HEADER_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_TITLE:
 			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_title), GMT_LEN256-1);
+			break;
+		case GMTCASE_FONT_TAG:
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_tag), GMT_LEN256-1);
 			break;
 		case GMTCASE_LABEL_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9610,6 +9641,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
 			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]));
+			break;
+		case GMTCASE_MAP_HEADING_OFFSET:
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_heading_offset GMT_def(GMTCASE_MAP_HEADING_OFFSET));
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

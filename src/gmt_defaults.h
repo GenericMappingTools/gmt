@@ -69,10 +69,12 @@ struct GMT_DEFAULTS {
 	double color_hsv_max_v;			/* For largest or most positive intensity [1.0] */
 	/* DIR group */
 	/* FONT group */
-	struct GMT_FONT font_annot[2];		/* Font for primary and secondary annotations [14p|16p,Helvetica,black] */
-	struct GMT_FONT font_label;		/* Font for labels [24p,Helvetica,black] */
+	struct GMT_FONT font_annot[2];		/* Font for primary and secondary annotations [12p|14p,Helvetica,black] */
+	struct GMT_FONT font_heading;		/* Font for headings above subplots [36p,Helvetica,black] */
+	struct GMT_FONT font_label;		/* Font for labels [16p,Helvetica,black] */
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
-	struct GMT_FONT font_title;		/* Font for headers [36p,Helvetica,black] */
+	struct GMT_FONT font_tag;		/* Font for plot figure tags, e.g., a) [20p,Helvetica,black] */
+	struct GMT_FONT font_title;		/* Font for plot titles [24p,Helvetica,black] */
 	/* FORMAT group */
 	char format_clock_in[GMT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */
 	char format_clock_out[GMT_LEN64];	/* Controls how clocks are written on output [hh:mm:ss] */
@@ -123,6 +125,7 @@ struct GMT_DEFAULTS {
 	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
+	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [24p] */
 	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
 	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
 	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */

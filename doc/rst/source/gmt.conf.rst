@@ -160,6 +160,11 @@ fonts can be found in the :doc:`gmt` man page.
     Font to use for time axis secondary annotations
     [14p,Helvetica,black].
 
+.. _FONT_HEADING:
+
+**FONT_HEADING**
+    Font to use when plotting headings above subplots [36p,Helvetica,black].
+
 .. _FONT_LABEL:
 
 **FONT_LABEL**
@@ -170,6 +175,12 @@ fonts can be found in the :doc:`gmt` man page.
 **FONT_LOGO**
     Font to use for text plotted as part of the GMT time logo
     [8p,Helvetica,black].
+
+.. _FONT_TAG:
+
+**FONT_TAG**
+    Font to use for subplot panel tags such as a), ii)
+    [20p,Helvetica,black].
 
 .. _FONT_TITLE:
 
@@ -755,6 +766,11 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_GRID_PEN_SECONDARY**
     Pen attributes used to draw secondary grid lines in dpi units or
     points (append p) [thinner,black].
+
+.. _MAP_HEADING_OFFSET:
+
+**MAP_HEADING_OFFSET**
+    Distance from top of subplot panel titles to the base of the heading [20p].
 
 .. _MAP_LABEL_OFFSET:
 
