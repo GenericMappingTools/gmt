@@ -1408,7 +1408,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
 		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
-			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for PS */
+			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for current PS */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
 				Return (GMT_RUNTIME_ERROR);
 			}

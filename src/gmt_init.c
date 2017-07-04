@@ -13552,7 +13552,7 @@ GMT_LOCAL char * get_session_name (struct GMTAPI_CTRL *API, unsigned int *code) 
 }
 
 GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, mark;
 	char *session = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS;
@@ -13579,12 +13579,17 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 			f++;
 		}
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
-			sprintf (cmd, "%s/gmt_%d.ps-", API->gwf_dir, fig[k].ID);	/* Check if the file exists */
-			if (access (cmd, F_OK)) {	/* No such file, give warning */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Figure # %d was registered but no matching PostScript- file found - skipping\n", fig[k].ID, cmd);
-				continue;
+			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
+			sprintf (cmd, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
+			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
+				mark = '+';	/* This is the last char in extension for a fully-baked GMT PostScript file */
+				sprintf (cmd, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
+				if (access (cmd, F_OK)) {	/* No such file ether, give up */
+					GMT_Report (API, GMT_MSG_VERBOSE, "Figure # %d was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, cmd);
+					continue;
+				}
 			}
-			/* Here the file exists and we can call psconvert */
+			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
 			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			if (not_PS) {	/* Append psconvert optional settings */

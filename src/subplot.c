@@ -432,8 +432,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				y -= ptitle_height;	/* Make space for panel title */
 			if ((row == 0 || ((Ctrl->L.mode & COL_FIXED_X) == 0)) && (Ctrl->L.selected[GMT_X] & ANNOT_AT_MAX)) {	/* Need annotation at N */
 				y -= annot_width;
-				if (Ctrl->L.has_label[GMT_X])
+				if (Ctrl->L.has_label[GMT_X]) {
 					y -= label_width;	/* Also has label at N */
+				}
 			}
 			y -= plot_dim[GMT_Y];	/* Now at correct y for this panel */
 			py[row] = y;
