@@ -13388,13 +13388,20 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	 * onle level, i.e., there are no sub-directories inside the directory. */
 	unsigned int n_files, k;
 	int error = GMT_NOERROR;
-	char **filelist = NULL;
+	char **filelist = NULL, *here = NULL;
 	struct GMT_CTRL *GMT = API->GMT;	/* Shorthand */
 	if (access (dir, F_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No directory named %s\n", dir);
 		return GMT_FILE_NOT_FOUND;
 	}
-	chdir (dir);
+	if ((here = getcwd (NULL, 0)) == NULL) {	/* Get the current directory */
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot determine current directory!\n");
+		return GMT_RUNTIME_ERROR;
+	}
+	if (chdir (dir)) {
+		perror (dir);
+		return GMT_RUNTIME_ERROR;
+	}
 	if ((n_files = (unsigned int)gmtlib_glob_list (GMT, "*", &filelist))) {
 		for (k = 0; k < n_files; k++) {
 			if (gmt_remove_file (GMT, filelist[k]))
@@ -13402,7 +13409,12 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 		}
 		gmtlib_free_list (GMT, filelist, n_files);	/* Free the file list */
 	}
-	chdir ("../");		/* Just get out of current dir so thaat it can be removed */
+	if (chdir (here)) {		/* Get back to where we were */
+		perror (here);
+		gmt_M_str_free (here);
+		return GMT_RUNTIME_ERROR;
+	}
+	gmt_M_str_free (here);
 	if (rmdir (dir)) {	/* Unable to delete the directory */
 		perror (dir);
 		error = GMT_RUNTIME_ERROR;
@@ -13414,7 +13426,7 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 		if (mkdir (dir))
 #endif
 		{
-            GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to recreate directory : %s\n", dir);
 			error = GMT_RUNTIME_ERROR;
 		}
 	}
@@ -13710,8 +13722,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist and is writeable (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist but is not writeable\n", API->gwf_dir);
-					error = GMT_RUNTIME_ERROR;
 				}
+				error = GMT_RUNTIME_ERROR;
 			}
 			else {	/* Create the new workflow directory */
 				/* To avoid the weird CID 167015 that says:
