@@ -14607,6 +14607,93 @@ char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]) {
 	return string;
 }
 
+/*
+ * Function to Convert Numbers to Roman Numerals
+ * [http://www.sanfoundry.com/c-program-convert-numbers-roman/]
+ */
+ 
+GMT_LOCAL void predigit(char num1, char num2, char string[], unsigned int *i) {
+    string[(*i)++] = num1;
+    string[(*i)++] = num2;
+}
+
+GMT_LOCAL void postdigit (char c, unsigned int n, char string[], unsigned int *i) {
+    unsigned int j;
+    for (j = 0; j < n; j++)
+        string[(*i)++] = c;
+}
+
+char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lower) {
+	/* Given number, return string to roman numeral, lowercase if lower is true */
+	unsigned i = 0;
+	if (string == NULL) return NULL;
+	gmt_M_memset (string, size, char);
+	while (number != 0) {
+		if (number >= 1000) {
+            postdigit ('M', number / 1000, string, &i);
+            number = number - (number / 1000) * 1000;
+        }
+		else if (number >= 500) {
+			if (number < (500 + 4 * 100)) {
+				postdigit('D', number / 500, string, &i);
+				number = number - (number / 500) * 500;
+			}
+			else {
+				predigit('C','M', string, &i);
+				number = number - (1000-100);
+            }
+        }
+		else if (number >= 100) {
+			if (number < (100 + 3 * 100)) {
+				postdigit('C', number / 100, string, &i);
+				number = number - (number / 100) * 100;
+			}
+			else {
+				predigit('L', 'D', string, &i);
+				number = number - (500 - 100);
+			}
+		}
+		else if (number >= 50) {
+			if (number < (50 + 4 * 10)) {
+				postdigit('L', number / 50, string, &i);
+				number = number - (number / 50) * 50;
+			} else {
+				predigit('X','C', string, &i);
+				number = number - (100-10);
+			}
+		}
+		else if (number >= 10) {
+			if (number < (10 + 3 * 10)) {
+				postdigit('X', number / 10, string, &i);
+				number = number - (number / 10) * 10;
+			} else {
+				predigit('X','L', string, &i);
+				number = number - (50 - 10);
+			}
+		}
+		else if (number >= 5) {
+			if (number < (5 + 4 * 1)) {
+				postdigit('V', number / 5, string, &i);
+				number = number - (number / 5) * 5;
+			} else {
+				predigit('I', 'X', string, &i);
+				number = number - (10 - 1);
+			}
+		}
+		else if (number >= 1) {
+			if (number < 4) {
+				postdigit('I', number / 1, string, &i);
+				number = number - (number / 1) * 1;
+			} else {
+				predigit('I', 'V', string, &i);
+				number = number - (5 - 1);
+			}
+		}
+	}
+	if (lower) gmtlib_str_tolower (string);
+	return string;
+}
+
 #if 0	/* Probably not needed after alll */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 	/* Build option string that needs to be passed to GMT_Call_Module */

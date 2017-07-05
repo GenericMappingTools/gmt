@@ -166,6 +166,9 @@ enum GMT_swap_direction {
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
+#define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
+#define GMT_IS_ROMAN_UCASE	2
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 0,

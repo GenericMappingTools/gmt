@@ -277,6 +277,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lower);
 EXTERN_MSC char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]);
 EXTERN_MSC bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt);
 EXTERN_MSC char *gmt_assign_text (struct GMT_CTRL *GMT, char *p);

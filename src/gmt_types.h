@@ -89,6 +89,21 @@ struct GMT_FIGURE {
 	char options[GMT_LEN256];	/* Optional arguments to psconvert (e.g., -A, -E, ...) */
 };
 
+/*! For keeping track of GMT subplots under modern mode */
+struct GMT_SUBPLOT {
+	unsigned int row, col;
+	unsigned int nrows, ncolumns;
+	double x, y;			/* LB corner of current panel */
+	double w, h;			/* Width and height of current panel */
+	double off[2];			/* Offset from justification point of panel tag */
+	char justify[3];		/* Justification point for panel tag */
+	char tag[GMT_LEN16];		/* Panel tag, e.g. a) */
+	char Baxes[8];			/* The -B setting for selected axes */
+	char Btitle[GMT_LEN128];	/* The -B setting for any title */
+	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
+	char Bylabel[GMT_LEN128];	/* The -By setting for x labels */
+};
+
 /*! For trend-fitting models */
 struct GMT_MODEL_TERM {	/* A single model term */
 	unsigned int kind;	/* GMT_POLYNOMIAL | GMT_COSINE | GMT_SINE | GMT_FOURIER */
