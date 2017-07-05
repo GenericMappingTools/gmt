@@ -7693,7 +7693,7 @@ int GMT_get_V (char arg) {
 /*! . */
 int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
-	unsigned int error = 0, rec = 0;
+	unsigned int error = 0, rec = 0, ver;
 	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
@@ -7708,7 +7708,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 		}
 
 		if (rec != 2) { /* Nothing */ }
-		else if (strlen (line) < 7 || strtol (&line[6], NULL, 10) != gmt_version_major )
+		else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
 			gmt_message (GMT, "Warning: Your gmt.conf file (%s) may not be GMT %d compatible\n", file, gmt_version_major);
 		else if (!strncmp (&line[6], "5.0.0", 5))
 			gmt_message (GMT, "Warning: Your gmt.conf file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", file, file);
