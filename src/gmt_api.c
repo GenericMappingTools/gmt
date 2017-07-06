@@ -946,8 +946,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-		fclose (ftpfile.fp);
-		ftpfile.fp = NULL;
+		if (ftpfile.fp != NULL) {
+			fclose (ftpfile.fp);
+			ftpfile.fp = NULL;
+		}
 		if (gmt_remove_file (GMT, local_path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
