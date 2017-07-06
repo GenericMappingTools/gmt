@@ -2175,6 +2175,16 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 		factor = scl / MAX (w, h);
 	else if (GMT->current.proj.gave_map_width == 4)	/* Must rescale to min dimension */
 		factor = scl / MIN (w, h);
+	else if (GMT->current.proj.gave_map_width == 5)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
+		double fw, fh;
+		fw = w / GMT->current.proj.panel->w;	fh = h / GMT->current.proj.panel->h;
+		if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
+			factor = 1.0 / fw;	GMT->current.proj.panel->dx = 0.0;	GMT->current.proj.panel->dy = 0.5 * (GMT->current.proj.panel->h - h * factor);
+		}
+		else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
+			factor = 1.0 / fh;	GMT->current.proj.panel->dy = 0.0;	GMT->current.proj.panel->dx = 0.5 * (GMT->current.proj.panel->w - w * factor);
+		}
+	}
 	GMT->current.proj.scale[GMT_X] *= factor;
 	GMT->current.proj.scale[GMT_Y] *= factor;
 	GMT->current.proj.w_r *= factor;

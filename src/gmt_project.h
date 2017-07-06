@@ -226,6 +226,7 @@ struct GMT_PROJ {
 	struct GMT_THREE_D z_project;
 	struct GMT_DATUM_CONV datum;	/* For datum conversions */
 	struct GMT_PROJ4 *proj4;	/* A read-only resource we allocate once and pass pointer around */
+	struct GMT_SUBPLOT *panel;	/* Pointer to current subplot panel settings [or NULL] */
 	void (*fwd) (struct GMT_CTRL *, double, double, double *, double *);/* Pointers to the selected forward mapping function */
 	void (*inv) (struct GMT_CTRL *, double *, double *, double, double);/* Pointers to the selected inverse mapping function */
 	void (*fwd_x) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear x forward function */

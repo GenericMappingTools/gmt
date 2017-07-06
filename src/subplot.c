@@ -58,7 +58,7 @@ struct SUBPLOT_CTRL {
 		unsigned int mode;	/* 0 = end, 1 = begin, 2 = set */
 		unsigned int row, col;
 	} In;
-	struct A {	/* -A[<letter>|<number>][+c][+j<just>][+o<offset>][+r|R] */
+	struct A {	/* -A[<letter>|<number>][+c][+j|J<pos>][+o<offset>][+r|R] */
 		bool active;
 		char format[GMT_LEN16];
 		unsigned int mode;
@@ -66,8 +66,8 @@ struct SUBPLOT_CTRL {
 		unsigned int way;
 		unsigned int roman;
 		char cstart;
-		char code[3];
-		int justify;
+		char placement[3];
+		char justify[3];
 		double off[2];
 	} A;
 	struct F {	/* -F<width>[u]/<height>[u] */
@@ -105,7 +105,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct SUBPLOT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
-	C->A.justify = PSL_TL;
+	strncpy (C->A.placement, "TL", 2);
+	strncpy (C->A.justify,   "TL", 2);
 	return (C);
 }
 
@@ -132,7 +133,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the label of the top-left panel and others follow incrementally.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Panels are numbered across rows.  Append +c to number down columns instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<justify> to specify where the label should be plotted in the panel [TL].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the label should be plotted in the panel [TL].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +j sets justification = <refpoint> while +J selects the mirror opposite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify dimension of area that the multi-panel figure may occupy [entire page].\n");
@@ -226,10 +228,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				if (c) {
 					c[0] = '+';	/* Restore modifiers */
-					/* modifiers are [+j<justify>][+c][+r|R] */
-					if (gmt_get_modifier (opt->arg, 'j', string)) {
-						Ctrl->A.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
-						strncpy (Ctrl->A.code, string, 2);
+					/* modifiers are [+j|J<justify>][+c][+r|R] */
+					if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {
+						gmt_just_validate (GMT, Ctrl->A.placement, "TL");
+						strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
+					}
+					else if (gmt_get_modifier (opt->arg, 'J', Ctrl->A.placement)) {
+						int pos = gmt_just_decode (GMT, Ctrl->A.placement, PSL_NO_DEF);
+						pos = gmt_flip_justify (GMT, pos);
+						gmt_just_to_code (GMT, pos, Ctrl->A.justify);
 					}
 					if (gmt_get_modifier (opt->arg, 'c', string))
 						Ctrl->A.way = GMT_IS_COL_FORMAT;
@@ -374,7 +381,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_NORMAL, "Warning: subplot is experimental and not complete.\n");
 	if (Ctrl->In.mode == BEGIN) {	/* Determine and save subplot panel attributes */
-		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL, *Tp = NULL;
+		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		double x, y, area_dim[2], plot_dim[2], width, height, annot_width, label_width, title_height, heading_height, heading_only;
 		double *px = NULL, *py = NULL;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, command[GMT_LEN128] = {""};
@@ -451,7 +458,6 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		By = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], char *);
 		Lx = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], unsigned int);
 		Ly = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], unsigned int);
-		Tp = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], unsigned int);
 		if (Ctrl->A.roman) {	/* Replace %d with %s since roman numerals are strings */
 			char *c = strchr (Ctrl->A.format, '%');
 			c[1] = 's';
@@ -467,10 +473,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			axes[0] = axes[1] = k = 0;
 			y -= Ctrl->M.margin[PANEL][YHI];
-			if ((row == 0 && (Ctrl->L.ptitle == PANEL_COL_TITLE)) || (Ctrl->L.ptitle == PANEL_TITLE)) {
+			if ((row == 0 && (Ctrl->L.ptitle == PANEL_COL_TITLE)) || (Ctrl->L.ptitle == PANEL_TITLE))
 				y -= title_height;	/* Make space for panel title */
-				Tp[row] = 1;
-			}
 			if (Ctrl->L.mode && ((row == 0 || ((Ctrl->L.mode & COL_FIXED_X) == 0)) && (Ctrl->L.selected[GMT_X] & ANNOT_AT_MAX)))	/* Need annotation at N */
 				add_annot = true;
 			else if (Ctrl->L.mode == 0 && strchr (Ctrl->L.axes, 'N'))
@@ -556,7 +560,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, height - heading_only - Ctrl->M.margin[MEDIA][YHI], Ctrl->T.title);
-		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_just\tBframe\tBx\tBy\n");
+		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_pos\ttag_just\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
@@ -573,14 +577,12 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					}
 					else
 						fprintf (fp, Ctrl->A.format, Ctrl->A.cstart + k);
-					fprintf (fp, "\t%g\t%g\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.code);
+					fprintf (fp, "\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
 				}
 				else
-					fprintf (fp, "-\t0\t0\tBL");
+					fprintf (fp, "-\t0\t0\tBL\tBL");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters */
 				fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
-				fprintf (fp,"%c", GMT_ASCII_GS);	/* Next is any panel titles - if selected then it is given COL# as title here */
-				if (Tp[row]) fprintf (fp,"COL%d", col);
 				fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */
 				if (Ly[row]) fprintf (fp,"%s", Ctrl->L.label[GMT_X]); 
 				fprintf (fp, "%c", GMT_ASCII_GS); 	/* Next is y labels,  Either given of just YLABEL */
@@ -608,6 +610,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			sprintf (command, "-R0/%g/0/%g -Jx1i -P -N -F+cTC+jBC+f%s %s -Xa0 -Ya0 --GMT_HISTORY=false", width, height - heading_only - Ctrl->M.margin[MEDIA][YHI], gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to pstext: %s\n", command);
 			if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the cancas with heading */
 				Return (API->error);
 			if (GMT_Destroy_Data (API, &T) != GMT_OK)
@@ -625,15 +628,10 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, By);
 		gmt_M_free (GMT, Lx);
 		gmt_M_free (GMT, Ly);
-		gmt_M_free (GMT, Tp);
 	}
 	else if (Ctrl->In.mode == SET) {	/* SET */
-		/* We dont care if the panel file exist since we are overwriting each time */
-		FILE *fp = NULL;
-		sprintf (file, "%s/gmt.panel", API->gwf_dir);
-		fp = fopen (file, "w");
-		fprintf (fp, "%d %d\n", Ctrl->In.row, Ctrl->In.col);
-		fclose (fp);
+		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, 1)))
+			Return (error)
 	}
 	else {	/* END */
 		sprintf (file, "%s/gmt.subplot", API->gwf_dir);

@@ -5576,8 +5576,12 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	}
 	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
 
+	if (GMT->current.proj.gave_map_width == 5) {	/* offsets required to center the plot on the subplot panel */
+		GMT->current.setting.map_origin[GMT_X] += GMT->current.proj.panel->dx;
+		GMT->current.setting.map_origin[GMT_Y] += GMT->current.proj.panel->dy;
+	}
+	
 	/* Get title */
-
 
 	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
@@ -5657,6 +5661,24 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	k = GMT->PSL->internal.line_join;	GMT->PSL->internal.line_join = -1; PSL_setlinejoin (PSL, k);
 	k = GMT->PSL->internal.miter_limit;	GMT->PSL->internal.miter_limit = -1; PSL_setmiterlimit (PSL, k);
 
+	if (GMT->current.proj.panel && GMT->current.proj.panel->first) {
+		/* Place the panel tag, once per panel (if requested), then update the gmt.panel file to say we have been there */
+		struct GMT_SUBPLOT *P = GMT->current.proj.panel;	/* Short hand 'cause we lazy */
+		if (P->tag[0]) {	/* Place the panel tag */
+			int form, refpoint, justify;
+			double x, y, plot_x, plot_y;
+			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
+			gmt_just_to_lonlat (GMT, refpoint, gmt_M_is_geographic (GMT, GMT_IN), &x, &y);	/* Get corresponding world coordinates */
+			gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);	/* Project to our panel coordinates in inches */
+			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
+			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
+			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+			PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+		}
+		/* Store first = 0 since we are done with -B and the optional tag */
+		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, 0))	/* +1 since get_current_panel does -1 */
+			return NULL;	/* Should never happen */
+	}
 	return (PSL);
 }
 

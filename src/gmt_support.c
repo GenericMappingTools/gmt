@@ -12022,6 +12022,32 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 }
 
 /*! . */
+int gmt_just_validate (struct GMT_CTRL *GMT, char *key, char *def) {
+	/* Ensure given justification key is kosher.  If not, then
+	 * use def unless NULL, else error */
+	if ((strchr ("LCRlcr", key[0]) && strchr ("BMTbmt", key[1])) ||
+	    (strchr ("LCRlcr", key[1]) && strchr ("BMTbmt", key[0]))) return 0;	/* We are good */
+	if (def == NULL) return GMT_RUNTIME_ERROR;	/* No fallback */
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Malformed justification/position code %s replaced by %s\n", key, def);
+	strncpy (key, def, 2U);	/* Override using default code */
+	return 0;
+}
+
+/*! . */
+void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key) {
+	/* Converts justify integer code to string.  Assume justify is valid */
+	static char *hor = {"LCR"}, *ver = {"BMT"};
+	int i, j;
+	gmt_M_unused (GMT);
+	i = (justify % 4) - 1;
+	j = (justify / 4) - 1;
+	assert (i >= 0 && i <= 2);
+	assert (j >= 0 && j <= 2);
+	key[0] = hor[i];
+	key[1] = ver[i];
+}
+
+/*! . */
 int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 	/* Converts justification info (key) like BL (bottom left) to justification indices
 	 * def = default value.

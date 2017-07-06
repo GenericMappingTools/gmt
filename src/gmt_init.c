@@ -10884,31 +10884,65 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 
 /* Subplot functions */
 
+GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, unsigned int *col, unsigned int *first) {
+	/* Gets the current subplot panel, returns 1 if found and 0 otherwise */
+	char file[PATH_MAX] = {""};
+	FILE *fp = NULL;
+	sprintf (file, "%s/gmt.panel", API->gwf_dir);
+	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
+		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
+		API->error = GMT_NOERROR;
+		return GMT_RUNTIME_ERROR;	/* It is an "error" in the sense we dont have a panel situation */
+	}
+	/* Here there is a current panel, get it */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s!\n", file);
+		API->error = GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
+	}
+	fscanf (fp, "%d %d %d", row, col, first);
+	fclose (fp);
+	if (row == 0 || col == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");
+		API->error = GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
+	}
+	(*row)--;	(*col)--;	/* Since they were given on a 1-n,1-m basis */
+	return GMT_NOERROR;
+}
+
+int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, unsigned first) {
+	/* Update gmt.panel with current pane's (row,col) and write first as 0 or 1.
+	 * first shoudl be 1 the first time we visit this panel so that the automatic -B
+	 * and panel tag stuff only happens once. */
+	char file[PATH_MAX] = {""};
+	FILE *fp = NULL;
+	sprintf (file, "%s/gmt.panel", API->gwf_dir);
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to create file %s!\n", file);
+		API->error = GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
+	}
+	fprintf (fp, "%d %d %d\n", row, col, first);
+	fclose (fp);
+	API->error = GMT_NOERROR;
+	return GMT_NOERROR;
+}
+
 /*! Return information about current panel */
 GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 	/* Only called under modern mode */
 	char file[PATH_MAX] = {""}, line[BUFSIZ] = {""}, *c = NULL;
 	bool found = false;
-	unsigned int row, col, k;
+	unsigned int row, col, first, k;
 	int n;
 	struct GMT_SUBPLOT *P = NULL;
 	FILE *fp = NULL;
 	
 	API->error = GMT_RUNTIME_ERROR;
-	sprintf (file, "%s/gmt.panel", API->gwf_dir);
-	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: No current panel selected so not in subplot mode\n");
-		API->error = GMT_NOERROR;
+	if (get_current_panel (API, &row, &col, &first))	/* No panel or there was an error */
 		return NULL;
-	}
-	/* Here there is a current panel, get it */
-	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Subplot Error: Unable to open file %s!\n", file);
-		return NULL;
-	}
-	fscanf (fp, "%d %d", &row, &col);
-	fclose (fp);
-	row--;	col--;	/* Since they were given on a 1-n,1-m basis */
+		
 	/* Now read subplot information file */
 	sprintf (file, "%s/gmt.subplot", API->gwf_dir);
 	if (access (file, F_OK))	{	/* Subplot information file not available */
@@ -10939,17 +10973,16 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 			return NULL;
 		}
 		if (P->row == row && P->col == col) {	/* Found it */
-			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %s", &P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], P->justify)) != 8) {
+			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %s %s", &P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], P->refpoint, P->justify)) != 9) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s]\n", file, line);
 				fclose (fp);
 				gmt_M_free (API->GMT, P);
 				return NULL;
 			}
+			P->first = first;
 			c = strchr (line, GMT_ASCII_GS);	/* Get the position before frame setting */
 			c++;	k = 0;	/* Now at start of axes */
-			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);		/* Copy it over until end */
-			c++;	k = 0;	/* Now at start of title */
-			while (*c != GMT_ASCII_GS) P->Btitle[k++] = *(c++);		/* Copy it over until end */
+			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);	/* Copy it over until end */
 			c++;	k = 0;	/* Now at start of xaxis */
 			while (*c != GMT_ASCII_GS) P->Bxlabel[k++] = *(c++);	/* Copy it over until end */
 			c++;	k = 0;	/* Now at start of yaxis */
@@ -11464,33 +11497,97 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (opt_J) got_J = true;
 		}
 
-		/* Check if a subplot is in effect */
-		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot */
-			FILE *fp = NULL;
-			char file[PATH_MAX] = {""};
+		/* Check if a subplot operation is in effect */
+		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot so must update gmt.panel */
 			unsigned int row, col;
 			sscanf (opt->arg, "%d,%d", &row, &col);
-			sprintf (file, "%s/gmt.panel", API->gwf_dir);
-			fp = fopen (file, "w");
-			fprintf (fp, "%d %d\n", row, col);
-			fclose (fp);
+			if (gmt_set_current_panel (API, row, col, 1)) return NULL;
 			if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here */
 		}
-		if (!(!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)) && (P = gmtinit_subplot_info (API))) {	/* Yes, so set up current panel settings */
-			/* Insert -J etc and -B etc */
-			if (got_J && (opt_J->arg[0] == 'X' || opt_J->arg[0] == 'x')) {
-				if (GMT_Delete_Option (API, opt_J, options)) n_errors++;	/* Must remove old -JX|x so we can set correct option */
+		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" */
+		if (GMT->current.ps.active && !(!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)) && (P = gmtinit_subplot_info (API))) {	/* Yes, so set up current panel settings */
+			bool frame_set = false, x_set = false, y_set = false;
+			char *c = NULL;
+			/* Insert -J etc and -B, etc. */
+			if (got_J && (opt_J->arg[0] == 'X' || opt_J->arg[0] == 'x')) {	/* Must remove old -JX|x so we can set correct option */
+				if (GMT_Delete_Option (API, opt_J, options)) n_errors++;
 				got_J = false;
 			}
-			if (got_J) {
-				/* Must set flag to possibly autoscale the projection to fit the panel after gmt_map_setup */
-			}
+			if (got_J)	/* Must set flag to possibly autoscale the projection to fit the panel after gmt_map_setup */
+				GMT->current.proj.gave_map_width = 5;
 			else {
+				GMT->current.proj.gave_map_width = 0;
 				sprintf (arg, "X%gi/%gi", P->w, P->h);
 				if ((opt = GMT_Make_Option (API, 'J', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				got_J = true;
 			}
+			/* Examine all -B settings and add/merge the panel settings */
+			for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+				if (opt->option != 'B') continue;	/* Just interested in -B here */
+				/* Deal with the frame option check first */
+				if (strchr ("WESNwesn", opt->arg[0]))	/* User is overriding the axes settings - that is their choice */
+					frame_set = true;
+				else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
+					/* Frame but no sides specified.  Insert the required sides */
+					sprintf (arg, "%s", P->Baxes);
+					strcat (arg, opt->arg);
+					GMT_Update_Option (API, opt, arg);
+					frame_set = true;
+				}
+				else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
+					if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
+						sprintf (arg, "xaf%s", &opt->arg[1]);
+						GMT_Update_Option (API, opt, arg);
+					}
+					if (P->Bxlabel[0]) {
+					 	if ((c = strstr (arg, "+l"))) {	/* See if we must append x label set during subplot call */
+							c += 2;
+							if (c[0] == '\0') strcat (arg, P->Bxlabel);
+						}
+						else {
+							strcat (arg, "+l");
+							strcat (arg, P->Bxlabel);
+						}
+						GMT_Update_Option (API, opt, arg);
+					}
+					x_set = true;
+				}
+				else if (opt->arg[0] == 'y') {	/* Gave specific y-setting */
+					if (opt->arg[1] == '+')	/* No x-axis annot/tick set, prepend default af */
+					sprintf (arg, "yaf%s", &opt->arg[1]);
+					GMT_Update_Option (API, opt, arg);
+					if (P->Bylabel[0]) {
+					 	if ((c = strstr (arg, "+l"))) {	/* See if we must append y label set during subplot call */
+							c += 2;
+							if (c[0] == '\0') strcat (arg, P->Bylabel);
+						}
+						else {
+							strcat (arg, "+l");
+							strcat (arg, P->Bylabel);
+						}
+						GMT_Update_Option (API, opt, arg);
+					}
+					y_set = true;
+				}
+			}
+			if (!frame_set && P->Baxes[0]) {	/* Did not specify frame setting so do that now */
+				if ((opt = GMT_Make_Option (API, 'B', P->Baxes)) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+			}
+			if (!x_set) {	/* Did not specify x-axis setting so do that now */
+				sprintf (arg, "xaf");
+				if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
+				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+			}
+			if (!y_set) {	/* Did not specify y-axis setting so do that now */
+				sprintf (arg, "yaf");
+				if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
+				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+			}
+			
 			/* Set -X -Y for absolute positioning */
 			sprintf (arg, "a%gi", P->x);
 			if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -11498,22 +11595,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			sprintf (arg, "a%gi", P->y);
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			/* Set or modify -B options */
-			sprintf (arg, "%s", P->Baxes);
-			if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
-			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			if (P->Bxlabel[0]) {
-				sprintf (arg, "x+l%s", P->Bxlabel);
-				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
-				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			}
-			if (P->Bylabel[0]) {
-				sprintf (arg, "y+l%s", P->Bylabel);
-				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
-				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			}
-			
-			gmt_M_free (GMT, P);
+			GMT->current.proj.panel = P;	/* So we can access items later.  Will be freed by gmt_end_module */
 		}
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
@@ -11648,6 +11730,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
+	gmt_M_free (GMT, Ccopy->current.proj.panel);
+	
 
 	/* Try this to fix valgrind leaks */
 

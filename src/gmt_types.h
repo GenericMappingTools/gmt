@@ -91,13 +91,16 @@ struct GMT_FIGURE {
 
 /*! For keeping track of GMT subplots under modern mode */
 struct GMT_SUBPLOT {
-	unsigned int row, col;
-	unsigned int nrows, ncolumns;
+	unsigned int row, col;		/* Current panel position e.g., 0,0 */
+	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
+	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	double x, y;			/* LB corner of current panel */
+	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
 	double off[2];			/* Offset from justification point of panel tag */
-	char justify[3];		/* Justification point for panel tag */
-	char tag[GMT_LEN16];		/* Panel tag, e.g. a) */
+	char refpoint[3];		/* Reference point for panel tag */
+	char justify[3];		/* Justification relative to refpoint */
+	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
 	char Baxes[8];			/* The -B setting for selected axes */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
