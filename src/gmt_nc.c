@@ -372,7 +372,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	int j, err, has_vector;
 	int old_fill_mode;
 	double dummy[2], *xy = NULL;
-	char dimname[GMT_GRID_UNIT_LEN80], coord[8];
+	char dimname[GMT_GRID_UNIT_LEN80], coord[GMT_LEN8];
 	nc_type z_type;
 
 	/* Dimension ids, variable ids, etc.. */

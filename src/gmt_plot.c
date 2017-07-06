@@ -5500,6 +5500,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *PSL= NULL;
+	struct GMT_SUBPLOT *P = NULL;
 
 	PSL = GMT->PSL;	/* Shorthand */
 
@@ -5576,9 +5577,9 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	}
 	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
 
-	if (GMT->current.proj.gave_map_width == 5) {	/* offsets required to center the plot on the subplot panel */
-		GMT->current.setting.map_origin[GMT_X] += GMT->current.proj.panel->dx;
-		GMT->current.setting.map_origin[GMT_Y] += GMT->current.proj.panel->dy;
+	if ((P = GMT->current.proj.panel) && P->geo) {	/* offsets required to center the plot on the subplot panel */
+		GMT->current.setting.map_origin[GMT_X] += P->dx;
+		GMT->current.setting.map_origin[GMT_Y] += P->dy;
 	}
 	
 	/* Get title */
@@ -5661,19 +5662,44 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	k = GMT->PSL->internal.line_join;	GMT->PSL->internal.line_join = -1; PSL_setlinejoin (PSL, k);
 	k = GMT->PSL->internal.miter_limit;	GMT->PSL->internal.miter_limit = -1; PSL_setmiterlimit (PSL, k);
 
-	if (GMT->current.proj.panel && GMT->current.proj.panel->first) {
+	if (P && P->first) {
 		/* Place the panel tag, once per panel (if requested), then update the gmt.panel file to say we have been there */
-		struct GMT_SUBPLOT *P = GMT->current.proj.panel;	/* Short hand 'cause we lazy */
 		if (P->tag[0]) {	/* Place the panel tag */
 			int form, refpoint, justify;
-			double x, y, plot_x, plot_y;
+			double plot_x, plot_y;
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
-			gmt_just_to_lonlat (GMT, refpoint, gmt_M_is_geographic (GMT, GMT_IN), &x, &y);	/* Get corresponding world coordinates */
-			gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);	/* Project to our panel coordinates in inches */
+			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
+			if (P->geo) {	/* Undo the offsets above that was required to center the plot on the subplot panel */
+				plot_x -= P->dx;
+				plot_y -= P->dy;
+			}
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
-			PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
+			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
+				int outline = 0;
+				double offset[2];
+				struct GMT_FILL fill;
+				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
+				/* Allow 15% space around the tag */
+				offset[GMT_X] = offset[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;
+				if (P->pen[0]) {	/* Want to draw outline of tag box */
+					struct GMT_PEN pen;
+					gmt_M_memset (&pen, 1, struct GMT_PEN);
+					gmt_getpen (GMT, P->pen, &pen);
+					gmt_setpen (GMT, &pen);
+					outline = 1;
+				}
+				if (P->fill[0])	/* Want to paint inside of tag box */
+					gmt_getfill (GMT, P->fill, &fill);
+				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
+				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, offset, 0);
+				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
+			}
+			else	
+				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
 		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, 0))	/* +1 since get_current_panel does -1 */

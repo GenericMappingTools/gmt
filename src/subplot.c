@@ -58,9 +58,11 @@ struct SUBPLOT_CTRL {
 		unsigned int mode;	/* 0 = end, 1 = begin, 2 = set */
 		unsigned int row, col;
 	} In;
-	struct A {	/* -A[<letter>|<number>][+c][+j|J<pos>][+o<offset>][+r|R] */
+	struct A {	/* -A[<letter>|<number>][+c][+j|J<pos>][+o<offset>][+r|R][+g<fill>][+p<pen>] */
 		bool active;
 		char format[GMT_LEN16];
+		char fill[GMT_LEN64];
+		char pen[GMT_LEN64];
 		unsigned int mode;
 		unsigned int nstart;
 		unsigned int way;
@@ -107,6 +109,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
 	strncpy (C->A.placement, "TL", 2);
 	strncpy (C->A.justify,   "TL", 2);
+	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
 	return (C);
 }
 
@@ -129,20 +132,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-N<nrows>/<ncols> is the number of rows and columns of panels for this figure.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify labeling of each panel.  Append either a number or letter [a].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the label of the top-left panel and others follow incrementally.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify tagging of each panel.  Append either a number or letter [a].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the label of the top-left panel and others follow sequentially.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Panels are numbered across rows.  Append +c to number down columns instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the label should be plotted in the panel [TL].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +j sets justification = <refpoint> while +J selects the mirror opposite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the textbox with <fill> color.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify dimension of area that the multi-panel figure may occupy [entire page].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set panel layout. May be set once (-L) or separately for rows (-LR) and columns (-LC):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L:  Append WESNwesn to indicate which panel frames should be drawn and annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l to make space for axes labels; applies equally to all panels [no labels].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       Append x to only use x-labels or y for only y-labels [both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +p to make space for all panel titles; use +pc for top row titles only [no panel titles].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +t to make space for all panel titles; use +tc for top row titles only [no panel titles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -LC: Each panel Column share the x-range. Only first (above) and last (below) rows will be annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append t or b to select only one of those two rows instead [both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l if annotated x-axes should have a label [none]; optionally append the label.\n");
@@ -203,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 
 			case 'N':	/* The required number of rows and columns */
 				Ctrl->N.active = true;
-				if (sscanf (opt->arg, "%dx%d", &Ctrl->N.dim[GMT_Y], &Ctrl->N.dim[GMT_X]) == 1)
+				if (sscanf (opt->arg, "%d/%d", &Ctrl->N.dim[GMT_Y], &Ctrl->N.dim[GMT_X]) == 1)
 					Ctrl->N.dim[GMT_X] = Ctrl->N.dim[GMT_Y];
 				Ctrl->N.n_panels = Ctrl->N.dim[GMT_X] * Ctrl->N.dim[GMT_Y];
 				break;
@@ -227,6 +232,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					}
 				}
 				if (c) {
+					struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+					struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 					c[0] = '+';	/* Restore modifiers */
 					/* modifiers are [+j|J<justify>][+c][+r|R] */
 					if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {
@@ -237,11 +244,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						int pos = gmt_just_decode (GMT, Ctrl->A.placement, PSL_NO_DEF);
 						pos = gmt_flip_justify (GMT, pos);
 						gmt_just_to_code (GMT, pos, Ctrl->A.justify);
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
 					}
 					if (gmt_get_modifier (opt->arg, 'c', string))
 						Ctrl->A.way = GMT_IS_COL_FORMAT;
+					if (gmt_get_modifier (opt->arg, 'g', Ctrl->A.fill) && Ctrl->A.fill[0]) {
+						if (gmt_getfill (GMT, Ctrl->A.fill, &fill)) n_errors++;
+					}
 					if (gmt_get_modifier (opt->arg, 'o', string))
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.off) < 0) n_errors++;
+					if (gmt_get_modifier (opt->arg, 'p', Ctrl->A.pen) && Ctrl->A.pen[0]) {
+						if (gmt_getpen (GMT, Ctrl->A.pen, &pen)) n_errors++;
+					}
 					if (gmt_get_modifier (opt->arg, 'r', string))
 						Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
 					else if (gmt_get_modifier (opt->arg, 'R', string))
@@ -401,6 +415,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Get plot/media area dimensions */
 		width  = area_dim[GMT_X] = (Ctrl->F.active) ? Ctrl->F.dim[GMT_X] : GMT->current.setting.ps_page_size[GMT_X] / PSL_POINTS_PER_INCH;
 		height = area_dim[GMT_Y] = (Ctrl->F.active) ? Ctrl->F.dim[GMT_Y] : GMT->current.setting.ps_page_size[GMT_Y] / PSL_POINTS_PER_INCH;
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: rows            = %d\n", Ctrl->N.dim[GMT_Y]);
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: columns         = %d\n", Ctrl->N.dim[GMT_X]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: height          = %g\n", height);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: width           = %g\n", width);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: annot_width     = %g\n", annot_width);
@@ -413,7 +429,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Start: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[MEDIA]) {	/* Remove space used by media margins */
 			area_dim[GMT_X] -= (Ctrl->M.margin[MEDIA][XLO] + Ctrl->M.margin[MEDIA][XHI]);
-			area_dim[GMT_Y] -= (Ctrl->M.margin[MEDIA][YLO] + Ctrl->M.margin[PANEL][YHI]);
+			area_dim[GMT_Y] -= (Ctrl->M.margin[MEDIA][YLO] + Ctrl->M.margin[MEDIA][YHI]);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After media margins: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[PANEL]) {	/* Remove space used by panel margins */
@@ -578,9 +594,10 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					else
 						fprintf (fp, Ctrl->A.format, Ctrl->A.cstart + k);
 					fprintf (fp, "\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
+					fprintf (fp, "\t%s\t%s", Ctrl->A.fill, Ctrl->A.pen);
 				}
 				else
-					fprintf (fp, "-\t0\t0\tBL\tBL");
+					fprintf (fp, "-\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters */
 				fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
 				fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */

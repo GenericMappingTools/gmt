@@ -49,6 +49,7 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y);
 EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);

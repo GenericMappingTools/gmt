@@ -135,7 +135,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
-	C->C.dx = C->C.dy = 15.0;	/* 15% of font size is default clearance */
+	C->C.dx = C->C.dy = GMT_TEXT_CLEARANCE;	/* 15% of font size is default clearance */
 	C->C.percent = true;
 	C->F.justify = PSL_MC;		/* MC is the default */
 	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */

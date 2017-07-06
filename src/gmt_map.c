@@ -2175,16 +2175,6 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 		factor = scl / MAX (w, h);
 	else if (GMT->current.proj.gave_map_width == 4)	/* Must rescale to min dimension */
 		factor = scl / MIN (w, h);
-	else if (GMT->current.proj.gave_map_width == 5)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
-		double fw, fh;
-		fw = w / GMT->current.proj.panel->w;	fh = h / GMT->current.proj.panel->h;
-		if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
-			factor = 1.0 / fw;	GMT->current.proj.panel->dx = 0.0;	GMT->current.proj.panel->dy = 0.5 * (GMT->current.proj.panel->h - h * factor);
-		}
-		else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
-			factor = 1.0 / fh;	GMT->current.proj.panel->dy = 0.0;	GMT->current.proj.panel->dx = 0.5 * (GMT->current.proj.panel->w - w * factor);
-		}
-	}
 	GMT->current.proj.scale[GMT_X] *= factor;
 	GMT->current.proj.scale[GMT_Y] *= factor;
 	GMT->current.proj.w_r *= factor;
@@ -2195,6 +2185,27 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 	}
 
 	map_setxy (GMT, xmin, xmax, ymin, ymax);
+	
+	if (GMT->current.proj.panel && GMT->current.proj.panel->geo)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
+		double fw, fh, f;
+		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+		fw = w / GMT->current.proj.panel->w;	fh = h / GMT->current.proj.panel->h;
+		if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
+			f = 1.0 / fw;	GMT->current.proj.panel->dx = 0.0;	GMT->current.proj.panel->dy = 0.5 * (GMT->current.proj.panel->h - h * f);
+		}
+		else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
+			f = 1.0 / fh;	GMT->current.proj.panel->dy = 0.0;	GMT->current.proj.panel->dx = 0.5 * (GMT->current.proj.panel->w - w * f);
+		}
+		GMT->current.proj.scale[GMT_X] *= f;
+		GMT->current.proj.scale[GMT_Y] *= f;
+		GMT->current.proj.w_r *= f;
+		GMT->current.proj.rect[XHI] = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
+		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factor = %g dx = %g dy = %g\n", f, GMT->current.proj.panel->dx, GMT->current.proj.panel->dy);
+		GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plan frame for panel maps */
+	}
 }
 
 /*! . */

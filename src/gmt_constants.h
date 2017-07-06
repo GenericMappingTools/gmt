@@ -85,6 +85,7 @@ enum GMT_enum_length {
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
 	GMT_BIG_CHUNK   = 65536U,
+	GMT_LEN8	= 8U,
 	GMT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
 	GMT_LEN32  = 32U,          /* Small length of texts */
 	GMT_LEN64  = 64U,          /* Intermediate length of texts */
@@ -150,6 +151,7 @@ enum GMT_swap_direction {
 
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
+#define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
 
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 

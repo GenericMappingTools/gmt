@@ -1873,7 +1873,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
-				char t1[8], t2[8];	/* To hold the translate part when landscape */
+				char t1[GMT_LEN8], t2[GMT_LEN8];	/* To hold the translate part when landscape */
 				char t3[128];		/* To hold a copy of the last commented (%%) line */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					int n_scan = 0;
@@ -2429,7 +2429,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[GMT_LEN256] = {""}, ver[8] = {""}, *ptr;
+	char data[GMT_LEN256] = {""}, ver[GMT_LEN8] = {""}, *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = GMT_LEN256;
 	unsigned long datatype;

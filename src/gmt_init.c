@@ -2720,7 +2720,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
 	int k, n_errors = 0;
-	char line[GMT_BUFSIZ] = {""}, type[8] = {""};
+	char line[GMT_BUFSIZ] = {""}, type[GMT_LEN8] = {""};
 	FILE *fp = gmt_fopen (GMT, A->file_custom, "r");
 
 	if (fp == NULL) return 1;
@@ -4519,7 +4519,7 @@ GMT_LOCAL int gmtinit_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_
 	double ss = 0.0;
 	int i, yy, mo, dd, hh = 0, mm = 0;
 	int64_t rd;
-	char tt[8];
+	char tt[GMT_LEN8];
 
 	i = 0;
 	while (s[i] && s[i] == ' ') i++;
@@ -9335,7 +9335,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 /*! . */
 char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_LEN256] = {""}, txt[8];
+	static char value[GMT_LEN256] = {""}, txt[GMT_LEN8];
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
@@ -10902,7 +10902,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 	}
 	fscanf (fp, "%d %d %d", row, col, first);
 	fclose (fp);
-	if (row == 0 || col == 0) {
+	if (*row == 0 || *col == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
@@ -10973,12 +10973,14 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 			return NULL;
 		}
 		if (P->row == row && P->col == col) {	/* Found it */
-			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %s %s", &P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], P->refpoint, P->justify)) != 9) {
+			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %s %s %s %s", &P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], P->refpoint, P->justify, P->fill, P->pen)) != 11) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s]\n", file, line);
 				fclose (fp);
 				gmt_M_free (API->GMT, P);
 				return NULL;
 			}
+			if (P->fill[0] == '-') P->fill[0] = '\0';	/* - means no fill */
+			if (P->pen[0] == '-') P->pen[0] = '\0';		/* - means no pen */
 			P->first = first;
 			c = strchr (line, GMT_ASCII_GS);	/* Get the position before frame setting */
 			c++;	k = 0;	/* Now at start of axes */
@@ -11509,14 +11511,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			bool frame_set = false, x_set = false, y_set = false;
 			char *c = NULL;
 			/* Insert -J etc and -B, etc. */
-			if (got_J && (opt_J->arg[0] == 'X' || opt_J->arg[0] == 'x')) {	/* Must remove old -JX|x so we can set correct option */
+			if (got_J && (opt_J->arg[0] == 'X' || opt_J->arg[0] == 'x')) {	/* Remove any inherited -JX|x so we can set correct size */
 				if (GMT_Delete_Option (API, opt_J, options)) n_errors++;
 				got_J = false;
 			}
 			if (got_J)	/* Must set flag to possibly autoscale the projection to fit the panel after gmt_map_setup */
-				GMT->current.proj.gave_map_width = 5;
+				P->geo = 1;
 			else {
-				GMT->current.proj.gave_map_width = 0;
 				sprintf (arg, "X%gi/%gi", P->w, P->h);
 				if ((opt = GMT_Make_Option (API, 'J', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
@@ -11540,7 +11541,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						sprintf (arg, "xaf%s", &opt->arg[1]);
 						GMT_Update_Option (API, opt, arg);
 					}
-					if (P->Bxlabel[0]) {
+					if (P->Bxlabel[0] && P->geo == 0) {
 					 	if ((c = strstr (arg, "+l"))) {	/* See if we must append x label set during subplot call */
 							c += 2;
 							if (c[0] == '\0') strcat (arg, P->Bxlabel);
@@ -11557,7 +11558,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (opt->arg[1] == '+')	/* No x-axis annot/tick set, prepend default af */
 					sprintf (arg, "yaf%s", &opt->arg[1]);
 					GMT_Update_Option (API, opt, arg);
-					if (P->Bylabel[0]) {
+					if (P->Bylabel[0] && P->geo == 0) {
 					 	if ((c = strstr (arg, "+l"))) {	/* See if we must append y label set during subplot call */
 							c += 2;
 							if (c[0] == '\0') strcat (arg, P->Bylabel);
@@ -11577,13 +11578,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if (!x_set) {	/* Did not specify x-axis setting so do that now */
 				sprintf (arg, "xaf");
-				if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
+				if (P->Bxlabel[0] && P->geo == 0) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
 				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			}
 			if (!y_set) {	/* Did not specify y-axis setting so do that now */
 				sprintf (arg, "yaf");
-				if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
+				if (P->Bylabel[0] && P->geo == 0) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
 				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			}
@@ -13402,7 +13403,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 */
 
 	struct GMT_CTRL *GMT = NULL;
-	char version[8] = {""};
+	char version[GMT_LEN8] = {""};
 
 #ifdef __FreeBSD__
 #ifdef _i386_

@@ -4437,7 +4437,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
+	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
@@ -12040,11 +12040,11 @@ void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key) {
 	int i, j;
 	gmt_M_unused (GMT);
 	i = (justify % 4) - 1;
-	j = (justify / 4) - 1;
+	j = justify / 4;
 	assert (i >= 0 && i <= 2);
 	assert (j >= 0 && j <= 2);
 	key[0] = hor[i];
-	key[1] = ver[i];
+	key[1] = ver[j];
 }
 
 /*! . */
@@ -12845,7 +12845,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
  	unsigned int k = 0, n_annot = 0, n_int = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
-	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_LEN64] = {""}, type[8] = {""}, txt[GMT_BUFSIZ] = {""};
+	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_LEN64] = {""}, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = gmt_fopen (GMT, A->file_custom, "r")) == NULL) {
@@ -14249,6 +14249,29 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 		gmt_xy_to_geo (GMT, x, y, xx, yy);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted code %d to i = %d, j = %d and finally x = %g and y = %g\n", justify, i, j, *x, *y);
+}
+
+/*! . */
+void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y) {
+	/* Takes the refpoint value and converts to panel position in inches. */
+	int i, j;
+	gmt_M_unused (GMT);
+
+	i = refpoint % 4;	/* Split the 2-D justify code into x just 1-3 */
+	j = refpoint / 4;	/* Split the 2-D justify code into y just 0-2 */
+	if (i == 1)
+		*x = 0.0;
+	else if (i == 2)
+		*x = 0.5 * P->w;
+	else
+		*x = P->w;
+
+	if (j == 0)
+		*y = 0.0;
+	else if (j == 1)
+		*y = 0.5 * P->h;
+	else
+		*y = P->h;
 }
 
 /*! . */

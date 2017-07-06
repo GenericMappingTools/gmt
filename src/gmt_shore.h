@@ -130,7 +130,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	char units[80];		/* Units of lon/lat */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
-	char version[8];	/* Version of data set */
+	char version[GMT_LEN8];	/* Version of data set */
 	char res;		/* Resolution f,g,i,l,c */
 
 	/* netCDF ID variables */
@@ -210,7 +210,7 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 	char units[80];		/* Units of lon/lat */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
-	char version[8];	/* Version of data set */
+	char version[GMT_LEN8];	/* Version of data set */
 
 	/* netCDF ID variables */
 	

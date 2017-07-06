@@ -183,7 +183,7 @@ struct GMT_CLOCK_IO {
 	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	bool compact;		/* true if we do not want leading zeros in items (e.g., 03) */
 	bool twelve_hr_clock;	/* true if we are doing am/pm on output */
-	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
+	char ampm_suffix[2][GMT_LEN8];	/* Holds the strings to append am or pm */
 	char format[GMT_LEN64];	/* Actual C format used to output clock */
 	char delimiter[2][2];		/* Delimiter strings in clock, e.g. ":" */
 };

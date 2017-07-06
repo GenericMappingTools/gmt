@@ -94,6 +94,7 @@ struct GMT_SUBPLOT {
 	unsigned int row, col;		/* Current panel position e.g., 0,0 */
 	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
+	unsigned int geo;		/* True for geographic projections in a panel */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
@@ -101,7 +102,9 @@ struct GMT_SUBPLOT {
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
 	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */
-	char Baxes[8];			/* The -B setting for selected axes */
+	char fill[GMT_LEN64];		/* Panel tag, e.g., a) */
+	char pen[GMT_LEN64];		/* Panel tag, e.g., a) */
+	char Baxes[GMT_LEN8];		/* The -B setting for selected axes */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
 	char Bylabel[GMT_LEN128];	/* The -By setting for x labels */
@@ -325,7 +328,7 @@ struct GMT_SESSION {
 	double d_NaN;			/* Holds the IEEE NaN for doubles */
 	double no_rgb[4];		/* To hold {-1, -1, -1, 0} when needed */
 	double u2u[4][4];		/* u2u is the 4x4 conversion matrix for cm, inch, m, pt */
-	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
+	char unit_name[4][GMT_LEN8];	/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
 	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
 	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
