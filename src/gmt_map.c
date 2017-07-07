@@ -2145,6 +2145,7 @@ GMT_LOCAL void map_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, doub
 /*! . */
 GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax) {
 	/* Set x/y parameters */
+	struct GMT_SUBPLOT *P = GMT->current.proj.panel;	/* NULL unless a panel in a subplot */
 
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
@@ -2153,6 +2154,34 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+
+	if (P)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
+		double fw, fh, fx, fy, w, h;
+		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+		fw = w / P->w;	fh = h / P->h;
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
+				fx = fy = 1.0 / fw;	P->dx = 0.0;	P->dy = 0.5 * (P->h - h * fy);
+			}
+			else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
+				fx = fy = 1.0 / fh;	P->dy = 0.0;	P->dx = 0.5 * (P->w - w * fx);
+			}
+		}
+		else {	/* Cartesian is scaled independently to fit the panel */
+			fx = 1.0 / fw;	fy = 1.0 / fh;	P->dx = P->dy = 0.0;
+		}
+		GMT->current.proj.scale[GMT_X] *= fx;
+		GMT->current.proj.scale[GMT_Y] *= fy;
+		GMT->current.proj.w_r *= fx;	/* Only matter for geographic where fx = fy anyway */
+		GMT->current.proj.rect[XHI] = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
+		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
+		GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
+		strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations must be parallel to axes */
+		GMT->current.setting.map_annot_oblique |= 32;		/* Plot latitude parallel to frame for geo maps */
+	}
 }
 
 /*! . */
@@ -2185,27 +2214,6 @@ GMT_LOCAL void map_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, doub
 	}
 
 	map_setxy (GMT, xmin, xmax, ymin, ymax);
-	
-	if (GMT->current.proj.panel && GMT->current.proj.panel->geo)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
-		double fw, fh, f;
-		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
-		fw = w / GMT->current.proj.panel->w;	fh = h / GMT->current.proj.panel->h;
-		if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
-			f = 1.0 / fw;	GMT->current.proj.panel->dx = 0.0;	GMT->current.proj.panel->dy = 0.5 * (GMT->current.proj.panel->h - h * f);
-		}
-		else {	/* Taller than wider given panel dims; adjust height to fit exactly and set dx for centering */
-			f = 1.0 / fh;	GMT->current.proj.panel->dy = 0.0;	GMT->current.proj.panel->dx = 0.5 * (GMT->current.proj.panel->w - w * f);
-		}
-		GMT->current.proj.scale[GMT_X] *= f;
-		GMT->current.proj.scale[GMT_Y] *= f;
-		GMT->current.proj.w_r *= f;
-		GMT->current.proj.rect[XHI] = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
-		GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
-		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
-		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factor = %g dx = %g dy = %g\n", f, GMT->current.proj.panel->dx, GMT->current.proj.panel->dy);
-		GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plan frame for panel maps */
-	}
 }
 
 /*! . */

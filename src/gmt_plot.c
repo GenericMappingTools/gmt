@@ -5578,10 +5578,9 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
 
 	if ((P = GMT->current.proj.panel)) {	/* Subplot panel mode is in effect */
-		if (P->geo) {	/* offsets required to center the plot on the subplot panel */
-			GMT->current.setting.map_origin[GMT_X] += P->dx;
-			GMT->current.setting.map_origin[GMT_Y] += P->dy;
-		}
+		/* Consider offsets required to center the plot on the subplot panel [0/0] */
+		GMT->current.setting.map_origin[GMT_X] += P->dx;
+		GMT->current.setting.map_origin[GMT_Y] += P->dy;
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
 	}
@@ -5672,10 +5671,9 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			double plot_x, plot_y;
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
-			if (P->geo) {	/* Undo the offsets above that was required to center the plot on the subplot panel */
-				plot_x -= P->dx;
-				plot_y -= P->dy;
-			}
+			/* Undo any offsets above that was required to center the plot on the subplot panel */
+			plot_x -= P->dx;
+			plot_y -= P->dy;
 			PSL_command (PSL, "/PSL_completion {\nV\n");
 			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_comment (PSL, "Will not execute until end of panel\n");

@@ -94,7 +94,6 @@ struct GMT_SUBPLOT {
 	unsigned int row, col;		/* Current panel position e.g., 0,0 */
 	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
-	unsigned int geo;		/* True for geographic projections in a panel */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */

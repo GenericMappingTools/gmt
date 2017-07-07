@@ -397,7 +397,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == BEGIN) {	/* Determine and save subplot panel attributes */
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		double x, y, area_dim[2], plot_dim[2], width, height, annot_width, label_width, title_height, heading_height, heading_only;
-		double *px = NULL, *py = NULL;
+		double *px = NULL, *py = NULL, y_heading, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, command[GMT_LEN128] = {""};
 		bool add_annot;
 		FILE *fp = NULL;
@@ -407,14 +407,15 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Subplot information file already exists: %s\n", file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		annot_width = (GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
-		label_width = (GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
-		title_height = (GMT_LET_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
-		heading_only = (GMT_LET_HEIGHT * GMT->current.setting.font_heading.size / PSL_POINTS_PER_INCH);
+		annot_width = (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
+		label_width = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+		title_height = (GMT_LETTER_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
+		heading_only = (GMT_LETTER_HEIGHT * GMT->current.setting.font_heading.size / PSL_POINTS_PER_INCH);
 		heading_height = heading_only + GMT->current.setting.map_heading_offset;
 		/* Get plot/media area dimensions */
 		width  = area_dim[GMT_X] = (Ctrl->F.active) ? Ctrl->F.dim[GMT_X] : GMT->current.setting.ps_page_size[GMT_X] / PSL_POINTS_PER_INCH;
 		height = area_dim[GMT_Y] = (Ctrl->F.active) ? Ctrl->F.dim[GMT_Y] : GMT->current.setting.ps_page_size[GMT_Y] / PSL_POINTS_PER_INCH;
+		y_heading = height - heading_only;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: rows            = %d\n", Ctrl->N.dim[GMT_Y]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: columns         = %d\n", Ctrl->N.dim[GMT_X]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: height          = %g\n", height);
@@ -430,6 +431,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active[MEDIA]) {	/* Remove space used by media margins */
 			area_dim[GMT_X] -= (Ctrl->M.margin[MEDIA][XLO] + Ctrl->M.margin[MEDIA][XHI]);
 			area_dim[GMT_Y] -= (Ctrl->M.margin[MEDIA][YLO] + Ctrl->M.margin[MEDIA][YHI]);
+			y_heading -= Ctrl->M.margin[MEDIA][YHI];
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After media margins: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[PANEL]) {	/* Remove space used by panel margins */
@@ -466,7 +468,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: area_dim = {%g, %g}\n", factor, area_dim[GMT_X], area_dim[GMT_Y]);
 		plot_dim[GMT_Y] = area_dim[GMT_Y] / Ctrl->N.dim[GMT_Y];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Panel dimensions: {%g, %g}\n", plot_dim[GMT_X], plot_dim[GMT_Y]);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, height - heading_only - Ctrl->M.margin[MEDIA][YHI]);
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 		/* Allocate panel info array */
 		px = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);
 		py = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], double);
@@ -575,8 +577,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		cmd = GMT_Create_Cmd (API, options);
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
-		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, height - heading_only - Ctrl->M.margin[MEDIA][YHI], Ctrl->T.title);
-		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_pos\ttag_just\tBframe\tBx\tBy\n");
+		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
+		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
@@ -626,7 +628,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -P -N -F+cTC+jBC+f%s %s -Xa0 -Ya0 --GMT_HISTORY=false", width, height - heading_only - Ctrl->M.margin[MEDIA][YHI], gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -P -N -F+cTC+jBC+f%s %s -Xa0 -Ya0 --GMT_HISTORY=false", width, y_heading, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to pstext: %s\n", command);
 			if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the cancas with heading */
 				Return (API->error);
