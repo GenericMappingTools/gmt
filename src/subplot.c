@@ -651,6 +651,18 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (error)
 	}
 	else {	/* END */
+		int k;
+		char *mode[2] = {"w","a"};
+		FILE *fp = NULL;
+		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, mode[k])) == NULL) {	/* Must open inside PSL DLL */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, mode[k]);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		PSL_command (GMT->PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */
 		sprintf (file, "%s/gmt.subplot", API->gwf_dir);
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.panel", API->gwf_dir);

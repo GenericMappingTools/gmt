@@ -291,6 +291,16 @@ affect the current state of parameters such as line and fill attributes.
     file and then retrieve them later with **PSL_load_rgb**. This
     makes the stored color the current color.
 
+**long PSL_setexec** (**struct PSL_CTRL** *\*P*, **long** *mode*)
+
+    If *mode* = 1 then we tell PSL to execute a custom PostScript
+    procedure named PSL_completion at the start of the next overlay.
+    Once executed, the function is reset to a dummy null procedure.
+    Experts may define their own procedure called PSL_completion
+    and insert it into the PostScript stream.  Changing the mode
+    can then be used to have some tasks complete prior to the
+    new overlay being generated.
+
 **long PSL_setcolor** (**struct PSL_CTRL** *\*P*, **double**
 *rgb*\ [], **long** *mode*)
 

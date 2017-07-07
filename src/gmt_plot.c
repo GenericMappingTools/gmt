@@ -5577,11 +5577,14 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	}
 	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
 
-	if ((P = GMT->current.proj.panel) && P->geo) {	/* offsets required to center the plot on the subplot panel */
-		GMT->current.setting.map_origin[GMT_X] += P->dx;
-		GMT->current.setting.map_origin[GMT_Y] += P->dy;
+	if ((P = GMT->current.proj.panel)) {	/* Subplot panel mode is in effect */
+		if (P->geo) {	/* offsets required to center the plot on the subplot panel */
+			GMT->current.setting.map_origin[GMT_X] += P->dx;
+			GMT->current.setting.map_origin[GMT_Y] += P->dy;
+		}
+		if (P->first && O_active)	/* Run completion script, if any */
+			PSL_setexec (PSL, 1);
 	}
-	
 	/* Get title */
 
 	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
@@ -5673,6 +5676,10 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 				plot_x -= P->dx;
 				plot_y -= P->dy;
 			}
+			PSL_command (PSL, "/PSL_completion {\nV\n");
+			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
+			PSL_comment (PSL, "Will not execute until end of panel\n");
+			PSL_setorigin (PSL, GMT->current.setting.map_origin[GMT_X], GMT->current.setting.map_origin[GMT_Y], 0.0, PSL_FWD);
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
@@ -5700,6 +5707,9 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			}
 			else	
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
+			PSL_command (PSL, "U\n}!\n");
+			PSL_command (PSL, "/PSL_exec_completion 1 def\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
 		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, 0))	/* +1 since get_current_panel does -1 */

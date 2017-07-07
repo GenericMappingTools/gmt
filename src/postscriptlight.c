@@ -4371,7 +4371,14 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
-	if (!overlay) {	/* Must issue PSL header - this is the start of a new plot */
+	if (overlay) {	/* Must issue PSL header - this is the start of a new plot */
+		if (PSL->current.complete) {	/* Execute the completion function, then disable again */
+			PSL_comment (PSL, "Run PSL completion function from last overlay, if defined\n");
+			PSL_command (PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */
+			PSL->current.complete = 0;
+		}
+	}
+	else {	/* Must issue PSL header - this is the start of a new plot */
 		char PSL_encoding[64] = {""};
 
 		if (PSL->internal.memory) {	/* Will be writing to memory so need to set that up */
@@ -4452,6 +4459,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		/* Save page size */
 		PSL_defpoints (PSL, "PSL_page_xsize", PSL->internal.landscape ? PSL->internal.p_height : PSL->internal.p_width);
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
+		
+		PSL_command (PSL, "/PSL_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);
@@ -4521,6 +4530,12 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n) {
 		PSL_command (PSL, "FO\n");		/* Close polygon and stroke/fill as set by PSL_setfill */
 	}
 
+	return (PSL_NO_ERROR);
+}
+
+int PSL_setexec (struct PSL_CTRL *PSL, int action) {
+	/* Enables of disables the execution of a PSL_completion function at start of a PSL_plotinit overlay */
+	PSL->current.complete = (action) ? 1 : 0;
 	return (PSL_NO_ERROR);
 }
 
@@ -4602,7 +4617,7 @@ int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double s
 }
 
 int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals) {
-	/* Sets nmber of decimals used for rgb/gray specifications [3] */
+	/* Sets number of decimals used for rgb/gray specifications [3] */
 	if (n_decimals < 1 || n_decimals > 3)
 		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected decimals for color out of range (%d), ignored\n", n_decimals);
 	else {
