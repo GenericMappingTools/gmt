@@ -125,7 +125,7 @@ struct GMT_DEFAULTS {
 	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
-	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [24p] */
+	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [18p] */
 	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
 	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
 	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */

@@ -4863,7 +4863,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* MAP_GRID_PEN_SECONDARY */
 	error += gmt_getpen (GMT, "thinner,black", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 	/* MAP_HEADING_OFFSET */
-	GMT->current.setting.map_heading_offset = 24 * pt;	/* 24p */
+	GMT->current.setting.map_heading_offset = 18 * pt;	/* 18p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
 	/* MAP_LABEL_OFFSET */
 	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
