@@ -473,8 +473,8 @@ modern mode.
 
 To defeat the rookie errors listed above, here are the features of *modern* mode:
 
-#. The **-O** and **-K** options are not available in modern mode.
-#. Modules no longer write *PostScript* to standard output for the users to redirect to files.
+#. The **-O** and **-K** options have been retired.
+#. Modules no longer write *PostScript* to standard output that the users must redirect to files.
    Instead, they write to hidden temporary files.  Checking the status of these files
    is what allows us to know if *PostScript* should be appended or if we are starting
    a new plot.
@@ -491,7 +491,7 @@ modern mode is activated and deactivated by the new commands **gmt begin** and *
 respectively.  Since these are not part of the classic repertoire one cannot
 accidentally execute a classic mode script in modern mode (or vice versa).
 We will discuss these two commands later.  Finally, there are some new features in GMT that
-are only accessible under modern mode, such as new ways to specify the map domain and to
+are only accessible under modern mode, such as subplots, new ways to specify the map domain and to
 get multiple output formats from the same plot.
 
 
