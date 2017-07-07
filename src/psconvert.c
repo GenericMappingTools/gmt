@@ -1409,10 +1409,15 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
 		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
 			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for current PS */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
-				Return (GMT_RUNTIME_ERROR);
+				/* THe half-baked file not found.  See if the fully baked file is there */
+				GMT->current.ps.filename[strlen(GMT->current.ps.filename)-1] = '+';
+				if (access (GMT->current.ps.filename, F_OK)) {	/* File does not exist - error; else we have changed the name */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
+					Return (GMT_RUNTIME_ERROR);
+				}
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
+			GMT->current.ps.filename[strlen(GMT->current.ps.filename)-1] = '-';	/* Due to logic below */
 			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
 			ps_names[0] = strdup (GMT->current.ps.filename);
 			Ctrl->In.n_files = 1;
