@@ -382,7 +382,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected correction table requires velocity which implies time (not selected)\n");
-			MGD77_Free_Correction (GMT, CORR, n_tracks);
+			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
@@ -559,7 +559,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	/* Clean up before quitting */
 	
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 
 	x2sys_end (GMT, s);
 	gmt_M_free (GMT, out);
