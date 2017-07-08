@@ -272,6 +272,9 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
+#ifdef PRJ4
+			if (opt->arg && opt->arg[0] == '"' || opt->arg[0] == '+') continue;
+#endif
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
 			if ((id = gmtlib_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */

@@ -5333,6 +5333,58 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	PSL_command (GMT->PSL, "[] 0 B\n");	/* Ensure no pen textures remain in effect */
 }
 
+#ifdef PRJ4
+char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4) {
+	unsigned int pos = 0;
+	char *pStrOut = NULL;
+	char opt_J[GMT_LEN128] = {""}, scale_c[GMT_LEN32] = {""};
+	char token[GMT_LEN256] = {""}, *prjcode, *pch, *par, *valc;
+	double val;
+
+	if ((pch = strchr(szProj4, '/')) != NULL) {
+		strncpy(scale_c, &pch[1], GMT_LEN32-1);
+		pch[0] = '\0';
+	}
+	else
+		sprintf(scale_c, "14c");		// TEMP, should error instead
+
+	if (szProj4[strlen(szProj4)-1] == '"') szProj4[strlen(szProj4)-1] = '\0';	/* Trim last " */
+			
+	gmt_strtok (szProj4, " \t", &pos, token);
+	prjcode = (token[0] == '"' ? &token[7] : &token[6]);	/* PROJ4 projection code. strlen("+proj=) = 7 chars */
+
+	if (!strcmp(prjcode, "cea")) {
+		GMT->current.proj.projection = GMT_CYL_EQ;
+		while (gmt_strtok (szProj4, " \t", &pos, token)) {
+			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; val = atof (pch+1);
+			if (!strcmp(par, "lon_ts")) GMT->current.proj.pars[0] = val;
+			else if (!strcmp(par, "lon_0")) GMT->current.proj.pars[1] = val;
+		}
+	}
+	else if (!strcmp(prjcode, "merc")) {
+		strcat (opt_J, "M");
+		while (gmt_strtok (szProj4, " \t", &pos, token)) {
+			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; valc = pch+1;
+			if (!strcmp(par, "lon_0")) {
+				strcat(opt_J, valc);	strcat (opt_J, "/");
+			}
+		}
+		strcat (opt_J, scale_c);
+	}
+	else if (!strcmp(prjcode, "utm")) {
+		GMT->current.proj.projection = GMT_UTM;
+		while (gmt_strtok (szProj4, " \t", &pos, token)) {
+			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; val = atof (pch+1);
+			if (!strcmp(par, "zone")) GMT->current.proj.pars[0] = val;
+			else if (!strcmp(par, "south")) GMT->current.proj.utm_hemisphere -= (int)val;
+		}
+	}
+
+	pStrOut = strdup(opt_J);
+	return (pStrOut);
+}
+#endif
+
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	char *pStrOut = NULL;
 	char szProj4[GMT_LEN512], proj4_ename[GMT_LEN16];

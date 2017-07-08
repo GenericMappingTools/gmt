@@ -162,7 +162,10 @@ EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GM
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
 
-EXTERN_MSC char * gmt_export2proj4 (struct GMT_CTRL *GMT);
+EXTERN_MSC char *gmt_export2proj4 (struct GMT_CTRL *GMT);
+#ifdef PRJ4
+EXTERN_MSC char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4);
+#endif
 EXTERN_MSC void gmt_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms);
