@@ -11375,6 +11375,47 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	return false;	/* Default to Cartesian */
 }
 
+GMT_LOCAL void set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION **options) {
+	/* Determine if user is attemtping a modern mode one-liner plot */
+	unsigned int code;
+	int error, k;
+	char figure[GMT_LEN128] = {""}, session[GMT_LEN128] = {""}, *c = NULL;
+	struct GMT_OPTION *opt = NULL;
+	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+		if (opt->option == 'O' || opt->option == 'K') return;	/* Cannot be a one-liner if -O or -K are involved */
+		sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png, which would be parse into -p and ng, are reunited to png */
+		code = 0;
+		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop of more than one format for the id test */
+		if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
+		if (opt->next && opt->next->option == GMT_OPT_INFILE) {	/* Found a -ext[,ext,ext,...] <prefix> pair */
+			if (c == NULL) sprintf (session, "%s %s", opt->next->arg, gmt_session_format[code]);
+			else {	/* Must also call figure */
+				c[0] = ',';	/* Restore comma */
+				sprintf (figure, "%s %c%s", opt->next->arg, opt->option, opt->arg);
+			}
+			/* Remove the one-liner options before the parser chokes on them */
+			if (GMT_Delete_Option (API, opt->next, options) || GMT_Delete_Option (API, opt, options)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to remove -ext <prefix> options in set_modern_mode_if_oneliner.\n");
+				return;
+			}
+			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to call module begin from set_modern_mode_if_oneliner.\n");
+				return;
+			}
+			API->GMT->current.setting.run_mode = GMT_MODERN;
+			if (session[0] == 0) {	/* Must also call figure */
+				if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, figure))) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to call module figure from set_modern_mode_if_oneliner.\n");
+					return;
+				}
+			}
+			API->GMT->current.ps.oneliner = true;	/* Special flag */
+			return;	/* All set */
+		}
+	}
+	return;
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -11400,6 +11441,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
+	bool is_PS;
 	struct GMT_OPTION *E = NULL, *opt = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
@@ -11425,6 +11467,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
+	is_PS = is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+	if (is_PS) set_modern_mode_if_oneliner (API, options);	/* Look out for modern -png mymap and similar specs */
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
 		int id;
@@ -11434,7 +11479,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		struct GMT_SUBPLOT *P = NULL;
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
-		GMT->current.ps.active = is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
@@ -11643,6 +11688,14 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int i, V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
+
+	if (GMT->current.ps.oneliner) {
+		GMT->current.ps.oneliner = false;
+		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, ""))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to call module end for a one-liner plot.\n");
+			return;
+		}
+	}
 
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n",
