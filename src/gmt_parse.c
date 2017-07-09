@@ -532,6 +532,24 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		gmt_M_free (G, new_args);
 	}
 
+	/* Check if we are in presence of a oneliner. If yes that implies MODERN mode. */
+	if (n_args_in == 0) {
+		int k;
+		bool code = false;
+		char figure[GMT_LEN128] = {""}, *c = NULL;
+		struct GMT_OPTION *opt = NULL;
+		for (opt = head; opt; opt = opt->next) {	/* Loop over all options */
+			if (opt->option == 'O' || opt->option == 'K') break;	/* Cannot be a one-liner if -O or -K are involved */
+			sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png, which would be parse into -p and ng, are reunited to png */
+			if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop of more than one format for the id test */
+			if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
+			if (opt->next && opt->next->option == GMT_OPT_INFILE) 	/* Found a -ext[,ext,ext,...] <prefix> pair */
+				code = true;
+		}
+		if (code)
+			API->GMT->current.setting.run_mode = GMT_MODERN;
+	}
+
 	return (head);		/* We return the linked list */
 }
 
