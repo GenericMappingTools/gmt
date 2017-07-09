@@ -36,14 +36,14 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: begin [<prefix>] [<format>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: begin [<prefix>] [<format(s)>] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for unnamed figures [%s].\n", GMT_SESSION_NAME);
-	GMT_Message (API, GMT_TIME_NONE, "\t<format> sets the default plot format [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Choose one of these valid extensions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<format(s)> sets the default plot format(s) [%s].\n", gmt_session_format[GMT_SESSION_FORMAT]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose one or more of these valid extensions separated by commas:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
@@ -59,22 +59,21 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
-	 * Any GMT common options will override values set previously by other commands.
-	 * It also replaces any file names specified as input or output with the data ID
-	 * returned when registering these sources/destinations with the API.
-	 */
+	/* This parses the options provided to begin */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, pos = 0;
+	char p[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	if ((opt = options))	/* Gave a replacement session name */
 		opt = opt->next;
-	if (opt) {	/* Also a replacement primary format */
-		int k = gmt_get_graphics_id (GMT, opt->arg);
-		if (k == GMT_NOTSET) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", opt->arg);
-			n_errors++;
+	if (opt) {	/* Also gave replacement primary format(s) */
+		int k;
+		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+			if ((k = gmt_get_graphics_id (GMT, p)) == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
+				n_errors++;
+			}
 		}
 	}
 	

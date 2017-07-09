@@ -74,6 +74,16 @@ The CookBook
 |    cookbook     |
 +-----------------+
 
+Modern Mode
+===========
+
++-----------------+
+| .. toctree::    |
+|    :maxdepth: 2 |
+|                 |
+|    modern       |
++-----------------+
+
 +-----------------+-------------------+---------------------+
 | .. toctree::    | .. toctree::      | .. toctree::        |
 |    :maxdepth: 1 |    :maxdepth: 1   |    :maxdepth: 1     |
