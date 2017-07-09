@@ -3,13 +3,19 @@ GMT Modern Mode
 
 .. include:: common_SYN_OPTs.rst_
 
-Experimental!
+Modern Mode is Experimental!
 
-In GMT modern mode there are four new commands that are used to control
-a GMT workflow.  We will discuss them in the order you may wish to use
-them.  Since one of the key concepts in modern mode is the elimination of
-user control over the PostScript redirection and compilation, the name of
-the final plot products and their formats are specified using these commands.
+In GMT modern mode there are four new commands that are used to manage
+a GMT workflow.  In modern mode many common GMT options have been made
+obsolete and explicitly specifying the previous region or projection
+is now implicit.  Finally, the default output format for illustrations
+is now PDF, but you can change this and request more than one format
+for your plots.
+
+A GMT modern session is enabled by **gmt begin** and is terminated by
+**gmt end**.  Within a session you may also use the **gmt figure* command
+to control names and formats for multi-figure scripts and the **gmt subplot**
+for building multi-panel illustrations.
 
 *****
 begin
