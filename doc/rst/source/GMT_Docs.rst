@@ -484,6 +484,7 @@ To defeat the rookie errors listed above, here are the features of *modern* mode
    projection (**-J**) arguments.
 #. When the workflow ends, the hidden *PostScript* files are automatically completed
    and converted to the chosen graphics format [Default is PDF for command-line work].
+#. Unless a plain *PostScript* is the chosen graphics format, the **-P** option no longer needed.
 
 Not only does the new rules remove the greatest obstacles to GMT learning, it greatly
 simplifies scripting by eliminating needless repetition of options and output filenames.  The

@@ -5549,6 +5549,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	unsigned int this_proj, write_to_mem = 0;
 	char *mode[2] = {"w","a"};
 	static char *ps_mode[2] = {"classic", "modern"};
+	double media_size[2];
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *PSL= NULL;
@@ -5560,6 +5561,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	if (gmt_M_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 	GMT->current.ps.memory = false;
+	gmt_M_memcpy (media_size, GMT->current.setting.ps_page_size, 2, double);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running in PS mode %s\n", ps_mode[GMT->current.setting.run_mode]);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
@@ -5574,6 +5576,10 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
 		}
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
+		/* Determine paper size */
+	
+		if (O_active == false && !gmtlib_fig_is_ps (GMT))	/* Dont need -P since we will do -A */
+			media_size[GMT_X] = media_size[GMT_Y] = MAX(media_size[GMT_X], media_size[GMT_Y]);
 	}
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
@@ -5636,12 +5642,13 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
 	}
+	
 	/* Get title */
 
 	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, O_active, GMT->current.setting.ps_color_mode,
-	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, GMT->current.ps.title, fno);
+		GMT->current.ps.origin, GMT->current.setting.map_origin, media_size, GMT->current.ps.title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 

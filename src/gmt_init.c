@@ -11385,12 +11385,12 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 		if (opt->option == 'O' || opt->option == 'K') return GMT_NOERROR;	/* Cannot be a one-liner if -O or -K are involved */
 	/* No -O -K present, so go ahead and check */
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		if (strlen (opt->arg) < 3) continue;	/* ps is the shortest format extension */
+		if (strlen (opt->arg) < 2) continue;	/* ps is the shortest format extension */
 		sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
 		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other format for the initial id test */
 		if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
 		/* Make sure all formats are valid */
-		c[0] = ',';	/* Restore comma */
+		if (c) c[0] = ',';	/* Restore any comma we found */
 		pos = 0;
 		while (gmt_strtok (figure, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 			if ((k = gmt_get_graphics_id (API->GMT, p)) == GMT_NOTSET) {
@@ -13844,6 +13844,25 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 		*figs = fig;	/* Pass out what we found */
 	}
 	return (k);
+}
+
+bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
+	int n_figs;
+	unsigned int pos = 0;
+	bool PS = false;
+	char p[GMT_LEN64] = {""};
+	struct GMT_FIGURE *fig = NULL;
+
+	if ((n_figs = gmtlib_read_figures (GMT, 2, &fig)) == GMT_NOTSET) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to determine number of figures\n");
+		return false;
+	}
+	n_figs--;	/* Id of current figure */
+	while (gmt_strtok (fig[n_figs].formats, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+		if (!strcmp (p, "ps")) PS = true;
+	}
+	gmt_M_free (GMT, fig);
+	return (PS);
 }
 
 GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
