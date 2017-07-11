@@ -12,7 +12,7 @@ Specifying Pens
     **thick**\ [**er**\ \|\ **est**], **fat**\ [**ter**\ \|\ **test**],
     or **obese**. *color* specifies a gray shade or color (see
     `Specifying Color`_ above). *style* can be any of 'solid', 'dashed'
-    or 'dotted', or a custom combination of dashes '-' and
+    'dotted', or 'dashdot', or a custom combination of dashes '-' and
     dots '.'. If any of the attributes is omitted their default or
     previous setting will be retained. See GMT Cookbook & Technical
     Reference :ref:`Specifying pen attributes <-Wpen_attrib>` for more information.
