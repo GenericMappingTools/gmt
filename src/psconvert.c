@@ -873,6 +873,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	int       fd[2] = { 0, 0 };
 	FILE     *fp = NULL;
 #else
+	int ios;
 	struct popen2 *H = NULL;
 #endif
 
