@@ -194,7 +194,7 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 
-**gmt subplot** *row,col* [ |SYN_OPT-V| ]
+**gmt subplot** *row,col* [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting into a panel you must first select the active panel.
 
@@ -208,6 +208,14 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-G:
+
+**-G**\ *side*\ /*gap*\ [**u**\ ]
+    Reserve a space of dimension *gap* between the margin and the plot panel on the specified
+    side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
+    on more than one side.  Such space will be left untouched by the main map plotting but can
+    be accessed by modules plotting scales, bars, text, etc.
 
 .. _-V:
 

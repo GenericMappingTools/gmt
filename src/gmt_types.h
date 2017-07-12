@@ -98,6 +98,7 @@ struct GMT_SUBPLOT {
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
 	double off[2];			/* Offset from justification point of panel tag */
+	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
 	char tag[GMT_LEN16];		/* Panel tag, e.g., a) */

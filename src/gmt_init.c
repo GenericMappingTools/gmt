@@ -10883,7 +10883,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 
 /* Subplot functions */
 
-GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, unsigned int *col, unsigned int *first) {
+GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, unsigned int *col, double gap[], unsigned int *first) {
 	/* Gets the current subplot panel, returns 1 if found and 0 otherwise */
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
@@ -10900,7 +10900,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	ios = fscanf (fp, "%d %d %d", row, col, first);
+	ios = fscanf (fp, "%d %d %lg %lg %lg %lg %d", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], first);
 	fclose (fp);
 	if (*row == 0 || *col == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");
@@ -10911,9 +10911,9 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 	return GMT_NOERROR;
 }
 
-int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, unsigned first) {
+int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, double gap[], unsigned first) {
 	/* Update gmt.panel with current pane's (row,col) and write first as 0 or 1.
-	 * first shoudl be 1 the first time we visit this panel so that the automatic -B
+	 * first should be 1 the first time we visit this panel so that the automatic -B
 	 * and panel tag stuff only happens once. */
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
@@ -10923,7 +10923,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned i
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	fprintf (fp, "%d %d %d\n", row, col, first);
+	fprintf (fp, "%d %d %g %g %g %g %d\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], first);
 	fclose (fp);
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
@@ -10936,11 +10936,12 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 	bool found = false;
 	unsigned int row, col, first, k;
 	int n;
+	double gap[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_SUBPLOT *P = NULL;
 	FILE *fp = NULL;
 
 	API->error = GMT_RUNTIME_ERROR;
-	if (get_current_panel (API, &row, &col, &first))	/* No panel or there was an error */
+	if (get_current_panel (API, &row, &col, gap, &first))	/* No panel or there was an error */
 		return NULL;
 
 	/* Now read subplot information file */
@@ -10982,6 +10983,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 			if (P->fill[0] == '-') P->fill[0] = '\0';	/* - means no fill */
 			if (P->pen[0] == '-') P->pen[0] = '\0';		/* - means no pen */
 			P->first = first;
+			gmt_M_memcpy (P->gap, gap, 4, double);
 			c = strchr (line, GMT_ASCII_GS);	/* Get the position before frame setting */
 			c++;	k = 0;	/* Now at start of axes */
 			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);	/* Copy it over until end */
@@ -11552,7 +11554,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot so must update gmt.panel */
 			unsigned int row, col;
 			sscanf (opt->arg, "%d,%d", &row, &col);
-			if (gmt_set_current_panel (API, row, col, 1)) return NULL;
+			if (gmt_set_current_panel (API, row, col, P->gap, 1)) return NULL;
 			if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here */
 		}
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" */

@@ -136,8 +136,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <nrows>x<ncols> [-A<labelinfo>] [-F[<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>] [-M[m[|p]]<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<labelinfo>] [-F[<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<side><gap>[u]] [-L<layout>] [-M[m[|p]]<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-G<side><gap>[u]] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -156,6 +158,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify dimension of area that the multi-panel figure may occupy [current page].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each panel area (for debugging).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a gap of dimension <tap>[u] to the <side> (w|e|s|n) of the plottable panel.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-  Shrinks the size for the main plot to make room for scales, bars, etc.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-  Repeatable for more than one side [no gaps].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set panel layout. May be set once (-L) or separately for rows (-LR) and columns (-LC):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L:  Append WESNwesn to indicate which panel frames should be drawn and annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l to make space for axes labels; applies equally to all panels [no labels].\n");
@@ -212,15 +217,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		Ctrl->In.mode = SUBPLOT_END;
 	else if (strchr (opt->arg, ',') && sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) == 2 && Ctrl->In.row > 0 && Ctrl->In.col > 0) {
 		Ctrl->In.mode = SUBPLOT_SET;
-		return GMT_NOERROR;
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Not a subplot command: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 	opt = opt->next;	/* Position to the next argument */
-	if ((Ctrl->In.mode == SUBPLOT_END || Ctrl->In.mode == SUBPLOT_SET) && opt && !(opt->option == 'V' && opt->next == NULL)) {	/* Only -V is optional for end or set */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: subplot end|set: Unrecognized option: %s\n", opt->arg);
+	if (Ctrl->In.mode == SUBPLOT_END && opt && !(opt->option == 'V' && opt->next == NULL)) {	/* Only -V is optional for end or set */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: subplot end: Unrecognized option: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 
@@ -431,6 +435,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Syntax error -A: Cannot select Roman numerals AND letters!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_panels == 0, "Syntax error: Number of RowsxCols is required!\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "Syntax error -L: Must specify panel layout!\n");
+	}
+	else if (Ctrl->In.mode == SUBPLOT_SET) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->A.active, "Syntax error -A: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Syntax error -F: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active, "Syntax error -L: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active, "Syntax error -M: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Syntax error -T: Only available for gmt subset begin!\n");
+		
 	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -818,7 +830,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, 1)))
+		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, 1)))
 			Return (error)
 	}
 	else {	/* SUBPLOT_END */

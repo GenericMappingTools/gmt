@@ -5769,7 +5769,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			PSL_command (PSL, "/PSL_exec_completion 1 def\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, P->gap, 0))	/* +1 since get_current_panel does -1 */
 			return NULL;	/* Should never happen */
 	}
 	return (PSL);
