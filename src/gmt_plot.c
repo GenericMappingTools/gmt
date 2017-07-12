@@ -2851,6 +2851,98 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 }
 
+#ifdef PRJ4
+GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
+	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
+	if (!strcmp(inname, "WGS84"))
+		sprintf(outname, "WGS-84");
+	else if (!strcmp(inname, "WGS72"))
+		sprintf(outname, "WGS-72");
+	else if (!strcmp(inname, "WGS66"))
+		sprintf(outname, "WGS-66");
+	else if (!strcmp(inname, "WGS60"))
+		sprintf(outname, "WGS-60");
+	else if (!strcmp(inname, "airy"))
+		sprintf(outname, "Airy");
+	else if (!strcmp(inname, "mod_airy"))
+		sprintf(outname, "Airy-Ireland");
+	else if (!strcmp(inname, "andrae"))
+		sprintf(outname, "Andrae");
+	else if (!strcmp(inname, "APL4.9"))
+		sprintf(outname, "APL4.9");
+	else if (!strcmp(inname, "aust_SA"))
+		sprintf(outname, "Australian");
+	else if (!strcmp(inname, "bessel"))
+		sprintf(outname, "Bessel");
+	else if (!strcmp(inname, "bess_nam"))
+		sprintf(outname, "Bessel-Namibia");
+	else if (!strcmp(inname, "clark66"))
+		sprintf(outname, "Clarke-1866");
+	else if (!strcmp(inname, "clark80"))
+		sprintf(outname, "Clarke-1880");
+	else if (!strcmp(inname, "CPM"))
+		sprintf(outname, "CPM");
+	else if (!strcmp(inname, "delmbr"))
+		sprintf(outname, "Delambre");
+	else if (!strcmp(inname, "engelis"))
+		sprintf(outname, "Engelis");
+	else if (!strcmp(inname, "evrst30"))
+		sprintf(outname, "Everest-1830");
+	else if (!strcmp(inname, "evrst48"))
+		sprintf(outname, "Everest-1830-Kertau");
+	else if (!strcmp(inname, "evrst56"))
+		sprintf(outname, "Everest-1830-Kalianpur");
+	else if (!strcmp(inname, "evrstSS"))
+		sprintf(outname, "Everest-1830-Timbalai");
+	else if (!strcmp(inname, "fschr60"))
+		sprintf(outname, "Fischer-1960");
+	else if (!strcmp(inname, "fschr60m"))
+		sprintf(outname, "Fischer-1960-SouthAsia");
+	else if (!strcmp(inname, "fschr68"))
+		sprintf(outname, "Fischer-1968");
+	else if (!strcmp(inname, "GRS80"))
+		sprintf(outname, "GRS-80");
+	else if (!strcmp(inname, "GRS67"))
+		sprintf(outname, "GRS-67");
+	else if (!strcmp(inname, "helmert"))
+		sprintf(outname, "Helmert-1906");
+	else if (!strcmp(inname, "hough"))
+		sprintf(outname, "Hough");
+	else if (!strcmp(inname, "intl"))
+		sprintf(outname, "Hayford-1909");
+	else if (!strcmp(inname, "new_intl"))
+		sprintf(outname, "International-1967");
+	else if (!strcmp(inname, "MERIT"))
+		sprintf(outname, "MERIT-83");
+	else if (!strcmp(inname, "krass"))
+		sprintf(outname, "Krassovsky");
+	else if (!strcmp(inname, "kaula"))
+		sprintf(outname, "Kaula");
+	else if (!strcmp(inname, "NWL-9D"))
+		sprintf(outname, "NWL9D");
+	else if (!strcmp(inname, "IAU76"))
+		sprintf(outname, "IAG-75");
+	else if (!strcmp(inname, "lerch"))
+		sprintf(outname, "Lerch");
+	else if (!strcmp(inname, "mprts"))
+		sprintf(outname, "Maupertius");
+	else if (!strcmp(inname, "SEasia"))
+		sprintf(outname, "Modified-Fischer-1960");
+	else if (!strcmp(inname, "SGS85"))
+		sprintf(outname, "SGS-85");
+	else if (!strcmp(inname, "plessis"))
+		sprintf(outname, "Plessis");
+	else if (!strcmp(inname, "walbeck"))
+		sprintf(outname, "Walbeck");
+	else if (!strcmp(inname, "sphere"))
+		sprintf(outname, "Sphere");
+	else if (!strcmp(inname, "sphere"))
+		sprintf(outname, "FlatEarth");
+	else
+		outname[0] = '\0';
+}
+#endif
+
 GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
 	if (!strcmp(inname, "WGS-84"))
@@ -2920,13 +3012,13 @@ GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
 	else if (!strcmp(inname, "NWL-9D"))
 		sprintf(outname, "NWL9D");
 	else if (!strcmp(inname, "IAG-75"))
-		sprintf(outname, "IAU76 ");
+		sprintf(outname, "IAU76");
 	else if (!strcmp(inname, "Lerch"))
 		sprintf(outname, "lerch");
 	else if (!strcmp(inname, "Maupertius"))
 		sprintf(outname, "mprts");
 	else if (!strcmp(inname, "Modified-Fischer-1960"))
-		sprintf(outname, "SEasia ");
+		sprintf(outname, "SEasia");
 	else if (!strcmp(inname, "SGS-85"))
 		sprintf(outname, "SGS85");
 	else if (!strcmp(inname, "Plessis"))
@@ -5334,12 +5426,24 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 }
 
 #ifdef PRJ4
-char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4) {
-	unsigned int pos = 0;
+GMT_LOCAL void wipe_substr(char *str1, char *str2) {
+	/* Set the substring str2 of str1 to blanks */
+	int k;
+	char *pch;
+	pch = strstr(str1, str2);
+	for (k = 0; k < strlen(str2); k++)
+		pch[k] = ' ';
+}
+
+char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
+	unsigned int k = 0, pos = 0;
+	bool got_a = false, got_lonlat = false;
 	char *pStrOut = NULL;
-	char opt_J[GMT_LEN128] = {""}, scale_c[GMT_LEN32] = {""};
-	char token[GMT_LEN256] = {""}, *prjcode, *pch, *par, *valc;
-	double val;
+	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, opt_T[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
+	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *prjcode, *pch = NULL;
+	char *easting = NULL, *northing = NULL;
+
+	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
 
 	if ((pch = strchr(szProj4, '/')) != NULL) {
 		strncpy(scale_c, &pch[1], GMT_LEN32-1);
@@ -5348,37 +5452,321 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4) {
 	else
 		sprintf(scale_c, "14c");		// TEMP, should error instead
 
-	if (szProj4[strlen(szProj4)-1] == '"') szProj4[strlen(szProj4)-1] = '\0';	/* Trim last " */
-			
-	gmt_strtok (szProj4, " \t", &pos, token);
-	prjcode = (token[0] == '"' ? &token[7] : &token[6]);	/* PROJ4 projection code. strlen("+proj=) = 7 chars */
+	if (isdigit(szProj4[1])) {		/* A EPSG code */
+		bool found = false;
+		FILE *fp = NULL;
+		char buffer [GMT_LEN256] = {""};
+		int EPSGID = atoi(pStr);
 
-	if (!strcmp(prjcode, "cea")) {
-		GMT->current.proj.projection = GMT_CYL_EQ;
-		while (gmt_strtok (szProj4, " \t", &pos, token)) {
-			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; val = atof (pch+1);
-			if (!strcmp(par, "lon_ts")) GMT->current.proj.pars[0] = val;
-			else if (!strcmp(par, "lon_0")) GMT->current.proj.pars[1] = val;
+		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
+		if ((fp = fopen (buffer, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot open %s file\n", buffer);
+			return (pStrOut);
+		}
+		while (fgets (buffer, GMT_LEN256, fp)) {
+			if (buffer[0] == '#') continue;
+			pch = strstr(buffer, "+proj");
+			pch[-1] = '\0';		/* Break the line before the +proj=... */
+			if (EPSGID == atoi(buffer)) {
+				snprintf(szProj4, GMT_LEN256-1, "%s", pch);
+				found = true;
+				break;
+			}
+		}
+		fclose (fp);
+		if (!found) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Could not find the EPGS code %d in database\n", EPSGID);
+			return (pStrOut);
+		}
+	}
+
+	if (szProj4[strlen(szProj4)-1] == '"') szProj4[strlen(szProj4)-1] = '\0';	/* Trim last " */
+
+	gmt_strtok (szProj4, " \t+", &pos, token);
+	prjcode = (token[0] == '"' ? &token[7] : (token[0] == '+' ? &token[6] : &token[5]));	/* PROJ4 projection code. */
+	wipe_substr(szProj4, token);	/* Consumed, clear it from list */
+
+	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
+		strcat (opt_J, "X");
+		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
+		wipe_substr(szProj4, token);
+	}
+	/* Cylindrical projections */
+	else if (!strcmp(prjcode, "cea")) {
+		strcat (opt_J, "E");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
+				strcat(opt_J, &token[7]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
 		}
 	}
 	else if (!strcmp(prjcode, "merc")) {
 		strcat (opt_J, "M");
-		while (gmt_strtok (szProj4, " \t", &pos, token)) {
-			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; valc = pch+1;
-			if (!strcmp(par, "lon_0")) {
-				strcat(opt_J, valc);	strcat (opt_J, "/");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {		/* Check for scale factor */
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
 			}
 		}
-		strcat (opt_J, scale_c);
 	}
-	else if (!strcmp(prjcode, "utm")) {
-		GMT->current.proj.projection = GMT_UTM;
-		while (gmt_strtok (szProj4, " \t", &pos, token)) {
-			pch = strchr(token, '='); pch[0] = '\0'; par = &token[1]; val = atof (pch+1);
-			if (!strcmp(par, "zone")) GMT->current.proj.pars[0] = val;
-			else if (!strcmp(par, "south")) GMT->current.proj.utm_hemisphere -= (int)val;
+	else if (!strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "cass")) {
+		if (!strcmp(prjcode, "tmerc")) strcat (opt_J, "T");
+		else if (!strcmp(prjcode, "mill")) strcat (opt_J, "J");
+		else strcat (opt_J, "C");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
 		}
 	}
+	else if (!strcmp(prjcode, "utm")) {
+		int zone = 100;
+		strcat (opt_J, "U");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "zone=")) != NULL) {	
+				zone = atoi(&token[5]);
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "south=")) != NULL) {	
+				zone *= -1;
+				wipe_substr(szProj4, token);
+			}
+		}
+		if (zone == 100) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj selected but no info about utm zone.\n");	
+			return (pStrOut);
+		}
+		else {
+			char t[4];
+			sprintf(t, "%d/", zone);
+			strcat(opt_J, t);
+		}
+	}
+
+	/* Conic projections */
+	else if (!strcmp(prjcode, "aea") || !strcmp(prjcode, "eqdc") || !strcmp(prjcode, "lcc") || !strcmp(prjcode, "poly")) {
+		if (!strcmp(prjcode, "aea")) strcat (opt_J, "B");
+		else if (!strcmp(prjcode, "eqdc")) strcat (opt_J, "D");
+		else if (!strcmp(prjcode, "lcc")) strcat (opt_J, "L");
+		else strcat (opt_J, "Poly");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_1=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_2=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+		}
+	}
+
+	/* Azimuthal projections */
+	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom")) {
+		if (!strcmp(prjcode, "stere")) strcat (opt_J, "S");
+		else if (!strcmp(prjcode, "laea")) strcat (opt_J, "A");
+		else if (!strcmp(prjcode, "aeqd")) strcat (opt_J, "E");
+		else strcat (opt_J, "F");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+		}
+	}
+
+	/* Misc projections */
+	else if (!strcmp(prjcode, "moll") || !strcmp(prjcode, "sinu") || !strcmp(prjcode, "vandg") ||
+	         !strcmp(prjcode, "robin") || !strcmp(prjcode, "wintri") || !strcmp(prjcode, "hammer") ||
+	         !strcmp(prjcode, "eck4") || !strcmp(prjcode, "eck6")) {
+		if (!strcmp(prjcode, "moll")) strcat (opt_J, "W");
+		else if (!strcmp(prjcode, "sinu"))   strcat (opt_J, "I");
+		else if (!strcmp(prjcode, "vandg"))  strcat (opt_J, "V");
+		else if (!strcmp(prjcode, "robin"))  strcat (opt_J, "N");
+		else if (!strcmp(prjcode, "wintri")) strcat (opt_J, "R");
+		else if (!strcmp(prjcode, "hammer")) strcat (opt_J, "H");
+		else if (!strcmp(prjcode, "eck4"))   strcat (opt_J, "Kf");
+		else strcat (opt_J, "Ks");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				wipe_substr(szProj4, token);
+			}
+		}
+	}
+
+	/* Work on common flags */
+	if ((pch = strstr(szProj4, "+a=")) != NULL) {	/* Check for major axis +a=xxxx */
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius = atof(&token[2]);
+		got_a = true;
+		wipe_substr(szProj4, token);	/* Set the token part in szProj4 to blanks */
+	}
+	if ((pch = strstr(szProj4, "+b=")) != NULL) {	/* Check for minor axis +b=xxxx */
+		double f;
+		if (!got_a) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: +b= in proj4 string without the companion +a\n");
+			return (pStrOut);
+		}
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		/* f =  1 - b / a; */
+		f =  1 - atof(&token[2]) / GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;
+		GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening = f;
+		wipe_substr(szProj4, token);
+	}
+	if ((pch = strstr(szProj4, "+k_0=")) != NULL) {		/* Check for scale factor */
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		GMT->current.setting.proj_scale_factor = atof (&token[4]);
+		wipe_substr(szProj4, token);
+	}
+	if ((pch = strstr(szProj4, "+k=")) != NULL) {		/* Check for scale factor */
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		GMT->current.setting.proj_scale_factor = atof (&token[2]);
+		wipe_substr(szProj4, token);
+	}
+
+	if ((pch = strstr(szProj4, "+ellps=")) != NULL) {	/* Check for ellipsoids */
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		plot_ellipsoid_name_convert2(&token[6], ename);
+		if (ename)
+			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			return (pStrOut);
+		}
+		wipe_substr(szProj4, token);
+	}
+
+	if ((pch = strstr(szProj4, "+datum=")) != NULL) {	/* Check for datum */
+		char t[128] = {""};
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+
+		if (!strcmp(&token[6], "WGS84"))
+			plot_ellipsoid_name_convert2("WGS84", ename);
+		else if (!strcmp(&token[6], "GGRS87")) {
+			plot_ellipsoid_name_convert2("GRS80", ename);
+			sprintf(t, " +towgs84=-199.87,74.79,246.62");
+		}
+		else if (!strcmp(&token[6], "NAD83"))
+			plot_ellipsoid_name_convert2("WGS84", ename);
+		else if (!strcmp(&token[6], "potsdam")) {
+			plot_ellipsoid_name_convert2("bessel", ename);
+			sprintf(t, " +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7");
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: this datum %s is not yet ported to GMT\n", &token[6]);
+			return (pStrOut);
+		}
+
+		if (ename)
+			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			return (pStrOut);
+		}
+		strcat(szProj4, t);			/* Append to the proj4 string so that the +towgs84 case below will handle this */
+		wipe_substr(szProj4, token);
+	}
+
+	if ((pch = strstr(szProj4, "+towgs84=")) != NULL) {
+		int n = 0;
+		char *txt, t[16] = {""};
+		struct GMT_DATUM *to = NULL, *from = NULL;
+
+		if (!ename) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
+			           "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin (miss +ellips=xxx)\n");
+			return (pStrOut);
+		}
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		txt = strdup (&token[8]);
+		pch = strchr(txt,',');
+		while (pch != NULL && n < 3) {		/* 3 because GMT does not the full Bursa-Wolf 7 params transform */
+			pch = strchr(pch+1,',');
+			n++;
+		}
+		pch[0] = '\0';
+		sprintf(t, "%s:%s", ename, txt);	/* Create a ellip:dx,dy,dz string */
+		pch[0] = ',';
+		if ((pch = strchr(pch+1,',')) != NULL)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT only process the Molodensky dx,dy,dz parames, remaining rotation params were ignored\n");
+
+		// Need to create and fill 2 GMT_DATUM structs (from & to). See gmt_set_datum() & gmt_datum_init()
+		gmt_set_datum (GMT, "-", to);		/* 'to' is WG84 */
+		gmt_set_datum (GMT, t, from);
+		gmt_datum_init(GMT, from, to, false);
+
+		free(txt);
+		wipe_substr(szProj4, token);
+	}
+
+	if ((pch = strstr(szProj4, "+x_0=")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		easting = strdup(&token[4]);
+		wipe_substr(szProj4, token);
+	}
+	if ((pch = strstr(szProj4, "+y_0=")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		northing = strdup(&token[4]);
+		wipe_substr(szProj4, token);
+	}
+	if (easting && northing)
+		sprintf(opt_C, " -C%s/%s", easting, northing);
+	else if (easting)
+		sprintf(opt_C, " -C%s/0", easting);
+	else if (northing)
+		sprintf(opt_C, " -C0/%s", northing);
+
+	if ((pch = strstr(szProj4, "+units=")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		if (token[6] != 'm') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: using units other than meters is not yet implemented\n");
+		}
+		wipe_substr(szProj4, token);
+	}
+
+	/* Remove known unused fields in proj4 string */ 
+	if ((pch = strstr(szProj4, "+no_defs")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		wipe_substr(szProj4, token);
+	}
+
+	strcat (opt_J, scale_c);
+	if (got_lonlat)				/* But this will all fail if x-scale & y-scale is given */
+		strcat (opt_J, "d");
+
+	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
+		opt_J[1] = tolower(opt_J[1]);
+
+	//if (opt_C) strncat(opt_J, opt_C, GMT_LEN256-1);
+
+	k = 0;
+	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+'))
+		k++;
+	if (k < strlen(szProj4))
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
 
 	pStrOut = strdup(opt_J);
 	return (pStrOut);
@@ -5540,7 +5928,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	return (pStrOut);
 }
 
-struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
