@@ -218,7 +218,7 @@ struct popen2 * gmt_popen2 (const char *cmdline) {
     F->child_pid = p;
     F->fd[1] = pipe_stdin[1];
     F->fd[0] = pipe_stdout[0];
-    return F; 
+    return F;
 }
 
 #ifndef _WIN32
@@ -233,7 +233,7 @@ void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 	if (F->n_closed == 2) {	/* Done so free object */
 		/* Done, kill child */
 #ifndef _WIN32
-    	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0)); 
+    	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0));
     	printf("waitpid() -> %d\n", waitpid(F->child_pid, NULL, 0));
     	printf("kill(%d, 0) -> %d\n", F->child_pid, kill(F->child_pid, 0));
 #endif
@@ -864,7 +864,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
-	int       fh, r, c_begin = 0;
+	int       fh, r, c_begin = 0, ios;
 	size_t    n;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
@@ -915,7 +915,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
- 	write (H->fd[1], PS->data, PS->n_bytes);
+ 	ios = write (H->fd[1], PS->data, PS->n_bytes);
 	/* Now closed for writing */
     gmt_pclose2 (&H, 1);
 	fh = H->fd[0];	/* File handle for reading */
@@ -1010,7 +1010,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
+	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h, ios;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
@@ -1063,7 +1063,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			return GMT_RUNTIME_ERROR;
 		}
 	}
-	
+
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_POSTSCRIPT);
 	PS->data = PSL_getplot (API->GMT->PSL);		/* Get pointer to the plot buffer */
 	PS->n_bytes = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
@@ -1088,7 +1088,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
 	}
 	else {	/* On non-Windows and want a raster back */
- 		write (H->fd[1], PS->data, PS->n_bytes);
+ 		ios = write (H->fd[1], PS->data, PS->n_bytes);
 		/* Now closed for writing */
     	gmt_pclose2 (&H, 1);
 		fh = H->fd[0];	/* File handle for reading */
@@ -1141,11 +1141,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		}
 	}
 	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
-		read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		ios = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
 	else {
 		for (row = 0; row < nRows; row++) {
-			read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			ios = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -2178,7 +2178,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Set_Default (API, "API_IMAGE_LAYOUT", GMT->current.gdal_read_in.O.mem_layout);
 			else
 				GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TCBa");
-	
+
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}

@@ -10888,6 +10888,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 	/* Gets the current subplot panel, returns 1 if found and 0 otherwise */
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
+	int ios;
 	sprintf (file, "%s/gmt.panel", API->gwf_dir);
 	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
 		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
@@ -10900,7 +10901,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	fscanf (fp, "%d %d %d", row, col, first);
+	ios = fscanf (fp, "%d %d %d", row, col, first);
 	fclose (fp);
 	if (*row == 0 || *col == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");
@@ -10938,11 +10939,11 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 	int n;
 	struct GMT_SUBPLOT *P = NULL;
 	FILE *fp = NULL;
-	
+
 	API->error = GMT_RUNTIME_ERROR;
 	if (get_current_panel (API, &row, &col, &first))	/* No panel or there was an error */
 		return NULL;
-		
+
 	/* Now read subplot information file */
 	sprintf (file, "%s/gmt.subplot", API->gwf_dir);
 	if (access (file, F_OK))	{	/* Subplot information file not available */
@@ -10955,7 +10956,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 		return NULL;
 	}
 	P = gmt_M_memory (API->GMT, NULL, 1, struct GMT_SUBPLOT);
-	
+
 	/* Now read it */
 	while (!found && fgets (line, PATH_MAX, fp)) {
 		if (line[0] == '#' || line[0] == '\n')	/* Comment line or blank */
@@ -11304,14 +11305,14 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
-	 * 	1 : Found a region-modifying modifier +r or +R 
+	 * 	1 : Found a region-modifying modifier +r or +R
 	 *  2 : Found a list-request +l or +L.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
 	unsigned int pos, n_errors = 0, answer = 0;
 	struct GMT_OPTION *E = options;
-	
+
 	while ((E = GMT_Find_Option (GMT->parent, 'E', E))) {	/* For all -E options */
 		c = NULL;
 		if ((c = strchr (E->arg, '+')))
@@ -11449,7 +11450,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
-	
+
 	if (gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
@@ -11624,7 +11625,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			}
-			
+
 			/* Set -X -Y for absolute positioning */
 			sprintf (arg, "a%gi", P->x);
 			if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -11776,7 +11777,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 	gmt_M_free (GMT, Ccopy->current.proj.panel);
-	
+
 
 	/* Try this to fix valgrind leaks */
 
@@ -13887,7 +13888,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	bool not_PS;
 	int error, k, f, nf, n_figs;
 	unsigned int pos = 0;
-	
+
  	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
@@ -13896,9 +13897,9 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
-	
+
 	if (n_figs) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process GMT figure queue: %d figures found\n", n_figs);
-	
+
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
@@ -13945,7 +13946,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		}
 	}
 	gmt_M_free (API->GMT, fig);
-		
+
 	return GMT_NOERROR;
 }
 
@@ -13978,7 +13979,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 			return GMT_ARG_IS_NULL;
 		}
 		/* Separate prefix, format, and convert arguments.  We know n >= 1 here */
-		
+
 		n = sscanf (arg, "%s %s %s", prefix, formats, options);
 		if (n == 1) /* Must set the default pdf format */
 			strncpy (formats, gmt_session_format[GMT_SESSION_FORMAT], GMT_LEN64-1);
@@ -14010,7 +14011,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
 	int err = 0, error = GMT_NOERROR, k1, k2;
 	struct stat S;
-	
+
 	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
@@ -14105,7 +14106,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	 */
 	unsigned int code = 0;
 	char *a = NULL, *c = NULL, *e = NULL, *p = NULL, *q = NULL, *s = NULL;
-	
+
 	pos[0] = pos[1] = 0;	/* Initialize */
 	if (file == NULL) return 0;	/* Nada */
 	a = strchr  (file, '&');	/* Address of the first ? or NULL */
@@ -14122,9 +14123,9 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 		code |= GMT_IS_URL;
 	else if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
 		code |= GMT_IS_DATA;
-	
+
 	/* Now try to detect subtleries like netcdf slices and grid attributes */
-	
+
 	if ((c = strstr (file, "=gd"))) {
 		code |= GMT_IS_GDAL_ATTR;	/* Only GDAL references would have these characters */
 		pos[1] = (unsigned int) (c - file);
