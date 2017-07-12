@@ -864,7 +864,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
-	int       fh, r, c_begin = 0, ios;
+	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
