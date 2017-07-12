@@ -1331,8 +1331,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
+	if (Ctrl->F.active && Ctrl->L.active) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and -L are mutually exclusive. Ignoring option -F.\n");
 		Ctrl->F.active = false;
 	}
 
@@ -2070,12 +2070,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			else {	/* Output is the final result */
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert to %s...\n", tag);
 
-				if (!Ctrl->F.active || return_image) {
-					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (!Ctrl->F.active || return_image)
 					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
-				}
 				else
-					strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
+					strcat (out_file, Ctrl->F.file);
 			}
 			strcat (out_file, ext[Ctrl->T.device]);
 
@@ -2129,12 +2128,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				Ctrl->T.device = dest_device;	/* Reset output device type */
 				strcpy (pdf_file, out_file);	/* Now the PDF is the infile */
 				*out_file = '\0'; /* truncate string to build new output file */
-				if (!Ctrl->F.active || return_image) {
-					if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (!Ctrl->F.active || return_image)
 					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
-				}
 				else
-					strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
+					strcat (out_file, Ctrl->F.file);
 				strcat (out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
 				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -r%d -sOutputFile=%c%s%c %c%s%c",

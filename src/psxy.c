@@ -943,12 +943,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
-	if (Ctrl->T.active) {
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	if (Ctrl->T.active) {	/* Honor canvas fill and box draw */
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
-	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */

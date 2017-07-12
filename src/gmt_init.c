@@ -10962,7 +10962,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 		if (line[0] == '#' || line[0] == '\n')	/* Comment line or blank */
 			continue;
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s]\n", file, line);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding row/col from subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 			fclose (fp);
 			gmt_M_free (API->GMT, P);
 			return NULL;
@@ -10975,7 +10975,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 		}
 		if (P->row == row && P->col == col) {	/* Found it */
 			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %s %s %s %s", &P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], P->refpoint, P->justify, P->fill, P->pen)) != 11) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s]\n", file, line);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
 				gmt_M_free (API->GMT, P);
 				return NULL;

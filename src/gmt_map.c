@@ -2155,7 +2155,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P)	{	/* Must rescale to fit subplot panel dimensions and set dy  for centering */
+	if (P)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
 		double fw, fh, fx, fy, w, h;
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 		fw = w / P->w;	fh = h / P->h;
@@ -2178,9 +2178,11 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 		GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
-		GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
-		strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations must be parallel to axes */
-		GMT->current.setting.map_annot_oblique |= 32;		/* Plot latitude parallel to frame for geo maps */
+		//GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Reset to plain frame for panel maps */
+		if (gmt_M_is_rect_graticule (GMT)) {
+			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations must be parallel to axes */
+			GMT->current.setting.map_annot_oblique |= 32;		/* Plot latitude parallel to frame for geo maps */
+		}
 	}
 }
 

@@ -68,6 +68,7 @@ struct GRDCONTOUR_CTRL {
 	} G;
 	struct GRDCONTOUR_L {	/* -L<Low/high> */
 		bool active;
+		int mode;	/* -2: Negative contours, -1 also do 0, +1 : Positive contours with 0, +2: only positive, 0: given range */
 		double low, high;
 	} L;
 	struct GRDCONTOUR_Q {	/* -Q[<cut>][+z] */
@@ -210,7 +211,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose from:\n");
 	gmt_cont_syntax (API->GMT, 3, 0);
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside this range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside specified range.  Alternatively, give -Ln or -Lp to just draw\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   negative or positive contours, respectively. Upper case N or P includes zero contour.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to skip tracing the zero-contour.\n");
@@ -402,7 +404,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'L':	/* Limits on range */
 				Ctrl->L.active = true;
-				sscanf (opt->arg, "%lf/%lf", &Ctrl->L.low, &Ctrl->L.high);
+				switch (opt->arg[0]) {
+					case 'n': Ctrl->L.mode = -2; break;
+					case 'N': Ctrl->L.mode = -1; break;
+					case 'P': Ctrl->L.mode = +1; break;
+					case 'p': Ctrl->L.mode = +2; break;
+					default:
+						sscanf (opt->arg, "%lf/%lf", &Ctrl->L.low, &Ctrl->L.high);
+						break;
+				}
 				break;
 			case 'Q':	/* Skip small closed contours */
 				if ((c = strstr (opt->arg, "+z"))) {
@@ -980,7 +990,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-
 	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
 	if (Ctrl->A.interval == 0.0) Ctrl->A.interval = Ctrl->C.interval;
 
@@ -1154,10 +1163,19 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	gmt_M_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
 	gmt_M_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
 
+	if (Ctrl->L.mode) {	/* Set negative or positive range only */
+		switch (Ctrl->L.mode) {
+			case -2: Ctrl->L.low = G->header->z_min-small; Ctrl->L.high = -small; break;
+			case -1: Ctrl->L.low = G->header->z_min-small; Ctrl->L.high = +small; break;
+			case +1: Ctrl->L.low = +small; Ctrl->L.high = G->header->z_max+small; break;
+			case +2: Ctrl->L.low = -small; Ctrl->L.high = G->header->z_max+small; break;
+		}
+	}
+
 	gmt_grd_minmax (GMT, G, xyz);
 	if (gmt_contlabel_prep (GMT, &Ctrl->contour, xyz)) {	/* Prep for crossing lines, if any */
 		gmt_M_free (GMT, contour);		gmt_M_free (GMT, cont_type);
-		gmt_M_free (GMT, cont_angle);		gmt_M_free (GMT, cont_do_tick);
+		gmt_M_free (GMT, cont_angle);	gmt_M_free (GMT, cont_do_tick);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

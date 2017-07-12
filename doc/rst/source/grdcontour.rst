@@ -19,7 +19,8 @@ Synopsis
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] [ |-L|\ *low/high* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
 [ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
@@ -146,9 +147,11 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *low/high*
+**-L**\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p**
     Limit range: Do not draw contours for data values below *low* or
-    above *high*.
+    above *high*.  Alternatively, limit contours to negative (**n**)
+    or positive (**p**) contours.  Use upper case **N** or **P** to
+    include the zero contour.
 
 .. _-O:
 
