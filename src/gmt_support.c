@@ -1093,7 +1093,7 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	if (n == 0) return (false);
 
 	if (!strncmp (word, "dashed", 6U) || !strncmp (word, "dotted", 6U) || !strncmp (word, "solid", 5U) \
-			|| !strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 57) return (true);
+			|| !strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 57)) return (true);
 
 	n--;
 	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
