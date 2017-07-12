@@ -2318,12 +2318,11 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 		if (!process) continue;		/* Not inside the good stuff yet */
 		if (sscanf (line, "%s %[^\n]", option, value) != 2) continue;	/* Quietly skip malformed lines */
 		if (!value[0]) continue;	/* No argument found */
-		if (option[0] == 'C') {	/* Read clip level */
-			GMT->current.ps.clip_level = atoi (value);
-			continue;
-		}
-		else if (option[0] == 'L') {	/* Read PS layer */
-			GMT->current.ps.layer = atoi (value);
+		if (option[0] == '@') {	/* PostScript information */
+			if (option[1] == 'C')	/* Read clip level */
+				GMT->current.ps.clip_level = atoi (value);
+			else if (option[1] == 'L')	/* Read PS layer */
+				GMT->current.ps.layer = atoi (value);
 			continue;
 		}
 		if ((id = gmt_hash_lookup (GMT, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
@@ -2391,8 +2390,8 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 		if (!GMT->init.history[id]) continue;	/* Not specified */
 		fprintf (fp, "%s\t%s\n", GMT_unique_option[id], GMT->init.history[id]);
 	}
-	if (GMT->current.ps.clip_level) fprintf (fp, "C\t%d\n", GMT->current.ps.clip_level); /* Write clip level */
-	if (GMT->current.ps.layer) fprintf (fp, "L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
+	if (GMT->current.ps.clip_level) fprintf (fp, "@C\t%d\n", GMT->current.ps.clip_level); /* Write clip level */
+	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
 	fprintf (fp, "END\n");
 
 	/* Close the file */
