@@ -5439,7 +5439,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	unsigned int k = 0, pos = 0;
 	bool got_a = false, got_lonlat = false;
 	char *pStrOut = NULL;
-	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, opt_T[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
+	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *prjcode, *pch = NULL;
 	char *easting = NULL, *northing = NULL;
 
@@ -5656,7 +5656,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		plot_ellipsoid_name_convert2(&token[6], ename);
 		if (ename[0] != '\0')
-			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
+			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
@@ -5686,7 +5686,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 
 		if (ename[0] != '\0')
-			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
+			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
@@ -5700,7 +5700,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		char *txt, t[16] = {""};
 		struct GMT_DATUM *to = NULL, *from = NULL;
 
-		if (!ename[0] != '\0') {
+		if (ename[0] == '\0') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
 			           "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin (miss +ellips=xxx)\n");
 			return (pStrOut);
