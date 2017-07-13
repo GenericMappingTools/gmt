@@ -11676,8 +11676,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
 				p->v.status |= PSL_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated GMT3/4 syntax; see -S%c for GMT5 syntax.\n", text[0]);
 				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
