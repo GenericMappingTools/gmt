@@ -7854,12 +7854,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			strncpy (GMT->current.setting.format_geo_map, value, GMT_LEN64-1);
 			gmtlib_plot_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of gmt_begin */
 			break;
+		case GMTCASE_FORMAT_TIME_MAP:
+			error = gmtlib_setparameter (GMT, "FORMAT_TIME_PRIMARY_MAP", value, core) +
+			        gmtlib_setparameter (GMT, "FORMAT_TIME_SECONDARY_MAP", value, core);
+			break;
 		case GMTCASE_TIME_FORMAT_PRIMARY:
 			GMT_COMPAT_TRANSLATE ("FORMAT_TIME_PRIMARY_MAP");
 			break;
-		case GMTCASE_FORMAT_TIME_MAP:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			strncpy (GMT->current.setting.format_time[GMT_SECONDARY], value, GMT_LEN64-1);	/* Sets secondary */
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
 			strncpy (GMT->current.setting.format_time[GMT_PRIMARY], value, GMT_LEN64-1);
 			break;
@@ -7896,12 +7897,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
 			/* if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true; */
 			break;
+		case GMTCASE_FONT_ANNOT:
+			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core);
+			break;
 		case GMTCASE_ANNOT_FONT_PRIMARY:
 			GMT_COMPAT_TRANSLATE ("FONT_ANNOT_PRIMARY");
 			break;
-		case GMTCASE_FONT_ANNOT:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
@@ -7979,7 +7981,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* FONT GROUP ... obsolete options */
 
 		case GMTCASE_ANNOT_FONT_SIZE_PRIMARY:
-			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: Warn then fall through to other case */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_PRIMARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
@@ -7992,7 +7994,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_ANNOT_FONT_SIZE_SECONDARY:
-			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: Warn then fall through to other case */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_SECONDARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
@@ -8005,7 +8007,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_HEADER_FONT_SIZE:
-			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: Warn then fall through to other case */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_TITLE");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
@@ -8018,7 +8020,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_LABEL_FONT_SIZE:
-			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: Warn then fall through to other case */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_LABEL");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
@@ -8037,8 +8039,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_OFFSET_PRIMARY");
 			break;
 		case GMTCASE_MAP_ANNOT_OFFSET:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			GMT->current.setting.map_annot_offset[GMT_SECONDARY] = gmt_M_to_inch (GMT, value);
+			error = gmtlib_setparameter (GMT, "MAP_ANNOT_OFFSET_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "MAP_ANNOT_OFFSET_SECONDARY", value, core);
+			break;
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
 			GMT->current.setting.map_annot_offset[GMT_PRIMARY] = gmt_M_to_inch (GMT, value);
 			break;
@@ -8078,7 +8081,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_annot_min_spacing = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
-			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: Warn then fall through to other case */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("MAP_ANNOT_ORTHO");
 				if (!strcmp (lower_value, "ver_text"))
 					strncpy (GMT->current.setting.map_annot_ortho, "", 5U);
@@ -8194,14 +8197,15 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_MAP_GRID_PEN:
+			error = gmtlib_setparameter (GMT, "MAP_GRID_PEN_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "MAP_GRID_PEN_SECONDARY", value, core);
+			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_PEN_PRIMARY");
 			break;
-		case GMTCASE_MAP_GRID_PEN:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
-			error += gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_PEN_SECONDARY");
@@ -8302,10 +8306,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
-			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = gmt_M_to_inch (GMT, txt_a);
-			GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = (i > 1) ? gmt_M_to_inch (GMT, txt_b) : 0.25 * GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER];
+			error = gmtlib_setparameter (GMT, "MAP_TICK_LENGTH_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "MAP_TICK_LENGTH_SECONDARY", value, core);
+			break;
 		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
 			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
 			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = gmt_M_to_inch (GMT, txt_a);
@@ -8320,10 +8323,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_TICK_PEN");
 			break;
 		case GMTCASE_MAP_TICK_PEN:
-			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
+			error = gmtlib_setparameter (GMT, "MAP_TICK_PEN_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "MAP_TICK_PEN_SECONDARY", value, core);
+			break;
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
-			error += gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
@@ -9121,7 +9125,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.time_interval_fraction = atof (value);
 			break;
 		case GMTCASE_GMT_LANGUAGE:
-			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
+			GMT_COMPAT_TRANSLATE ("TIME_LANGUAGE");
+			break;
 		case GMTCASE_TIME_LANGUAGE:
 			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
 			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
@@ -9149,6 +9154,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_TIME_SYSTEM:
 			error = gmt_get_time_system (GMT, lower_value, &GMT->current.setting.time_system);
 			(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+			GMT_KEYWORD_UPDATE (GMTCASE_TIME_UNIT);
+			GMT_KEYWORD_UPDATE (GMTCASE_TIME_EPOCH);
 			break;
 		case GMTCASE_TIME_WEEK_START:
 			ival = gmtinit_key_lookup (value, GMT_weekdays, 7);
