@@ -5016,6 +5016,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.history = (k_history_read | k_history_write);
 	/* GMT_INTERPOLANT */
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
+	/* GMT_LANGUAGE */
+	strcpy (GMT->current.setting.language, "us");
 	/* GMT_TRIANGULATE */
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
 	/* GMT_VERBOSE (compat) */
@@ -5044,9 +5046,6 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.time_is_interval = false;
 	/* TIME_INTERVAL_FRACTION */
 	GMT->current.setting.time_interval_fraction = 0.5;
-	/* GMT_LANGUAGE */
-	/* TIME_LANGUAGE --- SOME CONFUSION HERE. NO TIME_LANGUAGE IN gmt.conf */
-	strcpy (GMT->current.setting.language, "us");
 	gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
 	/* TIME_REPORT */
 	GMT->current.setting.timer_mode = GMT_NO_TIMER;
@@ -9052,12 +9051,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_TIME_INTERVAL_FRACTION:
 			GMT->current.setting.time_interval_fraction = atof (value);
 			break;
-		case GMTCASE_GMT_LANGUAGE:
-			GMT_COMPAT_TRANSLATE ("TIME_LANGUAGE");
-			break;
 		case GMTCASE_TIME_LANGUAGE:
-			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
-			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
+			GMT_COMPAT_TRANSLATE ("GMT_LANGUAGE");
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
 			GMT_COMPAT_TRANSLATE ("TIME_LEAP_SECONDS");
@@ -10054,6 +10049,10 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "none");
 			else
 				strcpy (value, "undefined");
+			break;
+		case GMTCASE_GMT_LANGUAGE:
+			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
+			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)
