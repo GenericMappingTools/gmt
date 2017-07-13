@@ -112,11 +112,14 @@
 #define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Warning: Option -%c given more than once\n", option))
 
 #define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "doc/" GMT_PACKAGE_VERSION "/GMT_Docs.html#new-features-in-gmt-5 for more information.\n"
-
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
 #define GMT_COMPAT_TRANSLATE(new_P) error = (gmt_M_compat_check (GMT, 4) ? GMT_COMPAT_CHANGE (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
+
+/* Leave a record that this keyword is no longer a default one
+   So far, only gmtset calls this function with core = true, but this is a too fragile solution */
+#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
@@ -7981,6 +7984,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
 					GMT->current.setting.font_annot[GMT_PRIMARY].size = dval;
+					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_PRIMARY);
 				else
 					error = true;
 			}
@@ -7993,6 +7997,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
 					GMT->current.setting.font_annot[GMT_SECONDARY].size = dval;
+					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_SECONDARY);
 				else
 					error = true;
 			}
@@ -8005,6 +8010,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
 					GMT->current.setting.font_title.size = dval;
+					GMT_KEYWORD_UPDATE (GMTCASE_FONT_TITLE);
 				else
 					error = true;
 			}
@@ -8017,6 +8023,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
 					GMT->current.setting.font_label.size = dval;
+					GMT_KEYWORD_UPDATE (GMTCASE_FONT_LABEL);
 				else
 					error = true;
 			}
@@ -8075,8 +8082,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT_COMPAT_CHANGE ("MAP_ANNOT_ORTHO");
 				if (!strcmp (lower_value, "ver_text"))
 					strncpy (GMT->current.setting.map_annot_ortho, "", 5U);
+					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
 				else if (!strcmp (lower_value, "hor_text"))
 					strncpy (GMT->current.setting.map_annot_ortho, "we", 5U);
+					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
 				else
 					error = true;
 			}
@@ -8286,6 +8295,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 0.50 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 				GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 3.00 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 				GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = 0.75 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+				GMT_KEYWORD_UPDATE (GMTCASE_MAP_TICK_LENGTH_PRIMARY);
+				GMT_KEYWORD_UPDATE (GMTCASE_MAP_TICK_LENGTH_SECONDARY);
 			}
 			else	/* Not recognized so give error message */
 				error = gmtinit_badvalreport (GMT, keyword);
@@ -9023,6 +9034,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				ival = atoi (value) + 2;
 				if (ival >= GMT_MSG_QUIET && ival <= GMT_MSG_DEBUG)
 					GMT->current.setting.verbose = ival;
+					GMT_KEYWORD_UPDATE (GMTCASE_GMT_VERBOSE);
 				else
 					error = true;
 			}
@@ -9189,8 +9201,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		if (error)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
-		else if (core)		/* So far, only gmtset calls this function with core = true, but this is a too fragile solution */
-			GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
+		else
+			GMT_KEYWORD_UPDATE (case_val);
 	}
 	return ((error) ? 1 : 0);
 }
