@@ -5617,6 +5617,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 	}
 
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Sorry, this projection '%s' is not supported in GMT\n", prjcode);
+		return (pStrOut);
+	}
+
 	/* Work on common flags */
 	if ((pch = strstr(szProj4, "+a=")) != NULL) {	/* Check for major axis +a=xxxx */
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
