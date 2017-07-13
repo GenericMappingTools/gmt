@@ -13023,7 +13023,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT->common.J.zactive = true;
 			}
 #ifdef PRJ4
-			else if (item && (item[0] == '"' || item[0] == '+')) {
+			else if (item && (item[0] == '"' || item[0] == '+' || isdigit(item[0]))) {
 				char *item2 = gmt_importproj4 (GMT, item);
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
 				                                 gmtinit_parse_J_option (GMT, item2));

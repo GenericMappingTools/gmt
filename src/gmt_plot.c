@@ -5445,18 +5445,18 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
 
-	if ((pch = strchr(szProj4, '/')) != NULL) {
+	if ((pch = strchr(szProj4, '/')) != NULL) {		/* Get the scale factor and chop it out of proj string */
 		strncpy(scale_c, &pch[1], GMT_LEN32-1);
 		pch[0] = '\0';
 	}
 	else
 		sprintf(scale_c, "14c");		// TEMP, should error instead
 
-	if (isdigit(szProj4[1])) {		/* A EPSG code */
+	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
 		bool found = false;
 		FILE *fp = NULL;
 		char buffer [GMT_LEN256] = {""};
-		int EPSGID = atoi(pStr);
+		int EPSGID = atoi(szProj4);
 
 		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
 		if ((fp = fopen (buffer, "r")) == NULL) {
