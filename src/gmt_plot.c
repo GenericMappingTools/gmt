@@ -5655,7 +5655,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if ((pch = strstr(szProj4, "+ellps=")) != NULL) {	/* Check for ellipsoids */
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		plot_ellipsoid_name_convert2(&token[6], ename);
-		if (ename)
+		if (ename[0] != '\0')
 			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
@@ -5685,7 +5685,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			return (pStrOut);
 		}
 
-		if (ename)
+		if (ename[0] != '\0')
 			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, ename);
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
@@ -5700,7 +5700,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		char *txt, t[16] = {""};
 		struct GMT_DATUM *to = NULL, *from = NULL;
 
-		if (!ename) {
+		if (!ename[0] != '\0') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
 			           "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin (miss +ellips=xxx)\n");
 			return (pStrOut);
