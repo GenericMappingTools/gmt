@@ -9186,9 +9186,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_Y_AXIS_LENGTH:
 			/* Setting ignored: x- and/or y scale are required inputs on -J option */
 		case GMTCASE_COLOR_IMAGE:
-			GMT_COMPAT_WARN;
-			/* Setting ignored, now always adobe image */
-			if (!gmt_M_compat_check (GMT, 4))	error = gmtinit_badvalreport (GMT, keyword);
+			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
+				GMT_COMPAT_WARN;
+			else	/* Not recognized so give error message */
+				error = gmtinit_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_DIR_TMP:
 		case GMTCASE_DIR_USER:
