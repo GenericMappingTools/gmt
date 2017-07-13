@@ -10134,8 +10134,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else
 				strcpy (value, "undefined");
 			break;
+		case GMTCASE_TIME_LANGUAGE:
 		case GMTCASE_GMT_LANGUAGE:
-			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
+			strncpy (value, GMT->current.setting.language, GMT_LEN64-1);
 			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
@@ -10194,10 +10195,6 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_TIME_INTERVAL_FRACTION:
 			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.time_interval_fraction);
-			break;
-		case GMTCASE_GMT_LANGUAGE:
-		case GMTCASE_TIME_LANGUAGE:
-			strncpy (value, GMT->current.setting.language, GMT_LEN64-1);
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
