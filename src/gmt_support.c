@@ -14258,6 +14258,8 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y) {
 	/* Takes the refpoint value and converts to panel position in inches. */
 	int i, j;
+	double w = P->w + P->gap[XLO] + P->gap[XHI];
+	double h = P->h + P->gap[YLO] + P->gap[YHI];
 	gmt_M_unused (GMT);
 
 	i = refpoint % 4;	/* Split the 2-D justify code into x just 1-3 */
@@ -14265,16 +14267,16 @@ void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT
 	if (i == 1)
 		*x = 0.0;
 	else if (i == 2)
-		*x = 0.5 * P->w;
+		*x = 0.5 * w;
 	else
-		*x = P->w;
+		*x = w;
 
 	if (j == 0)
 		*y = 0.0;
 	else if (j == 1)
-		*y = 0.5 * P->h;
+		*y = 0.5 * h;
 	else
-		*y = P->h;
+		*y = h;
 }
 
 /*! . */

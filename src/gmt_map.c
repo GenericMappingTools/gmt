@@ -2143,6 +2143,16 @@ GMT_LOCAL void map_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, doub
 }
 
 /*! . */
+GMT_LOCAL void adjust_panel_for_gaps (struct GMT_CTRL *GMT, struct GMT_SUBPLOT *P) {
+	/* Checks the caps array and makes adjustment to w/h and adjusts the x/y origin */
+	gmt_M_unused (GMT);
+
+	/* Shrink the availble panel dimensions based on the gaps */
+	P->w -= (P->gap[XLO] + P->gap[XHI]);
+	P->h -= (P->gap[YLO] + P->gap[YHI]);
+}
+
+/*! . */
 GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax) {
 	/* Set x/y parameters */
 	struct GMT_SUBPLOT *P = GMT->current.proj.panel;	/* NULL unless a panel in a subplot */
@@ -2155,9 +2165,10 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
+	if (P && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
 		double fw, fh, fx, fy, w, h;
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
+		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */
 		fw = w / P->w;	fh = h / P->h;
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */

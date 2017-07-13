@@ -47,7 +47,7 @@ EXTERN_MSC int gmt_get_V (char arg);
 EXTERN_MSC char gmt_set_V (int mode);
 EXTERN_MSC void gmtinit_conf_US (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtinit_conf (struct GMT_CTRL *GMT);
-EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, double gap[] ,unsigned int first);
+EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, double gap[], char *label, unsigned int first);
 EXTERN_MSC int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *arg);
 EXTERN_MSC int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format);

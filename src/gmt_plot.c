@@ -6030,8 +6030,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	if ((P = GMT->current.proj.panel)) {	/* Subplot panel mode is in effect */
 		/* Consider offsets required to center the plot on the subplot panel [0/0] */
-		GMT->current.setting.map_origin[GMT_X] += P->dx;
-		GMT->current.setting.map_origin[GMT_Y] += P->dy;
+		GMT->current.setting.map_origin[GMT_X] += (P->dx + P->gap[XLO]);
+		GMT->current.setting.map_origin[GMT_Y] += (P->dy + P->gap[YLO]);
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
 	}
@@ -6124,8 +6124,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
-			plot_x -= P->dx;
-			plot_y -= P->dy;
+			plot_x -= (P->dx);
+			plot_y -= (P->dy);
 			PSL_command (PSL, "/PSL_completion {\nV\n");
 			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_comment (PSL, "Will not execute until end of panel\n");
@@ -6162,7 +6162,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, "/PSL_exec_completion 1 def\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, P->gap, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
 			return NULL;	/* Should never happen */
 	}
 	return (PSL);

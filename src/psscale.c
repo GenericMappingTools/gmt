@@ -1217,6 +1217,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				((ndec > 0) ? GMT_PER_WIDTH : 0.0))
 				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
+		if (GMT->current.setting.map_annot_ortho[0] == '\0')	/* Turn off extra offsets */
+			off = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Annotations are orthogonal */
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + off;
 		label_off = annot_off + GMT->current.setting.map_label_offset;
@@ -1542,6 +1544,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			else
 				sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+			GMT_Report (API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);
 		}
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
@@ -1549,11 +1552,14 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
+		if (GMT->current.proj.panel) GMT->current.proj.panel->candy = 1;	/* Do not rescale dimensions */
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
 			Return (GMT_PROJECTION_ERROR);
+		if (GMT->current.proj.panel) GMT->current.proj.panel->candy = 0;	/* Reset candy flag */
 		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
 			char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
 			unsigned int pos = 0;
+			GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
 			group_sep[0] = GMT_ASCII_GS;
 			GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
 			for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {

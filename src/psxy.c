@@ -986,7 +986,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT_IS_FLOAT;	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
-		if ((S.v.status & PSL_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
+		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
 		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;

@@ -21,7 +21,8 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt subplot determines dimensions and offsets for a multi-panel figure.
- *	gmt subplot begin -N<nrows>/<ncols> [-A<labels>] [-F<WxH>] [-L<layout>] [-M[m|p]<margins>] [-T<title>] [-V]
+ *	gmt subplot begin -N<nrows>/<ncols> [-A<labels>] [-F[<WxH>][+g<fill>][+p<pen>][+d]] [-L<layout>] [-M[m|p]<margins>] [-T<title>] [-V]
+ *	gmt subplot [set] <row>,<col> [-A<fixlabel>] [-G<side><gap>[u]] [-V]
  *	gmt subplot end [-V]
  */
 
@@ -116,6 +117,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
 	strncpy (C->A.placement, "TL", 2);
 	strncpy (C->A.justify,   "TL", 2);
+	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.2 * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
 	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
 	C->F.dim[GMT_X] = GMT->current.setting.ps_page_size[GMT_X] / PSL_POINTS_PER_INCH;
@@ -136,22 +138,22 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<labelinfo>] [-F[<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-F[<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<side><gap>[u]] [-L<layout>] [-M[m[|p]]<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-G<side><gap>[u]] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-G<side><gap>[u]] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<nrows>x<ncols> is the number of rows and columns of panels in this figure.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify tagging of each panel.  Append either a number or letter [a].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each panel.  Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left panel and others follow sequentially.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Panels are numbered across rows.  Append +c to number down columns instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the tag should be plotted in the panel [TL].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +j sets justification = <refpoint> while +J selects the mirror opposite.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [20%% of font size].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the textbox with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
@@ -215,8 +217,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	}
 	else if (!strncmp (opt->arg, "end", 3U))
 		Ctrl->In.mode = SUBPLOT_END;
-	else if (strchr (opt->arg, ',') && sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) == 2 && Ctrl->In.row > 0 && Ctrl->In.col > 0) {
+	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set */
+		opt = opt->next;
+		if (sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 2 || Ctrl->In.row <= 0 || Ctrl->In.col <= 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error set: Unable to parse row,col: %s\n", opt->arg);
+			return GMT_PARSE_ERROR;
+		}
 		Ctrl->In.mode = SUBPLOT_SET;
+	}
+	else if (strchr (opt->arg, ',')) {	/* Implicitly called set */
+		if (sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 2 || Ctrl->In.row <= 0 || Ctrl->In.col <= 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Not a subplot command: %s\n", opt->arg);
+			return GMT_PARSE_ERROR;
+		}
+		Ctrl->In.mode = SUBPLOT_SET;	/* Implicit set command */
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Not a subplot command: %s\n", opt->arg);
@@ -236,55 +250,60 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 
 			case 'A':	/* Enable panel tags and get attributes */
 				Ctrl->A.active = true;
-				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
-				for (k = 0; k < strlen (opt->arg); k++) {	/* Decode the tag format */
-					if (isdigit (opt->arg[k])) {	/* Want number labeling */
-						Ctrl->A.nstart = atoi (&opt->arg[k]);	/* Starting number */
-						Ctrl->A.mode = SUBPLOT_LABEL_IS_NUMBER;
-						strcat (Ctrl->A.format, "%d");
+				if (Ctrl->In.mode == SUBPLOT_SET) {	/* Override the auto-annotation for this panel */
+					strncpy (Ctrl->A.format, opt->arg, GMT_LEN16);
+				}
+				else {	/* The full enchilada for begin */
+					if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
+					for (k = 0; k < strlen (opt->arg); k++) {	/* Decode the tag format */
+						if (isdigit (opt->arg[k])) {	/* Want number labeling */
+							Ctrl->A.nstart = atoi (&opt->arg[k]);	/* Starting number */
+							Ctrl->A.mode = SUBPLOT_LABEL_IS_NUMBER;
+							strcat (Ctrl->A.format, "%d");
+						}
+						else if (isalpha (opt->arg[k])) {	/* Want letter labeling */
+							Ctrl->A.cstart = opt->arg[k];
+							Ctrl->A.mode = SUBPLOT_LABEL_IS_LETTER;
+							strcat (Ctrl->A.format, "%c");
+						}
+						else {	/* Just part of the format string */
+							add[0] = opt->arg[k];
+							strcat (Ctrl->A.format, add);
+						}
 					}
-					else if (isalpha (opt->arg[k])) {	/* Want letter labeling */
-						Ctrl->A.cstart = opt->arg[k];
+					if (c) {	/* Gave modifiers so we must parse those now */
+						c[0] = '+';	/* Restore modifiers */
+						/* modifiers are [+c][+g<fill>][+j|J<justify>][+p<pen>][+r|R] */
+						if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement (?) */
+							gmt_just_validate (GMT, Ctrl->A.placement, "TL");
+							strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
+						}
+						else if (gmt_get_modifier (opt->arg, 'J', Ctrl->A.placement)) {	/* Outside placement (?) */
+							int pos = gmt_just_decode (GMT, Ctrl->A.placement, PSL_NO_DEF);
+							pos = gmt_flip_justify (GMT, pos);
+							gmt_just_to_code (GMT, pos, Ctrl->A.justify);
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
+						}
+						if (gmt_get_modifier (opt->arg, 'c', string))	/* Tag order is by columns */
+							Ctrl->A.way = GMT_IS_COL_FORMAT;
+						if (gmt_get_modifier (opt->arg, 'g', Ctrl->A.fill) && Ctrl->A.fill[0]) {
+							if (gmt_getfill (GMT, Ctrl->A.fill, &fill)) n_errors++;
+						}
+						if (gmt_get_modifier (opt->arg, 'o', string))	/* Offset refpoint */
+							if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.off) < 0) n_errors++;
+						if (gmt_get_modifier (opt->arg, 'p', Ctrl->A.pen) && Ctrl->A.pen[0]) {
+							if (gmt_getpen (GMT, Ctrl->A.pen, &pen)) n_errors++;
+						}
+						if (gmt_get_modifier (opt->arg, 'r', string))
+							Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
+						else if (gmt_get_modifier (opt->arg, 'R', string))
+							Ctrl->A.roman = GMT_IS_ROMAN_UCASE;
+					}
+					if (!opt->arg[0]) {	/* Just gave -A with no arguments, set defaults */
+						Ctrl->A.cstart = 'a';
 						Ctrl->A.mode = SUBPLOT_LABEL_IS_LETTER;
-						strcat (Ctrl->A.format, "%c");
+						strcpy (Ctrl->A.format, "%c)");
 					}
-					else {	/* Just part of the format string */
-						add[0] = opt->arg[k];
-						strcat (Ctrl->A.format, add);
-					}
-				}
-				if (c) {	/* Gave modifiers so we must parse those now */
-					c[0] = '+';	/* Restore modifiers */
-					/* modifiers are [+c][+g<fill>][+j|J<justify>][+p<pen>][+r|R] */
-					if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement (?) */
-						gmt_just_validate (GMT, Ctrl->A.placement, "TL");
-						strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
-					}
-					else if (gmt_get_modifier (opt->arg, 'J', Ctrl->A.placement)) {	/* Outside placement (?) */
-						int pos = gmt_just_decode (GMT, Ctrl->A.placement, PSL_NO_DEF);
-						pos = gmt_flip_justify (GMT, pos);
-						gmt_just_to_code (GMT, pos, Ctrl->A.justify);
-						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
-					}
-					if (gmt_get_modifier (opt->arg, 'c', string))	/* Tag order is by columns */
-						Ctrl->A.way = GMT_IS_COL_FORMAT;
-					if (gmt_get_modifier (opt->arg, 'g', Ctrl->A.fill) && Ctrl->A.fill[0]) {
-						if (gmt_getfill (GMT, Ctrl->A.fill, &fill)) n_errors++;
-					}
-					if (gmt_get_modifier (opt->arg, 'o', string))	/* Offset refpoint */
-						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.off) < 0) n_errors++;
-					if (gmt_get_modifier (opt->arg, 'p', Ctrl->A.pen) && Ctrl->A.pen[0]) {
-						if (gmt_getpen (GMT, Ctrl->A.pen, &pen)) n_errors++;
-					}
-					if (gmt_get_modifier (opt->arg, 'r', string))
-						Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
-					else if (gmt_get_modifier (opt->arg, 'R', string))
-						Ctrl->A.roman = GMT_IS_ROMAN_UCASE;
-				}
-				if (!opt->arg[0]) {	/* Just gave -A with no arguments, set defaults */
-					Ctrl->A.cstart = 'a';
-					Ctrl->A.mode = SUBPLOT_LABEL_IS_LETTER;
-					strcpy (Ctrl->A.format, "%c)");
 				}
 				break;
 				
@@ -316,6 +335,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				else {
+					Ctrl->G.active = true;
 					switch (opt->arg[0]) {
 						case 'w':	Ctrl->G.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						case 'e':	Ctrl->G.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
@@ -327,7 +347,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							break;
 					}
 				}
-				
+				break;
+
 			case 'L':	/* Layout */
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {	/* Type of layout option */
@@ -437,10 +458,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "Syntax error -L: Must specify panel layout!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->A.active, "Syntax error -A: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Syntax error -F: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active, "Syntax error -L: Only available for gmt subset begin!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active, "Syntax error -M: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active[SUBPLOT_MEDIA] || Ctrl->M.active[SUBPLOT_PANEL], "Syntax error -M: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Syntax error -T: Only available for gmt subset begin!\n");
 		
 	}
@@ -830,7 +850,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, 1)))
+		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, Ctrl->A.format, 1)))
 			Return (error)
 	}
 	else {	/* SUBPLOT_END */
