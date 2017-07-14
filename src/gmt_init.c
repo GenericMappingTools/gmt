@@ -13594,7 +13594,7 @@ int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *so
 int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	/* Delete all files in a directory, then the directory itself.
 	 * It is assumed that we created the directory so that there is only
-	 * onle level, i.e., there are no sub-directories inside the directory. */
+	 * one level, i.e., there are no sub-directories inside the directory. */
 	unsigned int n_files, k;
 	int error = GMT_NOERROR;
 	char **filelist = NULL, *here = NULL;
@@ -13952,12 +13952,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
-			else if (err == 0 && S_ISDIR (S.st_mode)) {	/* Directory already exists, give warning or error (if not writeable) */
-				if (S.st_mode & S_IWUSR)
-					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist and is writeable (remember to use gmt end to finish a workflow)\n", API->gwf_dir);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist but is not writeable\n", API->gwf_dir);
-				}
+			else if (err == 0 && S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0) {	/* Directory already exists and is not writeable */
+				GMT_Report (API, GMT_MSG_NORMAL, "Workflow directory %s already exist but is not writeable\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
 			else {	/* Create the new workflow directory */
@@ -13965,14 +13961,20 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				toctou: Calling function mkdir that uses API->gwf_dir after a check function.
 				This can cause a time-of-check, time-of-use race condition.
 				we will use "dir" instead of "API->gwf_dir" below  */
+				if (err == 0 && S.st_mode & S_IWUSR) {	/* Remove abandoned directory */
+					GMT_Report (API, GMT_MSG_DEBUG, "Workflow directory %s already exist and is writeable (we will delete are recreate)\n", API->gwf_dir);
+					error = gmt_remove_dir (API, dir, true);	/* Remove and recreate */
+				}
+				else {	/* Can create a fresh new directory */
 #ifndef _WIN32
-				if (mkdir (dir, (mode_t)0777))
+					if (mkdir (dir, (mode_t)0777))
 #else
-				if (mkdir (dir))
+						if (mkdir (dir))
 #endif
-				{
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
-					error = GMT_RUNTIME_ERROR;
+					{
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a workflow directory : %s\n", API->gwf_dir);
+						error = GMT_RUNTIME_ERROR;
+					}
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
