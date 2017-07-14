@@ -143,6 +143,7 @@ struct GMTAPI_CTRL {
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
+	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */

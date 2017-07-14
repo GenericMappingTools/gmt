@@ -752,6 +752,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Encode_Options_      | Encode option arguments for external interfaces       |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Error_Message_       | Return character pointer to last API error message    |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Expand_Option_       | Expand option with explicit memory references         |
     +--------------------------+-------------------------------------------------------+
     | GMT_End_IO_              | Disable further record-by-record i/o                  |
@@ -921,7 +923,9 @@ is a sum of bit flags and the various bits control the following settings:
 The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the
 standard printf function (this is the case for the GMT/MATLAB toolbox, for instance).
-For all other uses you should simply pass NULL for this argument.
+For all other uses you should simply pass NULL for this argument.  You can also access
+the last cached error message by calling GMT_Error_Message_ which returns a pointer to
+the internal character buffer with that message.
 Should something go wrong during the API initialization then ``API`` will be returned as ``NULL``.
 Finally, GMT_Create_Session_ will examine the environmental parameter TMPDIR (TEMP on Windows)
 to set the GMT temporary directory [/tmp on Unix, current directory on Windows].
@@ -1997,6 +2001,18 @@ progress reports, etc., and are sent to standard error.
     +----------------------+------------------------------------------------+
 
     The different levels of verbosity that can be selected.
+
+Error string
+~~~~~~~~~~~~
+
+.. _GMT_Error_Message:
+
+  ::
+
+    char * GMT_Error_Message (void *API);
+
+This function simply returns a character pointer to the internal error message
+buffer holding the last error message generated.
 
 User messages
 ~~~~~~~~~~~~~

@@ -10413,6 +10413,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
 	assert (strlen (message) < GMT_BUFSIZ);
+	gmt_M_memcpy (API->error_msg, message, GMT_BUFSIZ-1, char);
 	API->print_func (GMT ? GMT->session.std[GMT_ERR] : stderr, message);
 	return_error (V_API, GMT_NOERROR);
 }
@@ -10421,6 +10422,20 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 int GMT_Report_ (void *V_API, unsigned int *level, const char *format, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Report (GMT_FORTRAN, *level, format));
+}
+#endif
+
+char * GMT_Error_Message (void *V_API) {
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
+	return (API->error_msg);
+}
+
+#ifdef FORTRAN_API
+int GMT_Error_Message_ (void *V_API) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Error_Message (GMT_FORTRAN));
 }
 #endif
 
