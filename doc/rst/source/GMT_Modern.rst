@@ -248,9 +248,11 @@ Optional Arguments
 revert
 ******
 
-**gmt revert** [ *n* ] [ |SYN_OPT-V| ]
+**gmt revert** [ *n*\ \|\ **all** ] [ |SYN_OPT-V| ]
 
 This command strips off the last *n* layers of the current figure.
+Giving **all* wipes the figure completely; however, it still remains
+the current figure.
 
 Optional Arguments
 ------------------
