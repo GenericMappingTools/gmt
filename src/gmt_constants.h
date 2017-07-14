@@ -78,6 +78,9 @@
 #define GMT_ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
 #define GMT_ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
 
+#define GMT_RENAME_FILE	0
+#define GMT_COPY_FILE	1
+
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
 	GMT_DIM_SIZE	= 4U,	/* Length of dim array used in Read|Creat Data */

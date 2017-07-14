@@ -8120,16 +8120,17 @@ int gmt_remove_file (struct GMT_CTRL *GMT, const char *file) {
 
 
 /*! . */
-int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile) {
-	/* Try to rename a file - give error message if it fails.  Depends on extern int errno */
+int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode) {
+	/* Try to rename a file - give error message if it fails.  Depends on extern int errno.
+	 * mode is either GMT_COPY_FILE or GMT_RENAME_FILE */
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", oldfile, newfile);
 	errno = GMT_NOERROR;
-	if (rename (oldfile, newfile)) {	/* This may be benign as rename won't move files between different mounted partitions on a drive. Copy/remove instead */
+	if (mode == GMT_COPY_FILE || rename (oldfile, newfile)) {	/* This may be benign as rename won't move files between different mounted partitions on a drive. Copy/remove instead */
 		size_t ni, no;
 		char *chunk = NULL;
 		FILE *fpi = NULL, *fpo = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to rename %s -> %s! [rename error: %s].  Try copy/delete instead.\n", oldfile, newfile, strerror (errno));
+		if (mode == GMT_RENAME_FILE) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to rename %s -> %s! [rename error: %s].  Try copy/delete instead.\n", oldfile, newfile, strerror (errno));
 		/* Open the two files */
 		if ((fpo = fopen (newfile, "wb")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create %s! [fopen error: %s]\n", newfile, strerror (errno));
@@ -8167,7 +8168,7 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 			return errno;
 		}
 		/* Finally delete the old file */
-		errno = gmt_remove_file (GMT, oldfile);
+		if (mode == GMT_RENAME_FILE) errno = gmt_remove_file (GMT, oldfile);
 	}
 	return errno;
 }

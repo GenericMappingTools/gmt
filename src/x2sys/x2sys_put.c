@@ -365,7 +365,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_rename_file (GMT, track_path, old_track_path)) {
+	if (gmt_rename_file (GMT, track_path, old_track_path, GMT_RENAME_FILE)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
@@ -374,7 +374,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_rename_file (GMT, index_path, old_index_path)) {
+	if (gmt_rename_file (GMT, index_path, old_index_path, GMT_RENAME_FILE)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);

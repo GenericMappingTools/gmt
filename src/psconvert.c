@@ -1223,10 +1223,35 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
+GMT_LOCAL int unbake_file (struct GMTAPI_CTRL *API, char *file, size_t half_baked_size) {
+	/* Trim back the file to what it was when it was young and half-baked */
+	if (!file || file[0] == '\0' || half_baked_size == 0) return GMT_NOERROR;
+#ifdef WIN32
+	{
+		int *fp;
+	
+		if ((fp = fopen (file, "a")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
+			continue;
+		}
+		if (_chsize (fileno (fp), half_baked_size)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via _chsize) back to " PRIuS "d bytes\n", file, half_baked_size);
+			return errno;
+		}
+	}
+#else
+    if (truncate (file, half_baked_size)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via truncate) back to " PRIuS "d bytes\n", file, half_baked_size);
+		return errno;
+	}
+#endif
+	return GMT_NOERROR;
+}
+
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
-	size_t len, line_size = 0U;
+	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
@@ -1410,47 +1435,32 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
 		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
 			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for current PS */
-				/* THe half-baked file not found.  See if the fully baked file is there */
-				GMT->current.ps.filename[strlen(GMT->current.ps.filename)-1] = '+';
-				if (access (GMT->current.ps.filename, F_OK)) {	/* File does not exist - error; else we have changed the name */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
-					Return (GMT_RUNTIME_ERROR);
-				}
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No hidden PS file %s found\n", GMT->current.ps.filename);
+				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
-			GMT->current.ps.filename[strlen(GMT->current.ps.filename)-1] = '-';	/* Due to logic below */
 			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
 			ps_names[0] = strdup (GMT->current.ps.filename);
 			Ctrl->In.n_files = 1;
 		}
 		if (access (ps_names[0], F_OK) == 0) {	/* File exist, so complete it */
-			char *new_name = strdup (ps_names[0]);
+			struct stat buf;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Complete partial PS file %s\n", ps_names[0]);
+			if (stat (ps_names[0], &buf))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of file %s\n", ps_names[0]);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Size of half-baked PS file = %" PRIuS ".\n", buf.st_size);
+			half_baked_size = buf.st_size;	/* Remember the original size */
 			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot append to file %s\n", ps_names[0]);
-				gmt_M_str_free (new_name);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
 			if (PSL_fclose (GMT->PSL)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", ps_names[0]);
-				gmt_M_str_free (new_name);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			/* Rename from *.ps- to *.ps+ so we dont complete the file more than once */
-			new_name[strlen(new_name)-1] = '+';
-			if (gmt_rename_file (GMT, ps_names[0], new_name)) {
-				gmt_M_str_free (new_name);
-				Return (GMT_RUNTIME_ERROR);
-			}
-			ps_names[0][strlen(ps_names[0])-1] = '+';
-			gmt_M_str_free (new_name);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Renamed partial PS file to %s\n", ps_names[0]);
-		}
-		else {	/* Check if we already completed the file */
-			ps_names[0][strlen(ps_names[0])-1] = '+';
-			if (access (ps_names[0], F_OK))	/* File does not exist - error; else we have changed the name */
-				Return (GMT_RUNTIME_ERROR);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
 		}
 	}
 
@@ -1543,6 +1553,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
+				if (unbake_file (API, ps_file, half_baked_size))
+					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
 				if (!Ctrl->L.active)			/* Otherwise ps_names contents are the Garbageman territory */
@@ -1597,6 +1609,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				if (gmt_remove_file (GMT, BB_file))
 					Return (GMT_RUNTIME_ERROR);
+				if (unbake_file (API, ps_file, half_baked_size))
+					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_free (GMT, PS);
@@ -1604,6 +1618,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
+				if (unbake_file (API, ps_file, half_baked_size))
+					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_free (GMT, PS);
@@ -1637,6 +1653,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							if (gmt_remove_file (GMT, tmp_file))	/* Remove the file */
+								Return (GMT_RUNTIME_ERROR);
+							if (unbake_file (API, ps_file, half_baked_size))
 								Return (GMT_RUNTIME_ERROR);
 							if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 								Return (GMT_RUNTIME_ERROR);
@@ -2047,8 +2065,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		fclose (fpo);	fpo = NULL;
 		fclose (fp);	fp  = NULL;
-		if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
-			Return (GMT_RUNTIME_ERROR);
 
 		/* Build the converting ghostscript command and execute it */
 
@@ -2159,7 +2175,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", ps_names[0], out_file);
-				if (gmt_rename_file (GMT, ps_names[0], out_file))
+				if (gmt_rename_file (GMT, ps_names[0], out_file, GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -2167,6 +2183,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (gmt_remove_file (GMT, ps_file))
 				Return (GMT_RUNTIME_ERROR);
 		}
+
+		if (unbake_file (API, ps_file, half_baked_size))
+			Return (GMT_RUNTIME_ERROR);
+		if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+			Return (GMT_RUNTIME_ERROR);
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
 			struct GMT_IMAGE *I = NULL;

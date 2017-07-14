@@ -139,7 +139,9 @@ struct GMT5_params {
 	const int code;
 	const char *name;
 };
+
 /* These are the active GMT5 keywords, containing no backwards-compatible variants.
+ * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
 
 static struct GMT5_params GMT5_keywords[]= {
@@ -237,6 +239,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "MAP_VECTOR_SHAPE"},
 	{ 1, "Projection Parameters"},
 	{ 0, "PROJ_AUX_LATITUDE"},
+	{ 0, "PROJ_DATUM"},
 	{ 0, "PROJ_ELLIPSOID"},
 	{ 0, "PROJ_GEODESIC"},
 	{ 0, "PROJ_LENGTH_UNIT"},
@@ -261,6 +264,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "TIME_EPOCH"},
 	{ 0, "TIME_IS_INTERVAL"},
 	{ 0, "TIME_INTERVAL_FRACTION"},
+	{ 0, "TIME_LEAP_SECONDS"},
 	{ 0, "TIME_REPORT"},
 	{ 0, "TIME_UNIT"},
 	{ 0, "TIME_WEEK_START"},

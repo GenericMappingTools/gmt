@@ -113,7 +113,7 @@ The subplot command is used to split the current figure into a matrix of sub-pan
 that each may contain a single figure.  A subplot setup is started with the **begin**
 mode that defines the layout of the subplots:
 
-**gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *labelinfo* ]
+**gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *autolabel* ]
 [ **-F**\ *width*\ /*height* ]
 [ **-L**\ *layout* ] [ **-M**\ [**m**\ [\|\ **p**\ ]]\ *margins* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
@@ -131,8 +131,8 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *labelinfo*
-    Specify tagging of each panel.  Append either a number or letter [a].
+**-A**\ *autolabel*
+    Specify automatic tagging of each panel.  Append either a number or letter [a].
     This sets the tag of the first, top-left panel and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
@@ -194,7 +194,7 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 
-**gmt subplot** *row,col* [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** *row,col* [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting into a panel you must first select the active panel.
 
@@ -208,6 +208,11 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**\ *fixedlabel*
+    Overrides the automatic labeling with the given string.
 
 .. _-G:
 

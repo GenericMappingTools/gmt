@@ -127,8 +127,8 @@ Optional Arguments
     (corrected) meters [**-S**\ 1]; free-air gravity files in mGal\*10
     [**-S**\ 0.1 to get mGal]; vertical deflection files in
     micro-radians\*10 [**-S**\ 0.1 to get micro-radians], vertical gravity
-    gradient files in Eotvos\*50 [**-S**\ 0.02 to get Eotvos, or
-    **-S**\ 0.002 to get mGal/km]). If no *scale* is given we try to
+    gradient files in Eotvos\*10 [**-S**\ 0.1 to get Eotvos, or
+    **-S**\ 0.01 to get mGal/km]). If no *scale* is given we try to
     determine the scale by examining the file name for clues.
 
 .. _-T:

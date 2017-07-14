@@ -831,7 +831,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			/* Rename the old file for now */
 			
 			sprintf (oldfile, "%s.old", In.path);
-			if (gmt_rename_file (GMT, In.path, oldfile)) {
+			if (gmt_rename_file (GMT, In.path, oldfile, GMT_RENAME_FILE)) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 			

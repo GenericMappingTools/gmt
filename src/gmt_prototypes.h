@@ -204,7 +204,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 /* gmt_io.c: */
 
 EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
-EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile);
+EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode);
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 EXTERN_MSC int gmt_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col);
 EXTERN_MSC bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value);
