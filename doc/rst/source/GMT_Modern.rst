@@ -5,7 +5,7 @@ GMT Modern Mode
 
 Modern Mode is Experimental!
 
-In GMT modern mode there are four new commands that are used to manage
+In GMT modern mode there are five new commands that are used to manage
 a GMT workflow.  In modern mode many common GMT options have been made
 obsolete and explicitly specifying the previous region or projection
 is now implicit.  Finally, the default output format for illustrations
@@ -14,8 +14,9 @@ for your plots.
 
 A GMT modern session is enabled by **gmt begin** and is terminated by
 **gmt end**.  Within a session you may also use the **gmt figure* command
-to control names and formats for multi-figure scripts and the **gmt subplot**
-for building multi-panel illustrations.
+to control names and formats for multi-figure scripts, the **gmt subplot**
+for building multi-panel illustrations, and **gmt revert** to remove
+layers from the current plot.
 
 *****
 begin
@@ -237,6 +238,25 @@ the subplot.
 
 Optional Arguments
 ------------------
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+******
+revert
+******
+
+**gmt revert** [ *n* ] [ |SYN_OPT-V| ]
+
+This command strips off the last *n* layers of the current figure.
+
+Optional Arguments
+------------------
+
+*n*
+    Specifies the number of plot layers to revert [1].
 
 .. _-V:
 
