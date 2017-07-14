@@ -5940,6 +5940,21 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
 
+	if (mode & GMT_SESSION_LOGERRORS) {	/* Want to redirect errors to a log file */
+		char file[GMT_LEN128] = {""};
+		FILE *fp = NULL;
+		if (API->session_tag == NULL) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Must pass a sesssion tag to be used for error log file name\n");
+			return_null (API, GMT_ARG_IS_NULL);
+		}
+		sprintf (file, "%s.log", API->session_tag);
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Unable to open error log file %s\n", file);
+			return_null (API, GMT_ERROR_ON_FOPEN);
+		}
+		API->GMT->session.std[GMT_ERR] = fp;	/* Set the error fp pointer */
+	}
+	
 	API->n_cores = gmtlib_get_num_processors();	/* Get number of available CPU cores */
 
 	/* Allocate memory to keep track of registered data resources */
@@ -5986,6 +6001,8 @@ int GMT_Destroy_Session (void *V_API) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	gmt_M_free (API->GMT, API->object);
+	if (API->GMT->session.std[GMT_ERR] != stdin)	/* Close the error fp pointer */
+		fclose (API->GMT->session.std[GMT_ERR]);
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
 	gmt_M_str_free (API->tmp_dir);

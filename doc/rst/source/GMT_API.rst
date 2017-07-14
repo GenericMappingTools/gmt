@@ -916,7 +916,9 @@ is a sum of bit flags and the various bits control the following settings:
 #. Bit 3 (4): If set, then it means the external API uses a column-major format for
    matrices (e.g., MATLAB, Fortran).  If not set we default to row-major
    format (C/C++, Python, etc.).
-#. Bit 4 (8): If set, the we enable GMT's modern run-mode (where -O -K are
+#. Big 4 (8): If set, we redirect all error messages to a log file based on the
+   session name (we append ".log").
+#. Bit 4 (16): If set, the we enable GMT's modern run-mode (where -O -K are
    not allowed and PostScript is written to hidden temp file).  Default
    is the GMT classic run-mode.
 
@@ -925,7 +927,8 @@ messages from GMT via GMT_Message_ or GMT_Report_ from external environments tha
 standard printf function (this is the case for the GMT/MATLAB toolbox, for instance).
 For all other uses you should simply pass NULL for this argument.  You can also access
 the last cached error message by calling GMT_Error_Message_ which returns a pointer to
-the internal character buffer with that message.
+the internal character buffer with that message.  Pass NULL and set the mode bit if you
+want writing to a log file instead.
 Should something go wrong during the API initialization then ``API`` will be returned as ``NULL``.
 Finally, GMT_Create_Session_ will examine the environmental parameter TMPDIR (TEMP on Windows)
 to set the GMT temporary directory [/tmp on Unix, current directory on Windows].

@@ -49,15 +49,16 @@
 
 /*! Session modes for GMT_Create_Session */
 enum GMT_enum_session {
-	GMT_SESSION_NORMAL   = 0,	/* Typical mode to GMT_Create_Session */
-	GMT_SESSION_NOEXIT   = 1,	/* Call return and not exit when error */
-	GMT_SESSION_EXTERNAL = 2,	/* Called by an external API (e.g., MATLAB, Python). */
-	GMT_SESSION_COLMAJOR = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
-	GMT_SESSION_RUNMODE  = 8,	/* If set enable GMT's modern runmode. [Classic] */
-	GMT_SESSION_BEGIN    = 16,	/* Begin a new session. [Sets modern mode] */
-	GMT_SESSION_END      = 32,	/* End a session. [Ends modern mode] */
-	GMT_SESSION_CLEAR    = 64,	/* Clear session files/directories */
-	GMT_SESSION_FIGURE   = 128};	/* Add a figure to the session queue. [Modern mode only] */
+	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
+	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
+	GMT_SESSION_EXTERNAL  = 2,	/* Called by an external API (e.g., MATLAB, Python). */
+	GMT_SESSION_COLMAJOR  = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
+	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
+	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
+	GMT_SESSION_BEGIN     = 32,	/* Begin a new session. [Sets modern mode] */
+	GMT_SESSION_END       = 64,	/* End a session. [Ends modern mode] */
+	GMT_SESSION_CLEAR     = 128,	/* Clear session files/directories */
+	GMT_SESSION_FIGURE    = 256};	/* Add a figure to the session queue. [Modern mode only] */
 
 /*! Miscellaneous settings */
 enum GMT_enum_api {
