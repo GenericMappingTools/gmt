@@ -155,6 +155,7 @@ enum GMT_swap_direction {
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 #define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
+#define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 

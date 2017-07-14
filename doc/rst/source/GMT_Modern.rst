@@ -136,16 +136,18 @@ Optional Arguments
     This sets the tag of the first, top-left panel and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
-    Panels are normally numbered across rows.  Append **+c** to number down columns instead.
     Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the panel [TL].
     Note: **+j** sets the justification of the tag to *refpoint* while **+J** instead selects
     the mirror opposite.
+    Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
+    requested via **+g** or **p**.
+    Append **+g** to paint the tag's textbox with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [0/0].
+    by the justification [4pt/4pt, i.e., 20% of the FONT_TAG size].
+    Append **+p** to draw the outline of the tag's textbox using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
-    Append **+g** to paint the tag's textbox with *fill* [no painting].
-    Append **+p** to draw the outline of the tag's textbox using selected *pen* [no outline].
+    Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
 
 .. _-F:
 

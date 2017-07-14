@@ -59,7 +59,7 @@ struct SUBPLOT_CTRL {
 		unsigned int mode;	/* SUBPLOT_BEGIN|SET|END*/
 		unsigned int row, col;
 	} In;
-	struct A {	/* -A[<letter>|<number>][+c][+j|J<pos>][+o<offset>][+r|R][+g<fill>][+p<pen>] */
+	struct A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
 		bool active;
 		char format[GMT_LEN16];
 		char fill[GMT_LEN64];
@@ -72,8 +72,9 @@ struct SUBPLOT_CTRL {
 		char placement[3];
 		char justify[3];
 		double off[2];
+		double clearance[2];
 	} A;
-	struct F {	/* -F[<width>[u]/<height>[u]][+g<fill>][+p<pen>][+d] */
+	struct F {	/* -F[<width>[u]/<height>[u]][+d][+g<fill>][+p<pen>] */
 		bool active;
 		bool debug;
 		double dim[2];
@@ -117,7 +118,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
 	strncpy (C->A.placement, "TL", 2);
 	strncpy (C->A.justify,   "TL", 2);
-	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.2 * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
+	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
+	C->A.clearance[GMT_X] = C->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
+	
 	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
 	C->F.dim[GMT_X] = GMT->current.setting.ps_page_size[GMT_X] / PSL_POINTS_PER_INCH;
@@ -150,13 +153,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each panel.  Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left panel and others follow sequentially.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Panels are numbered across rows.  Append +c to number down columns instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the tag should be plotted in the panel [TL].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +j sets justification = <refpoint> while +J selects the mirror opposite.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [20%% of font size].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between tag and surrounding box.  Only used\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the textbox with <fill> color [no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [panels are numbered across rows].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify dimension of area that the multi-panel figure may occupy [current page].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each panel area (for debugging).\n");
@@ -242,8 +247,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		return GMT_PARSE_ERROR;
 	}
 
-	/* Here we are either doing SUBPLOT_BEGIN or just SUBPLOT_END with -V */
-	
 	while (opt) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -273,7 +276,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					}
 					if (c) {	/* Gave modifiers so we must parse those now */
 						c[0] = '+';	/* Restore modifiers */
-						/* modifiers are [+c][+g<fill>][+j|J<justify>][+p<pen>][+r|R] */
+						/* Modifiers are [+c<dx/dy>][+g<fill>][+j|J<justify>][+o<dx/dy>][+p<pen>][+r|R][+v] */
 						if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement (?) */
 							gmt_just_validate (GMT, Ctrl->A.placement, "TL");
 							strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
@@ -284,8 +287,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							gmt_just_to_code (GMT, pos, Ctrl->A.justify);
 							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
 						}
-						if (gmt_get_modifier (opt->arg, 'c', string))	/* Tag order is by columns */
-							Ctrl->A.way = GMT_IS_COL_FORMAT;
+						if (gmt_get_modifier (opt->arg, 'c', string))	/* Clearance for box */
+							if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.clearance) < 0) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'g', Ctrl->A.fill) && Ctrl->A.fill[0]) {
 							if (gmt_getfill (GMT, Ctrl->A.fill, &fill)) n_errors++;
 						}
@@ -298,6 +301,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
 						else if (gmt_get_modifier (opt->arg, 'R', string))
 							Ctrl->A.roman = GMT_IS_ROMAN_UCASE;
+						if (gmt_get_modifier (opt->arg, 'v', string))	/* Tag order is vertical */
+							Ctrl->A.way = GMT_IS_COL_FORMAT;
 					}
 					if (!opt->arg[0]) {	/* Just gave -A with no arguments, set defaults */
 						Ctrl->A.cstart = 'a';
@@ -752,7 +757,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
-		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
+		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
@@ -769,11 +774,11 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					}
 					else
 						fprintf (fp, Ctrl->A.format, Ctrl->A.cstart + k);
-					fprintf (fp, "\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
+					fprintf (fp, "\t%g\t%g\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.clearance[GMT_X], Ctrl->A.clearance[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
 					fprintf (fp, "\t%s\t%s", Ctrl->A.fill, Ctrl->A.pen);
 				}
 				else
-					fprintf (fp, "-\t0\t0\tBL\tBL\t-\t-");
+					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters */
 				fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
 				fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */

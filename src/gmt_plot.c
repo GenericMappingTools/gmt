@@ -6136,11 +6136,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
 			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
 				int outline = 0;
-				double offset[2];
 				struct GMT_FILL fill;
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
-				/* Allow 15% space around the tag */
-				offset[GMT_X] = offset[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;
 				if (P->pen[0]) {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
@@ -6151,7 +6148,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				if (P->fill[0])	/* Want to paint inside of tag box */
 					gmt_getfill (GMT, P->fill, &fill);
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
-				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, offset, 0);
+				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
 			}
