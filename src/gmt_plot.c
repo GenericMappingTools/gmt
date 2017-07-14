@@ -6179,10 +6179,10 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 	}
 }
 
-int gmt_strip_layer (struct GMTAPI_CTRL *API, unsigned int nlayers) {
+int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	/* Remove the last n layers from the current figure */
 	char file[PATH_MAX] = {""}, buffer[GMT_LEN64] = {""};
-	unsigned int k = 0;
+	int k = 0;
 	int fig;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	FILE *fp = NULL;
@@ -6190,12 +6190,22 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, unsigned int nlayers) {
 		unsigned int id;
 		size_t size;
 	} *layer = NULL;
-	/* See if there is a gmt.layers file to begin with */
+	
+	/* Get the name of the gmt.layers file */
 	sprintf (file, "%s/gmt.layers", API->gwf_dir);
+	if (nlayers == -1) {	/* Reset to nothing, but still remain at current file */
+		gmt_remove_file (API->GMT, file);	/* Remove the layers file */
+		fig = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
+		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
+		gmt_remove_file (API->GMT, file);	/* Wipe the PS file */
+		return GMT_NOERROR;
+	}
+	/* See if there is a gmt.layers file to read */
 	if (access (file, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No layers available [no file: %s]\n", file);
 		return GMT_FILE_NOT_FOUND;
 	}
+	
 	/* OK, the file exist, can we read it? */
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", file);
