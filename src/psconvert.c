@@ -1223,31 +1223,6 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-GMT_LOCAL int unbake_file (struct GMTAPI_CTRL *API, char *file, size_t half_baked_size) {
-	/* Trim back the file to what it was when it was young and half-baked */
-	if (!file || file[0] == '\0' || half_baked_size == 0) return GMT_NOERROR;
-#ifdef WIN32
-	{
-		int *fp;
-	
-		if ((fp = fopen (file, "a")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
-			continue;
-		}
-		if (_chsize (fileno (fp), half_baked_size)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via _chsize) back to " PRIuS "d bytes\n", file, half_baked_size);
-			return errno;
-		}
-	}
-#else
-    if (truncate (file, half_baked_size)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via truncate) back to " PRIuS "d bytes\n", file, half_baked_size);
-		return errno;
-	}
-#endif
-	return GMT_NOERROR;
-}
-
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
@@ -1553,7 +1528,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
-				if (unbake_file (API, ps_file, half_baked_size))
+				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
@@ -1609,7 +1584,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				if (gmt_remove_file (GMT, BB_file))
 					Return (GMT_RUNTIME_ERROR);
-				if (unbake_file (API, ps_file, half_baked_size))
+				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
@@ -1618,7 +1593,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
-				if (unbake_file (API, ps_file, half_baked_size))
+				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
@@ -1654,7 +1629,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							if (gmt_remove_file (GMT, tmp_file))	/* Remove the file */
 								Return (GMT_RUNTIME_ERROR);
-							if (unbake_file (API, ps_file, half_baked_size))
+							if (gmt_truncate_file (API, ps_file, half_baked_size))
 								Return (GMT_RUNTIME_ERROR);
 							if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 								Return (GMT_RUNTIME_ERROR);
@@ -2184,7 +2159,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (unbake_file (API, ps_file, half_baked_size))
+		if (gmt_truncate_file (API, ps_file, half_baked_size))
 			Return (GMT_RUNTIME_ERROR);
 		if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 			Return (GMT_RUNTIME_ERROR);

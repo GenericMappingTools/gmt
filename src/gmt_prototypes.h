@@ -47,6 +47,7 @@ EXTERN_MSC int gmt_get_V (char arg);
 EXTERN_MSC char gmt_set_V (int mode);
 EXTERN_MSC void gmtinit_conf_US (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtinit_conf (struct GMT_CTRL *GMT);
+EXTERN_MSC int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size);
 EXTERN_MSC int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, double gap[], char *label, unsigned int first);
 EXTERN_MSC int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *arg);
@@ -166,6 +167,7 @@ EXTERN_MSC char *gmt_export2proj4 (struct GMT_CTRL *GMT);
 #ifdef PRJ4
 EXTERN_MSC char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4);
 #endif
+EXTERN_MSC int gmt_strip_layer (struct GMTAPI_CTRL *API, unsigned int nlayers);
 EXTERN_MSC void gmt_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms);

@@ -6179,6 +6179,63 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 	}
 }
 
+int gmt_strip_layer (struct GMTAPI_CTRL *API, unsigned int nlayers) {
+	/* Remove the last n layers from the current figure */
+	char file[PATH_MAX] = {""}, buffer[GMT_LEN64] = {""};
+	unsigned int k = 0;
+	int fig;
+	size_t n_alloc = GMT_SMALL_CHUNK;
+	FILE *fp = NULL;
+	struct GMT_PSLAYER {	/* Used to hold the layer info locally */
+		unsigned int id;
+		size_t size;
+	} *layer = NULL;
+	/* See if there is a gmt.layers file to begin with */
+	sprintf (file, "%s/gmt.layers", API->gwf_dir);
+	if (access (file, R_OK)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No layers available [no file: %s]\n", file);
+		return GMT_FILE_NOT_FOUND;
+	}
+	/* OK, the file exist, can we read it? */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	/* Ingest the layer information */
+	layer = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_PSLAYER);
+	while (fgets (buffer, GMT_LEN64, fp)) {
+		sscanf (buffer, "%d %" PRIuS, &layer[k].id, &layer[k].size);
+		if (++k == n_alloc) {	/* Need more memory */
+			n_alloc <<= 1;
+			layer = gmt_M_memory (API->GMT, layer, n_alloc, struct GMT_PSLAYER);
+		}
+	}
+	fclose (fp);
+	if (nlayers >= k) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot revert %d layers as only %d layers found!\n", nlayers, k);
+		return GMT_RUNTIME_ERROR;
+	}
+	
+	fig = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
+	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
+	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not truncate file %s!\n", file);
+		return GMT_RUNTIME_ERROR;
+	}
+	/* Finally, rewrite the layers file to skip the reverted layers */
+	sprintf (file, "%s/gmt.layers", API->gwf_dir);
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not create new file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	nlayers = k - nlayers;	/* Number of surviving layers */
+	for (k = 0; k < nlayers; k++)
+		fprintf (fp, "%d %" PRIuS "\n", layer[k].id, layer[k].size);
+	fclose (fp);
+	gmt_M_free (API->GMT, layer);
+	return GMT_NOERROR;
+}
+
 void gmt_plotend (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	bool K_active = (GMT->current.setting.run_mode == GMT_MODERN) ? true : GMT->common.K.active;
@@ -6208,8 +6265,23 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	PSL_endplot (PSL, !K_active);
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Reset file pointer and name */
+		struct stat buf;
+		char file[PATH_MAX] = {""};
+		FILE *fp = NULL;
+		if (stat (GMT->current.ps.filename, &buf))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of file %s\n", GMT->current.ps.filename);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current size of half-baked PS file %s = %" PRIuS ".\n", GMT->current.ps.filename, buf.st_size);
 		GMT->current.ps.fp = NULL;
 		GMT->current.ps.filename[0] = '\0';
+		/* Write layer size to gmt.layers in case of revert calls */
+		sprintf (file, "%s/gmt.layers", GMT->parent->gwf_dir);
+		if ((fp = fopen (file, "a")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not open/create file %s\n", file);
+			return;
+		}
+		fprintf (fp, "%d\t%" PRIuS "\n", GMT->current.ps.layer, (size_t)buf.st_size);
+		fclose (fp);
 	}
 	else if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
 		struct GMT_POSTSCRIPT *P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);

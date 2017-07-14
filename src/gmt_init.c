@@ -13892,8 +13892,37 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	}
 	fprintf (fp, "\n");
 	fclose (fp);
+	/* Reset any gmt.layers file (repurposing the prefix string) */
+	sprintf (prefix, "%s/gmt.layers", API->gwf_dir);
+	gmt_remove_file (API->GMT, prefix);	/* Ignore if failed since file may not exist */
 	return GMT_NOERROR;
 }
+
+int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
+	/* Trim back the file to what it was when it was young and half-baked */
+	if (!file || file[0] == '\0' || size == 0) return GMT_NOERROR;
+#ifdef WIN32
+	{
+		FILE *fp = NULL;
+	
+		if ((fp = fopen (file, "a")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
+			continue;
+		}
+		if (_chsize (fileno (fp), size)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via _chsize) back to " PRIuS "d bytes\n", file, size);
+			return errno;
+		}
+	}
+#else
+    if (truncate (file, size)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via truncate) back to " PRIuS "d bytes\n", file, size);
+		return errno;
+	}
+#endif
+	return GMT_NOERROR;
+}
+
 
 /*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
