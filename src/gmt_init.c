@@ -13733,7 +13733,7 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 		else	/* Just count them */
 			k++;
 	}
-	fclose (fp);
+	if (fp) fclose (fp);
 	if (mode > 0) {
 		if (k == 0)	/* Blank file, nothing to report */
 			gmt_M_free (GMT, fig);
