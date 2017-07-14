@@ -408,6 +408,8 @@ struct GMT_PROJ {
 	double p_base_angle;
 	bool got_azimuths, got_elevations, z_down;
 
+	/* PROJ4 variables */
+	double proj4_x0, proj4_y0;
 };
 
 enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
