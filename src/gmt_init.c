@@ -8951,6 +8951,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_LANGUAGE:
+			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
+			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
+			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
 				GMT->current.setting.triangulate = GMT_TRIANGLE_WATSON;
