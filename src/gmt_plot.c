@@ -5441,7 +5441,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	char *pStrOut = NULL;
 	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *prjcode, *pch = NULL;
-	char *easting = NULL, *northing = NULL;
 
 	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
 
@@ -5729,20 +5728,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if ((pch = strstr(szProj4, "+x_0=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
-		easting = strdup(&token[4]);
+		GMT->current.proj.proj4_x0 = atof(&token[4]);
 		wipe_substr(szProj4, token);
 	}
 	if ((pch = strstr(szProj4, "+y_0=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
-		northing = strdup(&token[4]);
+		GMT->current.proj.proj4_y0 = atof(&token[4]);
 		wipe_substr(szProj4, token);
 	}
-	if (easting && northing)
-		sprintf(opt_C, " -C%s/%s", easting, northing);
-	else if (easting)
-		sprintf(opt_C, " -C%s/0", easting);
-	else if (northing)
-		sprintf(opt_C, " -C0/%s", northing);
 
 	if ((pch = strstr(szProj4, "+units=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
@@ -5764,8 +5757,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[1] = tolower(opt_J[1]);
-
-	//if (opt_C) strncat(opt_J, opt_C, GMT_LEN256-1);
 
 	k = 0;
 	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+'))
