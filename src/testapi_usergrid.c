@@ -12,13 +12,13 @@
 int main () {
 	unsigned int k, n_rows = 3, n_cols = 4;	/* Loop variable and dimensions*/
 	uint64_t dim[3] = {n_rows, n_cols, 1};		/* nrows, ncols, nlayers */
-    void *API = NULL;                 			/* The API control structure */
+    void *API = NULL;                           /* The API control structure */
     struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output grids as matrix */
 	struct GMT_MATRIX *M2 = NULL;
-    char input[GMT_STR16] = {""};     			/* String to hold virtual input filename */
-    char output[GMT_STR16] = {""};    			/* String to hold virtual output filename */
+    char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
+    char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
     char args[128] = {""};            			/* String to hold module command arguments */
-	INVARTYPE in_data[n_rows*n_cols];			/* Our user's input grid(matrix) data */
+	INVARTYPE in_data[3*4];                     /* Our user's input grid(matrix) data */
 	OUTVARTYPE *out_data = NULL;				/* We will inspect the modified data via this pointer */
 
    /* Initialize the GMT session */
