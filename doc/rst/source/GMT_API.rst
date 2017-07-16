@@ -1227,7 +1227,9 @@ and pass the ``par`` array with contents as indicated below:
     ``par[2]`` indicates the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
     (2) Pass ``wesn``, ``inc``, ``registration`` and we compute the dimensions of the matrix.
     The ``data`` argument should be NULL.  As for vectors, give dimensions as 0 and hook your custom matrix in
-    via a call to GMT_Put_Matrix_.
+    via a call to GMT_Put_Matrix_.  The matrix may either be row- or column-oriented and this is normally determined
+    when you created the session with GMT_Create_Session_ (see the bit 3 setting).
+    However, you can pass ``pad`` = 1 (set row major) or ``pad`` = 2 (set col major) to override the default.
 
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the prevailing GMT default. The ``mode`` determines what is actually

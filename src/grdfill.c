@@ -220,7 +220,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
 	V->n_rows = n_constraints;	/* Must specify how many input points we have */
    /* Associate our input data vectors with a virtual input file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_IN, V, input);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V, input);
 	/* Prepare the greenspline command-line arguments */
 	mode = (gmt_M_geographic (GMT, GMT_IN)) ? 2 : 1;
     sprintf (args, "%s -G%s -Sc -R%g/%g/%g/%g -I%g/%g -D%d", input, output, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);

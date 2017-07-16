@@ -43,7 +43,7 @@ int main (int argc, char **argv) {
     /* Associate the grid with a virtual input file */
     GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, G_in, grid);
     /* Associate our input data vectors with a virtual input file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_IN, V_in, input);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V_in, input);
     /* Associate our output data vectors with a virtual output file */
     GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output);
     /* Prepare the grdtrack command-line arguments, selecting bilinear sampling */

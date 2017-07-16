@@ -7714,7 +7714,7 @@ void gmt_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vec
 }
 
 /*! . */
-struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, unsigned int direction) {
+struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, unsigned int direction, int flag) {
 	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = gmt_M_memory (GMT, NULL, 1, struct GMT_MATRIX);
@@ -7723,7 +7723,11 @@ struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers,
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
-	M->shape = GMT->parent->shape;			/* Default layout (row vs column) selected by GMT_Create_Session [row-major] */
+	switch (flag) {
+		case 1:  M->shape = GMT_IS_ROW_FORMAT; break;	/* row-major */
+		case 2:  M->shape = GMT_IS_COL_FORMAT; break;	/* col-major */
+		default: M->shape = GMT->parent->shape; break;	/* Default layout (row vs column) selected by GMT_Create_Session [row-major] */
+	}
 	return (M);
 }
 
