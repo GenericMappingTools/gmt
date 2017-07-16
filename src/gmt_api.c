@@ -8661,9 +8661,9 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Set_Index_ (void *h, int *mode) {
+int GMT_Set_Index_ (void *h, char *code, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Index (GMT_FORTRAN, h, *mode));
+	return (GMT_Set_Index (GMT_FORTRAN, h, code));
 }
 #endif
 
@@ -10526,7 +10526,7 @@ char * GMT_Error_Message (void *V_API) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Error_Message_ (void *V_API) {
+char * GMT_Error_Message_ (void *V_API) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Error_Message (GMT_FORTRAN));
 }
@@ -11745,7 +11745,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint
 #ifdef FORTRAN_API
 void *GMT_Alloc_Segment_ (void *V_API, unsigned int *family, uint64_t *n_rows, uint64_t *n_columns, char *header, void *S, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Columns (GMT_FORTRAN, *family, *n_rows, *n_columns, header, S));
+	return (GMT_Alloc_Segment (GMT_FORTRAN, *family, *n_rows, *n_columns, header, S));
 }
 #endif
 
@@ -11935,6 +11935,13 @@ int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned in
 	return_error (API, error);
 }
 
+#ifdef FORTRAN_API
+int GMT_Change_Layout_ (void *V_API, unsigned int *family, char *code, unsigned int *mode, void *obj, void *out, void *alpha, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Change_Layout (GMT_FORTRAN, *family, code, *mode, obj, out, alpha));
+}
+#endif
+
 /* Deal with assignments of custom vectors and matrices to GMT containers */
 
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
@@ -11961,6 +11968,13 @@ int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned 
 	return GMT_NOERROR;
 }
 
+#ifdef FORTRAN_API
+int GMT_Put_Vector_ (void *V_API, struct GMT_VECTOR *V, unsigned int *col, unsigned int *type, void *vector) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Put_Vector (GMT_FORTRAN, V, *col, *type, vector));
+}
+#endif
+
 void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 	/* Returns a pointer to the specified column array. Users can consult
 	 * V->type[col] to know what data type is pointed to.  */
@@ -11985,6 +11999,13 @@ void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 	return vector;
 }
 
+#ifdef FORTRAN_API
+void * GMT_Get_Vector_ (void *V_API, struct GMT_VECTOR *V, unsigned int *col) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Vector (GMT_FORTRAN, V, *col));
+}
+#endif
+
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given matrix. */
@@ -12008,6 +12029,13 @@ int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *ma
 	return GMT_NOERROR;
 }
 
+#ifdef FORTRAN_API
+int GMT_Put_Matrix_ (void *V_API, struct GMT_MATRIX *M, unsigned int *type, void *matrix) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Put_Matrix (GMT_FORTRAN, M, *type, matrix));
+}
+#endif
+
 void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	/* Returns a pointer to the matrix.  Users can consult
 	 * M->type to know what data type is pointed to.  */
@@ -12030,6 +12058,13 @@ void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	}
 	return matrix;
 }
+
+#ifdef FORTRAN_API
+void * GMT_Get_Matrix_ (void *V_API, struct GMT_MATRIX *M) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Matrix (GMT_FORTRAN, M));
+}
+#endif
 
 /* Backwards compatibility for old API functions from 5.1-2 no longer in favor
  * as the Virtual File concept is much easier to understand and use. */
@@ -12099,5 +12134,28 @@ int GMT_Get_ID (void *API, unsigned int family, unsigned int direction, void *re
 int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
+}
+#endif
+
+/* A few more FORTRAN bindings moved from gmt_fft.c: */
+
+#ifdef FORTRAN_API
+double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_FFT_Wavenumber (GMT_FORTRAN, *k, *mode, v_K));
+}
+#endif
+
+#ifdef FORTRAN_API
+int GMT_FFT_1D_ (float *data, uint64_t *n, int *direction, unsigned int *mode) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_FFT_1D (GMT_FORTRAN, data, *n, *direction, *mode));
+}
+#endif
+
+#ifdef FORTRAN_API
+int GMT_FFT_2D_ (float *data, unsigned int *n_columns, unsigned int *n_rows, int *direction, unsigned int *mode) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_FFT_2D (GMT_FORTRAN, data, *n_columns, *n_rows, *direction, *mode));
 }
 #endif

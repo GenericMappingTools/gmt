@@ -353,13 +353,6 @@ double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K
 	else return (fft_kx (k, K));
 }
 
-#ifdef FORTRAN_API
-double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_FFT_Wavenumber (GMT_FORTRAN, *k, *mode, v_K));
-}
-#endif
-
 #ifdef HAVE_FFTW3F
 
 #include <fftw3.h>
@@ -1657,13 +1650,6 @@ int GMT_FFT_1D (void *V_API, float *data, uint64_t n, int direction, unsigned in
 	return status;
 }
 
-#ifdef FORTRAN_API
-int GMT_FFT_1D_ (float *data, uint64_t *n, int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_FFT_1D (GMT_FORTRAN, data, *n, *direction, *mode));
-}
-#endif
-
 int GMT_FFT_2D (void *V_API, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
 	/* data is an array of length n_columns*n_rows (or 2*n_columns*n_rows for complex) data points
 	 * n_columns, n_rows is the number of data nodes
@@ -1684,13 +1670,6 @@ int GMT_FFT_2D (void *V_API, float *data, unsigned int n_columns, unsigned int n
 	}
 	return status;
 }
-
-#ifdef FORTRAN_API
-int GMT_FFT_2D_ (float *data, unsigned int *n_columns, unsigned int *n_rows, int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_FFT_2D (GMT_FORTRAN, data, *n_columns, *n_rows, *direction, *mode));
-}
-#endif
 
 void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 	/* Called by gmt_begin and sets up pointers to the available FFT calls */
