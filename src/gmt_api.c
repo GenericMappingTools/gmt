@@ -11948,6 +11948,7 @@ int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned 
 	/* Hooks a users custom vector onto V's column array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given vector. */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
 	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
 	switch (type) {
 		case GMT_DOUBLE:	V->type[col] = GMT_DOUBLE;	V->data[col].f8  = vector;	break;
@@ -11980,6 +11981,7 @@ void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 	 * V->type[col] to know what data type is pointed to.  */
 	void *vector = NULL;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+	if (V == NULL) return_null (API, GMT_PTR_IS_NULL);
 	if (col >= V->n_columns) return_null (API, GMT_DIM_TOO_LARGE);
 	switch (V->type[col]) {
 		case GMT_DOUBLE:	vector = V->data[col].f8;	break;
@@ -12006,10 +12008,26 @@ void * GMT_Get_Vector_ (void *V_API, struct GMT_VECTOR *V, unsigned int *col) {
 }
 #endif
 
+int GMT_Set_Vector (void *API, struct GMT_VECTOR *V, uint64_t n_rows) {
+	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
+	V->n_rows = n_rows;
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Vector_ (void *V_API, struct GMT_VECTOR *V, uint64_t *n_rows) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Vector (GMT_FORTRAN, V, *n_rows));
+}
+#endif
+
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given matrix. */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
 	switch (type) {
 		case GMT_DOUBLE:	M->type = GMT_DOUBLE;	M->data.f8  = matrix;	break;
 		case GMT_FLOAT:		M->type = GMT_FLOAT;	M->data.f4  = matrix;	break;
@@ -12041,6 +12059,7 @@ void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	 * M->type to know what data type is pointed to.  */
 	void *matrix = NULL;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+	if (M == NULL) return_null (API, GMT_PTR_IS_NULL);
 	switch (M->type) {
 		case GMT_DOUBLE:	matrix = M->data.f8;	break;
 		case GMT_FLOAT:		matrix = M->data.f4;	break;
@@ -12063,6 +12082,22 @@ void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 void * GMT_Get_Matrix_ (void *V_API, struct GMT_MATRIX *M) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Matrix (GMT_FORTRAN, M));
+}
+#endif
+
+int GMT_Set_Matrix (void *API, struct GMT_MATRIX *M, uint64_t n_rows, uint64_t n_columns) {
+	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
+	M->n_rows    = n_rows;
+	M->n_columns = n_columns;
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Set_Matrix_ (void *V_API, struct GMT_MATRIX *M, uint64_t *n_rows, uint64_t *n_columns) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_Matrix (GMT_FORTRAN, M, *n_rows, *n_columns));
 }
 #endif
 
