@@ -5437,7 +5437,7 @@ GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 
 char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	unsigned int k = 0, pos = 0;
-	bool got_a = false, got_lonlat = false;
+	bool got_a = false, got_b = false, got_lonlat = false;
 	char *pStrOut = NULL;
 	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *prjcode, *pch = NULL;
@@ -5488,7 +5488,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
 		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
-		wipe_substr(szProj4, token);
 	}
 	/* Cylindrical projections */
 	else if (!strcmp(prjcode, "cea")) {
@@ -5638,6 +5637,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		/* f =  1 - b / a; */
 		f =  1 - atof(&token[2]) / GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;
 		GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening = f;
+		got_b = true;
 		wipe_substr(szProj4, token);
 	}
 	if ((pch = strstr(szProj4, "+k_0=")) != NULL) {		/* Check for scale factor */
@@ -5696,31 +5696,37 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if ((pch = strstr(szProj4, "+towgs84=")) != NULL) {
 		int n = 0;
-		char *txt, t[16] = {""};
-		struct GMT_DATUM *to = NULL, *from = NULL;
+		char *txt, t[64] = {""};
+		struct GMT_DATUM to, from;
 
-		if (ename[0] == '\0') {
+		if (ename[0] == '\0' && (!got_a || !got_b)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
-			           "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin (miss +ellips=xxx)\n");
+			            "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
+					    "(miss +ellips=xxxx OR +a=xxxx +b=xxxx)\n");
 			return (pStrOut);
 		}
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		txt = strdup (&token[8]);
 		pch = strchr(txt,',');
-		while (pch != NULL && n < 3) {		/* 3 because GMT does not the full Bursa-Wolf 7 params transform */
+		while (pch != NULL && n < 2) {		/* because GMT does not the full Bursa-Wolf 7 params transform */
 			pch = strchr(pch+1,',');
 			n++;
 		}
-		pch[0] = '\0';
-		sprintf(t, "%s:%s", ename, txt);	/* Create a ellip:dx,dy,dz string */
-		pch[0] = ',';
-		if ((pch = strchr(pch+1,',')) != NULL)
+		if (ename[0] != '\0')                   /* We know the ellipsoid name */
+			sprintf(t, "%s:%s", ename, txt);    /* Create a ellip:dx,dy,dz string */
+		else                                    /* Need to pass a,1/f */
+			sprintf(t, "%12g,%.10f:%s",
+			        GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius,
+					1 / GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening,
+					txt);
+
+		if (pch && strcmp(pch, ",0,0,0,0"))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT only process the Molodensky dx,dy,dz parames, remaining rotation params were ignored\n");
 
 		// Need to create and fill 2 GMT_DATUM structs (from & to). See gmt_set_datum() & gmt_datum_init()
-		gmt_set_datum (GMT, "-", to);		/* 'to' is WG84 */
-		gmt_set_datum (GMT, t, from);
-		gmt_datum_init(GMT, from, to, false);
+		gmt_set_datum (GMT, "-", &to);		/* 'to' is WG84 */
+		gmt_set_datum (GMT, t, &from);
+		gmt_datum_init(GMT, &from, &to, false);
 
 		free(txt);
 		wipe_substr(szProj4, token);
@@ -5763,6 +5769,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		k++;
 	if (k < strlen(szProj4))
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
+
+	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
 
 	pStrOut = strdup(opt_J);
 	return (pStrOut);
