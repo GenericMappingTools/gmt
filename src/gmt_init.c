@@ -13909,7 +13909,7 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			return GMT_FILE_NOT_FOUND;
 		}
-		if (_chsize (fileno (fp), size)) {
+		if (_chsize (fileno (fp), (long)size)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via _chsize) back to %" PRIuS " bytes\n", file, size);
 			return errno;
 		}
