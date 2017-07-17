@@ -410,6 +410,7 @@ struct GMT_PROJ {
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0;
+	bool is_proj4;
 };
 
 enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
