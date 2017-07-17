@@ -5449,7 +5449,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		pch[0] = '\0';
 	}
 	else
-		sprintf(scale_c, "14c");		// TEMP, should error instead
+		sprintf(scale_c, "1:1");	/* Good for map|grdproject but will blow in user hands for the others */
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
 		bool found = false;
@@ -5762,7 +5762,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		strcat (opt_J, "d");
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
-		opt_J[1] = tolower(opt_J[1]);
+		opt_J[0] = tolower(opt_J[0]);
 
 	k = 0;
 	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+'))
