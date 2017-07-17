@@ -258,7 +258,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing = GMT->current.proj.proj4_y0;
 	}
 	if (GMT->current.proj.is_proj4)
-		Ctrl->C.active   = shift_xy = true;
+		Ctrl->C.active = Ctrl->F.active = shift_xy = true;
 #endif
 	
 	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);

@@ -718,7 +718,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing = GMT->current.proj.proj4_y0;
 	}
 	if (GMT->current.proj.is_proj4)
-		Ctrl->C.active   = true;
+		Ctrl->C.active = Ctrl->F.active = true;
 #endif
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
