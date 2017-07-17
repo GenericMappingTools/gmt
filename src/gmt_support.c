@@ -4059,7 +4059,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	 * If -?m, optionally set annotation interval with +
 	 */
 
-	if (!text) {
+	if (!text[0]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
