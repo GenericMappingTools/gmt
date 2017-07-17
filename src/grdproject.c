@@ -251,6 +251,15 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
+
+#ifdef PRJ4
+	if (!shift_xy && (Ctrl->C.easting != 0 || Ctrl->C.northing != 0)) {	/* Set by a proj4 string */
+		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
+		Ctrl->C.northing = GMT->current.proj.proj4_y0;
+	}
+	if (GMT->current.proj.is_proj4)
+		Ctrl->C.active   = shift_xy = true;
+#endif
 	
 	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
 	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);

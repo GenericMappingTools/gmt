@@ -712,6 +712,15 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->Q.mode) Return (GMT_NOERROR);
 
+#ifdef PRJ4
+	if (!Ctrl->C.shift && (Ctrl->C.easting != 0 || Ctrl->C.northing != 0)) {	/* Set by a proj4 string */
+		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
+		Ctrl->C.northing = GMT->current.proj.proj4_y0;
+	}
+	if (GMT->current.proj.is_proj4)
+		Ctrl->C.active   = true;
+#endif
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
