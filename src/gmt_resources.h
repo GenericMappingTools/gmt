@@ -81,7 +81,17 @@ enum GMT_enum_type {
 	GMT_DOUBLE,    /* 8-byte data float type */
 	GMT_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */
 	GMT_DATETIME,  /* string with date/time info [OGR/GMT use only] */
-	GMT_N_TYPES};  /* The number of supported data types above */
+	GMT_N_TYPES,  /* The number of supported data types above */
+	GMT_VIA_CHAR = 100,  /* int8_t, 1-byte signed integer type */
+	GMT_VIA_UCHAR = 200,     /* uint8_t, 1-byte unsigned integer type */
+	GMT_VIA_SHORT = 300,     /* int16_t, 2-byte signed integer type */
+	GMT_VIA_USHORT = 400,    /* uint16_t, 2-byte unsigned integer type */
+	GMT_VIA_INT = 500,       /* int32_t, 4-byte signed integer type */
+	GMT_VIA_UINT = 600,      /* uint32_t, 4-byte unsigned integer type */
+	GMT_VIA_LONG = 700,      /* int64_t, 8-byte signed integer type */
+	GMT_VIA_ULONG = 800,     /* uint64_t, 8-byte unsigned integer type */
+	GMT_VIA_FLOAT = 900,     /* 4-byte data float type */
+	GMT_VIA_DOUBLE = 1000};    /* 8-byte data float type */
 
 /*! These are the 5 methods for i/o; used as arguments in the API that expects a "method" */
 
@@ -90,14 +100,16 @@ enum GMT_enum_method {
 	GMT_IS_STREAM = 1,	/* Entity is an open stream */
 	GMT_IS_FDESC = 2,	/* Entity is an open file descriptor */
 	GMT_IS_DUPLICATE = 3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE = 4,	/* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_REFERENCE = 4,	/* Entity is a memory location that should be referenced */
 	GMT_IS_OUTPUT = 1024};	/* When creating a resource as a container for output */
 
 /* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_NONE = 0,	/* No via anything */
-	GMT_VIA_MODULE_INPUT = 64};	/* To flag resources destined for another module's "command-line" input */
+	GMT_VIA_MODULE_INPUT = 64,	/* To flag resources destined for another module's "command-line" input */
+	GMT_VIA_VECTOR = 128,	/* A data item masquerading as a vector */
+	GMT_VIA_MATRIX = 256};	/* A data item masquerading as a matrix */
 
 /* We may allocate just a container, just the data (if container was allocated earlier), or both: */
 enum GMT_enum_container {
