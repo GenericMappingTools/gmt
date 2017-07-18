@@ -234,7 +234,7 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
  * NOTE: THe order of these depends on the order in the enums in gmt_resources.h! */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
-static const char *GMT_family[] = {"Data Table", "GMT Grid", "GMT Image", "CPT", "GMT PostScript", "Text Table", "GMT Matrix", "GMT Vector", "GMT Coord"};
+static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostScript", "Text Table", "Matrix", "Vector", "Coord"};
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
@@ -569,20 +569,20 @@ GMT_LOCAL void api_list_objects (struct GMTAPI_CTRL *API, char *txt) {
 	snprintf (message, GMT_LEN256, "==> %d API Objects at end of %s\n", API->n_objects, txt);
 	GMT_Message (API, GMT_TIME_NONE, message);
 	if (API->n_objects == 0) return;
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
-	snprintf (message, GMT_LEN256, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
+	GMT_Message (API, GMT_TIME_NONE, "---------------------------------------------------------------------\n");
+	snprintf (message, GMT_LEN256, "K.. ID RESOURCE.... DATA........ FAMILY.... ACTUAL.... DIR... S O M L\n");
 	GMT_Message (API, GMT_TIME_NONE, message);
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "---------------------------------------------------------------------\n");
 	for (item = 0; item < API->n_objects; item++) {
 		if ((S = API->object[item]) == NULL) continue;
 		O = (S->no_longer_owner) ? 'N' : 'Y';
 		M = (S->messenger) ? 'Y' : 'N';
 		ext = (S->alloc_mode == GMT_ALLOC_EXTERNALLY) ? '*' : ' ';
-		snprintf (message, GMT_LEN256, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
-			GMT_family[S->family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
+		snprintf (message, GMT_LEN256, "%c%2d %2d %12" PRIxS " %12" PRIxS " %-10s %-10s %-6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
+			GMT_family[S->family], GMT_family[S->actual_family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
 		GMT_Message (API, GMT_TIME_NONE, message);
 	}
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "---------------------------------------------------------------------\n");
 }
 
 /*! Mostly for debugging */
@@ -628,7 +628,7 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	else	/* Here we are probably running from the command line and want the shell's PID */
 		ppid = getppid(), k = 1; /* parent process id */
 #endif
-	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d", source[k], ppid);
+	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
 	return (ppid);
 }
 
@@ -1564,7 +1564,7 @@ GMT_LOCAL void *api_retrieve_data (void *V_API, int object_ID) {
 	API->object[item]->resource = NULL;
 
 #ifdef DEBUG
-	api_list_objects (API, "api_retrieve_data");
+	//api_list_objects (API, "api_retrieve_data");
 #endif
 	return (API->object[item]->data);	/* Return pointer to the data container */
 }
@@ -5179,7 +5179,7 @@ GMT_LOCAL void *api_get_data (void *V_API, int object_ID, unsigned int mode, voi
 	}
 #ifdef DEBUG
 	api_set_object (API, API->object[item]);
-	api_list_objects (API, "api_get_data");
+	//api_list_objects (API, "api_get_data");
 #endif
 	return (new_obj);		/* Return pointer to the data container */
 }
@@ -5242,7 +5242,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	}
 
 #ifdef DEBUG
-	api_list_objects (API, "api_export_data-in");
+	//api_list_objects (API, "api_export_data-in");
 #endif
 	/* PW Note: Important that any exporter needing to create memory to hold an output
 	 * that will be returned to the caller: Never create/duplicate with the API functions
@@ -5281,7 +5281,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 			break;
 	}
 #ifdef DEBUG
-	api_list_objects (API, "api_export_data-out");
+	//api_list_objects (API, "api_export_data-out");
 #endif
 	return (gmtapi_report_error (API, error));	/* Return status */
 }
@@ -5321,7 +5321,7 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 	}
 #ifdef DEBUG
 	api_set_object (API, API->object[item]);
-	api_list_objects (API, "api_put_data");
+	//api_list_objects (API, "api_put_data");
 #endif
 	return (GMT_OK);	/* No error encountered */
 }
@@ -5720,7 +5720,7 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 		if (!(S_obj->data || S_obj->resource)) {	/* No memory to free (probably freed earlier); handle trashing of empty object after this loop */
 			i++;	continue;
 		}
-		if (S_obj->no_longer_owner) {	/* No memory to free since we passed it on; just NULL the pointers */
+		if (level != GMT_NOTSET && S_obj->no_longer_owner) {	/* No memory to free since we passed it on; just NULL the pointers */
 			S_obj->data = S_obj->resource = NULL;		/* Since other objects own the data now */
 			S_obj->alloc_level = u_level;			/* To ensure it will be Unregistered below */
 			S_obj->alloc_mode = GMT_ALLOC_INTERNALLY;	/* To ensure it will be Unregistered below */
@@ -6035,7 +6035,6 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 #endif
 	if ((len = strlen (API->tmp_dir)) > 2 && API->tmp_dir[len-1] == '/') API->tmp_dir[len-1] = '\0';	/* Chop off trailing slash */
 	API->PPID = api_get_ppid (API);		/* Save PPID for the rest of the session */
-	GMT_Report (API, GMT_MSG_DEBUG, "Obtained PPID = %d\n", API->PPID);
 
 	/* gmt_begin initializes, among other things, the settings in the user's (or the system's) gmt.conf file */
 	if (gmt_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
@@ -6105,7 +6104,7 @@ int GMT_Destroy_Session (void *V_API) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	gmt_M_free (API->GMT, API->object);
-	if (API->GMT->session.std[GMT_ERR] != stdin)	/* Close the error fp pointer */
+	if (API->GMT->session.std[GMT_ERR] != stderr)	/* Close the error log fp pointer */
 		fclose (API->GMT->session.std[GMT_ERR]);
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
@@ -6375,7 +6374,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	object_ID = api_add_data_object (API, S_obj);
 	GMT_Report (API, GMT_MSG_DEBUG, message, object_ID, API->n_objects);
 #ifdef DEBUG
-	api_list_objects (API, "GMT_Register_IO");
+	//api_list_objects (API, "GMT_Register_IO");
 #endif
 	return_value (API, API->error, object_ID);
 }
@@ -6867,7 +6866,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		/* If the input is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
 		if (S_obj->actual_family == GMT_IS_MATRIX && family == GMT_IS_GRID && !matrix_data_conforms_to_grid (data)) {
 			S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Must switch to GMT_IS_DUPLICATE since input user data is not float");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile [GMT_IS_GRID/MATRIX]: Switch to GMT_IS_DUPLICATE as given in data not float\n");
 		}
 	}
 	else {	/* Set things up for writing */
@@ -6892,7 +6891,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			/* If the output is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
 			if (S_obj->actual_family == GMT_IS_MATRIX && family == GMT_IS_GRID && !matrix_data_conforms_to_grid (data)) {
 				S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Must switch to GMT_IS_DUPLICATE since user output matrix data is not grid compatible");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile [GMT_IS_GRID/MATRIX]: Switch to GMT_IS_DUPLICATE as given out data not float\n");
 			}
 		}
 		else {	/* New expanding output resource */
@@ -6914,7 +6913,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			/* If the output is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
 			if (S_obj->actual_family == GMT_IS_MATRIX && family == GMT_IS_GRID && !matrix_data_conforms_to_grid (object)) {
 				S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Must switch to GMT_IS_DUPLICATE since user output matrix data is not grid compatible");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile [GMT_IS_GRID/MATRIX]: Switch to GMT_IS_DUPLICATE as requested out data not float\n");
 			}
 		}
 	}
@@ -8335,8 +8334,8 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 #endif
 
 	}
-	else {
-		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
+	else if (error != GMT_FREE_WRONG_LEVEL) {
+		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED as they are not considered errors here. */
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: Ignored warning %d for object %d\n", error, object_ID);
 	}
 	return_error (API, GMT_OK);
@@ -8648,9 +8647,15 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 		API->object[item]->actual_family = family;	/* No distinction between these at this point since usage is unknown */
 		if (def_direction == GMT_OUT) API->object[item]->messenger = true;	/* We are passing a dummy container that should be destroyed before returning actual data */
 		GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container\n", GMT_family[family]);
+#ifdef DEBUG
+		api_set_object (API, API->object[item]);
+#endif
 	}
 	else
 		GMT_Report (API, GMT_MSG_DEBUG, "Successfully added data array to previously registered %s container\n", GMT_family[family]);
+#ifdef DEBUG
+	api_list_objects (API, "GMT_Create_Data");
+#endif
 
 	return (new_obj);
 }

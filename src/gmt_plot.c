@@ -6187,8 +6187,7 @@ void gmt_plotcanvas (struct GMT_CTRL *GMT) {
 int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	/* Remove the last n layers from the current figure */
 	char file[PATH_MAX] = {""}, buffer[GMT_LEN64] = {""};
-	int k = 0;
-	int fig;
+	int k = 0, fig;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	FILE *fp = NULL;
 	struct GMT_PSLAYER {	/* Used to hold the layer info locally */
@@ -6220,7 +6219,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	layer = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_PSLAYER);
 	while (fgets (buffer, GMT_LEN64, fp)) {
 		sscanf (buffer, "%d %" PRIuS, &layer[k].id, &layer[k].size);
-		if (++k == n_alloc) {	/* Need more memory */
+		if (++k == (int)n_alloc) {	/* Need more memory */
 			n_alloc <<= 1;
 			layer = gmt_M_memory (API->GMT, layer, n_alloc, struct GMT_PSLAYER);
 		}

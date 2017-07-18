@@ -1,4 +1,4 @@
-#include "gmt.h"
+#include "gmt_dev.h"
 #include <math.h>
 /*
  * Testing the user of user data provided via GMT_MATRIX
@@ -176,18 +176,20 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT) {
 	uint64_t dim[3] = {NCOLS, NROWS, 1};		/* ncols, nrows, nlayers */
 	int bad = 0;
 	unsigned int out_via = (outtype + 1) * 100 + GMT_IS_SURFACE;	/* To get GMT_VIA_<type */
+    unsigned int mode = (6 << 16) + GMT_SESSION_EXTERNAL;
 	double diff;
-    void *API = NULL;                           /* The API control structure */
+    //void *API = NULL;                           /* The API control structure */
     struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output grids as matrix */
     char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
     char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
     char args[128] = {""};            			/* String to hold module command arguments */
 	void *in_data = NULL, *out_data = NULL;
+	struct GMTAPI_CTRL *API = NULL;
 	
 	in_data = get_array (intype, 1);			/* Create dummy user grid in_data[] = k */
 	
    /* Initialize a GMT session */
-    API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
+    API = GMT_Create_Session ("test", 2U, mode, NULL);
  	/* Create a blank matrix container that will hold our user in_data */
 	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/* Hook the user input array up to this container */
@@ -229,6 +231,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT) {
 	}
 	/* Destroy session, which will free all GMT-allocated memory */
 	if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
+	fprintf (stderr, "\n\n");
 	free (in_data);
 	if (alloc_in_GMT == 0) free (out_data);
 	return bad;
