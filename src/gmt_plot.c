@@ -5453,9 +5453,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
 		bool found = false;
-		FILE *fp = NULL;
 		char buffer [GMT_LEN256] = {""};
-		int EPSGID = atoi(szProj4);
+		int EPSGID;
+		FILE *fp = NULL;
+
+		if (szProj4[0] == '+')		/* Let it both work: -J+epsg or -Jepsg */
+			EPSGID = atoi(&szProj4[1]);
+		else
+			EPSGID = atoi(szProj4);
 
 		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
 		if ((fp = fopen (buffer, "r")) == NULL) {
@@ -5487,6 +5492,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
+		GMT->current.proj.projection = GMT_LINEAR;
 		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
 	}
 	/* Cylindrical projections */
@@ -5758,7 +5764,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	}
 
 	strcat (opt_J, scale_c);
-	if (got_lonlat)				/* But this will all fail if x-scale & y-scale is given */
+	if (got_lonlat && (strlen(scale_c) != 3 || !strchr(scale_c, ':')))		/* But this will all fail if x-scale & y-scale is given */
 		strcat (opt_J, "d");
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
