@@ -380,27 +380,27 @@ struct GMT_PROJ {
 
 	double v_r, v_ir;
 
-        /* General Perspective parameters */
-        double g_H, g_R;
-        double g_P, g_P_inverse;
-        double g_lon0;
-        double g_sphi1, g_cphi1;
-        double g_phig, g_sphig, g_cphig;
-        double g_sdphi, g_cdphi;
-        double g_B, g_D, g_L, g_G, g_J;
-        double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2, g_HJ;
-        double g_sin_tilt, g_cos_tilt;
-        double g_azimuth, g_sin_azimuth, g_cos_azimuth;
-        double g_sin_twist, g_cos_twist;
-        double g_width;
-        double g_yoffset;
-        double g_rmax;
-        double g_max_yt;
-        double g_xmin, g_xmax;
-        double g_ymin, g_ymax;
+	/* General Perspective parameters */
+	double g_H, g_R;
+	double g_P, g_P_inverse;
+	double g_lon0;
+	double g_sphi1, g_cphi1;
+	double g_phig, g_sphig, g_cphig;
+	double g_sdphi, g_cdphi;
+	double g_B, g_D, g_L, g_G, g_J;
+	double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2, g_HJ;
+	double g_sin_tilt, g_cos_tilt;
+	double g_azimuth, g_sin_azimuth, g_cos_azimuth;
+	double g_sin_twist, g_cos_twist;
+	double g_width;
+	double g_yoffset;
+	double g_rmax;
+	double g_max_yt;
+	double g_xmin, g_xmax;
+	double g_ymin, g_ymax;
 
-        unsigned int g_debug;
-        int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
+	unsigned int g_debug;
+	int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
 	bool windowed;
 	
 	/* Polar (cylindrical) projection */
