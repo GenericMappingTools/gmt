@@ -604,37 +604,10 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 }
 #endif
 
-/*! . */
-GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
-	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
-	int ppid = -1;
-	unsigned int k = 0;
-	static char *source[4] = {"GMT_PPID", "parent", "app", "hardwired choice"};
-	char *str = NULL;
-	if ((str = getenv ("GMT_PPID")) != NULL)	/* GMT_PPID was set in the environment */
-		ppid = atoi (str);
-#if defined(WIN32) || defined(DEBUG_MODERN)
-	/* OK, the trouble is the following. On Win, if the executables are run from within a bash window
-	   api_get_ppid returns different values for each call, and this completely breaks the idea
-	   of using the constant PPID (parent PID) to create unique file names for each session.
-	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
-	   we are forcing PPID = 0 in all Windows variants unless set via GMT_PPID. A corollary of this
-	   is that WIndows users running many bash windows concurrently should use GMT_PPID in their scripts
-	   to give unique values to different scripts.  */
-	if (ppid == -1) ppid = 0, k = 3;
-#else
-	else if (API->external)	/* Return PID of the controlling app instead for external interfaces */
-		ppid = getpid (), k = 2;
-	else	/* Here we are probably running from the command line and want the shell's PID */
-		ppid = getppid(), k = 1; /* parent process id */
-#endif
-	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
-	return (ppid);
-}
 
-#if 0
 /* This was our effort to get PPID under Windows.  Remains as comments for now */
 #ifdef _WIN32
+int winppid () {
 	int pid = GetCurrentProcessId ();
 	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
 	PROCESSENTRY32 pe = { 0 };
@@ -647,8 +620,44 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 		} while (ppid == -1 && Process32Next(h, &pe));
 	}
 	CloseHandle (h);
+	return (ppid);
+}
 #endif
+
+/*! . */
+GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
+	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
+	int ppid = -1;
+	unsigned int k = 0;
+	static char *source[4] = {"GMT_PPID", "parent", "app", "hardwired choice"};
+	char *str = NULL;
+	if ((str = getenv ("GMT_PPID")) != NULL)	/* GMT_PPID was set in the environment */
+		ppid = atoi (str);
+#ifdef DEBUG_MODERN	/* To simplify debugging we set it to 1 */
+	if (ppid == -1) ppid = 1, k = 3;
+#elif defined(WIN32)
+	/* OK, the trouble is the following. On Win, if the Windows executables are run from within a bash window
+	   api_get_ppid returns different values for each call, and this completely breaks the idea
+	   of using the constant PPID (parent PID) to create unique file names for each session.
+	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
+	   we are forcing PPID = 0 in all Windows variants unless set via GMT_PPID. A corollary of this
+	   is that Windows users running many bash windows concurrently should use GMT_PPID in their scripts
+	   to give unique values to different scripts.  */
+	if ((str = getenv ("SHELL")) != NULL) {	/* GMT_PPID was set in the environment */
+		if (ppid == -1) ppid = 0, k = 3;
+	}
+	else {
+		if (ppid == -1) ppid = winppid(), k = 1;
+	}
+#else	/* Normal situation */
+	else if (API->external)	/* Return PID of the controlling app instead for external interfaces */
+		ppid = getpid (), k = 2;
+	else	/* Here we are probably running from the command line and want the shell's PID */
+		ppid = getppid(), k = 1; /* parent process id */
 #endif
+	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
+	return (ppid);
+}
 
 /*! . */
 GMT_LOCAL char *api_lib_tag (char *name) {
@@ -5191,7 +5200,7 @@ GMT_LOCAL void reconsider_messenger (struct GMTAPI_CTRL *API, struct GMTAPI_DATA
 	 * output memory.  For this to be true we need (a) non-NULL vectors/matrix and (b) known
 	 * dimension(s).  If we pass those tests then we set the messenger flag to false.
 	 */
-	
+	gmt_M_unused(API);
 	if (S->messenger == false) return;	/* Nothing to ponder */
 	if (S->actual_family == GMT_IS_VECTOR) {	/* Examine a vector container */
 		struct GMT_VECTOR *V = S->data;

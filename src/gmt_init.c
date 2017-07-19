@@ -10771,12 +10771,12 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 
 /* Subplot functions */
 
-GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, unsigned int *col, double gap[], char *tag, unsigned int *first) {
+GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col, double gap[], char *tag, unsigned int *first) {
 	/* Gets the current subplot panel, returns 1 if found and 0 otherwise */
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	int ios;
-	sprintf (file, "%s/gmt.panel", API->gwf_dir);
+	sprintf (file, "%s/gmt_%d.panel", API->gwf_dir, fig);
 	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
 		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
 		API->error = GMT_NOERROR;
@@ -10799,7 +10799,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, unsigned int *row, uns
 	return GMT_NOERROR;
 }
 
-int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned int col, double gap[], char *label, unsigned first) {
+int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, unsigned int col, double gap[], char *label, unsigned first) {
 	/* Update gmt.panel with current pane's (row,col) and write first as 0 or 1.
 	 * first should be 1 the first time we visit this panel so that the automatic -B
 	 * and panel tag stuff only happens once. */
@@ -10807,7 +10807,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned i
 	static char *dummy = "@";	/* Signify "use the the auto label" */
 	FILE *fp = NULL;
 	L = (label && label[0]) ? label : dummy;
-	sprintf (file, "%s/gmt.panel", API->gwf_dir);
+	sprintf (file, "%s/gmt_%d.panel", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to create file %s!\n", file);
 		API->error = GMT_RUNTIME_ERROR;
@@ -10823,7 +10823,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, unsigned int row, unsigned i
 }
 
 /*! Return information about current panel */
-GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
+GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
 	char file[PATH_MAX] = {""}, line[BUFSIZ] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
 	bool found = false;
@@ -10834,7 +10834,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API) {
 	FILE *fp = NULL;
 
 	API->error = GMT_RUNTIME_ERROR;
-	if (get_current_panel (API, &row, &col, gap, tmp, &first))	/* No panel or there was an error */
+	if (get_current_panel (API, fig, &row, &col, gap, tmp, &first))	/* No panel or there was an error */
 		return NULL;
 
 	/* Now read subplot information file */
@@ -11373,11 +11373,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
-		int id;
+		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
 		char arg[GMT_LEN256] = {""};
 		struct GMT_OPTION *opt_R = NULL, *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
+
+		fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
 		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
@@ -11449,13 +11451,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot so must update gmt.panel */
 			unsigned int row, col;
 			sscanf (opt->arg, "%d,%d", &row, &col);
-			if (gmt_set_current_panel (API, row, col, NULL, NULL, 1)) return NULL;
+			if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 			if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here */
 		}
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
-		if (GMT->current.ps.active && !exceptionp && (P = gmtinit_subplot_info (API))) {	/* Yes, so set up current panel settings */
+		if (GMT->current.ps.active && !exceptionp && (P = gmtinit_subplot_info (API, fig))) {	/* Yes, so set up current panel settings */
 			bool frame_set = false, x_set = false, y_set = false;
 			char *c = NULL;
 			if (exceptionb == 0) {
@@ -13722,7 +13724,7 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 	while (fp && fgets (line, PATH_MAX, fp)) {
 		if (line[0] == '#' || line[0] == '\n')
 			continue;
-		if (mode == 1) {
+		if (mode >= 1) {
 			gmt_chop (line);
 			n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 			if (++k >= n_alloc) {
@@ -13790,7 +13792,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
 	}
-	if ((n_figs = gmtlib_read_figures (API->GMT, 2, &fig)) == GMT_NOTSET) {
+	if ((n_figs = gmtlib_read_figures (API->GMT, 2, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
@@ -13847,6 +13849,47 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
+int gmtlib_set_current_figure (struct GMTAPI_CTRL *API, char *prefix, int this_k) {
+	/* Write the current figure number and prefix to the gmt.current file */
+	FILE *fp = NULL;
+	char file[PATH_MAX] = {""};
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtlib_set_current_figure: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (file, "%s/gmt.current", API->gwf_dir);
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtlib_set_current_figure: Could not create file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	fprintf (fp, "%d\t%s\n", this_k, prefix);
+	fclose (fp);
+	return GMT_NOERROR;
+}
+
+int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
+	/* Write the current figure number and prefix to the gmt.current file */
+	FILE *fp = NULL;
+	int fig_no = 0;
+	char file[PATH_MAX] = {""};
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt_get_current_figure: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (file, "%s/gmt.current", API->gwf_dir);
+	/* See if there is a gmt.current file to read */
+	if (access (file, R_OK))	/* No gmt.current file available so return 0 */
+		return fig_no;
+	/* Dealing with many figures so get the current one */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt_get_current_figure: Could not open file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	fscanf (fp, "%d", &fig_no);
+	fclose (fp);
+	return (fig_no);
+}
+
 int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* Add another figure to the gmt.figure queue.
 	 * arg = "[prefix] [format] [options]"
@@ -13857,10 +13900,14 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	 * indicate it was set via gmt figure.  Scripts that are
 	 * not using gmt figure just builds gmt_0.ps-.
 	 * Since gmt_add_figure is called by figure.c and arguments
-	 * have been vetted we dont need to check much here.
+	 * have been vetted we don't need to check much here except
+	 * when gmt figure is called to select an earlier plot and
+	 * make it the current figure.
 	 */
-	int n, n_figs, err;
+	int n = 0, n_figs, this_k, k, err;
+	bool found = false;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
+	struct GMT_FIGURE *fig = NULL;
 	FILE *fp = NULL;
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No workflow directory set\n");
@@ -13878,23 +13925,39 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		/* Separate prefix, format, and convert arguments.  We know n >= 1 here */
 
 		n = sscanf (arg, "%s %s %s", prefix, formats, options);
-		if (n == 1) /* Must set the default pdf format */
+	}
+	/* See what we have registered so far */
+	n_figs = gmtlib_read_figures (API->GMT, 1, &fig);	/* Number and names of figures so far [0] */
+	/* Did we already register this figure? */
+	for (k = 0; !found && k < n_figs; k++) {
+		if (!strcmp (prefix, fig[k].prefix)) {
+			found = true;
+			this_k = k + 1;	/* Since 0 is the hidden file used when figure is not set */
+		}
+	}
+	gmt_M_free (API->GMT, fig);
+	if (found && !(formats[0] == '-' || n == 1)) {
+		/* Want to make an already registered figure the current figure */
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: Cannot select an existing figure and change its format.\n");
+		return GMT_RUNTIME_ERROR;
+	}
+	else if (!found) {	/* Here we have a new valid entry */
+		this_k = n_figs + 1;	/* This is the ID number of the new figure we are adding */
+		if (n == 1) /* Only got a prefix so must set the default pdf format */
 			strncpy (formats, gmt_session_format[GMT_SESSION_FORMAT], GMT_LEN64-1);
+		if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
+			return GMT_ERROR_ON_FOPEN;
+		/* Append the new entry */
+		fprintf (fp, "%d\t%s\t%s", this_k, prefix, formats);
+		if (options[0])	/* Append the options string */
+			fprintf (fp, "\t%s", options);
+		fprintf (fp, "\n");
+		fclose (fp);
 	}
-	/* OK, here we have a valid new entry */
-	n_figs = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
-	if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
+	/* Set the current figure */
+	if (gmtlib_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
-	/* Append the new entry */
-	fprintf (fp, "%d\t%s\t%s", n_figs+1, prefix, formats);
-	if (options[0]) {	/* Append the options string */
-		fprintf (fp, "\t%s", options);
-	}
-	fprintf (fp, "\n");
-	fclose (fp);
-	/* Reset any gmt.layers file (repurposing the prefix string) */
-	sprintf (prefix, "%s/gmt.layers", API->gwf_dir);
-	gmt_remove_file (API->GMT, prefix);	/* Ignore if failed since file may not exist */
+	
 	return GMT_NOERROR;
 }
 

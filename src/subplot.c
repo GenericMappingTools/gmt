@@ -477,7 +477,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_subplot (void *V_API, int mode, void *args) {
-	int error = 0;
+	int error = 0, fig;
 	char file[PATH_MAX] = {""}, command[GMT_LEN256] = {""};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -509,6 +509,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_NORMAL, "Warning: subplot is experimental and not complete.\n");
 	
+	fig = gmt_get_current_figure (API);	/* Get current figure number */
+
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot panel attributes */
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
@@ -519,7 +521,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		bool add_annot;
 		FILE *fp = NULL;
 		
-		sprintf (file, "%s/gmt.subplot", API->gwf_dir);
+		sprintf (file, "%s/gmt_%d.subplot", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Subplot information file already exists: %s\n", file);
 			Return (GMT_RUNTIME_ERROR);
@@ -834,7 +836,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->F.debug) {	/* Write a debug file with panel polygons for use by "gmt subplot end" */
 			bool save = GMT->current.setting.io_header[GMT_OUT];
-			sprintf (file, "%s/subplot.debug", API->gwf_dir);
+			sprintf (file, "%s/gmt_%d.subplotdebug", API->gwf_dir, fig);
 			sprintf (command, "0/%g/0/%g", Ctrl->F.dim[GMT_X], Ctrl->F.dim[GMT_Y]);	/* Save page region */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT, command, D);
 			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
@@ -855,13 +857,14 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if ((error = gmt_set_current_panel (API, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, Ctrl->A.format, 1)))
+		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, Ctrl->A.format, 1)))
 			Return (error)
 	}
 	else {	/* SUBPLOT_END */
 		int k;
 		char *mode[2] = {"w","a"}, vfile[GMT_STR16] = {""};
 		FILE *fp = NULL;
+		
 		/* Must force PSL_completion to run, if set */
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
@@ -876,12 +879,12 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		sprintf (file, "%s/gmt.subplot", API->gwf_dir);
+		sprintf (file, "%s/gmt_%d.subplot", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
-		sprintf (file, "%s/gmt.panel", API->gwf_dir);
+		sprintf (file, "%s/gmt_%d.panel", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		/* Check if we should draw debug lines */
-		sprintf (file, "%s/subplot.debug", API->gwf_dir);
+		sprintf (file, "%s/gmt_%d.subplotdebug", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, NULL)) == NULL) {
 				Return (API->error);

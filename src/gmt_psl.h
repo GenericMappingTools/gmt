@@ -59,6 +59,7 @@ struct GMT_PSL {
 	/* A structure pointer is passed to gmt_plotinit which calls ps_plotinit */
 	int nclip;				/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
 	int clip_level;		/* Sum total clip level, should be zero at end of command sequence */
+	int figure;		/* Layer number starting at 1 and incremented for each GMT layer added */
 	int layer;		/* Layer number starting at 1 and incremented for each GMT layer added */
 	bool active;		/* true if current module writes PostScript */
 	bool initialize;		/* true for new plot (when -R -J must be set), false if overlay (when -R -J are found from history) */

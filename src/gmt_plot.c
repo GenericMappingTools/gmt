@@ -6164,7 +6164,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, "/PSL_exec_completion 1 def\n");
 		}
 		/* Store first = 0 since we are done with -B and the optional tag */
-		if (gmt_set_current_panel (GMT->parent, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
+		if (gmt_set_current_panel (GMT->parent, GMT->current.ps.figure, P->row+1, P->col+1, P->gap, P->tag, 0))	/* +1 since get_current_panel does -1 */
 			return NULL;	/* Should never happen */
 	}
 	return (PSL);
@@ -6195,16 +6195,16 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		size_t size;
 	} *layer = NULL;
 	
-	/* Get the name of the gmt.layers file */
-	sprintf (file, "%s/gmt.layers", API->gwf_dir);
-	if (nlayers == -1) {	/* Reset to nothing, but still remain at current file */
+	fig = gmt_get_current_figure (API);
+	/* Get the name of the corresponding gmt.layers file */
+	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
+	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
 		gmt_remove_file (API->GMT, file);	/* Remove the layers file */
-		fig = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 		gmt_remove_file (API->GMT, file);	/* Wipe the PS file */
 		return GMT_NOERROR;
 	}
-	/* See if there is a gmt.layers file to read */
+	/* See if there is a layers file to read for this figure */
 	if (access (file, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No layers available [no file: %s]\n", file);
 		return GMT_FILE_NOT_FOUND;
@@ -6230,14 +6230,13 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		return GMT_RUNTIME_ERROR;
 	}
 	
-	fig = gmtlib_read_figures (API->GMT, 0, NULL);	/* Number of figures so far [0] */
 	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not truncate file %s!\n", file);
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
-	sprintf (file, "%s/gmt.layers", API->gwf_dir);
+	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not create new file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
@@ -6289,7 +6288,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT->current.ps.fp = NULL;
 		GMT->current.ps.filename[0] = '\0';
 		/* Write layer size to gmt.layers in case of revert calls */
-		sprintf (file, "%s/gmt.layers", GMT->parent->gwf_dir);
+		sprintf (file, "%s/gmt_%d.layers", GMT->parent->gwf_dir, GMT->current.ps.figure);
 		if ((fp = fopen (file, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not open/create file %s\n", file);
 			return;
@@ -7033,16 +7032,16 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 /*! . */
 int gmt_set_psfilename (struct GMT_CTRL *GMT) {
-	int k, fig;
+	int k;
 	/* Returns 0 or 1 if successful and -1 if failure */
-	fig = gmtlib_read_figures (GMT, 0, NULL);	/* Number of figures so far equals the ID of the current figure PS file [0] */
+	GMT->current.ps.figure = gmt_get_current_figure (GMT->parent);
 	
 	if (GMT->parent->gwf_dir == NULL) {	/* Use the established temp directory */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT WorkFlow directory not set!\n");
 		return GMT_NOTSET;
 	}
 	else
-		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, fig);
+		sprintf (GMT->current.ps.filename, "%s/gmt_%d.ps-", GMT->parent->gwf_dir, GMT->current.ps.figure);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Use PS filename %s\n", GMT->current.ps.filename);
 	k = 1 + access (GMT->current.ps.filename, W_OK);	/* 1 = File exists (must append) or 0 (must create) */
 	GMT->current.ps.initialize = (k == 0);	/* False means it is an overlay and -R -J may come from history */
