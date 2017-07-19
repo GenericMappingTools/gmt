@@ -607,8 +607,10 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 
 /* This was our effort to get PPID under Windows.  Remains as comments for now */
 #ifdef _WIN32
+#include <TlHelp32.h>
 int winppid () {
 	int pid = GetCurrentProcessId ();
+	int ppid = -1;
 	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
 	PROCESSENTRY32 pe = { 0 };
 	pe.dwSize = sizeof (PROCESSENTRY32);
