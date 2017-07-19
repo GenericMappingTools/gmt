@@ -3182,18 +3182,24 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	}
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
-			/* Draw AND Annotate */
+			/* Draw, Annotate, and Tick */
 			case 'W': f_side[W_SIDE] |= 3; s_given = true; break;
 			case 'E': f_side[E_SIDE] |= 3; s_given = true; break;
 			case 'S': f_side[S_SIDE] |= 3; s_given = true; break;
 			case 'N': f_side[N_SIDE] |= 3; s_given = true; break;
 			case 'Z': f_side[Z_SIDE] |= 3; s_given = true; break;
-			/* Just Draw */
+			/* Just Draw and Tick */
 			case 'w': f_side[W_SIDE] |= 1; s_given = true; break;
 			case 'e': f_side[E_SIDE] |= 1; s_given = true; break;
 			case 's': f_side[S_SIDE] |= 1; s_given = true; break;
 			case 'n': f_side[N_SIDE] |= 1; s_given = true; break;
 			case 'z': f_side[Z_SIDE] |= 1; s_given = true; break;
+			/* Just Draw */
+			case 'l': f_side[W_SIDE] |= 1; s_given = true; break;
+			case 'r': f_side[E_SIDE] |= 1; s_given = true; break;
+			case 'b': f_side[S_SIDE] |= 1; s_given = true; break;
+			case 't': f_side[N_SIDE] |= 1; s_given = true; break;
+			case 'u': f_side[Z_SIDE] |= 1; s_given = true; break;
 			/* Draw 3-D box */
 			case '+':
 				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
@@ -4815,7 +4821,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "14p,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
 	/* FONT_HEADING */
-	error += gmt_getfont (GMT, "36p,Helvetica,black", &GMT->current.setting.font_heading);
+	error += gmt_getfont (GMT, "32p,Helvetica,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);

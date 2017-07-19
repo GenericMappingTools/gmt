@@ -70,7 +70,7 @@ struct GMT_DEFAULTS {
 	/* DIR group */
 	/* FONT group */
 	struct GMT_FONT font_annot[2];		/* Font for primary and secondary annotations [12p|14p,Helvetica,black] */
-	struct GMT_FONT font_heading;		/* Font for headings above subplots [36p,Helvetica,black] */
+	struct GMT_FONT font_heading;		/* Font for headings above subplots [32p,Helvetica,black] */
 	struct GMT_FONT font_label;		/* Font for labels [16p,Helvetica,black] */
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
 	struct GMT_FONT font_tag;		/* Font for plot figure tags, e.g., a) [20p,Helvetica,black] */

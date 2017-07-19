@@ -163,7 +163,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _FONT_HEADING:
 
 **FONT_HEADING**
-    Font to use when plotting headings above subplots [36p,Helvetica,black].
+    Font to use when plotting headings above subplots [32p,Helvetica,black].
 
 .. _FONT_LABEL:
 
@@ -770,7 +770,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _MAP_HEADING_OFFSET:
 
 **MAP_HEADING_OFFSET**
-    Distance from top of subplot panel titles to the base of the heading [20p].
+    Distance from top of subplot panel titles to the base of the heading [18p].
 
 .. _MAP_LABEL_OFFSET:
 

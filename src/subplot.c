@@ -556,7 +556,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			width  -= (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
 			height -= (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
 		}
-		y_heading = height - heading_only;
+		y_heading = height - heading_only - Ctrl->M.margin[SUBPLOT_PANEL][YHI];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After media margins: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[SUBPLOT_PANEL]) {	/* Remove space used by panel margins */
 			area_dim[GMT_X] -= Ctrl->N.dim[GMT_X] * (Ctrl->M.margin[SUBPLOT_PANEL][XLO] + Ctrl->M.margin[SUBPLOT_PANEL][XHI]);
