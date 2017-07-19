@@ -13,9 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcontour** *grid* |-C|\ [+]\ *cont_int*\ \|\ *cpt*
+**grdcontour** *grid*
 |-J|\ *parameters* [ |-A|\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
+[ |-C|\ [+]\ *cont_int*\ \|\ *cpt* ]
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
@@ -54,6 +55,30 @@ Required Arguments
 *grid*
     2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
+Optional Arguments
+------------------
+
+.. _-A:
+
+**-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
+    *annot_int* is annotation interval in data units; it is ignored if
+    contour levels are given in a file. [Default is no annotations]. Append
+    **-** to disable all annotations implied by **-C**. Alternatively prepend
+    + to the annotation interval to plot that as a single contour. The optional
+    *labelinfo* controls the specifics of the label formatting and consists
+    of a concatenated string made up of any of the following control arguments:
+
+.. include:: explain_clabelinfo.rst_
+
+.. _-B:
+
+.. include:: explain_-B.rst_
+
 .. _-C:
 
 **-C**\ [+]\ *cont_int*
@@ -85,31 +110,9 @@ Required Arguments
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour
-    values have the same units as the grid.
-
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-J.rst_
-
-Optional Arguments
-------------------
-
-.. _-A:
-
-**-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
-    *annot_int* is annotation interval in data units; it is ignored if
-    contour levels are given in a file. [Default is no annotations]. Append
-    **-** to disable all annotations implied by **-C**. Alternatively prepend
-    + to the annotation interval to plot that as a single contour. The optional
-    *labelinfo* controls the specifics of the label formatting and consists
-    of a concatenated string made up of any of the following control arguments:
-
-.. include:: explain_clabelinfo.rst_
-
-.. _-B:
-
-.. include:: explain_-B.rst_
+    values have the same units as the grid.  Finally, if neither **-C**
+    nor **-A** are set then we auto-compute suitable contour and annotation
+    intervals from the data range, yielding 10-20 contours.
 
 .. _-D:
 

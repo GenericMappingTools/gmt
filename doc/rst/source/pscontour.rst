@@ -13,10 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] |-C|\ [+]\ *cpt* |-J|\ *parameters*
+**pscontour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
+[ |-C|\ [+]\ *cont_int* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
@@ -57,38 +58,6 @@ one or more output files (or stdout) and no plot is produced.
 Required Arguments
 ------------------
 
-.. _-C:
-
-**-C**\ [+]\ *cont_int*
-    The contours to be drawn may be specified in one of three possible ways:
-
-    (1) If *cont_int* has the suffix ".cpt" and can be opened as a
-        file, it is assumed to be a CPT. The color
-        boundaries are then used as contour levels. If the CPT has
-        annotation flags in the last column then those contours will be
-        annotated. By default all contours are labeled; use **-A-** to
-        disable all annotations.
-
-    (2) If *cont_int* is a file but not a CPT, it is expected to
-        contain contour levels in column 1 and a
-        C(ontour) OR A(nnotate) in
-        col 2. The levels marked C (or c) are contoured, the levels marked A
-        (or a) are contoured and annotated. Optionally, a third column may
-        be present and contain the fixed annotation angle for this contour
-        level.
-
-    (3) If no file is found, then *cont_int* is interpreted as a
-        constant contour interval. However, if prepended with the + sign the
-        *cont_int* is taken as meaning draw that single contour. The **-A**
-        option offers the same possibility so they may be used together to
-        plot only one annotated and one non-annotated contour.
-        If **-A** is set and **-C** is not, then the contour interval is set
-        equal to the specified annotation interval.
-
-    If a file is given and **-T** is set, then only contours marked with
-    upper case C or A will have tick-marks. In all cases the contour
-    values have the same units as the file.
-
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -123,6 +92,40 @@ Optional Arguments
 .. _-B:
 
 .. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**\ [+]\ *cont_int*
+    The contours to be drawn may be specified in one of three possible ways:
+
+    (1) If *cont_int* has the suffix ".cpt" and can be opened as a
+        file, it is assumed to be a CPT. The color
+        boundaries are then used as contour levels. If the CPT has
+        annotation flags in the last column then those contours will be
+        annotated. By default all contours are labeled; use **-A-** to
+        disable all annotations.
+
+    (2) If *cont_int* is a file but not a CPT, it is expected to
+        contain contour levels in column 1 and a
+        C(ontour) OR A(nnotate) in
+        col 2. The levels marked C (or c) are contoured, the levels marked A
+        (or a) are contoured and annotated. Optionally, a third column may
+        be present and contain the fixed annotation angle for this contour
+        level.
+
+    (3) If no file is found, then *cont_int* is interpreted as a
+        constant contour interval. However, if prepended with the + sign the
+        *cont_int* is taken as meaning draw that single contour. The **-A**
+        option offers the same possibility so they may be used together to
+        plot only one annotated and one non-annotated contour.
+        If **-A** is set and **-C** is not, then the contour interval is set
+        equal to the specified annotation interval.
+
+    If a file is given and **-T** is set, then only contours marked with
+    upper case C or A will have tick-marks. In all cases the contour
+    values have the same units as the file.  Finally, if neither **-C**
+    nor **-A** are set then we auto-compute suitable contour and annotation
+    intervals from the data range, yielding 10-20 contours.
 
 .. _-D:
 
