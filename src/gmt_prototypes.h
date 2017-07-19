@@ -188,7 +188,7 @@ EXTERN_MSC void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsig
 EXTERN_MSC void gmt_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline);
 EXTERN_MSC void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode);
-EXTERN_MSC void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate);
+EXTERN_MSC void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned int side);
 EXTERN_MSC int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline);
 EXTERN_MSC void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level);

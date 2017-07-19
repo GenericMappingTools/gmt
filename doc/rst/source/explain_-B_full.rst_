@@ -8,8 +8,10 @@
     where *axes* selects which axes to plot. By default, all 4 map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
     append the codes for those you want (e.g., **WSn**). Upper case means plot
-    and annotate while lower case just plots the specified axes.  If a 3-D basemap
-    is selected with **-p** and **-Jz**, append **Z** or **z** to control the
+    and annotate while lower case just plots and ticks the specified axes.
+    To *just* draw an axis without annotation and ticks you can use the **l**\ (eft),
+    **r**\ (ight), **b**\ (ottom), **t**\ (opt) and (for 3-D) **u**\ (p) codes. If a 3-D basemap
+    is selected with **-p** and **-Jz**, append **Z**, **z**, or **u** to control the
     appearance of the vertical axis. By default a single vertical axes will be
     plotted at the most suitable map corner. Override the default by appending
     any combination of corner ids **1234**, where **1** represents the lower left

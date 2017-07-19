@@ -592,6 +592,8 @@ GMT_LOCAL bool letter_hangs_down (char *text) {
 	return false;
 }
 
+EXTERN_MSC void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate, unsigned side);
+
 GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
@@ -1049,7 +1051,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 
 		if (B_set) {	/* Used -B */
-			gmt_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
+			gmt_xy_axis2 (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE]);
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
@@ -1314,7 +1316,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
-			gmt_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & 2);
+			gmt_xy_axis2 (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & GMT_AXIS_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE]);
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
 		}
@@ -1469,7 +1471,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
-	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
+	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1600,12 +1602,12 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if (Ctrl->D.emode && Ctrl->D.elength == 0.0) Ctrl->D.elength = Ctrl->D.dim[GMT_Y] * 0.5;
 
 	if (Ctrl->D.horizontal) {
-		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_NONE;
 		dim[GMT_X] = fabs (Ctrl->D.dim[GMT_X]);	dim[GMT_Y] = Ctrl->D.dim[GMT_Y];
 	}
 	else {
 		dim[GMT_Y] = fabs (Ctrl->D.dim[GMT_X]);	dim[GMT_X] = Ctrl->D.dim[GMT_Y];
-		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = 0;
+		GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 		gmt_M_double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		gmt_M_double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}

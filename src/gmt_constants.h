@@ -219,6 +219,15 @@ enum GMT_enum_download {
 	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1
 	};
 
+/*! Various mode for axes */
+enum GMT_enum_axes {
+	GMT_AXIS_NONE  = 0,
+	GMT_AXIS_DRAW  = 1,
+	GMT_AXIS_TICK  = 2,
+	GMT_AXIS_BARB  = 3,
+	GMT_AXIS_ANNOT = 4,
+	GMT_AXIS_ALL   = 7};
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */

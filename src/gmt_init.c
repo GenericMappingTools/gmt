@@ -3166,7 +3166,7 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 		gmt_strrepc (in, 1, '+');
 }
 
-/*! Scans the WESNZ[1234]wesnz[1234] flags and sets the side/drawbox parameters
+/*! Scans the WESNZ[1234]wesnz[1234]lrbtu flags and sets the side/drawbox parameters
  * and returns the length of the remaining string.
  */
 GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
@@ -3183,23 +3183,23 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
 			/* Draw, Annotate, and Tick */
-			case 'W': f_side[W_SIDE] |= 3; s_given = true; break;
-			case 'E': f_side[E_SIDE] |= 3; s_given = true; break;
-			case 'S': f_side[S_SIDE] |= 3; s_given = true; break;
-			case 'N': f_side[N_SIDE] |= 3; s_given = true; break;
-			case 'Z': f_side[Z_SIDE] |= 3; s_given = true; break;
+			case 'W': f_side[W_SIDE] |= GMT_AXIS_ALL; s_given = true; break;
+			case 'E': f_side[E_SIDE] |= GMT_AXIS_ALL; s_given = true; break;
+			case 'S': f_side[S_SIDE] |= GMT_AXIS_ALL; s_given = true; break;
+			case 'N': f_side[N_SIDE] |= GMT_AXIS_ALL; s_given = true; break;
+			case 'Z': f_side[Z_SIDE] |= GMT_AXIS_ALL; s_given = true; break;
 			/* Just Draw and Tick */
-			case 'w': f_side[W_SIDE] |= 1; s_given = true; break;
-			case 'e': f_side[E_SIDE] |= 1; s_given = true; break;
-			case 's': f_side[S_SIDE] |= 1; s_given = true; break;
-			case 'n': f_side[N_SIDE] |= 1; s_given = true; break;
-			case 'z': f_side[Z_SIDE] |= 1; s_given = true; break;
+			case 'w': f_side[W_SIDE] |= GMT_AXIS_BARB; s_given = true; break;
+			case 'e': f_side[E_SIDE] |= GMT_AXIS_BARB; s_given = true; break;
+			case 's': f_side[S_SIDE] |= GMT_AXIS_BARB; s_given = true; break;
+			case 'n': f_side[N_SIDE] |= GMT_AXIS_BARB; s_given = true; break;
+			case 'z': f_side[Z_SIDE] |= GMT_AXIS_BARB; s_given = true; break;
 			/* Just Draw */
-			case 'l': f_side[W_SIDE] |= 1; s_given = true; break;
-			case 'r': f_side[E_SIDE] |= 1; s_given = true; break;
-			case 'b': f_side[S_SIDE] |= 1; s_given = true; break;
-			case 't': f_side[N_SIDE] |= 1; s_given = true; break;
-			case 'u': f_side[Z_SIDE] |= 1; s_given = true; break;
+			case 'l': f_side[W_SIDE] |= GMT_AXIS_DRAW; s_given = true; break;
+			case 'r': f_side[E_SIDE] |= GMT_AXIS_DRAW; s_given = true; break;
+			case 'b': f_side[S_SIDE] |= GMT_AXIS_DRAW; s_given = true; break;
+			case 't': f_side[N_SIDE] |= GMT_AXIS_DRAW; s_given = true; break;
+			case 'u': f_side[Z_SIDE] |= GMT_AXIS_DRAW; s_given = true; break;
 			/* Draw 3-D box */
 			case '+':
 				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
@@ -5498,7 +5498,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
 			gmt_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title, and type of gridlines:\n");
 			gmt_message (GMT, "\t     <axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)].\n");
-			gmt_message (GMT, "\t     Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes.\n");
+			gmt_message (GMT, "\t     Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes,\n");
+			gmt_message (GMT, "\t     and use l,r,b,t,u just to draw (but not annotate and tick) those axes.\n");
 			gmt_message (GMT, "\t     For 3-D plots the Z|z[<corners>][+b] controls the vertical axis.  The <corners> specifies\n");
 			gmt_message (GMT, "\t     at which corner(s) to erect the axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order. [Default automatically selects one axis].\n");

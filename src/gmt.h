@@ -50,7 +50,7 @@ extern "C" {
 #include <stdint.h>
 /*
  * When an application links to a DLL in Windows, the symbols that
- * are imported have to be identified as such.  MSC_EXTERN is used
+ * are imported have to be identified as such.  EXTERN_MSC is used
  * for all functions are is defined in the declspec.h include file.
  */
 #include "declspec.h"

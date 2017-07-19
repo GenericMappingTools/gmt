@@ -321,13 +321,13 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
 		if (GMT->current.map.frame.side[W_SIDE]) gmt_xy_axis (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YLO], y_length, s, n,
-			&GMT->current.map.frame.axis[GMT_Y], true,  GMT->current.map.frame.side[W_SIDE] & 2);	/* West or left y-axis */
+			&GMT->current.map.frame.axis[GMT_Y], true, GMT->current.map.frame.side[W_SIDE]);	/* West or left y-axis */
 		if (GMT->current.map.frame.side[E_SIDE]) gmt_xy_axis (GMT, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], y_length, s, n,
-			&GMT->current.map.frame.axis[GMT_Y], false, GMT->current.map.frame.side[E_SIDE] & 2);	/* East or right y-axis */
+			&GMT->current.map.frame.axis[GMT_Y], false, GMT->current.map.frame.side[E_SIDE]);	/* East or right y-axis */
 		if (GMT->current.map.frame.side[S_SIDE]) gmt_xy_axis (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YLO], x_length, w, e,
-			&GMT->current.map.frame.axis[GMT_X], true,  GMT->current.map.frame.side[S_SIDE] & 2);	/* South or lower x-axis */
+			&GMT->current.map.frame.axis[GMT_X], true, GMT->current.map.frame.side[S_SIDE]);	/* South or lower x-axis */
 		if (GMT->current.map.frame.side[N_SIDE]) gmt_xy_axis (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI], x_length, w, e,
-			&GMT->current.map.frame.axis[GMT_X], false, GMT->current.map.frame.side[N_SIDE] & 2);	/* North or upper x-axis */
+			&GMT->current.map.frame.axis[GMT_X], false, GMT->current.map.frame.side[N_SIDE]);	/* North or upper x-axis */
 
 		PSL_setlinecap (PSL, cap);	/* Reset back to default */
 	}
@@ -335,7 +335,7 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 
 	PSL_comment (PSL, "Placing plot title\n");
 
-	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] == 0)
+	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW)
 		PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
@@ -783,12 +783,12 @@ GMT_LOCAL void plot_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, stru
 				v2 = MIN (val + dx, e);
 				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
-				if (GMT->current.map.frame.side[S_SIDE]) {
+				if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, v1, s, &x1, &y1);
 					gmt_geo_to_xy (GMT, v2, s, &x2, &y2);
 					PSL_plotsegment (PSL, x1-0.5*scale[k]*shift_s[0], y1-0.5*scale[k]*shift_s[1], x2-0.5*scale[k]*shift_s[0], y2-0.5*scale[k]*shift_s[1]);
 				}
-				if (GMT->current.map.frame.side[N_SIDE]) {
+				if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, v1, n, &x1, &y1);
 					gmt_geo_to_xy (GMT, v2, n, &x2, &y2);
 					PSL_plotsegment (PSL, x1-0.5*scale[k]*shift_n[0], y1-0.5*scale[k]*shift_n[1], x2-0.5*scale[k]*shift_n[0], y2-0.5*scale[k]*shift_n[1]);
@@ -827,7 +827,7 @@ GMT_LOCAL void plot_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, struct
 				v2 = MIN (val + dx, e);
 				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
-				if (GMT->current.map.frame.side[S_SIDE]) {
+				if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, v2, s, &x1, &y1);
 					gmt_geo_to_xy (GMT, v1, s, &x2, &y2);
 					az1 = d_atan2d (y1 - GMT->current.proj.c_y0, x1 - GMT->current.proj.c_x0);
@@ -841,7 +841,7 @@ GMT_LOCAL void plot_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, struct
 						PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius_s-scale[k]*dr, az1, az2, PSL_MOVE + PSL_STROKE);
 					}
 				}
-				if (GMT->current.map.frame.side[N_SIDE]) {
+				if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, v2, n, &x1, &y1);
 					gmt_geo_to_xy (GMT, v1, n, &x2, &y2);
 					az1 = d_atan2d (y1 - GMT->current.proj.c_y0, x1 - GMT->current.proj.c_x0);
@@ -894,12 +894,12 @@ GMT_LOCAL void plot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, stru
 				v2 = MIN (val + dy, n);
 				if (v2 - v1 < GMT_CONV8_LIMIT) continue;
 				PSL_setcolor (PSL, shade ? GMT->current.setting.map_frame_pen.rgb : GMT->PSL->init.page_rgb, PSL_IS_STROKE);
-				if (GMT->current.map.frame.side[W_SIDE]) {
+				if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, w, v1, &x1, &y1);
 					gmt_geo_to_xy (GMT, w, v2, &x2, &y2);
 					PSL_plotsegment (PSL, x1-0.5*scale[k]*shift_w[0], y1-0.5*scale[k]*shift_w[1], x2-0.5*scale[k]*shift_w[0], y2-0.5*scale[k]*shift_w[1]);
 				}
-				if (GMT->current.map.frame.side[E_SIDE]) {
+				if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_TICK) {
 					gmt_geo_to_xy (GMT, e, v1, &x1, &y1);
 					gmt_geo_to_xy (GMT, e, v2, &x2, &y2);
 					PSL_plotsegment (PSL, x1+0.5*scale[k]*shift_e[0], y1+0.5*scale[k]*shift_e[1], x2+0.5*scale[k]*shift_e[0], y2+0.5*scale[k]*shift_e[1]);
@@ -1173,10 +1173,10 @@ GMT_LOCAL void plot_rect_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 	/* Temporarily change to square cap so rectangular frames have neat corners */
 	PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
-	if (GMT->current.map.frame.side[W_SIDE]) PSL_plotsegment (PSL, x0, y0, x0, y1);	/* West */
-	if (GMT->current.map.frame.side[E_SIDE]) PSL_plotsegment (PSL, x1, y0, x1, y1);	/* East */
-	if (GMT->current.map.frame.side[S_SIDE]) PSL_plotsegment (PSL, x0, y0, x1, y0);	/* South */
-	if (GMT->current.map.frame.side[N_SIDE]) PSL_plotsegment (PSL, x0, y1, x1, y1);	/* North */
+	if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_DRAW) PSL_plotsegment (PSL, x0, y0, x0, y1);	/* West */
+	if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_DRAW) PSL_plotsegment (PSL, x1, y0, x1, y1);	/* East */
+	if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_DRAW) PSL_plotsegment (PSL, x0, y0, x1, y0);	/* South */
+	if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_DRAW) PSL_plotsegment (PSL, x0, y1, x1, y1);	/* North */
 	PSL_setlinecap (PSL, cap);	/* Reset back to default */
 }
 
@@ -1193,11 +1193,11 @@ GMT_LOCAL void plot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	}
 
 	if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s)) /* Cannot have southern boundary */
-		GMT->current.map.frame.side[S_SIDE] = 0;
+		GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;
 	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n)) /* Cannot have northern boundary */
-		GMT->current.map.frame.side[N_SIDE] = 0;
+		GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w))
-		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_NONE;
 
 	if (!(GMT->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
 		plot_wesn_map_boundary (GMT, PSL, w, e, s, n);
@@ -1257,9 +1257,9 @@ GMT_LOCAL void plot_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	/* Here draw fancy map boundary */
 
 	if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s)) /* Cannot have southern boundary */
-		GMT->current.map.frame.side[S_SIDE] = 0;
+		GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;
 	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n)) /* Cannot have northern boundary */
-		GMT->current.map.frame.side[N_SIDE] = 0;
+		GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 
 	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
 	if (GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
@@ -1308,9 +1308,9 @@ GMT_LOCAL void plot_ellipse_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 	plot_wesn_map_boundary (GMT, PSL, w, e, s, n);	/* Draw outline first, then turn off non-existant sides */
 	if (gmt_M_is_Spole (GMT->common.R.wesn[YLO])) /* Cannot have southern boundary */
-		GMT->current.map.frame.side[S_SIDE] = 0;
+		GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;
 	if (gmt_M_is_Npole (GMT->common.R.wesn[YHI])) /* Cannot have northern boundary */
-		GMT->current.map.frame.side[N_SIDE] = 0;
+		GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 }
 
 GMT_LOCAL void plot_basic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
@@ -1370,39 +1370,39 @@ GMT_LOCAL void plot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 
 	if (GMT->current.proj.got_elevations) {
 		if (doubleAlmostEqual (n, 90.0))
-			GMT->current.map.frame.side[N_SIDE] = 0;	/* No donuts, please */
+			GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;	/* No donuts, please */
 	}
 	else {
 		if (gmt_M_is_zero (s))
-			GMT->current.map.frame.side[S_SIDE] = 0;		/* No donuts, please */
+			GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;		/* No donuts, please */
 	}
 	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w)) {
-		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = 0;
+		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_NONE;
 		close = PSL_CLOSE;
 	}
 	nr = GMT->current.map.n_lon_nodes;
 	while (nr > GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 	da = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / (nr - 1);
-	if (GMT->current.map.frame.side[N_SIDE]) {
+	if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_DRAW) {
 		for (i = 0; i < nr; i++) {
 			a = GMT->common.R.wesn[XLO] + i * da;
 			gmt_geo_to_xy (GMT, a, GMT->common.R.wesn[YHI], &GMT->current.plot.x[i], &GMT->current.plot.y[i]);
 		}
 		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE + close);
 	}
-	if (GMT->current.map.frame.side[S_SIDE]) {
+	if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_DRAW) {
 		for (i = 0; i < nr; i++) {
 			a = GMT->common.R.wesn[XLO] + i * da;
 			gmt_geo_to_xy (GMT, a, GMT->common.R.wesn[YLO], &GMT->current.plot.x[i], &GMT->current.plot.y[i]);
 		}
 		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE + PSL_STROKE + close);
 	}
-	if (GMT->current.map.frame.side[E_SIDE]) {
+	if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_DRAW) {
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &xx[0], &yy[0]);
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xx[1], &yy[1]);
 		PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE);
 	}
-	if (GMT->current.map.frame.side[W_SIDE]) {
+	if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_DRAW) {
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xx[0], &yy[0]);
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &xx[1], &yy[1]);
 		PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE);
@@ -1422,7 +1422,7 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
-		if (!GMT->current.map.frame.side[sides[i]]) continue;
+		if ((GMT->current.map.frame.side[sides[i]] & GMT_AXIS_TICK) == 0) continue;
 		if (!(GMT->current.setting.map_annot_oblique & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 		angle = ((GMT->current.setting.map_annot_oblique & 16) ? (sides[i] - 1) * 90.0 : angles[i]);
 		if (set_angle) {	/* Adjust angle to fit the range of angles relative to each side */
@@ -1845,7 +1845,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	lon_wrap_save = GMT->current.map.lon_wrap;
 
 	if (GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* Make plot header for geographic maps*/
-		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] == 2) {
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_ANNOT) {
 			PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 			PSL_command (PSL, "/PSL_H_y %d ", PSL_IZ (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
 			PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100\\312");
@@ -4090,13 +4090,14 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
  *----------------------------------------------------------|
  */
 
-void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate) {
+void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned side) {
 	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
 	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
 	unsigned int justify;
 	bool horizontal;		/* true if axis is horizontal */
+	bool annotate = ((side & 4) > 0);
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
 	bool faro;			/* true if the anchor point of annotations is on the far side of the axis */
 	bool first = true;
@@ -4123,7 +4124,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = plot_get_primary_annot (A);			/* Find primary axis items */
-	np = gmtlib_coordinate_array (GMT, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 	if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = true;	/* Annotations are orthogonal */
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
@@ -4153,7 +4153,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_plotsegment (PSL, 0.0, 0.0, length, 0.0);
 	else
 		PSL_plotsegment (PSL, 0.0, length, 0.0, 0.0);
-
 	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
 		struct GMT_FILL arrow;
 		double vector_width, dim[PSL_MAX_DIMS];
@@ -4184,6 +4183,13 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			PSL_plotsymbol (PSL, 0.0, y, dim, PSL_VECTOR);
 		}
 	}
+
+	if (side == 1) {	/* Just drawing the axis for this one */
+		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_INV);
+		return;
+	}
+
+	np = gmtlib_coordinate_array (GMT, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 
 	/* Axis items are in order: GMT_ANNOT_UPPER, GMT_ANNOT_LOWER, GMT_TICK_UPPER, GMT_TICK_LOWER, GMT_GRID_UPPER, GMT_GRID_LOWER */
 
@@ -4374,6 +4380,11 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	PSL_command (PSL, close ? "P S\n" : "S\n");
 }
 
+void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate, unsigned side) {
+	if (annotate) side |= 3;
+	gmt_xy_axis (GMT, x0, y0, length, val0, val1, A, below, side);
+}
+
 void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	unsigned int idup = 0, i, nx;
@@ -4541,7 +4552,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 			PSL_command (PSL, "/PSL_GPP matrix currentmatrix def [%g %g %g %g %g %g] concat\n",
 				cosd(az), sind(az) * GMT->current.proj.z_project.sin_el, 0.0, GMT->current.proj.z_project.cos_el, xx * PSL->internal.x2ix, yy * PSL->internal.y2iy);
 			gmt_xy_axis (GMT, 0.0, -GMT->common.R.wesn[ZLO], GMT->current.proj.zmax - GMT->current.proj.zmin, GMT->common.R.wesn[ZLO],
-				GMT->common.R.wesn[ZHI], &GMT->current.map.frame.axis[GMT_Z], true, GMT->current.map.frame.side[Z_SIDE] & 2);
+				GMT->common.R.wesn[ZHI], &GMT->current.map.frame.axis[GMT_Z], true, GMT->current.map.frame.side[Z_SIDE]);
 			PSL_command (PSL, "PSL_GPP setmatrix\n");
 		}
 	}

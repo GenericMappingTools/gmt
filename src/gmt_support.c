@@ -13008,7 +13008,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 	bool set_angle;
 
 	if (!GMT->current.proj.edge[side]) return -1;		/* Side doesn't exist */
-	if (GMT->current.map.frame.side[side] < 2) return -1;	/* Don't want labels here */
+	if (GMT->current.map.frame.side[side] < GMT_AXIS_ANNOT) return -1;	/* Don't want labels here */
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
 
