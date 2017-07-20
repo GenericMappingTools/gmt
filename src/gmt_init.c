@@ -10857,7 +10857,8 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		GMT_Report (API, GMT_MSG_NORMAL, "Subplot Error: Unable to open file %s!\n", file);
 		return NULL;
 	}
-	P = gmt_M_memory (API->GMT, NULL, 1, struct GMT_SUBPLOT);
+	
+	P = &(API->GMT->current.plot.panel);	/* Lazy shorthand only */
 
 	/* Now read it */
 	while (!found && fgets (line, PATH_MAX, fp)) {
@@ -10905,6 +10906,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		return NULL;
 	}
 	API->error = GMT_NOERROR;
+	P->active = 1;
 	return (P);
 }
 
@@ -11522,7 +11524,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						x_set = y_set = true;
 				}
 				if (!frame_set) {	/* Did not specify frame setting so do that now */
-					if (P->Baxes[0] && (opt = GMT_Make_Option (API, 'B', P->Baxes)) == NULL) return NULL;	/* Failure to make option */
+					if (P->Baxes[0]) {	/* Gave frame settings */
+						if ((opt = GMT_Make_Option (API, 'B', P->Baxes)) == NULL) return NULL;	/* Failure to make option */
+					}
 					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
@@ -11546,7 +11550,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			sprintf (arg, "a%gi", P->y);
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			GMT->current.proj.panel = P;	/* So we can access items later.  Will be freed by gmt_end_module */
 		}
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
@@ -11646,7 +11649,6 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->init.history[id] = strdup (RG);
 	}
 
-
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
 
 	for (i = 0; i < GMT_N_UNIQUE; i++)
@@ -11689,7 +11691,6 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
-	gmt_M_free (GMT, Ccopy->current.proj.panel);
 
 
 	/* Try this to fix valgrind leaks */

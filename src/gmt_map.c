@@ -2155,7 +2155,7 @@ GMT_LOCAL void adjust_panel_for_gaps (struct GMT_CTRL *GMT, struct GMT_SUBPLOT *
 /*! . */
 GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax) {
 	/* Set x/y parameters */
-	struct GMT_SUBPLOT *P = GMT->current.proj.panel;	/* NULL unless a panel in a subplot */
+	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
 
 	GMT->current.proj.rect_m[XLO] = xmin;	GMT->current.proj.rect_m[XHI] = xmax;	/* This is in original meters */
 	GMT->current.proj.rect_m[YLO] = ymin;	GMT->current.proj.rect_m[YHI] = ymax;
@@ -2165,7 +2165,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
 
-	if (P && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
+	if (P->active && P->candy == 0)	{	/* Must rescale to fit subplot panel dimensions and set dy for centering */
 		double fw, fh, fx, fy, w, h;
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */

@@ -904,6 +904,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			gmt_remove_file (GMT, file);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Removed panel and subplot files\n");
+		gmt_M_memset (&GMT->current.plot.panel, 1, struct GMT_SUBPLOT);
 	}
 		
 	Return (error);

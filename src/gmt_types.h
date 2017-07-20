@@ -91,6 +91,7 @@ struct GMT_FIGURE {
 
 /*! For keeping track of GMT subplots under modern mode */
 struct GMT_SUBPLOT {
+	unsigned int active;		/* 1 if subplot is in effect */
 	unsigned int row, col;		/* Current panel position e.g., 0,0 */
 	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
@@ -270,6 +271,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
+	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
 };
 
 struct GMT_CURRENT {
