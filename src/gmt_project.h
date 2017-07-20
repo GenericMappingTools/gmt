@@ -202,7 +202,11 @@ struct GMT_THREE_D {
 
 struct GMT_DATUM {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
+#ifdef PRJ4
+	double xyz[7];
+#else
 	double xyz[3];
+#endif
 	int ellipsoid_id;	/* Ellipsoid GMT ID number (or -1) */
 };
 
@@ -213,6 +217,9 @@ struct GMT_DATUM_CONV {
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
 	double one_minus_f;	/* 1 - f */
 	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
+#ifdef PRJ4
+	double bursa[7];	/* Bursa-Wolf seven parameters */
+#endif
 	struct GMT_DATUM from, to;	/* The old and new datums */
 };
 

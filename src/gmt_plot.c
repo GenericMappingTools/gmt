@@ -5672,7 +5672,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		plot_ellipsoid_name_convert2(&token[6], ename);
 		if (ename[0] != '\0')
-			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
+			;//sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
@@ -5716,6 +5716,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		char *txt, t[64] = {""};
 		struct GMT_DATUM to, from;
 
+		memset(&to, 0, sizeof(struct GMT_DATUM));
+		memset(&from, 0, sizeof(struct GMT_DATUM));
+
 		if (ename[0] == '\0' && (!got_a || !got_b)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
 			            "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
@@ -5737,13 +5740,16 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 					1 / GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening,
 					txt);
 
-		if (pch && strcmp(pch, ",0,0,0,0"))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT only process the Molodensky dx,dy,dz parames, remaining rotation params were ignored\n");
+		//if (pch && strcmp(pch, ",0,0,0,0"))
+			//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT only process the Molodensky dx,dy,dz params, remaining rotation params were ignored\n");
 
 		// Need to create and fill 2 GMT_DATUM structs (from & to). See gmt_set_datum() & gmt_datum_init()
-		gmt_set_datum (GMT, "-", &to);		/* 'to' is WG84 */
-		gmt_set_datum (GMT, t, &from);
+		gmt_set_datum (GMT, "-", &from);		/* 'to' is WG84 */
+		gmt_set_datum (GMT, t, &to);
 		gmt_datum_init(GMT, &from, &to, false);
+	
+		for (k = 0; k < 7; k++)
+			GMT->current.proj.datum.bursa[k] = GMT->current.proj.datum.to.xyz[k];
 
 		free(txt);
 		wipe_substr(szProj4, token);

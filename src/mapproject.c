@@ -634,6 +634,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
+#ifdef PRJ4
+	bool datum_already_init = false;
+#endif
 
 	enum GMT_enum_family family;
 	enum GMT_enum_geometry geometry;
@@ -712,6 +715,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->Q.mode) Return (GMT_NOERROR);
 
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 #ifdef PRJ4
 	if (!Ctrl->C.shift && (Ctrl->C.easting != 0 || Ctrl->C.northing != 0)) {	/* Set by a proj4 string */
 		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
@@ -719,11 +723,20 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 	if (GMT->current.proj.is_proj4)
 		Ctrl->C.active = Ctrl->F.active = true;
+	for (k = 0; k < 7; k++) {		/* Check if a +towgs84 was used */
+		if (GMT->current.proj.datum.bursa[k] != 0) {
+			Ctrl->T.active = datum_already_init = true;
+			break;
+		}
+	}
 #endif
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
+#ifdef PRJ4
+	if (Ctrl->T.active && !datum_already_init) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
+#else
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
+#endif
 	if (Ctrl->A.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
 		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
