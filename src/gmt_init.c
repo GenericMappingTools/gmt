@@ -10506,7 +10506,7 @@ int gmt_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode, char **keys,
 /*! Return ID of requested ellipsoid, or -1 if not found */
 int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 	int i, n;
-	char line[GMT_BUFSIZ], ename[GMT_LEN64];
+	char line[GMT_LEN128], ename[GMT_LEN64];
 	double pol_radius;
 
 	/* Try to get ellipsoid from the default list; use case-insensitive checking */
@@ -10541,16 +10541,16 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		FILE *fp = NULL;
-		char path[GMT_BUFSIZ];
+		char path[PATH_MAX];
 		double slop;
 		/* Try to open as file first in (1) current dir, then in (2) $GMT->session.SHAREDIR */
 
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Assigning PROJ_ELLIPSOID a file name is deprecated, use <a>,<inv_f> instead");
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Assigning PROJ_ELLIPSOID a file name is deprecated, use <a>,<inv_f> instead\n");
 		gmt_getsharepath (GMT, NULL, name, "", path, R_OK);
 
 		if ((fp = fopen (name, "r")) != NULL || (fp = fopen (path, "r")) != NULL) {
 			/* Found file, now get parameters */
-			while (fgets (line, GMT_BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
+			while (fgets (line, GMT_LEN128, fp) && (line[0] == '#' || line[0] == '\n'));
 			fclose (fp);
 			n = sscanf (line, "%s %d %lf %lf %lf", GMT->current.setting.ref_ellipsoid[i].name,
 				&GMT->current.setting.ref_ellipsoid[i].date, &GMT->current.setting.ref_ellipsoid[i].eq_radius,
@@ -10568,8 +10568,10 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "user-supplied ellipsoid has implicit flattening of %.8f\n", GMT->current.setting.ref_ellipsoid[i].flattening);
 			}
 			/* else check consistency: */
-			else if ((slop = fabs (GMT->current.setting.ref_ellipsoid[i].flattening - 1.0 + (pol_radius/GMT->current.setting.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
+			else if ((slop = fabs (GMT->current.setting.ref_ellipsoid[i].flattening - 1.0 +
+			         (pol_radius/GMT->current.setting.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+				            "Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
 			}
 			return (i);
 		}
