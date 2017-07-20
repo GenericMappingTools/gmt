@@ -11381,7 +11381,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
-		unsigned int n_errors = 0, first = 0;
+		unsigned int n_errors = 0;
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
 		char arg[GMT_LEN256] = {""};
@@ -11460,8 +11460,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -crow,col for subplot so must update gmt.panel */
 			unsigned int row, col;
 			sscanf (opt->arg, "%d,%d", &row, &col);
-			first = 1;
-			if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, first)) return NULL;
+			if (gmt_set_current_panel (API, fig, row, col, NULL, NULL, 1)) return NULL;
 			if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here */
 		}
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
@@ -11470,7 +11469,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (GMT->current.ps.active && !exceptionp && (P = gmtinit_subplot_info (API, fig))) {	/* Yes, so set up current panel settings */
 			bool frame_set = false, x_set = false, y_set = false;
 			char *c = NULL;
-			if (exceptionb == 0 && first == 1) {
+			if (exceptionb == 0 && P->first == 1) {
 				/* Examine all -B settings and add/merge the panel settings */
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */

@@ -6919,6 +6919,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			}
 			S_obj = API->object[item_s];	/* Short-hand for later */
 			S_obj->type = (via_type) ? via_type - 1 : API->GMT->current.setting.export_type;	/* Remember what output type we want */
+			S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
 			if (via_family == GMT_VIA_VECTOR) S_obj->actual_family = GMT_IS_VECTOR;
 			else if (via_family == GMT_VIA_MATRIX) S_obj->actual_family = GMT_IS_MATRIX;
 			/* If the output is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
