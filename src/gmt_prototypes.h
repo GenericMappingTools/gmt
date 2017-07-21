@@ -418,6 +418,7 @@ EXTERN_MSC void gmt_conv_datum (struct GMT_CTRL *GMT, double in[], double out[])
 #ifdef PRJ4
 EXTERN_MSC void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]);
 EXTERN_MSC void gmt_ECEF_forward_fw (struct GMT_CTRL *GMT, double in[], double out[]);
+EXTERN_MSC void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[]);
 #endif
 EXTERN_MSC struct GMT_DATASEGMENT *gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m);
 

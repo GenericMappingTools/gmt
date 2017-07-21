@@ -8520,10 +8520,10 @@ void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]) {
 	in[GMT_Z] = M_BF*(-Ry_BF*out[GMT_X] + Rx_BF*out[GMT_Y] +       out[GMT_Z]) + Dz_BF;
 
 	/* Temporarily put the datum 'to' in place of 'from'. Needed for the inverse operation (all the times?) */
-	gmt_M_memcpy (&bubble, &GMT->current.proj.datum.from, 1, struct GMT_DATUM);
-	gmt_M_memcpy (&GMT->current.proj.datum.from, &GMT->current.proj.datum.to, 1, struct GMT_DATUM);
-	gmt_ECEF_inverse (GMT, in, out);
-	gmt_M_memcpy (&GMT->current.proj.datum.from, &bubble, 1, struct GMT_DATUM);
+	//gmt_M_memcpy (&bubble, &GMT->current.proj.datum.from, 1, struct GMT_DATUM);
+	//gmt_M_memcpy (&GMT->current.proj.datum.from, &GMT->current.proj.datum.to, 1, struct GMT_DATUM);
+	gmt_ECEF_inverse_dest_datum (GMT, in, out);
+	//gmt_M_memcpy (&GMT->current.proj.datum.from, &bubble, 1, struct GMT_DATUM);
 }
 #endif
 
@@ -8593,12 +8593,7 @@ void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 	double in_p[3], sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
 
 	/* First remove the xyz shifts, us in_p to avoid changing in */
-
-#ifdef PRJ4
-	for (i = 0; i < 3; i++) in_p[i] = in[i];
-#else
 	for (i = 0; i < 3; i++) in_p[i] = in[i] - GMT->current.proj.datum.from.xyz[i];
-#endif
 
 	p = hypot (in_p[GMT_X], in_p[GMT_Y]);
 	theta = atan (in_p[GMT_Z] * GMT->current.proj.datum.from.a / (p * GMT->current.proj.datum.from.b));
@@ -8607,6 +8602,20 @@ void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 	out[GMT_Y] = atand ((in_p[GMT_Z] + GMT->current.proj.datum.from.ep_squared * GMT->current.proj.datum.from.b * pow (sin_theta, 3.0)) / (p - GMT->current.proj.datum.from.e_squared * GMT->current.proj.datum.from.a * pow (cos_theta, 3.0)));
 	sincosd (out[GMT_Y], &sin_lat, &cos_lat);
 	N = GMT->current.proj.datum.from.a / sqrt (1.0 - GMT->current.proj.datum.from.e_squared * sin_lat * sin_lat);
+	out[GMT_Z] = (p / cos_lat) - N;
+}
+
+/*! Convert ECEF coordinates to geodetic lon, lat, height given the 'to' parameters. Used in 7 params Bursa-Wolf transform */
+void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[]) {
+	double sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
+
+	p = hypot (in[GMT_X], in[GMT_Y]);
+	theta = atan (in[GMT_Z] * GMT->current.proj.datum.to.a / (p * GMT->current.proj.datum.to.b));
+	sincos (theta, &sin_theta, &cos_theta);
+	out[GMT_X] = d_atan2d (in[GMT_Y], in[GMT_X]);
+	out[GMT_Y] = atand ((in[GMT_Z] + GMT->current.proj.datum.to.ep_squared * GMT->current.proj.datum.to.b * pow (sin_theta, 3.0)) / (p - GMT->current.proj.datum.to.e_squared * GMT->current.proj.datum.to.a * pow (cos_theta, 3.0)));
+	sincosd (out[GMT_Y], &sin_lat, &cos_lat);
+	N = GMT->current.proj.datum.to.a / sqrt (1.0 - GMT->current.proj.datum.to.e_squared * sin_lat * sin_lat);
 	out[GMT_Z] = (p / cos_lat) - N;
 }
 
