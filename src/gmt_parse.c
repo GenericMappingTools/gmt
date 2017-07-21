@@ -536,7 +536,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 	if (n_args_in == 0) {
 		int k;
 		bool code = false;
-		char figure[GMT_LEN128] = {""}, *c = NULL;
+		char figure[GMT_LEN512] = {""}, *c = NULL;
 		struct GMT_OPTION *opt = NULL;
 		for (opt = head; opt; opt = opt->next) {	/* Loop over all options */
 			if (opt->option == 'O' || opt->option == 'K') break;	/* Cannot be a one-liner if -O or -K are involved */
