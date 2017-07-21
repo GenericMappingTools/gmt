@@ -5713,7 +5713,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if ((pch = strstr(szProj4, "+towgs84=")) != NULL) {
 		int n = 0;
-		char *txt, t[64] = {""};
+		char *txt, t[128] = {""};
 		struct GMT_DATUM to, from;
 
 		memset(&to, 0, sizeof(struct GMT_DATUM));

@@ -8412,77 +8412,6 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 }
 
 #ifdef PRJ4
-#if 0
-#define COS_67P5   0.38268343236508977  /* cosine of 67.5 degrees */
-#define AD_C       1.0026000            /* Toms region 1 constant */
-void gmt_ECEF_inverse_fw (struct GMT_CTRL *GMT, double in[], double out[]) {
-	/* Convert ECEF coordinates to geodetic lon, lat, height given the datum parameters.
-	 * GMT->current.proj.datum.from is always the ellipsoid to use */
-
-    double W;        /* distance from Z axis */
-    double W2;       /* square of distance from Z axis */
-    double T0;       /* initial estimate of vertical component */
-    double T1;       /* corrected estimate of vertical component */
-    double S0;       /* initial estimate of horizontal component */
-    double S1;       /* corrected estimate of horizontal component */
-    double Sin_B0;   /* sin(B0), B0 is estimate of Bowring aux variable */
-    double Sin3_B0;  /* cube of sin(B0) */
-    double Cos_B0;   /* cos(B0) */
-    double Sin_p1;   /* sin(phi1), phi1 is estimated latitude */
-    double Cos_p1;   /* cos(phi1) */
-    double Rn;       /* Earth radius at location */
-    double Sum;      /* numerator of cos(phi1) */
-    int At_Pole;     /* indicates location is in polar region */
-
-    At_Pole = FALSE;
-    if (in[GMT_X] != 0.0)
-        out[GMT_X] = atan2(in[GMT_Y],in[GMT_X]);
-    else {
-        if (in[GMT_Y] > 0)
-            out[GMT_X] = M_PI / 2.0;
-        else if (in[GMT_Y] < 0)
-            out[GMT_X] = -M_PI / 2.0;
-        else {
-            At_Pole = TRUE;
-            out[GMT_X] = 0.0;
-            if (in[GMT_Z] > 0.0) {  /* north pole */
-                out[GMT_Y] = M_PI / 2.0;
-            }
-            else if (in[GMT_Z] < 0.0) {  /* south pole */
-                out[GMT_Y] = -M_PI / 2.0;
-            }
-            else {  /* center of earth */
-                out[GMT_Y] = M_PI / 2.0;
-                out[GMT_Z] = -GMT->current.proj.datum.from.b;
-                return;
-            } 
-        }
-    }
-    W2 = in[GMT_X]*in[GMT_X] + in[GMT_Y]*in[GMT_Y];
-    W = sqrt(W2);
-    T0 = out[GMT_Z] * AD_C;
-    S0 = sqrt(T0 * T0 + W2);
-    Sin_B0 = T0 / S0;
-    Cos_B0 = W / S0;
-    Sin3_B0 = Sin_B0 * Sin_B0 * Sin_B0;
-    T1 = out[GMT_Z] + GMT->current.proj.datum.from.b * GMT->current.proj.datum.from.e_squared * Sin3_B0;
-    Sum = W - GMT->current.proj.datum.from.a * GMT->current.proj.datum.from.e_squared * Cos_B0 * Cos_B0 * Cos_B0;
-    S1 = sqrt(T1*T1 + Sum * Sum);
-    Sin_p1 = T1 / S1;
-    Cos_p1 = Sum / S1;
-    Rn = GMT->current.proj.datum.from.a / sqrt(1.0 - GMT->current.proj.datum.from.e_squared * Sin_p1 * Sin_p1);
-    if (Cos_p1 >= COS_67P5)
-        out[GMT_Z] = W / Cos_p1 - Rn;
-    else if (Cos_p1 <= -COS_67P5)
-        out[GMT_Z] = W / -Cos_p1 - Rn;
-    else
-        out[GMT_Z] = out[GMT_Z] / Sin_p1 + Rn * (GMT->current.proj.datum.from.e_squared - 1.0);
-    if (At_Pole == FALSE)
-        out[GMT_Y] = atan(Sin_p1 / Cos_p1);
-	out[GMT_X] *= R2D;
-	out[GMT_Y] *= R2D;
-}
-#endif
 
 #define PI_OVER_2  (M_PI / 2.0e0)
 #define genau   1.E-12
@@ -8548,8 +8477,13 @@ void gmt_ECEF_inverse_fw (struct GMT_CTRL *GMT, double in[], double out[]) {
 		RN = GMT->current.proj.datum.from.a / sqrt(1.0 - GMT->current.proj.datum.from.e_squared * SPHI0 * SPHI0);
 
 		/*  ellipsoidal (geodetic) height */
-		out[GMT_Z] = P*CPHI0+in[GMT_Y]*SPHI0 - RN * (1.0 - GMT->current.proj.datum.from.e_squared * SPHI0 * SPHI0);
+		out[GMT_Z] = P*CPHI0 + in[GMT_Z]*SPHI0 - RN * (1.0 - GMT->current.proj.datum.from.e_squared * SPHI0 * SPHI0);
 
+        /* avoid zero division */
+		if (RN + in[GMT_Z] == 0.0) {
+			in[GMT_Y] = 0.0;
+			return;
+		}
 		RK = GMT->current.proj.datum.from.e_squared*RN/(RN+out[GMT_Z]);
 		RX = 1.0/sqrt(1.0-RK*(2.0-RK)*ST*ST);
 		CPHI = ST*(1.0-RK)*RX;
@@ -8579,11 +8513,17 @@ void gmt_ECEF_inverse_fw (struct GMT_CTRL *GMT, double in[], double out[]) {
 void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]) {
 	/* Based on https://proj4.org/parameters.html#towgs84-datum-transformation-to-wgs84
 	   and pag 77 of http://www.ihsenergy.com/epsg/guid7_2.pdf */
+	struct GMT_DATUM bubble;
 	gmt_ECEF_forward (GMT, in, out);
 	in[GMT_X] = M_BF*(       out[GMT_X] - Rz_BF*out[GMT_Y] + Ry_BF*out[GMT_Z]) + Dx_BF;
 	in[GMT_Y] = M_BF*( Rz_BF*out[GMT_X] +       out[GMT_Y] - Rx_BF*out[GMT_Z]) + Dy_BF;
 	in[GMT_Z] = M_BF*(-Ry_BF*out[GMT_X] + Rx_BF*out[GMT_Y] +       out[GMT_Z]) + Dz_BF;
-	gmt_ECEF_inverse_fw (GMT, in, out);
+
+	/* Temporarily put the datum 'to' in place of 'from'. Needed for the inverse operation (all the times?) */
+	gmt_M_memcpy (&bubble, &GMT->current.proj.datum.from, 1, struct GMT_DATUM);
+	gmt_M_memcpy (&GMT->current.proj.datum.from, &GMT->current.proj.datum.to, 1, struct GMT_DATUM);
+	gmt_ECEF_inverse (GMT, in, out);
+	gmt_M_memcpy (&GMT->current.proj.datum.from, &bubble, 1, struct GMT_DATUM);
 }
 #endif
 
