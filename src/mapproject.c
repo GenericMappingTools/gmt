@@ -717,9 +717,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 #ifdef PRJ4
-	if (!Ctrl->C.shift && (Ctrl->C.easting != 0 || Ctrl->C.northing != 0)) {	/* Set by a proj4 string */
+	if (!Ctrl->C.shift && (GMT->current.proj.proj4_x0 != 0 || GMT->current.proj.proj4_y0 != 0)) {	/* Set by a proj4 string */
 		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
 		Ctrl->C.northing = GMT->current.proj.proj4_y0;
+		Ctrl->C.shift = true;
 	}
 	if (GMT->current.proj.is_proj4)
 		Ctrl->C.active = Ctrl->F.active = true;
