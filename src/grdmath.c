@@ -4581,46 +4581,32 @@ GMT_LOCAL char *grdmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 }
 
 GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_STORE *recall[], struct GRDMATH_INFO *info) {
-	/* Free allocated memory before quitting.  Some memory is registered while other is local
-	 * so we must first use GMT_Destroy_Data and if it fails then use gmt_free_grid. */
+	/* Free allocated memory via GMT_Destroy_Data. */
 	unsigned int k;
 	int error = 0;
-	bool is_object;
 
+	/* Free anything on the stack */
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (stack[k]->G) {	/* Must free unless being passed back out */
-			is_object = gmtlib_is_an_object (GMT, &stack[k]->G);
-			if (is_object && (error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
-			else if (!is_object || error == GMT_OBJECT_NOT_FOUND) {
-				/* Failures should only be from local objects not passed up */
-				if (gmt_this_alloc_level (GMT, stack[k]->G->alloc_level)) {
-					gmt_free_grid (GMT, &stack[k]->G, true);
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_free_dataset freed stack item %d\n", k);
-				}
-				else
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No freeing, returning stack item %d\n", k);
-			}
-			else
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
-		}
+		if (stack[k]->G && (error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		gmt_M_free (GMT, stack[k]);
 	}
+
+	/* Free anything used for store/recall */
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
-		if (recall[k] && !recall[k]->stored.constant) {
-			if ((error = GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G)) != GMT_NOERROR) {
-				if (error == GMT_OBJECT_NOT_FOUND && gmt_this_alloc_level (GMT, recall[k]->stored.G->alloc_level))
-					gmt_free_grid (GMT, &recall[k]->stored.G, true);
-				else
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
-			}
+		if (!recall[k]->stored.constant) {
+			if ((error = GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G)) != GMT_NOERROR)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 		}
 		gmt_M_free (GMT, recall[k]);
 	}
-	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_NOERROR) {
+	
+	/* Free the info grid structure */
+	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
-	}
+
+	/* Free misc. arrays for actual and normalized coordinates */
 	gmt_M_free (GMT, info->d_grd_x);
 	gmt_M_free (GMT, info->d_grd_y);
 	gmt_M_free (GMT, info->d_grd_xn);
@@ -4712,11 +4698,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 
-	/* Read the first file we encounter so we may allocate space */
+	/* Read the first input file we encounter so we may determine dimensions and allocate space */
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
 		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output file */
-		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
+		/* Skip table files given as argument to the LDIST, PDIST, POINT, INSIDE operators */
+		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode, recall, n_stored);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */

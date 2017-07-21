@@ -173,7 +173,7 @@ double sum_array (void *vector, unsigned int type) {
 
 int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, int V) {
 	/* Run the test using the specified in and out types */
-	uint64_t dim[3] = {NCOLS, NROWS, 1};		/* ncols, nrows, nlayers */
+	uint64_t dim[4] = {NCOLS, NROWS, 1, 0};		/* ncols, nrows, nlayers, type */
 	int bad = 0;
 	unsigned int out_via = (outtype + 1) * 100 + GMT_IS_SURFACE;	/* To get GMT_VIA_<type */
 	unsigned int mode = GMT_SESSION_EXTERNAL;
@@ -192,28 +192,30 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
  	/* Create a blank matrix container that will hold our user in_data */
-	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
+	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/* Hook the user input array up to this container */
 	GMT_Put_Matrix (API, M[GMT_IN], intype, in_data);
 	/* Associate our matrix container with a virtual grid file to "read" from */
-	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, M[GMT_IN], input);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
 	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data = get_array (outtype, 0);	/* Make user space for output */
  		/* Create a blank matrix container that will hold our user out_data */
-		M[GMT_OUT] = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, GMT_IS_OUTPUT, NULL, NULL, NULL, 0, 0, NULL);
+		M[GMT_OUT] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IS_OUTPUT, NULL, NULL, NULL, 0, 0, NULL);
 		/* Hook the user output array up to this containers */
 		GMT_Put_Matrix (API, M[GMT_OUT], outtype, out_data);
 		/* Must provide dimensions of the user output array */
 		GMT_Set_Matrix (API, M[GMT_OUT], NROWS, NCOLS);	
     	/* Associate our data matrix with a virtual grid file to "write" to */
-    	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
+    	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
 	}
 	/* Prepare the module arguments to multiply the input grid by 10 then add 1 */
 	sprintf (args, "%s 10 MUL 1 ADD = %s", input, output);
 	/* Call the grdmath module */
+	fprintf (stderr, "Before grdmath, n_objects = %d\n", API->n_objects);
 	GMT_Call_Module (API, "grdmath", GMT_MODULE_CMD, args);
+	fprintf (stderr, "After grdmath, n_objects = %d\n", API->n_objects);
 	if (alloc_in_GMT) {	/* Obtain the matrix container from the output virtual file */
     	M[GMT_OUT] = GMT_Read_VirtualFile (API, output);
 		/* Get the pointer to the modified user output array */
@@ -224,7 +226,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	GMT_Close_VirtualFile (API, output);
 	diff = sum_array (out_data, outtype) - sum_array (in_data, intype) - 606.0;
 	if (fabs (diff) > 0.0) {
-		printf ("\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[intype], type[outtype]);
+		fprintf (stderr, "\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[intype], type[outtype]);
 		/* Print out the input and output values */
 		put_array (in_data, intype, "Input: ");
 		put_array (out_data, outtype, "Output:");
@@ -239,16 +241,17 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 }
 
 int main (int argc, char *argv[]) {
-	unsigned int in, out, bad = 0, n = 0, V = (argc > 1);
+	unsigned int in, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
 	//deploy_test (GMT_CHAR, GMT_UCHAR, 0);
 	//exit (0);
 	for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
-			printf ("\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[in], type[out]);
+			fprintf (stderr, "\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[in], type[out]);
 			bad += deploy_test (in, out, 1, V);
 			n ++;
+			if (Q) out = in = GMT_DOUBLE;
 		}
 	}
-	if (bad) printf ("%d of %d combinations failed the test\n", bad, n);
+	if (bad) fprintf (stderr, "%d of %d combinations failed the test\n", bad, n);
 	exit (0);
 }
