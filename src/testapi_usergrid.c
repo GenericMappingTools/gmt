@@ -1,7 +1,7 @@
 #include "gmt_dev.h"
 #include <math.h>
 /*
- * Testing the user of user data provided via GMT_MATRIX
+ * Testing the use of user data provided via a GMT_MATRIX
  * to/from a module that expect to read/write GMT_GRIDs.
  * We do this for all possible type combinations as well
  * as pre-allocated and GMT-allocated output spaces.
@@ -196,7 +196,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Hook the user input array up to this container */
 	GMT_Put_Matrix (API, M[GMT_IN], intype, in_data);
 	/* Associate our matrix container with a virtual grid file to "read" from */
-	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M[GMT_IN], input);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
 	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
 	else {	/* Preallocate array space here in the app */
@@ -213,9 +213,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Prepare the module arguments to multiply the input grid by 10 then add 1 */
 	sprintf (args, "%s 10 MUL 1 ADD = %s", input, output);
 	/* Call the grdmath module */
-	fprintf (stderr, "Before grdmath, n_objects = %d\n", API->n_objects);
 	GMT_Call_Module (API, "grdmath", GMT_MODULE_CMD, args);
-	fprintf (stderr, "After grdmath, n_objects = %d\n", API->n_objects);
 	if (alloc_in_GMT) {	/* Obtain the matrix container from the output virtual file */
     	M[GMT_OUT] = GMT_Read_VirtualFile (API, output);
 		/* Get the pointer to the modified user output array */
@@ -227,31 +225,45 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	diff = sum_array (out_data, outtype) - sum_array (in_data, intype) - 606.0;
 	if (fabs (diff) > 0.0) {
 		fprintf (stderr, "\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[intype], type[outtype]);
+		fprintf (stderr, "Misfit = %g\n", diff);
 		/* Print out the input and output values */
 		put_array (in_data, intype, "Input: ");
 		put_array (out_data, outtype, "Output:");
 		bad = 1;
+		fprintf (stderr, "\n\n");
 	}
 	/* Destroy session, which will free all GMT-allocated memory */
 	if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
-	fprintf (stderr, "\n\n");
 	free (in_data);
 	if (alloc_in_GMT == 0) free (out_data);
 	return bad;
 }
 
 int main (int argc, char *argv[]) {
-	unsigned int in, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
-	deploy_test (GMT_CHAR, GMT_UCHAR, 0, V);
-	exit (0);
+	unsigned int in, answer, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
+	char *passfail[2] = {"PASS", "FAIL"};
+	(void)(argv);	/* Since not used */
 	for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
-			fprintf (stderr, "\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[in], type[out]);
-			bad += deploy_test (in, out, 1, V);
+			printf ("Test matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
+			answer = deploy_test (in, out, 1, V);
+			printf (" %s\n", passfail[answer]);
+			bad += answer;
 			n ++;
 			if (Q) out = in = GMT_DOUBLE;
 		}
 	}
-	if (bad) fprintf (stderr, "%d of %d combinations failed the test\n", bad, n);
+	if (bad) printf ("%d of %d combinations with preallocated output memory failed the test\n", bad, n);
+	for (in = GMT_CHAR, bad = 0; in <= GMT_DOUBLE; in++) {
+		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
+			printf ("Test matrix/grid/matrix(GMT alloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
+			answer = deploy_test (in, out, 0, V);
+			printf (" %s\n", passfail[answer]);
+			bad += answer;
+			n ++;
+			if (Q) out = in = GMT_DOUBLE;
+		}
+	}
+	if (bad) printf ("%d of %d combinations with GMT-allocated output memory failed the test\n", bad, n);
 	exit (0);
 }

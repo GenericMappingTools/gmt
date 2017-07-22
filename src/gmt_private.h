@@ -95,11 +95,11 @@ struct GMTAPI_DATA_OBJECT {
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Active Grid domain limits */
 	double orig_wesn[GMTAPI_N_GRID_ARGS];	/* Original Grid domain limits */
-	void *resource;				/* Points to registered filename, memory location, etc., where data can be obtained from with GMT_Get_Data. */
-	void *data;				/* Points to GMT object that was read from a resource */
+	void *resource;				/* Points to a GMT container, where data can be obtained or are placed. */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
 	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
+#ifdef DEBUG
 	/* Start of temporary variables for API debug - They are only set when building with /DEBUG */
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
@@ -110,6 +110,7 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_VECTOR *V;
 	struct GMT_IMAGE *I;
 	/* End of temporary variables for API debug - will be removed eventually */
+#endif
 };
 
 struct GMTAPI_CTRL {

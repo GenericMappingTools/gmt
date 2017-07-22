@@ -4589,7 +4589,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (stack[k]->G) {
 			if ((error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Freed stack item %d\n", k);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Freed stack item %d\n", k);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
