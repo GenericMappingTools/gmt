@@ -2441,13 +2441,14 @@ GMT_LOCAL int api_get_object (struct GMTAPI_CTRL *API, int sfamily, void *ptr) {
 	unsigned int item;
 	enum GMT_enum_family family = GMT_NOTSET;
 	int object_ID = GMT_NOTSET;	/* Not found yet */
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	if (sfamily != GMT_NOTSET) family = sfamily;
 	for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
-		if (!API->object[item]) continue;	/* Skip freed objects */
-		if (API->object[item]->data == NULL) continue;	/* No data pointer */
-		if (sfamily != GMT_NOTSET && API->object[item]->family != family) continue;	/* Not the right family */
-		if (API->object[item]->data == ptr && object_ID == GMT_NOTSET) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		if ((S_obj = API->object[item]) == NULL) continue;	/* Skip freed objects */
+		if (S_obj->data == NULL) continue;	/* No data pointer */
+		if (sfamily != GMT_NOTSET && S_obj->family != family) continue;	/* Not the right family */
+		if (S_obj->data == ptr && object_ID == GMT_NOTSET) object_ID = S_obj->ID;	/* Found a matching data pointer */
 	}
 	return (object_ID);	/* Return ID or GMT_NOTSET if not found */
 }
@@ -2541,14 +2542,15 @@ GMT_LOCAL int api_get_object_id_from_data_ptr (struct GMTAPI_CTRL *API, void *pt
 	unsigned int item;
 	int object_ID = GMT_NOTSET;	/* Not found yet */
 	void *data = NULL;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	for (item = 0; object_ID == GMT_NOTSET && item < API->n_objects; item++) {	/* Loop over all objects */
-		if (!API->object[item]) continue;	/* Skip freed objects */
-		data = api_return_address (ptr, API->object[item]->family);	/* Get void* pointer to resource of this family */
-		//if (API->object[item]->data == data && object_ID == GMT_NOTSET) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		if ((S_obj = API->object[item]) == NULL) continue;	/* Skip freed objects */
+		data = api_return_address (ptr, S_obj->family);	/* Get void* pointer to resource of this family */
+		//if (AS_obj->data == data && object_ID == GMT_NOTSET) object_ID = S_obj->ID;	/* Found a matching data pointer */
 		/* Try to look for either data or resource pointers since Open_VirtualFile shuffles these two and Destroy needs to find them even if the
 		 * function level test will tell it not to free anything */
-		if (object_ID == GMT_NOTSET && (API->object[item]->data == data || API->object[item]->resource == data)) object_ID = API->object[item]->ID;	/* Found a matching data pointer */
+		if (object_ID == GMT_NOTSET && (S_obj->data == data || S_obj->resource == data)) object_ID = S_obj->ID;	/* Found a matching data pointer */
 	}
 	return (object_ID);	/* Return ID or GMT_NOTSET if not found */
 }
@@ -5166,6 +5168,7 @@ GMT_LOCAL void *api_get_data (void *V_API, int object_ID, unsigned int mode, voi
 	int item, family, flag = GMT_NOTSET;
 	bool was_enabled;
 	void *new_obj = NULL;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
@@ -5188,10 +5191,11 @@ GMT_LOCAL void *api_get_data (void *V_API, int object_ID, unsigned int mode, voi
 	if (!was_enabled && api_begin_io (API, GMT_IN) != GMT_NOERROR) {	/* Enables data input if not already set and sets access mode */
 		return_null (API, API->error);
 	}
-	API->object[item]->selected = true;	/* Make sure it the requested data set is selected */
+	S_obj = API->object[item];	/* Short-hand */
+	S_obj->selected = true;	/* Make sure it the requested data set is selected */
 
 	/* OK, try to do the importing */
-	if ((new_obj = api_import_data (API, API->object[item]->family, object_ID, mode, data)) == NULL) {
+	if ((new_obj = api_import_data (API, S_obj->family, object_ID, mode, data)) == NULL) {
 		return_null (API, API->error);
 	}
 
@@ -5199,7 +5203,7 @@ GMT_LOCAL void *api_get_data (void *V_API, int object_ID, unsigned int mode, voi
 		return_null (API, API->error);
 	}
 #ifdef DEBUG
-	api_set_object (API, API->object[item]);
+	api_set_object (API, S_obj);
 	//api_list_objects (API, "api_get_data");
 #endif
 	return (new_obj);		/* Return pointer to the data container */
@@ -5321,6 +5325,7 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 	 */
 	int item;
 	bool was_enabled;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -5335,13 +5340,14 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 	if (!was_enabled && api_begin_io (API, GMT_OUT) != GMT_NOERROR) {	/* Enables data output if not already set and sets access mode */
 		return_error (API, API->error);
 	}
-	if (api_export_data (API, API->object[item]->family, object_ID, mode, data) != GMT_NOERROR) return_error (API, API->error);
+	S_obj = API->object[item];	/* The current object we are trying to export */
+	if (api_export_data (API, S_obj->family, object_ID, mode, data) != GMT_NOERROR) return_error (API, API->error);
 
 	if (!was_enabled && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables data output if we had to set it in this function */
 		return_error (API, API->error);
 	}
 #ifdef DEBUG
-	api_set_object (API, API->object[item]);
+	api_set_object (API, S_obj);
 	//api_list_objects (API, "api_put_data");
 #endif
 	return (GMT_NOERROR);	/* No error encountered */
@@ -5351,9 +5357,10 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 GMT_LOCAL bool api_not_used (struct GMTAPI_CTRL *API, char *name) {
 	unsigned int item = 0;
 	bool not_used = true;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	while (item < API->n_objects && not_used) {
-		if (API->object[item] && API->object[item]->direction == GMT_IN && API->object[item]->status != GMT_IS_UNUSED &&
-		    API->object[item]->filename && !strcmp (API->object[item]->filename, name))
+		if ((S_obj = API->object[item]) == NULL) continue;	/* Skip NULLs */
+			if (S_obj->direction == GMT_IN && S_obj->status != GMT_IS_UNUSED && S_obj->filename && !strcmp (S_obj->filename, name))
 			/* Used resource with same name */
 			not_used = false;	/* Got item with same name, but used */
 		else
@@ -5924,6 +5931,7 @@ int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 	/* Remove specified object ID from active list of objects */
 	int s_item;
 	unsigned item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (API->n_objects == 0) return (gmtapi_report_error (API, GMT_NO_RESOURCES));	/* There are no known resources yet */
@@ -5936,12 +5944,13 @@ if (API->GMT->hidden.func_level == 1 && API->n_objects == 2)
 	item = 0;
 	
 	item = s_item;
-	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Unregistering object no %d [n_objects = %d]\n", API->object[item]->ID, API->n_objects-1);
- 	if (API->object[item]->data) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Object no %d has non-NULL data pointer\n", API->object[item]->ID);
- 	if (API->object[item]->resource) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Object no %d has non-NULL resource pointer\n", API->object[item]->ID);
+	S_obj = API->object[item];	/* Short-hand */
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Unregistering object no %d [n_objects = %d]\n", S_obj->ID, API->n_objects-1);
+ 	if (S_obj->data) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Object no %d has non-NULL data pointer\n", S_obj->ID);
+ 	if (S_obj->resource) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Object no %d has non-NULL resource pointer\n", S_obj->ID);
 
-	if (API->object[item]->method == GMT_IS_FILE) gmt_M_str_free (API->object[item]->filename);	/* Free any strdup-allocated filenames */
-	gmt_M_free (API->GMT, API->object[item]);		/* Free the current data object */
+	if (S_obj->method == GMT_IS_FILE) gmt_M_str_free (S_obj->filename);	/* Free any strdup-allocated filenames */
+	gmt_M_free (API->GMT, S_obj);		/* Free the current data object */
 	API->n_objects--;				/* Tally of how many data sets are left */
 	while (item < API->n_objects) {
 		API->object[item] = API->object[item+1];	/* Shuffle pointers down one entry */
@@ -6511,6 +6520,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	 * Returns:	false if successful, true if error.
 	 */
 	int error, item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
@@ -6527,16 +6537,17 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	API->current_item[direction] = -1;	/* api_next_data_object (below) will wind it to the first item >= 0 */
 	if ((error = api_next_data_object (API, family, direction))) return_error (API, GMT_NO_RESOURCES);	/* Something went bad */
 	item = API->current_item[direction];	/* Next item */
+	S_obj = API->object[item];	/* Short-hand */
 	API->io_mode[direction] = GMTAPI_BY_REC;
 	API->io_enabled[direction] = true;	/* OK to access resources */
 	GMT->current.io.need_previous = (GMT->common.g.active || GMT->current.io.skip_duplicates);
 	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	GMT->current.io.segment_header[0] = GMT->current.io.record[0] = 0;
-	if (direction == GMT_OUT && API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
-		if ((error = api_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data)))	/* Do the dirty deed */
+	if (direction == GMT_OUT && S_obj->messenger && S_obj->data) {	/* Need to destroy the dummy container before passing data out */
+		if ((error = api_destroy_data_ptr (API, S_obj->actual_family, S_obj->data)))	/* Do the dirty deed */
 			return_error (API,error);
-		API->object[item]->resource = API->object[item]->data = NULL;	/* Since we now have nothing */
-		API->object[item]->messenger = false;	/* OK, now clean for output */
+		S_obj->resource = S_obj->data = NULL;	/* Since we now have nothing */
+		S_obj->messenger = false;	/* OK, now clean for output */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
 	if (direction == GMT_OUT && header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
@@ -6805,25 +6816,26 @@ int GMT_Status_IO_ (unsigned int *mode) {
 GMT_LOCAL int api_get_id (void *V_API, unsigned int family, unsigned int direction, void *resource) {
 	unsigned int i;
 	int item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
-		if (!API->object[i]) continue;				/* Empty object */
-		if (!API->object[i]->resource) continue;		/* Empty resource */
-		if (API->object[i]->family != (enum GMT_enum_family)family) {		/* Not the required data type, but check for exceptions */
-			if (family == GMT_IS_DATASET && (API->object[i]->family == GMT_IS_MATRIX || API->object[i]->family == GMT_IS_VECTOR))
-				API->object[i]->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */
+		if ((S_obj = API->object[i]) == NULL) continue;	/* Empty object */
+		if (!S_obj->resource) continue;		/* Empty resource */
+		if (S_obj->family != (enum GMT_enum_family)family) {		/* Not the required data type, but check for exceptions */
+			if (family == GMT_IS_DATASET && (S_obj->family == GMT_IS_MATRIX || S_obj->family == GMT_IS_VECTOR))
+				S_obj->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */
 			else
 				continue;
 		}
-		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
-		if (API->object[i]->resource == resource) item = i;	/* Pick the requested object regardless of direction */
+		if (S_obj->direction != (enum GMT_enum_std)direction) continue;	/* Not the required direction */
+		if (S_obj->resource == resource) item = i;	/* Pick the requested object regardless of direction */
 	}
 	if (item == GMT_NOTSET) return_value (API, GMT_NOT_A_VALID_ID, GMT_NOTSET);	/* No such resource found */
-	return (API->object[item]->ID);
+	return (S_obj->ID);
 }
 
 GMT_LOCAL bool matrix_data_conforms_to_grid (struct GMT_MATRIX *M) {
@@ -7289,12 +7301,13 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 	
+#if 0	/* Hold off on this since gmtmath is calling this function using local datasets */
 	/* Make sure input data has been registered */
 	if ((object_ID = api_is_registered (API, family, GMT_NOTSET, GMT_NOTSET, mode|GMT_IO_RESET, NULL, data)) == GMT_NOTSET)	/* Not registered before */
 		 return_null (V_API, GMT_OBJECT_NOT_FOUND);
 	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
 		 return_null (V_API, GMT_OBJECT_NOT_FOUND);
-	
+#endif	
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
 			new_obj = gmt_duplicate_grid (GMT, data, mode);

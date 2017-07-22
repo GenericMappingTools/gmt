@@ -192,7 +192,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
  	/* Create a blank matrix container that will hold our user in_data */
-	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
+	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/* Hook the user input array up to this container */
 	GMT_Put_Matrix (API, M[GMT_IN], intype, in_data);
 	/* Associate our matrix container with a virtual grid file to "read" from */
