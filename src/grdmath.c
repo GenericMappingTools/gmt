@@ -4587,8 +4587,12 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 
 	/* Free anything on the stack */
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (stack[k]->G && (error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
+		if (stack[k]->G) {
+			if ((error = GMT_Destroy_Data (GMT->parent, &stack[k]->G)) == GMT_NOERROR)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Freed stack item %d\n", k);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
+		}
 		gmt_M_free (GMT, stack[k]);
 	}
 
@@ -4736,7 +4740,9 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 		}
 		if ((info.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, G_in)) == NULL) Return (API->error);
+		GMT_Report (API, GMT_MSG_DEBUG, "Freeing G_in after duplication\n");
 		if (GMT_Destroy_Data (API, &G_in) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Failed to free G_in after duplication\n");
 			Return (API->error);
 		}
 	}

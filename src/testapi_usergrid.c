@@ -207,8 +207,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 		GMT_Put_Matrix (API, M[GMT_OUT], outtype, out_data);
 		/* Must provide dimensions of the user output array */
 		GMT_Set_Matrix (API, M[GMT_OUT], NROWS, NCOLS);	
-    	/* Associate our data matrix with a virtual grid file to "write" to */
-    	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
+    		/* Associate our data matrix with a virtual grid file to "write" to */
+    		GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
 	}
 	/* Prepare the module arguments to multiply the input grid by 10 then add 1 */
 	sprintf (args, "%s 10 MUL 1 ADD = %s", input, output);
@@ -242,8 +242,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 
 int main (int argc, char *argv[]) {
 	unsigned int in, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
-	//deploy_test (GMT_CHAR, GMT_UCHAR, 0);
-	//exit (0);
+	deploy_test (GMT_CHAR, GMT_UCHAR, 0, V);
+	exit (0);
 	for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
 			fprintf (stderr, "\nTest matrix/grid/matrix for Input = index [%s], output = 10*input + 1 [%s]\n", type[in], type[out]);

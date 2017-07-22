@@ -22,10 +22,10 @@ int main (int argc, char **argv) {
 	char grid[GMT_STR16] = {""}, input[GMT_STR16] = {""}, output[GMT_STR16] = {""};
 	char args[256] = {""};
 	(void)(argc);	
-    /* Initialize a normal GMT session with 2 rows/cols for grid BC padding */
-    if ((API = GMT_Create_Session (argv[0], 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
-    /* Read in the grid to be used with grdtrack */
-    G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "z.nc", NULL);
+	/* Initialize a normal GMT session with 2 rows/cols for grid BC padding */
+	if ((API = GMT_Create_Session (argv[0], 2U, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
+	/* Read in the grid to be used with grdtrack */
+	G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "z.nc", NULL);
 	/* Allocate two vector containers for input and output separately */
 	dim[0] = 2;	/* Want two input columns but let length be 0 - this signals that no vector allocations should take place */
 	if ((V_in = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
@@ -40,14 +40,14 @@ int main (int argc, char **argv) {
 	GMT_Put_Vector (API, V_out, GMT_Y, GMT_DOUBLE, y);
 	GMT_Put_Vector (API, V_out, GMT_Z, GMT_INT,    z);
 	V_in->n_rows = V_out->n_rows = 5;	/* Must specify how many input points we will simulate */
-    /* Associate the grid with a virtual input file */
-    GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, G_in, grid);
-    /* Associate our input data vectors with a virtual input file */
-    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, V_in, input);
-    /* Associate our output data vectors with a virtual output file */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output);
-    /* Prepare the grdtrack command-line arguments, selecting bilinear sampling */
-    sprintf (args, "-G%s %s -nl > %s", grid, input, output);
+	/* Associate the grid with a virtual input file */
+	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, G_in, grid);
+	/* Associate our input data vectors with a virtual input file */
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V_in, input);
+	/* Associate our output data vectors with a virtual output file */
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output);
+	/* Prepare the grdtrack command-line arguments, selecting bilinear sampling */
+	sprintf (args, "-G%s %s -nl > %s", grid, input, output);
 	for (k = 0; k < 5; k++) {	/* Repeat our experiment 5 times, getting different random input points */
 		/* Initialize the virtual files to their original state so they can be reused */
 		GMT_Init_VirtualFile (API, 0, grid);
@@ -58,8 +58,8 @@ int main (int argc, char **argv) {
 			x[p] = (double)100.0*rand() / (double)RAND_MAX;	/* Get x-value in 0-100 range */
 			y[p] = (double)100.0*rand() / (double)RAND_MAX;	/* Get y-value in 0-100 range */
 		}
-    	/* Run the grdtrack module */
-    	if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
+		/* Run the grdtrack module */
+		if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) exit (EXIT_FAILURE);
 		/* Report the results to stdout */
 		printf ("\nesult of simulation number %d:\n", (int)k);
 		for (p = 0; p < 5; p++)
@@ -69,8 +69,8 @@ int main (int argc, char **argv) {
 	GMT_Close_VirtualFile (API, grid);
 	GMT_Close_VirtualFile (API, input);
 	GMT_Close_VirtualFile (API, output);
-    /* Destroy the GMT session */
-    if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
+	/* Destroy the GMT session */
+	if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
 	/* Free our custom vectors */
 	free (x);	free (y);	free (z);
 }

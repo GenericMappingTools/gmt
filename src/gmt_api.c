@@ -2560,7 +2560,7 @@ bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr) {
 }
 
 /*! . */
-GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, enum GMT_enum_geometry geometry, enum GMT_enum_std direction, unsigned int mode, char *filename, void *resource) {
+GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, int family, int geometry, int direction, unsigned int mode, char *filename, void *resource) {
 	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
@@ -2568,14 +2568,15 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 	 */
 	unsigned int i;
 	int item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	if (API->n_objects == 0) return (GMT_NOTSET);	/* There are no known resources yet */
 
 	 /* Search for the object in the active list.  However, if object_ID == GMT_NOTSET we instead pick the first in that direction */
 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
-		if (!API->object[i]) continue;	/* Skip empty objects */
-		if (API->object[i]->status != GMT_IS_UNUSED) {	/* Has already been read - do we wish to reset this status ? */
+		if (!(S_obj = API->object[i])) continue;	/* Skip empty objects */
+		if (S_obj->status != GMT_IS_UNUSED) {	/* Has already been read - do we wish to reset this status ? */
 			if (family == GMT_IS_GRID && (mode & GMT_DATA_ONLY)) {	/* Requesting data only means we already did the header so OK to reset status */
 				if (mode & GMT_GRID_IS_COMPLEX_MASK) {	/* Complex grids are read in stages so handled separately */
 					/* Check if complex grid already has one layer and that we are reading the next layer */
@@ -2583,8 +2584,8 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 					unsigned int cmplx = mode & GMT_GRID_IS_COMPLEX_MASK;
 					if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK && G->header->complex_mode != cmplx && filename) {
 						/* Apparently so, either had real and now getting imag, or vice versa. */
-						gmt_M_str_free (API->object[i]->filename);	/* Free previous grid name and replace with current name */
-						API->object[i]->filename = strdup (filename);
+						gmt_M_str_free (S_obj->filename);	/* Free previous grid name and replace with current name */
+						S_obj->filename = strdup (filename);
 						mode |= GMT_IO_RESET;	/* Reset so we may read in the 2nd component grid */
 					}
 				}
@@ -2595,13 +2596,13 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 				mode |= GMT_IO_RESET;	/* Reset so we may read in the image data */
 
 			if (!(mode & GMT_IO_RESET)) continue;	/* No reset above so we refuse to do the work */
-			API->object[i]->status = GMT_IS_UNUSED;	/* Reset so we may continue to read it */
+			S_obj->status = GMT_IS_UNUSED;	/* Reset so we may continue to read it */
 		}
-		if (API->object[i]->direction != direction) continue;	/* Wrong direction */
-		if (API->object[i]->family != family) continue;		/* Wrong family */
-		if (API->object[i]->geometry != geometry) continue;	/* Wrong geometry */
-		if (resource && API->object[i]->resource == resource) item = API->object[i]->ID;	/* Yes: already registered NOTE PW: One of these may not be needed? */
-		else if (resource && API->object[i]->data == resource) item = API->object[i]->ID;	/* Yes: already registered */
+		if (direction != GMT_NOTSET && S_obj->direction != direction) continue;	/* Wrong direction */
+		if (family != GMT_NOTSET && S_obj->family != family) continue;		/* Wrong family */
+		if (geometry != GMT_NOTSET && S_obj->geometry != geometry) continue;	/* Wrong geometry */
+		if (resource && S_obj->resource == resource)  item = S_obj->ID;	/* Yes: already registered NOTE PW: One of these may not be needed? */
+		else if (resource && S_obj->data == resource) item = S_obj->ID;	/* Yes: already registered */
 	}
 	return (item);		/* The ID of the object (or GMT_NOTSET) */
 }
@@ -6343,12 +6344,8 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				gmt_M_str_free (file);
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			if (strlen (resource)) {
-				if (first)	/* Must strip off the beginning of the name */
-					S_obj->filename = strdup (&file[first]);
-				else
-					S_obj->filename = strdup (file);
-			}
+			if (strlen (resource))	/* Strip off any beginning of the name */
+				S_obj->filename = strdup (&file[first]);
 			gmt_M_str_free (file);
 			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
@@ -6869,7 +6866,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	if (direction == GMT_IN  && !valid_input_family (family))  return GMT_NOT_A_VALID_FAMILY;
 	if (direction == GMT_OUT && !valid_output_family (family)) return GMT_NOT_A_VALID_FAMILY;
 	if (via_type && data && !valid_type (via_type-1)) return GMT_NOT_A_VALID_TYPE;	/* via type only valid if not passing any data but want vector or matrix */
-	if (actual_family && data && !valid_via_family (actual_family)) return GMT_NOT_A_VALID_FAMILY;
+	if (actual_family != family && !valid_via_family (actual_family)) return GMT_NOT_A_VALID_FAMILY;
 	API = api_get_api_ptr (V_API);
 
 	if (data) {	/* Data container provided, see if registered */
@@ -6881,6 +6878,8 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
 		}
 		S_obj = API->object[item_s];	/* Short-hand for later */
+		if (!(S_obj->family == family && S_obj->actual_family == actual_family))
+			 return GMT_NOT_A_VALID_FAMILY;
 	}
 	if (direction == GMT_IN) {	/* Set things up for reading */
 		/* See if this one is known to us already */
@@ -7285,9 +7284,17 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	struct GMT_CTRL *GMT = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	if (data == NULL)  return_null (V_API, GMT_PTR_IS_NULL);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
+	
+	/* Make sure input data has been registered */
+	if ((object_ID = api_is_registered (API, family, GMT_NOTSET, GMT_NOTSET, mode|GMT_IO_RESET, NULL, data)) == GMT_NOTSET)	/* Not registered before */
+		 return_null (V_API, GMT_OBJECT_NOT_FOUND);
+	if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		 return_null (V_API, GMT_OBJECT_NOT_FOUND);
+	
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
 			new_obj = gmt_duplicate_grid (GMT, data, mode);
@@ -8311,9 +8318,10 @@ GMT_LOCAL char *ptrvoid (char ** p) { 	/* Handle as char ** just to determine if
 /*! . */
 int GMT_Destroy_Data (void *V_API, void *object) {
 	/* Destroy a resource that is no longer needed.
-	 * Returns the error code.
+	 * Returns the error code.  If passed an object allocated at a higher level then
+	 * we quietly return no error.
 	 */
-	int error, item, object_ID;
+	int error, item, object_ID = GMT_NOTSET;
 	enum GMT_enum_family family;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -8359,14 +8367,14 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 			return_error (API, GMT_NOT_A_VALID_FAMILY);
 			break;
 	}
-	if (!error) {	/* We successfully freed the items, now remove from IO list */
+	if (error == GMT_NOERROR) {	/* We successfully freed the items, now remove from IO list */
 		unsigned int j;
 		void *address = API->object[item]->data;
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[family], object_ID);
 		if ((error = gmtapi_unregister_io (API, object_ID, (unsigned int)GMT_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) {
-			if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Set repeated data references to NULL so we don't try to free twice */
-			if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Set matching resources to NULL so we don't try to read from there again */
+			if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Set repeated data references to NULL so we don't try to free this memory twice */
+			if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Set matching resources to NULL so we don't try to read from there again either */
 		}
 #ifdef DEBUG
 		api_list_objects (API, "GMT_Destroy_Data");
@@ -8377,6 +8385,8 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED as they are not considered errors here. */
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: Ignored warning %d for object %d\n", error, object_ID);
 	}
+	else
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: Skipped due to wrong level for object %d\n", object_ID);
 	return_error (API, GMT_NOERROR);
 }
 
@@ -8696,20 +8706,22 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or gmtapi_garbage_collection */
 		enum GMT_enum_method method = (mode & GMT_IS_OUTPUT) ? GMT_IS_DUPLICATE : GMT_IS_REFERENCE;	/* Since it is a memory object */
 		int item = GMT_NOTSET, object_ID = GMT_NOTSET;
+		struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 		if ((object_ID = GMT_Register_IO (API, actual_family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET)
 			return_null (API, API->error);	/* Failure to register */
 		if ((item = gmtapi_validate_id (API, actual_family, object_ID, def_direction, GMT_NOTSET)) == GMT_NOTSET)
 			return_null (API, API->error);
+		S_obj = API->object[item];		/* Short-hand notation */
 		API->object[item]->data = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
-		API->object[item]->actual_family = actual_family;
-		API->object[item]->family = family;	
-		if (def_direction == GMT_OUT) API->object[item]->messenger = true;	/* We are passing a dummy container that should be destroyed before returning actual data */
+		S_obj->actual_family = actual_family;
+		S_obj->family = family;	
+		if (def_direction == GMT_OUT) S_obj->messenger = true;	/* We are passing a dummy container that should be destroyed before returning actual data */
 		if (family == actual_family)
 			GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container\n", GMT_family[actual_family]);
 		else
 			GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container to represent a %s\n", GMT_family[actual_family], GMT_family[family]);
 #ifdef DEBUG
-		api_set_object (API, API->object[item]);
+		api_set_object (API, S_obj);
 #endif
 	}
 	else

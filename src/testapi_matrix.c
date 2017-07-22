@@ -13,9 +13,9 @@ int main () {
     API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
     M[GMT_IN] = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "belgium.txt", NULL);
     /* Associate our data table with a virtual file */
-    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, M[GMT_IN], input);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_PLP, GMT_IN, M[GMT_IN], input);
     /* Open a virtual file to hold the sampled points */
-    GMT_Open_VirtualFile (API, GMT_IS_MATRIX, GMT_IS_PLP, GMT_OUT, NULL, output);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_IS_MATRIX, GMT_IS_PLP, GMT_OUT, NULL, output);
     /* Prepare the module arguments */
     sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
     /* Call the grdtrack module */
@@ -26,7 +26,7 @@ int main () {
 	GMT_Close_VirtualFile (API, input);
 	GMT_Close_VirtualFile (API, output);
 	/* Associate our sampled table with a virtual file */
-    GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, M[GMT_OUT], input);
+    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_PLP, GMT_IN, M[GMT_OUT], input);
 	/* Prepare the module arguments */
     sprintf (args, "-R3/9/50/54 -JM6i -P -Baf -W0.5p %s ->apimat.ps", input);
 	/* Call the psxy module */

@@ -389,10 +389,10 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Allocate a matrix container for holding the GMT-matrix coordinates */
 	par[0] = 2;	par[1] = GMT_N_LETTERS;
-	if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, 0, NULL)) == NULL)
+	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, 0, NULL)) == NULL)
 		exit (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M, GMT_FLOAT, gmt_letters);	/* Hook in our static float matrix */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calling psxy with args %s\n", cmd);
