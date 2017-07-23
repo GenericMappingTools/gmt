@@ -1067,25 +1067,29 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
 
 .. _tbl-family:
 
-    +-------------------+-----------------------------+
-    | family            | source points to            |
-    +===================+=============================+
-    | GMT_IS_DATASET    | A [multi-segment] data file |
-    +-------------------+-----------------------------+
-    | GMT_IS_GRID       | A grid file                 |
-    +-------------------+-----------------------------+
-    | GMT_IS_IMAGE      | An image                    |
-    +-------------------+-----------------------------+
-    | GMT_IS_PALETTE    | A color palette table [CPT] |
-    +-------------------+-----------------------------+
-    | GMT_IS_POSTSCRIPT | A GMT PostScript object     |
-    +-------------------+-----------------------------+
-    | GMT_IS_TEXTSET    | A [multi-segment] text file |
-    +-------------------+-----------------------------+
-    | GMT_IS_MATRIX     | A custom user data matrix   |
-    +-------------------+-----------------------------+
-    | GMT_IS_VECTOR     | A custom user data vector   |
-    +-------------------+-----------------------------+
+    +-------------------+---------------------------------+
+    | family            | source points to                |
+    +===================+=================================+
+    | GMT_IS_DATASET    | A [multi-segment] data file     |
+    +-------------------+---------------------------------+
+    | GMT_IS_GRID       | A grid file                     |
+    +-------------------+---------------------------------+
+    | GMT_IS_IMAGE      | An image                        |
+    +-------------------+---------------------------------+
+    | GMT_IS_PALETTE    | A color palette table [CPT]     |
+    +-------------------+---------------------------------+
+    | GMT_IS_POSTSCRIPT | A GMT PostScript object         |
+    +-------------------+---------------------------------+
+    | GMT_IS_TEXTSET    | A [multi-segment] text file     |
+    +-------------------+---------------------------------+
+    | GMT_IS_MATRIX     | A custom user data matrix       |
+    +-------------------+---------------------------------+
+    | GMT_IS_VECTOR     | A custom user data vector       |
+    +-------------------+---------------------------------+
+    | GMT_VIA_MATRIX    | Modifier for grids and datasets |
+    +-------------------+---------------------------------+
+    | GMT_VIA_VECTOR    | Modifier for grids and datasets |
+    +-------------------+---------------------------------+
 
     GMT constants used to specify a data family.
 
@@ -1230,6 +1234,14 @@ and pass the ``par`` array with contents as indicated below:
     via a call to GMT_Put_Matrix_.  The matrix may either be row- or column-oriented and this is normally determined
     when you created the session with GMT_Create_Session_ (see the bit 3 setting).
     However, you can pass ``pad`` = 1 (set row major) or ``pad`` = 2 (set col major) to override the default.
+
+Users wishing to pass their own data matrices and vectors to GMT modules will need to do so via
+the **GMT_IS_MATRIX** and **GMT_IS_VECTOR** containers.  However, no module deals with such containers
+directly (they either expect **GMT_IS_GRID** or **GMT_IS_DATASET**, for instance).
+The solution is to specify the container type the GMT module expects but add in the special
+flags **GMT_VIA_MATRIX** or **GMT_VIA*VECTOR**.  This will create the **GMT_IS_MATRIX** or
+**GMT_IS_VECTOR** container the user needs to add the user data, but will also tell GMT how
+they should be considered by the module.
 
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the prevailing GMT default. The ``mode`` determines what is actually
@@ -1555,8 +1567,10 @@ If you have read in or otherwise obtained a data object in memory and you
 now wish for it to serve as input to a GMT module, you will have to associate
 that object with a "Virtual File".  This step assigns a special filename to the
 memory location and you can then pass this filename to any module that
-needs to read that data.  It is similar for writing, and you can pass
+needs to read that data.  It is similar for writing, except you may pass
 NULL as the object to have GMT automatically allocate the output resource.
+If you want GMT to write to your preallocated memory then you must create a
+suitable container and attach your array(s) using GMT_Set_Matrix_ or GMT_set_Vector_.
 The full syntax is
 
 .. _GMT_Open_VirtualFile:
@@ -1570,7 +1584,12 @@ Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``filename``.  This string must be at least ``GMT_STR16`` bytes (16).
 The other arguments have been discussed earlier.  Simply pass this filename in
 the calling sequence to the module you want to use to indicate which file should
-be used for reading or writing.
+be used for reading or writing.  Note that if you plan to pass a matrix or vectors
+instead of grids or dataset you must add the modifiers GMT_IS_MATRIX or GMT_IS_VECTOR
+to ``family`` so that the module knows what to do.  Finally, in the case of passing
+``data`` as NULL you may also control what type of matrix or vector will be created in
+GMT for the output by adding in the modifiers GMT_VIA_type, where *type* is any of the
+fundamental GMT data types listed in :ref:`types <tbl-types>`.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
