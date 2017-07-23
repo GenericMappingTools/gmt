@@ -135,7 +135,9 @@ EXTERN_MSC struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, v
 EXTERN_MSC int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_TEXTSET *D, int table);
 EXTERN_MSC struct GMT_TEXTSET * gmtlib_alloc_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET *Din, unsigned int mode);
 EXTERN_MSC bool gmtlib_init_complex (struct GMT_GRID_HEADER *h, unsigned int complex_mode, uint64_t *imag_offset);
-EXTERN_MSC struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, bool duplicate_data);
+EXTERN_MSC struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, unsigned int mode);
+EXTERN_MSC struct GMT_VECTOR * gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode);
+EXTERN_MSC int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n_alloc);
 EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction);

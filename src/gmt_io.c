@@ -191,6 +191,8 @@ EXTERN_MSC char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned in
 #include <windows.h>
 #endif
 
+#define return_null(GMT,err) { GMT->parent->error = err; return (NULL);}
+
 static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer",
                                             "integer", "integer", "double", "double", "string", "datetime"};
 
@@ -7657,7 +7659,8 @@ struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns,
 	struct GMT_VECTOR *V = NULL;
 	gmt_M_unused(direction);
 
-	V = gmt_M_memory (GMT, NULL, 1U, struct GMT_VECTOR);
+	if ((V = gmt_M_memory (GMT, NULL, 1U, struct GMT_VECTOR)) == NULL)
+		return_null (GMT, GMT_MEMORY_ERROR);
 	if (n_columns) V->data = gmt_M_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	if (n_columns) V->type = gmt_M_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
@@ -7665,6 +7668,44 @@ struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns,
 	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
+	return (V);
+}
+
+/*! . */
+int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n_alloc) {
+	/* Allocate space for each column according to data type; V->n_rows is not touched */
+	uint64_t col;
+	int error;
+
+	if (!V) return (GMT_PTR_IS_NULL);			/* Nothing to allocate to */
+	if (V->n_columns == 0) return (GMT_PTR_IS_NULL);	/* No columns specified */
+	if (n_alloc == 0) return (GMT_N_ROWS_NOT_SET);		/* No rows specified */
+	if (!V->data) return (GMT_PTR_IS_NULL);			/* Array of columns have not been allocated */
+	for (col = 0; col < V->n_columns; col++) {
+		if ((error = gmtlib_alloc_univector (GMT, &V->data[col], V->type[col], n_alloc)) != GMT_NOERROR) return (error);
+	}
+	V->alloc_mode = GMT_ALLOC_INTERNALLY;
+	return (GMT_NOERROR);
+}
+
+/*! . */
+struct GMT_VECTOR * gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode) {
+	/* Duplicates a vector container - optionally allocates and duplicates the data vectors */
+	struct GMT_VECTOR *V = NULL;
+	unsigned int col;
+	int error;
+	if ((V = gmt_create_vector (GMT, V_in->n_columns, GMT_IN)) == NULL)
+		return_null (GMT, GMT_MEMORY_ERROR);
+	for (col = 0; col < V_in->n_columns; col++)	/* Set same data type for all vectors */
+		V->type[col] = V_in->type[col];
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
+		if ((error = gmtlib_alloc_vectors (GMT, V, V_in->n_rows)) != GMT_NOERROR)
+			return_null (GMT, error);
+		if (mode & GMT_DUPLICATE_DATA) {
+			for (col = 0; col < V_in->n_columns; col++)
+				gmtio_duplicate_univector (GMT, &V->data[col], &V_in->data[col], V->type[col], V_in->n_rows);
+		}
+	}
 	return (V);
 }
 
@@ -7732,19 +7773,20 @@ struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers,
 }
 
 /*! . */
-struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, bool duplicate_data) {
+struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, unsigned int mode) {
 	/* Duplicates a matrix container - optionally duplicates the data array */
 	struct GMT_MATRIX *M = NULL;
 	M = gmt_M_memory (GMT, NULL, 1, struct GMT_MATRIX);
 	gmt_M_memcpy (M, M_in, 1, struct GMT_MATRIX);
 	gmt_M_memset (&M->data, 1, union GMT_UNIVECTOR);
-	if (duplicate_data) {
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
 		size_t size = M->n_rows * M->n_columns;
 		if (gmtlib_alloc_univector (GMT, &(M->data), M->type, size)) {
 			gmt_M_free (GMT, M);
 			return (NULL);
 		}
-		gmtio_duplicate_univector (GMT, &M->data, &M_in->data, M->type, size);
+		if (mode & GMT_DUPLICATE_DATA)
+			gmtio_duplicate_univector (GMT, &M->data, &M_in->data, M->type, size);
 	}
 	return (M);
 }
