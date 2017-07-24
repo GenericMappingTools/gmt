@@ -8314,17 +8314,16 @@ void gmtlib_init_geodesic (struct GMT_CTRL *GMT) {
 /*! . */
 void gmt_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights) {
 	/* Initialize datum conv structures based on the parsed values*/
-
 	unsigned int k;
 
 	GMT->current.proj.datum.h_given = heights;
-
 	gmt_M_memcpy (&GMT->current.proj.datum.from, from, 1, struct GMT_DATUM);
 	gmt_M_memcpy (&GMT->current.proj.datum.to,   to,   1, struct GMT_DATUM);
 
 	GMT->current.proj.datum.da = GMT->current.proj.datum.to.a - GMT->current.proj.datum.from.a;
 	GMT->current.proj.datum.df = GMT->current.proj.datum.to.f - GMT->current.proj.datum.from.f;
-	for (k = 0; k < 3; k++) GMT->current.proj.datum.dxyz[k] = -(GMT->current.proj.datum.to.xyz[k] - GMT->current.proj.datum.from.xyz[k]);	/* Since the X, Y, Z are Deltas relative to WGS-84 */
+	for (k = 0; k < 3; k++)
+		GMT->current.proj.datum.dxyz[k] = -(GMT->current.proj.datum.to.xyz[k] - GMT->current.proj.datum.from.xyz[k]);	/* Since the X, Y, Z are Deltas relative to WGS-84 */
 	GMT->current.proj.datum.one_minus_f = 1.0 - GMT->current.proj.datum.from.f;
 }
 
@@ -8366,9 +8365,14 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 		}
 		else if (n_commas == 2)
 			sscanf (dr, "%lf,%lf,%lf", &D->xyz[GMT_X], &D->xyz[GMT_Y], &D->xyz[GMT_Z]);
-		else
+		else {
 			sscanf (dr, "%lf,%lf,%lf,%lf,%lf,%lf,%lf",
 			        &D->xyz[GMT_X], &D->xyz[GMT_Y], &D->xyz[GMT_Z], &D->xyz[3], &D->xyz[4], &D->xyz[5], &D->xyz[6]);
+			for (i = 0; i < 7; i++) D->xyz[i] *= -1;		/* WTF have to to this, I don't know */
+			for (i = 3; i < 6; i++)
+				D->xyz[i] = D->xyz[i] / 3600 * D2R;
+			D->xyz[6] = 1 + D->xyz[6] * 1e-6;
+		}
 #else
 		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[GMT_X], &D->xyz[GMT_Y], &D->xyz[GMT_Z]) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Malformed <x>,<y>,<z> argument!\n");
@@ -8413,117 +8417,24 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 
 #ifdef PRJ4
 
-#define PI_OVER_2  (M_PI / 2.0e0)
-#define genau   1.E-12
-#define genau2  (genau*genau)
-#define maxiter 30
-void gmt_ECEF_inverse_fw (struct GMT_CTRL *GMT, double in[], double out[]) {
-    double P;        /* distance between semi-minor axis and location */
-    double RR;       /* distance between center and location */
-    double CT;       /* sin of geocentric latitude */
-    double ST;       /* cos of geocentric latitude */
-    double RX;
-    double RK;
-    double RN;       /* Earth radius at location */
-    double CPHI0;    /* cos of start or old geodetic latitude in iterations */
-    double SPHI0;    /* sin of start or old geodetic latitude in iterations */
-    double CPHI;     /* cos of searched geodetic latitude */
-    double SPHI;     /* sin of searched geodetic latitude */
-    double SDPHI;    /* end-criterium: addition-theorem of sin(Latitude(iter)-Latitude(iter-1)) */
-    int iter;        /* # of continous iteration, max. 30 is always enough (s.a.) */
-
-    P  = sqrt(in[GMT_X]*in[GMT_X] + in[GMT_Y]*in[GMT_Y]);
-    RR = sqrt(in[GMT_X]*in[GMT_X] + in[GMT_Y]*in[GMT_Y] + in[GMT_Z]*in[GMT_Z]);
-
-	/*	special cases for latitude and longitude */
-	if (P / GMT->current.proj.datum.from.a < genau) {
-
-		out[GMT_X] = 0.;		/*  special case, if P=0. (X=0., Y=0.) */
-
-		/*  if (X,Y,Z)=(0.,0.,0.) then Height becomes semi-minor axis
-		 *  of ellipsoid (=center of mass), Latitude becomes PI/2 */
-		if (RR / GMT->current.proj.datum.from.a < genau) {
-			out[GMT_Y] = PI_OVER_2;
-			out[GMT_Z] = -GMT->current.proj.datum.from.b;
-			return ;
-		}
-	}
-	else {
-		/*  ellipsoidal (geodetic) longitude
- 		*  interval: -PI < Longitude <= +PI */
-		out[GMT_X] = atan2(in[GMT_Y], in[GMT_X]);
-	}
-
-	/* --------------------------------------------------------------
-	* Following iterative algorithm was developped by
-	* "Institut für Erdmessung", University of Hannover, July 1988.
-	* Internet: www.ife.uni-hannover.de
-	* Iterative computation of CPHI,SPHI and Height.
-	* Iteration of CPHI and SPHI to 10**-12 radian resp.
-	* 2*10**-7 arcsec.
-	* --------------------------------------------------------------
-	*/
-	CT = in[GMT_Z]/RR;
-	ST = P/RR;
-	RX = 1.0 / sqrt(1.0 - GMT->current.proj.datum.from.e_squared * (2.0 - GMT->current.proj.datum.from.e_squared) * ST * ST);
-	CPHI0 = ST * (1.0 - GMT->current.proj.datum.from.e_squared) * RX;
-	SPHI0 = CT * RX;
-	iter = 0;
-
-	/* loop to find sin(Latitude) resp. Latitude
-	* until |sin(Latitude(iter)-Latitude(iter-1))| < genau */
-	do {
-		iter++;
-		RN = GMT->current.proj.datum.from.a / sqrt(1.0 - GMT->current.proj.datum.from.e_squared * SPHI0 * SPHI0);
-
-		/*  ellipsoidal (geodetic) height */
-		out[GMT_Z] = P*CPHI0 + in[GMT_Z]*SPHI0 - RN * (1.0 - GMT->current.proj.datum.from.e_squared * SPHI0 * SPHI0);
-
-        /* avoid zero division */
-		if (RN + in[GMT_Z] == 0.0) {
-			in[GMT_Y] = 0.0;
-			return;
-		}
-		RK = GMT->current.proj.datum.from.e_squared*RN/(RN+out[GMT_Z]);
-		RX = 1.0/sqrt(1.0-RK*(2.0-RK)*ST*ST);
-		CPHI = ST*(1.0-RK)*RX;
-		SPHI = CT*RX;
-		SDPHI = SPHI*CPHI0-CPHI*SPHI0;
-		CPHI0 = CPHI;
-		SPHI0 = SPHI;
-	} while (SDPHI*SDPHI > genau2 && iter < maxiter);
-
-	/*	ellipsoidal (geodetic) latitude */
-	out[GMT_Y]=atan(SPHI/fabs(CPHI));
-
-	out[GMT_X] *= R2D;
-	out[GMT_Y] *= R2D;
-
-    return;
-}
-
 #define Dx_BF (GMT->current.proj.datum.bursa[0])
 #define Dy_BF (GMT->current.proj.datum.bursa[1])
 #define Dz_BF (GMT->current.proj.datum.bursa[2])
-#define Rx_BF (GMT->current.proj.datum.bursa[3] / 3600 * M_PI / 180)	/* angles are sec but we need radians */
-#define Ry_BF (GMT->current.proj.datum.bursa[4] / 3600 * M_PI / 180)
-#define Rz_BF (GMT->current.proj.datum.bursa[5] / 3600 * M_PI / 180)
-#define M_BF  (1 + GMT->current.proj.datum.bursa[6] * 1e-6)
+#define Rx_BF (GMT->current.proj.datum.bursa[3])	/* angles are sec but we need radians */
+#define Ry_BF (GMT->current.proj.datum.bursa[4])
+#define Rz_BF (GMT->current.proj.datum.bursa[5])
+#define M_BF  (GMT->current.proj.datum.bursa[6])
 /*! Compute the Bursa-Wolf seven parameters transformation. */
 void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]) {
 	/* Based on https://proj4.org/parameters.html#towgs84-datum-transformation-to-wgs84
 	   and pag 77 of http://www.ihsenergy.com/epsg/guid7_2.pdf */
-	struct GMT_DATUM bubble;
 	gmt_ECEF_forward (GMT, in, out);
 	in[GMT_X] = M_BF*(       out[GMT_X] - Rz_BF*out[GMT_Y] + Ry_BF*out[GMT_Z]) + Dx_BF;
 	in[GMT_Y] = M_BF*( Rz_BF*out[GMT_X] +       out[GMT_Y] - Rx_BF*out[GMT_Z]) + Dy_BF;
 	in[GMT_Z] = M_BF*(-Ry_BF*out[GMT_X] + Rx_BF*out[GMT_Y] +       out[GMT_Z]) + Dz_BF;
 
 	/* Temporarily put the datum 'to' in place of 'from'. Needed for the inverse operation (all the times?) */
-	//gmt_M_memcpy (&bubble, &GMT->current.proj.datum.from, 1, struct GMT_DATUM);
-	//gmt_M_memcpy (&GMT->current.proj.datum.from, &GMT->current.proj.datum.to, 1, struct GMT_DATUM);
 	gmt_ECEF_inverse_dest_datum (GMT, in, out);
-	//gmt_M_memcpy (&GMT->current.proj.datum.from, &bubble, 1, struct GMT_DATUM);
 }
 #endif
 

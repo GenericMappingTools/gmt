@@ -5602,8 +5602,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 		/* Check if user errors */
 		if (strcmp(prjcode, "Poly")) {		/* i.e. if NOT Poly */
-			if (!lon_0[0] || !lat_0[0] || !lat_1[0] || !lat_2[0]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the all 4 lon_0 lat_0 lat_1 & lat_2 proj parameters\n", prjcode);
+			if (!lon_0[0]) strcat(lon_0, "0");
+			if (!lat_0[0]) strcat(lat_0, "0");
+			if (!lat_1[0] || !lat_2[0]) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
 				return (pStrOut);
 			}
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
@@ -5636,10 +5638,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				wipe_substr(szProj4, token);
 			}
 		}
-		if (!lon_0[0] || !lat_0[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lon_0 & lat_0 proj parameters\n", prjcode);
-			return (pStrOut);
-		}
+		if (!lon_0[0]) strcat(lon_0, "0");
+		if (!lat_0[0]) strcat(lat_0, "0");
 		strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
 	}
 
