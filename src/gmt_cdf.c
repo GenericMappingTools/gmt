@@ -267,7 +267,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
 		start[0] = j * header->n_columns;
-		if ((err = nc_get_vara_grdfloat (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
+		if ((err = gmt_nc_get_vara_grdfloat (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
 			nc_close (ncid);
@@ -398,7 +398,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			if ((err = nc_put_vara_grdfloat (ncid, header->z_id, start, edge, tmp_f))) {
+			if ((err = gmt_nc_put_vara_grdfloat (ncid, header->z_id, start, edge, tmp_f))) {
 				gmt_M_free (GMT, actual_col);
 				gmt_M_free (GMT, tmp_f);
 				return (err);

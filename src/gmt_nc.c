@@ -100,25 +100,25 @@ enum Netcdf_io_mode {
 	k_get_netcdf
 };
 
-/* Wrapper around nc_put_vara_grdfloat and nc_get_vara_grdfloat */
+/* Wrapper around gmt_nc_put_vara_grdfloat and gmt_nc_get_vara_grdfloat */
 static inline int io_nc_vara_grdfloat (int ncid, int varid, const size_t *startp,
 	 const size_t *countp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_vara_grdfloat (ncid, varid, startp, countp, fp);
+		return gmt_nc_put_vara_grdfloat (ncid, varid, startp, countp, fp);
 	/* read netcdf */
-	return nc_get_vara_grdfloat (ncid, varid, startp, countp, fp);
+	return gmt_nc_get_vara_grdfloat (ncid, varid, startp, countp, fp);
 }
 
-/* Wrapper around nc_put_varm_grdfloat and nc_get_varm_grdfloat */
+/* Wrapper around gmt_nc_put_varm_grdfloat and gmt_nc_get_varm_grdfloat */
 static inline int io_nc_varm_grdfloat (int ncid, int varid, const size_t *startp,
 	 const size_t *countp, const ptrdiff_t *stridep,
 	 const ptrdiff_t *imapp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
+		return gmt_nc_put_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
 	/* read netcdf */
-	return nc_get_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
+	return gmt_nc_get_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
 }
 
 /* Get number of chunked rows that fit into cache (32MiB) */

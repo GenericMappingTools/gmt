@@ -8257,7 +8257,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, gmt_grdfloat *row)
 			R->row = row_no;
 			R->start[0] = R->row * R->edge[0];
 		}
-		gmt_M_err_trap (nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
 		if (R->auto_advance) R->start[0] += R->edge[0];	/* Advance to next row if auto */
 	}
 	else if (fmt[0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
@@ -8270,7 +8270,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, gmt_grdfloat *row)
 			R->row = row_no;
 			R->start[0] = G->header->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
 		}
-		gmt_M_err_trap (nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
 		if (R->auto_advance) R->start[0] -= G->header->row_order;	/* Advance to next row if auto */
 	}
 	else {			/* Get a native binary row */
@@ -8344,12 +8344,12 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row)
 	switch (fmt[0]) {
 		case 'c':
 			if (!R->auto_advance) R->start[0] = rec_no * R->edge[0];
-			gmt_M_err_trap (nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] += R->edge[0];
 			break;
 		case 'n':
 			if (!R->auto_advance) R->start[0] = G->header->row_order = k_nc_start_north ? rec_no : G->header->n_rows - 1 - rec_no;
-			gmt_M_err_trap (nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] -= G->header->row_order;
 			break;
 		default:
