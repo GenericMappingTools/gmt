@@ -612,8 +612,7 @@ the return codes of the modules for now.  We will call our program
 Example code
 ------------
 
-For the example code to run, make sure the data table "table_5.11" from gallery
-example 14 is placed in the current directory, then compile and run
+For the example code to run you must have Internet access. Compile and run
 this program:
 
 .. _example-code1:
@@ -633,7 +632,7 @@ this program:
       API = GMT_Create_Session ("test", 2U, 0, NULL);
       /* Read in our data table to memory */
       D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL,
-          "table_5.11", NULL);
+          "@table_5.11", NULL);
       /* Associate our data table with a virtual file */
       GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, D, input);
       /* Create a virtual file to hold the resulting grid */
@@ -1560,6 +1559,18 @@ are read into separate tables that all form part of a single SET (this is what G
 but if GMT_Read_Group_ is used on the same arguments then an array of one-table sets will
 be returned instead.  The purpose of your application will dictate which form is more convenient.
 
+Using user arrays in GMT
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your program uses a matrix or a set of column vectors to hold data
+and you wish to use such data in a GMT module, you must first create a
+GMT_MATRIX (for matrices) or GMT_VECTOR (for vectors) to hold your arrays.
+Use GMT_Create_Data_ to make the empty containers, then use GMT_Put_Matrix_
+and GMT_Put_Vector_ to hook up your own allocated arrays.  The functions
+GMT_Set_Matrix_ and GMT_Set_Vector_ may be helpful in specifying the
+dimensions of your data to GMT.  It is then these containers that you
+will pass to GMT via *virtual files*.
+
 Open a virtual file (memory location)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1582,13 +1593,20 @@ The full syntax is
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
 desired filename via ``filename``.  This string must be at least ``GMT_STR16`` bytes (16).
-The other arguments have been discussed earlier.  Simply pass this filename in
+The other arguments have been discussed earlier.  Specifically for direction, use
+GMT_IN for reading and GMT_OUT for writing.  Simply pass this filename in
 the calling sequence to the module you want to use to indicate which file should
 be used for reading or writing.  Note that if you plan to pass a matrix or vectors
 instead of grids or dataset you must add the modifiers GMT_IS_MATRIX or GMT_IS_VECTOR
 to ``family`` so that the module knows what to do.  Finally, in the case of passing
 ``data`` as NULL you may also control what type of matrix or vector will be created in
 GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
+Note: GMT tries to minimize data duplication if possible, so if your input arrays are
+compatible with the data type used by the modules then we may use your array directly.
+This *may* have the side-effect that your input array is modified by the module.
+If you want to prevent this from happening then add GMT_IS_DUPLICATE to the ``direction``
+argument and we will duplicate the array internally to make sure your input is truly
+read-only.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3993,7 +4011,7 @@ virtual file for returning results from a GMT module *and* you are
 using a :ref:`GMT_MATRIX <struct-matrix>` or :ref:`GMT_VECTOR <struct-vector>`
 as your container, you may prescribe
 the data type used for the underlying arrays.  The constants below
-can be added to the ``direction'' argument in order to change the
+can be added to the ``direction`` argument in order to change the
 default data types [float for matrix and double for vector].
 
 .. _tbl-viatypes:
