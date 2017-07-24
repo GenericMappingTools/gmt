@@ -1327,9 +1327,9 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 
 	for (k = 0; k < GMT_N_FAMILIES; k++) n_to_add[k] = GMT_NOTSET;	/* Initially no input counts */
 	if (!string) return NULL;	/* Got NULL, so just give up */
-	len = strlen (string);		/* Get the length of this item */
-	if (len == 0) return NULL;	/* Got no characters, so give up */
 	tmp = api_prepare_keys (API, string);	/* Get the correct KEYS if there are separate ones for Classic and Modern mode */
+	len = strlen (tmp);			/* Get the length of this item */
+	if (len == 0) return NULL;	/* Got no characters, so give up */
 	/* Replace unknown types (marked as ?) in tmp with selected type give by input variable "type" */
 	if (type) {	/* Got a nonzero type */
 		for (k = 0; k < strlen (tmp); k++)
