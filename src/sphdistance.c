@@ -265,7 +265,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
 	
-	float f_val = 0.0, *z_val = NULL;
+	gmt_grdfloat f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
@@ -385,7 +385,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		n_alloc = 0;
 		gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
-		if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_M_memory (GMT, NULL, n_alloc, float);
+		if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_M_memory (GMT, NULL, n_alloc, gmt_grdfloat);
 
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -424,12 +424,12 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
 			}
-			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = (float)in[GMT_Z];
+			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = (gmt_grdfloat)in[GMT_Z];
 
 			if (++n == n_alloc) {	/* Get more memory */
 				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; gmt_M_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				gmt_M_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
-				if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_M_memory (GMT, z_val, n_alloc, float);
+				if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_M_memory (GMT, z_val, n_alloc, gmt_grdfloat);
 			}
 			first = false;
 		} while (true);
@@ -515,7 +515,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
-				case SPHD_NODES:	f_val = (float)node;	break;
+				case SPHD_NODES:	f_val = (gmt_grdfloat)node;	break;
 				case SPHD_VALUES:	f_val = z_val[node];	break;
 				default:	break;	/* Must compute distances below */
 			}
@@ -558,7 +558,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = gmt_M_ijp (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)
-					f_val = (float)gmt_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+					f_val = (gmt_grdfloat)gmt_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
 				Grid->data[ij] = f_val;
 				n_set++;
 				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */

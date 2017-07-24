@@ -320,7 +320,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
 	
-	/* Convert the doubles to float and unto the Fortran transpose order */
+	/* Convert the doubles to gmt_grdfloat and unto the Fortran transpose order */
 	
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
@@ -329,8 +329,8 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	}
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* Fortran index */
-		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
-		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
+		Grid->data[ij] = (gmt_grdfloat)surfd[ij_f];	/* ij is GMT C index */
+		if (Ctrl->Z.active) Grid->data[ij] *= (gmt_grdfloat)sf;
 	}
 	gmt_M_free (GMT, surfd);
 	

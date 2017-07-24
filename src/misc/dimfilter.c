@@ -825,7 +825,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				else {	/* Simply divide weighted sums by the weights */
 					for (s = k = 0; s < Ctrl->N.n_sectors; s++) {
 						if (wt_sum[s] != 0.0) {
-							value[k] = (float)(value[s] / wt_sum[s]);
+							value[k] = (gmt_grdfloat)(value[s] / wt_sum[s]);
 							k++;
 						}
 					}
@@ -880,7 +880,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->N.filter == 2) z /= (double)k;	/* Mean requires a final normalization */
 				}
-				Gout->data[ij_out] = (float)z;
+				Gout->data[ij_out] = (gmt_grdfloat)z;
 #ifdef OBSOLETE
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
@@ -890,7 +890,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 					else {		/* Get weighted stdev. */
 						scale = sqrt ((Sxx - Sw * z * z) / (Sw * (n - 1) / n));
 					}
-					Sout->data[ij_out] = (float)scale;
+					Sout->data[ij_out] = (gmt_grdfloat)scale;
 				}
 #endif
 			}

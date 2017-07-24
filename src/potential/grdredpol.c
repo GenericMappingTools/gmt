@@ -211,7 +211,7 @@ GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double 
 	}
 }
 
-GMT_LOCAL void mirror_edges (float *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
+GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
@@ -1482,7 +1482,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					if (Ctrl->Z.active && !wrote_one && l == 0 && k == 0) {
 						for (jj = i2 = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */
 							for (j2 = 0; j2 < Ctrl->F.ncoef_col; j2++, jj++)
-								Gfilt->data[jj] = (float)fix[ij_mn(Ctrl,i2,j2)];
+								Gfilt->data[jj] = (gmt_grdfloat)fix[ij_mn(Ctrl,i2,j2)];
 
 						wrote_one = true;
 					}
@@ -1494,7 +1494,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 							tmp_d += fix[ij_mn(Ctrl,i2,j2)] * Gin->data[ij0_data(Ctrl,i3,(col + j2))];
 					}
 
-					Gout->data[ij] = (float)tmp_d;
+					Gout->data[ij] = (gmt_grdfloat)tmp_d;
 				}
 			}
 		}

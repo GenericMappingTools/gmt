@@ -365,7 +365,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		for (col = 0; col < (int)Gout->header->n_columns; col++) {
 			ij = gmt_M_ijp (Gout->header, row, col);
-			Gout->data[ij] = (float)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
+			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
 			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
 		}

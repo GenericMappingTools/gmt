@@ -390,7 +390,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		size_t n_bytes = sizeof (struct GMT_GRID);
 		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
-		n_bytes += Grid->header->size * sizeof (float);			/* Grid */
+		n_bytes += Grid->header->size * sizeof (gmt_grdfloat);			/* Grid */
 		n_bytes += 2 * (L_max + 1) * sizeof (double *);			/* C[] and S[] pointers */
 		n_bytes += 2 * (L_max + 1) * (L_max + 1) * sizeof (double);	/* C[] and S[] contents */
 		n_bytes += n_PLM * sizeof (double);				/* P_lm */
@@ -439,7 +439,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 				}
 			}
 			node = gmt_M_ijp (Grid->header, row, col);
-			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */
+			Grid->data[node] = (gmt_grdfloat)sum;	/* Assign total to the grid, cast as gmt_grdfloat */
 		}
 	}
 	if (duplicate_col) {	/* Just copy over what we found on the western boundary to the repeated eastern boundary */

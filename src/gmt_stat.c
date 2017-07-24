@@ -1939,7 +1939,7 @@ int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	return (0);
 }
 
-int gmt_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est) {
+int gmt_mode_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est) {
 	uint64_t i, istop;
 	unsigned int multiplicity;
 	double mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
@@ -2023,9 +2023,9 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 	*scale = MAD_NORMALIZE * med;
 }
 
-void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale) {
+void gmt_getmad_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, double location, double *scale) {
 	uint64_t i;
-	float *dev = NULL;
+	gmt_grdfloat *dev = NULL;
 	double med;
 
 	if (n == 0) {	/* No data, so cannot define MAD */
@@ -2037,7 +2037,7 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 		return;
 	}
 	dev = gmt_M_memory (GMT, NULL, n, double);
-	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
+	for (i = 0; i < n; i++) dev[i] = (gmt_grdfloat) fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_FLOAT);
 	for (i = n; i > 0 && gmt_M_is_fnan (dev[i-1]); i--);
 	if (i)
@@ -2145,7 +2145,7 @@ double gmt_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, un
 	return (r);
 }
 
-double gmt_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, unsigned int mode) {
+double gmt_corrcoeff_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, gmt_grdfloat *y, uint64_t n, unsigned int mode) {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
 	 */
@@ -2201,7 +2201,7 @@ double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n) {
 	return (p);
 }
 
-double gmt_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n) {
+double gmt_quantile_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, double q, uint64_t n) {
 	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
 	 * q is expected to be 0 < q < 100 */
 
@@ -2579,7 +2579,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 			gmt_M_grd_loop (GMT, G, row, col, node) {
 				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
 					continue;
-				pair[n].value    = (float)fabs (G->data[node] - wmed);
+				pair[n].value    = (gmt_grdfloat)fabs (G->data[node] - wmed);
 				pair[n++].weight = W->data[node];
 			}
 		}
@@ -2594,7 +2594,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 			/* 2. Find the weighted median */
 			wmed = gmt_median_weighted (GMT, pair, n);
 			/* 3. Compute the absolute deviations from this median */
-			for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - wmed);
+			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmed);
 		}
 		/* 4. Find the weighted median absolue deviation */
 		wmad = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
@@ -2638,7 +2638,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 			pair[n++].weight = W->data[node];
 		}
 		/* 2. Find the weighted lms mode */
-		wmode = (float)gmt_mode_weighted (GMT, pair, n);
+		wmode = (gmt_grdfloat)gmt_mode_weighted (GMT, pair, n);
 		gmt_M_free (GMT, pair);
 	}
 	else {	/* Plain median */
@@ -2672,7 +2672,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 			gmt_M_grd_loop (GMT, G, row, col, node) {
 				if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
 					continue;
-				pair[n].value    = (float)fabs (G->data[node] - wmode);
+				pair[n].value    = (gmt_grdfloat)fabs (G->data[node] - wmode);
 				pair[n++].weight = W->data[node];
 			}
 		}
@@ -2685,9 +2685,9 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 				pair[n++].weight = W->data[node];
 			}
 			/* 2. Find the weighted median */
-			wmode = (float)gmt_mode_weighted (GMT, pair, n);
+			wmode = (gmt_grdfloat)gmt_mode_weighted (GMT, pair, n);
 			/* 3. Compute the absolute deviations from this mode */
-			for (node = 0; node < n; node++) pair[node].value = (float)fabs (pair[node].value - wmode);
+			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmode);
 		}
 		/* 4. Find the weighted median absolue deviation and scale it */
 		lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
@@ -2742,7 +2742,7 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
 		gmt_M_col_loop (GMT, G, first_row, col, node) {
 			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
-			G->data[node] = (float)(row_weight * col_weight * area);
+			G->data[node] = (gmt_grdfloat)(row_weight * col_weight * area);
 		}
 		first_row++;
 	}
@@ -2750,7 +2750,7 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 		row_weight = 1.0 - cosd (f * G->header->inc[GMT_Y]);
 		gmt_M_col_loop (GMT, G, last_row, col, node) {
 			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
-			G->data[node] = (float)(row_weight * col_weight * area);
+			G->data[node] = (gmt_grdfloat)(row_weight * col_weight * area);
 		}
 		last_row--;
 	}
@@ -2762,7 +2762,7 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 		row_weight = cosd (lat);
 		gmt_M_col_loop (GMT, G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;
-			G->data[node] = (float)(row_weight * col_weight * area);
+			G->data[node] = (gmt_grdfloat)(row_weight * col_weight * area);
 		}
 	}
 }
@@ -2777,7 +2777,7 @@ GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 		if (G->header->registration == GMT_GRID_NODE_REG) row_weight = (row == 0 || row == last_row) ? 0.5 : 1.0;	/* half-cells in y */
 		gmt_M_col_loop (GMT, G, row, col, node) {	/* Now loop over the columns */
 			if (G->header->registration == GMT_GRID_NODE_REG) col_weight = (col == 0 || col == last_col) ? 0.5 : 1.0;	/* half-cells in x */
-			G->data[node] = (float)(row_weight * col_weight * area);
+			G->data[node] = (gmt_grdfloat)(row_weight * col_weight * area);
 		}
 	}
 }

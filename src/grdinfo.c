@@ -856,11 +856,11 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.active) {
 		if (Ctrl->T.mode & 2) {	/* Must do alpha trimming first */
-			float *tmp_grid = NULL;
+			gmt_grdfloat *tmp_grid = NULL;
 			char *file_ptr = grdfile;	/* To avoid a warning */
 			if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
-				tmp_grid = gmt_M_memory_aligned (GMT, NULL, G->header->size, float);
-				gmt_M_memcpy (tmp_grid, G->data, G->header->size, float);
+				tmp_grid = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
+				gmt_M_memcpy (tmp_grid, G->data, G->header->size, gmt_grdfloat);
 			}
 			else
 				tmp_grid = G->data;

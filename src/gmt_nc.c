@@ -77,7 +77,7 @@
 #define NC_CACHE_PREEMPTION 0.75f
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job);
-int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 static int nc_libvers[] = {-1, -1, -1, -1}; /* holds the version of the netCDF library */
 
@@ -100,25 +100,25 @@ enum Netcdf_io_mode {
 	k_get_netcdf
 };
 
-/* Wrapper around nc_put_vara_float and nc_get_vara_float */
-static inline int io_nc_vara_float (int ncid, int varid, const size_t *startp,
-	 const size_t *countp, float *fp, unsigned io_mode) {
+/* Wrapper around nc_put_vara_grdfloat and nc_get_vara_grdfloat */
+static inline int io_nc_vara_grdfloat (int ncid, int varid, const size_t *startp,
+	 const size_t *countp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_vara_float (ncid, varid, startp, countp, fp);
+		return nc_put_vara_grdfloat (ncid, varid, startp, countp, fp);
 	/* read netcdf */
-	return nc_get_vara_float (ncid, varid, startp, countp, fp);
+	return nc_get_vara_grdfloat (ncid, varid, startp, countp, fp);
 }
 
-/* Wrapper around nc_put_varm_float and nc_get_varm_float */
-static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
+/* Wrapper around nc_put_varm_grdfloat and nc_get_varm_grdfloat */
+static inline int io_nc_varm_grdfloat (int ncid, int varid, const size_t *startp,
 	 const size_t *countp, const ptrdiff_t *stridep,
-	 const ptrdiff_t *imapp, float *fp, unsigned io_mode) {
+	 const ptrdiff_t *imapp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)
 		/* write netcdf */
-		return nc_put_varm_float (ncid, varid, startp, countp, stridep, imapp, fp);
+		return nc_put_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
 	/* read netcdf */
-	return nc_get_varm_float (ncid, varid, startp, countp, stridep, imapp, fp);
+	return nc_get_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
 }
 
 /* Get number of chunked rows that fit into cache (32MiB) */
@@ -164,7 +164,7 @@ GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GR
 }
 
 /* Read and write classic or chunked netcdf files */
-GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], size_t stride, unsigned io_mode, float* grid) {
+GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], size_t stride, unsigned io_mode, gmt_grdfloat* grid) {
 	/* io_mode = k_get_netcdf: read a netcdf file to grid
 	 * io_mode = k_put_netcdf: write a grid to netcdf */
 	int status = NC_NOERR;
@@ -222,9 +222,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 #endif
 			/* get/put chunked rows */
 			if (stride)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+				status = io_nc_varm_grdfloat (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 			else
-				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
+				status = io_nc_vara_grdfloat (header->ncid, header->z_id, start, count, grid, io_mode);
 
 			/* advance grid location and set new origin */
 			grid += count[yx_dim[0]] * ((stride == 0 ? width_t : stride));
@@ -243,9 +243,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			if (stride)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+				status = io_nc_varm_grdfloat (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 			else
-				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
+				status = io_nc_vara_grdfloat (header->ncid, header->z_id, start, count, grid, io_mode);
 		}
 	}
 	else {
@@ -253,9 +253,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		count[yx_dim[0]] = height_t;
 		count[yx_dim[1]] = width_t;
 		if (stride)
-			status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+			status = io_nc_varm_grdfloat (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 		else
-			status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
+			status = io_nc_vara_grdfloat (header->ncid, header->z_id, start, count, grid, io_mode);
 	}
 	return status;
 }
@@ -1255,7 +1255,7 @@ int gmt_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	return (gmtnc_grd_info (GMT, header, 'w'));
 }
 
-int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -1276,7 +1276,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	unsigned width = 0, height = 0;
 	size_t width_t, height_t, row, stride_t;
 	uint64_t imag_offset;
-	float *pgrid = NULL;
+	gmt_grdfloat *pgrid = NULL;
 
 	/* Check type: is file in old NetCDF format or not at all? */
 	if (GMT->session.grdformat[header->type][0] == 'c')
@@ -1349,11 +1349,11 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	adj_nan_value = !isnan (header->nan_value);
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (row = 0; row < height_t; ++row) {
-		float *p_data = pgrid + row * (header->stride ? stride_t : width_t);
+		gmt_grdfloat *p_data = pgrid + row * (header->stride ? stride_t : width_t);
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == header->nan_value) {
-				p_data[col] = (float)NAN;
+				p_data[col] = (gmt_grdfloat)NAN;
 				header->has_NaNs = GMT_GRID_HAS_NANS;
 				continue;
 			}
@@ -1395,7 +1395,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		unsigned n;
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = header->stride ? header->stride : width;
-		float *p_data = pgrid + header->data_offset;
+		gmt_grdfloat *p_data = pgrid + header->data_offset;
 		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]); n++) {
 			if (n % (stride + pad_x) == 0)
 				fprintf (stderr, "\n");
@@ -1415,7 +1415,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	return GMT_NOERROR;
 }
 
-int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 { /* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -1435,7 +1435,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	size_t n, nm;
 	size_t width_t, height_t;
 	double limit[2];      /* minmax of z variable */
-	float *pgrid = NULL;
+	gmt_grdfloat *pgrid = NULL;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 	switch (header->type) {
@@ -1452,7 +1452,9 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 				header->nan_value = NC_MIN_INT;
 			break;
 		case GMT_GRID_IS_ND:
+#ifndef DOUBLE_PRECISION_GRID
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
+#endif
 			/* no break! */
 		default: /* don't round float */
 			do_round = false;

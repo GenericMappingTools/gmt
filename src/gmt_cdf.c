@@ -211,7 +211,7 @@ int gmt_cdf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -233,7 +233,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	unsigned int i, width_in, height_in;
 	unsigned int width_out, *actual_col = NULL;
 	uint64_t ij, kk, imag_offset;
-	float *tmp = NULL;
+	gmt_grdfloat *tmp = NULL;
 
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -257,7 +257,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	tmp = gmt_M_memory (GMT, NULL, header->n_columns, float);
+	tmp = gmt_M_memory (GMT, NULL, header->n_columns, gmt_grdfloat);
 
 	edge[0] = header->n_columns;
 	ij = imag_offset + pad[YHI] * width_out + pad[XLO];
@@ -267,7 +267,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
 		start[0] = j * header->n_columns;
-		if ((err = nc_get_vara_float (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
+		if ((err = nc_get_vara_grdfloat (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
 			nc_close (ncid);
@@ -298,7 +298,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -316,9 +316,9 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	unsigned int j, width_out, height_out, width_in;
 	int first_col, last_col, first_row, last_row;
 	uint64_t ij, nr_oor = 0, imag_offset;
-	float *tmp_f = NULL;
+	gmt_grdfloat *tmp_f = NULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX};
-	float value;
+	gmt_grdfloat value;
 	nc_type z_type;
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);	/* Cannot do piping on netCDF files */
@@ -382,14 +382,14 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = gmt_M_memory (GMT, NULL, width_in, float);
+		tmp_f = gmt_M_memory (GMT, NULL, width_in, gmt_grdfloat);
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
 				value = grid[ij+actual_col[i]+imag_offset];
 				if (!isfinite (value)) {
 					if (isinf(value))
-						nr_oor++; /* out of float range */
+						nr_oor++; /* out of gmt_grdfloat range */
 					tmp_f[i] = header->nan_value;
 				}
 				else {
@@ -398,7 +398,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			if ((err = nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f))) {
+			if ((err = nc_put_vara_grdfloat (ncid, header->z_id, start, edge, tmp_f))) {
 				gmt_M_free (GMT, actual_col);
 				gmt_M_free (GMT, tmp_f);
 				return (err);
@@ -414,7 +414,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 				value = grid[ij+actual_col[i]+imag_offset];
 				if (!isfinite (value)) {
 					if (isinf(value))
-						nr_oor++; /* out of float range */
+						nr_oor++; /* out of gmt_grdfloat range */
 					tmp_i[i] = lrintf (header->nan_value);
 				}
 				else if (value <= limit[0] || value >= limit[1]) {

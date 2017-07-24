@@ -292,7 +292,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {
 		double scale_factor, add_offset;
-		float nan_value;
+		gmt_grdfloat nan_value;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Decode and change attributes in file %s\n", out_file);
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;
@@ -372,12 +372,12 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			if (gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col)) continue;			/* Outside grid node range */
 
 			ij = gmt_M_ijp (G->header, row, col);
-			G->data[ij] = (float)in[GMT_Z];
+			G->data[ij] = (gmt_grdfloat)in[GMT_Z];
 			n_use++;
 			if (gmt_M_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
-				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->n_columns-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->n_columns-1); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
+				else if (col == (G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
 			}
 		} while (true);
 
@@ -393,7 +393,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr = 0;
-		float *a_tr = NULL, *save_grid_pointer = NULL;
+		gmt_grdfloat *a_tr = NULL, *save_grid_pointer = NULL;
 
 		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
@@ -436,7 +436,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		/* Now transpose the matrix */
 
-		a_tr = gmt_M_memory (GMT, NULL, G->header->size, float);
+		a_tr = gmt_M_memory (GMT, NULL, G->header->size, gmt_grdfloat);
 		gmt_M_grd_loop (GMT, G, row, col, ij) {
 			switch (Ctrl->E.mode) {
 				case 'a': /* Rotate grid around 180 degrees */

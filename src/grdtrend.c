@@ -278,7 +278,7 @@ GMT_LOCAL void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *
 	gmt_M_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
 		T->data[ij] = 0.0f;
-		for (k = 0; k < n_model; k++) T->data[ij] += (float)(pstuff[k]*gtd[k]);
+		for (k = 0; k < n_model; k++) T->data[ij] += (gmt_grdfloat)(pstuff[k]*gtd[k]);
 	}
 }
 
@@ -354,7 +354,7 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 	/* Find weights from residuals  */
 	unsigned int row, col;
 	uint64_t j = 0, j2, ij;
-	float r, mad, scale;
+	gmt_grdfloat r, mad, scale;
 
 	gmt_M_grd_loop (GMT, R, row, col, ij) {
 		if (gmt_M_is_fnan (R->data[ij])) continue;
@@ -372,7 +372,7 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 
 	/* Use weight according to Huber (1981), but squared */
 
-	gmt_M_memset (W->data, W->header->size, float);	/* Wipe W clean */
+	gmt_M_memset (W->data, W->header->size, gmt_grdfloat);	/* Wipe W clean */
 	gmt_M_grd_loop (GMT, R, row, col, ij) {
 		if (gmt_M_is_fnan (R->data[ij])) {
 			W->data[ij] = R->data[ij];

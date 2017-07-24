@@ -69,7 +69,7 @@ struct GRDRASTER_INFO {
 	char type;
 };
 
-GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, gmt_grdfloat *row, char *buffer) {
 	/* convert unsigned char */
 	unsigned int i;
 	unsigned char tempval;
@@ -79,15 +79,15 @@ GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
-			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
-			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
+			row[i] = (gmt_grdfloat)tempval;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (gmt_grdfloat)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (gmt_grdfloat)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, gmt_grdfloat *row, char *buffer) {
 	/* convert char */
 	unsigned int i;
 	char tempval;
@@ -97,15 +97,15 @@ GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
-			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
-			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
+			row[i] = (gmt_grdfloat)tempval;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (gmt_grdfloat)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (gmt_grdfloat)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, gmt_grdfloat *row, char *buffer) {
 	/* convert uint16_t */
 	unsigned int i;
 	uint16_t tempval;
@@ -117,15 +117,15 @@ GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
-			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
-			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
+			row[i] = (gmt_grdfloat)tempval;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (gmt_grdfloat)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (gmt_grdfloat)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, gmt_grdfloat *row, char *buffer) {
 	/* convert int16_t */
 	unsigned int i;
 	int16_t tempval;
@@ -138,15 +138,15 @@ GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
-			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
-			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
+			row[i] = (gmt_grdfloat)tempval;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (gmt_grdfloat)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (gmt_grdfloat)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, gmt_grdfloat *row, char *buffer) {
 	/* convert int32_t */
 	unsigned int i;
 	int32_t tempval;
@@ -159,9 +159,9 @@ GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
-			row[i] = (float)tempval;
-			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
-			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
+			row[i] = (gmt_grdfloat)tempval;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (gmt_grdfloat)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (gmt_grdfloat)ras->h.z_add_offset;
 		}
 	}
 	return;
@@ -736,7 +736,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned char *ubuffer = NULL;
 	static unsigned char maskset[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 
-	float *floatrasrow = NULL;
+	gmt_grdfloat *floatrasrow = NULL;
 
 	double tol, grdlatorigin, grdlonorigin, raslatorigin, raslonorigin, *x = NULL, y, out[3];
 
@@ -974,7 +974,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		unsigned int col;
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->n_columns, float);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 		x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
 		for (col = 0; col < Grid->header->n_columns; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->n_columns);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
@@ -993,7 +993,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	} else {	/* Need an entire (padded) grid */
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, float);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat);
 	}
 
 	ksize = get_byte_size (GMT, myras.type);
@@ -1001,9 +1001,9 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		nmask = lrint (ceil (myras.h.n_columns * myras.h.n_rows * 0.125));
 		ubuffer = gmt_M_memory (GMT, NULL, nmask, unsigned char);
 	}
-	else {	/* Need to read by rows, and convert each row to float */
+	else {	/* Need to read by rows, and convert each row to gmt_grdfloat */
 		buffer = gmt_M_memory (GMT, NULL, ksize * myras.h.n_columns, char);
-		floatrasrow = gmt_M_memory (GMT, NULL, myras.h.n_columns, float);
+		floatrasrow = gmt_M_memory (GMT, NULL, myras.h.n_columns, gmt_grdfloat);
 	}
 
 	/* Now open file and do it */
@@ -1048,7 +1048,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 					}
 					else {
 						k = ijras + iras;
-						Grid->data[ij] = (float)((ubuffer[k/8] & maskset[k%8]) ? 1.0 : 0.0);
+						Grid->data[ij] = (gmt_grdfloat)((ubuffer[k/8] & maskset[k%8]) ? 1.0 : 0.0);
 						if (Grid->data[ij] > Grid->header->z_max) Grid->header->z_max = Grid->data[ij];
 						if (Grid->data[ij] < Grid->header->z_min) Grid->header->z_min = Grid->data[ij];
 					}

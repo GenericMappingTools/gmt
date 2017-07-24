@@ -1895,7 +1895,7 @@ GMT_LOCAL void support_edge_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 }
 
 /*! . */
-GMT_LOCAL void support_setcontjump (float *z, uint64_t nz) {
+GMT_LOCAL void support_setcontjump (gmt_grdfloat *z, uint64_t nz) {
 /* This routine will check if there is a 360 jump problem
  * among these coordinates and adjust them accordingly so
  * that subsequent testing can determine if a zero contour
@@ -1904,7 +1904,7 @@ GMT_LOCAL void support_setcontjump (float *z, uint64_t nz) {
 
 	uint64_t i;
 	bool jump = false;
-	float dz;
+	gmt_grdfloat dz;
 
 	for (i = 1; !jump && i < nz; i++) {
 		dz = z[i] - z[0];
@@ -1933,7 +1933,7 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 	bool more;
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
-	float z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
+	gmt_grdfloat z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
 	double xk[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
@@ -8424,13 +8424,13 @@ int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 }
 
 /*! . */
-void gmtlib_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols) {
-	/* In-place transpose of a float grid array.  Based on example
+void gmtlib_inplace_transpose (gmt_grdfloat *A, unsigned int n_rows, unsigned int n_cols) {
+	/* In-place transpose of a gmt_grdfloat grid array.  Based on example
 	 * code from http://www.geeksforgeeks.org/inplace-m-x-n-size-matrix-transpose
 	 * Switched to C-style bit flag.
 	 */
 	uint64_t size = n_rows * n_cols - 1ULL;
-	float t;	/* holds element to be replaced, eventually becomes next element to move */
+	gmt_grdfloat t;	/* holds element to be replaced, eventually becomes next element to move */
 	uint64_t next;	/* location of 't' to be moved */
 	uint64_t cycleBegin;	/* holds start of cycle */
 	uint64_t i;	/* iterator */
@@ -10422,8 +10422,8 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				in loop, since y's already loaded to 2nd outside.  */
 
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
-				if (set[XLO]) G->data[jmx + iwo1] = (float)(4.0 * G->data[jmx + iw]) - (G->data[jmx + iw + mx] + G->data[jmx + iw - mx] + G->data[jmx + iwi1]);
-				if (set[XHI]) G->data[jmx + ieo1] = (float)(4.0 * G->data[jmx + ie]) - (G->data[jmx + ie + mx] + G->data[jmx + ie - mx] + G->data[jmx + iei1]);
+				if (set[XLO]) G->data[jmx + iwo1] = (gmt_grdfloat)(4.0 * G->data[jmx + iw]) - (G->data[jmx + iw + mx] + G->data[jmx + iw - mx] + G->data[jmx + iwi1]);
+				if (set[XHI]) G->data[jmx + ieo1] = (gmt_grdfloat)(4.0 * G->data[jmx + ie]) - (G->data[jmx + ie + mx] + G->data[jmx + ie - mx] + G->data[jmx + iei1]);
 			}
 
 			/* Copy that result to 2nd outside row using periodicity.  */
@@ -10439,9 +10439,9 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* Now set d[laplacian]/dx = 0 on 2nd outside column.  Include 1st outside rows in loop.  */
 			for (jmx = jno1; jmx <= jso1; jmx += mx) {
 				if (set[XLO]) G->data[jmx + iwo2] = (G->data[jmx + iw - mx] + G->data[jmx + iw + mx] + G->data[jmx + iwi1])
-					- (G->data[jmx + iwo1 - mx] + G->data[jmx + iwo1 + mx]) + (float)(5.0 * (G->data[jmx + iwo1] - G->data[jmx + iw]));
+					- (G->data[jmx + iwo1 - mx] + G->data[jmx + iwo1 + mx]) + (gmt_grdfloat)(5.0 * (G->data[jmx + iwo1] - G->data[jmx + iw]));
 				if (set[XHI]) G->data[jmx + ieo2] = (G->data[jmx + ie - mx] + G->data[jmx + ie + mx] + G->data[jmx + iei1])
-					- (G->data[jmx + ieo1 - mx] + G->data[jmx + ieo1 + mx]) + (float)(5.0 * (G->data[jmx + ieo1] - G->data[jmx + ie]));
+					- (G->data[jmx + ieo1 - mx] + G->data[jmx + ieo1 + mx]) + (gmt_grdfloat)(5.0 * (G->data[jmx + ieo1] - G->data[jmx + ie]));
 			}
 
 			/* Now copy that result also, for complete periodicity's sake  */
@@ -10478,44 +10478,44 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				but explicitly that d2f/dx2 = 0 and d2f/dy2 = 0.
 				Also set d2f/dxdy = 0.  Then can set remaining points.  */
 
-	/* d2/dx2 */	if (set[XLO]) G->data[jn + iwo1]   = (float)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
-	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + iw]   = (float)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
+	/* d2/dx2 */	if (set[XLO]) G->data[jn + iwo1]   = (gmt_grdfloat)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
+	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + iw]   = (gmt_grdfloat)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
 	/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[jno1 + iwo1] = -(G->data[jno1 + iwi1] - G->data[jni1 + iwi1] + G->data[jni1 + iwo1]);
 
-	/* d2/dx2 */	if (set[XHI]) G->data[jn + ieo1]   = (float)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
-	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + ie]   = (float)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
+	/* d2/dx2 */	if (set[XHI]) G->data[jn + ieo1]   = (gmt_grdfloat)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
+	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + ie]   = (gmt_grdfloat)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
 	/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[jno1 + ieo1] = -(G->data[jno1 + iei1] - G->data[jni1 + iei1] + G->data[jni1 + ieo1]);
 
-	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (float)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
-	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (float)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
+	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
+	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
 	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = -(G->data[jso1 + iwi1] - G->data[jsi1 + iwi1] + G->data[jsi1 + iwo1]);
 
-	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (float)(2.0 * G->data[js + ie] - G->data[js + iei1]);
-	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (float)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
+	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[js + iei1]);
+	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
 	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = -(G->data[jso1 + iei1] - G->data[jsi1 + iei1] + G->data[jsi1 + ieo1]);
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
 			for (i = iwi1; i <= iei1; i++) {
-				if (set[YHI]) G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
-				if (set[YLO]) G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
+				if (set[YHI]) G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
+				if (set[YLO]) G->data[jso1 + i] = (gmt_grdfloat)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
 			for (jmx = jni1; jmx <= jsi1; jmx += mx) {
-				if (set[XLO]) G->data[iwo1 + jmx] = (float)(4.0 * G->data[iw + jmx]) - (G->data[iw + jmx + mx] + G->data[iw + jmx - mx] + G->data[iwi1 + jmx]);
-				if (set[XHI]) G->data[ieo1 + jmx] = (float)(4.0 * G->data[ie + jmx]) - (G->data[ie + jmx + mx] + G->data[ie + jmx - mx] + G->data[iei1 + jmx]);
+				if (set[XLO]) G->data[iwo1 + jmx] = (gmt_grdfloat)(4.0 * G->data[iw + jmx]) - (G->data[iw + jmx + mx] + G->data[iw + jmx - mx] + G->data[iwi1 + jmx]);
+				if (set[XHI]) G->data[ieo1 + jmx] = (gmt_grdfloat)(4.0 * G->data[ie + jmx]) - (G->data[ie + jmx + mx] + G->data[ie + jmx - mx] + G->data[iei1 + jmx]);
 			}
 
 			/* Now set d[Laplacian]/dn = 0 on all edge pts, including
 				corners, since the points needed in this are now set.  */
 			for (i = iw; i <= ie; i++) {
-				if (set[YHI]) G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
+				if (set[YHI]) G->data[jno2 + i] = G->data[jni1 + i] + (gmt_grdfloat)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
-				if (set[YLO]) G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
+				if (set[YLO]) G->data[jso2 + i] = G->data[jsi1 + i] + (gmt_grdfloat)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
 			for (jmx = jn; jmx <= js; jmx += mx) {
-				if (set[XLO]) G->data[iwo2 + jmx] = G->data[iwi1 + jmx] + (float)(5.0 * (G->data[iwo1 + jmx] - G->data[iw + jmx]))
+				if (set[XLO]) G->data[iwo2 + jmx] = G->data[iwi1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[iwo1 + jmx] - G->data[iw + jmx]))
 					+ (G->data[iw + jmx - mx] - G->data[iwo1 + jmx - mx]) + (G->data[iw + jmx + mx] - G->data[iwo1 + jmx + mx]);
-				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (float)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
+				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
 					+ (G->data[ie + jmx - mx] - G->data[ieo1 + jmx - mx]) + (G->data[ie + jmx + mx] - G->data[ieo1 + jmx + mx]);
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
@@ -10609,7 +10609,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				then use periodicity to set 2nd col outside.  */
 
 			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
-				G->data[jno1 + i] = (float)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
+				G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
 			}
 			if (set[XLO] && set[YHI]) G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + G->header->nxp];
 			if (set[XHI] && set[YHI]) G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - G->header->nxp];
@@ -10619,7 +10619,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				use periodicity to set 2nd out col after loop.  */
 
 			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
-				G->data[jno2 + i] = G->data[jni1 + i] + (float)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
+				G->data[jno2 + i] = G->data[jni1 + i] + (gmt_grdfloat)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
 			}
 			if (set[XLO] && set[YHI]) G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + G->header->nxp];
@@ -10659,7 +10659,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				then use periodicity to set 2nd col outside.  */
 
 			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
-				G->data[jso1 + i] = (float)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
+				G->data[jso1 + i] = (gmt_grdfloat)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
 			if (set[XLO] && set[YLO]) G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + G->header->nxp];
 			if (set[XHI] && set[YHI]) G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - G->header->nxp];
@@ -10669,7 +10669,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				use periodicity to set 2nd out col after loop.  */
 
 			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
-				G->data[jso2 + i] = G->data[jsi1 + i] + (float)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
+				G->data[jso2 + i] = G->data[jsi1 + i] + (gmt_grdfloat)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
 			if (set[XLO] && set[YLO]) G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + G->header->nxp];

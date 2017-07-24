@@ -32,7 +32,7 @@
 #define _GMT_PROTOTYPES_H
 
 #ifdef DEBUG
-EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt);
+EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_complex, char *txt);
 #endif
 
 /* Temporary redef of strdup to allow check of memory leaks due to usage of strdup */
@@ -147,7 +147,7 @@ EXTERN_MSC void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 EXTERN_MSC void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad);
 EXTERN_MSC void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC void gmt_grd_pad_zero (struct GMT_CTRL *GMT, struct GMT_GRID *G);
-EXTERN_MSC void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *z);
+EXTERN_MSC void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z);
 EXTERN_MSC int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant);
 EXTERN_MSC int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int mode);
@@ -559,7 +559,7 @@ EXTERN_MSC double gmt_nrand (struct GMT_CTRL *GMT);
 EXTERN_MSC double gmt_lrand (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmt_chebyshev (struct GMT_CTRL *GMT, double x, int n, double *t);
 EXTERN_MSC double gmt_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, unsigned int mode);
-EXTERN_MSC double gmt_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, unsigned int mode);
+EXTERN_MSC double gmt_corrcoeff_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, gmt_grdfloat *y, uint64_t n, unsigned int mode);
 EXTERN_MSC double gmt_Fcrit (struct GMT_CTRL *GMT, double alpha, double nu1, double nu2);
 EXTERN_MSC double gmt_chi2crit (struct GMT_CTRL *GMT, double alpha, double nu);
 EXTERN_MSC double gmt_extreme (struct GMT_CTRL *GMT, double *x, uint64_t n, double x_default, int kind, int way);
@@ -568,7 +568,7 @@ EXTERN_MSC double gmt_zcrit (struct GMT_CTRL *GMT, double alpha);
 EXTERN_MSC double gmt_zdist (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double xmax, double m_initial, double *med);
 EXTERN_MSC int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est);
-EXTERN_MSC int gmt_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est);
+EXTERN_MSC int gmt_mode_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est);
 EXTERN_MSC double gmt_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std);
 EXTERN_MSC double gmt_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n);
 EXTERN_MSC double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile);
@@ -589,11 +589,11 @@ EXTERN_MSC double gmt_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale,
 EXTERN_MSC double gmt_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double shape);
 EXTERN_MSC double gmt_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double shape);
 EXTERN_MSC void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, double *scale);
-EXTERN_MSC void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale);
+EXTERN_MSC void gmt_getmad_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, double location, double *scale);
 EXTERN_MSC double gmt_psi (struct GMT_CTRL *GMT, double z[], double p[]);
 EXTERN_MSC void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsigned int *iter);
 EXTERN_MSC double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n);
-EXTERN_MSC double gmt_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n);
+EXTERN_MSC double gmt_quantile_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, double q, uint64_t n);
 EXTERN_MSC double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W);
 EXTERN_MSC double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite);
 EXTERN_MSC double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, bool overwrite);

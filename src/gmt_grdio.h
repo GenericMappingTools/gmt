@@ -54,6 +54,11 @@ enum GMT_enum_img {
 	GMT_IMG_NLAT_2M_85 = 10800U, /* At 2 min resolution */
 	GMT_IMG_ITEMSIZE   = 2U      /* Size of 2 byte short ints */
 };
+#ifdef DOUBLE_PRECISION_GRID
+#define GMT_GRD_FORMAT 'd'
+#else
+#define GMT_GRD_FORMAT 'f'
+#endif
 
 /*! Special grid format IDs */
 
@@ -158,7 +163,7 @@ EXTERN_MSC int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_
 EXTERN_MSC int gmt_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
 EXTERN_MSC int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, float *data, size_t length, double scale, double offset);
-EXTERN_MSC int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *grid, unsigned int complex_mode, unsigned int direction);
-EXTERN_MSC void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, float *data, unsigned int mode);
+EXTERN_MSC int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction);
+EXTERN_MSC void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *data, unsigned int mode);
 
 #endif /* GMT_GRDIO_H */

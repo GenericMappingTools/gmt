@@ -130,7 +130,7 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 	unsigned int k = 0, j, i, l, n_pix;
 	unsigned char *buffer = NULL;
 	size_t img_size;
-	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
+	gmt_grdfloat *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
 	int rgb[3];
 	FILE *fp = NULL;
 
@@ -153,10 +153,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 	n_pix = (unsigned int) (img_size / byte_per_pixel);
 
 	buffer  = gmt_M_memory (GMT, NULL, img_size, unsigned char);
-	datac   = gmt_M_memory (GMT, NULL, 2*n_pix, float);
-	work    = gmt_M_memory (GMT, NULL, 2*n_pix, float);
-	img_pow = gmt_M_memory (GMT, NULL, n_pix/2, float);
-	gmt_M_memset (work, 2*n_pix, float);
+	datac   = gmt_M_memory (GMT, NULL, 2*n_pix, gmt_grdfloat);
+	work    = gmt_M_memory (GMT, NULL, 2*n_pix, gmt_grdfloat);
+	img_pow = gmt_M_memory (GMT, NULL, n_pix/2, gmt_grdfloat);
+	gmt_M_memset (work, 2*n_pix, gmt_grdfloat);
 
 	if (gmt_M_fread (buffer, 1U, img_size, fp) != img_size) {
 		if (byte_per_pixel == 3)
@@ -175,7 +175,7 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 	for (j = 0; j < img_size; j += inc) {
 		for (i = 0; i < 3; i++) rgb[i] = buffer[j+i];
 		/* Convert rgb to gray using the gmt_M_yiq transformation */
-		datac[k] = (float) gmt_M_yiq (rgb);
+		datac[k] = (gmt_grdfloat) gmt_M_yiq (rgb);
 		k += 2;
 	}
 
@@ -197,11 +197,11 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 
 	/* That's the way it should be but, I don't know why, the result is transposed. Instead
 	   of the number of lines I get number of columns. This is very weird and smells BUG */
-	/* *raw_nx = j;		*raw_ny = lrint((float)n_pix / raw_nx);*/
+	/* *raw_nx = j;		*raw_ny = lrint((gmt_grdfloat)n_pix / raw_nx);*/
 
 	/* So be it */
 	*raw_ny = j;
-	if (j > 0) *raw_nx = urint((float)n_pix / (*raw_ny));
+	if (j > 0) *raw_nx = urint((gmt_grdfloat)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
 		/* Let's make another attempt to find the right n_columns * n_rows combination. The idea is that we
@@ -435,7 +435,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Grid of %s components in the 0-255 range", comp[channel]);
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 				(void)gmt_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
-				Out->data[ij] = (float)gmt_M_s255 (f_rgb[channel]);
+				Out->data[ij] = (gmt_grdfloat)gmt_M_s255 (f_rgb[channel]);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, grdfile, Out) != GMT_NOERROR) {
 				Return (API->error);
@@ -527,9 +527,9 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			k = 0;
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 				if (header.depth == 8)	/* Gray ramp */
-					Grid->data[ij] = (float)picture[k++];
+					Grid->data[ij] = (gmt_grdfloat)picture[k++];
 				else {				/* 24-bit image */
-					Grid->data[ij] = (float)picture[k3];
+					Grid->data[ij] = (gmt_grdfloat)picture[k3];
 					k3 += 3;
 				}
 			}

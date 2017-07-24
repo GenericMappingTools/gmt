@@ -157,7 +157,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deal
 GMT_LOCAL unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	double scale, fact;
-	float *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat *datac = Grid->data;	/* Shorthand */
 
 	/* Differentiate in frequency domain by multiplying by kr [scale optional] */
 
@@ -165,8 +165,8 @@ GMT_LOCAL unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, str
 	datac[0] = datac[1] = 0.0f;	/* Derivative of the mean is zero */
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = scale * gmt_fft_get_wave (k, K);
-		datac[k]   *= (float)fact;
-		datac[k+1] *= (float)fact;
+		datac[k]   *= (gmt_grdfloat)fact;
+		datac[k+1] *= (gmt_grdfloat)fact;
 	}
 	return (1);	/* Number of parameters used */
 }
@@ -175,26 +175,26 @@ GMT_LOCAL unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct 
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
 	uint64_t k;
 	double fact, scale;
-	float *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat *datac = Grid->data;	/* Shorthand */
 
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = 1.0 / (scale * gmt_fft_get_wave (k, K));
-		datac[k]   *= (float)fact;
-		datac[k+1] *= (float)fact;
+		datac[k]   *= (gmt_grdfloat)fact;
+		datac[k+1] *= (gmt_grdfloat)fact;
 	}
 	return (1);	/* Number of parameters used */
 }
 
 GMT_LOCAL unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
-	float tmp, *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat tmp, *datac = Grid->data;	/* Shorthand */
 
 	/* If z is positive, the field will be upward continued using exp[- k z].  */
 
 	for (k = 2; k < Grid->header->size; k += 2) {
-		tmp = (float)exp (-(*zlevel) * gmt_fft_get_wave (k, K));
+		tmp = (gmt_grdfloat)exp (-(*zlevel) * gmt_fft_get_wave (k, K));
 		datac[k]   *= tmp;
 		datac[k+1] *= tmp;
 	}
@@ -203,14 +203,14 @@ GMT_LOCAL unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, s
 
 GMT_LOCAL unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
-	float tempr, tempi, fact, *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat tempr, tempi, fact, *datac = Grid->data;	/* Shorthand */
 	double cos_azim, sin_azim;
 
 	sincosd (*azim, &sin_azim, &cos_azim);
 
 	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
-		fact = (float)(sin_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
+		fact = (gmt_grdfloat)(sin_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
 		tempr = -(datac[k+1] * fact);
 		tempi =  (datac[k]   * fact);
 		datac[k]   = tempr;
@@ -239,7 +239,7 @@ GMT_LOCAL unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *C
 	double rw;	/* Water density, SI units  */
 	double ri;	/* Infill density, SI units  */
 
-	float *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat *datac = Grid->data;	/* Shorthand */
 
 	te = par[0];	rl = par[1];	rm = par[2];	rw = par[3];	ri = par[4];
 	airy_ratio = -(rl - rw)/(rm - ri);
@@ -257,8 +257,8 @@ GMT_LOCAL unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *C
 		k2 = mk * mk;
 		k4 = k2 * k2;
 		transfer_fn = airy_ratio / ((d_over_restoring_force * k4) + 1.0);
-		datac[k]   *= (float)transfer_fn;
-		datac[k+1] *= (float)transfer_fn;
+		datac[k]   *= (gmt_grdfloat)transfer_fn;
+		datac[k+1] *= (gmt_grdfloat)transfer_fn;
 	}
 	return (5);	/* Number of parameters used */
 }
@@ -299,10 +299,10 @@ GMT_LOCAL double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GM
 
 GMT_LOCAL void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
-	float weight, *datac = Grid->data;	/* Shorthand */
+	gmt_grdfloat weight, *datac = Grid->data;	/* Shorthand */
 
 	for (k = 0; k < Grid->header->size; k += 2) {
-		weight = (float) get_filter_weight (k, f_info, K);
+		weight = (gmt_grdfloat) get_filter_weight (k, f_info, K);
 		datac[k]   *= weight;
 		datac[k+1] *= weight;
 	}
@@ -318,7 +318,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
 	uint64_t k, nk, ifreq, *nused = NULL;
 	unsigned int col;
-	float *X = GridX->data, *Y = NULL;	/* Short-hands */
+	gmt_grdfloat *X = GridX->data, *Y = NULL;	/* Short-hands */
 	double delta_k, r_delta_k, freq, coh_k, sq_norm, powfactor, k_pow_factor, tmp, eps_pow;
 	double *X_pow = NULL, *Y_pow = NULL, *co_spec = NULL, *quad_spec = NULL;
 	struct GMT_DATASET *D = NULL;

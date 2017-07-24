@@ -47,6 +47,19 @@
 #define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
 
+#ifdef DOUBLE_PRECISION_GRID
+#define GMT_GRDFLOAT GMT_DOUBLE
+#define nc_get_vara_grdfloat nc_get_vara_double
+#define nc_put_vara_grdfloat nc_put_vara_double
+#define nc_get_varm_grdfloat nc_get_varm_double
+#define nc_put_varm_grdfloat nc_put_varm_double
+#else
+#define nc_get_vara_grdfloat nc_get_vara_float
+#define nc_put_vara_grdfloat nc_put_vara_float
+#define nc_get_varm_grdfloat nc_get_varm_float
+#define nc_put_varm_grdfloat nc_put_varm_float
+#endif
+
 /*! Safe math macros that check arguments */
 
 #define d_log10(C,x) ((x) <= 0.0 ? C->session.d_NaN : log10 (x))

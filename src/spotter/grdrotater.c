@@ -597,7 +597,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 			xx -= 360.0;
 			while (xx < G->header->wesn[XLO]) xx += 360.0;	/* Make sure we deal with 360 issues */
-			G_rot->data[ij_rot] = (float)gmt_bcr_get_z (GMT, G, xx, yy);
+			G_rot->data[ij_rot] = (gmt_grdfloat)gmt_bcr_get_z (GMT, G, xx, yy);
 		}
 
 		/* Also loop over original node locations to make sure the nearest nodes are set */

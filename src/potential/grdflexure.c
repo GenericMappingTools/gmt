@@ -490,8 +490,8 @@ GMT_LOCAL void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *G
 			mk[GMT_FFT_K_IS_KR] = hypot (mk[GMT_FFT_K_IS_KX], mk[GMT_FFT_K_IS_KY]);	/* kr wavenumber */
 		}
 		transfer_fn = R->transfer (mk, R);
-		Grid->data[k] *= (float)transfer_fn;
-		Grid->data[k+1] *= (float)transfer_fn;
+		Grid->data[k] *= (gmt_grdfloat)transfer_fn;
+		Grid->data[k+1] *= (gmt_grdfloat)transfer_fn;
 	}
 }
 
@@ -718,7 +718,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
 		for (node = 0; node < Grid->header->size; node++) {
 			if (Grid->data[node] > Ctrl->W.water_depth) {
-				Grid->data[node] = (float)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
+				Grid->data[node] = (gmt_grdfloat)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
 				n_subaerial++;
 			}
 		}
@@ -792,7 +792,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	unsigned int t_eval, t_load, n_load_times = 0;
 	int error;
 	bool retain_original;
-	float *orig_load = NULL;
+	gmt_grdfloat *orig_load = NULL;
 	char file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
@@ -885,7 +885,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	retain_original = (n_load_times > 1 || Ctrl->T.n_eval_times > 1);	/* True when we will have to loop over the loads */
 	if (retain_original) {	/* We may need to reuse loads for different times and will have to keep copy of unchanged H(kx,ky) */
-		orig_load = gmt_M_memory (GMT, NULL, Load[0]->Grid->header->size, float);	/* Single temporary storage to hold one original H(kx,ky) grid */
+		orig_load = gmt_M_memory (GMT, NULL, Load[0]->Grid->header->size, gmt_grdfloat);	/* Single temporary storage to hold one original H(kx,ky) grid */
 		/* We must also allocate a separate output grid */
 		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Load[0]->Grid)) == NULL) Return (API->error);	/* Output grid of same size as input */
 	}
@@ -916,7 +916,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating flexural deformation for time %g %s\n", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
 		}
 
-		if (retain_original) gmt_M_memset (Out->data, Out->header->size, float);	/* Reset output grid to zero; not necessary when we only get here once */
+		if (retain_original) gmt_M_memset (Out->data, Out->header->size, gmt_grdfloat);	/* Reset output grid to zero; not necessary when we only get here once */
 
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
 			This_Load = Load[t_load];	/* Short-hand for current load */
@@ -944,11 +944,11 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
 			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
-			if (retain_original) gmt_M_memcpy (orig_load, This_Load->Grid->data, This_Load->Grid->header->size, float);	/* Make a copy of H(kx,ky) before operations */
+			if (retain_original) gmt_M_memcpy (orig_load, This_Load->Grid->data, This_Load->Grid->header->size, gmt_grdfloat);	/* Make a copy of H(kx,ky) before operations */
 			Apply_Transfer_Function (GMT, This_Load->Grid, Ctrl, This_Load->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
 			if (retain_original) {	/* Must add this contribution to our total output grid */
 				Accumulate_Solution (GMT, Out, This_Load->Grid);
-				gmt_M_memcpy (This_Load->Grid->data, orig_load, This_Load->Grid->header->size, float);	/* Restore H(kx,ky) to what it was before operations */
+				gmt_M_memcpy (This_Load->Grid->data, orig_load, This_Load->Grid->header->size, gmt_grdfloat);	/* Restore H(kx,ky) to what it was before operations */
 			}
 		}
 

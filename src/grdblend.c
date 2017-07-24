@@ -98,7 +98,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	char file[GMT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
-	float *z;					/* Row vector holding the current row from this file */
+	gmt_grdfloat *z;					/* Row vector holding the current row from this file */
 };
 
 #ifdef HAVE_GDAL
@@ -400,7 +400,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 		/* Allocate space for one entire row */
 
-		B[n].z = gmt_M_memory (GMT, NULL, B[n].G->header->n_columns, float);
+		B[n].z = gmt_M_memory (GMT, NULL, B[n].G->header->n_columns, gmt_grdfloat);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].G->header->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
@@ -614,7 +614,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	
 	uint64_t ij, n_fill, n_tot;
 	double wt_x, w, wt;
-	float *z = NULL, no_data_f;
+	gmt_grdfloat *z = NULL, no_data_f;
 	
 	char type;
 	char *outfile = NULL, outtemp[GMT_BUFSIZ];
@@ -686,13 +686,13 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Only 1 grid found; no blending will take place\n");
 	}
 
-	no_data_f = (float)Ctrl->N.nodata;
+	no_data_f = (gmt_grdfloat)Ctrl->N.nodata;
 
 	/* Initialize header structure for output blend grid */
 
 	n_tot = gmt_M_get_nm (GMT, Grid->header->n_columns, Grid->header->n_rows);
 
-	z = gmt_M_memory (GMT, NULL, Grid->header->n_columns, float);	/* Memory for one output row */
+	z = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);	/* Memory for one output row */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 		gmt_M_free (GMT, z);
@@ -737,7 +737,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Grid->header->n_rows; row++) {	/* For every output row */
 
-		gmt_M_memset (z, Grid->header->n_columns, float);	/* Start from scratch */
+		gmt_M_memset (z, Grid->header->n_columns, gmt_grdfloat);	/* Start from scratch */
 
 		sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
 
@@ -778,7 +778,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 						wt_x = 1.0;
 					wt = wt_x * blend[k].wt_y;					/* Actual weight is 2-D cosine taper */
 					if (blend[k].invert) wt = blend[k].weight - wt;			/* Invert the sense of the tapering */
-					z[col] += (float)(wt * blend[k].z[kk]);				/* Add up weighted z*w sum */
+					z[col] += (gmt_grdfloat)(wt * blend[k].z[kk]);				/* Add up weighted z*w sum */
 					w += wt;							/* Add up the weight sum */
 					m++;								/* Add up the number of contributing grids */
 				}
@@ -787,14 +787,14 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 			if (m) {	/* OK, at least one grid contributed to an output value */
 				switch (out_case) {
 					case 0: /* Blended average */
-						z[col] = (float)((w == 0.0) ? 0.0 : z[col] / w);	/* Get weighted average z */
-						if (Ctrl->Z.active) z[col] *= (float)Ctrl->Z.scale;	/* Apply the global scale here */
+						z[col] = (gmt_grdfloat)((w == 0.0) ? 0.0 : z[col] / w);	/* Get weighted average z */
+						if (Ctrl->Z.active) z[col] *= (gmt_grdfloat)Ctrl->Z.scale;	/* Apply the global scale here */
 						break;
 					case 1:	/* Just weights */
-						z[col] = (float)w;				/* Only interested in the weights */
+						z[col] = (gmt_grdfloat)w;				/* Only interested in the weights */
 						break;
 					case 2:	/* w*z = sum of z */
-						z[col] = (float)(z[col] * w);
+						z[col] = (gmt_grdfloat)(z[col] * w);
 						break;
 				}
 				n_fill++;						/* One more cell filled */
@@ -806,7 +806,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		}
 		if (write_all_at_once) {	/* Must copy entire row to grid */
 			ij = gmt_M_ijp (Grid->header, row, 0);
-			gmt_M_memcpy (&(Grid->data[ij]), z, Grid->header->n_columns, float);
+			gmt_M_memcpy (&(Grid->data[ij]), z, Grid->header->n_columns, gmt_grdfloat);
 		}
 		else
 			GMT_Put_Row (API, row, Grid, z);

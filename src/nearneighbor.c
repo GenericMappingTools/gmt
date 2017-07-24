@@ -69,12 +69,12 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 };
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
-	float *distance;	/* Distance of nearest datapoint to this node per sector */
+	gmt_grdfloat *distance;	/* Distance of nearest datapoint to this node per sector */
 	int64_t *datum;		/* Point id of this data point */
 };
 
 struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
-	float x, y, z, w;
+	gmt_grdfloat x, y, z, w;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -96,7 +96,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/
 GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
 	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = gmt_M_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
-	new_node->distance = gmt_M_memory (GMT, NULL, n, float);
+	new_node->distance = gmt_M_memory (GMT, NULL, n, gmt_grdfloat);
 	new_node->datum = gmt_M_memory (GMT, NULL, n, int64_t);
 	while (n > 0) new_node->datum[--n] = -1;
 
@@ -108,7 +108,7 @@ GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **nod
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);
 	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
-		(*node)->distance[sector] = (float)distance;
+		(*node)->distance[sector] = (gmt_grdfloat)distance;
 		(*node)->datum[sector] = id;
 	}
 }
@@ -409,10 +409,10 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 		/* Store this point in memory */
 		
-		point[n].x = (float)in[GMT_X];
-		point[n].y = (float)in[GMT_Y];
-		point[n].z = (float)in[GMT_Z];
-		if (Ctrl->W.active) point[n].w = (float)in[3];
+		point[n].x = (gmt_grdfloat)in[GMT_X];
+		point[n].y = (gmt_grdfloat)in[GMT_Y];
+		point[n].z = (gmt_grdfloat)in[GMT_Z];
+		if (Ctrl->W.active) point[n].w = (gmt_grdfloat)in[3];
 
 		/* Find row/col indices of the node closest to this data point.  Note: These may be negative */
 
@@ -509,7 +509,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		gmt_M_col_loop (GMT, Grid, row, col, ij) {
 			if (!grid_node[ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
-				Grid->data[ij] = (float)Ctrl->E.value;
+				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
 				ij0++;
 				continue;
 			}
@@ -517,7 +517,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			for (k = 0, n_filled = 0; k < Ctrl->N.sectors; k++) if (grid_node[ij0]->datum[k] >= 0) n_filled++;
 			if (n_filled < Ctrl->N.min_sectors) { 	/* Not minimum set of neighbors in all sectors, set to empty and goto next node */
 				n_almost++;
-				Grid->data[ij] = (float)Ctrl->E.value;
+				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
 				free_node (GMT, grid_node[ij0]);
 				ij0++;
 				continue;
@@ -536,7 +536,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 					weight_sum += weight;
 				}
 			}
-			Grid->data[ij] = (float)(grd_sum / weight_sum);
+			Grid->data[ij] = (gmt_grdfloat)(grd_sum / weight_sum);
 			free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}

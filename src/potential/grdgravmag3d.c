@@ -60,7 +60,7 @@ struct GRDOKB_CTRL {
 	} C;
 	struct GRDOKB_D {	/* -D */
 		bool active;
-		float z_dir;
+		gmt_grdfloat z_dir;
 	} D;
 	struct GRDOKB_E {	/* -E */
 		bool active;
@@ -894,15 +894,15 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 					for (i = 0; i < Gout->header->n_columns; i++) {    /* Loop over input grid cols */
 						x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
 						a = okabe(GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or);
-						Gout->data[gmt_M_ijp(Gout->header, k, i)] += (float)a;
+						Gout->data[gmt_M_ijp(Gout->header, k, i)] += (gmt_grdfloat)a;
 					}
 				}
 			}
 			else {      /* A Constant thickness layer */
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (float)Ctrl->E.thickness;	/* Shift by thickness */
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (gmt_grdfloat)Ctrl->E.thickness;	/* Shift by thickness */
 				grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
 				                       okabe_mag_var, loc_or, &body_desc, body_verts);
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (float)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (gmt_grdfloat)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
 			}
 		}
 		else {          /* "two_grids". One at the top and the other at the base */
@@ -925,9 +925,9 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 				                          GridA->header->n_rows-1, GridA->header->n_columns-1);
 			}
 			else {                      /* A Constant thickness layer */
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (float)Ctrl->E.thickness;	/* Shift by thickness */
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (gmt_grdfloat)Ctrl->E.thickness;	/* Shift by thickness */
 				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0, 1, 1);
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (float)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (gmt_grdfloat)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
 			}
 
 			for (k = 0; k < ndata; k++)
@@ -1081,7 +1081,7 @@ GMT_LOCAL int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL
 
 	unsigned int i1, j1, ij;
 	bool is_geog = Ctrl->box.is_geog;
-	float *z = Grid->data;
+	gmt_grdfloat *z = Grid->data;
 	double cosj, cosj1;
 	struct GMT_GRID_HEADER *h = Grid->header;
 	gmt_M_unused(GMT);
@@ -1130,7 +1130,7 @@ GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CT
 
 	unsigned int i1, j1;
 	bool is_geog = Ctrl->box.is_geog;
-	float *z = Grid->data;
+	gmt_grdfloat *z = Grid->data;
 	double cosj, cosj1;
 	struct GMT_GRID_HEADER *h = Grid->header;
 	gmt_M_unused(GMT);
@@ -1271,7 +1271,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 							if ((DX*DX + DY) > s_rad2) continue;    /* Remember that DY was already squared above */
 						}
 						a = d_func[indf](GMT, x_o, y_o, Ctrl->L.zobs, rho_or_mag, Ctrl->C.active, *body_desc, body_verts, km, pm, loc_or);
-						Gout->data[gmt_M_ijp(Gout->header, k, i)] += (float)a;
+						Gout->data[gmt_M_ijp(Gout->header, k, i)] += (gmt_grdfloat)a;
 					}
 				}
 			}

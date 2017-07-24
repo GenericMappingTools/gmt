@@ -638,7 +638,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
 					if (side == 0) continue;	/* Outside polygon */
 					p = gmt_M_ijp (Grid->header, row, col);
-					Grid->data[p] = (float)zpol[seg];
+					Grid->data[p] = (gmt_grdfloat)zpol[seg];
 					n_set++;
 					if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
 						if (col == 0) Grid->data[p+nx1] = Grid->data[p], n_set++;
@@ -670,7 +670,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Perform Delaunay triangle gridding\n");
 		if (!Ctrl->F.active) {
 			if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
-			for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
+			for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (gmt_grdfloat)Ctrl->E.value;	/* initialize grid */
 		}
 
 		if (Ctrl->C.active) {	/* CURVE needs grid coordinates */
@@ -681,7 +681,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (API->error);
 			}
-			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = (float)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
+			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = (gmt_grdfloat)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {
@@ -730,9 +730,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					if (!gmt_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
 
 					if (Ctrl->D.dir == GMT_X)	/* d/dx of solution */
-						Grid->data[p] = (float)a;
+						Grid->data[p] = (gmt_grdfloat)a;
 					else if (Ctrl->D.dir == GMT_Y)	/* d/dy of solution */
-						Grid->data[p] = (float)b;
+						Grid->data[p] = (gmt_grdfloat)b;
 					else if (Ctrl->C.active) {	/* CURVE propagated uncertainty prediction */
 						hj = hh[link[ij - 1]];	vj = vv[link[ij - 1]];
 						hk = hh[link[ij - 1]];	vk = vv[link[ij - 1]];
@@ -756,10 +756,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 							distSum = 1.0 / distv1 + 1.0 / distv2 + 1.0 / distv3;
 							sigma = sqrt ((dv1 + dv2 + dv3) / distSum);
 						}
-						Grid->data[p] = (float)(sigma);
+						Grid->data[p] = (gmt_grdfloat)(sigma);
 					}
 					else	/* Planar prediction */
-						Grid->data[p] = (float)(a * xp + b * yp + c);
+						Grid->data[p] = (gmt_grdfloat)(a * xp + b * yp + c);
 				}
 			}
 		}

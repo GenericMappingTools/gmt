@@ -1059,9 +1059,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
 		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
-			float *tmp[2] = {NULL, NULL};
+			gmt_grdfloat *tmp[2] = {NULL, NULL};
 			if (Ctrl->C.movie == 1) {	/* Need temp arrays to capture increments */
-				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[k]->header->size, float);
+				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[k]->header->size, gmt_grdfloat);
 			}
 			
 			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */
@@ -1082,8 +1082,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 							V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 						}
 						undo_gps_normalization (V, normalize, norm);
-						Out[GMT_X]->data[ij] = (float)V[GMT_U];
-						Out[GMT_Y]->data[ij] = (float)V[GMT_V];
+						Out[GMT_X]->data[ij] = (gmt_grdfloat)V[GMT_U];
+						Out[GMT_Y]->data[ij] = (gmt_grdfloat)V[GMT_V];
 					}
 				}
 				for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
@@ -1126,8 +1126,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 					}
 					undo_gps_normalization (V, normalize, norm);
-					Out[GMT_X]->data[ij] = (float)V[GMT_U];
-					Out[GMT_Y]->data[ij] = (float)V[GMT_V];
+					Out[GMT_X]->data[ij] = (gmt_grdfloat)V[GMT_U];
+					Out[GMT_Y]->data[ij] = (gmt_grdfloat)V[GMT_V];
 				}
 			}
 			for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */

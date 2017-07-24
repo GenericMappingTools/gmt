@@ -36,6 +36,14 @@
 
 #define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
 
+#ifdef DOUBLE_PRECISION_GRID
+/* Build GMT using double-precicion for grids.  Untested and caveat emptor */
+typedef double gmt_grdfloat;
+#else
+/* GMT default is single-precicion grids */
+typedef float gmt_grdfloat;
+#endif
+
 /*============================================================ */
 /*=============== Constants Public Declaration =============== */
 /*============================================================ */
@@ -92,6 +100,12 @@ enum GMT_enum_type {
 	GMT_VIA_ULONG = 800,     /* uint64_t, 8-byte unsigned integer type */
 	GMT_VIA_FLOAT = 900,     /* 4-byte data float type */
 	GMT_VIA_DOUBLE = 1000};    /* 8-byte data float type */
+
+#ifdef DOUBLE_PRECISION_GRID
+#define GMT_GRDFLOAT GMT_DOUBLE
+#else
+#define GMT_GRDFLOAT GMT_FLOAT
+#endif
 
 /*! These are the 5 methods for i/o; used as arguments in the API that expects a "method" */
 
@@ -365,7 +379,7 @@ struct GMT_GRID_HEADER {
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
-	float  nan_value;                /* Missing value as stored in grid file */
+	gmt_grdfloat  nan_value;         /* Missing value as stored in grid file */
 	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char   flags[4];                 /* Flags used for ESRI grids */
@@ -419,9 +433,9 @@ struct GMT_GRID_HEADER {
 		    centered on the node.
 -------------------------------------------------------------------------------------------*/
 
-struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
+struct GMT_GRID {	/* To hold a GMT gmt_grdfloat grid and its header in one container */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
-	float *data;                    /* Pointer to the float grid */
+	gmt_grdfloat *data;             /* Pointer to the gmt_grdfloat grid */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;                /* The internal number of the grid */
 	unsigned int alloc_level;       /* The level it was allocated at */

@@ -499,7 +499,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 					break;
 			}
 			if (Ctrl->G.active)
-				G_mod[k]->data[node] = (float)value;
+				G_mod[k]->data[node] = (gmt_grdfloat)value;
 			else
 				out[k+3] = value;
 		}

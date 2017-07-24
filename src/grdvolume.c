@@ -547,9 +547,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	this_base = (Ctrl->L.active) ? Ctrl->L.value : 0.0;
 	z_range = Work->header->z_max - Work->header->z_min;
 	if (n_contours == 1 || Ctrl->C.inc == 0.0)
-		small = z_range * 1.0e-6;	/* Our float noise threshold */
+		small = z_range * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
 	else
-		small = MIN (fabs (Ctrl->C.inc), z_range) * 1.0e-6;	/* Our float noise threshold */
+		small = MIN (fabs (Ctrl->C.inc), z_range) * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
 	GMT_Report (API, GMT_MSG_DEBUG, "Small noise value = %g\n", small);
 	for (c = 0; Ctrl->C.active && c < n_contours; c++) {	/* Trace contour, only count volumes inside contours */
 
@@ -559,8 +559,8 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
 		
 		for (ij = 0; ij < Work->header->size; ij++) {
-			Work->data[ij] -= (float)take_out;		/* Take out the zero value */
-			if (Work->data[ij] == 0.0) Work->data[ij] = (float)small;	/* But we don't want exactly zero, just + or - */
+			Work->data[ij] -= (gmt_grdfloat)take_out;		/* Take out the zero value */
+			if (Work->data[ij] == 0.0) Work->data[ij] = (gmt_grdfloat)small;	/* But we don't want exactly zero, just + or - */
 		}
 		if (Ctrl->L.active) this_base -= take_out;
 
@@ -578,7 +578,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 				/* Find if a contour goes through this bin */
 
 				for (k = neg = pos = 0, bad = false; !bad && k < 4; k++) {
-					(Work->data[ij+ij_inc[k]] <= (float)small) ? neg++ : pos++;
+					(Work->data[ij+ij_inc[k]] <= (gmt_grdfloat)small) ? neg++ : pos++;
 					if (gmt_M_is_fnan (Work->data[ij+ij_inc[k]])) bad = true;
 				}
 

@@ -7662,12 +7662,12 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			z_int = gmt_bcr_get_z (GMT, I, x_proj, y_proj);
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
-				O->data[ij_out] = (float)z_int;
+				O->data[ij_out] = (gmt_grdfloat)z_int;
 			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
 				O->data[ij_out] /= nz[ij_out];		/* Plain average */
 			else {						/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
-				O->data[ij_out] = (float) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
+				O->data[ij_out] = (gmt_grdfloat) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
 			}
 			if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
 			if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
@@ -7680,8 +7680,8 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		if (GMT->common.n.truncate) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_grd_project: Output grid clipped to input grid extrema\n");
 			gmt_M_grd_loop (GMT, O, row_out, col_out, ij_out) {
-				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = (float)I->header->z_min;
-				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = (float)I->header->z_max;
+				if (O->data[ij_out] < I->header->z_min) O->data[ij_out] = (gmt_grdfloat)I->header->z_min;
+				else if (O->data[ij_out] > I->header->z_max) O->data[ij_out] = (gmt_grdfloat)I->header->z_max;
 			}
 			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
 		}

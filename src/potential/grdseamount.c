@@ -62,7 +62,7 @@ struct GMT_MODELTIME {	/* Hold info about modeling time */
 struct GRDSEAMOUNT_CTRL {
 	struct A {	/* -A[<out>/<in>] */
 		bool active;
-		float value[2];	/* Inside and outside value for mask */
+		gmt_grdfloat value[2];	/* Inside and outside value for mask */
 	} A;
 	struct C {	/* -C<shape> */
 		bool active;
@@ -224,8 +224,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {
 					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
-						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (float)atof (T1);
-						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (float)atof (T2);
+						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T1);
+						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
 					}
 					else {
 						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -A: Must specify two values\n");
@@ -495,7 +495,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	
 	char unit, unit_name[8], file[GMT_LEN256] = {""}, time_fmt[GMT_LEN64] = {""};
 	
-	float *data = NULL;
+	gmt_grdfloat *data = NULL;
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV;
 	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, h_scl = 0.0, noise = 0.0, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, *V = NULL;
@@ -680,9 +680,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
 	if (Ctrl->Z.active) {	/* Start with the background depth */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Set the background level to %g\r", Ctrl->Z.value);
-		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (float)Ctrl->Z.value;
+		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (gmt_grdfloat)Ctrl->Z.value;
 	}
-	data = gmt_M_memory (GMT, NULL, Grid->header->size, float);	/* tmp */
+	data = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* tmp */
 
 	for (t = t_use = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
 
@@ -691,7 +691,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
-		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, float);	/* Wipe clean for next increment */
+		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
 		empty = true;	/* So far, no seamounts have left a contribution */
 				
@@ -862,16 +862,16 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 							if (Ctrl->A.active)	/* Just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
 							else {	/* Add in contribution and keep track of max height */
-								Grid->data[ij] += (float)z_assign;
+								Grid->data[ij] += (gmt_grdfloat)z_assign;
 								if (Grid->data[ij] > max) max = Grid->data[ij];
 							}
 							if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
 								if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
-									if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (float)z_assign;
+									if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
 									first = false;
 								}
 								else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
-									if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (float)z_assign;
+									if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
 									first = false;
 								}
 							}
@@ -909,7 +909,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
-			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (float)n_scl;
+			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (gmt_grdfloat)n_scl;
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
@@ -917,13 +917,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 			Return (API->error);
 		}
-		gmt_M_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
+		gmt_M_memcpy (data, Grid->data, Grid->header->size, gmt_grdfloat);	/* This will go away once gmt_nc.c is fixed to leave array alone */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid) != GMT_NOERROR) {
 			gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 			Return (API->error);
 		}
-		gmt_M_memcpy (Grid->data, data, Grid->header->size, float);
+		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);
 	}
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {

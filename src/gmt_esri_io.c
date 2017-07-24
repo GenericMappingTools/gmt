@@ -471,7 +471,7 @@ int gmt_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	int error;
 	bool check, is_binary = false, swap = false;
 	unsigned int col, height_in, ii, in_nx;
@@ -482,7 +482,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	size_t n_expected;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
-	float value, *tmp = NULL;
+	gmt_grdfloat value, *tmp = NULL;
 	FILE *fp = NULL;
 
 	if (header->flags[0]) {	/* We are dealing with a ESRI .hdr file or GTOPO30, SRTM30, SRTM1|3 */

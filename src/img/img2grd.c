@@ -705,13 +705,13 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			switch (Ctrl->T.value) {
 				case 0:
 				case 1:
-					Merc->data[ij] = (float) dsum;
+					Merc->data[ij] = (gmt_grdfloat) dsum;
 					break;
 				case 2:
-					Merc->data[ij] = (float)((csum >= 0.5) ? dsum : GMT->session.f_NaN);
+					Merc->data[ij] = (gmt_grdfloat)((csum >= 0.5) ? dsum : GMT->session.f_NaN);
 					break;
 				case 3:
-					Merc->data[ij] = (float)csum;
+					Merc->data[ij] = (gmt_grdfloat)csum;
 					break;
 			}
 

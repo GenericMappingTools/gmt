@@ -48,7 +48,7 @@ struct GRDCUT_CTRL {
 	} G;
 	struct GRDCUT_N {	/* -N<nodata> */
 		bool active;
-		float value;
+		gmt_grdfloat value;
 	} N;
 	struct GRDCUT_S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
@@ -150,7 +150,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 			case 'N':
 				Ctrl->N.active = true;
 				if (opt->arg[0])
-					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.f_NaN : (float)atof (opt->arg);
+					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (opt->arg);
 				break;
  			case 'S':	/* Origin and radius */
 				Ctrl->S.active = true;

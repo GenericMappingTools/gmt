@@ -1832,7 +1832,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
 				Z.nz = gmt_M_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
 				n_ok = Grid->header->nm * Z.nz;
-				Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
+				Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, gmt_grdfloat);
 			}
 			else	/* Just 1-D */
 				n_ok = Grid->header->n_columns = gmt_M_grd_get_nx (GMT, Grid->header);
@@ -2277,9 +2277,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		} /* Else we are writing a grid */
 		gmt_M_memset (V, 4, double);
 		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
-			float *tmp = NULL;
+			gmt_grdfloat *tmp = NULL;
 			char file[GMT_LEN256] = {""};
-			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, float);
+			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
@@ -2308,7 +2308,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 							wp += alpha[p] * part;
 						}
 						V[GMT_Z] = undo_normalization (V, wp, normalize, norm, 2U);
-						Out->data[ij] = (float)V[GMT_Z];
+						Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 					}
 				}
 				sprintf (file, Ctrl->G.file, (int)k+1);
@@ -2355,9 +2355,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 							wp += alpha[p] * part;
 						}
-						V[dimension] = (float)undo_normalization (V, wp, normalize, norm, dimension);
+						V[dimension] = (gmt_grdfloat)undo_normalization (V, wp, normalize, norm, dimension);
 						if (dimension > 1)	/* Special 2-D grid output */
-							Out->data[ij] = (float)V[dimension];
+							Out->data[ij] = (gmt_grdfloat)V[dimension];
 						else	/* Crude dump for now for both 1-D and 3-D */
 							GMT->hidden.mem_coord[GMT_X][col] = V[dimension];
 					}

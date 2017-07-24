@@ -542,9 +542,9 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 			else {	/* More than 1 value went to this node */
 				if (Ctrl->A.mode == COUNT)
-					Grid->data[ij] = (float)flag[ij];
+					Grid->data[ij] = (gmt_grdfloat)flag[ij];
 				else if (Ctrl->A.mode == AVERAGE)
-					Grid->data[ij] /= (float)flag[ij];
+					Grid->data[ij] /= (gmt_grdfloat)flag[ij];
 				n_filled++;
 				n_stuffed++;
 			}

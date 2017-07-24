@@ -162,14 +162,14 @@ static double	scale_out = 1.0;
 static double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
-                          float *raised, uint64_t n, double rho);
+                          gmt_grdfloat *raised, uint64_t n, double rho);
 GMT_LOCAL void do_isostasy(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
 GMT_LOCAL void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
 GMT_LOCAL void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
 GMT_LOCAL void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
-                                  struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+                                  struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, unsigned int n);
 GMT_LOCAL void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
-                                    struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+                                    struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, unsigned int n);
 GMT_LOCAL void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
                                     double *z_top_or_bot, double delta_pt);
 GMT_LOCAL int do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl,
@@ -488,7 +488,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	unsigned int k, n;
 	int      error = 0;
 	uint64_t m;
-	float    slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
+	gmt_grdfloat    slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
 	double   delta_pt, freq;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL}, *Rho = NULL;
@@ -635,9 +635,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		unsigned int row, col;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
 		gmt_M_grd_loop (GMT, Grid[0], row, col, m)
-			Grid[0]->data[m] -= (float)Ctrl->W.water_depth;
-		Grid[0]->header->z_min -= (float)Ctrl->W.water_depth;
-		Grid[0]->header->z_max -= (float)Ctrl->W.water_depth;
+			Grid[0]->data[m] -= (gmt_grdfloat)Ctrl->W.water_depth;
+		Grid[0]->header->z_min -= (gmt_grdfloat)Ctrl->W.water_depth;
+		Grid[0]->header->z_max -= (gmt_grdfloat)Ctrl->W.water_depth;
 	}
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
@@ -678,8 +678,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	topo   = gmt_M_memory (GMT, NULL, Grid[0]->header->size, float);
-	raised = gmt_M_memory (GMT, NULL, Grid[0]->header->size, float);
+	topo   = gmt_M_memory (GMT, NULL, Grid[0]->header->size, gmt_grdfloat);
+	raised = gmt_M_memory (GMT, NULL, Grid[0]->header->size, gmt_grdfloat);
 
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
@@ -725,7 +725,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_M_memcpy (topo, Grid[0]->data, Grid[0]->header->size, float);
+	gmt_M_memcpy (topo, Grid[0]->data, Grid[0]->header->size, gmt_grdfloat);
 	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
 	gmt_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
 	if (Ctrl->D.variable) {	/* Also interleave manually the rho grid */
@@ -734,9 +734,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			raised[m] = topo[m] * Rho->data[m];
 	}
 	else	/* Constant density contrast passed into do_parker */
-		gmt_M_memcpy (raised,  topo, Grid[0]->header->size, float);
+		gmt_M_memcpy (raised,  topo, Grid[0]->header->size, gmt_grdfloat);
 
-	gmt_M_memset (Grid[0]->data, Grid[0]->header->size, float);
+	gmt_M_memset (Grid[0]->data, Grid[0]->header->size, gmt_grdfloat);
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
 
@@ -744,7 +744,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		if (n > 1)	/* n == 1 was initialized via the gmt_M_memcpy or loop above */
 			for (m = 0; m < Grid[0]->header->size; m++) {
-				raised[m] = (float)pow(topo[m], (double)n);
+				raised[m] = (gmt_grdfloat)pow(topo[m], (double)n);
 				if (Ctrl->D.variable) raised[m] *= Rho->data[m];
 			}
 
@@ -779,7 +779,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			strcpy (Grid[0]->header->title, "Gravity anomalies");
 			strcpy (Grid[0]->header->z_units, "mGal");
 			if (Ctrl->F.slab) {	/* Do the slab adjustment */
-				slab_gravity = (float) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST *
+				slab_gravity = (gmt_grdfloat) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST *
 				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
 				GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
 				if (Ctrl->F.bouger)		/* The complete bouger contribution */
@@ -841,7 +841,7 @@ GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
 	uint64_t k;
 	double  A = 1.0, rho_load, airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
-	float *datac = Grid->data;
+	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
 	/*   te	 Elastic thickness, SI units (m)  */
@@ -874,16 +874,16 @@ GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 		mk = gmt_fft_get_wave (k, K);
 		k2 = mk * mk;	k4 = k2 * k2;
 		transfer_fn = airy_ratio / ( (d_over_restoring_force * k4) + 1.0);
-		datac[k] *= (float)transfer_fn;
-		datac[k+1] *= (float)transfer_fn;
+		datac[k] *= (gmt_grdfloat)transfer_fn;
+		datac[k+1] *= (gmt_grdfloat)transfer_fn;
 	}
 }
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
-GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho) {
+GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, uint64_t n, double rho) {
 	uint64_t i, k;
 	double f, p, t, mk, kx, ky, v, c;
-	float *datac = Grid->data;
+	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
 	f = 1.0;
@@ -904,34 +904,34 @@ GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GR
 		v = c * exp (-mk * Ctrl->misc.z_level) * t;
 		switch (Ctrl->F.mode) {
 			case GRAVFFT_FAA:
-				datac[k]   += (float) (v * raised[k]);
-				datac[k+1] += (float) (v * raised[k+1]);
+				datac[k]   += (gmt_grdfloat) (v * raised[k]);
+				datac[k+1] += (gmt_grdfloat) (v * raised[k+1]);
 				break;
 			case GRAVFFT_GEOID:
 				if (mk > 0.0) v /= (MGAL_AT_45 * mk);
-				datac[k]   += (float) (v * raised[k]);
-				datac[k+1] += (float) (v * raised[k+1]);
+				datac[k]   += (gmt_grdfloat) (v * raised[k]);
+				datac[k+1] += (gmt_grdfloat) (v * raised[k+1]);
 				break;
 			case GRAVFFT_VGG:
 			 	v *= 1.0e4 * mk;	/* Scale mGal/m to 0.1 mGal/km = 1 Eotvos */
-				datac[k]   += (float) (v * raised[k]);
-				datac[k+1] += (float) (v * raised[k+1]);
+				datac[k]   += (gmt_grdfloat) (v * raised[k]);
+				datac[k+1] += (gmt_grdfloat) (v * raised[k+1]);
 				break;
 			case GRAVFFT_DEFL_EAST:
 				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
 					kx = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
 					v *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
 				}
-				datac[k]   += (float) (-v * raised[k+1]);
-				datac[k+1] += (float) ( v * raised[k]);
+				datac[k]   += (gmt_grdfloat) (-v * raised[k+1]);
+				datac[k+1] += (gmt_grdfloat) ( v * raised[k]);
 				break;
 			case GRAVFFT_DEFL_NORTH:
 				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
 					ky = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
 					v *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
 				}
-				datac[k]   += (float) ( v * raised[k+1]);
-				datac[k+1] += (float) (-v * raised[k]);
+				datac[k]   += (gmt_grdfloat) ( v * raised[k+1]);
+				datac[k+1] += (gmt_grdfloat) (-v * raised[k]);
 				break;
 		}
 	}
@@ -962,8 +962,8 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 	size_t   n_alloc;
 	double   delta_k, r_delta_k, freq;
 	double  *out = NULL, *err_bar = NULL, *coh = NULL, *b_pow = NULL, *g_pow = NULL, *co_spec = NULL, *quad = NULL;
-	float   *datac = GridA->data;
-	float   *in_grv = GridB->data;
+	gmt_grdfloat   *datac = GridA->data;
+	gmt_grdfloat   *in_grv = GridB->data;
 	double  *z_from_below = NULL, *z_from_top = NULL;
 	struct   GMT_DATASET *D = NULL;
 	struct   GMT_DATASEGMENT *S = NULL;
@@ -1160,7 +1160,7 @@ GMT_LOCAL void load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *
 	}
 }
 
-GMT_LOCAL void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
+GMT_LOCAL void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from top" model --  M. McNutt & Shure (1986)  */
@@ -1168,7 +1168,7 @@ GMT_LOCAL void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	unsigned int i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
-	float *datac = Grid->data;
+	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
 	f = 1.0;
@@ -1196,12 +1196,12 @@ GMT_LOCAL void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 		else                 /* Must be the GEOID case */
 			t1 /= (NORMAL_GRAVITY * mk * twopi);
 		t2 = exp(-twopi * mk * Ctrl->misc.z_level) - exp(-twopi * mk * Ctrl->Z.zm) / (1 + alfa*pow(mk,4.));
-		datac[k] += (float) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
-		datac[k+1] += (float) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+		datac[k] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+		datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
 	}
 }
 
-GMT_LOCAL void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
+GMT_LOCAL void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from below" model --  M. McNutt & Shure (1986)  */
@@ -1209,7 +1209,7 @@ GMT_LOCAL void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid
 	unsigned int i;
 	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
-	float *datac = Grid->data;
+	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
 	f = 1.0;
@@ -1239,7 +1239,7 @@ GMT_LOCAL void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid
 		t2 = Ctrl->T.rho_cw * exp(-twopi * mk * Ctrl->misc.z_level) +
 			 Ctrl->T.rho_mc * exp(-twopi * mk * Ctrl->Z.zm);
 		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(mk,4.) * alfa) * exp(-twopi * mk * Ctrl->Z.zl);
-		datac[k] += (float) ((t1 * (t2 + t3)) * t / f * raised[k]);
-		datac[k+1] += (float) ((t1 * (t2 + t3)) * t / f * raised[k+1]);
+		datac[k] += (gmt_grdfloat) ((t1 * (t2 + t3)) * t / f * raised[k]);
+		datac[k+1] += (gmt_grdfloat) ((t1 * (t2 + t3)) * t / f * raised[k+1]);
 	}
 }

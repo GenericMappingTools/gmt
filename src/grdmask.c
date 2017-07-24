@@ -247,7 +247,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	
 	char text_item[GMT_LEN64] = {""};
 
-	float mask_val[3], value;
+	gmt_grdfloat mask_val[3], value;
 	
 	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
@@ -283,7 +283,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
-	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
+	for (k = 0; k < 3; k++) mask_val[k] = (gmt_grdfloat)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -532,7 +532,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						ij = gmt_M_ijp (Grid->header, row, col);
 						
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
-						Grid->data[ij] = (Ctrl->N.mode) ? (float)z_value : mask_val[side];
+						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
 					}
 					GMT_Report (API, GMT_MSG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
 				}

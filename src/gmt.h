@@ -84,8 +84,8 @@ EXTERN_MSC int GMT_Write_Data         (void *API, unsigned int family, unsigned 
                                           unsigned int mode, double wesn[], const char *output, void *data);
 EXTERN_MSC int GMT_Destroy_Data       (void *API, void *object);
 EXTERN_MSC int GMT_Put_Record         (void *API, unsigned int mode, void *record);
-EXTERN_MSC int GMT_Get_Row            (void *API, int rec_no, struct GMT_GRID *G, float *row);
-EXTERN_MSC int GMT_Put_Row            (void *API, int rec_no, struct GMT_GRID *G, float *row);
+EXTERN_MSC int GMT_Get_Row            (void *API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row);
+EXTERN_MSC int GMT_Put_Row            (void *API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row);
 EXTERN_MSC int GMT_Set_Comment        (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
 EXTERN_MSC int GMT_Set_Geometry	      (void *API, unsigned int direction, unsigned int geometry);
 EXTERN_MSC int GMT_Get_Family	      (void *API, unsigned int direction, struct GMT_OPTION *head);
@@ -157,14 +157,14 @@ EXTERN_MSC void        *GMT_FFT_Create     (void *API, void *data, unsigned int 
 EXTERN_MSC double       GMT_FFT_Wavenumber (void *API, uint64_t k, unsigned int mode, void *info);
 EXTERN_MSC int          GMT_FFT            (void *API, void *data, int direction, unsigned int mode, void *info);
 EXTERN_MSC int          GMT_FFT_Destroy    (void *API, void *info);
-EXTERN_MSC int          GMT_FFT_1D         (void *API, float *data, uint64_t n, int direction, unsigned int mode);
-EXTERN_MSC int          GMT_FFT_2D         (void *API, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode);
+EXTERN_MSC int          GMT_FFT_1D         (void *API, gmt_grdfloat *data, uint64_t n, int direction, unsigned int mode);
+EXTERN_MSC int          GMT_FFT_2D         (void *API, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode);
 
 /* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 
 EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
-EXTERN_MSC int gmt_f77_readgrd_	    (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
-EXTERN_MSC int gmt_f77_writegrd_    (float *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
+EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
+EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
 /* 2 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);

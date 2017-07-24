@@ -696,7 +696,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_set_pad (GMT, 0U);		/* Change default pad to 0 only */
 		gmt_M_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		gmt_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
-		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
+		/* We allocate a 1-byte array separately instead of the 4-byte gmt_grdfloat array that GMT_Create_Data would have given us */
 		grd = gmt_M_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
@@ -819,13 +819,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			for (ij = 0; ij < Grid->header->size; ij++) {	/* Copy over the 0/1 grid */
 				switch (Ctrl->L.mode) {
 					case 0:	/* As is */
-						G->data[ij] = (float)grd[ij];
+						G->data[ij] = (gmt_grdfloat)grd[ij];
 						break;
 					case +1:	/* Replace zeros by NaNs */
-						G->data[ij] = (grd[ij] == 0) ? GMT->session.f_NaN : (float)grd[ij];
+						G->data[ij] = (grd[ij] == 0) ? GMT->session.f_NaN : (gmt_grdfloat)grd[ij];
 						break;
 					case -1:	/* Replace ones by NaNs */
-						G->data[ij] = (grd[ij] == 1) ? GMT->session.f_NaN : (float)grd[ij];
+						G->data[ij] = (grd[ij] == 1) ? GMT->session.f_NaN : (gmt_grdfloat)grd[ij];
 						break;
 				}
 			}

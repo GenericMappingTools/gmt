@@ -390,7 +390,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	uint64_t ij;
 	size_t nm;
 	int km, pm;		/* index of current body facet (for mag only) */
-	float	*g = NULL, one_100;
+	gmt_grdfloat	*g = NULL, one_100;
 	double	s_rad2, x_o, y_o, t_mag, a, DX, DY;
 	double	*x_obs = NULL, *y_obs = NULL, *z_obs = NULL, *x = NULL, *y = NULL, *cos_vec = NULL;
 	double	cc_t, cs_t, s_t, lon_0 = 0, lat_0 = 0;
@@ -525,7 +525,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			y_obs[row] = (Ctrl->box.is_geog) ? -(point->segment[0]->data[GMT_Y][row] - lat_0) *
 				Ctrl->box.d_to_m : -point->segment[0]->data[GMT_Y][row]; /* - because y positive 'south' */
 		}
-		g = gmt_M_memory (GMT, NULL, nm, float);
+		g = gmt_M_memory (GMT, NULL, nm, gmt_grdfloat);
 	}
 
 	if (Ctrl->T.triangulate) {
@@ -636,7 +636,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	/* ---------------> Now start computing <------------------------------------- */
-	one_100 = (float)(n_triang / 100.);
+	one_100 = (gmt_grdfloat)(n_triang / 100.);
 	s_rad2 = Ctrl->S.radius*Ctrl->S.radius;
 
 	if (Ctrl->G.active) {		/* Compute the cos(lat) vector only once */
@@ -675,7 +675,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 						}
 
 						a = okabe (GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
-						Gout->data[ij] += (float)a;
+						Gout->data[ij] += (gmt_grdfloat)a;
 					}
 				}
 			}
@@ -688,7 +688,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 						if (!DO) continue;
 					}
 					a = okabe (GMT, x_obs[kk], y_obs[kk], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, pm, loc_or);
-					g[kk] += (float)a;
+					g[kk] += (gmt_grdfloat)a;
 				}
 			}
 		}
@@ -778,7 +778,7 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 
 	unsigned int ndata_xyz;
 	size_t n_alloc;
-	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
+	gmt_grdfloat x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
@@ -801,8 +801,8 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 	if (Ctrl->box.is_geog) {	/* take a first read just to compute the central longitude */
 		while (fgets (line, GMT_LEN256, fp)) {
 			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done below */
-			x_min = (float)MIN(in[0], x_min);	x_max = (float)MAX(in[0], x_max);
-			y_min = (float)MIN(in[1], y_min);	y_max = (float)MAX(in[1], y_max);
+			x_min = (gmt_grdfloat)MIN(in[0], x_min);	x_max = (gmt_grdfloat)MAX(in[0], x_max);
+			y_min = (gmt_grdfloat)MIN(in[1], y_min);	y_max = (gmt_grdfloat)MAX(in[1], y_max);
 		}
 		*lon_0 = (x_min + x_max) / 2;
 		*lat_0  = (y_min + y_max) / 2;

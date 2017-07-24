@@ -270,7 +270,7 @@ GMT_LOCAL double get_z_ave (double v[], double next_up, uint64_t n) {
 	return (z_ave / n);
 }
 
-GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], float topo[], float zgrd[], uint64_t ij) {
+GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
@@ -674,7 +674,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	size_t max_alloc;
 
-	float *saved_data_pointer = NULL;
+	gmt_grdfloat *saved_data_pointer = NULL;
 	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
@@ -866,8 +866,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour.
 			   PW, 11/18/2011 */
 			gmt_M_grd_loop (GMT, Topo, row, col, ij) {
-				if (!gmt_M_is_fnan (Z_orig->data[ij])) Z->data[ij] = Z_orig->data[ij] - (float)cval;
-				if (Z->data[ij] == 0.0) Z->data[ij] += (float)small;
+				if (!gmt_M_is_fnan (Z_orig->data[ij])) Z->data[ij] = Z_orig->data[ij] - (gmt_grdfloat)cval;
+				if (Z->data[ij] == 0.0) Z->data[ij] += (gmt_grdfloat)small;
 			}
 
 			begin = true;
@@ -1080,7 +1080,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		uint64_t d_node, nm_i, node, kk, p;
 		double xp, yp, sum_w, w, sum_i, x_width, y_width, value;
 		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
-		float *int_drape = NULL;
+		gmt_grdfloat *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
 		if (Ctrl->C.active && P->has_pattern)
@@ -1101,7 +1101,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			iy = gmt_M_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = gmt_grd_coord (GMT, Z->header, GMT_X);
 			y_drape = gmt_grd_coord (GMT, Z->header, GMT_Y);
-			if (use_intensity_grid) int_drape = gmt_M_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
+			if (use_intensity_grid) int_drape = gmt_M_memory (GMT, NULL, Z->header->mx*Z->header->my, gmt_grdfloat);
 			bin = 0;
 			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = gmt_bcr_get_z (GMT, Topo, x_drape[col], y_drape[row]);
@@ -1113,7 +1113,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
-				if (use_intensity_grid) int_drape[ij] = (float)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
+				if (use_intensity_grid) int_drape[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
 			}
 			gmt_M_free (GMT, x_drape);
@@ -1405,11 +1405,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		int start_side, entry_side, exit_side, next_side, low, ncont, nw_se_diagonal, check;
 		int corner[2], bad_side[2][2], p, p1, p2, saddle_sign;
 		double *xcont = NULL, *ycont = NULL, *zcont = NULL, *vcont = NULL, X_vert[4], Y_vert[4], saddle_small;
-		float Z_vert[4];
+		gmt_grdfloat Z_vert[4];
 
 		/* PW: Bugs fixed in Nov, 2011: Several problems worth remembering:
 			1) Earlier [2004] we had fixed grdcontour but not grdview in dealing with the current zero contour.  Because
-			   of float precision we cannot take the grid and repeatedly subtract the difference in contour values.
+			   of gmt_grdfloat precision we cannot take the grid and repeatedly subtract the difference in contour values.
 			   Instead for each contour value cval, we must subtract cval from the original grid to get the tmp grid.
 			2) To avoid never to have contours go through nodes EXACTLY, we check if there are nodes that equal zero.
 			   If so, we add small (a small amount to make it different from zero).  We then get contours.  However,
@@ -1419,7 +1419,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			3) We should make sure that the small value exceeeds single-precision EPS (~ 1.2e-7), otherwise adding small
 			   will not make the node non-zero.  This does not seem to have been a problem yet but I added a new check
 			   just in case and if so set small to 1.0e-7.
-			4) Given zgrd is float, there is a difference between zgrd[node] -= (float)cval and zgrd[node] -= cval,
+			4) Given zgrd is gmt_grdfloat, there is a difference between zgrd[node] -= (gmt_grdfloat)cval and zgrd[node] -= cval,
 			   since cval is double precision.  We had the cast during the contouring but here under -Qs we had some
 			   comparisons without the cast, the result being both sides got promoted to double prior to the test and
 			   we can get a different result.
@@ -1489,9 +1489,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							this_cont = this_cont->next_cont;
 					}
 					for (k = 0; k < 4; k++) {	/* Deal with the fact that some nodes may have had small added to them */
-						Z_vert[k] -= (float)this_cont->value;	/* Note we cast to float to get the same precision as for contours */
-						if (Z_vert[k] == 0.0) Z_vert[k] += (float)small;
-						Z_vert[k] += (float)this_cont->value;
+						Z_vert[k] -= (gmt_grdfloat)this_cont->value;	/* Note we cast to gmt_grdfloat to get the same precision as for contours */
+						if (Z_vert[k] == 0.0) Z_vert[k] += (gmt_grdfloat)small;
+						Z_vert[k] += (gmt_grdfloat)this_cont->value;
 					}
 					/* Here, Z_vert reflects what the grid was when contouring was determined */
 
@@ -1586,7 +1586,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								n = 0;
 								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
-								way = (Z_vert[low] < (float)this_cont->value) ? -1 : 1;
+								way = (Z_vert[low] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
 							}
 
 							/* Final contour needs to add diagonal */
@@ -1684,7 +1684,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 							next_side = exit_side;
 							start_side = entry_side;
-							way = (Z_vert[start_side] < (float)this_cont->value) ? -1 : 1;
+							way = (Z_vert[start_side] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
 
 							this_cont = this_cont->next_cont;	/* Goto next contour */
  						}

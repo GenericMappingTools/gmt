@@ -465,7 +465,7 @@ GMT_LOCAL bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A,
 	return (true);	/* We are returning a useful age */
 }
 
-GMT_LOCAL void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data) {
+GMT_LOCAL void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, gmt_grdfloat *data) {
 	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
 	unsigned int row, col;
@@ -481,7 +481,7 @@ GMT_LOCAL void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
 	CVA_scale = 100.0 / G->header->z_max;
-	for (node = 0; node < G->header->size; node++) data[node] *= (float)CVA_scale;
+	for (node = 0; node < G->header->size; node++) data[node] *= (gmt_grdfloat)CVA_scale;
 	G->header->z_min *= CVA_scale;
 	G->header->z_max *= CVA_scale;
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
@@ -509,7 +509,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */
 
-	float zz;
+	gmt_grdfloat zz;
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */
 	double *x_smt = NULL;		/* node longitude (input degrees, stored as radians) */
@@ -762,7 +762,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			/* If we did not keep flowlines then there is no PA to skip over (hence no k++) */
 			if (node != UINTMAX_MAX) {
 				if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */
-					G->data[node] += (float)cva_contribution;
+					G->data[node] += (gmt_grdfloat)cva_contribution;
 					processed_node[node] = true;		/* Now we have visited this node */
 					n_unique_nodes++;
 #ifdef DEBUG2
@@ -822,7 +822,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		size_t len;
 		char file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 		double z0, z1;
-		float *CVA_inc = NULL, *old = G->data;
+		gmt_grdfloat *CVA_inc = NULL, *old = G->data;
 		
 		GMT_Report (API, GMT_MSG_VERBOSE, "Start z-slice CVA calculations\n");
 		for (len = strlen (Ctrl->G.file); len > 0 && Ctrl->G.file[len] != '.'; len--);
@@ -831,13 +831,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			strcat (format, "_%%d");		/* Make filenames like prefix_#.ext */
 			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */
 		}
-		CVA_inc = gmt_M_memory (GMT, NULL, G->header->size, float);
+		CVA_inc = gmt_M_memory (GMT, NULL, G->header->size, gmt_grdfloat);
 		nz = urint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
 		for (layer = 0; layer < nz; layer++) {
 			z0 = Ctrl->Z.min + layer * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Start z-slice %g - %g\n", z0, z1);
-			gmt_M_memset (CVA_inc, G->header->size, float);	/* Fresh start for this z-slice */
+			gmt_M_memset (CVA_inc, G->header->size, gmt_grdfloat);	/* Fresh start for this z-slice */
 			for (m = 0; m < n_nodes; m++) {				/* Loop over all active flowlines */
 				ij = flowline[m].ij;
 				if (Z->data[ij] <= z0 || Z->data[ij] > z1) continue;	/* z outside current slice */
@@ -847,7 +847,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
 					node = flowline[m].node[k];
 					if (node != UINTMAX_MAX && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
-						CVA_inc[node] += (float)cva_contribution;
+						CVA_inc[node] += (gmt_grdfloat)cva_contribution;
 						processed_node[node] = true;		/* Now we have visited this node */
 					}
 				}
@@ -900,8 +900,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 						if (Ctrl->PA.active) pa = flowline[m].PA[k];	/* Keep the estimate of age at highest CVA */
 					}
 				}
-				if (Ctrl->D.active) DI->data[flowline[m].ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
-				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (float) (pa * PA_2_T);
+				if (Ctrl->D.active) DI->data[flowline[m].ij] = (gmt_grdfloat)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
+				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (gmt_grdfloat) (pa * PA_2_T);
 				if (!(m%10000)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
@@ -938,8 +938,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 					CVA_max = G->data[node];
 					if (Ctrl->PA.active) this_pa = pa_val;
 				}
-				if (Ctrl->D.active) DI->data[ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
-				if (Ctrl->PA.active) PA->data[ij] = (float) this_pa;
+				if (Ctrl->D.active) DI->data[ij] = (gmt_grdfloat)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
+				if (Ctrl->PA.active) PA->data[ij] = (gmt_grdfloat) this_pa;
 				gmt_M_free (GMT, c);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\r", row, n_nodes);
 			}
@@ -1005,7 +1005,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\r", try);
 		
-			gmt_M_memset (G->data, G->header->size, float);	/* Start with fresh grid */
+			gmt_M_memset (G->data, G->header->size, gmt_grdfloat);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
 				row = urint (floor (gmt_rand(GMT) * y_scale));		/* Get a random integer in 0 to n_rows-1 range */
 				col = urint (floor (gmt_rand(GMT) * x_scale));		/* Get a random integer in 0 to n_columns-1 range */

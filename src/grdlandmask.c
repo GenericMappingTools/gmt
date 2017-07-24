@@ -66,7 +66,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	struct GRDLNDM_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
-		float mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
+		gmt_grdfloat mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };
 
@@ -92,7 +92,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
-	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, float);		/* Default "wet" value = 0 */
+	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, gmt_grdfloat);		/* Default "wet" value = 0 */
 	C->N.mask[2] = C->N.mask[6] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
 	
 	return (C);
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					j = pos = 0;
 					strncpy (line, opt->arg,  GMT_LEN256);
 					while (j < 4 && (gmt_strtok (line, "/", &pos, ptr))) {
-						Ctrl->N.mask[2*j+1] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
+						Ctrl->N.mask[2*j+1] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (ptr);
 						j++;
 					}
 					if (!(j == 1 || j == 4)) {
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 				}
 				j = pos = 0;
 				while (j < 5 && (gmt_strtok (line, "/", &pos, ptr))) {
-					Ctrl->N.mask[2*j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
+					Ctrl->N.mask[2*j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (ptr);
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
@@ -242,7 +242,7 @@ GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x
 	return true;
 }
 
-GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, float f_level, int64_t *ij) {
+GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, gmt_grdfloat f_level, int64_t *ij) {
 	/* Set node value and return node index if this point is inside the grid */
 	int row, col;
 	gmt_M_unused(GMT);
@@ -275,7 +275,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch, inc_inch[2];
 	double dummy, *x = NULL, *y = NULL;
 	
-	float f_level = 0.0f;
+	gmt_grdfloat f_level = 0.0f;
 
 	struct GMT_SHORE c;
 	struct GMT_GRID *Grid = NULL, *Cart = NULL;
@@ -438,7 +438,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				/* So row_min is in range [0,?] */
 				row_max = MIN (ny1, irint (floor ((GMT->current.proj.rect[YHI] - ymin) * i_dy_inch - Grid->header->xy_off + GMT_CONV8_LIMIT)));
 				/* So row_max is in range [?,ny1] */
-				f_level = (float)(2*p[k].level);
+				f_level = (gmt_grdfloat)(2*p[k].level);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,side,ij) shared(row_min,row_max,col_min,col_max,GMT,x,y,p,k,Ctrl,Grid,f_level)
@@ -478,7 +478,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 						gmt_geo_to_xy (GMT, p[k].lon[pt], p[k].lat[pt], &xc, &yc);
 						p[k].lon[pt] = xc;		p[k].lat[pt] = yc;
 					}
-					f_level = (float)(2*p[k].level-1);	/* Border index is half-way between the two levels */
+					f_level = (gmt_grdfloat)(2*p[k].level-1);	/* Border index is half-way between the two levels */
 					last_ij = UINT_MAX;
 					last_not_set = true;
 					last_col = last_row = -1;
@@ -581,7 +581,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			/* If k is still INT_MAX we must assume this patch should have the min level of the bin */
 
 			if (k == INT_MAX) k = MIN (MIN (c.node_level[0], c.node_level[1]) , MIN (c.node_level[2], c.node_level[3]));
-			f_level = (float)(2*k);
+			f_level = (gmt_grdfloat)(2*k);
 
 			/* Determine nodes to initialize */
 

@@ -60,13 +60,13 @@ struct GRDHISTEQ_CTRL {
 };
 
 struct INDEXED_DATA {
-	float x;
+	gmt_grdfloat x;
 	uint64_t i;
 };
 
 struct CELL {
-	float low;
-	float high;
+	gmt_grdfloat low;
+	gmt_grdfloat high;
 };
 
 EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
+GMT_LOCAL gmt_grdfloat get_cell (gmt_grdfloat x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
 	unsigned int low, high, i;
 
 	low = 0;
@@ -185,13 +185,13 @@ GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, u
 
 	do {
 		if (cell[i].low <= x && cell[i].high >= x) {
-			return ((float)i);
+			return ((gmt_grdfloat)i);
 		}
 		else if (cell[low].low <= x && cell[low].high >= x) {
-			return ((float)low);
+			return ((gmt_grdfloat)low);
 		}
 		else if (cell[high].low <= x && cell[high].high >= x) {
-			return ((float)high);
+			return ((gmt_grdfloat)high);
 		}
 		else if (cell[i].low > x) {
 			high = i;
@@ -299,9 +299,9 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	qsort (pair, nxy, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
 	/* Compute normalized cumulative weights */
 	wsum = 1.0 / wsum;	/* Do avoid division later */
-	pair[0].weight *= (float)wsum;
+	pair[0].weight *= (gmt_grdfloat)wsum;
 	for (i = 1; i < nxy; i++) {
-		pair[i].weight *= (float)wsum;
+		pair[i].weight *= (gmt_grdfloat)wsum;
 		pair[i].weight += pair[i-1].weight;
 	}
 	
@@ -405,8 +405,8 @@ GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, d
 	if (norm != 0.0) norm /= fabs (gmt_zcrit (GMT, dnxy));	/* Normalize by abs(max score) */
 
 	for (i = 0; i < nxy; i++) {
-		indexed_data[i].x = (float)gmt_zcrit (GMT, (i + 1.0) * dnxy);
-		if (norm != 0.0) indexed_data[i].x *= (float)norm;
+		indexed_data[i].x = (gmt_grdfloat)gmt_zcrit (GMT, (i + 1.0) * dnxy);
+		if (norm != 0.0) indexed_data[i].x *= (gmt_grdfloat)norm;
 	}
 
 	/* Sort on data index  */

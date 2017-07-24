@@ -521,7 +521,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 						x_part = d_col * latfactor[row] - dx;
 						r2 = (x_part * x_part + y_part2) * norm;
-						G->data[node_0+col_0] += (float)(z_smt * exp (r2));
+						G->data[node_0+col_0] += (gmt_grdfloat)(z_smt * exp (r2));
 					}
 				}
 				processed_node[node] = 1;	/* Now we have visited this node */
@@ -559,7 +559,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
 		scale = 100.0 / G->header->z_max;
-		for (node = 0; node < G->header->size; node++) G->data[node] *= (float)scale;
+		for (node = 0; node < G->header->size; node++) G->data[node] *= (gmt_grdfloat)scale;
 		G->header->z_min *= scale;	G->header->z_max *= scale;
 		GMT_Report (API, GMT_MSG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
 	}

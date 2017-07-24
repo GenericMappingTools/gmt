@@ -1174,9 +1174,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	z_range = G->header->z_max - G->header->z_min;
 	if (Ctrl->C.interval == 0.0)
-		small = z_range * 1.0e-6;	/* Our float noise threshold */
+		small = z_range * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
 	else
-		small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
+		small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
 	n_alloc = n_tmp = n_contours;
 	gmt_M_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
 	gmt_M_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
@@ -1268,8 +1268,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* New approach to avoid round-off */
 
 		for (ij = 0; ij < G->header->size; ij++) {
-			G->data[ij] = G_orig->data[ij] - (float)cval;		/* If there are NaNs they will remain NaNs */
-			if (G->data[ij] == 0.0) G->data[ij] += (float)small;	  /* There will be no actual zero-values, just -ve and +ve values */
+			G->data[ij] = G_orig->data[ij] - (gmt_grdfloat)cval;		/* If there are NaNs they will remain NaNs */
+			if (G->data[ij] == 0.0) G->data[ij] += (gmt_grdfloat)small;	  /* There will be no actual zero-values, just -ve and +ve values */
 		}
 
 		id = (cont_type[c] == 'A' || cont_type[c] == 'a') ? 1 : 0;

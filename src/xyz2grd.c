@@ -317,7 +317,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	double *in = NULL, wesn[4];
 
-	float no_data_f, *data = NULL;
+	gmt_grdfloat no_data_f, *data = NULL;
 
 	void * (*save_i) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;
 	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *);
@@ -480,7 +480,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
 
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
@@ -502,13 +502,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		else {	/* Instead got the very first data value */
 			ij = gmt_M_ijp (Grid->header, row, col);
 			value = atof (line);
-			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
+			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (gmt_grdfloat) value;
 			if (++col == Grid->header->n_columns) col = 0, row++;
 			n_left--;
 		}
 		while (fscanf (fp, "%lf", &value) == 1 && n_left) {
 			ij = gmt_M_ijp (Grid->header, row, col);
-			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
+			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (gmt_grdfloat) value;
 			if (++col == Grid->header->n_columns) col = 0, row++;
 			n_left--;
 		}
@@ -525,7 +525,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
 
-	no_data_f = (GMT->common.d.active[GMT_IN]) ? (float)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
+	no_data_f = (GMT->common.d.active[GMT_IN]) ? (gmt_grdfloat)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
 
 	/* Set up and allocate output grid [note: zero padding specificied since no BCs required] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
@@ -539,7 +539,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* For Amode = 'd' or 'S' we need a second grid, and also require a minimum of 2 points per grid */
 	if (Amode == 'd' || Amode == 'S') {
-		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
+		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
 		n_min = 2;
 	}
 
@@ -619,7 +619,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			ij_gmt = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			Grid->data[ij_gmt] = (gmt_input_is_nan_proxy (GMT, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
+			Grid->data[ij_gmt] = (gmt_input_is_nan_proxy (GMT, in[zcol])) ? GMT->session.f_NaN : (gmt_grdfloat)in[zcol];
 			ij++;
 		}
 		else {	/* Get x, y, z */
@@ -640,50 +640,50 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			switch (Amode) {
 				case 'f':	/* Want the first value to matter only */
 					if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
-						Grid->data[ij] = (float)in[zcol];
+						Grid->data[ij] = (gmt_grdfloat)in[zcol];
 						flag[ij] = (unsigned int)n_read;
 					}
 					break;
 				case 's':	/* Want the last value to matter only */
-					Grid->data[ij] = (float)in[zcol];	/* Assign last value and that is it */
+					Grid->data[ij] = (gmt_grdfloat)in[zcol];	/* Assign last value and that is it */
 					flag[ij] = (unsigned int)n_read;
 					break;
 				case 'l':	/* Keep lowest value */
 					if (flag[ij]) {	/* Already assigned the first value */
-						if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+						if (in[zcol] < (double)Grid->data[ij]) Grid->data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					else {	/* First time, just assign the current value */
-						Grid->data[ij] = (float)in[zcol];
+						Grid->data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					flag[ij]++;
 					break;
 				case 'u':	/* Keep highest value */
 					if (flag[ij]) {	/* Already assigned the first value */
-						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
+						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					else {	/* First time, just assign the current value */
-						Grid->data[ij] = (float)in[zcol];
+						Grid->data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					flag[ij]++;
 					break;
 				case 'd':	/* Keep highest and lowest value */
 					if (flag[ij]) {	/* Already assigned the first value */
-						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (float)in[zcol];
-						if (in[zcol] < (double)data[ij]) data[ij] = (float)in[zcol];
+						if (in[zcol] > (double)Grid->data[ij]) Grid->data[ij] = (gmt_grdfloat)in[zcol];
+						if (in[zcol] < (double)data[ij]) data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					else {	/* First time, just assign the current value */
-						Grid->data[ij] = data[ij] = (float)in[zcol];
+						Grid->data[ij] = data[ij] = (gmt_grdfloat)in[zcol];
 					}
 					flag[ij]++;
 					break;
 				case 'S': 	/* Add up squares and means to compute standard deviation */
-					data[ij] += (float)in[zcol];	/* This adds up the means; we fall through to next case to also add up squares */
+					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case to also add up squares */
 				case 'r': 	/* Add up squares in case we must rms */
-					Grid->data[ij] += (float)in[zcol] * (float)in[zcol];
+					Grid->data[ij] += (gmt_grdfloat)in[zcol] * (gmt_grdfloat)in[zcol];
 					flag[ij]++;
 					break;
 				default:	/* Add up in case we must sum or mean */
-					Grid->data[ij] += (float)in[zcol];
+					Grid->data[ij] += (gmt_grdfloat)in[zcol];
 					flag[ij]++;
 					break;
 			}
@@ -762,15 +762,15 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			}
 			else {	/* Enough values went to this node */
 				if (Amode == 'n')
-					Grid->data[ij] = (float)flag[ij];
+					Grid->data[ij] = (gmt_grdfloat)flag[ij];
 				else if (Amode == 'm')
-					Grid->data[ij] /= (float)flag[ij];
+					Grid->data[ij] /= (gmt_grdfloat)flag[ij];
 				else if (Amode == 'r')
-					Grid->data[ij] = (float)sqrt (Grid->data[ij] / (float)flag[ij]);
+					Grid->data[ij] = (gmt_grdfloat)sqrt (Grid->data[ij] / (gmt_grdfloat)flag[ij]);
 				else if (Amode == 'd')
 					Grid->data[ij] -= data[ij];
 				else if (Amode == 'S') {
-					Grid->data[ij] = (float)sqrt ((Grid->data[ij] - data[ij] * data[ij] / (float)flag[ij]) / (float)(flag[ij] - 1));
+					Grid->data[ij] = (gmt_grdfloat)sqrt ((Grid->data[ij] - data[ij] * data[ij] / (gmt_grdfloat)flag[ij]) / (gmt_grdfloat)(flag[ij] - 1));
 
 				}
 				/* Implicit else means return the currently stored value */

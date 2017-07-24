@@ -517,7 +517,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 
 		gmt_M_col_loop (GMT, A, row, col, ij) {	/* Now loop over the columns */
 			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (A->header->n_columns-1))) ? 0.5 : 1.0);
-			A->data[ij] = (float)(row_weight * col_weight);
+			A->data[ij] = (gmt_grdfloat)(row_weight * col_weight);
 		}
 	}
 	if (file) {	/* For debug purposes: Save the area weight grid */
@@ -1416,7 +1416,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 					if (slow) {	/* Add it to the relevant temporary work array */
 						if (slower) {	/* Need to store both value and weight */
 							work_data[n_in_median].value = Gin->data[ij_in];
-							work_data[n_in_median++].weight = (float)(weight[ij_wt] * A->data[ij_in]);
+							work_data[n_in_median++].weight = (gmt_grdfloat)(weight[ij_wt] * A->data[ij_in]);
 						}
 						else	/* Only need to store values */
 							work_array[n_in_median++] = Gin->data[ij_in];
@@ -1429,9 +1429,9 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 						n_conv++;	/* Points used inside filter circle */
 						if (Ctrl->A.active) {	/* Store selected debug info in Gin data */
 							if (Ctrl->A.mode == 'a') Gin->data[ij_in] = A->data[ij_in];
-							else if (Ctrl->A.mode == 'w') Gin->data[ij_in] = (float)weight[ij_wt];
-							else if (Ctrl->A.mode == 'r') Gin->data[ij_in] = (float)weight[ij_wt];	/* holds r */
-							else if (Ctrl->A.mode == 'c') Gin->data[ij_in] = (float)w;
+							else if (Ctrl->A.mode == 'w') Gin->data[ij_in] = (gmt_grdfloat)weight[ij_wt];
+							else if (Ctrl->A.mode == 'r') Gin->data[ij_in] = (gmt_grdfloat)weight[ij_wt];	/* holds r */
+							else if (Ctrl->A.mode == 'c') Gin->data[ij_in] = (gmt_grdfloat)w;
 						}
 #endif
 					}
@@ -1480,7 +1480,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 							this_estimate = GMT_histmode_weighted (GMT, work_data, n_in_median, B);
 							break;
 					}
-					Gout->data[ij_out] = (float)this_estimate;	/* Truncate to float */
+					Gout->data[ij_out] = (gmt_grdfloat)this_estimate;	/* Truncate to gmt_grdfloat */
 				}
 				else {	/* Nothing found inside circle, set output node to NaN */
 					Gout->data[ij_out] = GMT->session.f_NaN;
@@ -1493,10 +1493,10 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 					n_nan++;
 				}
 				else	/* Safe to compute weighted average */
-					Gout->data[ij_out] = (float)(value / wt_sum);
+					Gout->data[ij_out] = (gmt_grdfloat)(value / wt_sum);
 			}
 			else	/* Operator; no weight normalization needed */
-				Gout->data[ij_out] = (float)value;
+				Gout->data[ij_out] = (gmt_grdfloat)value;
 		}
 	}
 

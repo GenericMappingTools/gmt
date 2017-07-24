@@ -475,7 +475,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 		if (plan == NULL) {
 			/* No Wisdom available
 			 * Need extra memory to prevent overwriting data while planning */
-			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (n_rows == 0 ? 1 : n_rows) * n_columns * sizeof(float));
+			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (n_rows == 0 ? 1 : n_rows) * n_columns * sizeof(gmt_grdfloat));
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Generating new FFTW Wisdom, be patient...\n");
 			if (n_rows == 0) /* 1d DFT */
 				plan = fftwf_plan_dft_1d(n_columns, in_place_tmp, in_place_tmp, sign, GMT->current.setting.fftw_plan);
@@ -508,7 +508,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 	return plan;
 }
 
-GMT_LOCAL int fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
+GMT_LOCAL int fft_1d_fftwf (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n, int direction, unsigned int mode) {
 	fftwf_plan plan = NULL;
 	gmt_M_unused(mode);
 
@@ -520,7 +520,7 @@ GMT_LOCAL int fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, i
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
+GMT_LOCAL int fft_2d_fftwf (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
 	fftwf_plan plan = NULL;
 	gmt_M_unused(mode);
 
@@ -544,7 +544,7 @@ GMT_LOCAL void fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	}
 }
 
-GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
+GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n, int direction, unsigned int mode) {
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -564,8 +564,8 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, in
 		 * single-precision FFT functions: */
 		fft_1d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_1d = vDSP_create_fftsetup (log2n, kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(float));
-		GMT->current.fft.dsp_split_complex_1d.imagp = malloc (n * sizeof(float));
+		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_1d.imagp = malloc (n * sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_1d.realp == NULL || GMT->current.fft.dsp_split_complex_1d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n);
 			return -1; /* out of memory */
@@ -589,7 +589,7 @@ GMT_LOCAL void fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	}
 }
 
-GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
+GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -612,8 +612,8 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n_col
 	 	* single-precision FFT functions: */
 		fft_2d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_2d = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_2d.realp = malloc (n_xy * sizeof(float));
-		GMT->current.fft.dsp_split_complex_2d.imagp = malloc (n_xy * sizeof(float));
+		GMT->current.fft.dsp_split_complex_2d.realp = malloc (n_xy * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_2d.imagp = malloc (n_xy * sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_2d.realp == NULL || GMT->current.fft.dsp_split_complex_2d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
 			return -1; /* out of memory */
@@ -639,7 +639,7 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n_col
 
 #include "kiss_fft/kiss_fftnd.h"
 
-GMT_LOCAL int fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
+GMT_LOCAL int fft_1d_kiss (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n, int direction, unsigned int mode) {
 	kiss_fft_cpx *fin, *fout;
 	kiss_fft_cfg config;
 	gmt_M_unused(GMT); gmt_M_unused(mode);
@@ -653,7 +653,7 @@ GMT_LOCAL int fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, in
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
+GMT_LOCAL int fft_2d_kiss (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
 	const int dim[2] = {n_rows, n_columns}; /* dimensions of fft */
 	const int dimcount = 2;      /* number of dimensions */
 	kiss_fft_cpx *fin, *fout;
@@ -671,7 +671,7 @@ GMT_LOCAL int fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n_col
 }
 
 
-GMT_LOCAL int fft_brenner_fourt_f (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work) {
+GMT_LOCAL int fft_brenner_fourt_f (gmt_grdfloat *data, int *nn, int *ndim, int *ksign, int *iform, gmt_grdfloat *work) {
 
     /* System generated locals */
     int i__1, i__2, i__3, i__4, i__5, i__6, i__7, i__8, i__9, i__10, i__11, i__12;
@@ -688,9 +688,9 @@ GMT_LOCAL int fft_brenner_fourt_f (float *data, int *nn, int *ndim, int *ksign, 
     static int nhalf, krang, kconj, kdif, idim, ntot, kstep, k2, k3, k4, nprev, iquot;
     static int i2, i1, i3, j3, k1, j2, j1, if_, np0, np1, np2, ifp1, ifp2, non2;
 
-    static float theta, oldsi, tempi, oldsr, sinth, difi, difr, sumi, sumr, tempr, twopi;
-    static float wstpi, wstpr, twowr, wi, wr, u1i, w2i, w3i, u2i, u3i, u4i, t2i, u1r;
-    static float u2r, u3r, w2r, w3r, u4r, t2r, t3r, t3i, t4r, t4i;
+    static gmt_grdfloat theta, oldsi, tempi, oldsr, sinth, difi, difr, sumi, sumr, tempr, twopi;
+    static gmt_grdfloat wstpi, wstpr, twowr, wi, wr, u1i, w2i, w3i, u2i, u3i, u4i, t2i, u1r;
+    static gmt_grdfloat u2r, u3r, w2r, w3r, u4r, t2r, t3r, t3i, t4r, t4i;
     static double wrd, wid;
 
 /*---------------------------------------------------------------------------
@@ -717,8 +717,8 @@ GMT_LOCAL int fft_brenner_fourt_f (float *data, int *nn, int *ndim, int *ksign, 
     --data;
 
     /* Function Body */
-    wr = wi = wstpr = wstpi = (float)0.0;
-    twopi = (float)6.283185307;
+    wr = wi = wstpr = wstpi = (gmt_grdfloat)0.0;
+    twopi = (gmt_grdfloat)6.283185307;
     if (*ndim - 1 >= 0) {
 	goto L1;
     } else {
@@ -957,7 +957,7 @@ L370:
 	    goto L380;
 	}
 L380:
-	theta = -twopi * (float) non2 / (float) (mmax <<  2);
+	theta = -twopi * (gmt_grdfloat) non2 / (gmt_grdfloat) (mmax <<  2);
 	if (*ksign >= 0) {
 	    goto L390;
 	} else {
@@ -967,10 +967,10 @@ L390:
 	theta = -theta;
 L400:
 	sincos ((double)theta, &wid, &wrd);
-	wr = (float)wrd;
-	wi = (float)wid;
-	wstpr = (float)-2.0 * wi * wi;
-	wstpi = (float)2.0 * wr * wi;
+	wr = (gmt_grdfloat)wrd;
+	wi = (gmt_grdfloat)wid;
+	wstpr = (gmt_grdfloat)-2.0 * wi * wi;
+	wstpi = (gmt_grdfloat)2.0 * wr * wi;
 L405:
 	i__4 = lmax;
 	i__5 = non2t;
@@ -983,7 +983,7 @@ L405:
 	    }
 L410:
 	    w2r = wr * wr - wi * wi;
-	    w2i = (float)(wr * 2.0 * wi);
+	    w2i = (gmt_grdfloat)(wr * 2.0 * wi);
 	    w3r = w2r * wr - w2i * wi;
 	    w3i = w2r * wi + w2i * wr;
 L420:
@@ -1143,7 +1143,7 @@ L615:
 	i__5 = ifp1;
 	i__4 = ifp2;
 	for (j2 = j2min; i__4 < 0 ? j2 >= i__5 : j2 <= i__5; j2 +=  i__4) {
-	    theta = -twopi * (float) (j2 - 1) / (float)  np2;
+	    theta = -twopi * (gmt_grdfloat) (j2 - 1) / (gmt_grdfloat)  np2;
 	    if (*ksign >= 0) {
 		goto L620;
 	    } else {
@@ -1152,10 +1152,10 @@ L615:
 L620:
 	    theta = -theta;
 L625:
-	    sinth = (float)sin((double)(0.5 * theta));
-	    wstpr = sinth * (float)(-2. * sinth);
-	    wstpi = (float)sin((double)theta);
-	    wr = wstpr + (float)1.0;
+	    sinth = (gmt_grdfloat)sin((double)(0.5 * theta));
+	    wstpr = sinth * (gmt_grdfloat)(-2. * sinth);
+	    wstpi = (gmt_grdfloat)sin((double)theta);
+	    wr = wstpr + (gmt_grdfloat)1.0;
 	    wi = wstpi;
 	    j1min = j2 + ifp1;
 	    i__3 = j1rng;
@@ -1184,7 +1184,7 @@ L625:
 	    }
 	}
 L640:
-	theta = -twopi / (float) ifact[if_ - 1];
+	theta = -twopi / (gmt_grdfloat) ifact[if_ - 1];
 	if (*ksign >= 0) {
 	    goto L645;
 	} else {
@@ -1193,9 +1193,9 @@ L640:
 L645:
 	theta = -theta;
 L650:
-	sinth = (float)sin((double)(0.5 * theta));
-	wstpr = sinth * (float)(-2. * sinth);
-	wstpi = (float)sin((double)theta);
+	sinth = (gmt_grdfloat)sin((double)(0.5 * theta));
+	wstpr = sinth * (gmt_grdfloat)(-2. * sinth);
+	wstpi = (gmt_grdfloat)sin((double)theta);
 	kstep = (n << 1) / ifact[if_ - 1];
 	krang = kstep * (ifact[if_ - 1] / 2) + 1;
 	i__2 = i1rng;
@@ -1222,8 +1222,8 @@ L650:
 				goto L665;
 			    }
 L655:
-			    sumr = (float)0.0;
-			    sumi = (float)0.0;
+			    sumr = (gmt_grdfloat)0.0;
+			    sumi = (gmt_grdfloat)0.0;
 			    i__11 = j2max;
 			    i__12 = ifp2;
 			    for (j2 = j3; i__12 < 0 ? j2 >= i__11 : j2 <= i__11; j2 += i__12) {
@@ -1238,8 +1238,8 @@ L665:
 			    j2 = j2max;
 			    sumr = data[j2];
 			    sumi = data[j2 + 1];
-			    oldsr = (float)0.0;
-			    oldsi = (float)0.0;
+			    oldsr = (gmt_grdfloat)0.0;
+			    oldsi = (gmt_grdfloat)0.0;
 			    j2 -= ifp2;
 L670:
 			    tempr = sumr;
@@ -1273,7 +1273,7 @@ L680:
 			goto L686;
 		    }
 L685:
-		    wr = wstpr + (float)1.0;
+		    wr = wstpr + (gmt_grdfloat)1.0;
 		    wi = wstpi;
 		    goto L690;
 L686:
@@ -1356,7 +1356,7 @@ L700:
 L701:
 	nhalf = n;
 	n += n;
-	theta = -twopi / (float) n;
+	theta = -twopi / (gmt_grdfloat) n;
 	if (*ksign >= 0) {
 	    goto L702;
 	} else {
@@ -1365,10 +1365,10 @@ L701:
 L702:
 	theta = -theta;
 L703:
-	sinth = (float)sin((double)(0.5 * theta));
-	wstpr = sinth * (float)(-2. * sinth);
-	wstpi = (float)sin((double)theta);
-	wr = wstpr + (float)1.0;
+	sinth = (gmt_grdfloat)sin((double)(0.5 * theta));
+	wstpr = sinth * (gmt_grdfloat)(-2. * sinth);
+	wstpi = (gmt_grdfloat)sin((double)theta);
+	wr = wstpr + (gmt_grdfloat)1.0;
 	wi = wstpi;
 	imin = 3;
 	jmin = (nhalf << 1) - 1;
@@ -1378,10 +1378,10 @@ L710:
 	i__4 = ntot;
 	i__3 = np2;
 	for (i = imin; i__3 < 0 ? i >= i__4 : i <= i__4; i += i__3) {
-	    sumr = (float)0.5 * (data[i] + data[j]);
-	    sumi = (float)0.5 * (data[i + 1] + data[j + 1]);
-	    difr = (float)0.5 * (data[i] - data[j]);
-	    difi = (float)0.5 * (data[i + 1] - data[j + 1]);
+	    sumr = (gmt_grdfloat)0.5 * (data[i] + data[j]);
+	    sumi = (gmt_grdfloat)0.5 * (data[i + 1] + data[j + 1]);
+	    difr = (gmt_grdfloat)0.5 * (data[i] - data[j]);
+	    difi = (gmt_grdfloat)0.5 * (data[i + 1] - data[j + 1]);
 	    tempr = wr * sumi + wi * difr;
 	    tempi = wi * sumi - wr * difr;
 	    data[i] = sumr + tempr;
@@ -1437,7 +1437,7 @@ L755:
 	}
 L760:
 	data[j] = data[imin] - data[imin + 1];
-	data[j + 1] = (float)0.0;
+	data[j + 1] = (gmt_grdfloat)0.0;
 	if (i - j >= 0) {
 	    goto L780;
 	} else {
@@ -1456,12 +1456,12 @@ L770:
 	}
 L775:
 	data[j] = data[imin] + data[imin + 1];
-	data[j + 1] = (float)0.0;
+	data[j + 1] = (gmt_grdfloat)0.0;
 	imax = imin;
 	goto L745;
 L780:
 	data[1] += data[2];
-	data[2] = (float)0.0;
+	data[2] = (gmt_grdfloat)0.0;
 	goto L900;
 L800:
 	if (i1rng - np1 >= 0) {
@@ -1558,8 +1558,8 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int n_colu
 }
 
 /* C-callable wrapper for fft_brenner_fourt_f */
-GMT_LOCAL int fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
-        /* void GMT_fourt (struct GMT_CTRL *GMT, float *data, int *nn, int ndim, int ksign, int iform, float *work) */
+GMT_LOCAL int fft_1d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n, int direction, unsigned int mode) {
+        /* void GMT_fourt (struct GMT_CTRL *GMT, gmt_grdfloat *data, int *nn, int ndim, int ksign, int iform, gmt_grdfloat *work) */
         /* Data array */
         /* Dimension array */
         /* Number of dimensions */
@@ -1569,16 +1569,16 @@ GMT_LOCAL int fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n,
 	
         int ksign, ndim = 1, n_signed = n, kmode = mode;
         size_t work_size = 0;
-        float *work = NULL;
+        gmt_grdfloat *work = NULL;
 	
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = fft_brenner_worksize (GMT, n, 1))) work = gmt_M_memory (GMT, NULL, work_size, float);
+        if ((work_size = fft_brenner_worksize (GMT, n, 1))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
         (void) fft_brenner_fourt_f (data, &n_signed, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);	
         return (GMT_OK);
 }
 	
-GMT_LOCAL int fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
+GMT_LOCAL int fft_2d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
         /* Data array */
         /* Dimension array */
         /* Number of dimensions */
@@ -1588,10 +1588,10 @@ GMT_LOCAL int fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n_
 
         int ksign, ndim = 2, nn[2] = {n_columns, n_rows}, kmode = mode;
         size_t work_size = 0;
-        float *work = NULL;
+        gmt_grdfloat *work = NULL;
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = fft_brenner_worksize (GMT, n_columns, n_rows))) work = gmt_M_memory (GMT, NULL, work_size, float);
+        if ((work_size = fft_brenner_worksize (GMT, n_columns, n_rows))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
         GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) fft_brenner_fourt_f (data, nn, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);
@@ -1630,7 +1630,7 @@ GMT_LOCAL int fft_2d_selection (struct GMT_CTRL *GMT, unsigned int n_columns, un
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
-int GMT_FFT_1D (void *V_API, float *data, uint64_t n, int direction, unsigned int mode) {
+int GMT_FFT_1D (void *V_API, gmt_grdfloat *data, uint64_t n, int direction, unsigned int mode) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
@@ -1650,7 +1650,7 @@ int GMT_FFT_1D (void *V_API, float *data, uint64_t n, int direction, unsigned in
 	return status;
 }
 
-int GMT_FFT_2D (void *V_API, float *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
+int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode) {
 	/* data is an array of length n_columns*n_rows (or 2*n_columns*n_rows for complex) data points
 	 * n_columns, n_rows is the number of data nodes
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)

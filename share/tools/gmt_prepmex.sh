@@ -16,7 +16,7 @@
 # 3. Link the gmt.mex executable with these libraries.
 #
 # To prepare your system to run the gmt.mex application, run
-# /Application/GMT-5.2.x[_r#####.app]/Contents/Resources/share/tools/gmt_prepmex.sh
+# /Application/GMT-6.x.x[_r#####.app]/Contents/Resources/share/tools/gmt_prepmex.sh
 # This will require sudo privileges.
 #
 #-------------------------------------------------------------------------
@@ -33,16 +33,16 @@ pushd `dirname $0` > /dev/null
 BUNDLEDIR=`pwd | sed -e sB/Contents/Resources/share/toolsBBg`
 popd > /dev/null
 # Set path to the new gmt installation
-MEXGM5TDIR=/tmp/$$/gmt
+MEXGMT5DIR=/tmp/$$/gmt
 # Set path to additional subdirectories
-MEXLIBDIR=$MEXGM5TDIR/lib
-MEXINCDIR=$MEXGM5TDIR/include
-MEXSHADIR=$MEXGM5TDIR/share
-MEXBINDIR=$MEXGM5TDIR/bin
+MEXLIBDIR=$MEXGMT5DIR/lib
+MEXINCDIR=$MEXGMT5DIR/include
+MEXSHADIR=$MEXGMT5DIR/share
+MEXBINDIR=$MEXGMT5DIR/bin
 MEXSUPDIR=$MEXLIBDIR/gmt/plugins
 # Create install directory [remove first if exist]
-rm -rf $MEXGM5TDIR
-printf "gmt_prepmex.sh: Create $MEXGM5TDIR and copy files\n" >&2
+rm -rf $MEXGMT5DIR
+printf "gmt_prepmex.sh: Create $MEXGMT5DIR and copy files\n" >&2
 mkdir -p $MEXBINDIR $MEXSUPDIR $MEXINCDIR
 # Copy the share files
 cd $BUNDLEDIR/Contents/Resources
@@ -86,8 +86,8 @@ done < /tmp/l.lis
 # Set links to the new libs
 ln -s libXgmt.dylib libgmt.dylib
 ln -s libXpostscriptlight.dylib libpostscriptlight.dylib
-ln -s libXgmt.5.dylib libXgmt.dylib
-ln -s libXpostscriptlight.5.dylib libXpostscriptlight.dylib
+ln -s libXgmt.6.dylib libXgmt.dylib
+ln -s libXpostscriptlight.6.dylib libXpostscriptlight.dylib
 # If argument gs is given then we also do the same to the GS library.
 if [ "$1" == "gs" ]; then
 	# Same stuff for gs which is called by psconvert as a system call.
@@ -129,9 +129,9 @@ while read old; do
 	install_name_tool -change $old /opt/gmt/lib/$new gmt
 	let k=k+1
 done < /tmp/t.lis
-chmod -R ugo+r $MEXGM5TDIR
+chmod -R ugo+r $MEXGMT5DIR
 printf "gmt_prepmex.sh: Install /opt/gmt\n" >&2
-sudo cp -fpR $MEXGM5TDIR /opt
+sudo cp -fpR $MEXGMT5DIR /opt
 rm -rf /tmp/$$
 cd $here
 version=`/opt/gmt/bin/gmt-config --version`

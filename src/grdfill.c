@@ -162,7 +162,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void do_constant_fill (struct GMT_GRID *G, unsigned int limit[], float value) {
+GMT_LOCAL void do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
 	/* Algorithm 1: Replace NaNs with a constant value */
 	unsigned int row, col;
 	uint64_t node;
@@ -182,7 +182,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4];
 	uint64_t node, node_hole, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;
-	float *z = NULL;
+	gmt_grdfloat *z = NULL;
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_GRID *G_hole = NULL;
 	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""};
@@ -205,7 +205,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 	n_constraints = (d_limit[YHI] - d_limit[YLO] - 1) * (d_limit[XHI] - d_limit[XLO] - 1) - n_in_hole;
 	x = gmt_M_memory (GMT, NULL, n_constraints, double);
 	y = gmt_M_memory (GMT, NULL, n_constraints, double);
-	z = gmt_M_memory (GMT, NULL, n_constraints, float);
+	z = gmt_M_memory (GMT, NULL, n_constraints, gmt_grdfloat);
 	for (row = d_limit[YLO]; row < d_limit[YHI]; row++) {
 		for (col = d_limit[XLO]; col < d_limit[XHI]; col++) {
 			node = gmt_M_ijp (G->header, row, col);
@@ -388,7 +388,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			else {
 				switch (Ctrl->A.mode) {
 					case ALG_CONSTANT:	/* Fill in using a constant value */
-						do_constant_fill (Grid, limit, (float)Ctrl->A.value);
+						do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
 						//do_splinefill (Grid, wesn, limit, n_nodes, Ctrl->A.value);

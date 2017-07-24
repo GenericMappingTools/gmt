@@ -602,7 +602,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					if (Ctrl->D.mode & 2 && azim >= 180) azim -= 180.0;
 				}
 				output = azim;
-				if (Ctrl->S.active) Slope->data[ij] = (float)hypot (dzdx, dzdy);
+				if (Ctrl->S.active) Slope->data[ij] = (gmt_grdfloat)hypot (dzdx, dzdy);
 			}
 			else {	/* Ctrl->E.active */
 				if (Ctrl->E.mode == 2)
@@ -624,7 +624,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				r_max = MAX (r_max, output);
 			}
 			index = (new_grid) ? ij : ij0;
-			Out->data[index] = (float)output;
+			Out->data[index] = (gmt_grdfloat)output;
 			n_used++;
 		}
 	}
@@ -641,12 +641,12 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
 			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (gmt_grdfloat)sum;
 		}
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
 			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (gmt_grdfloat)sum;
 		}
 	}
 	
@@ -654,7 +654,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		scale = 1.0 / (r_max - r_min);
 		gmt_M_grd_loop (GMT, Out, row, col, ij) {
 			if (gmt_M_is_fnan (Out->data[ij])) continue;
-			Out->data[ij] = (float)((-1.0 + 2.0 * ((Out->data[ij] - r_min) * scale)) * 0.95);
+			Out->data[ij] = (gmt_grdfloat)((-1.0 + 2.0 * ((Out->data[ij] - r_min) * scale)) * 0.95);
 		}
 	}
 
@@ -679,7 +679,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				}
 				rpi = 2.0 * Ctrl->N.norm / M_PI;
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (float)(rpi * atan ((Out->data[ij] - ave_gradient) * denom));
+					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)(rpi * atan ((Out->data[ij] - ave_gradient) * denom));
 				}
 				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom);
 				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom);
@@ -696,10 +696,10 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
 					if (gmt_M_is_fnan (Out->data[ij])) continue;
 					if (Out->data[ij] < ave_gradient) {
-						Out->data[ij] = (float)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)));
+						Out->data[ij] = (gmt_grdfloat)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)));
 					}
 					else {
-						Out->data[ij] = (float)( Ctrl->N.norm * (1.0 - exp (-(Out->data[ij] - ave_gradient) * denom)));
+						Out->data[ij] = (gmt_grdfloat)( Ctrl->N.norm * (1.0 - exp (-(Out->data[ij] - ave_gradient) * denom)));
 					}
 				}
 				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom));
@@ -711,7 +711,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				else
 					denom = Ctrl->N.norm / (ave_gradient - min_gradient);
 				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (float)((Out->data[ij] - ave_gradient) * denom);
+					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)((Out->data[ij] - ave_gradient) * denom);
 				}
 				Out->header->z_max = (max_gradient - ave_gradient) * denom;
 				Out->header->z_min = (min_gradient - ave_gradient) * denom;

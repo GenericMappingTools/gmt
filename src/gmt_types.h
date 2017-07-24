@@ -72,8 +72,8 @@ struct GMT_TEXT_SELECTION {	/* Used to hold array with items (0-n) that have bee
 
 /*! For weighted mean/mode */
 struct GMT_OBSERVATION {
-	float value;
-	float weight;
+	gmt_grdfloat value;
+	gmt_grdfloat weight;
 };
 
 /*! For keeping table,segment IDs in a 1-D array */
@@ -340,10 +340,10 @@ struct GMT_SESSION {
 	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid read header functions */
 	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid update header functions */
 	int (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid write header functions */
-	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
-	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
-	int (*fft1d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
-	int (*fft2d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
+	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, gmt_grdfloat *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, gmt_grdfloat *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*fft1d[k_n_fft_algorithms]) (struct GMT_CTRL *, gmt_grdfloat *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
+	int (*fft2d[k_n_fft_algorithms]) (struct GMT_CTRL *, gmt_grdfloat *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
 	char *DCWDIR;			/* Path to the DCW directory */
 	char *GSHHGDIR;			/* Path to the GSHHG directory */

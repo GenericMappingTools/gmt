@@ -46,7 +46,7 @@ enum Grdclip_cases {
 /* Control structure for grdclip */
 
 struct GRDCLIP_RECLASSIFY {
-	float low, high, between;
+	gmt_grdfloat low, high, between;
 	uint64_t n_between;
 	bool replace;	/* true if low == high */
 };
@@ -65,8 +65,8 @@ struct GRDCLIP_CTRL {
 		unsigned int mode;
 		unsigned int n_class;
 		unsigned int n_replace;
-		float high, above;
-		float low, below;
+		gmt_grdfloat high, above;
+		gmt_grdfloat low, below;
 		struct GRDCLIP_RECLASSIFY *class;
 		struct GRDCLIP_REPLACE *replace;
 	} S;
@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						n_errors++;
 					}
 					else 
-						Ctrl->S.above = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
+						Ctrl->S.above = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 					break;
 				case 'b':
 					Ctrl->S.mode |= GRDCLIP_BELOW;
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						n_errors++;
 					}
 					else
-						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
+						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 					break;
 				case 'i':
 					n_to_expect = 3;	/* Since only two for -Sr */
@@ -195,7 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 							n_errors++;
 						}
 						else
-							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
+							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 					}
 					else {
 						n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.class[n_class].low, txt);
@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 							n_errors++;
 						}
 						else
-							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
+							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 						Ctrl->S.class[n_class].high = Ctrl->S.class[n_class].low;
 						Ctrl->S.class[n_class].replace = true;
 					}

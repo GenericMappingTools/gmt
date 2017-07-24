@@ -996,7 +996,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
-				G->data[node] = (float) get_one_output3D (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
+				G->data[node] = (gmt_grdfloat) get_one_output3D (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
 			}
 		}
 		gmt_M_free (GMT, x_obs);
