@@ -1588,8 +1588,7 @@ be used for reading or writing.  Note that if you plan to pass a matrix or vecto
 instead of grids or dataset you must add the modifiers GMT_IS_MATRIX or GMT_IS_VECTOR
 to ``family`` so that the module knows what to do.  Finally, in the case of passing
 ``data`` as NULL you may also control what type of matrix or vector will be created in
-GMT for the output by adding in the modifiers GMT_VIA_type, where *type* is any of the
-fundamental GMT data types listed in :ref:`types <tbl-types>`.
+GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3988,6 +3987,42 @@ functions.
     +--------------+------------------------------------------+
 
     The known data types in the GMT API.
+
+When GMT_Open_VirtualFile_ is used with a NULL pointer to create a
+virtual file for returning results from a GMT module *and* you are
+using a :ref:`GMT_MATRIX <struct-matrix>` or :ref:`GMT_VECTOR <struct-vector>`
+as your container, you may prescribe
+the data type used for the underlying arrays.  The constants below
+can be added to the ``direction'' argument in order to change the
+default data types [float for matrix and double for vector].
+
+.. _tbl-viatypes:
+
+    +------------------+------------------------------------------+
+    | constant         | description                              |
+    +==================+==========================================+
+    | GMT_VIA_CHAR     | Select GMT_CHAR as array type            |
+    +------------------+------------------------------------------+
+    | GMT_VIA_UCHAR    | Select GMT_UCHAR as array type           |
+    +------------------+------------------------------------------+
+    | GMT_VIA_SHORT    | Select GMT_SHORT as array type           |
+    +------------------+------------------------------------------+
+    | GMT_VIA_USHORT   | Select GMT_USHORT as array type          |
+    +------------------+------------------------------------------+
+    | GMT_VIA_INT      | Select GMT_INT as array type             |
+    +------------------+------------------------------------------+
+    | GMT_VIA_UINT     | Select GMT_UINT as array type            |
+    +------------------+------------------------------------------+
+    | GMT_VIA_LONG     | Select GMT_LONG as array type            |
+    +------------------+------------------------------------------+
+    | GMT_VIA_ULONG    | Select GMT_ULONG as array type           |
+    +------------------+------------------------------------------+
+    | GMT_VIA_FLOAT    | Select GMT_FLOAT as array type           |
+    +------------------+------------------------------------------+
+    | GMT_VIA_DOUBLE   | Select GMT_DOUBLE as array type          |
+    +------------------+------------------------------------------+
+
+    Flags to select the type of arrays used in output GMT_MATRIX or GMT_VECTOR.
 
 
 .. [1]
