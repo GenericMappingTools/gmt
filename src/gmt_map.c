@@ -8347,8 +8347,11 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 		}
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
-		char ellipsoid[GMT_LEN256] = {""}, dr[GMT_LEN256] = {""}, *pch;
+		char ellipsoid[GMT_LEN256] = {""}, dr[GMT_LEN256] = {""};
+#ifdef PRJ4
+		char *pch;
 		int n_commas = 0;
+#endif
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Malformed <ellipsoid>:<dr> argument!\n");
 			return (-1);
