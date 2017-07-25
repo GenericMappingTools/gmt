@@ -585,14 +585,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
+#ifdef PRJ4
+	/* The following lousy hack allows NOT having to specify -R */
+	if (GMT->current.proj.is_proj4 && !GMT->common.R.active[RSET] && !GMT->current.proj.gave_map_width) {	/* Means MAYBE a 1:1 scale was used */
+		GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
+		GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
+		GMT->common.R.active[RSET] = true;
+	}
+#endif
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
-	                                 "Syntax error: -T cannot work with -E, -G or -L\n");
+	                                   "Syntax error: -T cannot work with -E, -G or -L\n");
 	n_errors += gmt_M_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
 	n_errors += gmt_M_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");
 	/* Must have -J */
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
-	                                 "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
+	                                   "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
 	if (!GMT->common.R.active[RSET] && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		if (GMT->current.proj.utm_hemisphere == 0)		/* Default to N hemisphere if nothing is known */
 			GMT->current.proj.utm_hemisphere = 1;
@@ -608,14 +617,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		GMT->common.R.active[RSET] = true;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK),
-	                                 "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
+	                                   "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active ||
-	                                 Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
+	                                   Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->D.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -D and -F\n");
 	n_errors += gmt_M_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) &&
-	                                 GMT->common.b.active[GMT_IN] && gmt_get_cols (GMT, GMT_IN) < 3,
-	                                 "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
+	                                   GMT->common.b.active[GMT_IN] && gmt_get_cols (GMT, GMT_IN) < 3,
+	                                   "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
 
 	if (!(n_errors || GMT->common.R.active[RSET])) {
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
