@@ -12315,6 +12315,35 @@ int GMT_Set_Matrix_ (void *V_API, struct GMT_MATRIX *M, uint64_t *n_rows, uint64
 }
 #endif
 
+#define GMT_NO_SUCH_ENUM -99999
+#include "gmt_enum_dict.h"
+
+int GMT_Get_Enum (char *key) {
+	/* Access to GMT enums from environments unable to parse in gmt_resources.h.
+	 * Return value of enum or GMT_NO_SUCH_ENUM if not found */
+	int lo = 0, hi = GMT_N_API_ENUMS, mid, value;
+	if (key == NULL || key[0] == '\0') return GMT_NO_SUCH_ENUM;
+	while (lo != hi) {
+		mid = (lo + hi) / 2;
+		value = strcmp (key, gmt_api_enums[mid].name);
+		fprintf (stderr, "lo = %d mid = %d high = %d value = %d %s\n", lo, mid, hi, value, gmt_api_enums[mid].name);
+		if (value == 0) return gmt_api_enums[mid].value;
+		if ((hi-lo) == 1)
+			lo = hi = mid;
+		else if (value > 0)
+			lo = mid;
+		else if (value < 0)
+			hi = mid;
+	}
+	return (value == 0) ? gmt_api_enums[mid].value : GMT_NO_SUCH_ENUM;
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Enum_ (char *arg, int len) {
+	return (GMT_Get_Enum (arg));
+}
+#endif
+
 /* Backwards compatibility for old API functions from 5.1-2 no longer in favor
  * as the Virtual File concept is much easier to understand and use. */
 

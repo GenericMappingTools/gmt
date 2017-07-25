@@ -9,11 +9,20 @@
 # This script just makes the include snippet gmt_enum_dict.h
 # needed for GMT_API_Enum () to work.
 #
+egrep -v 'struct|union|enum|_GMT|define|char' gmt_resources.h | tr ',' ' ' | awk '{if (substr($1,1,4) == "GMT_") print $1, $3}' > /tmp/junk1.txt
+grep -v GMT_OPT_ /tmp/junk1.txt > /tmp/junk2.txt
+grep GMT_OPT_ /tmp/junk1.txt | awk '{print $1, substr($2,1,2)} '> /tmp/junk3.txt
+while read key value; do
+	printf "%s %d\n" $key "$value" >> /tmp/junk2.txt
+done < /tmp/junk3.txt
+n=`gmt info -Fd -o2 /tmp/junk2.txt`
+COPY_YEAR=$(date +%Y)
+NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h
 /*--------------------------------------------------------------------
  *      \$Id\$
  *
- *      Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *      Copyright (c) 1991-$COPY_YEAR by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -30,27 +39,25 @@ cat << EOF > gmt_enum_dict.h
 
 /*
  * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        23-JUL-2017
+ * Date:        $NOW
  * Version:     6 API
  */
 
-struct GMT_API_DICT *gmt_api_enums_int[] = {
-EOF
-
-egrep -v 'struct|union|enum|_GMT|define|char' gmt_resources.h | tr ',' ' ' | awk '{if (substr($1,1,4) == "GMT_") print $1, $3}' | sort -k 1 > /tmp/junk.txt
-grep -v GMT_OPT_ /tmp/junk.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enum_dict.h
-cat << EOF >> gmt_enum_dict.h
-	{NULL, 0}
+struct GMT_API_DICT {
+	char name[32];
+	int value;
 };
 
-struct GMT_API_DICT *gmt_api_enums_char[] = {
+#define GMT_N_API_ENUMS $n
+
+GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 EOF
 
-grep GMT_OPT_ /tmp/junk.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enum_dict.h
+sort -k 1 /tmp/junk2.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enum_dict.h
 cat << EOF >> gmt_enum_dict.h
-	{NULL, 0}
 };
 EOF
-rm -f /tmp/junk.txt
+rm -f /tmp/junk?.txt
