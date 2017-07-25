@@ -5520,9 +5520,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			}
 		}
 	}
-	else if (!strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
+	else if (!strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
 		char lon_0[32] = {""}, lat_0[32] = {""};
-		if (!strcmp(prjcode, "tmerc")) strcat (opt_J, "T");
+		if (!strcmp(prjcode, "tmerc"))     strcat (opt_J, "T");
+		else if (!strcmp(prjcode, "eqc"))  strcat (opt_J, "Q");
 		else if (!strcmp(prjcode, "merc")) strcat (opt_J, "M");
 		else if (!strcmp(prjcode, "mill")) strcat (opt_J, "J");
 		else strcat (opt_J, "C");
@@ -5536,7 +5537,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				wipe_substr(szProj4, token);
 			}
 		}
-		if (!strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
+		if (!strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
 			if (!lon_0[0]) strcat(lon_0, "0");
 			if (!lat_0[0]) strcat(lat_0, "0");
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
