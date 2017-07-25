@@ -5450,8 +5450,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	unsigned int k = 0, pos = 0;
 	bool got_a = false, got_b = false, got_lonlat = false;
 	char *pStrOut = NULL;
-	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""};
-	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *prjcode, *pch = NULL;
+	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
+	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *pch = NULL;
 
 	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
 
@@ -5498,7 +5498,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if (szProj4[strlen(szProj4)-1] == '"') szProj4[strlen(szProj4)-1] = '\0';	/* Trim last " */
 
 	gmt_strtok (szProj4, " \t+", &pos, token);
-	prjcode = (token[0] == '"' ? &token[7] : (token[0] == '+' ? &token[6] : &token[5]));	/* PROJ4 projection code. */
+	sprintf(prjcode, "%s",(token[0] == '"' ? &token[7] : (token[0] == '+' ? &token[6] : &token[5])));	/* PROJ4 projection code. */
 	wipe_substr(szProj4, token);	/* Consumed, clear it from list */
 
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
@@ -5520,18 +5520,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			}
 		}
 	}
-	else if (!strcmp(prjcode, "merc")) {
-		strcat (opt_J, "M");
-		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {		/* Check for scale factor */
-				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
-				wipe_substr(szProj4, token);
-			}
-		}
-	}
-	else if (!strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "cass")) {
+	else if (!strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
 		char lon_0[32] = {""}, lat_0[32] = {""};
 		if (!strcmp(prjcode, "tmerc")) strcat (opt_J, "T");
+		else if (!strcmp(prjcode, "merc")) strcat (opt_J, "M");
 		else if (!strcmp(prjcode, "mill")) strcat (opt_J, "J");
 		else strcat (opt_J, "C");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
@@ -5544,11 +5536,15 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				wipe_substr(szProj4, token);
 			}
 		}
-		if (lon_0[0]) {
+		if (!strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
+			if (!lon_0[0]) strcat(lon_0, "0");
+			if (!lat_0[0]) strcat(lat_0, "0");
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
-			if (lat_0[0]) {
-				strcat(opt_J, lat_0);	strcat (opt_J, "/");
-			}
+			strcat(opt_J, lat_0);	strcat (opt_J, "/");
+		}
+		else {		/* "mill" */
+			if (!lon_0[0]) strcat(lon_0, "0");
+			strcat(opt_J, lon_0);	strcat (opt_J, "/");
 		}
 	}
 	else if (!strcmp(prjcode, "utm")) {
@@ -5816,6 +5812,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if (k < strlen(szProj4))
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
 
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
 
 	pStrOut = strdup(opt_J);
