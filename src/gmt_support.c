@@ -10454,19 +10454,19 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 	/* d2/dx2 */	if (set[XLO]) G->data[jn + iwo1]   = (float)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
 	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + iw]   = (float)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
-	/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[jno1 + iwo1] = -(G->data[jno1 + iwi1] - G->data[jni1 + iwi1] + G->data[jni1 + iwo1]);
+	/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[jno1 + iwo1] = -(G->data[jno1 + iw] - G->data[jn + iw] + G->data[jn + iwo1]);
 
 	/* d2/dx2 */	if (set[XHI]) G->data[jn + ieo1]   = (float)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
 	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + ie]   = (float)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
-	/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[jno1 + ieo1] = -(G->data[jno1 + iei1] - G->data[jni1 + iei1] + G->data[jni1 + ieo1]);
+	/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[jno1 + ieo1] = -(G->data[jno1 + ie] - G->data[jn + ie] + G->data[jn + ieo1]);
 
 	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (float)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
 	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (float)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
-	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = -(G->data[jso1 + iwi1] - G->data[jsi1 + iwi1] + G->data[jsi1 + iwo1]);
+	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = -(G->data[jso1 + iw] - G->data[js + iw] + G->data[js + iwo1]);
 
 	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (float)(2.0 * G->data[js + ie] - G->data[js + iei1]);
 	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (float)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
-	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = -(G->data[jso1 + iei1] - G->data[jsi1 + iei1] + G->data[jsi1 + ieo1]);
+	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = -(G->data[jso1 + ie] - G->data[js + ie] + G->data[js + ieo1]);
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
 			for (i = iwi1; i <= iei1; i++) {
@@ -10869,19 +10869,19 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 			for (b = 0; b < nb; b++) {
 			/* d2/dx2 */	if (set[XLO]) G->data[nb*(jn + iwo1)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jn + iwi1)+b]);
 			/* d2/dy2 */	if (set[YHI]) G->data[nb*(jno1 + iw)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(jn + iw)+b] - G->data[nb*(jni1 + iw)+b]);
-			/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo1)+b] = (unsigned char)lrint (-(G->data[nb*(jno1 + iwi1)+b] - G->data[nb*(jni1 + iwi1)+b] + G->data[nb*(jni1 + iwo1)+b]));
+			/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo1)+b] = (unsigned char)lrint (-(G->data[nb*(jno1 + iw)+b] - G->data[nb*(jn + iw)+b] + G->data[nb*(jn + iwo1)+b]));
 
 			/* d2/dx2 */	if (set[XHI]) G->data[nb*(jn + ieo1)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jn + iei1)+b]);
 			/* d2/dy2 */	if (set[YHI]) G->data[nb*(jno1 + ie)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(jn + ie)+b] - G->data[nb*(jni1 + ie)+b]);
-			/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo1)+b] = (unsigned char)lrint (-(G->data[nb*(jno1 + iei1)+b] - G->data[nb*(jni1 + iei1)+b] + G->data[nb*(jni1 + ieo1)+b]));
+			/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo1)+b] = (unsigned char)lrint (-(G->data[nb*(jno1 + ie)+b] - G->data[nb*(jn + ie)+b] + G->data[nb*(jn + ieo1)+b]));
 
 			/* d2/dx2 */	if (set[XLO]) G->data[nb*(js + iwo1)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(js + iwi1)+b]);
 			/* d2/dy2 */	if (set[YLO]) G->data[nb*(jso1 + iw)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(js + iw)+b] - G->data[nb*(jsi1 + iw)+b]);
-			/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo1)+b] = (unsigned char)lrint (-(G->data[nb*(jso1 + iwi1)+b] - G->data[nb*(jsi1 + iwi1)+b] + G->data[nb*(jsi1 + iwo1)+b]));
+			/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo1)+b] = (unsigned char)lrint (-(G->data[nb*(jso1 + iw)+b] - G->data[nb*(js + iw)+b] + G->data[nb*(js + iwo1)+b]));
 
 			/* d2/dx2 */	if (set[XHI]) G->data[nb*(js + ieo1)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(js + iei1)+b]);
 			/* d2/dy2 */	if (set[YLO]) G->data[nb*(jso1 + ie)+b]   = (unsigned char)lrint (2.0 * G->data[nb*(js + ie)+b] - G->data[nb*(jsi1 + ie)+b]);
-			/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[nb*(jso1 + ieo1)+b] = (unsigned char)lrint (-(G->data[nb*(jso1 + iei1)+b] - G->data[nb*(jsi1 + iei1)+b] + G->data[nb*(jsi1 + ieo1)+b]));
+			/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[nb*(jso1 + ieo1)+b] = (unsigned char)lrint (-(G->data[nb*(jso1 + ie)+b] - G->data[nb*(js + ie)+b] + G->data[nb*(js + ieo1)+b]));
 			}
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
