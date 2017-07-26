@@ -1834,34 +1834,19 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	 * This function will shift a grid by shift degrees.
 	 * It is only called when we know the grid is geographic. */
 
-	unsigned int col, row, width, n_warn = 0;
-	int n_shift, actual_col;
+	unsigned int row, n_warn = 0;
+	int col, n_shift, width, actual_col;
 	bool gridline;
 	uint64_t ij;
 	float *tmp = NULL;
 
 	n_shift = irint (shift * G->header->r_inc[GMT_X]);
-	width = urint (360.0 * G->header->r_inc[GMT_X]);
-	if (width > G->header->n_columns) {
+	width = irint (360.0 * G->header->r_inc[GMT_X]);
+	if (width > (int)G->header->n_columns) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot rotate grid, width is too small\n");
 		return;
 	}
-	gridline = (width < G->header->n_columns);	/* Gridline-registrered grids will have width = n_columns-1, pixel grids have width = n_columns */
-
-	tmp = gmt_M_memory (GMT, NULL, G->header->n_columns, float);
-
-	for (row = 0; row < G->header->n_rows; row++) {
-		ij = gmt_M_ijp (G->header, row, 0);
-		if (gridline && G->data[ij] != G->data[ij+width]) n_warn++;
-		for (col = 0; col < G->header->n_columns; col++) {
-			actual_col = (col - n_shift) % width;
-			if (actual_col < 0) actual_col += width;
-			tmp[actual_col] = G->data[ij+col];
-		}
-		gmt_M_memcpy (&G->data[ij], tmp, G->header->n_columns, float);
-	}
-	gmt_M_free (GMT, tmp);
-
+	
 	/* Shift boundaries */
 
 	G->header->wesn[XLO] += shift;
@@ -1874,6 +1859,25 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 		G->header->wesn[XLO] -= 360.0;
 		G->header->wesn[XHI] -= 360.0;
 	}
+
+	gridline = (width < (int)G->header->n_columns);	/* Gridline-registrered grids will have width = n_columns-1, pixel grids have width = n_columns */
+
+	if (gridline) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Repeating column now at %g/%g\n", G->header->wesn[XLO], G->header->wesn[XHI]);
+
+	tmp = gmt_M_memory (GMT, NULL, G->header->n_columns, float);
+
+	for (row = 0; row < G->header->n_rows; row++) {
+		ij = gmt_M_ijp (G->header, row, 0);
+		if (gridline && G->data[ij] != G->data[ij+width]) n_warn++;
+		for (col = 0; col < (int)G->header->n_columns; col++) {
+			actual_col = (col - n_shift) % width;
+			if (actual_col < 0) actual_col += width;
+			tmp[actual_col] = G->data[ij+col];
+		}
+		if (gridline) tmp[width] = tmp[0];	/* Set new repeating column */
+		gmt_M_memcpy (&G->data[ij], tmp, G->header->n_columns, float);
+	}
+	gmt_M_free (GMT, tmp);
 
 	if (n_warn)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
