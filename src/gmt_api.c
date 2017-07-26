@@ -2473,6 +2473,9 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 						object->reset_pad = G->header->reset_pad = 1;
 				}
 			}
+			gmt_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (gmt_M_err_pass (API->GMT, gmt_grd_BC_set (API->GMT, G, GMT_IN), "Grid memory"))
+				return_null (API, GMT_GRID_BC_ERROR);	/* Failed to set boundary conditions */
 			break;
 		case GMT_IS_IMAGE:	/* Images need to update the grdtype setting, possibly rotate geographic grids, and maybe deal with subsets */
 			I = api_get_image_data (data);	/* Get the right image pointer */
@@ -2501,6 +2504,9 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 						object->reset_pad = I->header->reset_pad = 1;
 				}
 			}
+			gmt_BC_init (API->GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */
+			if (gmt_M_err_pass (API->GMT, gmtlib_image_BC_set (API->GMT, I), "Image memory"))
+				return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
 			break;
 		case GMT_IS_DATASET:	/* Just make sure the min/max values are updated for tables and dataset  */
 		 	D = api_get_dataset_data (data);	/* Get the right dataset pointer */

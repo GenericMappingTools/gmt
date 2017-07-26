@@ -1429,7 +1429,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
 	gmt_M_free (GMT, xpos);
-	if (use_image || Ctrl->I.active) gmt_M_free (GMT, bar);
+	if (use_image || Ctrl->I.active || need_image) gmt_M_free (GMT, bar);
 	/* Reset back to original line cap and join */
 	PSL_setlinecap (PSL, cap);
 	PSL_setlinejoin (PSL, join);
