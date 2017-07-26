@@ -1128,6 +1128,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval;
 		if (max > G->header->z_max) max -= Ctrl->C.interval;
+		if (Ctrl->A.interval > Ctrl->C.interval && fabs ((Ctrl->A.interval/Ctrl->C.interval) - irint (Ctrl->A.interval/Ctrl->C.interval)) > GMT_CONV4_LIMIT)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Annotation interval is not a multiple of contour interval - no annotated contours will be drawn.\n");
+		else if (Ctrl->contour.annot && Ctrl->A.interval < Ctrl->C.interval)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Annotation interval < contour interval - some/all annotated contours will not be drawn.\n");
 		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
