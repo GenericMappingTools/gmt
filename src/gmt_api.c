@@ -5035,8 +5035,6 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 					G_copy->header->z_max = MAX (G_copy->header->z_max, (double)G_copy->data[ij]);
 				}
 			}
-			gmt_BC_init (GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
-			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_copy, GMT_OUT), "Grid memory")) return (gmtapi_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_copy;	/* Set resource pointer to the grid */
 			break;
 
@@ -5044,13 +5042,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			if (S_obj->region) return (gmtapi_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtapi_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to GMT_GRID memory location\n");
-#if 0
-			if (api_adjust_grdpadding (G_obj->header, GMT->current.io.pad)) /* PW: 7/5/2016: Cannot do this since any change to region/pad would be overturned */
-				gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);	/* Adjust pad */
-#endif
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
-			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
-			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtapi_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
 			G_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
