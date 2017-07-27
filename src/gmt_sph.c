@@ -69,7 +69,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	uint64_t kk;
 	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
-	int64_t n = n_in, n_out, k, ierror, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
+	int64_t n = n_in, n_out, k, ierror= 0, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
 	size_t n_alloc;
 	double *ds = NULL;
 	

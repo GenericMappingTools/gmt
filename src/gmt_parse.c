@@ -247,7 +247,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	 *    Also, a single -B in the options may expand to several
 	 *    separate -B<args> so the linked options list may grow.
 	 */
-	int id = 0, k, n_B = 0, B_id, update_id;
+	int id = 0, k, n_B = 0, B_id, update_id = 0;
 	unsigned int pos = 0, B_replace = 1;
 	bool update, remember;
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;

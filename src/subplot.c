@@ -653,6 +653,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = true;
 			else if (Ctrl->L.axes && strchr (Ctrl->L.axes, 'n'))
 				add_annot = false;
+			else
+				add_annot = false;
 			if (add_annot) {	/* Need annotation at N */
 				axes[k++] = 'N';
 				y -= (annot_height + tick_height);
@@ -864,7 +866,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	}
 	else {	/* SUBPLOT_END */
 		int k;
-		char *mode[2] = {"w","a"}, vfile[GMT_STR16] = {""};
+		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""};
 		FILE *fp = NULL;
 		
 		/* Must force PSL_completion to run, if set */
@@ -872,8 +874,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, mode[k])) == NULL) {	/* Must open inside PSL DLL */
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, mode[k]);
+		if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, wmode[k])) == NULL) {	/* Must open inside PSL DLL */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", GMT->current.ps.filename, wmode[k]);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		PSL_command (GMT->PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */

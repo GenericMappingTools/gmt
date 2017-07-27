@@ -2604,10 +2604,10 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, int family, int geomet
 			if (!(mode & GMT_IO_RESET)) continue;	/* No reset above so we refuse to do the work */
 			S_obj->status = GMT_IS_UNUSED;	/* Reset so we may continue to read it */
 		}
-		if (direction != GMT_NOTSET && S_obj->direction != direction) continue;	/* Wrong direction */
-		if (family != GMT_NOTSET && S_obj->family != family) continue;		/* Wrong family */
-		if (geometry != GMT_NOTSET && S_obj->geometry != geometry) continue;	/* Wrong geometry */
-		if (resource && S_obj->resource == resource)  item = S_obj->ID;	/* Yes: already registered NOTE PW: One of these may not be needed? */
+		if (direction != GMT_NOTSET && (int)S_obj->direction != direction) continue;	/* Wrong direction */
+		if (family != GMT_NOTSET && (int)S_obj->family != family) continue;			/* Wrong family */
+		if (geometry != GMT_NOTSET && (int)S_obj->geometry != geometry) continue;	/* Wrong geometry */
+		if (resource && S_obj->resource == resource) item = S_obj->ID;	/* Yes: already registered. */
 	}
 	return (item);		/* The ID of the object (or GMT_NOTSET) */
 }
@@ -4664,7 +4664,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, new = false, row_by_row, via = false;
+	bool done = true, new = false, row_by_row;
  	uint64_t row, col, i0, i1, j0, j1, ij, ij_orig;
 	size_t size;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
@@ -4907,7 +4907,6 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
-			via = true;
 #if 0
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */

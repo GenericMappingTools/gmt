@@ -10802,7 +10802,11 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	ios = fscanf (fp, "%d %d %lg %lg %lg %lg %s %d", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], tag, first);
+	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %s %d", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], tag, first)) != 8) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to decode record from %s!\n", file);
+		API->error = GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
+	}
 	fclose (fp);
 	if (*row == 0 || *col == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");

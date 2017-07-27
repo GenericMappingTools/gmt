@@ -3238,7 +3238,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		if (vorOut.pointlist[k] < wesn[XLO] || vorOut.pointlist[k] > wesn[XHI] || vorOut.pointlist[k+1] < wesn[YLO] || vorOut.pointlist[k+1] > wesn[YHI])
 			n_to_clip++;
 
-#if DEBUG
+#ifdef DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Output from triangulate:\n");
 	for (i = k = 0; i < n_int_edges; i++, k += 2)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
@@ -3375,7 +3375,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 	/* Now edgelist only contains actual point IDs and pointlist has been updated to hold all added border points */
 
-#if DEBUG
+#ifdef DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After infinite ray and exterior vertex crossing replacements:\n");
 		for (i = k = 0; i < n_int_edges; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
@@ -3386,7 +3386,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 	if (mode) {	/* Need to make closed polygons from edges */
 		bool first_turn, go_i, go_j;
 		signed char *edge_use = NULL;
-		int expected_sign, prev_sign, next_sign, *start_vertex = NULL, *stop_vertex = NULL;
+		int expected_sign = 0, prev_sign, next_sign, *start_vertex = NULL, *stop_vertex = NULL;
 		int64_t edge, pstart, pstop, start_point, next_point, prev_point, np;
 		double xstart, xstop, xend, ystart, ystop, yend, cross_product;
 		double *xcoord = NULL, *ycoord = NULL, *dx = NULL, *dy = NULL, *x_pos = NULL, *y_pos = NULL;
@@ -3397,7 +3397,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		vorOut.pointlist[p++] = wesn[XLO];	vorOut.pointlist[p++] = wesn[YHI];	point_type[n_vertex++] = 7;
 		vorOut.pointlist[p++] = wesn[XLO];	vorOut.pointlist[p++] = wesn[YLO];	point_type[n_vertex++] = 8;
 
-#if DEBUG
+#ifdef DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before border edges are added:\n");
 		for (i = k = 0; i < n_int_edges; i++, k += 2)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
@@ -3447,7 +3447,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 			}
 		}
 		n_edges = (int)edge;	/* Total number of all edges times 2 */
-#if DEBUG
+#ifdef DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter border edges are added:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
 			if (i < n_int_edges)
@@ -3474,7 +3474,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		/* Update the count of edges.  All the unneeded edges will lie within the original n_int_edges section */
 		n_edges -= (j2 - i2);
 		n_int_edges -= ((j2 - i2)/2);
-#if DEBUG
+#ifdef DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter removing unused edges:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
 			if (i < n_int_edges)
