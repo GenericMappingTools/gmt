@@ -10488,7 +10488,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
 	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
-	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = G->data[js + iwo1] + G->data[jso1 + iw]  - G->data[js + iw];
+	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = G->data[js + iwo1] + G->data[jso1 + iw] - G->data[js + iw];
 
 	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[js + iei1]);
 	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);

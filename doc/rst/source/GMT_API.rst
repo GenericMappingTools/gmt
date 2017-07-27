@@ -781,6 +781,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Default_         | Obtain one of the API or GMT default settings         |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Enum_            | Obtain one of the API enum constants                  |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Index_           | Convert row, col into a grid or image index           |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Matrix_          | Obtain pointer to user matrix from container          |
@@ -2633,6 +2635,29 @@ where as before ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <P
 ``value`` must be a character string with the new setting.
 Note that all settings must be passed as text strings even if many are
 inherently integers or floats.
+
+Get an API enum constant
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The GMT API enum constants that are part of the API are defined in the
+include file gmt_resources.h, which is included by gmt.h.  So, if you are
+writing an application in C/C++ you are including gmt.h and thus have
+access to all the API enums directly.  However, if your application is
+written in other languages and you are perhaps just interfacing with the
+shared GMT API library, then you can access any GMT enum via
+
+.. _GMT_Get_Enum:
+
+  ::
+
+    int GMT_Get_Enum (const char *enumname);
+
+where ``enumname`` is the name of one such enum (e.g., GMT_SESSION_EXTERNAL, GMT_IS_DATASET, etc.),
+including the ones listed in :ref:`types <tbl-types>` and :ref:`types <tbl-viatypes>`; see
+gmt_resources.h for the full listing.
+The function returns the corresponding integer value.  For unrecognized names we return -99999.
+Note: This is the only API function that does not require the API void pointer, so you may use
+it at any time to obtain enum values prior to calling GMT_Create_Session_.
 
 For indexed access to custom grids and images we may need to know the internal matrix layout.
 You can change this information via

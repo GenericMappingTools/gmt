@@ -79,10 +79,11 @@
  * record-by-record basis (GMT_Get|Put_Record).  Finally, data sets that
  * are allocated can then be destroyed when no longer needed.
  *
- * There are 5 functions that deal with options, defaults and arguments:
+ * There are 6 functions that deal with options, defaults and arguments:
  *
  * GMT_Get_Common	      : Checks for and returns values for GMT common options
  * GMT_Get_Default	      : Return the value of a GMT parameter as a string
+ * GMT_Get_Enum	          : Return the integer constant of a GMT API enum.
  * GMT_Get_Values	      : Convert string to one or more coordinates or dimensions
  * GMT_Set_Default	      : Set a GMT parameter via a strings
  * GMT_Option		      : Display syntax for one or more GMT common options
@@ -12329,10 +12330,9 @@ int GMT_Get_Enum (char *key) {
 	 * Return value of enum or GMT_NO_SUCH_ENUM if not found */
 	int lo = 0, hi = GMT_N_API_ENUMS, mid, value;
 	if (key == NULL || key[0] == '\0') return GMT_NO_SUCH_ENUM;
-	while (lo != hi) {
+	while (lo != hi) {	/* Do a binary search since gmt_api_enums is lexically sorted */
 		mid = (lo + hi) / 2;
 		value = strcmp (key, gmt_api_enums[mid].name);
-		fprintf (stderr, "lo = %d mid = %d high = %d value = %d %s\n", lo, mid, hi, value, gmt_api_enums[mid].name);
 		if (value == 0) return gmt_api_enums[mid].value;
 		if ((hi-lo) == 1)
 			lo = hi = mid;
