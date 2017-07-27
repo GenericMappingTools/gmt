@@ -17,25 +17,19 @@
  *--------------------------------------------------------------------
  *
  * Author:	Paul Wessel
- * Date:	23-JUN-2017
+ * Date:	26-JUL-2017
  * Version:	6
  */
 
 /*!
- * \file gmt_modern.h
- * \brief Definitions of constants used through GMT for modern mode.
+ * \file gmt_gsformats.h
+ * \brief List of gs formats for modern mode.
  */
 
-#ifndef _GMT_MODERN_H
-#define _GMT_MODERN_H
+#ifndef _GMT_GSFORMATS_H
+#define _GMT_GSFORMATS_H
 
-#define GMT_HISTORY_FILE	"gmt.history"
-#define GMT_SESSION_FILE	"gmt.session"
+/* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
+static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
 
-/* Session settings for default plot file prefix and format (extension) */
-
-#define GMT_SESSION_NAME	"gmtsession"	/* Default prefix for single-figure modern sessions */
-#define GMT_SESSION_FORMAT	0		/* Default entry into gmt_session_format|code arrays -> PDF */
-#define GMT_SESSION_CONVERT	"A,P"		/* Default psconvert options in gmt figure */
-
-#endif  /* _GMT_MODERN_H */
+#endif  /* _GMT_GSFORMATS_H */
