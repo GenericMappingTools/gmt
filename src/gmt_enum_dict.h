@@ -30,7 +30,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 212
+#define GMT_N_API_ENUMS 213
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -169,6 +169,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_OPT_SYNOPSIS", 94},
 	{"GMT_OPT_USAGE", 63},
 	{"GMT_OUT", 1},
+	{"GMT_PAD_DEFAULT", 2},
 	{"GMT_PS_COMPLETE", 3},
 	{"GMT_PS_EMPTY", 0},
 	{"GMT_PS_HEADER", 1},

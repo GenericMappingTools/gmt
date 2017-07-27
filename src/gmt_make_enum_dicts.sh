@@ -60,4 +60,6 @@ sort -k 1 /tmp/junk2.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enu
 cat << EOF >> gmt_enum_dict.h
 };
 EOF
+printf "gmt_make_enum_dicts.sh: Found %d enums set in gmt_resources.h. Updated gmt_enum_dict.h\n" $n
+
 rm -f /tmp/junk?.txt

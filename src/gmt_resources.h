@@ -73,6 +73,7 @@ enum GMT_enum_session {
 enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
+	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
 	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
 };
 
