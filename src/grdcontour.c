@@ -455,7 +455,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 								A[0] = string[0];	Ctrl->T.txt[0] = strdup (A);
 								A[0] = string[1];	Ctrl->T.txt[1] = strdup (A);
 							}
-							else if (strchr (&(opt->arg[j]), ',') && (n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
+							else if (strchr (string, ',') && (n = sscanf (string, "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
 								Ctrl->T.txt[0] = strdup (txt_a);
 								Ctrl->T.txt[1] = strdup (txt_b);
 							}
