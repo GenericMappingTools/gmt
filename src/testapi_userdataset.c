@@ -247,7 +247,7 @@ int main (int argc, char *argv[]) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
 			printf ("Test matrix/dataset/matrix(prealloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
 			answer = deploy_test (in, out, 1, V);
-			printf (" %s\n", passfail[answer]);
+			printf (" :%s\n", passfail[answer]);
 			bad += answer;
 			n ++;
 			if (Q) out = in = GMT_DOUBLE;
@@ -258,7 +258,7 @@ int main (int argc, char *argv[]) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
 			printf ("Test matrix/dataset/matrix(GMT alloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
 			answer = deploy_test (in, out, 0, V);
-			printf (" %s\n", passfail[answer]);
+			printf (" :%s\n", passfail[answer]);
 			bad += answer;
 			n ++;
 			if (Q) out = in = GMT_DOUBLE;
