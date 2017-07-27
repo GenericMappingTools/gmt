@@ -10301,6 +10301,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return (GMT_NOERROR);	/* Only set up for real arrays */
 	if (G->header->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
+	if (G->data == NULL) return (GMT_NOERROR);	/* Premature call; no grid data yet */
 
 	for (i = n_skip = 0; i < 4; i++) {
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
@@ -10728,6 +10729,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
+	if (G->data == NULL) return (GMT_NOERROR);	/* Premature call; no image data yet */
 
 	/* Check minimum size:  */
 	if (G->header->n_columns < 1 || G->header->n_rows < 1) {
@@ -10738,7 +10740,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	/* Check if pad is requested */
 	if (G->header->pad[0] < 2 ||  G->header->pad[1] < 2 ||  G->header->pad[2] < 2 ||  G->header->pad[3] < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pad not large enough for BC assignments; no BCs applied\n");
-		return(GMT_NOERROR);
+		return (GMT_NOERROR);
 	}
 
 	/* Initialize stuff:  */

@@ -2435,7 +2435,7 @@ GMT_LOCAL int api_get_object (struct GMTAPI_CTRL *API, int sfamily, void *ptr) {
 }
 
 /*! . */
-GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, double *wesn) {
+GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, unsigned int mode, double *wesn) {
 	/* Passes back the input object pointer after possibly performing some minor adjustments to metadata.
 	 * For grids and images we must worry about possible subset requests */
 	void *data = object->resource;
@@ -2474,6 +2474,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 						object->reset_pad = G->header->reset_pad = 1;
 				}
 			}
+			if (mode & GMT_CONTAINER_ONLY) break;	/* No grid yet */
 			gmt_BC_init (API->GMT, G->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (API->GMT, gmt_grd_BC_set (API->GMT, G, GMT_IN), "Grid memory"))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Failed to set boundary conditions */
@@ -2505,6 +2506,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 						object->reset_pad = I->header->reset_pad = 1;
 				}
 			}
+			if (mode & GMT_CONTAINER_ONLY) break;	/* No image yet */
 			gmt_BC_init (API->GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (API->GMT, gmtlib_image_BC_set (API->GMT, I), "Image memory"))
 				return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
@@ -7248,7 +7250,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			api_set_object (API, S_obj);
 #endif
 			if (reset) S_obj->status = 0;	/* Reset  to unread */
-			return (api_pass_object (API, S_obj, family, wesn));
+			return (api_pass_object (API, S_obj, family, mode, wesn));
 		}
 	}
 
