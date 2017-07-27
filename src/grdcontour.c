@@ -167,7 +167,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> [-A[-|[+]<annot_int>][<labelinfo>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-C[+]<cont_int>|<cpt>][%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q[<cut>][+z]] [%s]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-O] [-P] [-Q[<cut>][+z]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -1189,8 +1189,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		switch (Ctrl->L.mode) {
 			case -2: Ctrl->L.low = G->header->z_min-small; Ctrl->L.high = -small; break;
 			case -1: Ctrl->L.low = G->header->z_min-small; Ctrl->L.high = +small; break;
-			case +1: Ctrl->L.low = +small; Ctrl->L.high = G->header->z_max+small; break;
-			case +2: Ctrl->L.low = -small; Ctrl->L.high = G->header->z_max+small; break;
+			case +1: Ctrl->L.low = -small; Ctrl->L.high = G->header->z_max+small; break;
+			case +2: Ctrl->L.low = +small; Ctrl->L.high = G->header->z_max+small; break;
 		}
 	}
 
