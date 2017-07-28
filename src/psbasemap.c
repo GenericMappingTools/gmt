@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				Ctrl->T.active = true;
 				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
-#if DEBUG
+#ifdef DEBUG
 			case '+':	/* Draw a single gridline only [for debugging]  -+x|y<value>*/
 				GMT->hidden.gridline_debug = true;
 				GMT->hidden.gridline_kind = opt->arg[0];	/* Get x or y */

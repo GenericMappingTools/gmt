@@ -311,7 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 int GMT_triangulate (void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
-	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, node = 0, seg, n = 0;
+	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
 	unsigned int n_input, n_output, side;
 	int row, col, col_min, col_max, row_min, row_max, error = 0;
 	bool triplets[2] = {false, false}, map_them = false, do_output = true, get_input = false;
@@ -581,7 +581,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			gmt_M_grd_loop (GMT, F, frow, fcol, ij) {
 				row = gmt_M_grd_y_to_row (GMT, yf[frow], Grid->header);
 				if (row < 0 || row >= (int)Grid->header->n_columns) continue;
-				col = gmt_M_grd_x_to_col (GMT, xf[col], Grid->header);
+				col = gmt_M_grd_x_to_col (GMT, xf[fcol], Grid->header);
 				if (col < 0 || col >= (int)Grid->header->n_rows) continue;
 				p = gmt_M_ijp (Grid->header, row, col);
 				Grid->data[p] = F->data[ij];	/* This also copies the NaNs from F to Grid */

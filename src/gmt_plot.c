@@ -3273,9 +3273,9 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 
 	uint64_t n = S->n_rows, k;
 	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
 	bool ap = at_pole (plat, n);
 	if (ap) plon[n-1] = plon[0];
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
 	if (add_pole) {
 		if ((n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
@@ -6372,14 +6372,13 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	double *x_perim = NULL, *y_perim = NULL, *plon = NULL, *plat = NULL;
 	static char *pole = "S N";
 	int type;
-	bool ap;
 #if 0
 	FILE *fp;
+	bool aap = at_pole (S->data[GMT_Y], S->n_rows);
 #endif
 	if (GMT->common.R.oblique) return 0;	/* Algorithm assumes meridian boundaries */
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
-	ap = at_pole (S->data[GMT_Y], S->n_rows);
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -6406,7 +6405,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Crossing at %g,%g\n", GMT->common.R.wesn[XLO], yc);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "k at point closest to lon %g is = %d [n = %d]\n", GMT->common.R.wesn[XLO], (int)k0, (int)n);
 	/* Then, add path from pole to start longitude, then copy perimeter path, then add path from stop longitude back to pole */
-	/* WIth cylindrical projections we may not go all the way to the pole, so we adjust pole_lat based on -R: */
+	/* With cylindrical projections we may not go all the way to the pole, so we adjust pole_lat based on -R: */
 	if (pole_lat < GMT->common.R.wesn[YLO]) pole_lat = GMT->common.R.wesn[YLO];
 	if (pole_lat >GMT->common.R.wesn[YHI])  pole_lat = GMT->common.R.wesn[YHI];
 	/* 1. Calculate the path from yc to pole: */

@@ -4491,7 +4491,6 @@ GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 
 GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H, struct GRDMATH_STORE *recall[], int n_stored) {
 	int i, expect, check = GMT_IS_NAN;
-	unsigned int first;
 	bool possible_number = false;
 	double tmp = 0.0;
 
@@ -4516,7 +4515,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 		/* First check if it is a registered memory reference set via @STO: */
 		if ((i = grdmath_find_stored_item (GMT, recall, n_stored, &opt->arg[1])) != GMT_NOTSET) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
 		/* If not then we must assume it is a cache file that needs to be downloaded */
-		first = gmt_download_file_if_not_found (GMT, opt->arg, 0);
+		(void)gmt_download_file_if_not_found (GMT, opt->arg, 0);
 		return GRDMATH_ARG_IS_FILE;
 	}				
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;

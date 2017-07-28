@@ -13748,7 +13748,11 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 			continue;
 		if (mode >= 1) {
 			gmt_chop (line);
-			n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+			if ((n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options)) != 4) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to read from figure file\n");
+				fclose (fp);
+				return 0;
+			}
 			if (++k >= n_alloc) {
 				n_alloc += GMT_TINY_CHUNK;
 				fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE);
@@ -14020,14 +14024,13 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
-	int err = 0, error = GMT_NOERROR, k1, k2;
+	int err = 0, error = GMT_NOERROR, k1;
 	struct stat S;
 
 	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	k1 = (err) ? 1 : 0;
-	k2 = (mode == GMT_BEGIN_WORKFLOW) ? 1 - k1 : k1;
 
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */

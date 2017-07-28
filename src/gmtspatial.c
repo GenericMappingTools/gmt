@@ -1930,7 +1930,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_HOLE) {	/* Flag polygons that are holes of others */
-		uint64_t n_holes = 0, tbl1, seg1, tbl2, seg2, first_seg, seg_out, k1, k2;
+		uint64_t n_holes = 0, tbl1, seg1, tbl2, seg2, seg_out, k1, k2;
 		uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* Only one output table */
 		unsigned int side, *inside = NULL, *kase = NULL;
 		int P_handedness, H_handedness;
@@ -1955,7 +1955,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (S1->header && !strcmp (S1->header, "-Ph")) continue;	/* Marked as a hole already */
 				for (tbl2 = k2 = 0; tbl2 < D->n_tables; tbl2++) {
 					T2 = D->table[tbl2];
-					first_seg = (tbl1 == tbl2) ? seg1 + 1 : 0;
 					for (seg2 = 0; seg2 < T2->n_segments; seg2++, k2++) {
 						if (tbl2 < tbl1) continue;	/* Avoid duplication */
 						if (tbl2 == tbl1 && seg2 <= seg1) continue;	/* Avoid duplication */
