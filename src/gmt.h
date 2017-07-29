@@ -107,7 +107,7 @@ EXTERN_MSC int GMT_Put_Vector         (void *API, struct GMT_VECTOR *V, unsigned
 EXTERN_MSC int GMT_Put_Matrix         (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
 /* These functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Set_Matrix         (void *API, struct GMT_MATRIX *M, uint64_t n_rows, uint64_t n_columns);
-EXTERN_MSC int GMT_Set_Vector         (void *API, struct GMT_VECTOR *V, uint64_t n_rows);
+EXTERN_MSC int GMT_Set_Vector         (void *API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t n_columns);
 
 /* 4 functions to relate (row,col) to a 1-D index for grids and images and to precompute equidistant coordinates for grids and images */
 

@@ -3963,7 +3963,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			break;
 
 		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to user olumn-matrix location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to users column-matrix location\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NOT IMPLEMENTED YET\n");
 			break;
 		
@@ -4018,17 +4018,22 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
-		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
-			col = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
-			if ((V_obj = gmt_create_vector (GMT, col, GMT_OUT)) == NULL)
-				return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 			save = GMT->current.io.multi_segments[GMT_OUT];
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
-			V_obj->n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
-			for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = GMT->current.setting.export_type;	/* Set same data type for all columns */
-			if ((error = gmtlib_alloc_vectors (GMT, V_obj, V_obj->n_rows)) != GMT_NOERROR) return (gmtapi_report_error (API, error));	/* Allocate space for all columns */
-			api_put_val = api_select_put_function (API, GMT->current.setting.export_type);	/* Since all columns are of same type we get the pointer here */
+			n_columns = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
+			n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
+			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container */
+				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
+					return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
+				for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = S_obj->type;	/* Set same data type for all columns */
+				if ((error = gmtlib_alloc_vectors (GMT, V_obj, V_obj->n_rows)) != GMT_NOERROR) return (gmtapi_report_error (API, error));	/* Allocate space for all columns */
+			}
+			else {	/* Got a preallocated contrainer */
+				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
+					return (gmtapi_report_error (API, GMT_DIM_TOO_SMALL));
+			}
+			api_put_val = api_select_put_function (API, S_obj->type);	/* Since all columns are of same type we get the pointer here */
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over all tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
@@ -4049,6 +4054,12 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			V_obj->alloc_level = S_obj->alloc_level;
 			S_obj->resource = V_obj;
 			GMT->current.io.multi_segments[GMT_OUT] = save;
+			break;
+
+		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to users column-vector location\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NOT IMPLEMENTED YET\n");
+
 			break;
 
 		default:
@@ -6851,6 +6862,9 @@ GMT_LOCAL bool matrix_data_conforms_to_dataset (struct GMT_MATRIX *M) {
 
 GMT_LOCAL bool vector_data_conforms_to_dataset (struct GMT_VECTOR *V) {
 	/* Check if the vector data arrays matches the form of a GMT dataset (columns of doubles) */
+	if (V->n_columns == 0) return (false);	/* Having nothing yet means we must duplicate */
+	if (V->type == NULL) return (false);	/* Having nothing yet means we must duplicate */
+	if (V->data == NULL) return (false);	/* Having nothing yet means we must duplicate */
 	for (unsigned int col = 0; col < V->n_columns; col++) {
 		if (V->data[col].f8 == NULL) return (false);	/* Having nothing means we must duplicate */
 		if (V->type[col] != GMT_DOUBLE) return (false);	/* Not having double means must duplicate */
@@ -12221,18 +12235,24 @@ void * GMT_Get_Vector_ (void *V_API, struct GMT_VECTOR *V, unsigned int *col) {
 }
 #endif
 
-int GMT_Set_Vector (void *API, struct GMT_VECTOR *V, uint64_t n_rows) {
-	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays */
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
-	V->n_rows = n_rows;
+int GMT_Set_Vector (void *V_API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t n_columns) {
+	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays.
+	 * We also ensure that the type and data arrays are allocated if dimensions are set */
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (V == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
+	if (n_rows) V->n_rows = n_rows;
+	if (n_columns) V->n_columns = n_columns;
+	if (n_columns && V->data == NULL) V->data = gmt_M_memory_aligned (API->GMT, NULL, n_columns, union GMT_UNIVECTOR);
+	if (n_columns && V->type == NULL) V->type = gmt_M_memory (API->GMT, NULL, n_columns, enum GMT_enum_type);
+	
 	return GMT_NOERROR;
 }
 
 #ifdef FORTRAN_API
-int GMT_Set_Vector_ (void *V_API, struct GMT_VECTOR *V, uint64_t *n_rows) {
+int GMT_Set_Vector_ (void *V_API, struct GMT_VECTOR *V, uint64_t *n_rows, uint64_t *n_columns) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Vector (GMT_FORTRAN, V, *n_rows));
+	return (GMT_Set_Vector (GMT_FORTRAN, V, *n_rows, *n_columns));
 }
 #endif
 
@@ -12302,9 +12322,9 @@ int GMT_Set_Matrix (void *API, struct GMT_MATRIX *M, uint64_t n_rows, uint64_t n
 	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
-	M->n_rows    = n_rows;
-	M->n_columns = n_columns;
-	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? n_columns : n_rows;	/* Matrix layout order */
+	if (n_rows) M->n_rows = n_rows;
+	if (n_columns) M->n_columns = n_columns;
+	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
 	return GMT_NOERROR;
 }
 
