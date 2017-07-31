@@ -3709,7 +3709,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					n_use = api_n_cols_needed_for_gaps (GMT, V_obj->n_columns);
 					api_update_prev_rec (GMT, n_use);
 					for (col = 0; col < V_obj->n_columns; col++) {	/* Process a single record into curr_rec */
-						if (diff_types) api_get_val = api_select_get_function (API, V_obj->type[col]);
+						if (diff_types && col) api_get_val = api_select_get_function (API, V_obj->type[col]);
 						api_get_val (&(V_obj->data[col]), row, &(GMT->current.io.curr_rec[col]));
 					}
 					if ((status = api_bin_input_memory (GMT, V_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the one we had and add more */
@@ -3900,7 +3900,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	int item, error, default_method;
 	unsigned int method;
 	uint64_t tbl, col, row_out, row, seg, ij, n_columns, n_rows;
-	bool save;
+	bool save, diff_types = false;
 	double value;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -4023,17 +4023,19 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
 			n_columns = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
-			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container */
+			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container given data dimensions */
 				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
 					return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 				for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = S_obj->type;	/* Set same data type for all columns */
-				if ((error = gmtlib_alloc_vectors (GMT, V_obj, V_obj->n_rows)) != GMT_NOERROR) return (gmtapi_report_error (API, error));	/* Allocate space for all columns */
+				V_obj->n_rows = n_rows;
+				if ((error = gmtlib_alloc_vectors (GMT, V_obj, n_rows)) != GMT_NOERROR) return (gmtapi_report_error (API, error));	/* Allocate space for all columns */
 			}
 			else {	/* Got a preallocated contrainer */
 				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
 					return (gmtapi_report_error (API, GMT_DIM_TOO_SMALL));
+				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
 			}
-			api_put_val = api_select_put_function (API, S_obj->type);	/* Since all columns are of same type we get the pointer here */
+			api_put_val = api_select_put_function (API, V_obj->type[0]);	/* Get function to write 1st column (possily all columns) */
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over all tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
@@ -4044,6 +4046,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
 						for (col = 0; col < V_obj->n_columns; col++) {
+							if (diff_types && col) api_put_val = api_select_put_function (API, V_obj->type[col]);
 							value = api_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(V_obj->data[col]), row_out, value);
 						}
@@ -4057,9 +4060,34 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			break;
 
 		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to users column-vector location\n");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NOT IMPLEMENTED YET\n");
-
+			GMT_Report (API, GMT_MSG_DEBUG, "Referencing data table to users column-vector location\n");
+			if (D_obj->n_tables > 1 || D_obj->n_segments > 1) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Reference by vector requires a single segment!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Output may be truncated or an error may occur!\n");
+			}
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user column arrays location\n");
+			n_columns = (GMT->common.o.active) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
+			n_rows = D_obj->n_records;	/* Number of data records */
+			S = D_obj->table[0]->segment[0];	/* Shorthand for this single segment */
+			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container given data dimensions */
+				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
+					return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
+				for (col = 0; col < V_obj->n_columns; col++) {
+					V_obj->type[col] = S_obj->type;	/* Set same data type for all columns */
+					V_obj->data[col].f8 = S->data[col];	/* Set pointer only */
+				}
+				V_obj->n_rows = n_rows;
+				V_obj->alloc_level = S_obj->alloc_level;	/* Otherwise D_obj will be freed before we get to use data */
+				V_obj->alloc_mode = S_obj->alloc_mode = D_obj->alloc_mode;	/* Otherwise D_obj will be freed before we get to use data */
+				S->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* To prevent freeing in D_obj */
+			}
+			else {	/* Got a preallocated contrainer */
+				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
+					return (gmtapi_report_error (API, GMT_DIM_TOO_SMALL));
+				for (col = 0; col < V_obj->n_columns; col++)
+					gmt_M_memcpy (V_obj->data[col].f8, S->data[col], n_rows, double);	/* Duplicate data */
+			}
+			S_obj->resource = V_obj;
 			break;
 
 		default:
@@ -6860,11 +6888,13 @@ GMT_LOCAL bool matrix_data_conforms_to_dataset (struct GMT_MATRIX *M) {
 	return (M->type == GMT_DOUBLE);			/* Having double means we can use as is */
 }
 
-GMT_LOCAL bool vector_data_conforms_to_dataset (struct GMT_VECTOR *V) {
+GMT_LOCAL bool vector_data_conforms_to_dataset (struct GMT_VECTOR *V, enum GMT_enum_type type) {
 	/* Check if the vector data arrays matches the form of a GMT dataset (columns of doubles) */
-	if (V->n_columns == 0) return (false);	/* Having nothing yet means we must duplicate */
-	if (V->type == NULL) return (false);	/* Having nothing yet means we must duplicate */
-	if (V->data == NULL) return (false);	/* Having nothing yet means we must duplicate */
+	if (type != GMT_DOUBLE) {	/* Only doubles can be passed or memcpy directly */
+		if (V->n_columns == 0) return (false);	/* Having nothing yet means we must duplicate */
+		if (V->type == NULL) return (false);	/* Having nothing yet means we must duplicate */
+		if (V->data == NULL) return (false);	/* Having nothing yet means we must duplicate */
+	}
 	for (unsigned int col = 0; col < V->n_columns; col++) {
 		if (V->data[col].f8 == NULL) return (false);	/* Having nothing means we must duplicate */
 		if (V->type[col] != GMT_DOUBLE) return (false);	/* Not having double means must duplicate */
@@ -6905,7 +6935,7 @@ GMT_LOCAL void maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API, struct
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as vectors are not compatible with a GMT grid\n");
 	}
-	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !vector_data_conforms_to_dataset (S_obj->resource)) {
+	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !vector_data_conforms_to_dataset (S_obj->resource, S_obj->type)) {
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
 	}

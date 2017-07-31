@@ -248,8 +248,6 @@ int main (int argc, char *argv[]) {
 	unsigned int in, answer, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
 	char *passfail[2] = {"PASS", "FAIL"};
 	(void)(argv);	/* Since not used */
-	answer = deploy_test (GMT_CHAR, GMT_USHORT, 0, V);
-	exit(0);
 	for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
 			printf ("Test vectors/dataset/vectors(prealloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
