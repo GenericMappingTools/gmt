@@ -31,7 +31,7 @@
  *	gmt_ker:	      : Kelvin-Bessel function ker(x)
  *	gmt_plm:	      : Legendre polynomial of degree L order M
  *	gmt_plm_bar:	      : Normalized Legendre polynomial of degree L order M
- *	gmt_plm_bar_all       : 
+ *	gmt_plm_bar_all       :
  *	gmt_i0:		      : Modified Bessel function 1st kind order 0
  *	gmt_i1:		      : Modified Bessel function 1st kind order 1
  *	gmt_in:		      : Modified Bessel function 1st kind order N
@@ -1057,7 +1057,7 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm *= 0.5 / d_sqrt(M_PI);
+		pmm *= 1.0 / d_sqrt(M_PI);
 	else if (m != 0)
 		pmm *= d_sqrt(2.0);
 
@@ -1342,7 +1342,7 @@ double gmt_erfinv (struct GMT_CTRL *GMT, double y) {
 double gmt_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 	/* Probability density distribution for F */
 	double y;
-	
+
 	y = sqrt (pow (nu1 * F, (double)nu1) * pow ((double)nu2, (double)nu2) / pow (nu1 * F + nu2, (double)(nu1+nu2))) / (F * gmtstat_beta (GMT, 0.5*nu1, 0.5*nu2));
 	return (y);
 }
@@ -1350,16 +1350,16 @@ double gmt_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 double gmt_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 	/* Cumulative probability density distribution for F */
 	double y = 0.0;
-	
+
 	gmtstat_inc_beta (GMT, 0.5*nu1, 0.5*nu2, F*nu1/(F*nu1+nu2), &y);
-	
+
 	return (y);
 }
 
 double gmt_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu) {
 	/* Probability density distribution for Student t */
 	double y, n = nu + 1.0, g1 = 0.0, g2 = 0.0;
-	
+
 	gmtstat_ln_gamma_r (GMT, 0.5*n, &g1);
 	gmtstat_ln_gamma_r (GMT, 0.5*nu, &g2);
 	y = exp (g1 - g2) * pow (1.0 + t*t/nu, -0.5*n) / sqrt (M_PI * nu);
@@ -1495,7 +1495,7 @@ double gmt_tcrit (struct GMT_CTRL *GMT, double alpha, double nu) {
 double gmt_chi2_pdf (struct GMT_CTRL *GMT, double c, uint64_t nu) {
 	/* Probability density distribution for chi-squared */
 	double g = 0.0, y;
-	
+
 	gmtstat_ln_gamma_r (GMT, 0.5*nu, &g);
 	y = pow (c, 0.5*nu - 1.0) * exp (-0.5 * c - g) / pow (2.0, 0.5 * nu);
 	return (y);
@@ -1797,7 +1797,7 @@ double gmt_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n
 	/* Return the weighted mean of x given weights w */
 	uint64_t k;
 	double sum_xw = 0.0, sum_w = 0.0;
-	
+
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mean */
 	for (k = 0; k < n; k++) {
 		sum_w  += w[k];
@@ -1857,7 +1857,7 @@ double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, ui
 
 	/* First check if any single point has 50% or more of the total weights; if so we are done */
 	for (i = 0; i < n; i++) if (data[i].weight >= wsum) return data[i].value;
-	
+
 	/* Some more initializations */
 	top = p_max = 0.0;
 	mode = 0.5 * (data[0].value + data[n-1].value);
@@ -2009,7 +2009,7 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		*scale = 0.0;
 		return;
 	}
-		
+
 	dev = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_DOUBLE);
@@ -2535,7 +2535,7 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	/* Non-destructive: Original grid left as is unless overwrite = true */
 	uint64_t node, n = 0;
 	double wmed;
-	
+
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
@@ -2626,7 +2626,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	/* Non-destructive: Original grid left as is unless overwrite = true */
 	uint64_t node, n = 0;
 	double wmode;
-	
+
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
