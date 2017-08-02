@@ -833,8 +833,9 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	uint64_t n_rows;		/* Number of rows in each vector */
 	enum GMT_enum_reg registration;	/* 0 for gridline and 1 for pixel registration  */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
-	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
+	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
+	char **text;			/* Pointer to optional array of strings [NULL] */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
@@ -866,6 +867,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix of the chosen type */
+	char **text;			/* Pointer to optional array of strings [NULL] */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */

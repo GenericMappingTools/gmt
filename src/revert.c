@@ -59,8 +59,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "<nlayers> is the number of layers to strip off [1]\n");
-	GMT_Message (API, GMT_TIME_NONE, "   Giving all will delete the current figure.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<nlayers> is the number of layers to strip off [1]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Giving all will delete the current figure.\n\n");
 	GMT_Option (API, "V");
 	
 	return (GMT_MODULE_USAGE);
