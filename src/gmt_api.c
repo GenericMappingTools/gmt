@@ -2289,7 +2289,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 
 	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* These 2 mean reading or writing a dataset record-by-record via a user matrix */
 		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
-			if (S_obj->family != GMT_IS_DATASET) return (gmtapi_report_error (API, GMT_NOT_A_VALID_FAMILY));
+			if (!(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) return (gmtapi_report_error (API, GMT_NOT_A_VALID_FAMILY));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via matrix\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction]);
 			if (direction == GMT_IN) {	/* Hard-wired limits are passed in from calling program; for outout we have nothing yet */
@@ -2343,9 +2343,10 @@ GMT_LOCAL int api_next_data_object (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 	 * When EOF is returned, API->current_item[direction] holds the last object ID used. */
 	bool found = false;
 	int item = API->current_item[direction] + 1;	/* Advance to next item, if it exists */
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	while (item < (int)API->n_objects && !found) {
-		if (API->object[item] && API->object[item]->selected && API->object[item]->status == GMT_IS_UNUSED
-		    && API->object[item]->direction == direction && family == API->object[item]->family)
+		S_obj = API->object[item];	/* Current object in list */
+		if (S_obj && S_obj->selected && S_obj->status == GMT_IS_UNUSED && S_obj->direction == direction && S_obj->family == family)
 			found = true;	/* Got item that is selected and unused, has correct direction and family */
 		else
 			item++;	/* No, keep looking */
@@ -6480,7 +6481,8 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	for (current = head; current; current = current->next) {		/* Loop over the list and look for input files */
 		if (current->option != desired_option) continue;				/* Not a module resource argument */
 		if ((object_ID = api_decode_id (current->arg)) == GMT_NOTSET) continue;	/* Not a registered resource */
-		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, flag)) == GMT_NOTSET) continue;	/* Not the right attributes */
+		//if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, flag)) == GMT_NOTSET) continue;	/* Not the right attributes */
+		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) continue;	/* Not the right attributes */
 		counter[(API->object[item]->family)]++;	/* Update counts of this family */
 	}
 	for (k = 0; k < GMT_N_FAMILIES; k++) {	/* Determine which family we found, if any */
@@ -7671,6 +7673,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	int64_t *count = NULL, n_fields = 0;
 	uint64_t col, ij, n_use, col_pos, n_columns = 0;
 	bool get_next_record;
+	char value[GMT_LEN32] = {""};
 	void *record = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
@@ -7776,8 +7779,20 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							S_obj->rec--, API->current_rec[GMT_IN]--;
 						record = NULL;
 					}
-					else	/* Valid data record */
-						record = GMT->current.io.curr_rec;
+					else {	/* Valid data record */
+						if (M_obj->text) {	/* Also have text as part of record */
+							GMT->current.io.record[0] = '\0';	/* Start new record */
+							for (col = 0; col < n_columns; col++) {
+								sprintf (value, "%.16g", GMT->current.io.curr_rec[col]);
+								strcat (GMT->current.io.record, value);
+								strcat (GMT->current.io.record, "\t");
+							}
+							strcat (GMT->current.io.record, M_obj->text[S_obj->rec-1]);
+							record = GMT->current.io.record;
+						}
+						else
+							record = GMT->current.io.curr_rec;
+					}
 					n_fields = n_columns;
 				}
 				break;
