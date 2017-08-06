@@ -218,7 +218,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (Ctrl->S.mode && !gmt_M_is_geographic (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
+	if (Ctrl->S.mode && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");

@@ -766,7 +766,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) {
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
 		Return (GMT_RUNTIME_ERROR);
 	}

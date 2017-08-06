@@ -246,7 +246,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Get all */
 	}
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
 		if (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && gmt_M_180_range (Grid->header->wesn[YLO], Grid->header->wesn[YHI])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Use -fg to ensure the output grid will be identified as geographic.\n");
@@ -272,7 +272,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 		Return (API->error);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_M_is_geographic (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
 		Grid->header->grdtype = GMT_GRID_CARTESIAN;
 		strcpy (Grid->header->x_units, "x_units");
 		strcpy (Grid->header->y_units, "y_units");

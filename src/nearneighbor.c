@@ -367,7 +367,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	/* To allow data points falling outside -R but within the search radius we extend the data domain in all directions */
 	
 	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];	/* This is what -R says */
-	if (!gmt_M_is_geographic (GMT, GMT_IN) || !gmt_M_grd_is_global (GMT, Grid->header)) {
+	if (gmt_M_is_cartesian (GMT, GMT_IN) || !gmt_M_grd_is_global (GMT, Grid->header)) {
 		x_left  -= max_d_col * Grid->header->inc[GMT_X];	/* OK to extend x-domain since not a periodic geographic grid */
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}

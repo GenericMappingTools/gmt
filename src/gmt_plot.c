@@ -3091,7 +3091,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 		}
 		PSL_comment (PSL, comment);
 
-		if (!gmt_M_is_geographic (GMT, GMT_IN)) {		/* Not geographic data so there are no periodic boundaries to worry about */
+		if (gmt_M_is_cartesian (GMT, GMT_IN)) {		/* Not geographic data so there are no periodic boundaries to worry about */
 			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
 			return GMT->current.plot.n;
 		}
@@ -4752,7 +4752,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	if (!ms->plot) return GMT_OK;
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
 	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
@@ -4926,7 +4926,7 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	struct GMT_MAP_PANEL *panel = mr->panel;
 	double dim[2];
 	if (!mr->plot) return;
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
 	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */

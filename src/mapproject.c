@@ -492,7 +492,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				/* Check settings */
 				n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
 				            "Syntax error: Expected -L<file>[+u[-|+]%s|c|C][+p]\n", GMT_LEN_UNITS_DISPLAY);
-				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !gmt_M_is_geographic (GMT, GMT_IN))
+				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && gmt_M_is_cartesian (GMT, GMT_IN))
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
@@ -689,7 +689,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	if (!GMT->common.J.active && !gmt_M_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
+	if (!GMT->common.J.active && gmt_M_is_cartesian (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
 		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X'))
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
 	}

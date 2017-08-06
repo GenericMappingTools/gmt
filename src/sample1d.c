@@ -302,8 +302,8 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
 			Ctrl->I.smode = GMT_GREATCIRCLE;
 		}
-		if (Ctrl->I.mode == INT_2D_GEO && !gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
-		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+		if (Ctrl->I.mode == INT_2D_GEO && gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}

@@ -542,7 +542,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 	uint64_t left = 0, right = 0, node = 0;
 
 	if (header->registration == GMT_GRID_PIXEL_REG) return;	/* Not gridline registered */
-	if (!gmt_M_is_geographic (GMT, GMT_OUT)) return;		/* Not geographic */
+	if (gmt_M_is_cartesian (GMT, GMT_OUT)) return;		/* Not geographic */
 	if (header->wesn[YLO] == -90.0) {	/* Check consistency of S pole duplicates */
 		double sum;
 		node = gmt_M_ijp (header, 0, 0);	/* First node at S pole */

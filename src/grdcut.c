@@ -357,7 +357,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		if (!gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -S option requires a geographic grid\n");
 			Return (GMT_RUNTIME_ERROR);
 		}

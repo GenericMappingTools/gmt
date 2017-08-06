@@ -1025,7 +1025,7 @@ GMT_LOCAL unsigned int map_rect_crossing (struct GMT_CTRL *GMT, double lon0, dou
 
 	for (i = 0; i < n; i++)	gmt_xy_to_geo (GMT, &clon[i], &clat[i], xx[i], yy[i]);
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) return (n);
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (n);
 
 	if (n < 2) return (n);
 
@@ -1115,7 +1115,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
+	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
 	map_half_size = MAX (gmtlib_half_map_width (GMT, y0), gmtlib_half_map_width (GMT, y1));
 	if (fabs (map_half_size) < GMT_CONV4_LIMIT) return (0);
@@ -7346,7 +7346,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, k, np, n_sections;
- 	bool last_inside = false, this_inside, jump, cartesian = !gmt_M_is_geographic (GMT, GMT_IN);
+ 	bool last_inside = false, this_inside, jump, cartesian = gmt_M_is_cartesian (GMT, GMT_IN);
 	unsigned int sides[4];
 	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
@@ -9005,7 +9005,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 
 	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
 
-	if (strchr (GMT_LEN_UNITS, unit) && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
+	if (strchr (GMT_LEN_UNITS, unit) && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", unit);
 	}

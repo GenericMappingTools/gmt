@@ -1319,7 +1319,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[2] = p_in[ex3];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
-					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
+					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						gmt_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
@@ -1374,7 +1374,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						
 					if (!S.convert_angles)	/* Use direction as given */
 						direction = d;
-					else if (!gmt_M_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
+					else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
 						direction = 90.0 - d;
 					else	/* Convert geo azimuth to map direction */
 						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
@@ -1491,7 +1491,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[1] = in[ex1+S.read_size];
 						dim[2] = in[ex2+S.read_size];
 					}
-					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {
+					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 						/* Note that the direction of the arc gets swapped when converting from azimuth */
 						dim[2] = 90.0 - in[ex1+S.read_size];
 						dim[1] = 90.0 - in[ex2+S.read_size];

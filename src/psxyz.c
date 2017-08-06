@@ -902,7 +902,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[2] = p_in[ex3];
 						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					}
-					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
+					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
@@ -937,7 +937,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						d = in[ex1+S.read_size];	/* Got direction */
 					if (!S.convert_angles)	/* Use direction as given */
 						data[n].dim[0] = d;	/* direction */
-					else if (!gmt_M_is_geographic (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */
+					else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */
 						data[n].dim[0] = 90.0 - d;
 					else	/* Convert geo azimuth to map direction */
 						data[n].dim[0] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
@@ -1044,7 +1044,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[1] = in[ex1+S.read_size];			/* Start direction in degrees */
 						data[n].dim[2] = in[ex2+S.read_size];			/* Stop direction in degrees */
 					}
-					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Got azimuths instead */
+					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got azimuths instead */
 						data[n].dim[1] = 90.0 - in[ex1+S.read_size];		/* Start direction in degrees */
 						data[n].dim[2] = 90.0 - in[ex2+S.read_size];		/* Stop direction in degrees */
 					}

@@ -9229,7 +9229,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
-	if (G->dist_kind == 1 && !gmt_M_is_geographic (GMT, GMT_IN)) {
+	if (G->dist_kind == 1 && gmt_M_is_cartesian (GMT, GMT_IN)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}
@@ -9353,7 +9353,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
 		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
 	}
-	if ((G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) && !gmt_M_is_geographic (GMT, GMT_IN)) {
+	if ((G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) && gmt_M_is_cartesian (GMT, GMT_IN)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
 		error++;
 	}

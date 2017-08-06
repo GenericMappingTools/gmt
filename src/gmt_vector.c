@@ -1374,7 +1374,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) return (vector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (vector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 

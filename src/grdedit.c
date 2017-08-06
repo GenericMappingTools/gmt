@@ -493,7 +493,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset grid-spacing in file %s to %g/%g\n",
 				out_file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_M_is_geographic (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
+		if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
 			G->header->grdtype = GMT_GRID_CARTESIAN;
 			strcpy (G->header->x_units, "x_units");
 			strcpy (G->header->y_units, "y_units");

@@ -2378,7 +2378,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 	gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 

@@ -607,7 +607,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	if (Ctrl->C.active && !gmt_M_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
+	if (Ctrl->C.active && gmt_M_is_cartesian (GMT, GMT_IN)) pt_cartesian = true;
 
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */

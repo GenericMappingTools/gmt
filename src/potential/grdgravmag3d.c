@@ -309,7 +309,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					}
 					else {
 						Ctrl->H.do_igrf = true;                     /* Case when -H+i to mean use IGRF */
-						if (!gmt_M_is_geographic(GMT, GMT_IN))
+						if (gmt_M_is_cartesian(GMT, GMT_IN))
 							gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					}
 					break;
@@ -321,7 +321,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				}
 				else if (opt->arg[0] == '+' && (opt->arg[1] == 'g' || opt->arg[1] == 'r' || opt->arg[1] == 'f' || opt->arg[1] == 'n')) {
 					Ctrl->H.do_igrf = true;                         /* Anny of -H+i|+g|+r|+f|+n is allowed to mean use IGRF */
-					if (!gmt_M_is_geographic(GMT, GMT_IN))
+					if (gmt_M_is_cartesian(GMT, GMT_IN))
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					break;
 				}
@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 			case 'M':
 				if (gmt_M_compat_check(GMT, 4)) {
 					GMT_Report(API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!gmt_M_is_geographic(GMT, GMT_IN))
+					if (gmt_M_is_cartesian(GMT, GMT_IN))
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else

@@ -540,7 +540,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 			*mode = this_mode;
 	}
 	if (*unit == 0) *unit = (gmt_M_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
-	if (strchr (GMT_LEN_UNITS, *unit) && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
+	if (strchr (GMT_LEN_UNITS, *unit) && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
@@ -840,7 +840,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *Dtmp = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
-		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}

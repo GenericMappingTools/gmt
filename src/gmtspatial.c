@@ -795,7 +795,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					else
 						Ctrl->A.smode = 2;	/* Great circle */
 					Ctrl->A.unit = (Ctrl->A.smode == 2) ? opt->arg[0] : opt->arg[1];
-					if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Data was not geographic, revert to Cartesian settings */
+					if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Data was not geographic, revert to Cartesian settings */
 						Ctrl->A.smode = 0;
 						Ctrl->A.unit = 'X';
 					}
@@ -1286,7 +1286,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		char line[GMT_LEN128] = {""};
 		
-		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
+		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
 		geo = gmt_M_is_geographic (GMT, GMT_IN);

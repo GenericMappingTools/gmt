@@ -16,7 +16,7 @@ Synopsis
 **surface** [ *table* ] |-G|\ *outputfile.nc*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ *aspect_ratio* ]
+[ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
 [ |-N|\ *max_iterations* ]
@@ -89,10 +89,12 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *aspect_ratio*
+**-A**\ *aspect_ratio*\ \|\ **m**
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect_ratio*, where dy = dx / *aspect_ratio*
-    relates the grid dimensions. [Default = 1 assumes isotropic grid.]
+    relates the grid dimensions. For geographic data, you may use
+    **-Am** to set the aspect ratio to the cosine of the mean latitude
+    [Default = 1 assumes isotropic grid.]
 
 .. _-C:
 
