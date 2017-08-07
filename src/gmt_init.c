@@ -11559,6 +11559,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			sprintf (arg, "a%gi", P->y);
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+			if (opt_J) {	/* Gave -J, must append /1 as dummy scale/width */
+				sprintf (arg, "%s/%gi", opt_J->arg, P->w);	/* Append the dummy width */
+				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+			}
 		}
 
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
