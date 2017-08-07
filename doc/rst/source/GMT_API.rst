@@ -919,7 +919,7 @@ is a sum of bit flags and the various bits control the following settings:
    format (C/C++, Python, etc.).
 #. Big 4 (8): If set, we redirect all error messages to a log file based on the
    session name (we append ".log").
-#. Bit 4 (16): If set, the we enable GMT's modern run-mode (where -O -K are
+#. Bit 5 (16): If set, the we enable GMT's modern run-mode (where -O -K are
    not allowed and PostScript is written to hidden temp file).  Default
    is the GMT classic run-mode.
 

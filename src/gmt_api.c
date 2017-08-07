@@ -6074,6 +6074,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	 *   bit 1 (GMT_SESSION_NOEXIT)   means call return and not exit when returning from an error.
 	 *   bit 2 (GMT_SESSION_EXTERNAL) means we are called by an external API (e.g., MATLAB, Python).
 	 *   bit 3 (GMT_SESSION_COLMAJOR) means the external API uses column-major format (e.g., MATLAB, Fortran) [Default is row-major, i.e., C/C++, Python]
+	 *   bit 4 (GMT_SESSION_LOGERRORS) means we redirect stderr to a log file whose hame is the session string + log.
 	 *   We reserve the right to add future flags.
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
