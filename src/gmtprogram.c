@@ -25,7 +25,7 @@
  *
  */
 
-#include "gmt_dev.h"
+#include "gmt.h"
 
 int main (int argc, char *argv[]) {
 	int status = GMT_NOERROR;           /* Status code from GMT API */
@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 
 	/* 2. Run GMT module, or give usage message if errors arise during parsing */
-	status = GMT_Call_Module (api_ctrl, MODULE, argc-1, (argv+1));
+	status = GMT_Call_Module (api_ctrl, argv[1], argc-2, (argv+2));
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl) != GMT_NOERROR)

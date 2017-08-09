@@ -197,9 +197,12 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 
-**gmt subplot set** *row,col* [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting into a panel you must first select the active panel.
+Note: Any **-J** option passed when plotting subplots must not give the final width or scale
+since the dimensions of the map is completely determined by the panel size and your region.
+Specifying map width will result in an error.
 
 Required Arguments
 ------------------
