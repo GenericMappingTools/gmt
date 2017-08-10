@@ -13752,11 +13752,12 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 			continue;
 		if (mode >= 1) {
 			gmt_chop (line);
-			if ((n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options)) != 4) {
+			if ((n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options)) < 3) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to read from figure file\n");
 				fclose (fp);
 				return 0;
 			}
+			if (n == 3) fig[k].options[0] = '\0';
 			if (++k >= n_alloc) {
 				n_alloc += GMT_TINY_CHUNK;
 				fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE);
