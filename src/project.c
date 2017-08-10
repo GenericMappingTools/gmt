@@ -520,6 +520,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if (!Ctrl->N.active && ((Ctrl->C.active && (Ctrl->C.x < -360 || Ctrl->C.x > 360) && (Ctrl->C.y < -90 || Ctrl->C.y > 90)) || (Ctrl->E.active && (Ctrl->E.x < -360 || Ctrl->E.x > 360) && (Ctrl->E.y < -90 || Ctrl->E.y > 90)))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Your -C or -E options suggest Cartesian coordinates.  Please see -N\n");
+		n_errors++;
+	}
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max,
 	                                 "Syntax error -L option: w_min must be < w_max\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max,
@@ -723,8 +728,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
 		P.n_outputs = 3;
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		GMT->current.io.col_type[GMT_OUT][GMT_X] = (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON;
+		GMT->current.io.col_type[GMT_OUT][GMT_Y] = (Ctrl->N.active) ? GMT_IS_FLOAT : (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT;
 		GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	}
 	else {	/* Decode and set the various output column types */
