@@ -2042,17 +2042,17 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 		}
 		switch (in[i]) {
 			/* Draw AND Annotate */
-			case 'W': side[W_SIDE] |= 3; break;
-			case 'E': side[E_SIDE] |= 3; break;
-			case 'S': side[S_SIDE] |= 3; break;
-			case 'N': side[N_SIDE] |= 3; break;
-			case 'Z': side[Z_SIDE] |= 3; break;
-			/* Just Draw */
-			case 'w': side[W_SIDE] |= 1; break;
-			case 'e': side[E_SIDE] |= 1; break;
-			case 's': side[S_SIDE] |= 1; break;
-			case 'n': side[N_SIDE] |= 1; break;
-			case 'z': side[Z_SIDE] |= 1; break;
+			case 'W': side[W_SIDE] |= GMT_AXIS_ALL; break;
+			case 'E': side[E_SIDE] |= GMT_AXIS_ALL; break;
+			case 'S': side[S_SIDE] |= GMT_AXIS_ALL; break;
+			case 'N': side[N_SIDE] |= GMT_AXIS_ALL; break;
+			case 'Z': side[Z_SIDE] |= GMT_AXIS_ALL; break;
+			/* Just Draw and tick */
+			case 'w': side[W_SIDE] |= GMT_AXIS_BARB; break;
+			case 'e': side[E_SIDE] |= GMT_AXIS_BARB; break;
+			case 's': side[S_SIDE] |= GMT_AXIS_BARB; break;
+			case 'n': side[N_SIDE] |= GMT_AXIS_BARB; break;
+			case 'z': side[Z_SIDE] |= GMT_AXIS_BARB; break;
 			/* Draw 3-D box */
 			case '+': *draw_box = true; break;
 		}
