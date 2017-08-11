@@ -10871,8 +10871,13 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 
 	/* Now read it */
 	while (!found && fgets (line, PATH_MAX, fp)) {
-		if (line[0] == '#' || line[0] == '\n')	/* Comment line or blank */
+		if (line[0] == '\n')	/* Blank line */
 			continue;
+		if (line[0] == '#') {	/* Comment line */
+			if (!strncmp (line, "# PARALLEL:", 11U))
+				P->parallel = atoi (&line[12]);
+			continue;
+		}
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding row/col from subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 			fclose (fp);
@@ -11560,7 +11565,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			if (opt_J) {	/* Gave -J, must append /1 as dummy scale/width */
-				sprintf (arg, "%s/%gi", opt_J->arg, P->w);	/* Append the dummy width */
+				if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))
+					sprintf (arg, "%s%gi", opt_J->arg, P->w);	/* Append the dummy width as only argument */
+				else
+					sprintf (arg, "%s/%gi", opt_J->arg, P->w);	/* Append the dummy width to other arguments */
 				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 			}
 		}

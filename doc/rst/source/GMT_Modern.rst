@@ -172,6 +172,8 @@ Optional Arguments
     (i.e., **r**\ ight) columns will have *y*-annotations.  Append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally append the label if it is the same
     for the entire subplot.
+    Append **+p** to make all annotation axis-parallel [horizontal]. If used you may have to set **-C** to make
+    extra space for long horizontal annotations.
     Append **+t** to make space for panel titles; use **+tc** for top row titles only [no panel titles].
 
 .. _-M:
@@ -197,7 +199,7 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 
-**gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-G**\ *side*\ /*gap*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting into a panel you must first select the active panel.
 Note: Any **-J** option passed when plotting subplots must not give the final width or scale
@@ -220,10 +222,10 @@ Optional Arguments
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.
 
-.. _-G:
+.. _-C:
 
-**-G**\ *side*\ /*gap*\ [**u**\ ]
-    Reserve a space of dimension *gap* between the margin and the plot panel on the specified
+**-C**\ *side*\ /*clearance*\ [**u**\ ]
+    Reserve a space of dimension *clearance* between the margin and the plot panel on the specified
     side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules plotting scales, bars, text, etc.

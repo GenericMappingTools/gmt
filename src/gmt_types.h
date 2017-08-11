@@ -96,6 +96,7 @@ struct GMT_SUBPLOT {
 	unsigned int nrows, ncolumns;	/* Panel arrangement for subplot window */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
+	unsigned int parallel;		/* 1 for axis-parallel annotations [0 for standard] */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */

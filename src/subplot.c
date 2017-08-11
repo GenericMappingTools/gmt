@@ -22,7 +22,7 @@
  *
  * Brief synopsis: gmt subplot determines dimensions and offsets for a multi-panel figure.
  *	gmt subplot begin -N<nrows>/<ncols> [-A<labels>] [-F[<WxH>][+g<fill>][+p<pen>][+d]] [-L<layout>] [-M[m|p]<margins>] [-T<title>] [-V]
- *	gmt subplot [set] <row>,<col> [-A<fixlabel>] [-G<side><gap>[u]] [-V]
+ *	gmt subplot [set] <row>,<col> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
  *	gmt subplot end [-V]
  */
 
@@ -74,21 +74,23 @@ struct SUBPLOT_CTRL {
 		double off[2];
 		double clearance[2];
 	} A;
-	struct F {	/* -F[<width>[u]/<height>[u]][+d][+g<fill>][+p<pen>] */
+	struct C {	/* -C[side]<clearance>[u]  */
+		bool active;
+		double gap[4];
+	} C;
+	struct F {	/* -F[m|p][<width>[u]/<height>[u]][+d][+g<fill>][+p<pen>] */
 		bool active;
 		bool debug;
+		unsigned int mode;
 		double dim[2];
 		char fill[GMT_LEN64];
 		char pen[GMT_LEN64];
 	} F;
-	struct G {	/* -G[side]<gap>[u]  */
-		bool active;
-		double gap[4];
-	} G;
 	struct L {	/* -L<layout> */
 		bool active;
 		bool has_label[2];	/* True if x and y labels */
 		unsigned int mode;	/* 0 for -L, 1 for -LC, 2 for -LR (3 for both) */
+		unsigned int parallel;	/* 0 for horizontal annotations, 1 for axis-parallel */
 		char *axes;		/* WESNwesn for -L */
 		char *label[2];		/* The constant x and y labels */
 		unsigned int ptitle;	/* 0 = no panel titles, 1 = column titles, 2 = all panel titles */
@@ -125,6 +127,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
 	C->F.dim[GMT_X] = GMT->current.setting.ps_page_size[GMT_X] / PSL_POINTS_PER_INCH;
 	C->F.dim[GMT_Y] = GMT->current.setting.ps_page_size[GMT_Y] / PSL_POINTS_PER_INCH;
+	C->F.mode = SUBPLOT_MEDIA;
 	return (C);
 }
 
@@ -141,9 +144,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-F[<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<side><gap>[u]] [-L<layout>] [-M[m[|p]]<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-G<side><gap>[u]] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-F[[m[|p]]<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>] [-M[m[|p]]<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -162,14 +165,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [panels are numbered across rows].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify dimension of area that the multi-panel figure may occupy [current page].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each panel area (for debugging).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a gap of dimension <tap>[u] to the <side> (w|e|s|n) of the plottable panel.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance>[u] to the <side> (w|e|s|n) of the plottable panel.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side [no gaps].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side [no clearances].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Fp: Specify dimension of each panel\'s map area.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Fm to set dimensions of area that the multi-panel figure may occupy [current page].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each panel\'s map area (for debugging).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set panel layout. May be set once (-L) or separately for rows (-LR) and columns (-LC):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L: Append WESNwesn to indicate which panel frames should be drawn and annotated.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L: Append codes from WESNwesnlrbt to indicate which panel frames should be drawn, ticked and annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l to make space for axes labels; applies equally to all panels [no labels].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       Append x to only use x-labels or y for only y-labels [both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +t to make space for all panel titles; use +tc for top row titles only [no panel titles].\n");
@@ -180,8 +184,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -LR: Each panel Row share common y-range. Only first (left) and last (right) columns are annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append l or r to select only one of those two columns [both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l if annotated y-axes will have a label [none]; optionally append the label if fixed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +p if axes annotations should be parallel to axis [horizontal].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify the two types of margins:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -M[p] adds space around each panel. Append  a uniform <margin>, separate x and y <xmargin>/<ymargin>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Mp adds space around each panel. Append  a uniform <margin>, separate x and y <xmargin>/<ymargin>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mm sets the media whitespace around each figure. Append 1, 2, or 4 margins [1c].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify a main heading to be centered above all the panels [none].\n");
@@ -312,11 +317,36 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				break;
 				
+			case 'C':
+				if (Ctrl->In.mode != SUBPLOT_SET) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -C is only available when setting the active panel\n");
+					n_errors++;
+				}
+				else {
+					Ctrl->C.active = true;
+					switch (opt->arg[0]) {
+						case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -C requires w|e|s|n<clearance>[u]\n");
+							n_errors++;
+							break;
+					}
+				}
+				break;
+
 			case 'F':
 				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
 				if (opt->arg[0]) {	/* Set active canvas size */
 					Ctrl->F.active = true;
-					if ((k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->F.dim, 2)) < 2) {
+					switch (opt->arg[0]) {
+						case 'm':	Ctrl->F.mode = SUBPLOT_MEDIA; n = 1;	break; /* Media dimension */
+						case 'p':	Ctrl->F.mode = SUBPLOT_PANEL; n = 1;	break; /* Panel dimension */
+						default:	Ctrl->F.mode = SUBPLOT_PANEL; n = 0;	break; /* Panel dimension */
+					}
+					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) < 2) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -F requires width and height of plot area.\n");
 						n_errors++;
 					}
@@ -336,26 +366,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			
-			case 'G':
-				if (Ctrl->In.mode != SUBPLOT_SET) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -G is only available when setting the active panel\n");
-					n_errors++;
-				}
-				else {
-					Ctrl->G.active = true;
-					switch (opt->arg[0]) {
-						case 'w':	Ctrl->G.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'e':	Ctrl->G.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 's':	Ctrl->G.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'n':	Ctrl->G.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -G requires w|e|s|n<gap>[u]\n");
-							n_errors++;
-							break;
-					}
-				}
-				break;
-
 			case 'L':	/* Layout */
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {	/* Type of layout option */
@@ -414,6 +424,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							Ctrl->L.tick[GMT_X]     |= SUBPLOT_PLACE_AT_MAX;
 						break;
 				}
+				/* Axis annotation orientation is a common modifier */
+				if (gmt_get_modifier (opt->arg, 'p', string))	/* Want axis-parallel annotations [horizontal] */
+					Ctrl->L.parallel = 1;
 				/* Panel title is a common modifier */
 				if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for panel titles */
 					Ctrl->L.ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
@@ -516,8 +529,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot panel attributes */
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
-		double x, y, area_dim[2], plot_dim[2], width, height, tick_height, annot_height, label_height, title_height, heading_height, heading_only;
-		double *px = NULL, *py = NULL, y_heading, GMT_LETTER_HEIGHT = 0.736;
+		double x, y, area_dim[2], plot_dim[2], width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, heading_height, heading_only;
+		double *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN64] = {""};
 		char vfile[GMT_STR16] = {""};
 		bool add_annot;
@@ -535,8 +548,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		heading_only = (GMT_LETTER_HEIGHT * GMT->current.setting.font_heading.size / PSL_POINTS_PER_INCH);
 		heading_height = heading_only + GMT->current.setting.map_heading_offset;
 		/* Get plot/media area dimensions */
-		width  = area_dim[GMT_X] = Ctrl->F.dim[GMT_X];
-		height = area_dim[GMT_Y] = Ctrl->F.dim[GMT_Y];
+		//width  = area_dim[GMT_X] = Ctrl->F.dim[GMT_X];
+		//height = area_dim[GMT_Y] = Ctrl->F.dim[GMT_Y];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: rows            = %d\n", Ctrl->N.dim[GMT_Y]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: columns         = %d\n", Ctrl->N.dim[GMT_X]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: height          = %g\n", height);
@@ -551,57 +564,81 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Shrink these if media margins were requested */
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Start: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[SUBPLOT_MEDIA]) {	/* Remove space used by media margins */
-			area_dim[GMT_X] -= (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
-			area_dim[GMT_Y] -= (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
-			width  -= (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
-			height -= (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
+			fluff[GMT_X] = Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI];
+			fluff[GMT_Y] = Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI];
+			//area_dim[GMT_X] -= (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
+			//area_dim[GMT_Y] -= (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
+			//width  -= (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
+			//height -= (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
 		}
-		y_heading = height - heading_only - Ctrl->M.margin[SUBPLOT_PANEL][YHI];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After media margins: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->M.active[SUBPLOT_PANEL]) {	/* Remove space used by panel margins */
-			area_dim[GMT_X] -= Ctrl->N.dim[GMT_X] * (Ctrl->M.margin[SUBPLOT_PANEL][XLO] + Ctrl->M.margin[SUBPLOT_PANEL][XHI]);
-			area_dim[GMT_Y] -= Ctrl->N.dim[GMT_Y] * (Ctrl->M.margin[SUBPLOT_PANEL][YLO] + Ctrl->M.margin[SUBPLOT_PANEL][YHI]);
+			fluff[GMT_X] += Ctrl->N.dim[GMT_X] * (Ctrl->M.margin[SUBPLOT_PANEL][XLO] + Ctrl->M.margin[SUBPLOT_PANEL][XHI]);
+			fluff[GMT_Y] += Ctrl->N.dim[GMT_Y] * (Ctrl->M.margin[SUBPLOT_PANEL][YLO] + Ctrl->M.margin[SUBPLOT_PANEL][YHI]);
+			//area_dim[GMT_X] -= Ctrl->N.dim[GMT_X] * (Ctrl->M.margin[SUBPLOT_PANEL][XLO] + Ctrl->M.margin[SUBPLOT_PANEL][XHI]);
+			//area_dim[GMT_Y] -= Ctrl->N.dim[GMT_Y] * (Ctrl->M.margin[SUBPLOT_PANEL][YLO] + Ctrl->M.margin[SUBPLOT_PANEL][YHI]);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After panel margins: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		/* Limit tickmarks to 1 or 2 axes per row or per panel */
 		if (Ctrl->L.tick[GMT_Y]) nx = (Ctrl->L.tick[GMT_Y] == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else nx = 0;
 		if ((Ctrl->L.mode & SUBPLOT_ROW_FIXED_Y) == 0) 
 			nx *= Ctrl->N.dim[GMT_X];	/* Each column needs separate y-axis [and labels] */
-		area_dim[GMT_X] -= nx * tick_height;
+		fluff[GMT_X] += nx * tick_height;
+		//area_dim[GMT_X] -= nx * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row ticks: area_dim = {%g, %g}\n", nx, area_dim[GMT_X], area_dim[GMT_Y]);
 		/* Limit annotations/labels to 1 or 2 axes per row or per panel */
 		if (Ctrl->L.annotate[GMT_Y]) nx = (Ctrl->L.annotate[GMT_Y] == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else nx = 0;
 		if ((Ctrl->L.mode & SUBPLOT_ROW_FIXED_Y) == 0) 
 			nx *= Ctrl->N.dim[GMT_X];	/* Each column needs separate y-axis [and labels] */
-		area_dim[GMT_X] -= nx * annot_height;
+		fluff[GMT_X] += nx * annot_height;
+		//area_dim[GMT_X] -= nx * annot_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row annots: area_dim = {%g, %g}\n", nx, area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->L.has_label[GMT_Y])
-			area_dim[GMT_X] -= nx * label_height;
+			fluff[GMT_X] += nx * label_height;
+			//area_dim[GMT_X] -= nx * label_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row labels: area_dim = {%g, %g}\n", nx, area_dim[GMT_X], area_dim[GMT_Y]);
-		plot_dim[GMT_X] = area_dim[GMT_X] / Ctrl->N.dim[GMT_X];
 		/* Limit annotations/labels to 1 or 2 axes per column or per panel */
 		if (Ctrl->T.active)
-			area_dim[GMT_Y] -= heading_height;
+			fluff[GMT_Y] += heading_height;
+			//area_dim[GMT_Y] -= heading_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After main heading: area_dim = {%g, %g}\n", area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->L.tick[GMT_X]) ny = (Ctrl->L.tick[GMT_X] == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else ny = 0;
 		factor = (Ctrl->L.mode & SUBPLOT_COL_FIXED_X) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis ticks */
 		ny *= factor;
-		area_dim[GMT_Y] -= ny * tick_height;
+		fluff[GMT_Y] += ny * tick_height;
+		//area_dim[GMT_Y] -= ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: area_dim = {%g, %g}\n", ny, area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->L.annotate[GMT_X]) ny = (Ctrl->L.annotate[GMT_X] == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else ny = 0;
 		factor = (Ctrl->L.mode & SUBPLOT_COL_FIXED_X) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis [and labels] */
 		ny *= factor;
-		area_dim[GMT_Y] -= ny * annot_height;
+		fluff[GMT_Y] += ny * annot_height;
+		//area_dim[GMT_Y] -= ny * annot_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col annot: area_dim = {%g, %g}\n", ny, area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->L.has_label[GMT_X])
-			area_dim[GMT_Y] -= ny * label_height;
+			fluff[GMT_Y] += ny * label_height;
+			//area_dim[GMT_Y] -= ny * label_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col labels: area_dim = {%g, %g}\n", ny, area_dim[GMT_X], area_dim[GMT_Y]);
 		if (Ctrl->L.ptitle == SUBPLOT_PANEL_COL_TITLE)
-			area_dim[GMT_Y] -= title_height;
+			fluff[GMT_Y] += title_height;
+			//area_dim[GMT_Y] -= title_height;
 		else if (Ctrl->L.ptitle == SUBPLOT_PANEL_TITLE)
-			area_dim[GMT_Y] -= factor * title_height;
+			fluff[GMT_Y] += factor * title_height;
+			//area_dim[GMT_Y] -= factor * title_height;
+		if (Ctrl->F.mode == SUBPLOT_MEDIA) {	/* Got media dimension, compute panel dimension */
+			plot_dim[GMT_X] = (Ctrl->F.dim[GMT_X] - fluff[GMT_X]) / Ctrl->N.dim[GMT_X];
+			plot_dim[GMT_Y] = (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]) / Ctrl->N.dim[GMT_Y];
+		}
+		else {	/* Got panel dimension, compute media dimension */
+			plot_dim[GMT_X] = Ctrl->F.dim[GMT_X];
+			plot_dim[GMT_Y] = Ctrl->F.dim[GMT_Y];
+			Ctrl->F.dim[GMT_X] = Ctrl->N.dim[GMT_X] * plot_dim[GMT_X] + fluff[GMT_X];
+			Ctrl->F.dim[GMT_Y] = Ctrl->N.dim[GMT_Y] * plot_dim[GMT_Y] + fluff[GMT_Y];
+		}
+		/* Plottable area: */
+		width  = Ctrl->F.dim[GMT_X] - (Ctrl->M.margin[SUBPLOT_MEDIA][XLO] + Ctrl->M.margin[SUBPLOT_MEDIA][XHI]);
+		height = Ctrl->F.dim[GMT_Y] - (Ctrl->M.margin[SUBPLOT_MEDIA][YLO] + Ctrl->M.margin[SUBPLOT_MEDIA][YHI]);
+		y_heading = height - heading_only - Ctrl->M.margin[SUBPLOT_PANEL][YHI];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: area_dim = {%g, %g}\n", factor, area_dim[GMT_X], area_dim[GMT_Y]);
-		plot_dim[GMT_Y] = area_dim[GMT_Y] / Ctrl->N.dim[GMT_Y];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Panel dimensions: {%g, %g}\n", plot_dim[GMT_X], plot_dim[GMT_Y]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 
@@ -763,6 +800,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
+		fprintf (fp, "# PARALLEL: %d\n", Ctrl->L.parallel);
 		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
@@ -861,7 +899,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->G.gap, Ctrl->A.format, 1)))
+		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->C.gap, Ctrl->A.format, 1)))
 			Return (error)
 	}
 	else {	/* SUBPLOT_END */
