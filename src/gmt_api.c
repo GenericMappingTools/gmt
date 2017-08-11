@@ -892,7 +892,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	struct FtpFile ftpfile = {NULL, NULL};
 
     if (!file_name) return 0;   /* Got nutin' */
-    
+
     file = strdup (file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
@@ -1323,7 +1323,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
-	
+
 	*n_items = 0;	/* No keys yet */
 
 	for (k = 0; k < GMT_N_FAMILIES; k++) n_to_add[k] = GMT_NOTSET;	/* Initially no input counts */
@@ -2578,7 +2578,7 @@ GMT_LOCAL int api_is_registered (struct GMTAPI_CTRL *API, int family, int geomet
 
 	if ((item = api_memory_registered (API, family, direction, filename)) != GMT_NOTSET)
 		return (item);	/* OK, return the object ID */
-		
+
 	 /* Search for the object in the active list.  However, if object_ID == GMT_NOTSET we instead pick the first in that direction */
 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
@@ -3967,7 +3967,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to users column-matrix location\n");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NOT IMPLEMENTED YET\n");
 			break;
-		
+
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table to user matrix location\n");
 			save = GMT->current.io.multi_segments[GMT_OUT];
@@ -5336,7 +5336,7 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	 * table.  Symptoms of this are memory junk back in the calling program because two objects
 	 * have a pointer to the same memory and one of them is destroyed, messing up the other.
 	 * Use the gmtlib functions like gmt_duplicate_grid, etc for these purposes herein. */
-	
+
 	switch (family) {
 		case GMT_IS_PALETTE:	/* Export a CPT */
 			error = api_export_palette (API, object_ID, mode, data);
@@ -5984,7 +5984,7 @@ int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 	/* OK, now it is safe to remove the object; item >= 0 */
 if (API->GMT->hidden.func_level == 1 && API->n_objects == 2)
 	item = 0;
-	
+
 	item = s_item;
 	S_obj = API->object[item];	/* Short-hand */
 	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_unregister_io: Unregistering object no %d [n_objects = %d]\n", S_obj->ID, API->n_objects-1);
@@ -6137,7 +6137,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 		}
 		API->GMT->session.std[GMT_ERR] = fp;	/* Set the error fp pointer */
 	}
-	
+
 	API->n_cores = gmtlib_get_num_processors();	/* Get number of available CPU cores */
 
 	/* Allocate memory to keep track of registered data resources */
@@ -6471,7 +6471,8 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
-	int item, object_ID, family = GMT_NOTSET, flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
+	int item, object_ID, family = GMT_NOTSET;
+	//int flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
 	unsigned int n_kinds = 0, k, counter[GMT_N_FAMILIES];
 	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -7185,7 +7186,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		if ((mode & GMT_DATA_ONLY) && data == NULL) return_null (V_API, GMT_PTR_IS_NULL);
 		if ((mode & GMT_CONTAINER_ONLY) && data != NULL) return_null (V_API, GMT_PTR_NOT_NULL);
 	}
-	
+
 	if (!gmt_M_file_is_cache(infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !api_file_with_netcdf_directive (API, infile)) {
 		/* Gave a wildcard filename */
 		uint64_t n_files;
@@ -7398,7 +7399,7 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
-	
+
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header and possibly data array */
 			new_obj = gmt_duplicate_grid (GMT, data, mode);
@@ -8829,7 +8830,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 		S_obj = API->object[item];		/* Short-hand notation */
 		API->object[item]->resource = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 		S_obj->actual_family = actual_family;
-		S_obj->family = family;	
+		S_obj->family = family;
 		if (def_direction == GMT_OUT) S_obj->messenger = true;	/* We are passing a dummy container that should be destroyed before returning actual data */
 		if (family == actual_family)
 			GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container\n", GMT_family[actual_family]);
@@ -12291,7 +12292,7 @@ int GMT_Set_Vector (void *V_API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t
 	if (n_columns) V->n_columns = n_columns;
 	if (n_columns && V->data == NULL) V->data = gmt_M_memory_aligned (API->GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	if (n_columns && V->type == NULL) V->type = gmt_M_memory (API->GMT, NULL, n_columns, enum GMT_enum_type);
-	
+
 	return GMT_NOERROR;
 }
 
