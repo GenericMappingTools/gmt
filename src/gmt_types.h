@@ -100,6 +100,7 @@ struct GMT_SUBPLOT {
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
 	double w, h;			/* Width and height of current panel */
+	double origin[2];		/* Location of lower left figure origin set via -X -Y */
 	double off[2];			/* Offset from justification point of panel tag */
 	double clearance[4];		/* Space around text for surrounding textbox */
 	double gap[4];			/* Shrink plottable region to make space for enhancements */

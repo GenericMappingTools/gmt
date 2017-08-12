@@ -6072,6 +6072,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
 
 	P = &(GMT->current.plot.panel);
+
 	if (P->active) {	/* Subplot panel mode is in effect */
 		/* Consider offsets required to center the plot on the subplot panel [0/0] */
 		GMT->current.setting.map_origin[GMT_X] += (P->dx + P->gap[XLO]);
@@ -6162,7 +6163,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	if (P->active && P->first) {
 		/* Place the panel tag, once per panel (if requested), then update the gmt.panel file to say we have been there */
-		if (P->tag[0]) {	/* Place the panel tag */
+		if (strcmp (P->tag, "-")) {	/* Place the panel tag */
 			int form, refpoint, justify;
 			double plot_x, plot_y;
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */

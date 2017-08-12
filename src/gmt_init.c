@@ -668,23 +668,44 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_parse_XY_option (struct GMT_CTRL *GMT, int axis, char *text) {
+GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
-		GMT->current.ps.origin[axis] = 'r';
-		GMT->current.setting.map_origin[axis] = 0.0;
+		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
+		GMT->current.setting.map_origin[GMT_X] = 0.0;
 		return (GMT_NOERROR);
 	}
 	switch (text[0]) {
 		case 'r': case 'a': case 'f': case 'c':
-			GMT->current.ps.origin[axis] = text[0]; i++; break;
+			GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = text[0]; i++; break;
 		default:
-			GMT->current.ps.origin[axis] = 'r'; break;
+			GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r'; break;
 	}
 	if (text[i])
-		GMT->current.setting.map_origin[axis] = gmt_M_to_inch (GMT, &text[i]);
+		GMT->current.setting.map_origin[GMT_X] = gmt_M_to_inch (GMT, &text[i]);
 	else	/* Allow use of -Xc or -Xf meaning -Xc0 or -Xf0 */
-		GMT->current.setting.map_origin[axis] = 0.0;
+		GMT->current.setting.map_origin[GMT_X] = 0.0;
+	return (GMT_NOERROR);
+}
+
+/*! . */
+GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
+	int i = 0;
+	if (!text || !text[0]) {	/* Default is -Yr0 */
+		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
+		GMT->current.setting.map_origin[GMT_Y] = 0.0;
+		return (GMT_NOERROR);
+	}
+	switch (text[0]) {
+		case 'r': case 'a': case 'f': case 'c':
+			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = text[0]; i++; break;
+		default:
+			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r'; break;
+	}
+	if (text[i])
+		GMT->current.setting.map_origin[GMT_Y] = gmt_M_to_inch (GMT, &text[i]);
+	else	/* Allow use of -Yc or -Yf meaning -Yc0 or -Yf0 */
+		GMT->current.setting.map_origin[GMT_Y] = 0.0;
 	return (GMT_NOERROR);
 }
 
@@ -10874,7 +10895,9 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		if (line[0] == '\n')	/* Blank line */
 			continue;
 		if (line[0] == '#') {	/* Comment line */
-			if (!strncmp (line, "# PARALLEL:", 11U))
+			if (!strncmp (line, "# ORIGIN:", 9U))
+				sscanf (&line[10], "%lg %lg", &P->origin[GMT_X], &P->origin[GMT_Y]);
+			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
 			continue;
 		}
@@ -11558,10 +11581,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			/* Set -X -Y for absolute positioning */
-			sprintf (arg, "a%gi", P->x);
+			sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 			if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			sprintf (arg, "a%gi", P->y);
+			sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			if (opt_J) {	/* Gave -J, must append /1 as dummy scale/width */
@@ -13021,12 +13044,12 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'X':
-			error += (GMT_more_than_once (GMT, GMT->common.X.active) || gmtinit_parse_XY_option (GMT, GMT_X, item));
+			error += (GMT_more_than_once (GMT, GMT->common.X.active) || gmtinit_parse_X_option (GMT, item));
 			GMT->common.X.active = true;
 			break;
 
 		case 'Y':
-			error += (GMT_more_than_once (GMT, GMT->common.Y.active) || gmtinit_parse_XY_option (GMT, GMT_Y, item));
+			error += (GMT_more_than_once (GMT, GMT->common.Y.active) || gmtinit_parse_Y_option (GMT, item));
 			GMT->common.Y.active = true;
 			break;
 
