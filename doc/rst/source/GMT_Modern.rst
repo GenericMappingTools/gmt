@@ -15,7 +15,7 @@ for your plots.
 A GMT modern session is enabled by **gmt begin** and is terminated by
 **gmt end**.  Within a session you may also use the **gmt figure* command
 to control names and formats for multi-figure scripts, the **gmt subplot**
-for building multi-panel illustrations, and **gmt revert** to remove
+for building multi-panel figures, and **gmt revert** to remove
 layers from the current plot.
 
 *****
@@ -110,22 +110,22 @@ Optional Arguments
 subplot
 *******
 
-The subplot command is used to split the current figure into a matrix of sub-panels
+The subplot command is used to split the current figure into a matrix of subplots
 that each may contain a single figure.  A subplot setup is started with the **begin**
 mode that defines the layout of the subplots:
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *autolabel* ]
-[ **-F**\ *width*\ /*height* ]
-[ **-L**\ *layout* ] [ **-M**\ [**m**\ [\|\ **p**\ ]]\ *margins* ]
+[ **-F**\ [**f**\ \|\ **s**\ ]*width*\ /*height* ]
+[ **-L**\ *layout* ] [ **-M**\ *margins* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
 
 Required Arguments
 ------------------
 
 *nrows*\ **x**\ *ncols*
-    Specifies the number of rows and columns of panels.  Thus each row will have
-    the same number of panels.  To construct subplots with different number of
-    panels per row you will need to make several subplots.
+    Specifies the number of rows and columns of subplots.  Each row will have
+    the same number of subplots.  To construct figures with different number of
+    subplots per row you will need to make several subplots.
 
 Optional Arguments
 ------------------
@@ -133,11 +133,11 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *autolabel*
-    Specify automatic tagging of each panel.  Append either a number or letter [a].
-    This sets the tag of the first, top-left panel and others follow sequentially.
+    Specify automatic tagging of each subplot.  Append either a number or letter [a].
+    This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
-    Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the panel [TL].
+    Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
     Note: **+j** sets the justification of the tag to *refpoint* while **+J** instead selects
     the mirror opposite.
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
@@ -152,46 +152,44 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *width*\ /*height*
-    Specify the dimension of area that the multi-panel figure may occupy [current page].
+**-F**\ [**f**\ \|\ **s**\ ] *width*\ /*height*
+    Specify the dimension of the figure.  The subplot dimensions are then calculation from the figure
+    dimensions after accounting for annotations and margins.  Alternatively, use **-Fs** to specify
+    the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
 
 .. _-L:
 
 **-L**\ *layout*
-    Set panel layout. May be set once (**-L**) or separately for rows (**-LR**) and columns (**-LC**).
-    **-L**:  Append a combination from WESNwesn to indicate which panel frames should be drawn and annotated.
+    Set subplot layout. May be set once (**-L**) or separately for rows (**-LR**) and columns (**-LC**).
+    **-L**:  Append a combination from WESNwesnlrbt to indicate which subplot frames should be annotated, ticked, and drawn.
     Can be used with **-LR** and **-LC** to indicate which axes should be present in addition to those
     that will be selected automatically.
-    Append **+l** to make space for axes labels on all panels [no labels].
+    Append **+l** to make space for axes labels on all subplots [no labels].
     Append **x** to only use *x*-labels or **y** for only *y*-labels [both axis will be labeled].
-    **-LC**: Each panel **C**\ olumn shares a common *x*-range. Only the first (i.e., **t**\ op) and the last
+    **-LC**: Each subplot **C**\ olumn shares a common *x*-range. Only the first (i.e., **t**\ op) and the last
     (i.e., **b**\ ottom) rows will have *x* annotations.  Append **t** or **b** to select only one of those two rows [both].
     Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
     for the entire subplot.
-    **-LR**: Each panel **R**\ ow shares common *y*-range. Only the first (i.e., **l**\ eft) and the last
+    **-LR**: Each subplot **R**\ ow shares common *y*-range. Only the first (i.e., **l**\ eft) and the last
     (i.e., **r**\ ight) columns will have *y*-annotations.  Append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally append the label if it is the same
     for the entire subplot.
     Append **+p** to make all annotation axis-parallel [horizontal]. If used you may have to set **-C** to make
     extra space for long horizontal annotations.
-    Append **+t** to make space for panel titles; use **+tc** for top row titles only [no panel titles].
+    Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].
 
 .. _-M:
 
-**-M**\ [**m**\ [\|\ **p**\ ]]\ *margins*
-    There are two types of margins that you can adjust.  For plots destined to be printed you may want to
-    specify *media* margins because the printer cannot print all the way to the edges.  Use **-Mm** to
-    specify such margins [1c].  The other margin type is for each *panel*.  This is clearance that is added
-    around each panel when the plot dimensions of each panel are calculated [0.5c].  For either type, the margins
-    can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
+**-M**\ *margins*
+    This is clearance that is added around each subplot beyond the automatic space allocated for annotations [0.5c].
+    The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
     or the full set of four margins for the left, right, bottom, and top margin.
 
 .. _-T:
 
 **-T**\ *heading*
-    While individual panels can have titles (see **-L**), the entire collection of panels may also have a
-    overarching *heading*.  If selected then the dimensions of panels are adjusted accordingly to allow for
-    panels, annotations, labels, and heading to fit within the dimensions allotted by **-F** [no heading].
+    While individual subplots can have titles (see **-L**), the entire figure may also have a
+    overarching *heading* [no heading].
 
 .. _-V:
 
@@ -201,18 +199,20 @@ Optional Arguments
 
 **gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
-Before you start plotting into a panel you must first select the active panel.
-Note: Any **-J** option passed when plotting subplots must not give the final width or scale
-since the dimensions of the map is completely determined by the panel size and your region.
-Specifying map width will result in an error.
+Before you start plotting you must first select the active subplot.
+Note: Any **-J** option passed when plotting subplots must not give the width or scale
+since the dimensions of the map is completely determined by the subplot size and your region.
+Specifying map width will result in an error.  For Cartesian plots: If you want the scale
+to apply equally to both dimensions then you must specify **-Jx** [The default **-JX** will
+fill the subplot using unequal scales].
 
 Required Arguments
 ------------------
 
 *row,col*
-    Sets the current plot panel until further notice.  As an alternative, you may
-    instead append **-c**\ *row,col* to the first plot command you issue in the panel.
-    GMT maintains information about the current subplot and panel.
+    Sets the current subplot until further notice.  As an alternative, you may
+    instead supply **-c**\ *row,col* to the first plot command you issue in the subplot.
+    GMT maintains information about the current figure and subplot.
 
 Optional Arguments
 ------------------
@@ -225,7 +225,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
-    Reserve a space of dimension *clearance* between the margin and the plot panel on the specified
+    Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules plotting scales, bars, text, etc.
