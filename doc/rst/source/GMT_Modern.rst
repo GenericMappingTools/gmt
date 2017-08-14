@@ -39,7 +39,7 @@ Optional Arguments
     Give one or more comma-separated graphics extensions from the allowable graphics
     :ref:`formats <tbl-formats>` [pdf].
 
-.. _-V:
+.. _begin-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -101,9 +101,8 @@ Optional Arguments
     **A**\ [*args*],\ **C**\ *args*,\ **D*\ *dir*,\ **E**\ *dpi*,\ **P**\ ,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
-.. _-V:
+.. _figure-V:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 *******
@@ -130,7 +129,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-A:
+.. _subplot_begin-A:
 
 **-A**\ *autolabel*
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
@@ -150,14 +149,14 @@ Optional Arguments
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
 
-.. _-F:
+.. _subplot_begin-F:
 
 **-F**\ [**f**\ \|\ **s**\ ] *width*\ /*height*
     Specify the dimension of the figure.  The subplot dimensions are then calculation from the figure
     dimensions after accounting for annotations and margins.  Alternatively, use **-Fs** to specify
     the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
 
-.. _-L:
+.. _subplot_begin-L:
 
 **-L**\ *layout*
     Set subplot layout. May be set once (**-L**) or separately for rows (**-LR**) and columns (**-LC**).
@@ -178,22 +177,21 @@ Optional Arguments
     extra space for long horizontal annotations.
     Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].
 
-.. _-M:
+.. _subplot_begin-M:
 
 **-M**\ *margins*
     This is clearance that is added around each subplot beyond the automatic space allocated for annotations [0.5c].
     The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
     or the full set of four margins for the left, right, bottom, and top margin.
 
-.. _-T:
+.. _subplot_begin-T:
 
 **-T**\ *heading*
     While individual subplots can have titles (see **-L**), the entire figure may also have a
     overarching *heading* [no heading].
 
-.. _-V:
+.. _subplot_begin-V:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 
@@ -217,12 +215,12 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-A:
+.. _subplot_set-A:
 
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.
 
-.. _-C:
+.. _subplot_set-C:
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
@@ -230,9 +228,8 @@ Optional Arguments
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules plotting scales, bars, text, etc.
 
-.. _-V:
+.. _subplot_set-V:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 
@@ -244,9 +241,8 @@ the subplot.
 Optional Arguments
 ------------------
 
-.. _-V:
+.. _subplot_end-V:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 ******
@@ -256,7 +252,7 @@ revert
 **gmt revert** [ *n*\ \|\ **all** ] [ |SYN_OPT-V| ]
 
 This command strips off the last *n* layers of the current figure.
-Giving **all* wipes the figure completely; however, it still remains
+Giving *all* wipes the figure completely; however, it still remains
 the current figure.
 
 Optional Arguments
@@ -265,9 +261,8 @@ Optional Arguments
 *n*
     Specifies the number of plot layers to revert [1].
 
-.. _-V:
+.. _revert_-V:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 ***

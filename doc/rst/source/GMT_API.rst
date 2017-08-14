@@ -1583,7 +1583,7 @@ memory location and you can then pass this filename to any module that
 needs to read that data.  It is similar for writing, except you may pass
 NULL as the object to have GMT automatically allocate the output resource.
 If you want GMT to write to your preallocated memory then you must create a
-suitable container and attach your array(s) using GMT_Set_Matrix_ or GMT_set_Vector_.
+suitable container and attach your array(s) using GMT_Set_Matrix_ or GMT_Set_Vector_.
 The full syntax is
 
 .. _GMT_Open_VirtualFile:
