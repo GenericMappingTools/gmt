@@ -47,7 +47,7 @@ The optional *session-prefix* assigns a name to the session, and this may be use
 as figure name for single-figure sessions [gmtsession].  Likewise, the optional
 *format* can be used to override the default graphics format [PDF].
 
-** gmt figure** [*prefix*] [*format(s)*] [*options*]
+**gmt figure** [*prefix*] [*format(s)*] [*options*]
 
 Specifies the desired name, output format(s) and any custom arguments that should
 be passed to :doc:`psconvert` when producing this figure.  All subsequent plotting
