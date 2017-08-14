@@ -669,6 +669,8 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
+	/* Syntax: -Xa|r|f|c<off>[unit], -X[-|+]w[-|+]<off>[unit], where
+	 * w is the width of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
@@ -681,8 +683,22 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 		default:
 			GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r'; break;
 	}
-	if (text[i])
-		GMT->current.setting.map_origin[GMT_X] = gmt_M_to_inch (GMT, &text[i]);
+	if (text[i]) {	/* Gave some argument */
+		if (strchr (text, 'w')) {	/* Used previous width as part of offset */
+			GMT->current.setting.map_origin[GMT_X] = GMT->current.map.last_width;
+			if (text[i] == '-') {	/* Wanted the negative width */
+				GMT->current.setting.map_origin[GMT_X] *= -1;
+				i++;	/* Skip the minus sign */
+			}
+			else if (text[i] == '+')	/* In case the user explicitly gave a + */
+				i++;	/* Skip the plus sign */
+			i++;	/* Skip past the w */
+			/* Now add the offset the user added, if given */
+			if (text[i]) GMT->current.setting.map_origin[GMT_X] += gmt_M_to_inch (GMT, &text[i]);
+		}
+		else
+			GMT->current.setting.map_origin[GMT_X] = gmt_M_to_inch (GMT, &text[i]);
+	}
 	else	/* Allow use of -Xc or -Xf meaning -Xc0 or -Xf0 */
 		GMT->current.setting.map_origin[GMT_X] = 0.0;
 	return (GMT_NOERROR);
@@ -690,6 +706,8 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
+	/* Syntax: -Ya|r|f|c<off>[unit], -Y[-|+]h[-|+]<off>[unit], where
+	 * h is the height of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
@@ -702,8 +720,22 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 		default:
 			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r'; break;
 	}
-	if (text[i])
-		GMT->current.setting.map_origin[GMT_Y] = gmt_M_to_inch (GMT, &text[i]);
+	if (text[i]) {	/* Gave some argument */
+		if (strchr (text, 'h')) {	/* Used previous height as part of offset */
+			GMT->current.setting.map_origin[GMT_Y] = GMT->current.map.last_height;
+			if (text[i] == '-') {	/* Wanted the negative height */
+				GMT->current.setting.map_origin[GMT_Y] *= -1;
+				i++;	/* Skip the minus sign */
+			}
+			else if (text[i] == '+')	/* In case the user explicitly gave a + */
+				i++;	/* Skip the plus sign */
+			i++;	/* Skip past the h */
+			/* Now add the offset the user added, if given */
+			if (text[i]) GMT->current.setting.map_origin[GMT_Y] += gmt_M_to_inch (GMT, &text[i]);
+		}
+		else
+			GMT->current.setting.map_origin[GMT_Y] = gmt_M_to_inch (GMT, &text[i]);
+	}
 	else	/* Allow use of -Yc or -Yf meaning -Yc0 or -Yf0 */
 		GMT->current.setting.map_origin[GMT_Y] = 0.0;
 	return (GMT_NOERROR);
@@ -11362,6 +11394,48 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
+	/* Get dimensions of previous plot, if any */
+	FILE *fp = NULL;
+	char file[PATH_MAX] = {""};
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_get_last_dimensions: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (file, "%s/gmt.canvas", API->gwf_dir);
+	/* See if there is a gmt.canvas file to read */
+	if (access (file, R_OK))	/* No gmt.canvas file available so return 0 */
+		return GMT_NOERROR;
+	/* Get previous dimensions */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_get_last_dimensions: Could not open file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height);
+	fclose (fp);
+	return (GMT_NOERROR);
+}
+
+GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
+	/* Save dimensions of current plot */
+	FILE *fp = NULL;
+	char file[PATH_MAX] = {""};
+	if (API->GMT->current.map.width == 0.0) return GMT_NOERROR;	/* No dimensions set yet */
+	if (API->gwf_dir == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_set_last_dimensions: No workflow directory set\n");
+		return GMT_NOT_A_VALID_DIRECTORY;
+	}
+	sprintf (file, "%s/gmt.canvas", API->gwf_dir);
+	/* Write current dimensions */
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_set_last_dimensions: Could not create file %s\n", file);
+		return GMT_ERROR_ON_FOPEN;
+	}
+	fprintf (fp, "%lg %lg", API->GMT->current.map.width, API->GMT->current.map.height);
+	fclose (fp);
+	return (GMT_NOERROR);
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
@@ -11426,6 +11500,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		char arg[GMT_LEN256] = {""};
 		struct GMT_OPTION *opt_R = NULL, *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
+
+		gmtinit_get_last_dimensions (API);	/* Get dimensions of previous plot, if any */
 
 		fig = gmt_get_current_figure (API);	/* Get current figure number */
 
@@ -11661,6 +11737,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 			return;
 		}
 	}
+
+	gmtinit_set_last_dimensions (GMT->parent);	/* Save cancas size */
 
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n",

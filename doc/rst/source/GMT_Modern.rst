@@ -13,7 +13,7 @@ is now PDF, but you can change this and request more than one format
 for your plots.
 
 A GMT modern session is enabled by **gmt begin** and is terminated by
-**gmt end**.  Within a session you may also use the **gmt figure* command
+**gmt end**.  Within a session you may also use the **gmt figure** command
 to control names and formats for multi-figure scripts, the **gmt subplot**
 for building multi-panel figures, and **gmt revert** to remove
 layers from the current plot.
@@ -98,7 +98,7 @@ Optional Arguments
     Sets one or more comma-separated options arguments that
     will be passed to :doc:`psconvert` when preparing this figure [A,P].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D*\ *dir*,\ **E**\ *dpi*,\ **P**\ ,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **P**\ ,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
 .. _figure-V:
@@ -273,6 +273,14 @@ end
 
 This command terminates the modern mode and completes the processing of all registered
 figures.  The graphics will be placed in the current directory.
+
+*************
+Misc. Changes
+*************
+
+The two positional options **-X** and **-Y** can now access the previous plot dimensions
+*w* and *h* and construct offsets that involves them.  For instance, to move the origin
+up 2 cm beyond the height of the previous plot, use **-Yh**\ +2c.
 
 See Also
 --------
