@@ -1261,11 +1261,11 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 	double f = (z_cut - S->z_low) * S->i_dz, hsv[4], rgb[4];
 	unsigned int k;
 	if (do_hsv) {	/* Interpolation in HSV space */
-		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + (S->hsv_high[k] - S->hsv_low[k]) * f;
+		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + S->hsv_diff[k] * f;
 		support_hsv_to_rgb (rgb, hsv);
 	}
 	else {	/* Interpolation in RGB space */
-		for (k = 0; k < 4; k++) rgb[k] = S->rgb_low[k] + (S->rgb_high[k] - S->rgb_low[k]) * f;
+		for (k = 0; k < 4; k++) rgb[k] = S->rgb_low[k] + S->rgb_diff[k] * f;
 		support_rgb_to_hsv (rgb, hsv);
 	}
 	if (side == -1) {
@@ -1278,7 +1278,11 @@ GMT_LOCAL void support_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, doubl
 		gmt_M_memcpy (S->rgb_high, rgb, 4, double);
 		S->z_high = z_cut;
 	}
-	S->i_dz = 1.0 / (S->z_high - S->z_low);	/* Recompute inverse stepsize */
+	/* Recompute differences used in gmt_get_rgb_from_z */
+	for (k = 0; k < 4; k++) S->rgb_diff[k] = S->rgb_high[k] - S->rgb_low[k];
+	for (k = 0; k < 4; k++) S->hsv_diff[k] = S->hsv_high[k] - S->hsv_low[k];
+	/* Recompute inverse stepsize */
+	S->i_dz = 1.0 / (S->z_high - S->z_low);
 }
 
 /*! . */
