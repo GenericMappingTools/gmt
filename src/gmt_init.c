@@ -11420,6 +11420,7 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 	/* Save dimensions of current plot */
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""};
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)  return GMT_NOERROR;	/* Not in modern mode */
 	if (API->GMT->current.map.width == 0.0) return GMT_NOERROR;	/* No dimensions set yet */
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_set_last_dimensions: No workflow directory set\n");

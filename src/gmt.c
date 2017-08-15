@@ -215,6 +215,8 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
 		fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
 		fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
+		fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
+		fprintf (stderr, "  gmt revert        Undo last <n> layers from current figure.\n");
 		fprintf (stderr, "  gmt clear history | conf | cache | all\n");
 		fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
 		fprintf (stderr, "options:\n");
