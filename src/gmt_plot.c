@@ -5560,6 +5560,12 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				zone *= -1;
 				wipe_substr(szProj4, token);
 			}
+			else if ((pch = strstr(token, "lon_0=")) != NULL) {
+				double x;
+				x = atof(&token[6]);
+				if (x < 180) x -= 360;
+				zone = (int)(x + 180) / 6 + 1;
+			}
 		}
 		if (zone == 100) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj selected but no info about utm zone.\n");	
@@ -5619,12 +5625,13 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	}
 
 	/* Azimuthal projections */
-	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom")) {
-		char lon_0[32] = {""}, lat_0[32] = {""};
+	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom") || !strcmp(prjcode, "sterea") || !strcmp(prjcode, "stere")) {
+		char lon_0[32] = {""}, lat_0[32] = {""}, lat_ts[32] = {""};
 		if (!strcmp(prjcode, "stere")) strcat (opt_J, "S");
 		else if (!strcmp(prjcode, "laea")) strcat (opt_J, "A");
 		else if (!strcmp(prjcode, "aeqd")) strcat (opt_J, "E");
-		else strcat (opt_J, "F");
+		else if (!strcmp(prjcode, "gnom")) strcat (opt_J, "F");
+		else strcat (opt_J, "S");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
 				strcat(lon_0, &token[6]);
@@ -5634,10 +5641,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				strcat(lat_0, &token[6]);
 				wipe_substr(szProj4, token);
 			}
+			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
+				strcat(lat_ts, &token[7]);
+				wipe_substr(szProj4, token);
+			}
+		}
+		//if (!strcmp(prjcode, "ups")) lon_0[0] = lat_0[0] = '\0';
+		if (!strcmp(prjcode, "stere")) {
+			if (!lat_0[0]) strcat(lat_0, "90");		/* ptoj4 says lat_0 = 90 but if in southerm hemisphere? */
 		}
 		if (!lon_0[0]) strcat(lon_0, "0");
 		if (!lat_0[0]) strcat(lat_0, "0");
 		strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
+		if (!strcmp(prjcode, "stere")) strcat(opt_J, "75/");
 	}
 
 	/* Misc projections */
@@ -5653,7 +5669,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		else if (!strcmp(prjcode, "eck4"))   strcat (opt_J, "Kf");
 		else strcat (opt_J, "Ks");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {	
+			if ((pch = strstr(token, "lon_0=")) != NULL) {
 				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
 				wipe_substr(szProj4, token);
 			}
