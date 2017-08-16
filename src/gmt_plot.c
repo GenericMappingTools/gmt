@@ -5562,9 +5562,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			}
 			else if ((pch = strstr(token, "lon_0=")) != NULL) {
 				double x;
-				x = atof(&token[6]);
-				if (x < 180) x -= 360;
+				gmt_scanf (GMT, &token[6], GMT_IS_GEO, &x);
+				//gmtio_scanf_geo (&token[6], &x);
+				if (x > 180) x -= 360;
 				zone = (int)(x + 180) / 6 + 1;
+				wipe_substr(szProj4, token);
 			}
 		}
 		if (zone == 100) {
@@ -5648,7 +5650,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 		//if (!strcmp(prjcode, "ups")) lon_0[0] = lat_0[0] = '\0';
 		if (!strcmp(prjcode, "stere")) {
-			if (!lat_0[0]) strcat(lat_0, "90");		/* ptoj4 says lat_0 = 90 but if in southerm hemisphere? */
+			if (!lat_0[0]) strcat(lat_0, "90");		/* ptoj4 says lat_0 = 90 but what if in southerm hemisphere? */
 		}
 		if (!lon_0[0]) strcat(lon_0, "0");
 		if (!lat_0[0]) strcat(lat_0, "0");
