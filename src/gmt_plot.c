@@ -5452,6 +5452,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	char *pStrOut = NULL;
 	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *pch = NULL;
+	char lon_0[32] = {""}, lat_0[32] = {""}, lat_1[32] = {""}, lat_2[32] = {""}, lat_ts[32] = {""};
 
 	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
 
@@ -5507,22 +5508,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
 	}
 	/* Cylindrical projections */
-	else if (!strcmp(prjcode, "cea")) {
-		strcat (opt_J, "E");
-		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_0=")) != NULL) {	
-				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
-				wipe_substr(szProj4, token);
-			}
-			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
-				strcat(opt_J, &token[7]);	strcat (opt_J, "/");
-				wipe_substr(szProj4, token);
-			}
-		}
-	}
-	else if (!strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
-		char lon_0[32] = {""}, lat_0[32] = {""};
+	else if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
 		if (!strcmp(prjcode, "tmerc"))     strcat (opt_J, "T");
+		else if (!strcmp(prjcode, "cea"))  strcat (opt_J, "Y");
 		else if (!strcmp(prjcode, "eqc"))  strcat (opt_J, "Q");
 		else if (!strcmp(prjcode, "merc")) strcat (opt_J, "M");
 		else if (!strcmp(prjcode, "mill")) strcat (opt_J, "J");
@@ -5537,7 +5525,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				wipe_substr(szProj4, token);
 			}
 		}
-		if (!strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
+		if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
 			if (!lon_0[0]) strcat(lon_0, "0");
 			if (!lat_0[0]) strcat(lat_0, "0");
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
@@ -5547,6 +5535,36 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			if (!lon_0[0]) strcat(lon_0, "0");
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
 		}
+	}
+	else if (!strcmp(prjcode, "omerc")) {
+		char lon_1[32] = {""}, lon_2[32] = {""};
+		strcat (opt_J, "OC");
+		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
+			if ((pch = strstr(token, "lon_1=")) != NULL) {	
+				strcat(lon_1, &token[6]);
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_1=")) != NULL) {
+				strcat(lat_1, &token[6]);
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lon_2=")) != NULL) {	
+				strcat(lon_2, &token[6]);
+				wipe_substr(szProj4, token);
+			}
+			else if ((pch = strstr(token, "lat_2=")) != NULL) {
+				strcat(lat_2, &token[6]);
+				wipe_substr(szProj4, token);
+			}
+		}
+		if (!lon_2[0] || !lat_2[0]) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lon_2 & lat_2 proj parameters\n", prjcode);
+			return (pStrOut);
+		}
+		if (!lon_1[0]) strcat(lon_1, "0");
+		if (!lat_1[0]) strcat(lat_1, "0");
+		strcat(opt_J, lon_1);	strcat (opt_J, "/");	strcat(opt_J, lat_1);	strcat (opt_J, "/");
+		strcat(opt_J, lon_2);	strcat (opt_J, "/");	strcat(opt_J, lat_2);	strcat (opt_J, "/");
 	}
 	else if (!strcmp(prjcode, "utm")) {
 		int zone = 100;
@@ -5563,7 +5581,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			else if ((pch = strstr(token, "lon_0=")) != NULL) {
 				double x;
 				gmt_scanf (GMT, &token[6], GMT_IS_GEO, &x);
-				//gmtio_scanf_geo (&token[6], &x);
 				if (x > 180) x -= 360;
 				zone = (int)(x + 180) / 6 + 1;
 				wipe_substr(szProj4, token);
@@ -5582,11 +5599,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	/* Conic projections */
 	else if (!strcmp(prjcode, "aea") || !strcmp(prjcode, "eqdc") || !strcmp(prjcode, "lcc") || !strcmp(prjcode, "poly")) {
-		char lon_0[32] = {""}, lat_0[32] = {""}, lat_1[32] = {""}, lat_2[32] = {""};
 		if (!strcmp(prjcode, "aea")) strcat (opt_J, "B");
 		else if (!strcmp(prjcode, "eqdc")) strcat (opt_J, "D");
 		else if (!strcmp(prjcode, "lcc")) strcat (opt_J, "L");
-		else strcat (opt_J, "Poly");
+		else strcat (opt_J, "Poly/");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
 				strcat(lon_0, &token[6]);
@@ -5606,9 +5622,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			}
 		}
 		/* Check if user errors */
-		if (strcmp(prjcode, "Poly")) {		/* i.e. if NOT Poly */
-			if (!lon_0[0]) strcat(lon_0, "0");
-			if (!lat_0[0]) strcat(lat_0, "0");
+		if (!lon_0[0]) strcat(lon_0, "0");
+		if (!lat_0[0]) strcat(lat_0, "0");
+		if (strcmp(prjcode, "poly")) {			/* i.e. if NOT Poly */
 			if (!lat_1[0] || !lat_2[0]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
 				return (pStrOut);
@@ -5617,18 +5633,12 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			strcat(opt_J, lat_1);	strcat (opt_J, "/");	strcat(opt_J, lat_2);	strcat (opt_J, "/");
 		}
 		else {
-			if (lon_0[0]) {
-				strcat (opt_J, "/");	strcat(opt_J, lon_0);	strcat (opt_J, "/");
-				if (lat_0[0]) {
-					strcat(opt_J, lon_0);	strcat (opt_J, "/");
-				}
-			}
+			strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
 		}
 	}
 
 	/* Azimuthal projections */
 	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom") || !strcmp(prjcode, "sterea") || !strcmp(prjcode, "stere")) {
-		char lon_0[32] = {""}, lat_0[32] = {""}, lat_ts[32] = {""};
 		if (!strcmp(prjcode, "stere")) strcat (opt_J, "S");
 		else if (!strcmp(prjcode, "laea")) strcat (opt_J, "A");
 		else if (!strcmp(prjcode, "aeqd")) strcat (opt_J, "E");
