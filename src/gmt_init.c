@@ -11739,6 +11739,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		}
 	}
 
+	if (GMT->hidden.func_level == 1 && GMT->parent->log_level == GMT_LOG_ONCE) {	/* Reset logging to default at the end of a top-level module */
+		fclose (GMT->session.std[GMT_ERR]);
+		GMT->session.std[GMT_ERR] = stderr;
+		GMT->parent->log_level = GMT_LOG_OFF;
+	}
+
 	gmtinit_set_last_dimensions (GMT->parent);	/* Save cancas size */
 
 	if (GMT->current.proj.n_geodesic_approx) {
@@ -13037,8 +13043,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN && item[0] == '\0')
-					error = gmtlib_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+				if (GMT->current.setting.run_mode == GMT_MODERN) {
+					if (item[0] == '\0')
+						error = gmtlib_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+					else if (item[0] == 'x' && item[1] == '\0')
+						error = gmtlib_parse_B_option (GMT, "xaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+					else if (item[0] == 'y' && item[1] == '\0')
+						error = gmtlib_parse_B_option (GMT, "yaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+					else if (item[0] == 'z' && item[1] == '\0')
+						error = gmtlib_parse_B_option (GMT, "zaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
+					else
+						error = gmtlib_parse_B_option (GMT, item);
+				}
 				else
 					error = gmtlib_parse_B_option (GMT, item);
 			}

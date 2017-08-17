@@ -139,6 +139,7 @@ struct GMTAPI_CTRL {
 	int last_error;				/* Error code from previous API call [GMT_OK] */
 	int shelf;				/* Place to pass hidden values within API */
 	int PPID;				/* The Process ID of the parent (e.g., shell) or the external caller */
+	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */

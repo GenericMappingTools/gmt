@@ -69,6 +69,13 @@ enum GMT_enum_session {
 	GMT_SESSION_FIGURE    = 256	/* Add a figure to the session queue. [Modern mode only] */
 };
 
+/*! Logging settings */
+enum GMT_enum_log {
+	GMT_LOG_OFF	= 0,	/* Let errors go to stderr [Default] */
+	GMT_LOG_ONCE	= 1,	/* Redirect log errors to new source until end of module */
+	GMT_LOG_SET	= 2	/* Change log error destination until changed or session ends */
+};
+
 /*! Miscellaneous settings */
 enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */

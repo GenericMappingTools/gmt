@@ -6136,6 +6136,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 			return_null (API, GMT_ERROR_ON_FOPEN);
 		}
 		API->GMT->session.std[GMT_ERR] = fp;	/* Set the error fp pointer */
+		API->log_level = GMT_LOG_SET;
 	}
 
 	API->n_cores = gmtlib_get_num_processors();	/* Get number of available CPU cores */
@@ -6185,7 +6186,7 @@ int GMT_Destroy_Session (void *V_API) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	gmt_M_free (API->GMT, API->object);
-	if (API->GMT->session.std[GMT_ERR] != stderr)	/* Close the error log fp pointer */
+	if (API->log_level == GMT_LOG_SET)	/* Close the error log fp pointer */
 		fclose (API->GMT->session.std[GMT_ERR]);
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
@@ -10805,6 +10806,63 @@ char * GMT_Error_Message (void *V_API) {
 char * GMT_Error_Message_ () {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Error_Message (GMT_FORTRAN));
+}
+#endif
+
+/*! . */
+int GMT_Handle_Messages (void *V_API, unsigned int mode, unsigned int method, void *dest) {
+	/* Change where verbosity messages go */
+	struct GMTAPI_CTRL *API = NULL;
+	FILE *fp = NULL;
+	int *fd = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	switch (mode) {
+		case GMT_LOG_OFF:	/* Close log file and reset to stderr */
+			if (API->log_level == GMT_LOG_SET)
+				fclose (API->GMT->session.std[GMT_ERR]);
+			API->GMT->session.std[GMT_ERR] = stderr;
+			break;
+		case GMT_LOG_ONCE:	/* Redirect message just until end of next module */
+		case GMT_LOG_SET:	/* Redirect message until end of session (or changed) */
+			if (API->log_level)	/* Cannot turn on when already on */
+				return_error (V_API, GMT_LOGGING_AREADY_ACTIVE);
+			switch (method) {
+				case GMT_IS_FILE:
+					if ((fp = fopen (dest, "w")) == NULL) {
+						GMT_Report (API, GMT_MSG_DEBUG, "Unable to open error log file %s\n", dest);
+						return_error (API, GMT_ERROR_ON_FOPEN);
+					}
+					break;
+				case GMT_IS_STREAM:
+					fp = dest;
+					break;
+				case GMT_IS_FDESC:
+					fd = (int *)dest;	/* Extract the file handle integer */
+					if ((fp = fdopen (*fd, "w")) == NULL) {	/* Reopen handle as stream */
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file descriptor %d for error log\n", *fd);
+						return_error (API, GMT_ERROR_ON_FDOPEN);
+					}
+					break;
+				default:
+					return_error (API, GMT_NOT_A_VALID_METHOD);
+					break;
+			}
+			API->GMT->session.std[GMT_ERR] = fp;	/* Set the error fp pointer */
+			API->log_level = mode;
+			break;
+		default:
+			return_error (API, GMT_NOT_A_VALID_LOGMODE);
+			break;
+	}
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Handle_Messages_ (unsigned int *mode, unsigned int *method, void *dest) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Handle_Messages (GMT_FORTRAN, *mode, *method, dest));
 }
 #endif
 
