@@ -179,7 +179,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 	int n;
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""};
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -252,7 +252,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				else if (strchr (opt->arg, ','))
 					Ctrl->T.list = strdup (opt->arg);
 				else {
-					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
+					//n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+					gmt_scanf_float (GMT, txt_a, &Ctrl->T.low);
+					gmt_scanf_float (GMT, txt_b, &Ctrl->T.high);
+					if (n == 3) gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
+					
 					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify z_min/z_max[/z_inc[+n]]\n");
 					if (n == 3 && (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')) {	/* Gave number of levels instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / (Ctrl->T.inc - 1.0);

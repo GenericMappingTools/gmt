@@ -2187,7 +2187,7 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 }
 
 /*! . */
-GMT_LOCAL int gmtio_scanf_float (char *s, double *val) {
+int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	/* Try to decode a value from s and store
 	in val.  s should not have any special format
 	(neither geographical, with suffixes or
@@ -2204,6 +2204,20 @@ GMT_LOCAL int gmtio_scanf_float (char *s, double *val) {
 	double x;
 	size_t j, k;
 
+	if (strstr (s, "pi")) {	/* Got a number given via multiple/fraction of pi */
+		/* Only allow parsing of [-|+][n]pi[m], with n = 1-9 and m = 2,3,4 */
+		GMT->current.plot.substitute_pi = true;	/* Used in formatting labels */
+		k = 0;
+		if (s[0] == '-') x = -1.0, k = 1;
+		else if (s[0] == '+') x = 1.0, k = 1;
+		else x = 1.0;
+		if (isdigit (s[k])) x *= (s[k]-'0'), k++;	/* Get multiples of pi up to 9 */
+		k += 2;	/* Skip the pi part */
+		if (s[k]) x /= (s[k]-'0');	/* Get pi fraction */
+		*val = x * M_PI;	/* Scale up by pi */
+		return (GMT_IS_FLOAT);
+	}
+	
 	x = strtod (s, &p);
 	if (p[0] == 0) {	/* Success (non-Fortran).  */
 		*val = x;
@@ -2266,7 +2280,7 @@ GMT_LOCAL int gmtio_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 	   string, but we might allow the user to use that in a data file (in GMT->current.setting.[in/out]put_date_format.
 	   Therefore we cannot use the user's date format string here, and we hard-wire something here.
 
-	   The relative format must be decodable by gmtio_scanf_float().  It may optionally end in 't'
+	   The relative format must be decodable by gmt_scanf_float().  It may optionally end in 't'
 	   (which will be stripped off by this routine).
 
 	   The absolute format must have a T.  If it has a clock string then it must be of the form
@@ -2302,8 +2316,8 @@ GMT_LOCAL int gmtio_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 	i = strlen (s) - 1;
 	if (s[i] == 't') s[i] = '\0';
 	if ( (pt = strchr (s, (int)'T') ) == NULL) {
-		/* There is no T.  This must decode with gmtio_scanf_float() or we die.  */
-		if ((gmtio_scanf_float (s, t)) == GMT_IS_NAN) return (GMT_IS_NAN);
+		/* There is no T.  This must decode with gmt_scanf_float() or we die.  */
+		if ((gmt_scanf_float (GMT, s, t)) == GMT_IS_NAN) return (GMT_IS_NAN);
 		return (GMT_IS_RELTIME);
 	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
@@ -6004,7 +6018,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
 		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
 	}
-	else if (isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
+	else if (strstr (s, "pi") == NULL && isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
 	switch (expectation) {
 		case GMT_IS_GEO: case GMT_IS_LON: case GMT_IS_LAT:
@@ -6014,7 +6028,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 
 	 	case GMT_IS_FLOAT:
 			/* True if no special format is expected or allowed  */
-			return (gmtio_scanf_float (s, val));
+			return (gmt_scanf_float (GMT, s, val));
 			break;
 
 	 	case GMT_IS_DIMENSION:
@@ -6033,7 +6047,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			   assume it is relative time in user's units since epoch.  */
 			callen = strlen (s) - 1;
 			if (s[callen] == 't') s[callen] = '\0';
-			if ((gmtio_scanf_float (s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
+			if ((gmt_scanf_float (GMT, s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
 			return (GMT_IS_ABSTIME);
 			break;
 

@@ -206,6 +206,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val);
 EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
 EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode);
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
@@ -353,7 +354,7 @@ EXTERN_MSC struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, en
 EXTERN_MSC unsigned int gmt_gcd_euclid (unsigned int a, unsigned int b);
 EXTERN_MSC unsigned int gmt_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int n_columns, unsigned int n_rows, struct GMT_SURFACE_SUGGESTION **S);
 EXTERN_MSC int gmt_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);
-EXTERN_MSC void gmt_sprintf_float (char *string, char *format, double x);
+EXTERN_MSC void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x);
 EXTERN_MSC void gmt_enable_threads (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
 EXTERN_MSC double gmt_pol_area (double x[], double y[], uint64_t n);

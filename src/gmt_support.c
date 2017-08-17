@@ -2351,15 +2351,15 @@ GMT_LOCAL bool support_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, c
 		case GMT_LABEL_IS_PDIST:
 			if (G->spacing) {	/* Distances are even so use special contour format */
 				gmt_get_format (GMT, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit], G->unit, NULL, format);
-				gmt_sprintf_float (this_label, format, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
+				gmt_sprintf_float (GMT, this_label, format, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			else {
-				gmt_sprintf_float (this_label, GMT->current.setting.format_float_map, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
+				gmt_sprintf_float (GMT, this_label, GMT->current.setting.format_float_map, this_dist * GMT->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			break;
 
 		case GMT_LABEL_IS_MDIST:
-			gmt_sprintf_float (this_label, GMT->current.setting.format_float_map, this_value_dist);
+			gmt_sprintf_float (GMT, this_label, GMT->current.setting.format_float_map, this_value_dist);
 			break;
 
 		case GMT_LABEL_IS_FFILE:
@@ -9716,13 +9716,40 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 }
 
 /*! . */
-void gmt_sprintf_float (char *string, char *format, double x) {
+void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x) {
 	/* Determines if %-apostrophe is used in the format for a float. If so, use LC_NUMERIC=en_US */
 #ifdef HAVE_SETLOCALE
 	char *use_locale = strstr (format, "%'");
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 #endif
-	sprintf (string, format, x);
+	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi */
+		/* We only allow n pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 */
+		double f = fabs (x / M_PI);
+		int n = irint (f);
+		char s = (x < 0.0) ? '-' : '+';
+		if (fabs (f-(double)n) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~%dp@~", s, n);
+		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~3p/2@~", s);
+		else if (fabs (f-1.0) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~p@~", s);
+		else if (fabs (f-0.75) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~3p/4@~", s);
+		else if (fabs (f-0.6666666666666666) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~2p/3@~", s);
+		else if (fabs (f-0.5) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~p/2@~", s);
+		else if (fabs (f-0.3333333333333333) < GMT_CONV6_LIMIT)
+			sprintf (string, "%c@~p/3@~", s);
+		else if (fabs (f-0.25) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~p/4@~", s);
+		else if (fabs (f) < GMT_CONV4_LIMIT)
+			sprintf (string, "0");
+		else
+			sprintf (string, format, x);
+	}
+	else
+		sprintf (string, format, x);
 #ifdef HAVE_SETLOCALE
 	if (use_locale) setlocale (LC_NUMERIC, "C");
 #endif
@@ -12987,7 +13014,7 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 #if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 #endif
-			gmt_sprintf_float (string, format, coord);
+			gmt_sprintf_float (GMT, string, format, coord);
 			break;
 		case GMT_LOG10:
 			sprintf (string, "%ld", lrint (d_log10 (GMT, coord)));
@@ -13114,7 +13141,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
 	if (GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta (set in )*/
-		gmt_sprintf_float (label, GMT->current.setting.format_float_map, val);
+		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
 		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi);
 	else {

@@ -2840,14 +2840,18 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 
 	/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-	/* Decode interval, get pointer to next segment */
-	if ((val = strtod (t, &s)) < 0.0 && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
-		return (3);
-	}
-	if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
-		t = s;
-		phase = strtod (t, &s);
+	if (strstr (t, "pi"))	/* Treat pi-fractions separately */
+		gmt_scanf_float (GMT, in, &val);
+	else {
+		/* Decode interval, get pointer to next segment */
+		if ((val = strtod (t, &s)) < 0.0 && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
+			return (3);
+		}
+		if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
+			t = s;
+			phase = strtod (t, &s);
+		}
 	}
 	if (val == 0.0 && t[0] && t == s) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Bad interval in -B option (%c-component, %c-info): %s gave interval = 0\n", axis, flag, in);
@@ -2855,7 +2859,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	}
 
 	/* Appended one of the allowed units, or l or p for log10/pow */
-	if (s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
+	if (s && s[0] && strchr ("YyOoUuKkJjDdHhMmSsCcrRlp", s[0]))
 		unit = s[0];
 	else if (A->type == GMT_TIME)	/* Default time system unit implied, but use s if custom to avoid resetting of flag below */
 		unit = (A->special == GMT_CUSTOM) ? 's' : GMT->current.setting.time_system.unit;

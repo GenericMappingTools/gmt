@@ -1105,7 +1105,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 							do_annot = false;
 					}
 					else
-						gmt_sprintf_float (text, format, P->data[i].z_low);
+						gmt_sprintf_float (GMT, text, format, P->data[i].z_low);
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 				x1 += z_width[i];
@@ -1123,7 +1123,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 							do_annot = false;
 					}
 					else
-						gmt_sprintf_float (text, format, P->data[i].z_high);
+						gmt_sprintf_float (GMT, text, format, P->data[i].z_high);
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 			}
@@ -1387,7 +1387,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 						this_just = l_justify;
 					}
 					else
-						gmt_sprintf_float (text, format, P->data[i].z_high);
+						gmt_sprintf_float (GMT, text, format, P->data[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}

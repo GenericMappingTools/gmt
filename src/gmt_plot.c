@@ -4851,7 +4851,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		ty = ms->refpoint->y - dist_to_annot;	/* The y-coordinate at the top of the annotations */
 		form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 		for (j = 0; j <= n_a_ticks[i]; j++) {
-			gmt_sprintf_float (format, GMT->current.setting.format_float_map, j * d_base);
+			gmt_sprintf_float (GMT, format, GMT->current.setting.format_float_map, j * d_base);
 			if (ms->unit) /* Must append unit */
 				snprintf (txt, GMT_LEN256, "%s %s", format, units[unit]);
 			else
@@ -4912,7 +4912,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		yp[0] = yp[3] = ms->refpoint->y - scale_height;	yp[1] = yp[2] = ms->refpoint->y;
 		PSL_plotline (PSL, xp, yp, 4, PSL_MOVE + PSL_STROKE);
 		/* Make a basic label using the length and chosen unit and place below the scale */
-		gmt_sprintf_float (format, GMT->current.setting.format_float_map, ms->length);
+		gmt_sprintf_float (GMT, format, GMT->current.setting.format_float_map, ms->length);
 		snprintf (txt, GMT_LEN256, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
 		form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 		PSL_plottext (PSL, ms->refpoint->x, ms->refpoint->y - dist_to_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_TC, form);
