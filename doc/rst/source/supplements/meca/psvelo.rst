@@ -271,7 +271,7 @@ fits inside a rectangle of dimension Esig by Nsig.
    ::
 
     gmt psvelo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18 \
-        -B1g1 -Jx0.4/0.4 -A0.3p -P -V > test.ps
+        -B1g1 -Jx0.4/0.4 -A1c+p3p+e -P -V > test.ps
     #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
     #(deg) (deg) (mm/yr) (mm/yr)
     0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
