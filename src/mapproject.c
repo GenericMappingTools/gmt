@@ -1396,6 +1396,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
+#ifdef PRJ4_BIS
+	if (Ctrl->z.active)		/* Clean up the GDAL CT object */
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT);
+#endif
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
