@@ -152,6 +152,11 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		double speed;	/* Fixed speed in distance units per TIME_UNIT [m/s] */
 		double epoch;	/* Start absolute time for increments */
 	} Z;
+#ifdef PRJ4_BIS
+	struct MPPRJ_z {		// TMP TMP TMP
+		bool active;
+	} z;
+#endif
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -577,6 +582,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (Ctrl->Z.mode & GMT_MP_Z_ABST) Ctrl->used[MP_COL_AT] = true;		/* Output absolute time */
 				break;
 
+#ifdef PRJ4_BIS
+			case 'z':		// TMP TMP TMP
+				Ctrl->z.active = true;
+				Ctrl->C.active = true;
+				Ctrl->F.active = true;
+				if (opt->arg[0])
+					GMT->current.gdal_read_in.hCT = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
+				else
+					GMT->current.gdal_read_in.hCT = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", "+proj=utm +zone=31 +ellps=intl +no_defs");
+				gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear degree projection */
+				GMT->current.proj.fwd = &gmt_proj4proj;
+				GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
+				GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
+				GMT->common.R.active[RSET] = true;
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -732,12 +753,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing = GMT->current.proj.proj4_y0;
 		Ctrl->C.shift = true;
 	}
-	if (GMT->current.proj.is_proj4)
+	if (GMT->current.proj.is_proj4) {
 		Ctrl->C.active = Ctrl->F.active = true;
-	for (k = 0; k < 7; k++) {		/* Check if a +towgs84 was used */
-		if (GMT->current.proj.datum.bursa[k] != 0) {
-			Ctrl->T.active = datum_already_init = true;
-			break;
+		for (k = 0; k < 7; k++) {		/* Check if a +towgs84 was used */
+			if (GMT->current.proj.datum.bursa[k] != 0) {
+				Ctrl->T.active = datum_already_init = true;
+				break;
+			}
 		}
 	}
 #endif
@@ -815,7 +837,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 		}
 	}
+
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+
+#ifdef PRJ4_BIS
+	if (Ctrl->z.active)		// TMP TMP TMP. Just testing proj4 purpose
+		GMT->current.proj.fwd = &gmt_proj4proj;
+#endif
 	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};

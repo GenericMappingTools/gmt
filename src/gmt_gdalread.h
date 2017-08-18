@@ -124,6 +124,7 @@ struct GMT_GDALREAD_IN_CTRL {
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
 	} mini_hdr;
+	OGRCoordinateTransformationH *hCT;		// TEMP TEMP TEMP. Only to quick try access GDAL coordinates transforms
 };
 
 /*! Structure to hold metadata info in a per bands basis read */

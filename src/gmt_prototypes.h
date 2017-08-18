@@ -125,6 +125,11 @@ EXTERN_MSC double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, 
 EXTERN_MSC int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl);
 EXTERN_MSC int gmt_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GMT_GDALWRITE_CTRL *prhs);
 EXTERN_MSC int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I);
+EXTERN_MSC OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation (struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS);
+EXTERN_MSC int gmt_ogrproj (struct GMT_CTRL *GMT, char *pszSrcSRS, char *pszDstSRS, int n_pts,
+                            double *xi, double *yi, double *zi, bool insitu, double *xo, double *yo, double *zo);
+EXTERN_MSC void gmt_ogrproj_one_pt (OGRCoordinateTransformationH *hCT, double *xi, double *yi, double *zi);
+void gmt_proj4proj (struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo);
 #endif
 
 /* gmt_fft.c: */
