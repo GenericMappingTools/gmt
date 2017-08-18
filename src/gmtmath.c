@@ -536,6 +536,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0, k, n_files = 0;
 	bool missing_equal = true;
 	char *c = NULL;
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
@@ -642,13 +643,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					Ctrl->T.notime = true;
 				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
 					Ctrl->T.file = strdup (opt->arg);
-				else {	/* Presumably gave tmin/tmax/tinc */
-					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc) != 3) {
+				else {	/* Presumably gave tmin/tmax/tinc[+n] */
+					if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T: Unable to decode arguments\n");
 						n_errors++;
 					}
-					if (strstr (opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
-						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
+					else {	/* OK to parse individual items */
+						gmt_scanf_float (GMT, txt_a, &Ctrl->T.min);
+						gmt_scanf_float (GMT, txt_b, &Ctrl->T.max);
+						if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
+							c[0] = '\0';
+						gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
+						if (c)
+							Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
 					}
 				}
 				break;
