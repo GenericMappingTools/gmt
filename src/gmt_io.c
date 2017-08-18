@@ -2211,8 +2211,12 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 		if (s[0] == '-') x = -1.0, k = 1;
 		else if (s[0] == '+') x = 1.0, k = 1;
 		else x = 1.0;
-		if (isdigit (s[k])) x *= (s[k]-'0'), k++;	/* Get multiples of pi up to 9 */
-		k += 2;	/* Skip the pi part */
+		if (isdigit (s[k])) {	/* Need an integer multiple of pi */
+			int ival = atoi (&s[k]);
+			x *= ival;	/* Get multiples of pi */
+			while (isdigit (s[k])) k++;
+		}
+		k += 2;	/* Now skip the pi part */
 		if (s[k]) x /= (s[k]-'0');	/* Get pi fraction */
 		*val = x * M_PI;	/* Scale up by pi */
 		return (GMT_IS_FLOAT);

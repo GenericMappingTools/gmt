@@ -9727,8 +9727,10 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 		double f = fabs (x / M_PI);
 		int n = irint (f);
 		char s = (x < 0.0) ? '-' : '+';
-		if (fabs (f-(double)n) < GMT_CONV4_LIMIT)
+		if (n > 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)
 			sprintf (string, "%c@~%dp@~", s, n);
+		else if (n == 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)
+			sprintf (string, "%c@~p@~", s);
 		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)
 			sprintf (string, "%c@~3p/2@~", s);
 		else if (fabs (f-1.0) < GMT_CONV4_LIMIT)

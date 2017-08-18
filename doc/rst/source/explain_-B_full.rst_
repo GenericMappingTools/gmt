@@ -121,6 +121,10 @@
        be plotted as untransformed units. E.g., if *stride* = 1 and *power*
        = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
 
+    Finally, if your axis is in radians you can use multiples or fractions of **pi** to
+    set such annotation intervals.  The format is [*n*\ ]**pi**\ [*m*\ ], for an optional
+    integer *n* and optional *m* fractions 2, 3, or 4.
+
     These GMT parameters can affect the appearance of the map boundary:
     :ref:`MAP_ANNOT_MIN_ANGLE <MAP_ANNOT_MIN_ANGLE>`, :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>`,
     :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`, :ref:`FONT_ANNOT_SECONDARY <FONT_ANNOT_SECONDARY>`,
