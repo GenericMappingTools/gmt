@@ -152,11 +152,9 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		double speed;	/* Fixed speed in distance units per TIME_UNIT [m/s] */
 		double epoch;	/* Start absolute time for increments */
 	} Z;
-#ifdef PRJ4_BIS
 	struct MPPRJ_z {		// TMP TMP TMP
 		bool active;
 	} z;
-#endif
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -582,20 +580,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (Ctrl->Z.mode & GMT_MP_Z_ABST) Ctrl->used[MP_COL_AT] = true;		/* Output absolute time */
 				break;
 
-#ifdef PRJ4_BIS
+#ifdef HAVE_GDAL
 			case 'z':		// TMP TMP TMP
 				Ctrl->z.active = true;
-				Ctrl->C.active = true;
-				Ctrl->F.active = true;
-				if (opt->arg[0])
-					GMT->current.gdal_read_in.hCT = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
-				else
-					GMT->current.gdal_read_in.hCT = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", "+proj=utm +zone=31 +ellps=intl +no_defs");
-				gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear degree projection */
-				GMT->current.proj.fwd = &gmt_proj4proj;
+				Ctrl->C.active = Ctrl->F.active = true;
+				/* Having to declare an inverse function (gmt_map_setup() imposition) must be fixed. */
+				if (opt->arg[0]) {
+					GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
+					GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, opt->arg, "+proj=latlong");
+				}
+				else {
+					GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", "+proj=utm +zone=31 +ellps=intl +no_defs");
+					GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, "+proj=utm +zone=31 +ellps=intl +no_defs", "+proj=latlong");
+				}
+				gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear projection */
 				GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
 				GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
 				GMT->common.R.active[RSET] = true;
+				GMT->current.proj.projection = GMT_PROJ4_PROJS;		// This causes gmt_map_setup to set the fwd & inv funs
 				break;
 #endif
 			default:	/* Report bad options */
@@ -840,11 +842,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-#ifdef PRJ4_BIS
-	if (Ctrl->z.active)		// TMP TMP TMP. Just testing proj4 purpose
-		GMT->current.proj.fwd = &gmt_proj4proj;
-#endif
-	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};
 		switch (Ctrl->W.mode) {
@@ -1396,9 +1393,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
-#ifdef PRJ4_BIS
-	if (Ctrl->z.active)		/* Clean up the GDAL CT object */
-		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT);
+#ifdef HAVE_GDAL
+	if (Ctrl->z.active)	{	/* Clean up the GDAL CT object */
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
+	}
 #endif
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */

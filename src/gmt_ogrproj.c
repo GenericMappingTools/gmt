@@ -104,8 +104,14 @@ void gmt_ogrproj_one_pt(OGRCoordinateTransformationH *hCT, double *xi, double *y
 	OCTTransform(hCT, 1, xi, yi, zi);
 }
 
-void gmt_proj4proj(struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo) {
+void gmt_proj4_fwd(struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo) {
 	/* Function that have the same signature as the GMT coordinate transforms */
 	*xo = xi;	*yo = yi;
-	gmt_ogrproj_one_pt(GMT->current.gdal_read_in.hCT, xo, yo, NULL);
+	gmt_ogrproj_one_pt(GMT->current.gdal_read_in.hCT_fwd, xo, yo, NULL);
+}
+
+void gmt_proj4_inv(struct GMT_CTRL *GMT, double *xi, double *yi, double xo, double yo) {
+	/* The inverse transform */
+	*xi = xo;	*yi = yo;
+	gmt_ogrproj_one_pt(GMT->current.gdal_read_in.hCT_inv, xi, yi, NULL);
 }

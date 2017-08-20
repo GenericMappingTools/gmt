@@ -118,6 +118,9 @@ enum gmt_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_ECKERT6,
 	GMT_WINKEL};
 
+/* All projections from proj.4 lib */
+enum gmt_enum_allprojs {GMT_PROJ4_PROJS = 500};
+
 /*! The various GMT measurement units */
 enum gmt_enum_units {GMT_IS_METER = 0,
 	GMT_IS_KM,

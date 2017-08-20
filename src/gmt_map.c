@@ -3214,6 +3214,37 @@ GMT_LOCAL void map_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, doubl
 }
 #endif
 
+#ifdef HAVE_GDAL
+/*!
+ *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
+ */
+ GMT_LOCAL bool map_init_proj4 (struct GMT_CTRL *GMT) {
+	double xmin, xmax, ymin, ymax;
+
+	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
+	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
+	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
+	GMT->current.map.n_lat_nodes = 2;
+	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+	GMT->current.proj.fwd = &gmt_proj4_fwd;
+	GMT->current.proj.inv = &gmt_proj4_inv;
+	GMT->current.map.outside = &map_wesn_outside;
+	GMT->current.map.crossing = &map_wesn_crossing;
+	GMT->current.map.overlap = &map_wesn_overlap;
+	GMT->current.map.clip = &map_wesn_clip;
+	GMT->current.map.left_edge = &map_left_rect;
+	GMT->current.map.right_edge = &map_right_rect;
+	GMT->current.map.frame.horizontal = 1;
+	GMT->current.map.frame.check_side = true;
+	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
+
+	return (false);	/* No need to search for wesn */
+}
+#endif
+
 /*! . */
 GMT_LOCAL void map_get_origin (struct GMT_CTRL *GMT, double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2) {
 	double beta, dummy, d, az, c;
@@ -8915,6 +8946,12 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		case GMT_POLYCONIC:		/* Polyconic */
 			search = map_init_polyconic (GMT);
 			break;
+
+#ifdef HAVE_GDAL
+		case GMT_PROJ4_PROJS:	/* All proj.4 projections */
+			search = map_init_proj4 (GMT);
+			break;
+#endif
 
 		default:	/* No projection selected, return to a horrible death */
 			Return (GMT_MAP_NO_PROJECTION);
