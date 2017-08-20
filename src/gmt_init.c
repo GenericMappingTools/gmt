@@ -3785,7 +3785,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 	if (project != GMT_ZAXIS) {
 		/* Check to see if scale is specified in 1:xxxx */
-		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
+		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--)
+			if (args[j] == ':') k = j + 1;
 		GMT->current.proj.units_pr_degree = (k == -1) ? true : false;
 		gmt_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
@@ -3807,7 +3808,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			error += (n_slashes > 1) ? 1 : 0;
 
 			/* Find occurrences of /, l, p, t, or d */
-			for (j = 0, slash = 0; args[j] && slash == 0; j++) if (args[j] == '/') slash = j;
+			for (j = 0, slash = 0; args[j] && slash == 0; j++)
+				if (args[j] == '/') slash = j;
 			for (j = id = 0; args[j]; j++) {
 				if (args[j] == '/') id = 1;
 				if (strchr ("Ll"  , (int)args[j])) l_pos[id] = j;
@@ -4235,9 +4237,11 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				}
 				error += (m == 0) ? 1 : 0;
 				if (error) gmt_message (GMT, "scale entered but couldn't read\n");
-			} else  if (width_given) {
+			}
+			else  if (width_given) {
 				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
-			} else {
+			}
+			else {
 				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-2][0]));
 				/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
 				if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
@@ -13077,11 +13081,52 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT->common.J.zactive = true;
 			}
 #ifdef PRJ4
-			else if (item && (item[0] == '"' || item[0] == '+' || isdigit(item[0]))) {
-				char *item2 = gmt_importproj4 (GMT, item);
+			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
+				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, *pch;
+				bool do_free = false;
+				if (item[0] == '+') {
+					bool found = false;
+					size_t k, len = strlen (item);
+					for (k = 1; k < len; k++) {			/* Search for glued tokens */
+						if (item[k] == '+' && item[k-1] != ' ') {
+							found = true;
+							break;
+						}
+					}
+					if (found) {			/* OK, need to break up things like +x=0+y=0 into "+x=0 +y=0" */
+						item_t1 = gmt_strrep (item, "+", " +");
+						do_free = true;		/* Signal that we must free item_t1 */
+					}
+					else
+						item_t1 = item;
+				}
+				else if (strstr(item, "EPSG:"))
+					item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
+				else
+					item_t1 = item;
+
+				item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
-				                                 gmtinit_parse_J_option (GMT, item2));
-				free (item2);
+				                                 gmtinit_parse_J_option (GMT, item_t2));
+				if (isdigit(item[0]))
+					sprintf (item_t3, "EPSG:%s", item);
+				else if (strstr(item, "EPSG:"))
+					sprintf (item_t3, "%s", item);
+				else
+					sprintf (item_t3, "%s", item_t1);
+	
+				/* CAN'T DO THIS BECAUSE IT CRASHES IN Destroy_options() 	WHY!!!!!!!!
+				free (item);
+				item = item_t2;
+				*/
+				free (item_t2);	
+				if (do_free) free (item_t1);
+
+				if ((pch = strchr(item_t3, '/')) != NULL)	/* If we have a scale drop it before passing the string to GDAL */
+					pch[0] = '\0';
+				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, "+proj=latlong", item_t3);
+				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, item_t3, "+proj=latlong");
+				GMT->current.proj.projection = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
 				GMT->common.J.active = true;
 			}
 #endif

@@ -585,14 +585,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				Ctrl->z.active = true;
 				Ctrl->C.active = Ctrl->F.active = true;
 				/* Having to declare an inverse function (gmt_map_setup() imposition) must be fixed. */
-				if (opt->arg[0]) {
-					GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
-					GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, opt->arg, "+proj=latlong");
-				}
-				else {
-					GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", "+proj=utm +zone=31 +ellps=intl +no_defs");
-					GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, "+proj=utm +zone=31 +ellps=intl +no_defs", "+proj=latlong");
-				}
+				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
+				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, opt->arg, "+proj=latlong");
 				gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear projection */
 				GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
 				GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
@@ -615,6 +609,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
 		GMT->common.R.active[RSET] = true;
 	}
+	if (GMT->current.proj.is_proj4) 
+		Ctrl->C.active = Ctrl->F.active = true;
 #endif
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
@@ -749,7 +745,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode) Return (GMT_NOERROR);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-#ifdef PRJ4
+#ifdef PRJ4__		// Comment this part now that gmt_parse_common_options sets the things to do the projections with proj.4
 	if (!Ctrl->C.shift && (GMT->current.proj.proj4_x0 != 0 || GMT->current.proj.proj4_y0 != 0)) {	/* Set by a proj4 string */
 		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
 		Ctrl->C.northing = GMT->current.proj.proj4_y0;
@@ -1394,10 +1390,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	} while (true);
 
 #ifdef HAVE_GDAL
-	if (Ctrl->z.active)	{	/* Clean up the GDAL CT object */
+	/* If that's the case, clean up the GDAL CT object */
+	if (GMT->current.gdal_read_in.hCT_fwd)
 		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+	if (GMT->current.gdal_read_in.hCT_inv)
 		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
-	}
 #endif
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
