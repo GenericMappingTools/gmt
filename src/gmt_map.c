@@ -3222,8 +3222,8 @@ GMT_LOCAL void map_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, doubl
 	double xmin, xmax, ymin, ymax;
 
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
-	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
+	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
+	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
 	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
