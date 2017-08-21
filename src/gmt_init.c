@@ -3720,6 +3720,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 			return (1);
 		}
 	}
+	GMT->current.proj.pars[15] = *value;	/* Store the scale here so we always know where to find it */
 	return (GMT_NOERROR);
 }
 

@@ -610,15 +610,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		GMT->common.R.active[RSET] = true;
 	}
 	if (GMT->current.proj.is_proj4) {
-		/* We need to know if scale == 1 but that is not stored directly any where and furtheremore the indirect
-		   value may be stored in different places of proj.pars[], so scan them and try to find if one ~= 1
-		*/
-		for (k = 0; k < 5; k++) {
-			if (fabs(1 / GMT->current.proj.pars[k] - GMT->current.proj.unit) < 1e-5) {
-				Ctrl->C.active = Ctrl->F.active = true;
-				break;
-			}
-		}
+		/* See if scale == 1:1 and if yes set -C -F */
+		if (fabs(1 / GMT->current.proj.pars[15] - GMT->current.proj.unit) < 1e-5)
+			Ctrl->C.active = Ctrl->F.active = true;
 	}
 #endif
 

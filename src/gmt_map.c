@@ -3219,11 +3219,12 @@ GMT_LOCAL void map_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, doubl
  *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
  */
  GMT_LOCAL bool map_init_proj4 (struct GMT_CTRL *GMT) {
+	int k;
 	double xmin, xmax, ymin, ymax;
 
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
-	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
+	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[15] /= GMT->current.proj.M_PR_DEG;
+	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[15];
 	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);

@@ -246,7 +246,7 @@ struct GMT_PROJ {
 	void (*inv_y) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear y inverse function */
 	void (*inv_z) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear z inverse function */
 
-	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
+	double pars[16];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
 
 	/* Common projection parameters */
