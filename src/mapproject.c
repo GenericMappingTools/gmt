@@ -609,8 +609,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
 		GMT->common.R.active[RSET] = true;
 	}
-	if (GMT->current.proj.is_proj4) 
-		Ctrl->C.active = Ctrl->F.active = true;
+	if (GMT->current.proj.is_proj4) {
+		/* We need to know if scale == 1 but that is not stored directly any where and furtheremore the indirect
+		   value may be stored in different places of proj.pars[], so scan them and try to find if one ~= 1
+		*/
+		for (k = 0; k < 5; k++) {
+			if (fabs(1 / GMT->current.proj.pars[k] - GMT->current.proj.unit) < 1e-5) {
+				Ctrl->C.active = Ctrl->F.active = true;
+				break;
+			}
+		}
+	}
 #endif
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
