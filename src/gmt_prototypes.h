@@ -128,7 +128,7 @@ EXTERN_MSC int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 EXTERN_MSC OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation (struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS);
 EXTERN_MSC int gmt_ogrproj (struct GMT_CTRL *GMT, char *pszSrcSRS, char *pszDstSRS, int n_pts,
                             double *xi, double *yi, double *zi, bool insitu, double *xo, double *yo, double *zo);
-EXTERN_MSC void gmt_ogrproj_one_pt (OGRCoordinateTransformationH *hCT, double *xi, double *yi, double *zi);
+EXTERN_MSC void gmt_ogrproj_one_pt (OGRCoordinateTransformationH hCT, double *xi, double *yi, double *zi);
 void gmt_proj4_fwd (struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo);
 void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, double yo);
 #endif

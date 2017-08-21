@@ -33,7 +33,7 @@ OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation(struct GMT_CTRL *G
 	   OCTDestroyCoordinateTransformation(hCT);
 	*/
 	OGRSpatialReferenceH hSrcSRS, hDstSRS; 
-	OGRCoordinateTransformationH *hCT; 
+	OGRCoordinateTransformationH hCT; 
 
 	/* ------------------ Set the Source projection ----------------------------- */
 	hSrcSRS = OSRNewSpatialReference(NULL);
@@ -61,7 +61,7 @@ OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation(struct GMT_CTRL *G
 		OSRExportToPrettyWkt(hSrcSRS, &pszSrcWKT, FALSE);
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n%s\n%s\n", pszSrcWKT, pszDstWKT);
-		OGRFree(pSrcSRS);		OGRFree(pDstSRS);
+		CPLFree(pSrcSRS);		CPLFree(pDstSRS);
 	}
 	return hCT;
 }
@@ -96,7 +96,7 @@ int gmt_ogrproj(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS, int n_pts,
 	return (GMT_NOERROR);
 }
 
-void gmt_ogrproj_one_pt(OGRCoordinateTransformationH *hCT, double *xi, double *yi, double *zi) {
+void gmt_ogrproj_one_pt(OGRCoordinateTransformationH hCT, double *xi, double *yi, double *zi) {
 	/* Suitable to call on a rec-by-rec basis because *hCT must have been initiated outside.
 	   Again, *zi may be NULL for the 2D case and after last point the hCT GDAL object must be cleaned by a call to
 	   OCTDestroyCoordinateTransformation(hCT);
