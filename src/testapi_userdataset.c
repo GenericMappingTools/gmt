@@ -35,7 +35,7 @@ void *get_array (unsigned int type, unsigned int set) {
 			break;
 		case GMT_FLOAT:
 			f = vector = calloc (NM, sizeof (float));
-			if (set) for (k = 0; k < NM; k++) f[k] = k;
+			if (set) for (k = 0; k < NM; k++) f[k] = (float)k;
 			break;
 		case GMT_ULONG:
 			ul = vector = calloc (NM, sizeof (uint64_t));

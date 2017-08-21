@@ -13084,9 +13084,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
 				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, *pch;
 				bool do_free = false;
+				size_t k, len;
 				if (item[0] == '+') {
 					bool found = false;
-					size_t k, len = strlen (item);
+					len = strlen (item);
 					for (k = 1; k < len; k++) {			/* Search for glued tokens */
 						if (item[k] == '+' && item[k-1] != ' ') {
 							found = true;
@@ -13119,6 +13120,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				free (item);
 				item = item_t2;
 				*/
+				/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
+				k = 0;
+				while (item_t2[k]) item[k] = item_t2[k++];
+				item[k] = '\0';
 				free (item_t2);	
 				if (do_free) free (item_t1);
 
