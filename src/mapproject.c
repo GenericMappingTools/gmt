@@ -604,7 +604,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 #ifdef PRJ4
 	/* The following lousy hack allows NOT having to specify -R */
-	if (GMT->current.proj.is_proj4 && !GMT->common.R.active[RSET] && !GMT->current.proj.gave_map_width) {	/* Means MAYBE a 1:1 scale was used */
+	if (GMT->current.proj.is_proj4 && !GMT->common.R.active[RSET]) {	/* Means MAYBE a 1:1 scale was used */
 		GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
 		GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
 		GMT->common.R.active[RSET] = true;

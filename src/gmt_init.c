@@ -13108,6 +13108,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					item_t1 = item;
 
 				item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
+				len = strlen(item_t2);
+				if (item_t2[len-1] == 'W') {					/* See if scale is in fact a width */
+					item_t2[0] = toupper(item_t2[0]);			/* and let the GMT machinery detect this fact */
+					item_t2[len-1] = '\0';
+				}
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
 				                                 gmtinit_parse_J_option (GMT, item_t2));
 				if (isdigit(item[0]))

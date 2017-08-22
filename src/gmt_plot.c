@@ -5828,6 +5828,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		wipe_substr(szProj4, token);
 	}
 
+	/* Override the /1:xxx scale set at the begining of this function if a +scale=scale is found */
+	if ((pch = strstr(szProj4, "+scale=")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		sprintf(scale_c, "%s", &token[6]);
+		wipe_substr(szProj4, token);
+	}
+	/* If a +width=xx is given, append it a 'W' so that we identify this in gmt_parse_common_options() and act */
+	if ((pch = strstr(szProj4, "+width=")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		sprintf(scale_c, "%sW", &token[6]);
+		wipe_substr(szProj4, token);
+	}
+
 	strcat (opt_J, scale_c);
 	if (got_lonlat && (strlen(scale_c) != 3 || !strchr(scale_c, ':')))		/* But this will all fail if x-scale & y-scale is given */
 		strcat (opt_J, "d");
