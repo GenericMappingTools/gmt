@@ -2088,7 +2088,7 @@ GMT_LOCAL void plot_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
  */
 
 GMT_LOCAL bool plot_is_fancy_boundary (struct GMT_CTRL *GMT) {
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:
 			return (gmt_M_is_geographic (GMT, GMT_IN));
 			break;

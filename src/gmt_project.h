@@ -252,6 +252,7 @@ struct GMT_PROJ {
 	/* Common projection parameters */
 
 	int projection;		/* Gives the id number for the projection used (-1 if not set) */
+	int projection_GMT;	/* A copy of the above to use when using the Proj.4 lib for coord/mapp transforms */
 	int autoscl[2];		/* If +1 then set x/y-scale to y/x-scale and compute height/width, -1 reverses direction */
 
 	bool units_pr_degree;	/* true if scale is given as inch (or cm)/degree.  false for 1:xxxxx */

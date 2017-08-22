@@ -3214,37 +3214,6 @@ GMT_LOCAL void map_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, doubl
 }
 #endif
 
-#ifdef HAVE_GDAL
-/*!
- *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
- */
- GMT_LOCAL bool map_init_proj4 (struct GMT_CTRL *GMT) {
-	double xmin, xmax, ymin, ymax;
-
-	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[15] /= GMT->current.proj.M_PR_DEG;
-	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[15];
-	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-	gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
-	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[15]);
-	GMT->current.map.n_lat_nodes = 2;
-	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT->current.proj.fwd = &gmt_proj4_fwd;
-	GMT->current.proj.inv = &gmt_proj4_inv;
-	GMT->current.map.outside = &map_wesn_outside;
-	GMT->current.map.crossing = &map_wesn_crossing;
-	GMT->current.map.overlap = &map_wesn_overlap;
-	GMT->current.map.clip = &map_wesn_clip;
-	GMT->current.map.left_edge = &map_left_rect;
-	GMT->current.map.right_edge = &map_right_rect;
-	GMT->current.map.frame.horizontal = 1;
-	GMT->current.map.frame.check_side = true;
-	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
-
-	//return (GMT->common.R.oblique);
-	return (false);	/* No need to search for wesn */
-}
-#endif
 
 /*! . */
 GMT_LOCAL void map_get_origin (struct GMT_CTRL *GMT, double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2) {
@@ -4890,6 +4859,55 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 
 	return (GMT->common.R.oblique);
 }
+
+#ifdef HAVE_GDAL
+/*!
+ *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
+ */
+ GMT_LOCAL bool map_init_proj4 (struct GMT_CTRL *GMT) {
+	/*
+	*  Here we use the trick of letting the previous GMT functions do the necessary initializations
+	*  and at the end just replace the pointers to the FWD & INV transform functions to those of GDAL.
+	*/
+	bool search;
+
+	switch (GMT->current.proj.projection_GMT) {
+		case GMT_LINEAR:        search = map_init_linear (GMT); break;      /* Linear transformations */
+		case GMT_POLAR:         search = map_init_polar (GMT); break;       /* Both lon/lat are actually theta, radius */
+		case GMT_MERCATOR:      search = map_init_merc (GMT); break;        /* Standard Mercator projection */
+		case GMT_STEREO:        search = map_init_stereo (GMT); break;      /* Stereographic projection */
+		case GMT_LAMBERT:       search = map_init_lambert (GMT); break;     /* Lambert Conformal Conic */
+		case GMT_OBLIQUE_MERC:  search = map_init_oblique (GMT); break;     /* Oblique Mercator */
+		case GMT_TM:            search = map_init_tm (GMT); break;          /* Transverse Mercator */
+		case GMT_UTM:           search = map_init_utm (GMT); break;         /* Universal Transverse Mercator */
+		case GMT_LAMB_AZ_EQ:    search = map_init_lambeq (GMT); break;      /* Lambert Azimuthal Equal-Area */
+		case GMT_ORTHO:         search = map_init_ortho (GMT); break;       /* Orthographic Projection */
+		case GMT_GENPER:        search = map_init_genper (GMT); break;      /* General Perspective Projection */
+		case GMT_AZ_EQDIST:     search = map_init_azeqdist (GMT); break;    /* Azimuthal Equal-Distance Projection */
+		case GMT_GNOMONIC:      search = map_init_gnomonic (GMT); break;    /* Azimuthal Gnomonic Projection */
+		case GMT_MOLLWEIDE:     search = map_init_mollweide (GMT); break;   /* Mollweide Equal-Area */
+		case GMT_HAMMER:        search = map_init_hammer (GMT); break;      /* Hammer-Aitoff Equal-Area */
+		case GMT_VANGRINTEN:    search = map_init_grinten (GMT); break;     /* Van der Grinten */
+		case GMT_WINKEL:        search = map_init_winkel (GMT); break;      /* Winkel Tripel */
+		case GMT_ECKERT4:       search = map_init_eckert4 (GMT); break;     /* Eckert IV */
+		case GMT_ECKERT6:       search = map_init_eckert6 (GMT); break;     /* Eckert VI */
+		case GMT_CYL_EQ:        search = map_init_cyleq (GMT); break;       /* Cylindrical Equal-Area */
+		case GMT_CYL_STEREO:    search = map_init_cylstereo (GMT); break;   /* Cylindrical Stereographic */
+		case GMT_MILLER:        search = map_init_miller (GMT); break;      /* Miller Cylindrical */
+		case GMT_CYL_EQDIST:    search = map_init_cyleqdist (GMT); break;   /* Cylindrical Equidistant */
+		case GMT_ROBINSON:      search = map_init_robinson (GMT); break;    /* Robinson */
+		case GMT_SINUSOIDAL:    search = map_init_sinusoidal (GMT); break;  /* Sinusoidal Equal-Area */
+		case GMT_CASSINI:       search = map_init_cassini (GMT); break;     /* Cassini cylindrical */
+		case GMT_ALBERS:        search = map_init_albers (GMT); break;      /* Albers Equal-Area Conic */
+		case GMT_ECONIC:        search = map_init_econic (GMT); break;      /* Equidistant Conic */
+		case GMT_POLYCONIC:     search = map_init_polyconic (GMT); break;   /* Polyconic */
+	}
+	/* Now we only have to replace the pointers to the FWD and INV transform functions */
+	GMT->current.proj.fwd = &gmt_proj4_fwd;
+	GMT->current.proj.inv = &gmt_proj4_inv;
+	return search;
+}
+#endif
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
