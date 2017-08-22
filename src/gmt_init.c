@@ -605,12 +605,11 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	wesn[XLO] = GMT->current.proj.lon0 - 1.0;		wesn[XHI] = GMT->current.proj.lon0 + 1.0;
 	wesn[YLO] = MAX (GMT->current.proj.lat0 -1.0, -90.0);	wesn[YHI] = MIN (GMT->current.proj.lat0 + 1.0, 90.0);
 
-	proj_class = GMT->current.proj.projection / 100;	/* 1-4 for valid projections */
-	if (GMT->current.proj.projection == GMT_AZ_EQDIST) proj_class = 4;	/* Make -JE use global region */
+	proj_class = GMT->current.proj.projection_GMT / 100;	/* 1-4 for valid projections */
+	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST) proj_class = 4;	/* Make -JE use global region */
 	switch (proj_class) {
 		case 1:	/* Cylindrical: pick small equatorial patch centered on central meridian */
-			if (GMT->current.proj.projection == GMT_UTM && gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, wesn))
-			{
+			if (GMT->current.proj.projection_GMT == GMT_UTM && gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, wesn)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
 			}
@@ -3083,7 +3082,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
 			double lon, lat;
 			char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
-			if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {
+			if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 				error++;
 			}
@@ -3094,7 +3093,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, A, GMT_IS_LON, &lon), A);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, B, GMT_IS_LAT, &lat), B);
-			if (GMT->current.proj.projection != GMT_OBLIQUE_MERC) gmtlib_set_oblique_pole_and_origin (GMT, lon, lat, 0.0, 0.0);
+			if (GMT->current.proj.projection_GMT != GMT_OBLIQUE_MERC) gmtlib_set_oblique_pole_and_origin (GMT, lon, lat, 0.0, 0.0);
 			o = i;
 			in[o] = '\0';	/* Chop off +o for now */
 		}
@@ -3185,7 +3184,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 	}
 
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
-	if (GMT->current.proj.projection == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
+	if (GMT->current.proj.projection_GMT == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (i = 0; i < 2; i++) {
 			if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_GEO && GMT->current.map.frame.axis[i].unit[0] == 0) {
 				GMT->current.map.frame.axis[i].unit[0] = '-';
@@ -3337,7 +3336,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					GMT->current.map.frame.no_frame = true;
 					break;
 				case 'o':	/* Specify pole for oblique gridlines */
-					if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {
+					if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 						            "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 						error++;
@@ -3558,7 +3557,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	}
 
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit (suffix) - if so set degree symbol as unit */
-	if (GMT->current.proj.projection == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
+	if (GMT->current.proj.projection_GMT == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (no = 0; no < 2; no++) {
 			if (GMT->current.io.col_type[GMT_IN][no] & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
 				GMT->current.map.frame.axis[no].unit[0] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
@@ -6608,7 +6607,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			break;
 
 		case 'J':	/* Map projection option */
-			switch (GMT->current.proj.projection) {
+			switch (GMT->current.proj.projection_GMT) {
 				case GMT_LAMB_AZ_EQ:
 					gmt_message (GMT, "\t-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>\n");
 					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (<= 180, default 90)\n");
@@ -7092,7 +7091,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			if (gmt_M_is_Npole (G->header->wesn[YHI])) G->header->wesn[YHI] = +90.0;
 			if (gmt_M_is_Spole (G->header->wesn[YLO])) G->header->wesn[YLO] = -90.0;
 		}
-		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
+		if ((GMT->current.proj.projection_GMT == GMT_UTM || GMT->current.proj.projection_GMT == GMT_TM || GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
 			if (fabs (G->header->wesn[XLO]) > 360.0 || fabs (G->header->wesn[XHI]) > 360.0 \
 			  || fabs (G->header->wesn[YLO]) > 90.0 || fabs (G->header->wesn[YHI]) > 90.0) {	/* Yes we probably did, but cannot be sure */
 				inv_project = true;
@@ -7169,8 +7168,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			inv_project = true;
 	}
-	else if (item[length] != 'r' && !strstr (item, "+r") && (GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM ||
-	         GMT->current.proj.projection == GMT_STEREO)) {	/* Just _might_ be getting -R in meters, better check */
+	else if (item[length] != 'r' && !strstr (item, "+r") && (GMT->current.proj.projection_GMT == GMT_UTM || GMT->current.proj.projection_GMT == GMT_TM ||
+	         GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Just _might_ be getting -R in meters, better check */
 		double rect[4];
 		strncpy (string, item, GMT_BUFSIZ-1);
 		sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
