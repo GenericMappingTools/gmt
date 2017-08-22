@@ -81,7 +81,7 @@ enum GMT_mp_cols {
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	bool used[8];	/* Used to keep track of which items are used by -A,G,L,Z */
-	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
+	struct MAPPRJ_A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
 		bool active;
 		bool azims;
 		bool orient;	/* true if we want orientations, not azimuths */
@@ -90,71 +90,68 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		unsigned int mode;
 		double lon, lat;	/* Fixed point of reference */
 	} A;
-	struct C {	/* -C[<false_easting>/<false_northing>] */
+	struct MAPPRJ_C {	/* -C[<false_easting>/<false_northing>] */
 		bool active;
 		bool shift;
 		double easting, northing;	/* Shifts */
 	} C;
-	struct D {	/* -D<c|i|p> */
+	struct MAPPRJ_D {	/* -D<c|i|p> */
 		bool active;
 		char unit;
 	} D;
-	struct E {	/* -E[<datum>] */
+	struct MAPPRJ_E {	/* -E[<datum>] */
 		bool active;
 		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
-	struct F {	/* -F[k|m|n|i|c|p] */
+	struct MAPPRJ_F {	/* -F[k|m|n|i|c|p] */
 		bool active;
 		char unit;
 	} F;
-	struct G {	/* -G<lon0>/<lat0>[+a][+i][+u[+|-]d|e|f|k|m|M|n|s|c|C][+v] */
+	struct MAPPRJ_G {	/* -G<lon0>/<lat0>[+a][+i][+u[+|-]d|e|f|k|m|M|n|s|c|C][+v] */
 		bool active;
 		unsigned int mode;	/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
 		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
-	struct I {	/* -I */
+	struct MAPPRJ_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
+	struct MAPPRJ_L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
 		bool active;
 		unsigned int mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
 		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
-	struct N {	/* -N */
+	struct MAPPRJ_N {	/* -N */
 		bool active;
 		unsigned int mode;
 	} N;
-	struct Q {	/* -Q[e|d] */
+	struct MAPPRJ_Q {	/* -Q[e|d] */
 		bool active;
 		unsigned int mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
-	struct S {	/* -S */
+	struct MAPPRJ_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T[h]<from>[/<to>] */
+	struct MAPPRJ_T {	/* -T[h]<from>[/<to>] */
 		bool active;
 		bool heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
-	struct W {	/* -W[w|h] */
+	struct MAPPRJ_W {	/* -W[w|h] */
 		bool active;
 		unsigned int mode;	/* 0 = print width & height, 1 print width, 2 print height */
 	} W;
-	struct Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
+	struct MAPPRJ_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
 		bool active;
 		bool formatted;		/* Format duration per ISO 8601 specification */
 		unsigned int mode;	/* 1 = incremental time, 2 absolute time since epoch, 3 = both */
 		double speed;	/* Fixed speed in distance units per TIME_UNIT [m/s] */
 		double epoch;	/* Start absolute time for increments */
 	} Z;
-	struct MPPRJ_z {		// TMP TMP TMP
-		bool active;
-	} z;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -580,20 +577,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (Ctrl->Z.mode & GMT_MP_Z_ABST) Ctrl->used[MP_COL_AT] = true;		/* Output absolute time */
 				break;
 
-#ifdef HAVE_GDAL
-			case 'z':		// TMP TMP TMP
-				Ctrl->z.active = true;
-				Ctrl->C.active = Ctrl->F.active = true;
-				/* Having to declare an inverse function (gmt_map_setup() imposition) must be fixed. */
-				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong", opt->arg);
-				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, opt->arg, "+proj=latlong");
-				gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear projection */
-				GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
-				GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
-				GMT->common.R.active[RSET] = true;
-				GMT->current.proj.projection = GMT_PROJ4_PROJS;		// This causes gmt_map_setup to set the fwd & inv funs
-				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
