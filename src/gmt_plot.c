@@ -1418,7 +1418,7 @@ GMT_LOCAL void plot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	 * which side of a rectangular box it occurs.  There are exception for round maps, etc.  It is a bit nebulous and could
 	 * need a better explanation.  For instance, I commented out the Gnomonic case which is needed for annotations but not here, apparently */
 	set_angle = ((!GMT->common.R.oblique && !(gmt_M_is_azimuthal(GMT) || gmt_M_is_conical(GMT))) || GMT->common.R.oblique);
-	if (!GMT->common.R.oblique && (GMT->current.proj.projection_GMT == GMT_GENPER || GMT->current.proj.projection_GMT == GMT_POLYCONIC)) set_angle = true;
+	if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
 
 	for (i = 0; i < nx; i++) {
 		if (!GMT->current.proj.edge[sides[i]]) continue;
@@ -1789,7 +1789,7 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 GMT_LOCAL void plot_map_tickmarks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	/* Tickmarks at annotation interval has already been done except when annotations were not desired */
 
-	if (!(gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) return;	/* Tickmarks already done by linear axis */
+	if (!(gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) return;	/* Tickmarks already done by linear axis */
 
 	PSL_comment (PSL, "Map tickmarks\n");
 
@@ -1839,7 +1839,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del, shift = 0.0;
 
-	if (!(gmt_M_x_is_lon (GMT, GMT_IN) || gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) return;	/* Annotations and header already done by plot_linear_map_boundary */
+	if (!(gmt_M_x_is_lon (GMT, GMT_IN) || gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) return;	/* Annotations and header already done by plot_linear_map_boundary */
 
 	is_world_save = GMT->current.map.is_world;
 	lon_wrap_save = GMT->current.map.lon_wrap;
@@ -1866,12 +1866,12 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		/* Determine if we should annotate both 0 and 360 degrees */
 
 		full_lat_range = (fabs (180.0 - fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) < GMT_CONV4_LIMIT);
-		proj_A = (GMT->current.proj.projection_GMT == GMT_MERCATOR || GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC ||
-			GMT->current.proj.projection_GMT == GMT_WINKEL || GMT->current.proj.projection_GMT == GMT_ECKERT4 || GMT->current.proj.projection_GMT == GMT_ECKERT6 ||
-			GMT->current.proj.projection_GMT == GMT_ROBINSON || GMT->current.proj.projection_GMT == GMT_CYL_EQ || GMT->current.proj.projection_GMT == GMT_CYL_STEREO ||
-			GMT->current.proj.projection_GMT == GMT_CYL_EQDIST || GMT->current.proj.projection_GMT == GMT_MILLER || GMT->current.proj.projection_GMT == GMT_LINEAR);
-		proj_B = (GMT->current.proj.projection_GMT == GMT_HAMMER || GMT->current.proj.projection_GMT == GMT_MOLLWEIDE ||
-			GMT->current.proj.projection_GMT == GMT_SINUSOIDAL);
+		proj_A = (GMT->current.proj.projection == GMT_MERCATOR || GMT->current.proj.projection == GMT_OBLIQUE_MERC ||
+			GMT->current.proj.projection == GMT_WINKEL || GMT->current.proj.projection == GMT_ECKERT4 || GMT->current.proj.projection == GMT_ECKERT6 ||
+			GMT->current.proj.projection == GMT_ROBINSON || GMT->current.proj.projection == GMT_CYL_EQ || GMT->current.proj.projection == GMT_CYL_STEREO ||
+			GMT->current.proj.projection == GMT_CYL_EQDIST || GMT->current.proj.projection == GMT_MILLER || GMT->current.proj.projection == GMT_LINEAR);
+		proj_B = (GMT->current.proj.projection == GMT_HAMMER || GMT->current.proj.projection == GMT_MOLLWEIDE ||
+			GMT->current.proj.projection == GMT_SINUSOIDAL);
 		annot_0_and_360 = (is_world_save && (proj_A || (!full_lat_range && proj_B)));
 	}
 	else
@@ -1897,7 +1897,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	GMT->current.map.on_border_is_outside = true;	/* Temporarily, points on the border are outside */
 	if (!GMT->common.R.oblique) {
 		GMT->current.map.is_world = false;
-		if (!(GMT->current.proj.projection_GMT == GMT_GENPER || GMT->current.proj.projection_GMT == GMT_GNOMONIC)) GMT->current.map.lon_wrap = false;
+		if (!(GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_GNOMONIC)) GMT->current.map.lon_wrap = false;
 	}
 
 	w2 = (dx[1] > 0.0) ? floor (w / dx[1]) * dx[1] : 0.0;
@@ -1907,7 +1907,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	if (dual[GMT_Y]) remove[GMT_Y] = (dy[0] < (1.0/60.0)) ? 2 : 1;
 	add = (is_dual) ? 1 : 0;
 	for (k = 0; k < 1 + add; k++) {
-		if (dx[k] > 0.0 && (gmt_M_x_is_lon (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) {	/* Annotate the S and N boundaries */
+		if (dx[k] > 0.0 && (gmt_M_x_is_lon (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = false;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_CONV4_LIMIT);
 			do_seconds = plot_set_do_seconds (GMT, dx[k]);
@@ -1953,7 +1953,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			}
 		}
 
-		if (dy[k] > 0.0 && (gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) {	/* Annotate W and E boundaries */
+		if (dy[k] > 0.0 && (gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR)) {	/* Annotate W and E boundaries */
 			unsigned int lonlat;
 			double *tval = NULL;
 
@@ -1984,7 +1984,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			}
 			last = ny - 1;
 			for (i = 0; i < ny; i++) {
-				if ((GMT->current.proj.polar || GMT->current.proj.projection_GMT == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
+				if ((GMT->current.proj.polar || GMT->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
 				annot = true, trim = 0;
 				if (check_edges && ((i == 0 && val[i] == s) || (i == last && val[i] == n)))
@@ -2020,12 +2020,12 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 }
 
 GMT_LOCAL void plot_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	if (!GMT->current.map.frame.draw && GMT->current.proj.projection_GMT != GMT_LINEAR) return;	/* We have a separate check in linear_map_boundary */
+	if (!GMT->current.map.frame.draw && GMT->current.proj.projection != GMT_LINEAR) return;	/* We have a separate check in linear_map_boundary */
 	if (GMT->current.map.frame.no_frame) return;	/* Specifically did not want frame */
 
 	PSL_comment (PSL, "Map boundaries\n");
 
-	switch (GMT->current.proj.projection_GMT) {
+	switch (GMT->current.proj.projection) {
 		case GMT_LINEAR:
 			if (gmt_M_is_geographic (GMT, GMT_IN))	/* xy is lonlat */
 				plot_fancy_map_boundary (GMT, PSL, w, e, s, n);
@@ -4351,7 +4351,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	while (i < n) {
 		im1 = i - 1;
 		ip1 = i + 1;
-		if (pen[im1] == PSL_MOVE && pen[i] == PSL_DRAW && (ip1 == n || pen[ip1] == PSL_MOVE) && GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC && fabs (y[i]-y[im1]) < 0.001) {
+		if (pen[im1] == PSL_MOVE && pen[i] == PSL_DRAW && (ip1 == n || pen[ip1] == PSL_MOVE) && GMT->current.proj.projection == GMT_OBLIQUE_MERC && fabs (y[i]-y[im1]) < 0.001) {
 			double mw = 2.0 * gmtlib_half_map_width (GMT, y[i]);	/* Get map width */
 			/* We have a single 2-point ~horizontal line segment with move, draw, move.  Check if the draw is across the entire oblique Mercator map */
 			if (doubleAlmostEqual (fabs (x[i]-x[im1]), mw)) {	/* Yes, so skip such stray lines across map */
@@ -4395,7 +4395,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	idup = (gmt_M_is_azimuthal(GMT) && doubleAlmostEqual(e-w, 360.0)) ? 1 : 0;
 
 	if (gmt_M_pole_is_point(GMT)) {	/* Might have two separate domains of gridlines */
-		if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
+		if (GMT->current.proj.projection == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
 			ys = cap_stop[0] = cap_stop[1] = p_cap = 90.0 - GMT->current.setting.map_polar_cap[0];
 			yn = n;
 			cap_start[0] = cap_start[1] = 0.0;
@@ -5504,7 +5504,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
-		GMT->current.proj.projection_GMT = GMT_LINEAR;
+		GMT->current.proj.projection = GMT_LINEAR;
 		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
 	}
 	/* Cylindrical projections */
@@ -5871,7 +5871,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	if (scale_factor < 0) scale_factor = 1;
 	szProj4[0] = 0;
 
-	switch (GMT->current.proj.projection_GMT) {
+	switch (GMT->current.proj.projection) {
 	/* Cylindrical projections */
 	case GMT_UTM:
 		snprintf (szProj4, GMT_LEN512, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
@@ -6149,7 +6149,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
-	this_proj = GMT->current.proj.projection_GMT;
+	this_proj = GMT->current.proj.projection;
 	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
 		if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
@@ -6160,7 +6160,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		Cartesian_m[2] = (GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y]) * GMT->current.proj.i_scale[GMT_Y];
 		Cartesian_m[3] = (GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X]) * GMT->current.proj.i_scale[GMT_X];
 		/* It woul be simpler if we had a cleaner way of telling when data is lon-lat */
-		if (GMT->current.proj.projection_GMT == GMT_LINEAR && gmt_M_is_geographic (GMT, GMT_IN))
+		if (GMT->current.proj.projection == GMT_LINEAR && gmt_M_is_geographic (GMT, GMT_IN))
 			strcpy (proj4name, "latlong");
 		else
 			strncpy (proj4name, GMT->current.proj.proj4[id].name, 15U);
