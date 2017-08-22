@@ -4401,7 +4401,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 	}
 
-	if (project != GMT_ZAXIS) GMT->current.proj.projection = project;
+	if (project != GMT_ZAXIS) {
+		GMT->current.proj.projection = project;
+		GMT->current.proj.projection_GMT = project;		/* Make a copy to use when using the Proj4 lib */
+	}
 	if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier */
 
 	return (error > 0);
@@ -13137,7 +13140,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					pch[0] = '\0';
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, "+proj=latlong", item_t3);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, item_t3, "+proj=latlong");
-				GMT->current.proj.projection_GMT  = GMT->current.proj.projection;		/* Save the GMT projection type */
 				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
 				GMT->common.J.active = true;
 			}

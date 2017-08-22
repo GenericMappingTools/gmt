@@ -2025,7 +2025,7 @@ GMT_LOCAL void plot_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	PSL_comment (PSL, "Map boundaries\n");
 
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:
 			if (gmt_M_is_geographic (GMT, GMT_IN))	/* xy is lonlat */
 				plot_fancy_map_boundary (GMT, PSL, w, e, s, n);
