@@ -553,7 +553,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				if (Ctrl->T.active)	/* Deal with negative scales in x and/or y which affect the azimuths */
 					gmt_flip_azim_d (GMT, &vec_azim);
 				vec_azim = 90.0 - vec_azim;	/* Transform azimuths to plot angle */
-				if (GMT->current.proj.projection == GMT_POLAR) {	/* Must rotate azimuth since circular projection */
+				if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* Must rotate azimuth since circular projection */
 					double x_orient;
 					x_orient = (GMT->current.proj.got_azimuths) ? -(x + GMT->current.proj.p_base_angle) : x - GMT->current.proj.p_base_angle - 90.0;
 					vec_azim += x_orient;

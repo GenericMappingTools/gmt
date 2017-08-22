@@ -417,7 +417,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);		
 		}
 		/* Supply dummy linear proj */
-		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
+		GMT->current.proj.projection_GMT = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
 		GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
 		GMT->common.J.active = true;
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {

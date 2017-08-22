@@ -4273,8 +4273,8 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection == GMT_POLAR && GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
-	if (GMT->current.proj.projection == GMT_POLAR && GMT->current.proj.got_elevations) {
+	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_elevations) {
 		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
 		gmt_M_int_swap (left, right);
 		low = 2 - low;
@@ -5708,7 +5708,7 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 /*! . */
 void gmt_flip_azim_d (struct GMT_CTRL *GMT, double *azim) {
 	/* Adjust an azimuth for Cartesian axes pointing backwards/downwards */
-	if (GMT->current.proj.projection != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
+	if (GMT->current.proj.projection_GMT != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
 	/* Must check if negative scales were used */
 	if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
 		if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
@@ -5723,7 +5723,7 @@ void gmt_flip_azim_d (struct GMT_CTRL *GMT, double *azim) {
 /*! . */
 void gmt_flip_angle_d (struct GMT_CTRL *GMT, double *angle) {
 	/* Adjust an angle for Cartesian axes pointing backwards/downwards */
-	if (GMT->current.proj.projection != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
+	if (GMT->current.proj.projection_GMT != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
 	/* Must check if negative scales were used */
 	if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
 		if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
@@ -12172,7 +12172,7 @@ unsigned int gmt_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted,
 
 			case GMT_IS_GEO:	/* Found a : in the string - GEO ? */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %s appears to be a Geographical Location String: ", item);
-				if (GMT->current.proj.projection == GMT_LINEAR)
+				if (GMT->current.proj.projection_GMT == GMT_LINEAR)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should specify geographical data type with option -f.\n");
@@ -12181,7 +12181,7 @@ unsigned int gmt_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted,
 
 			case GMT_IS_LON:	/* Found a : in the string and then W or E - LON ? */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %s appears to be a Geographical Longitude String: ", item);
-				if (GMT->current.proj.projection == GMT_LINEAR)
+				if (GMT->current.proj.projection_GMT == GMT_LINEAR)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should specify geographical data type with option -f.\n");
@@ -12190,7 +12190,7 @@ unsigned int gmt_verify_expectations (struct GMT_CTRL *GMT, unsigned int wanted,
 
 			case GMT_IS_LAT:	/* Found a : in the string and then S or N - LAT ? */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %s appears to be a Geographical Latitude String: ", item);
-				if (GMT->current.proj.projection == GMT_LINEAR)
+				if (GMT->current.proj.projection_GMT == GMT_LINEAR)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You should specify geographical data type with option -f.\n");
@@ -13052,7 +13052,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 	if (angle < 0.0) angle += 360.0;
 
 	set_angle = ((!GMT->common.R.oblique && !(gmt_M_is_azimuthal(GMT) || gmt_M_is_conical(GMT))) || GMT->common.R.oblique);
-	if (!GMT->common.R.oblique && (GMT->current.proj.projection == GMT_GENPER || GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_POLYCONIC)) set_angle = true;
+	if (!GMT->common.R.oblique && (GMT->current.proj.projection_GMT == GMT_GENPER || GMT->current.proj.projection_GMT == GMT_GNOMONIC || GMT->current.proj.projection_GMT == GMT_POLYCONIC)) set_angle = true;
 	if (set_angle) {
 		if (side == 0 && angle < 180.0) angle -= 180.0;
 		if (side == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -13065,7 +13065,7 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 	if (GMT->current.setting.map_annot_oblique & 16) *line_angle = (side - 1) * 90.0;
 
 	if (!set_angle) *justify = support_polar_adjust (GMT, side, angle, x, y);
-	if (set_angle && !GMT->common.R.oblique && GMT->current.proj.projection == GMT_GNOMONIC) {
+	if (set_angle && !GMT->common.R.oblique && GMT->current.proj.projection_GMT == GMT_GNOMONIC) {
 		/* Fix until we write something that works for everything.  This is a global gnomonic map
 		 * so it is easy to fix the angles.  We get correct justify and make sure
 		 * the line_angle points away from the boundary */
@@ -13107,7 +13107,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	if (lonlat) {	/* i.e., for geographical data */
 		if (doubleAlmostEqual (val, 360.0) && !worldmap)
 			val = 0.0;
-		if (doubleAlmostEqual (val, 360.0) && worldmap && GMT->current.proj.projection == GMT_OBLIQUE_MERC)
+		if (doubleAlmostEqual (val, 360.0) && worldmap && GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC)
 			val = 0.0;
 	}
 

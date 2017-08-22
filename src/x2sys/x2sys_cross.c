@@ -488,7 +488,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
-	if (GMT->common.R.active[RSET] && GMT->current.proj.projection != GMT_NO_PROJ) {
+	if (GMT->common.R.active[RSET] && GMT->current.proj.projection_GMT != GMT_NO_PROJ) {
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;

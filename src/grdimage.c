@@ -441,7 +441,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 
 	gmt_M_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
 	
-	if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
+	if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {
 		all_lats = gmt_M_180_range (g->wesn[YHI], g->wesn[YLO]);
@@ -954,8 +954,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate image pixel colors\n");
 
 	/* Worry about linear projections with negative scales that may reverse the orientation of the image */
-	normal_x = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
-	normal_y = !(GMT->current.proj.projection == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
+	normal_x = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
+	normal_y = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
 	/* Evaluate colors at least once (try = 0), or twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {

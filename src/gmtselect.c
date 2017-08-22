@@ -620,7 +620,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active[RSET]) {	/* -R was set directly or indirectly; hence must set -J if not supplied */
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */
-			GMT->current.proj.projection = GMT->current.proj.xyz_projection[GMT_X] = GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
+			GMT->current.proj.projection_GMT = GMT->current.proj.xyz_projection[GMT_X] = GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
 			GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
 			GMT->common.J.active = no_resample = true;
 		}

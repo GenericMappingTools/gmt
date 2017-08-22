@@ -607,7 +607,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	/* Must have -J */
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
 	                                   "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
-	if (!GMT->common.R.active[RSET] && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
+	if (!GMT->common.R.active[RSET] && GMT->current.proj.projection_GMT == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		if (GMT->current.proj.utm_hemisphere == 0)		/* Default to N hemisphere if nothing is known */
 			GMT->current.proj.utm_hemisphere = 1;
 		if (gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney,
@@ -777,7 +777,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.mode & GMT_MP_Z_ABST) extra[MP_COL_AT] = Ctrl->Z.epoch;	/* Need to initiate epoch time */
 	}
 		
-	if (Ctrl->T.active && GMT->current.proj.projection != GMT_LINEAR && GMT->common.R.active[RSET]) {	/* Do datum shift & project coordinates */
+	if (Ctrl->T.active && GMT->current.proj.projection_GMT != GMT_LINEAR && GMT->common.R.active[RSET]) {	/* Do datum shift & project coordinates */
 		double_whammy = true;
 		if (Ctrl->I.active) {	/* Need to set the ellipsoid to that of the old datum */
 			if (GMT->current.proj.datum.from.ellipsoid_id < 0) {

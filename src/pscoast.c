@@ -566,7 +566,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active),
 	                                 "Syntax error: Must choose between dumping and clipping/plotting\n");
-	n_errors += gmt_M_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
+	n_errors += gmt_M_check_condition (GMT, clipping && GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
 	                                 GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0,
 	                                 "-JE not implemented for global clipping - I quit\n");
 	n_errors += gmt_M_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active),
@@ -869,7 +869,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (clipping) gmt_map_basemap (GMT);
 
-	if (GMT->current.proj.projection == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
+	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};
 		if (check_antipode_status (GMT, &c, GMT_INSIDE, GMT->current.proj.central_meridian, GMT->current.proj.pole, status)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: check_antipode_status crashed - not good\n");
@@ -923,7 +923,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0 && !gmt_M_is_linear (GMT)) greenwich = true;
 	if (need_coast_base && (360.0 - fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) ) < c.bsize) {
 		GMT->current.map.is_world = true;
-		if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER) GMT->current.map.is_world = false;
+		if (GMT->current.proj.projection_GMT == GMT_GNOMONIC || GMT->current.proj.projection_GMT == GMT_GENPER) GMT->current.map.is_world = false;
 		if (gmt_M_is_azimuthal (GMT)) GMT->current.map.is_world = false;
 	}
 	if (GMT->current.map.is_world && greenwich)
