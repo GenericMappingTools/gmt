@@ -863,7 +863,7 @@ GMT_LOCAL unsigned int map_wesn_crossing (struct GMT_CTRL *GMT, double lon0, dou
 
 	for (i = 0; i < n; i++) {
 		gmt_geo_to_xy (GMT, clon[i], clat[i], &xx[i], &yy[i]);
-		if (GMT->current.proj.projection == GMT_POLAR && sides[i]%2) sides[i] = 4 - sides[i];	/*  toggle 1 <-> 3 */
+		if (GMT->current.proj.projection_GMT == GMT_POLAR && sides[i]%2) sides[i] = 4 - sides[i];	/*  toggle 1 <-> 3 */
 	}
 
 	if (n == 1) return (1);
@@ -4947,7 +4947,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 
 	/* Then check if one or both poles are inside map; then the above won't be correct */
 
-	if (GMT->current.proj.projection == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
+	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
 		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[0] = false;
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, +90.0, &x, &y);
@@ -5874,7 +5874,7 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 	/* easy = true means we can use 4 corner points to find min x and y, false
 	   means we must search along wesn perimeter the hard way */
 
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:
 		case GMT_MERCATOR:
 		case GMT_OBLIQUE_MERC:
@@ -6287,7 +6287,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
-			else if (GMT->common.R.oblique && GMT->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && !strncmp (GMT->init.module_name, "pscoast", 7U)) {
+			else if (GMT->common.R.oblique && GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && n <= 5 && !strncmp (GMT->init.module_name, "pscoast", 7U)) {
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;
@@ -6766,7 +6766,7 @@ bool gmt_genper_reset (struct GMT_CTRL *GMT, bool reset) {
 	 * have kept the older, simpler functions and switch from those to the new ones when we
 	 * do gridlines.  P. Wessel, Feb 10, 2015.
 	 */
-	if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.windowed) {
+	if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.windowed) {
 		if (reset) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Revert to old genper crossing/overlap functions\n");
 			GMT->current.map.crossing = &map_rect_crossing;
@@ -6799,7 +6799,7 @@ double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y) {
 	/* Returns 1/2-width of map in inches given y value */
 	double half_width;
 
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 
 		case GMT_STEREO:	/* Must compute width of circular map based on y value (ASSUMES FULL CIRCLE!!!) */
 		case GMT_LAMB_AZ_EQ:
@@ -6853,7 +6853,7 @@ uint64_t gmt_map_truncate (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 	   side : -1 = left (bottom); +1 = right (top)
 	*/
 
-	if (GMT->current.proj.projection == GMT_TM)
+	if (GMT->current.proj.projection_GMT == GMT_TM)
 		return (map_truncate_tm (GMT, x, y, n, start, side));
 	else
 		return (map_truncate_x (GMT, x, y, n, start, side));
@@ -7697,7 +7697,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				gmt_geo_to_xy (GMT, x_out[col_out], y_out[row_out], &x_proj, &y_proj);
 			else {
 				gmt_xy_to_geo (GMT, &x_proj, &y_proj, x_out[col_out], y_out[row_out]);
-				if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_outside) continue;	/* We are beyond the horizon */
+				if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_outside) continue;	/* We are beyond the horizon */
 
 				/* On 17-Sep-2007 the slack of GMT_CONV4_LIMIT was added to allow for round-off
 				   errors in the grid limits. */
@@ -7881,7 +7881,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 				gmt_geo_to_xy (GMT, x_out[col_out], y_out[row_out], &x_proj, &y_proj);
 			else {
 				gmt_xy_to_geo (GMT, &x_proj, &y_proj, x_out[col_out], y_out[row_out]);
-				if (GMT->current.proj.projection == GMT_GENPER && GMT->current.proj.g_outside) continue;	/* We are beyond the horizon */
+				if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_outside) continue;	/* We are beyond the horizon */
 
 				/* On 17-Sep-2007 the slack of GMT_CONV4_LIMIT was added to allow for round-off
 				   errors in the grid limits. */
@@ -7939,7 +7939,7 @@ double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 		}
 		return (angle);
 	}
-	else if (GMT->current.proj.projection == GMT_POLAR) {	/* r/theta */
+	else if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* r/theta */
 		return (azim);	/* Place holder - not correct yet but don't want to go into the below if r/theta */
 	}
 
@@ -7981,7 +7981,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 	if (GMT->common.R.oblique)	/* Rectangular map boundary */
 		np = 4;
 	else {
-		switch (GMT->current.proj.projection) {
+		switch (GMT->current.proj.projection_GMT) {
 			case GMT_LINEAR:
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
@@ -8034,7 +8034,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				np = 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes);
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad case in gmt_map_clip_path (%d)\n", GMT->current.proj.projection);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad case in gmt_map_clip_path (%d)\n", GMT->current.proj.projection_GMT);
 				np = 0;
 				break;
 		}
@@ -8048,7 +8048,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		work_x[1] = work_x[2] = GMT->current.proj.rect[XHI];	work_y[2] = work_y[3] = GMT->current.proj.rect[YHI];
 	}
 	else {
-		switch (GMT->current.proj.projection) {	/* Fill in clip path */
+		switch (GMT->current.proj.projection_GMT) {	/* Fill in clip path */
 			case GMT_LINEAR:
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
@@ -8264,7 +8264,7 @@ double gmt_lat_swap (struct GMT_CTRL *GMT, double lat, unsigned int itype) {
 void gmtlib_scale_eqrad (struct GMT_CTRL *GMT) {
 	/* Reinitialize GMT->current.proj.EQ_RAD to the appropriate value */
 
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 
 		/* Conformal projections */
 
