@@ -276,7 +276,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.active) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		}
 		else {			/* Do inverse transformation */
 			double x_c, y_c, lon_t, lat_t, xSW, ySW, xNW, yNW, xNE, yNE, xSE, ySE;
@@ -299,7 +299,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				y_c *= fwd_scale;
 			}
 
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 			x_c *= GMT->current.proj.scale[GMT_X];
 			y_c *= GMT->current.proj.scale[GMT_Y];
@@ -313,7 +313,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active[RSET] = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 			/* Finally obtain the good limits */
 			if (shift_xy) {
@@ -346,7 +346,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */

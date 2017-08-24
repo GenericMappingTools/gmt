@@ -358,7 +358,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	//gmt_parse_common_options (GMT, "J", 'J', "x1id");	/* Fake linear projection so the shore machinery will work */
 	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = gmt_M_grd_is_global (GMT, Grid->header);
 	double_dip = (wrap && Grid->header->registration == GMT_GRID_NODE_REG);	/* Must duplicate the west nodes to east */

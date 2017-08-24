@@ -201,7 +201,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		GMT->current.setting.map_line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
 		GMT->current.proj.pars[0] = out[GMT_X];
 		GMT->current.proj.pars[1] = out[GMT_Y];
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn), "")) {
 			gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
 			return (0);
 		}
@@ -1738,7 +1738,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			else
 				gmt_parse_common_options (GMT, "J", 'J', "x1");		/* Fake linear Cartesian projection */
 		}
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];

@@ -40,9 +40,11 @@ gmt psxy $R -J -O -K -L -W0.5p,- << EOF >> $ps
 1.1	0.9
 -0.2	0.9
 EOF
+# Do clipping and plot the clipped files
 gmt spatial A.txt -C -R-0.2/1.1/-0.4/0.9 | gmt psxy $R -Jx1.5i -O -K -W3p,red >> $ps
 gmt spatial B.txt -C -R-0.2/1.1/-0.4/0.9 | gmt psxy $R -Jx1.5i -O -K -W3p,blue >> $ps
 
+# Make geographic files and scale coordinates by 10
 gmt math -T A.txt 10 MUL = Ag.txt
 gmt math -T B.txt 10 MUL = Bg.txt
 # Geographic
@@ -61,6 +63,7 @@ gmt psxy $R -J -O -K -L -W0.5p,- << EOF >> $ps
 11	9
 -2	9
 EOF
+# Do clipping and plot the clipped files
 gmt spatial Ag.txt -C -R-2/11/-4/9 -fg | gmt psxy $R -Jm0.15i -O -K -W3p,red >> $ps
 gmt spatial Bg.txt -C -R-2/11/-4/9 -fg | gmt psxy $R -Jm0.15i -O -K -W3p,blue >> $ps
 

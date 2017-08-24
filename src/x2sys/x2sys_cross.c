@@ -494,7 +494,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		s->dist_flag = 0;
 		if (fpC) fclose (fpC);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) {
 			gmt_M_free (GMT, duplicate);
 			Return (GMT_PROJECTION_ERROR);
 		}

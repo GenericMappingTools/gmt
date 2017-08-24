@@ -424,7 +424,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) {
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (GMT_PROJECTION_ERROR);
 		}

@@ -261,7 +261,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		            B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		gmt_parse_common_options (GMT, "J", 'J', proj);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, B.wesn), "")) {
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			x2sys_end (GMT, s);
 			Return (GMT_PROJECTION_ERROR);

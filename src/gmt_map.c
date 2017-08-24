@@ -8787,7 +8787,13 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 	return (nc);
 }
 
-int gmt_map_setup_proj (struct GMT_CTRL *GMT, double wesn[]) {
+int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
+	/* Core map setup function for the projection.  All program needing projection support
+	 * will call this either directly or indirectly.  Programs that _just_ need to project
+	 * to/from may call this function only, while all the plotting program need to hvae more
+	 * things initialized and they will call gmt_map_setup instead, which starts by calling
+	 * gmt_proj_setup first. */
+	
 	bool search = false;
 	
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
@@ -8979,6 +8985,20 @@ int gmt_map_setup_proj (struct GMT_CTRL *GMT, double wesn[]) {
 
 	GMT->current.proj.search = search;
 	
+	GMT->current.proj.i_scale[GMT_X] = (GMT->current.proj.scale[GMT_X] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_X] : 1.0;
+	GMT->current.proj.i_scale[GMT_Y] = (GMT->current.proj.scale[GMT_Y] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Y] : 1.0;
+	GMT->current.proj.i_scale[GMT_Z] = (GMT->current.proj.scale[GMT_Z] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Z] : 1.0;
+
+	GMT->current.map.width  = fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
+	GMT->current.map.height = fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
+	GMT->current.map.half_width  = 0.5 * GMT->current.map.width;
+	GMT->current.map.half_height = 0.5 * GMT->current.map.height;
+
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* x is longitude */
+		if (GMT->current.proj.central_meridian < GMT->common.R.wesn[XLO] && (GMT->current.proj.central_meridian + 360.0) <= GMT->common.R.wesn[XHI]) GMT->current.proj.central_meridian += 360.0;
+		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
+	}
+	
 	return (GMT_NOERROR);
 }
 
@@ -8988,7 +9008,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	bool search, double_auto[6];
 	double scale, i_scale;
 
-	if ((i = gmt_map_setup_proj (GMT, wesn)) != GMT_NOERROR) Return (i);
+	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) Return (i);
 
 	search = GMT->current.proj.search;
 	
@@ -9012,15 +9032,6 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		MAX (GMT->current.map.frame.axis[GMT_X].item[i].interval, GMT->current.map.frame.axis[GMT_Y].item[i].interval);
 	}
 
-	GMT->current.proj.i_scale[GMT_X] = (GMT->current.proj.scale[GMT_X] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_X] : 1.0;
-	GMT->current.proj.i_scale[GMT_Y] = (GMT->current.proj.scale[GMT_Y] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Y] : 1.0;
-	GMT->current.proj.i_scale[GMT_Z] = (GMT->current.proj.scale[GMT_Z] != 0.0) ? 1.0 / GMT->current.proj.scale[GMT_Z] : 1.0;
-
-	GMT->current.map.width  = fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
-	GMT->current.map.height = fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
-	GMT->current.map.half_width  = 0.5 * GMT->current.map.width;
-	GMT->current.map.half_height = 0.5 * GMT->current.map.height;
-
 	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
 	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
@@ -9039,11 +9050,6 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) map_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);
 	}
 
-	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* x is longitude */
-		if (GMT->current.proj.central_meridian < GMT->common.R.wesn[XLO] && (GMT->current.proj.central_meridian + 360.0) <= GMT->common.R.wesn[XHI]) GMT->current.proj.central_meridian += 360.0;
-		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
-	}
-	
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
 	GMT->current.map.path_step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 

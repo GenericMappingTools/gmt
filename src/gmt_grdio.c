@@ -2214,7 +2214,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.J.active = true;
 
-		gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn_all), file);
+		gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn_all), file);
 	}
 
 	if (wesn[XLO] < 0.0 && wesn[XHI] < 0.0) wesn[XLO] += 360.0, wesn[XHI] += 360.0;
