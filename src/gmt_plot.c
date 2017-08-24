@@ -4304,7 +4304,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
-		unsigned int far = (!below);
+		unsigned int far_ = !below;
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_command (PSL, "/PSL_LH ");
@@ -4315,10 +4315,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
 			i = (below) ? PSL_MR : PSL_ML;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far), 0.0, i, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far_), 0.0, i, form);
 		}
 		else
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far), horizontal ? 0.0 : 90.0, PSL_BC, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far_), horizontal ? 0.0 : 90.0, PSL_BC, form);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
