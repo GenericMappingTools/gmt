@@ -8787,23 +8787,21 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 	return (nc);
 }
 
-/*! . */
-int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
-	unsigned int i;
-	bool search, double_auto[6];
-	double scale, i_scale;
-
+int gmt_map_setup_proj (struct GMT_CTRL *GMT, double wesn[]) {
+	bool search = false;
+	
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
 
 	if (!GMT->common.J.active) {
 		char *def_args[2] = {"X15c", "Q15c"};
+		unsigned int geo;
 		if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* This is a fatal error in classic mode */
 			Return (GMT_MAP_NO_PROJECTION);
 		if (!GMT->current.ps.active)
 			Return (GMT_MAP_NO_PROJECTION);	/* Only auto-setup a projection for mapping and plots */
 		/* Here we are in modern mode starting a new plot without a map projection.  The rules says use -JQ15c (geo) or -JX15c (Cartesian) */
-		i = gmt_M_is_geographic (GMT, GMT_IN);
-		gmt_parse_common_options (GMT, "J", 'J', def_args[i]);
+		geo = gmt_M_is_geographic (GMT, GMT_IN);
+		gmt_parse_common_options (GMT, "J", 'J', def_args[geo]);
 		GMT->common.J.active = true;
 	}
 
@@ -8979,6 +8977,21 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	if (GMT->current.proj.fwd == NULL)	/* Some wrror in projection projection parameters, return to a horrible death */
 		Return(GMT_MAP_NO_PROJECTION);
 
+	GMT->current.proj.search = search;
+	
+	return (GMT_NOERROR);
+}
+
+/*! . */
+int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
+	unsigned int i;
+	bool search, double_auto[6];
+	double scale, i_scale;
+
+	if ((i = gmt_map_setup_proj (GMT, wesn)) != GMT_NOERROR) Return (i);
+
+	search = GMT->current.proj.search;
+	
 	/* If intervals are not set specifically, round them to some "nice" values
 	 * Remember whether frame items in both directions were automatically set */
 	for (i = 0; i < 6; i++)

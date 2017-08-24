@@ -114,6 +114,7 @@ that each may contain a single figure.  A subplot setup is started with the **be
 mode that defines the layout of the subplots:
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *autolabel* ]
+[ **-D**\ [**x**\ ]\ [**y**\ ] ]
 [ **-F**\ [**f**\ \|\ **s**\ ]*width*\ /*height* ]
 [ **-L**\ *layout* ] [ **-M**\ *margins* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
@@ -148,6 +149,13 @@ Optional Arguments
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
+
+.. _subplot_begin-D:
+
+**-D**\ [**x**\ ]\ [**y**\ ]
+   If your subplots are Cartesian plots *and* one or both axes should have a reversed direction,
+   then you must indicate which axes should be reversed, e.g., **-Dy** for just the *y*-axis
+   [no reversed axes].
 
 .. _subplot_begin-F:
 

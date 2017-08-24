@@ -21,7 +21,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt subplot determines dimensions and offsets for a multi-panel figure.
- *	gmt subplot begin -N<nrows>/<ncols> [-A<labels>] [-F[f|s][<WxH>][+g<fill>][+p<pen>][+d]] [-L<layout>] [-M<margins>] [-T<title>] [-V]
+ *	gmt subplot begin -N<nrows>/<ncols> [-A<labels>] [-D[x][y]] [-F[f|s][<WxH>][+g<fill>][+p<pen>][+d]] [-L<layout>] [-M<margins>] [-T<title>] [-V]
  *	gmt subplot [set] <row>,<col> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
  *	gmt subplot end [-V]
  */
@@ -78,6 +78,10 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];
 	} C;
+	struct D {	/* -D[x][y]]  */
+		bool active;
+		int dir[2];
+	} D;
 	struct F {	/* -F[f|s][<width>[u]/<height>[u]][+d][+g<fill>][+p<pen>] */
 		bool active;
 		bool debug;
@@ -123,6 +127,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
 	C->A.clearance[GMT_X] = C->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
 	
+	C->D.dir[GMT_X] = C->D.dir[GMT_Y] = +1;	/* Normal axes directions for Cartesian plots */
 	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
 	return (C);
@@ -141,7 +146,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-F[[f[|s]]<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-D[x][y]] [-F[[f[|s]]<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>] [-M<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
@@ -165,6 +170,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance>[u] to the <side> (w|e|s|n) of the plottable subplot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side [no clearances].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D For Cartesian subplots only: If x and/or the y-axis should be reversed, append x and/or y.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Ff: Specify dimension of the whole figure plot area.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Fs to set dimensions of area that each multi-subplot figure may occupy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
@@ -329,6 +335,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							n_errors++;
 							break;
 					}
+				}
+				break;
+
+			case 'D':
+				Ctrl->C.active = true;
+				k = 0;
+				while (opt->arg[k]) {	/* Expecting -Dx, -Dy, -Dxy or -Dyx */
+					if (opt->arg[k] == 'x') Ctrl->D.dir[GMT_X] = -1;
+					else if (opt->arg[k] == 'y') Ctrl->D.dir[GMT_Y] = -1;
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error Option -C: Bad axis direction %c\n", opt->arg[k]);
+						n_errors++;
+					}
+					k++;
 				}
 				break;
 
@@ -790,6 +810,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->L.parallel);
+		if (Ctrl->D.dir[GMT_X] == -1 || Ctrl->D.dir[GMT_Y] == -1) fprintf (fp, "# DIRECTION: %d %d\n", Ctrl->D.dir[GMT_X], Ctrl->D.dir[GMT_Y]);
 		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */

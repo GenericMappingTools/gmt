@@ -1375,14 +1375,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
-#ifdef HAVE_GDAL
-	/* If that's the case, clean up the GDAL CT object */
-	if (GMT->current.gdal_read_in.hCT_fwd)
-		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
-	if (GMT->current.gdal_read_in.hCT_inv)
-		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
-#endif
-
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}

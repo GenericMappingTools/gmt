@@ -255,6 +255,7 @@ struct GMT_PROJ {
 	int projection_GMT;	/* A copy of the above to use when using the Proj.4 lib for coord/mapp transforms */
 	int autoscl[2];		/* If +1 then set x/y-scale to y/x-scale and compute height/width, -1 reverses direction */
 
+	bool search;		/* true if we are allowed to search along oblique boundary for min/max lon/lats */
 	bool units_pr_degree;	/* true if scale is given as inch (or cm)/degree.  false for 1:xxxxx */
 	bool north_pole;		/* true if projection is on northern hemisphere, false on southern */
 	bool edge[4];		/* true if the edge is a map boundary */

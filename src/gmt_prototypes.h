@@ -397,6 +397,7 @@ EXTERN_MSC bool gmt_geo_to_xy_noshift (struct GMT_CTRL *GMT, double lon, double 
 EXTERN_MSC bool gmt_geo_to_xy_noshiftscale (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);
 EXTERN_MSC void gmt_geoz_to_xy (struct GMT_CTRL *GMT, double x, double y, double z, double *x_out, double *y_out);
 EXTERN_MSC int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int n_columns, unsigned int n_rows, unsigned int dpi, unsigned int offset);
+EXTERN_MSC int gmt_map_setup_proj (struct GMT_CTRL *GMT, double wesn[]);
 EXTERN_MSC int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]);
 EXTERN_MSC double gmt_x_to_xx (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC double gmt_y_to_yy (struct GMT_CTRL *GMT, double y);

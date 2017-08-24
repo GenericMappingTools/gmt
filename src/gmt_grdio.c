@@ -2210,7 +2210,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		GMT->current.proj.pars[0] = 180.0;
 		GMT->current.proj.pars[1] = 0.0;
 		GMT->current.proj.pars[2] = 1.0;
-		GMT->current.proj.projection_GMT = GMT_MERCATOR;
+		GMT->current.proj.projection = GMT->current.proj.projection_GMT = GMT_MERCATOR;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.J.active = true;
 

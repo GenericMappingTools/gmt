@@ -10932,6 +10932,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 	}
 	
 	P = &(API->GMT->current.plot.panel);	/* Lazy shorthand only */
+	P->dir[GMT_X] = P->dir[GMT_Y] = +1;	/* Default direction of Cartesian axis if -JX */
 
 	/* Now read it */
 	while (!found && fgets (line, PATH_MAX, fp)) {
@@ -10942,6 +10943,8 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 				sscanf (&line[10], "%lg %lg", &P->origin[GMT_X], &P->origin[GMT_Y]);
 			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
+			else if (!strncmp (line, "# DIRECTION:", 12U))
+				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
 			continue;
 		}
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
@@ -11509,7 +11512,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int n_errors = 0;
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
-		char arg[GMT_LEN256] = {""};
+		char arg[GMT_LEN256] = {""}, scl[GMT_LEN64] = {""};
 		struct GMT_OPTION *opt_R = NULL, *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 
@@ -11676,10 +11679,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 			if (opt_J) {	/* Gave -J, must append /1 as dummy scale/width */
+				if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
+					sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
+				else	/* Just append dummy width */
+					sprintf (scl, "%gi",  P->w);
 				if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))
-					sprintf (arg, "%s%gi", opt_J->arg, P->w);	/* Append the dummy width as only argument */
+					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the dummy width as only argument */
 				else
-					sprintf (arg, "%s/%gi", opt_J->arg, P->w);	/* Append the dummy width to other arguments */
+					sprintf (arg, "%s/%s", opt_J->arg, scl);	/* Append the dummy width to other arguments */
 				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
 			}
 		}
@@ -11715,12 +11722,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					got_J = true;
 				}
 			}
-			if (got_J == false) {	/* No history, apply default projection */
+			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots */
 				static char *arg[2] = {"X15c", "Q15c"};
 				unsigned int geo = is_region_geographic (GMT, *options, mod_name);
-				if ((opt = GMT_Make_Option (API, 'J', arg[geo])) == NULL) return NULL;	/* Failure to make option */
+				if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
+					sprintf (scl, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
+				else	/* Just append dummy width */
+					sprintf (scl, "%s",  arg[geo]);
+				if ((opt = GMT_Make_Option (API, 'J', scl)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", arg[geo]);
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", scl);
 			}
 		}
 	}
@@ -11741,6 +11752,15 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int i, V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
+
+#ifdef HAVE_GDAL
+	/* If that's the case, clean up anu GDAL CT object */
+	if (GMT->current.gdal_read_in.hCT_fwd)
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+	if (GMT->current.gdal_read_in.hCT_inv)
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
+	GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
+#endif
 
 	if (GMT->current.ps.oneliner) {
 		GMT->current.ps.oneliner = false;

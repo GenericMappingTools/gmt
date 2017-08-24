@@ -193,7 +193,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 	}
 	xp = gmt_M_memory (GMT, NULL, n, double);	yp = gmt_M_memory (GMT, NULL, n, double);
 	if (geo == 1) {	/* Initializes GMT projection parameters to the -JA settings */
-		GMT->current.proj.projection_GMT = GMT_LAMB_AZ_EQ;
+		GMT->current.proj.projection_GMT = GMT->current.proj.projection = GMT_LAMB_AZ_EQ;
 		GMT->current.proj.unit = 1.0;
 		GMT->current.proj.pars[3] = 39.3700787401574814;
 		GMT->common.R.oblique = false;

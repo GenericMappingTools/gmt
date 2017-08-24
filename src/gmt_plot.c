@@ -4090,6 +4090,24 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
  *----------------------------------------------------------|
  */
 
+char *extract_label (char *label, unsigned int side) {
+	static char static_label[GMT_LEN256] = {""};
+	char *c = NULL;
+	/* Returns the left or right label if a dual-label was given */
+	if ((c = strstr (label, "||"))) {	/* Got dual label */
+		if (side)	/* The right/top label */
+			return (&c[2]);
+		else {	/* The left/bottom label - must separate from the other label */
+			c[0] = '\0';
+			strcpy (static_label, label);
+			c[0] = '|';
+			return static_label;
+		}
+	}
+	else	/* Normal label */
+		return label;
+}
+
 void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned side) {
 	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
@@ -4285,6 +4303,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
+		unsigned int far = (!below);
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_command (PSL, "/PSL_LH ");
@@ -4295,10 +4314,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
 			i = (below) ? PSL_MR : PSL_ML;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, 0.0, i, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far), 0.0, i, form);
 		}
 		else
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, horizontal ? 0.0 : 90.0, PSL_BC, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, extract_label (A->label, far), horizontal ? 0.0 : 90.0, PSL_BC, form);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
