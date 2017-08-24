@@ -4085,28 +4085,29 @@ GMT_LOCAL unsigned int plot_geo_vector_greatcircle (struct GMT_CTRL *GMT, double
 	return (warn);
 }
 
+GMT_LOCAL char *extract_label (char *label, unsigned int far_side) {
+	static char static_label[GMT_LEN256] = {""};
+	char *c = NULL;
+	/* Returns the left or right label if a dual-label was given, which is a sentence
+	 * separated by || i.e., "My left label||My right label" */
+	if ((c = strstr (label, "||"))) {	/* Got a dual label */
+		if (far_side)	/* The right/top axis label */
+			return (&c[2]);	/* Return starting address for 2nd label */
+		else {	/* The left/bottom label - must make temporary copy to static label buffer */
+			c[0] = '\0';	/* Temporarily chop off the 2nd label part */
+			strcpy (static_label, label);	/* Copy the first label */
+			c[0] = '|';	/* Restore the 2nd label part */
+			return static_label;
+		}
+	}
+	else	/* Normal label, return as is */
+		return label;
+}
+
 /*----------------------------------------------------------|
  * Public functions that are part of the GMT Devel library  |
  *----------------------------------------------------------|
  */
-
-char *extract_label (char *label, unsigned int side) {
-	static char static_label[GMT_LEN256] = {""};
-	char *c = NULL;
-	/* Returns the left or right label if a dual-label was given */
-	if ((c = strstr (label, "||"))) {	/* Got dual label */
-		if (side)	/* The right/top label */
-			return (&c[2]);
-		else {	/* The left/bottom label - must separate from the other label */
-			c[0] = '\0';
-			strcpy (static_label, label);
-			c[0] = '|';
-			return static_label;
-		}
-	}
-	else	/* Normal label */
-		return label;
-}
 
 void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned side) {
 	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */

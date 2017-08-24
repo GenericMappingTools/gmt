@@ -43,8 +43,11 @@
     each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
     to give settings for the vertical axis.).  To add a label to an axis,
     just append **+l**\ *label* (Cartesian projections only). Use **+L** to
-    force a horizontal label for *y*-axes (useful for very short labels).  If the
-    axis annotation should have a leading text prefix (e.g., dollar sign for those
+    force a horizontal label for *y*-axes (useful for very short labels).
+    For Cartesian axes you may specify two labels via **+l** where the labels
+    are separated by two vertical bars (\|\|).  Then the first label is used for
+    the left or lower axis while the second label is used for the right or upper axis.
+    If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
     default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
