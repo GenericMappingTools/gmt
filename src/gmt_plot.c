@@ -5459,9 +5459,8 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 #ifdef PRJ4
 GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 	/* Set the substring str2 of str1 to blanks */
-	int k;
-	char *pch;
-	pch = strstr(str1, str2);
+	size_t k;
+	char *pch = strstr(str1, str2);
 	for (k = 0; k < strlen(str2); k++)
 		pch[k] = ' ';
 }
@@ -5470,7 +5469,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	unsigned int k = 0, pos = 0;
 	bool got_a = false, got_b = false, got_lonlat = false;
 	char *pStrOut = NULL;
-	char opt_J[GMT_LEN256] = {""}, opt_C[GMT_LEN64] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
+	char opt_J[GMT_LEN256] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *pch = NULL;
 	char lon_0[32] = {""}, lat_0[32] = {""}, lat_1[32] = {""}, lat_2[32] = {""}, lat_ts[32] = {""};
 
@@ -5788,7 +5787,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	}
 
 	if ((pch = strstr(szProj4, "+towgs84=")) != NULL) {
-		int n = 0;
 		char *txt, t[128] = {""};
 		struct GMT_DATUM to, from;
 

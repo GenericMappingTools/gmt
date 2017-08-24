@@ -13152,7 +13152,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				*/
 				/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
 				k = 0;
-				while (item_t2[k]) item[k] = item_t2[k++];
+				while (item_t2[k]) {
+					item[k] = item_t2[k];
+					k++;
+				}
 				item[k] = '\0';
 				free (item_t2);	
 				if (do_free) free (item_t1);
