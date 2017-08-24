@@ -13132,13 +13132,19 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					item_t1 = item;
 
 				item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
-				len = strlen(item_t2);
-				if (item_t2[len-1] == 'W') {					/* See if scale is in fact a width */
-					item_t2[0] = toupper(item_t2[0]);			/* and let the GMT machinery detect this fact */
-					item_t2[len-1] = '\0';
+				if (item_t2) {
+					len = strlen(item_t2);
+					if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
+						item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
+						item_t2[len-1] = '\0';
+					}
+					error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
+													gmtinit_parse_J_option (GMT, item_t2));
 				}
-				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
-				                                 gmtinit_parse_J_option (GMT, item_t2));
+				else {
+					GMT->current.proj.projection_GMT = GMT_NO_PROJ;		/* Make a copy to use when using the Proj4 lib */
+				}
+
 				if (isdigit(item[0]))
 					sprintf (item_t3, "EPSG:%s", item);
 				else if (strstr(item, "EPSG:"))
@@ -13146,19 +13152,17 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				else
 					sprintf (item_t3, "%s", item_t1);
 	
-				/* CAN'T DO THIS BECAUSE IT CRASHES IN Destroy_options() 	WHY!!!!!!!!
-				free (item);
-				item = item_t2;
-				*/
-				/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
-				k = 0;
-				while (item_t2[k]) {
-					item[k] = item_t2[k];
-					k++;
+				if (item_t2) {
+					/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
+					k = 0;
+					while (item_t2[k]) {
+						item[k] = item_t2[k];
+						k++;
+					}
+					item[k] = '\0';
+					free (item_t2);	
 				}
-				item[k] = '\0';
-				free (item_t2);	
-				if (do_free) free (item_t1);
+				if (do_free) free (item_t1);		/* When we got a glued +proj=... and had to inser spaces */
 
 				if ((pch = strchr(item_t3, '/')) != NULL)	/* If we have a scale drop it before passing the string to GDAL */
 					pch[0] = '\0';
