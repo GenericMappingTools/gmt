@@ -4869,7 +4869,7 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 	*  Here we use the trick of letting the previous GMT functions do the necessary initializations
 	*  and at the end just replace the pointers to the FWD & INV transform functions to those of GDAL.
 	*/
-	bool search;
+	bool search = false;
 
 	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:        search = map_init_linear (GMT); break;      /* Linear transformations */

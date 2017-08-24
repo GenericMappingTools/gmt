@@ -13142,7 +13142,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 													gmtinit_parse_J_option (GMT, item_t2));
 				}
 				else {
+					/* Even though it failed to do the mapping we can still use it in mapproject */
 					GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+					GMT->current.proj.is_proj4 = true;
+					GMT->current.proj.pars[15] = 1 / GMT->current.proj.unit;
 				}
 
 				if (isdigit(item[0]))
