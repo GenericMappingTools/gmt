@@ -45,8 +45,8 @@ OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation(struct GMT_CTRL *G
 	CPLErrorReset();
 	hDstSRS = OSRNewSpatialReference(NULL);
 	if (OSRSetFromUserInput(hDstSRS, pDstSRS) != OGRERR_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating target SRS failed.\n%s\n", pSrcSRS);
-		OSRDestroySpatialReference(hSrcSRS);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGRPROJ: Translating target SRS failed.\n%s\n", pDstSRS);
+		OSRDestroySpatialReference(hSrcSRS);	/* It was just created above */
 		return NULL;
 	}
 	/* -------------------------------------------------------------------------- */

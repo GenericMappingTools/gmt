@@ -13142,7 +13142,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 													gmtinit_parse_J_option (GMT, item_t2));
 				}
 				else {
-					GMT->current.proj.projection_GMT = GMT_NO_PROJ;		/* Make a copy to use when using the Proj4 lib */
+					GMT->current.proj.projection_GMT = GMT_NO_PROJ;
 				}
 
 				if (isdigit(item[0]))
