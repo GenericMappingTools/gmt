@@ -190,7 +190,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +g for automatic grid-lines [off]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l if annotated y-axes will have a label [none]; optionally append the label if fixed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +p if axes annotations should be parallel to axis [horizontal].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Adds space around each subplot. Append  a uniform <margin>, separate x and y <xmargin>/<ymargin>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Adds space around each subplot. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [0.5c].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify a main heading to be centered above all the subplots [none].\n");
 	GMT_Option (API, "V");
