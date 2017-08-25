@@ -13139,7 +13139,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 						item_t2[len-1] = '\0';
 					}
 					error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
-													gmtinit_parse_J_option (GMT, item_t2));
+													 gmtinit_parse_J_option (GMT, item_t2));
+
+					if (!GMT->current.proj.pars[15])	/* Some projections (e.g. -Je) do not set it. SHOULD BE TESTING IF 1:1 */
+						GMT->current.proj.pars[15] = 1 / GMT->current.proj.unit;
 				}
 				else {
 					/* Even though it failed to do the mapping we can still use it in mapproject */
