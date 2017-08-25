@@ -13112,6 +13112,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
 				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, *pch;
 				bool do_free = false;
+				double sc;
 				size_t k, len;
 				if (item[0] == '+') {
 					bool found = false;
@@ -13135,7 +13136,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					item_t1 = item;
 
 				item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
-				if (item_t2) {
+				if (item_t2) { 
+					char *pch2;
 					len = strlen(item_t2);
 					if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
 						item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
@@ -13144,14 +13146,20 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
 													 gmtinit_parse_J_option (GMT, item_t2));
 
-					if (!GMT->current.proj.pars[15])	/* Some projections (e.g. -Je) do not set it. SHOULD BE TESTING IF 1:1 */
-						GMT->current.proj.pars[15] = 1 / GMT->current.proj.unit;
+					/* Chech if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
+					pch = strrchr(item_t2, '/');
+					if ((pch2 = strchr(pch, ':')) != NULL) {
+						if ((sc = atof(&pch2[1])) == 1)
+							GMT->current.proj.pars[14] = 1;
+					}
+					else if ((sc = atof(&pch[1])) == 1)
+						GMT->current.proj.pars[14] = 1;
 				}
 				else {
 					/* Even though it failed to do the mapping we can still use it in mapproject */
 					GMT->current.proj.projection_GMT = GMT_NO_PROJ;
 					GMT->current.proj.is_proj4 = true;
-					GMT->current.proj.pars[15] = 1 / GMT->current.proj.unit;
+					GMT->current.proj.pars[14] = 1;
 				}
 
 				if (isdigit(item[0]))

@@ -594,7 +594,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	}
 	if (GMT->current.proj.is_proj4) {
 		/* See if scale == 1:1 and if yes set -C -F */
-		if (fabs(1 / GMT->current.proj.pars[15] - GMT->current.proj.unit) < 1e-5)
+		if (GMT->current.proj.pars[14] == 1)
 			Ctrl->C.active = Ctrl->F.active = true;
 	}
 #endif
