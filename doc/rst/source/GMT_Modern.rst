@@ -181,6 +181,7 @@ Optional Arguments
     (i.e., **r**\ ight) columns will have *y*-annotations.  Append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally append the label if it is the same
     for the entire subplot.
+    Append **+g** to add grid-lines to each subplot [off].
     Append **+p** to make all annotation axis-parallel [horizontal]. If used you may have to set **-C** to make
     extra space for long horizontal annotations.
     Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].

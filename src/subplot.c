@@ -95,6 +95,7 @@ struct SUBPLOT_CTRL {
 		bool has_label[2];	/* True if x and y labels */
 		unsigned int mode;	/* 0 for -L, 1 for -LC, 2 for -LR (3 for both) */
 		unsigned int parallel;	/* 0 for horizontal annotations, 1 for axis-parallel */
+		unsigned int grid;	/* 0 for grid off, 1 for grid on */
 		char *axes;		/* WESNwesn for -L */
 		char *label[2];		/* The constant x and y labels */
 		unsigned int ptitle;	/* 0 = no panel titles, 1 = column titles, 2 = all panel titles */
@@ -147,7 +148,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-D[x][y]] [-F[[f[|s]]<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>] [-M<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>][+<mods>] [-M<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
 
@@ -186,6 +187,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +t to make space for all subplot titles; use +tc for top row titles only [no subplot titles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -LR: Each subplot Row share common y-range. Only first (left) and last (right) columns are annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append l or r to select only one of those two columns [both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +g for automatic grid-lines [off]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l if annotated y-axes will have a label [none]; optionally append the label if fixed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +p if axes annotations should be parallel to axis [horizontal].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Adds space around each subplot. Append  a uniform <margin>, separate x and y <xmargin>/<ymargin>\n");
@@ -440,6 +442,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						break;
 				}
 				/* Axis annotation orientation is a common modifier */
+				if (gmt_get_modifier (opt->arg, 'g', string))	/* Want "grid on" [grid off] */
+					Ctrl->L.grid = 1;
 				if (gmt_get_modifier (opt->arg, 'p', string))	/* Want axis-parallel annotations [horizontal] */
 					Ctrl->L.parallel = 1;
 				/* Panel title is a common modifier */
@@ -810,6 +814,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->L.parallel);
+		fprintf (fp, "# GRID_ON: %d\n", Ctrl->L.grid);
 		if (Ctrl->D.dir[GMT_X] == -1 || Ctrl->D.dir[GMT_Y] == -1) fprintf (fp, "# DIRECTION: %d %d\n", Ctrl->D.dir[GMT_X], Ctrl->D.dir[GMT_Y]);
 		fprintf (fp, "#panel\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */

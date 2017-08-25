@@ -10943,6 +10943,8 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		if (line[0] == '#') {	/* Comment line */
 			if (!strncmp (line, "# ORIGIN:", 9U))
 				sscanf (&line[10], "%lg %lg", &P->origin[GMT_X], &P->origin[GMT_Y]);
+			else if (!strncmp (line, "# GRID_ON:", 10U))
+				P->grid_on = atoi (&line[11]);
 			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
@@ -11616,8 +11618,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						frame_set = true;
 					}
 					else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
-						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
-							sprintf (arg, "xaf%s", &opt->arg[1]);
+						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af[g] */
+							if (P->grid_on) sprintf (arg, "xafg%s", &opt->arg[1]); else sprintf (arg, "xaf%s", &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
 						}
 						if (P->Bxlabel[0]) {
@@ -11634,8 +11636,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						x_set = true;
 					}
 					else if (opt->arg[0] == 'y') {	/* Gave specific y-setting */
-						if (opt->arg[1] == '+')	/* No x-axis annot/tick set, prepend default af */
-						sprintf (arg, "yaf%s", &opt->arg[1]);
+						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
+							if (P->grid_on) sprintf (arg, "yafg%s", &opt->arg[1]); else sprintf (arg, "yaf%s", &opt->arg[1]);
+						}
 						GMT_Update_Option (API, opt, arg);
 						if (P->Bylabel[0]) {
 						 	if ((c = strstr (arg, "+l"))) {	/* See if we must append y label set during subplot call */
@@ -11661,13 +11664,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!x_set) {	/* Did not specify x-axis setting so do that now */
-					sprintf (arg, "xaf");
+					if (P->grid_on) sprintf (arg, "xafg"); else sprintf (arg, "xaf");
 					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!y_set) {	/* Did not specify y-axis setting so do that now */
-					sprintf (arg, "yaf");
+					if (P->grid_on) sprintf (arg, "yafg"); else sprintf (arg, "yaf");
 					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
