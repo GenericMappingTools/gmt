@@ -25,7 +25,7 @@
 #include "gdal.h"
 #include "ogr_srs_api.h"
 
-OGRCoordinateTransformationH *gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS) {
+OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS) {
     /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination Referencing
 	   System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?). 
 
@@ -77,7 +77,7 @@ int gmt_ogrproj(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS, int n_pts,
 	   or, when false, the output is stored in xo,yo,zo. In this later case, it's user responsability
 	   to allocate the xo,yo[,zo] arrays with same size as xi,yi[,zi].
 	*/
-	OGRCoordinateTransformationH *hCT = gmt_OGRCoordinateTransformation(GMT, pSrcSRS, pDstSRS); 
+	OGRCoordinateTransformationH hCT = gmt_OGRCoordinateTransformation(GMT, pSrcSRS, pDstSRS); 
 
 	if (insitu)
 		OCTTransform(hCT, n_pts, xi, yi, zi);
