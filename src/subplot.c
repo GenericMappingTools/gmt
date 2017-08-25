@@ -87,6 +87,7 @@ struct SUBPLOT_CTRL {
 		bool debug;
 		unsigned int mode;
 		double dim[2];
+		double *w, *h;	/* For variable widths or heights */
 		char fill[GMT_LEN64];
 		char pen[GMT_LEN64];
 	} F;
@@ -141,13 +142,15 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->L.label[GMT_X]);
 	gmt_M_str_free (C->L.label[GMT_Y]);
 	gmt_M_str_free (C->L.axes);
+	gmt_M_free (GMT, C->F.w);
+	gmt_M_free (GMT, C->F.h);
 	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> [-A<autolabelinfo>] [-D[x][y]] [-F[[f[|s]]<width>/<height>][+f<fill>][+p<pen>][+d]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: subplot begin <nrows>x<ncols> -F[[f[|s]]<width>/<height>][+f<fill>][+p<pen>][+d] [-A<autolabelinfo>] [-D[x][y]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layout>][+<mods>] [-M<margins>] [-T<title>] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot <row>,<col> [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: subplot end [%s]\n\n", GMT_V_OPT);
@@ -155,6 +158,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<nrows>x<ncols> is the number of rows and columns of panels in this figure.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Ff: Specify dimension of the whole figure plot area.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Fs to set dimensions of area that each multi-subplot figure may occupy.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each subplot\'s map area (for debugging).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot.  Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
@@ -172,10 +179,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side [no clearances].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D For Cartesian subplots only: If x and/or the y-axis should be reversed, append x and/or y.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Ff: Specify dimension of the whole figure plot area.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Fs to set dimensions of area that each multi-subplot figure may occupy.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint canvas and +p<pen> to draw outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to draw faint red lines outlining each subplot\'s map area (for debugging).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set subplot layout. May be set once (-L) or separately for rows (-LR) and columns (-LC):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L: Append codes from WESNwesnlrbt to indicate which subplot frames should be drawn, ticked and annotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l to make space for axes labels; applies equally to all subplots [no labels].\n");
@@ -206,7 +209,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n;
+	unsigned int n_errors = 0, k, j, n;
 	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
@@ -355,13 +358,52 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'F':
+				Ctrl->F.active = true;
 				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
-				if (opt->arg[0]) {	/* Set active canvas size */
-					Ctrl->F.active = true;
-					switch (opt->arg[0]) {
-						case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE; n = 1;	break; /* Figure dimension */
-						case 's':	Ctrl->F.mode = SUBPLOT_PANEL;  n = 1;	break; /* Panel dimension */
-						default:	Ctrl->F.mode = SUBPLOT_PANEL;  n = 0;	break; /* Panel dimension */
+				switch (opt->arg[0]) {
+					case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE; n = 1;	break; /* Figure dimension */
+					case 's':	Ctrl->F.mode = SUBPLOT_PANEL;  n = 1;	break; /* Panel dimension */
+					default:	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 0;	break; /* Figure dimension is default */
+				}
+				if (Ctrl->F.mode == SUBPLOT_PANEL && strchr (opt->arg, ':')) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error Option -F: Colon modifier can only be used with -F[f].\n");
+					n_errors++;
+				}
+				Ctrl->F.w = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);
+				Ctrl->F.h = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], double);
+				if (Ctrl->F.mode == SUBPLOT_FIGURE) {
+					char *q = NULL;
+					double f = 0.0;
+					if ((q = strchr (opt->arg, ':'))) {	/* Gave optional instructions on how to partition width and height on a per row/col basis */
+						char *ytxt = strchr (&q[1], '/');	/* Find the slash */
+						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
+						if (k == 1) {	/* Constant, must duplicate */
+							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
+						}
+						else if (k < Ctrl->N.dim[GMT_Y]) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -Ff...: requires as many height fractions as there are rows.\n");
+							n_errors++;
+						}
+						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
+						k = GMT_Get_Values (GMT->parent, &q[1], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						ytxt[0] = '/';	/* Restore the slash */
+						if (k == 1) {	/* Constant, must duplicate */
+							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
+						}
+						else if (k < Ctrl->N.dim[GMT_X]) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -Ff...: requires as many width fractions as there are columns.\n");
+							n_errors++;
+						}
+						/* Normalize fractions */
+						for (j = 0, f = 0.0; j < Ctrl->N.dim[GMT_X]; j++) f += Ctrl->F.w[j];
+						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] /= f;
+						for (j = 0, f = 0.0; j < Ctrl->N.dim[GMT_Y]; j++) f += Ctrl->F.h[j];
+						for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] /= f;
+						q[0] = '\0';	/* Chop off the fraction settings for now */
+					}
+					else {	/* Equal rows and cols */
+						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_X]; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = f;
+						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_Y]; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = f;
 					}
 					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) < 2) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -F requires width and height of plot area.\n");
@@ -369,6 +411,43 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
 					for (k = 0; k < 2; k++) Ctrl->F.dim[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+				}
+				else {	/* Gave subplot dimension(s)  */
+					if (strchr (opt->arg, ',')) {	/* Gave separete widths and heights */
+						char *ytxt = strchr (opt->arg, '/');	/* Find the slash */
+						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
+						if (k == 1) {	/* Constant, must duplicate */
+							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
+						}
+						else if (k < Ctrl->N.dim[GMT_Y]) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -Fs...: requires as many height fractions as there are rows, or just one.\n");
+							n_errors++;
+						}
+						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
+						k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						ytxt[0] = '/';	/* Restore the slash */
+						if (k == 1) {	/* Constant, must duplicate */
+							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
+						}
+						else if (k < Ctrl->N.dim[GMT_X]) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -Ff...: requires as many width fractions as there are columns, or just one.\n");
+							n_errors++;
+						}
+						/* Since GMT_Get_Values returns in default project length unit, convert to inch */
+						for (k = 0; k < Ctrl->N.dim[GMT_X]; k++) Ctrl->F.w[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+						for (k = 0; k < Ctrl->N.dim[GMT_Y]; k++) Ctrl->F.h[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					}
+					else {	/* Just got a fixed width/height for each subplot */
+						if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) < 2) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option -F requires width and height of plot area.\n");
+							n_errors++;
+						}
+						/* Since GMT_Get_Values returns in default project length unit, convert to inch */
+						for (k = 0; k < 2; k++) Ctrl->F.dim[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.dim[GMT_X];	/* Duplicate equally to all rows and cols */
+						for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.dim[GMT_Y];
+						Ctrl->F.dim[GMT_X] = Ctrl->F.dim[GMT_Y] = 0.0;	/* Since not know at this time */
+					}
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
@@ -489,7 +568,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		if (Ctrl->L.axes && Ctrl->L.mode) gmtlib_str_tolower (Ctrl->L.axes);	/* Used to control the non-annotated axes */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Syntax error -A: Cannot select Roman numerals AND letters!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Syntax error: Number of RowsxCols is required!\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "Syntax error -L: Must specify panel layout!\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error -F: Must specify figure and subplot dimensions!\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "Syntax error -L: Must specify subplot layout!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Syntax error -F: Only available for gmt subset begin!\n");
@@ -539,7 +619,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
-	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot panel attributes */
+	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes */
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
 		double x, y, plot_dim[2], width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
@@ -631,22 +711,29 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->L.ptitle == SUBPLOT_PANEL_TITLE)
 			fluff[GMT_Y] += (factor-1) * title_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: fluff = {%g, %g}\n", factor, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimension */
-			plot_dim[GMT_X] = (Ctrl->F.dim[GMT_X] - fluff[GMT_X]) / Ctrl->N.dim[GMT_X];
-			plot_dim[GMT_Y] = (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]) / Ctrl->N.dim[GMT_Y];
+		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimensions */
+			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.w[col] *= (Ctrl->F.dim[GMT_X] - fluff[GMT_X]);
+			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] *= (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]);
+			//plot_dim[GMT_X] = (Ctrl->F.dim[GMT_X] - fluff[GMT_X]) / Ctrl->N.dim[GMT_X];
+			//plot_dim[GMT_Y] = (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]) / Ctrl->N.dim[GMT_Y];
 		}
-		else {	/* Got subplot dimension, compute media dimension */
-			plot_dim[GMT_X] = Ctrl->F.dim[GMT_X];
-			plot_dim[GMT_Y] = Ctrl->F.dim[GMT_Y];
-			Ctrl->F.dim[GMT_X] = Ctrl->N.dim[GMT_X] * plot_dim[GMT_X] + fluff[GMT_X];
-			Ctrl->F.dim[GMT_Y] = Ctrl->N.dim[GMT_Y] * plot_dim[GMT_Y] + fluff[GMT_Y];
+		else {	/* Already got subplot dimension, compute figure dimension */
+			for (col = 0, Ctrl->F.dim[GMT_X] = fluff[GMT_X]; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.dim[GMT_X] += Ctrl->F.w[col];
+			for (row = 0, Ctrl->F.dim[GMT_Y] = fluff[GMT_Y]; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.dim[GMT_Y] += Ctrl->F.h[row];
+			//plot_dim[GMT_X] = Ctrl->F.dim[GMT_X];
+			//plot_dim[GMT_Y] = Ctrl->F.dim[GMT_Y];
+			//Ctrl->F.dim[GMT_X] = Ctrl->N.dim[GMT_X] * plot_dim[GMT_X] + fluff[GMT_X];
+			//Ctrl->F.dim[GMT_Y] = Ctrl->N.dim[GMT_Y] * plot_dim[GMT_Y] + fluff[GMT_Y];
 		}
 		/* Plottable area: */
 		width  = Ctrl->F.dim[GMT_X];
 		height = Ctrl->F.dim[GMT_Y];
 		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure dimensions: {%g, %g}\n", Ctrl->F.dim[GMT_X], Ctrl->F.dim[GMT_Y]);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Panel dimensions:  {%g, %g}\n", plot_dim[GMT_X], plot_dim[GMT_Y]);
+		for (col = 0; col < Ctrl->N.dim[GMT_X]; col++)
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Subplot col %d dimension:  %g,", Ctrl->F.w[col]);
+		for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++)
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Subplot row %d dimension:  %g,", Ctrl->F.h[row]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 
 		/* Allocate panel info array */
@@ -711,7 +798,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->L.axes && strchr (Ctrl->L.axes, 't'))
 				axes[k++] = 't';
-			y -= plot_dim[GMT_Y];	/* Now at correct y for this panel */
+			y -= Ctrl->F.h[row];	/* Now at correct y for this panel */
 			py[row] = y;
 			if (Ctrl->L.mode && (row == last_row || ((Ctrl->L.mode & SUBPLOT_COL_FIXED_X) == 0)) && (Ctrl->L.annotate[GMT_X] & SUBPLOT_PLACE_AT_MIN))	/* Need annotation at S */
 				add_annot = true;
@@ -773,7 +860,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			else if (Ctrl->L.axes && strchr (Ctrl->L.axes, 'l'))
 				axes[k++] = 'l';
 			px[col] = x;	/* Now at correct x for this panel */
-			x += plot_dim[GMT_X];
+			x += Ctrl->F.w[col];
 			if (Ctrl->L.mode && (col == last_col || ((Ctrl->L.mode & SUBPLOT_ROW_FIXED_Y) == 0)) && (Ctrl->L.annotate[GMT_Y] & SUBPLOT_PLACE_AT_MAX))	/* Need annotation at E */
 				add_annot = true;
 			else if (Ctrl->L.mode == 0 && Ctrl->L.axes && strchr (Ctrl->L.axes, 'E'))
@@ -820,7 +907,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
-				fprintf (fp, "%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t", panel, row, col, Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], px[col], py[row], plot_dim[GMT_X], plot_dim[GMT_Y]);
+				fprintf (fp, "%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t", panel, row, col, Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], px[col], py[row], Ctrl->F.w[col], Ctrl->F.h[row]);
 				if (Ctrl->A.active) {
 					if (Ctrl->A.mode == SUBPLOT_LABEL_IS_NUMBER) {
 						if (Ctrl->A.roman) {
