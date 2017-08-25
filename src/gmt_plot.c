@@ -5586,7 +5586,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		strcat(opt_J, lon_2);	strcat (opt_J, "/");	strcat(opt_J, lat_2);	strcat (opt_J, "/");
 	}
 	else if (!strcmp(prjcode, "utm")) {
-		int zone = 100;
+		unsigned int zone = 100;
 		strcat (opt_J, "U");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "zone=")) != NULL) {	
@@ -5608,6 +5608,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		if (zone == 100) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj selected but no info about utm zone.\n");	
 			return (pStrOut);
+		}
+		else if (zone > 64) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj The lon_0 argument was not correctly parsed.\n");	
 		}
 		else {
 			char t[4];
@@ -5842,6 +5845,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	/* Remove known unused fields in proj4 string */ 
 	if ((pch = strstr(szProj4, "+no_defs")) != NULL) {
+		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
+		wipe_substr(szProj4, token);
+	}
+	if ((pch = strstr(szProj4, "+wktext")) != NULL) {	/* +wktext is used by GDAL to capture the proj.4 string of unsupported projs */
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		wipe_substr(szProj4, token);
 	}
