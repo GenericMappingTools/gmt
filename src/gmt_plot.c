@@ -2851,7 +2851,6 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 }
 
-#ifdef PRJ4
 GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
 	if (!strcmp(inname, "WGS84"))
@@ -2941,7 +2940,6 @@ GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 	else
 		outname[0] = '\0';
 }
-#endif
 
 GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
@@ -5456,7 +5454,6 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	PSL_command (GMT->PSL, "[] 0 B\n");	/* Ensure no pen textures remain in effect */
 }
 
-#ifdef PRJ4
 GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 	/* Set the substring str2 of str1 to blanks */
 	size_t k;
@@ -5885,7 +5882,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	pStrOut = strdup(opt_J);
 	return (pStrOut);
 }
-#endif
 
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	char *pStrOut = NULL;

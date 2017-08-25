@@ -585,7 +585,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
-#ifdef PRJ4
 	/* The following lousy hack allows NOT having to specify -R */
 	if (GMT->current.proj.is_proj4 && !GMT->common.R.active[RSET]) {	/* Means MAYBE a 1:1 scale was used */
 		GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
@@ -597,7 +596,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		if (GMT->current.proj.pars[14] == 1)
 			Ctrl->C.active = Ctrl->F.active = true;
 	}
-#endif
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                   "Syntax error: -T cannot work with -E, -G or -L\n");
@@ -648,9 +646,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
-#ifdef PRJ4
-	bool datum_already_init = false;
-#endif
 
 	enum GMT_enum_family family;
 	enum GMT_enum_geometry geometry;
@@ -731,29 +726,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode) Return (GMT_NOERROR);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-#ifdef PRJ4__		// Comment this part now that gmt_parse_common_options sets the things to do the projections with proj.4
-	if (!Ctrl->C.shift && (GMT->current.proj.proj4_x0 != 0 || GMT->current.proj.proj4_y0 != 0)) {	/* Set by a proj4 string */
-		Ctrl->C.easting  = GMT->current.proj.proj4_x0;
-		Ctrl->C.northing = GMT->current.proj.proj4_y0;
-		Ctrl->C.shift = true;
-	}
-	if (GMT->current.proj.is_proj4) {
-		Ctrl->C.active = Ctrl->F.active = true;
-		for (k = 0; k < 7; k++) {		/* Check if a +towgs84 was used */
-			if (GMT->current.proj.datum.bursa[k] != 0) {
-				Ctrl->T.active = datum_already_init = true;
-				break;
-			}
-		}
-	}
-#endif
 
 	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
-#ifdef PRJ4
-	if (Ctrl->T.active && !datum_already_init) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
-#else
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
-#endif
 	if (Ctrl->A.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
 		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);

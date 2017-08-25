@@ -221,9 +221,7 @@ struct GMT_DATUM_CONV {
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
 	double one_minus_f;	/* 1 - f */
 	double dxyz[3];		/* Ellipsoids offset in meter from Earth's center of mass for x,y, and z */
-#ifdef PRJ4
 	double bursa[7];	/* Bursa-Wolf seven parameters */
-#endif
 	struct GMT_DATUM from, to;	/* The old and new datums */
 };
 
