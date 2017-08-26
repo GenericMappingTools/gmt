@@ -5708,7 +5708,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	}
 
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Sorry, this projection '%s' is not supported in GMT\n", prjcode);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Sorry, mapping this projection '%s' is not supported in GMT\n", prjcode);
 		return (pStrOut);
 	}
 
@@ -5870,11 +5870,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);
 
+	/* This part is now not particularly useful but let it in case we may need it in future */
 	k = 0;
-	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+'))
-		k++;
+	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+')) k++;
 	if (k < strlen(szProj4))
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 

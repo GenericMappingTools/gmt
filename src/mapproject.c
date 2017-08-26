@@ -586,12 +586,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
 	/* The following lousy hack allows NOT having to specify -R */
-	if (GMT->current.proj.is_proj4 && !GMT->common.R.active[RSET]) {	/* Means MAYBE a 1:1 scale was used */
-		GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
-		GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
-		GMT->common.R.active[RSET] = true;
-	}
 	if (GMT->current.proj.is_proj4) {
+		if (!GMT->common.R.active[RSET]) {	/* Means MAYBE a 1:1 scale was used */
+			GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 1;
+			GMT->common.R.wesn[YLO] = 0;	GMT->common.R.wesn[YHI] = 1;
+			GMT->common.R.active[RSET] = true;
+		}
 		/* See if scale == 1:1 and if yes set -C -F */
 		if (GMT->current.proj.pars[14] == 1)
 			Ctrl->C.active = Ctrl->F.active = true;
