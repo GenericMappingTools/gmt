@@ -44,5 +44,6 @@ gmt begin ex47 ps
   echo "ORTHOGONAL" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
   plot_one -Ey -Nr -c4,3
   echo "REDUCED MAJOR AXIS" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
+  gmt subplot end
 gmt end
 rm -f tmp data giants

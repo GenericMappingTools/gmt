@@ -115,7 +115,7 @@ mode that defines the layout of the subplots:
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *autolabel* ]
 [ **-D**\ [**x**\ ]\ [**y**\ ] ]
-[ **-F**\ [**f**\ \|\ **s**\ ]*width*\ /*height* ]
+[ **-F**\ [**f**\ \|\ **s**\ ]*width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ] ]
 [ **-L**\ *layout* ] [ **-M**\ *margins* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
 
@@ -159,10 +159,16 @@ Optional Arguments
 
 .. _subplot_begin-F:
 
-**-F**\ [**f**\ \|\ **s**\ ] *width*\ /*height*
-    Specify the dimension of the figure.  The subplot dimensions are then calculation from the figure
-    dimensions after accounting for annotations and margins.  Alternatively, use **-Fs** to specify
+**-F**\ [**f**\ \|\ **s**\ ]*width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
+    Specify the dimension of the figure.  The subplot dimensions are then calculated from the figure
+    dimensions after accounting for annotations and margins.  If the subplot dimensions should be different
+    for different rows (or columns) you must append a comma-separated list of relative widths (and heights)
+    following the colon.  A single number means constant widths (or heights) [Default].
+    Alternatively, use **-Fs** to specify
     the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
+    To specify different subplot dimensions for all rows (or columns), give a comma-separated
+    list of values instead.  Thee number of values must either be one (constant across the rows or columns)
+    or match the number of rows (or columns).
 
 .. _subplot_begin-L:
 
