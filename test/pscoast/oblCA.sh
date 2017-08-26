@@ -18,11 +18,11 @@ PROJ2="-JOc-120.3938/36.1433/-70/51/8.0i -R-120.01540/33.83507/-120.76423/38.402
 
 gmt pscoast -R$Rbox -JM6i -Slightblue -W0.25p -Baf -K -P -Na/.5p,gray -Xc > $ps
 gmt psbasemap $PROJ1 -A | gmt psxy -R$Rbox -JM6i -W1p,red -O -K >> $ps
-psxy -R -J -O -K -Sc0.1i -Ggreen << EOF >> $ps
+gmt psxy -R -J -O -K -Sc0.1i -Ggreen << EOF >> $ps
 -117.84865	35.59988
 -122.94715	36.71517
 EOF
-psxy -R -J -O -K -Sc0.1i -Gred << EOF >> $ps
+gmt psxy -R -J -O -K -Sc0.1i -Gred << EOF >> $ps
 -120.01540	33.83507
 -120.76423	38.40270
 EOF

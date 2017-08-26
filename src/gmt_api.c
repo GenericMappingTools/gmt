@@ -882,8 +882,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
  	 * 0 : Place file in the cache directory
 	 * 1 : Place file in user directory
 	 * 2 : Place file in local (current) directory
+	 * Add 4 if the file may not be found and we should not complain about this here.
 	 */
-	unsigned int kind = 0, pos = 0, from = 0, to = 0;
+	unsigned int kind = 0, pos = 0, from = 0, to = 0, be_fussy;
 	int curl_err = 0;
 	CURL *Curl = NULL;
 	static char *ftp_dir[2] = {"/cache", ""}, *name[3] = {"CACHE", "USER", "LOCAL"};
@@ -891,9 +892,11 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
 
-    if (!file_name) return 0;   /* Got nutin' */
+	if (!file_name) return 0;   /* Got nutin' */
 
-    file = strdup (file_name);
+	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
+	
+	file = strdup (file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
@@ -970,13 +973,15 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-		if (ftpfile.fp != NULL) {
-			fclose (ftpfile.fp);
-			ftpfile.fp = NULL;
+		if (be_fussy || curl_err != CURLE_REMOTE_FILE_NOT_FOUND) {	/* Unexpected failure - want to bitch about it */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+			if (ftpfile.fp != NULL) {
+				fclose (ftpfile.fp);
+				ftpfile.fp = NULL;
+			}
+			if (gmt_remove_file (GMT, local_path))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 		}
-		if (gmt_remove_file (GMT, local_path))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 	}
 	curl_easy_cleanup (Curl);
 	if (ftpfile.fp) /* close the local file */

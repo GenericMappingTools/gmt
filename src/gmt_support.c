@@ -4461,7 +4461,9 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		strcpy (name, in_name);
 	
 	sprintf (file, "%s.def", name);	/* Full name of potential def file */
-	pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
+	/* Deal with downloadable GMT data sets first.  Passing 4 to avoid hearing about missing remote file
+	 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
+	pos = gmt_download_file_if_not_found (GMT, file, 4);
 	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
 	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[pos], path)) {	/* No *.def file found */
 		/* See if we got EPS macro */
