@@ -2147,7 +2147,7 @@ GMT_LOCAL void adjust_panel_for_gaps (struct GMT_CTRL *GMT, struct GMT_SUBPLOT *
 	/* Checks the caps array and makes adjustment to w/h and adjusts the x/y origin */
 	gmt_M_unused (GMT);
 
-	/* Shrink the availble panel dimensions based on the gaps */
+	/* Shrink the available panel dimensions based on the gaps */
 	P->w -= (P->gap[XLO] + P->gap[XHI]);
 	P->h -= (P->gap[YLO] + P->gap[YHI]);
 }

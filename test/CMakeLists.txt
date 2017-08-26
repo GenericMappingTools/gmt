@@ -24,14 +24,14 @@ if (DO_TESTS)
 		set (SCRIPT_MODE "C")
 	endif (MODERNIZE_TESTS)
 	
-	# list of test dirs
+	# list of test dirs {Note: You must add new test sub-directories here}
 	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
 		genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify
 		gmtspatial gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour
 		grdcut grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
-		grdvector grdview grdvolume greenspline gshhg kml mapproject nearneighbor ogr
-		postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
+		grdvector grdview grdvolume greenspline gshhg kml modern mapproject nearneighbor
+		ogr postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
 		pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz
 		sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
 		triangulate img meca mgd77 potential spotter x2sys)

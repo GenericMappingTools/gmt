@@ -3789,10 +3789,9 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			if (args[j] == ':') k = j + 1;
 		GMT->current.proj.units_pr_degree = (k == -1) ? true : false;
 		gmt_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
-		if (project != GMT_LINEAR) {
-			GMT->current.proj.gave_map_width = mod_flag;
+		if (project != GMT_LINEAR)
 			gmt_set_geographic (GMT, GMT_IN);
-		}
+		GMT->current.proj.gave_map_width = mod_flag;
 	}
 
 	GMT->current.proj.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */
@@ -11450,7 +11449,7 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_set_last_dimensions: Could not create file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	fprintf (fp, "%lg %lg", API->GMT->current.map.width, API->GMT->current.map.height);
+	fprintf (fp, "%lg %lg\n", API->GMT->current.map.width, API->GMT->current.map.height);
 	fclose (fp);
 	return (GMT_NOERROR);
 }

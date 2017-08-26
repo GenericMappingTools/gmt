@@ -137,6 +137,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.dir[GMT_X] = C->D.dir[GMT_Y] = +1;	/* Normal axes directions for Cartesian plots */
 	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
+	for (unsigned int k = 0; k < 4; k++) C->M.margin[k] = 0.5 * GMT->session.u2u[GMT_CM][GMT_INCH];	/* 0.5 cm -> inches */
 	return (C);
 }
 
@@ -313,7 +314,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							gmt_just_to_code (GMT, pos, Ctrl->A.justify);
 							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
 						}
-						if (gmt_get_modifier (opt->arg, 'c', string))	/* Clearance for box */
+						if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for box */
 							if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.clearance) < 0) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'g', Ctrl->A.fill) && Ctrl->A.fill[0]) {
 							if (gmt_getfill (GMT, Ctrl->A.fill, &fill)) n_errors++;
@@ -434,7 +435,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							n_errors++;
 						}
 						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
-						k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						k = GMT_Get_Values (GMT->parent, &opt->arg[1], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
 						ytxt[0] = '/';	/* Restore the slash */
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];

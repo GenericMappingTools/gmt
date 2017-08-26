@@ -113,9 +113,10 @@ The subplot command is used to split the current figure into a matrix of subplot
 that each may contain a single figure.  A subplot setup is started with the **begin**
 mode that defines the layout of the subplots:
 
-**gmt subplot begin** *nrows*\ **x**\ *ncols* [ **-A**\ *autolabel* ]
+**gmt subplot begin** *nrows*\ **x**\ *ncols*
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
+[ **-A**\ *autolabel* ]
 [ **-D**\ [**x**\ ]\ [**y**\ ] ]
-[ **-F**\ [**f**\ \|\ **s**\ ]*width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ] ]
 [ **-L**\ *layout* ] [ **-M**\ *margins* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
 
@@ -126,6 +127,19 @@ Required Arguments
     Specifies the number of rows and columns of subplots.  Each row will have
     the same number of subplots.  To construct figures with different number of
     subplots per row you will need to make several subplots.
+
+.. _subplot_begin-F:
+
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
+    Specify the dimensions of the figure.  The subplot dimensions are then calculated from the figure
+    dimensions after accounting for tick marks, annotations, labels, and margins.  If the subplot dimensions should be different
+    for each row (or column) you must append a comma-separated list of relative widths (or heights)
+    following the colon.  A single number means constant widths (or heights) [Default].
+    Alternatively, use **-Fs** to specify
+    the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
+    To specify different subplot dimensions for each row (or column), give a comma-separated
+    list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
+    or exactly match the number of rows (or columns).
 
 Optional Arguments
 ------------------
@@ -157,19 +171,6 @@ Optional Arguments
    then you must indicate which axes should be reversed, e.g., **-Dy** for just the *y*-axis
    [no reversed axes].
 
-.. _subplot_begin-F:
-
-**-F**\ [**f**\ \|\ **s**\ ]*width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
-    Specify the dimension of the figure.  The subplot dimensions are then calculated from the figure
-    dimensions after accounting for annotations and margins.  If the subplot dimensions should be different
-    for different rows (or columns) you must append a comma-separated list of relative widths (and heights)
-    following the colon.  A single number means constant widths (or heights) [Default].
-    Alternatively, use **-Fs** to specify
-    the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
-    To specify different subplot dimensions for all rows (or columns), give a comma-separated
-    list of values instead.  Thee number of values must either be one (constant across the rows or columns)
-    or match the number of rows (or columns).
-
 .. _subplot_begin-L:
 
 **-L**\ *layout*
@@ -195,7 +196,8 @@ Optional Arguments
 .. _subplot_begin-M:
 
 **-M**\ *margins*
-    This is clearance that is added around each subplot beyond the automatic space allocated for annotations [0.5c].
+    This is clearance that is added around each subplot beyond the automatic space allocated for tick marks,
+    annotations, and lables [0.5c].
     The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
     or the full set of four margins for the left, right, bottom, and top margin.
 
@@ -233,7 +235,7 @@ Optional Arguments
 .. _subplot_set-A:
 
 **-A**\ *fixedlabel*
-    Overrides the automatic labeling with the given string.
+    Overrides the automatic labeling with the given string.  No modifiers are allowed.
 
 .. _subplot_set-C:
 

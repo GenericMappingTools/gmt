@@ -268,7 +268,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
 		if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'B') continue;	/* The -B option is NOT a shorthand option under modern mode */
 		update = false;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s\n", opt->option, opt->arg);
 
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
