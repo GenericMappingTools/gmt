@@ -5705,6 +5705,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				wipe_substr(szProj4, token);
 			}
 		}
+		if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
+			strcat(opt_J, "0/");
 	}
 
 	else {
