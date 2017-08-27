@@ -5774,14 +5774,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			sprintf(t, " +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7");
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: this datum %s is not yet ported to GMT\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: this datum %s is not yet ported to GMT\n", &token[6]);
 			return (pStrOut);
 		}
 
 		if (ename[0] != '\0')
 			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
 		}
 		strcat(szProj4, t);			/* Append to the proj4 string so that the +towgs84 case below will handle this */
