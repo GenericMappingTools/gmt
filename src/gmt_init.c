@@ -13109,7 +13109,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 #ifdef HAVE_GDAL
 			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
-				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, *pch;
+				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, wktext[10] = {""}, *pch;
 				bool do_free = false;
 				double sc;
 				size_t k, len;
@@ -13167,6 +13167,69 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					sprintf (item_t3, "%s", item);
 				else
 					sprintf (item_t3, "%s", item_t1);
+
+				/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
+				if (!strncmp(item, "+proj=", 6)) {
+					char prjcode[8] = {""};
+					k = 6;
+					while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t')) k++;
+					strncpy(prjcode, &item[6], k - 6 + 1);
+
+					/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
+					if (strcmp(prjcode, "longlat") &&
+					    strcmp(prjcode, "geocent") &&
+					    strcmp(prjcode, "bonne") &&
+					    strcmp(prjcode, "cass") &&
+					    strcmp(prjcode, "nzmg") &&
+					    strcmp(prjcode, "cea") &&
+					    strcmp(prjcode, "tmerc") &&
+					    strcmp(prjcode, "etmerc") &&
+					    strcmp(prjcode, "utm") &&
+					    strcmp(prjcode, "merc") &&
+					    strcmp(prjcode, "stere") &&
+					    strcmp(prjcode, "sterea") &&
+					    strcmp(prjcode, "eqc") &&
+					    strcmp(prjcode, "gstmerc") &&
+					    strcmp(prjcode, "gnom") &&
+					    strcmp(prjcode, "ortho") &&
+					    strcmp(prjcode, "laea") &&
+					    strcmp(prjcode, "aeqd") &&
+					    strcmp(prjcode, "eqdc") &&
+					    strcmp(prjcode, "mill") &&
+					    strcmp(prjcode, "moll") &&
+					    strcmp(prjcode, "eck1") &&
+					    strcmp(prjcode, "eck2") &&
+					    strcmp(prjcode, "eck3") &&
+					    strcmp(prjcode, "eck4") &&
+					    strcmp(prjcode, "eck5") &&
+					    strcmp(prjcode, "eck6") &&
+					    strcmp(prjcode, "poly") &&
+					    strcmp(prjcode, "aea") &&
+					    strcmp(prjcode, "robin") &&
+					    strcmp(prjcode, "vandg") &&
+					    strcmp(prjcode, "sinu") &&
+					    strcmp(prjcode, "gall") &&
+					    strcmp(prjcode, "goode") &&
+					    strcmp(prjcode, "igh") &&
+					    strcmp(prjcode, "geos") &&
+					    strcmp(prjcode, "lcc") &&
+					    strcmp(prjcode, "omerc") &&
+					    strcmp(prjcode, "somerc") &&
+					    strcmp(prjcode, "krovak") &&
+					    strcmp(prjcode, "iwm_p") &&
+					    strcmp(prjcode, "wag1") &&
+					    strcmp(prjcode, "wag2") &&
+					    strcmp(prjcode, "wag3") &&
+					    strcmp(prjcode, "wag4") &&
+					    strcmp(prjcode, "wag5") &&
+					    strcmp(prjcode, "wag6") &&
+					    strcmp(prjcode, "wag7") &&
+					    strcmp(prjcode, "qsc") &&
+					    strcmp(prjcode, "sch") &&
+					    strcmp(prjcode, "tpeqd"))
+
+						sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
+				}
 	
 				if (item_t2) {
 					/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
@@ -13178,10 +13241,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					item[k] = '\0';
 					free (item_t2);	
 				}
-				if (do_free) free (item_t1);		/* When we got a glued +proj=... and had to inser spaces */
+				if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
 
-				if ((pch = strchr(item_t3, '/')) != NULL)	/* If we have a scale drop it before passing the string to GDAL */
+				if ((pch = strchr(item_t3, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
 					pch[0] = '\0';
+
+				if (wktext) strcat(item_t3, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
+
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, "+proj=latlong", item_t3);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, item_t3, "+proj=latlong");
 				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
