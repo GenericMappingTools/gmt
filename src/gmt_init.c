@@ -13050,6 +13050,160 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
+	/* Deal with proj.4 or EPSGs passed in -J option */
+	char  *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, wktext[10] = {""}, *pch;
+	bool   do_free = false;
+	int    error = 0;
+	size_t k, len;
+	double sc;
+
+	if (item[0] == '+') {
+		bool found = false;
+		len = strlen (item);
+		for (k = 1; k < len; k++) {			/* Search for glued tokens */
+			if (item[k] == '+' && item[k-1] != ' ') {
+				found = true;
+				break;
+			}
+		}
+		if (found) {			/* OK, need to break up things like +x=0+y=0 into "+x=0 +y=0" */
+			item_t1 = gmt_strrep (item, "+", " +");
+			do_free = true;		/* Signal that we must free item_t1 */
+		}
+		else
+			item_t1 = item;
+	}
+	else if (strstr(item, "EPSG:"))
+		item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
+	else
+		item_t1 = item;
+
+	item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
+	if (item_t2) { 
+		char *pch2;
+		len = strlen(item_t2);
+		if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
+			item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
+			item_t2[len-1] = '\0';
+		}
+		error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
+		                                 gmtinit_parse_J_option (GMT, item_t2));
+
+		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
+		pch = strrchr(item_t2, '/');
+		if (pch == NULL) {
+			if (item_t2[0] == 'x' || item_t2[0] == 'X')		/* In this case we dont have a / but we know where scale starts */ 
+				pch = &item_t2[1];
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: this J string, %s, has no slash separating the scale\n", item_t2);
+				return 1;
+			}
+		}
+		if ((pch2 = strchr(pch, ':')) != NULL) {
+			if ((sc = atof(&pch2[1])) == 1)
+				GMT->current.proj.pars[14] = 1;
+		}
+		else if ((sc = atof(&pch[1])) == 1)
+			GMT->current.proj.pars[14] = 1;
+	}
+	else {
+		/* Even though it failed to do the mapping we can still use it in mapproject */
+		GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		GMT->current.proj.is_proj4 = true;
+		GMT->current.proj.pars[14] = 1;
+	}
+
+	if (isdigit(item[0]))
+		sprintf (dest, "EPSG:%s", item);
+	else if (strstr(item, "EPSG:"))
+		sprintf (dest, "%s", item);
+	else
+		sprintf (dest, "%s", item_t1);
+
+	/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
+	if (!strncmp(item, "+proj=", 6)) {
+		char prjcode[8] = {""};
+		k = 6;
+		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t')) k++;
+		strncpy(prjcode, &item[6], k - 6 + 1);
+
+		/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
+		if (strcmp(prjcode, "longlat") &&
+		    strcmp(prjcode, "geocent") &&
+		    strcmp(prjcode, "bonne") &&
+		    strcmp(prjcode, "cass") &&
+		    strcmp(prjcode, "nzmg") &&
+		    strcmp(prjcode, "cea") &&
+		    strcmp(prjcode, "tmerc") &&
+		    strcmp(prjcode, "etmerc") &&
+		    strcmp(prjcode, "utm") &&
+		    strcmp(prjcode, "merc") &&
+		    strcmp(prjcode, "stere") &&
+		    strcmp(prjcode, "sterea") &&
+		    strcmp(prjcode, "eqc") &&
+		    strcmp(prjcode, "gstmerc") &&
+		    strcmp(prjcode, "gnom") &&
+		    strcmp(prjcode, "ortho") &&
+		    strcmp(prjcode, "laea") &&
+		    strcmp(prjcode, "aeqd") &&
+		    strcmp(prjcode, "eqdc") &&
+		    strcmp(prjcode, "mill") &&
+		    strcmp(prjcode, "moll") &&
+		    strcmp(prjcode, "eck1") &&
+		    strcmp(prjcode, "eck2") &&
+		    strcmp(prjcode, "eck3") &&
+		    strcmp(prjcode, "eck4") &&
+		    strcmp(prjcode, "eck5") &&
+		    strcmp(prjcode, "eck6") &&
+		    strcmp(prjcode, "poly") &&
+		    strcmp(prjcode, "aea") &&
+		    strcmp(prjcode, "robin") &&
+		    strcmp(prjcode, "vandg") &&
+		    strcmp(prjcode, "sinu") &&
+		    strcmp(prjcode, "gall") &&
+		    strcmp(prjcode, "goode") &&
+		    strcmp(prjcode, "igh") &&
+		    strcmp(prjcode, "geos") &&
+		    strcmp(prjcode, "lcc") &&
+		    strcmp(prjcode, "omerc") &&
+		    strcmp(prjcode, "somerc") &&
+		    strcmp(prjcode, "krovak") &&
+		    strcmp(prjcode, "iwm_p") &&
+		    strcmp(prjcode, "wag1") &&
+		    strcmp(prjcode, "wag2") &&
+		    strcmp(prjcode, "wag3") &&
+		    strcmp(prjcode, "wag4") &&
+		    strcmp(prjcode, "wag5") &&
+		    strcmp(prjcode, "wag6") &&
+		    strcmp(prjcode, "wag7") &&
+		    strcmp(prjcode, "qsc") &&
+		    strcmp(prjcode, "sch") &&
+		    strcmp(prjcode, "tpeqd"))
+
+			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
+	}
+
+	if (item_t2) {
+		/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
+		k = 0;
+		while (item_t2[k]) {
+			item[k] = item_t2[k];
+			k++;
+		}
+		item[k] = '\0';
+		free (item_t2);	
+	}
+	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
+
+	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
+		pch[0] = '\0';
+
+	if (wktext) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
+
+	return error;
+}
+
 /*! gmt_parse_common_options interprets the command line for the common, unique options
  * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
@@ -13071,7 +13225,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	}
 
 	switch (option) {	/* Handle parsing of this option, if allowed here */
-
 		case 'B':
 			switch (item[0]) {	/* Check for -B[p] and -Bs */
 				case 's': GMT->common.B.active[GMT_SECONDARY] = true; break;
@@ -13107,151 +13260,28 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				                                 gmtinit_parse_J_option (GMT, item));
 				GMT->common.J.zactive = true;
 			}
-#ifdef HAVE_GDAL
 			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
-				char *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, wktext[10] = {""}, *pch;
-				bool do_free = false;
-				double sc;
-				size_t k, len;
-				if (item[0] == '+') {
-					bool found = false;
-					len = strlen (item);
-					for (k = 1; k < len; k++) {			/* Search for glued tokens */
-						if (item[k] == '+' && item[k-1] != ' ') {
-							found = true;
-							break;
-						}
-					}
-					if (found) {			/* OK, need to break up things like +x=0+y=0 into "+x=0 +y=0" */
-						item_t1 = gmt_strrep (item, "+", " +");
-						do_free = true;		/* Signal that we must free item_t1 */
-					}
-					else
-						item_t1 = item;
-				}
-				else if (strstr(item, "EPSG:"))
-					item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
-				else
-					item_t1 = item;
+#ifdef HAVE_GDAL
+				char  *item_t1 = NULL, *item_t2 = NULL, wktext[10] = {""}, *pch;
+				char   source[1024] = {""}, dest[1024] = {""};
 
-				item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
-				if (item_t2) { 
-					char *pch2;
-					len = strlen(item_t2);
-					if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
-						item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
-						item_t2[len-1] = '\0';
-					}
-					error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
-													 gmtinit_parse_J_option (GMT, item_t2));
-
-					/* Chech if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
-					pch = strrchr(item_t2, '/');
-					if ((pch2 = strchr(pch, ':')) != NULL) {
-						if ((sc = atof(&pch2[1])) == 1)
-							GMT->current.proj.pars[14] = 1;
-					}
-					else if ((sc = atof(&pch[1])) == 1)
-						GMT->current.proj.pars[14] = 1;
+				if ((pch = strstr(item, "+to")) == NULL) {
+					sprintf(source, "+proj=latlong +datum=WGS84");
+					error = parse_proj4 (GMT, item, dest);
 				}
 				else {
-					/* Even though it failed to do the mapping we can still use it in mapproject */
-					GMT->current.proj.projection_GMT = GMT_NO_PROJ;
-					GMT->current.proj.is_proj4 = true;
-					GMT->current.proj.pars[14] = 1;
-				}
-
-				if (isdigit(item[0]))
-					sprintf (item_t3, "EPSG:%s", item);
-				else if (strstr(item, "EPSG:"))
-					sprintf (item_t3, "%s", item);
-				else
-					sprintf (item_t3, "%s", item_t1);
-
-				/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
-				if (!strncmp(item, "+proj=", 6)) {
-					char prjcode[8] = {""};
-					k = 6;
-					while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t')) k++;
-					strncpy(prjcode, &item[6], k - 6 + 1);
-
-					/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
-					if (strcmp(prjcode, "longlat") &&
-					    strcmp(prjcode, "geocent") &&
-					    strcmp(prjcode, "bonne") &&
-					    strcmp(prjcode, "cass") &&
-					    strcmp(prjcode, "nzmg") &&
-					    strcmp(prjcode, "cea") &&
-					    strcmp(prjcode, "tmerc") &&
-					    strcmp(prjcode, "etmerc") &&
-					    strcmp(prjcode, "utm") &&
-					    strcmp(prjcode, "merc") &&
-					    strcmp(prjcode, "stere") &&
-					    strcmp(prjcode, "sterea") &&
-					    strcmp(prjcode, "eqc") &&
-					    strcmp(prjcode, "gstmerc") &&
-					    strcmp(prjcode, "gnom") &&
-					    strcmp(prjcode, "ortho") &&
-					    strcmp(prjcode, "laea") &&
-					    strcmp(prjcode, "aeqd") &&
-					    strcmp(prjcode, "eqdc") &&
-					    strcmp(prjcode, "mill") &&
-					    strcmp(prjcode, "moll") &&
-					    strcmp(prjcode, "eck1") &&
-					    strcmp(prjcode, "eck2") &&
-					    strcmp(prjcode, "eck3") &&
-					    strcmp(prjcode, "eck4") &&
-					    strcmp(prjcode, "eck5") &&
-					    strcmp(prjcode, "eck6") &&
-					    strcmp(prjcode, "poly") &&
-					    strcmp(prjcode, "aea") &&
-					    strcmp(prjcode, "robin") &&
-					    strcmp(prjcode, "vandg") &&
-					    strcmp(prjcode, "sinu") &&
-					    strcmp(prjcode, "gall") &&
-					    strcmp(prjcode, "goode") &&
-					    strcmp(prjcode, "igh") &&
-					    strcmp(prjcode, "geos") &&
-					    strcmp(prjcode, "lcc") &&
-					    strcmp(prjcode, "omerc") &&
-					    strcmp(prjcode, "somerc") &&
-					    strcmp(prjcode, "krovak") &&
-					    strcmp(prjcode, "iwm_p") &&
-					    strcmp(prjcode, "wag1") &&
-					    strcmp(prjcode, "wag2") &&
-					    strcmp(prjcode, "wag3") &&
-					    strcmp(prjcode, "wag4") &&
-					    strcmp(prjcode, "wag5") &&
-					    strcmp(prjcode, "wag6") &&
-					    strcmp(prjcode, "wag7") &&
-					    strcmp(prjcode, "qsc") &&
-					    strcmp(prjcode, "sch") &&
-					    strcmp(prjcode, "tpeqd"))
-
-						sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
-				}
-	
-				if (item_t2) {
-					/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
-					k = 0;
-					while (item_t2[k]) {
-						item[k] = item_t2[k];
-						k++;
-					}
-					item[k] = '\0';
-					free (item_t2);	
-				}
-				if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
-
-				if ((pch = strchr(item_t3, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
 					pch[0] = '\0';
-
-				if (wktext) strcat(item_t3, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
-
-				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, "+proj=latlong", item_t3);
-				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, item_t3, "+proj=latlong");
+					error  = parse_proj4 (GMT, item, source);
+					error += parse_proj4 (GMT, &pch[3], dest);
+				}
+				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
+				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
 				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
 				GMT->common.J.active = true;
+			}
+#else
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: PROJ.4 can only be used with GDAL linked GMT.\n");
+				error = 1;
 			}
 #endif
 			else {	/* Horizontal map projection */
