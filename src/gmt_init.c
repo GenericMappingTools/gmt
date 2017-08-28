@@ -13052,7 +13052,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 
 GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
-	char  *item_t1 = NULL, *item_t2 = NULL, item_t3[GMT_LEN256] = {""}, wktext[10] = {""}, *pch;
+	char  *item_t1 = NULL, *item_t2 = NULL, wktext[10] = {""}, *pch;
 	bool   do_free = false;
 	int    error = 0;
 	size_t k, len;
@@ -13074,7 +13074,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		else
 			item_t1 = item;
 	}
-	else if (strstr(item, "EPSG:"))
+	else if (strstr(item, "EPSG:") || strstr(item, "epsg:"))
 		item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
 	else
 		item_t1 = item;
@@ -13100,6 +13100,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 				return 1;
 			}
 		}
+		free (item_t2);	
+
 		if ((pch2 = strchr(pch, ':')) != NULL) {
 			if ((sc = atof(&pch2[1])) == 1)
 				GMT->current.proj.pars[14] = 1;
@@ -13116,7 +13118,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 	if (isdigit(item[0]))
 		sprintf (dest, "EPSG:%s", item);
-	else if (strstr(item, "EPSG:"))
+	else if (strstr(item, "EPSG:") || strstr(item, "epsg:"))
 		sprintf (dest, "%s", item);
 	else
 		sprintf (dest, "%s", item_t1);
@@ -13184,16 +13186,6 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
 	}
 
-	if (item_t2) {
-		/* Copy the Jstring into the input arg "item". This assumes a proj4 string is ALWAYS >= Jstring */
-		k = 0;
-		while (item_t2[k]) {
-			item[k] = item_t2[k];
-			k++;
-		}
-		item[k] = '\0';
-		free (item_t2);	
-	}
 	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
 
 	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
@@ -13260,10 +13252,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				                                 gmtinit_parse_J_option (GMT, item));
 				GMT->common.J.zactive = true;
 			}
-			else if (item && (item[0] == '+' || isdigit(item[0]) || strstr(item, "EPSG:"))) {
+			else if (item && (item[0] == '+' || isdigit(item[0]) || strncmp(item, "EPSG:", 5) || strncmp(item, "epsg:", 5))) {
 #ifdef HAVE_GDAL
-				char  *item_t1 = NULL, *item_t2 = NULL, wktext[10] = {""}, *pch;
-				char   source[1024] = {""}, dest[1024] = {""};
+				char   source[1024] = {""}, dest[1024] = {""}, *pch;
 
 				if ((pch = strstr(item, "+to")) == NULL) {
 					sprintf(source, "+proj=latlong +datum=WGS84");
