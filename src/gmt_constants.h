@@ -81,21 +81,22 @@
 
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
-	GMT_DIM_SIZE	= 4U,	/* Length of dim array used in Read|Creat Data */
+	GMT_DIM_SIZE	= 4U,          /* Length of dim array used in Read|Creat Data */
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
 	GMT_BIG_CHUNK   = 65536U,
-	GMT_LEN8	= 8U,
-	GMT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
-	GMT_LEN32  = 32U,          /* Small length of texts */
-	GMT_LEN64  = 64U,          /* Intermediate length of texts */
-	GMT_LEN128 = 128U,         /* Double of 64 */
-	GMT_LEN256 = 256U,         /* Max size of some text items */
-	GMT_LEN512 = 512U,         /* Max size of other text items */
+	GMT_LEN8	    = 8U,
+	GMT_LEN16	    = 16U,          /* All strings used to format date/clock output must be this length */
+	GMT_LEN32       = 32U,          /* Small length of texts */
+	GMT_LEN64       = 64U,          /* Intermediate length of texts */
+	GMT_LEN128      = 128U,         /* Double of 64 */
+	GMT_LEN256      = 256U,         /* Max size of some text items */
+	GMT_LEN512      = 512U,         /* Max size of other text items */
+	GMT_LEN1024     = 1024U,        /* For file names (antecipating web fnames) */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
-	GMT_MIN_MEMINC  = 1U,        /* E.g., 16 kb of 8-byte doubles */
+	GMT_MIN_MEMINC  = 1U,           /* E.g., 16 kb of 8-byte doubles */
 	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
 
 /*! The four plot length units [m just used internally] */
