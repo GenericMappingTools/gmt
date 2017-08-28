@@ -13100,7 +13100,6 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 				return 1;
 			}
 		}
-		free (item_t2);	
 
 		if ((pch2 = strchr(pch, ':')) != NULL) {
 			if ((sc = atof(&pch2[1])) == 1)
@@ -13108,6 +13107,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		}
 		else if ((sc = atof(&pch[1])) == 1)
 			GMT->current.proj.pars[14] = 1;
+
+		free (item_t2);			/* Cannot be freed before */
 	}
 	else {
 		/* Even though it failed to do the mapping we can still use it in mapproject */
@@ -13128,7 +13129,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		char prjcode[8] = {""};
 		k = 6;
 		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t' && item[k] != '/')) k++;
-		strncpy(prjcode, &item[6], k - 6 + 1);
+		strncpy(prjcode, &item[6], k - 6);
 
 		/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
 		if (strcmp(prjcode, "longlat") &&
