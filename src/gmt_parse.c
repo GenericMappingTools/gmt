@@ -273,10 +273,6 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		str[0] = opt->option; str[1] = str[2] = '\0';
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 
-			/* This is for the proj.4 calls via GDAL but like that it means no storing in history */
-			//if (opt->arg && (opt->arg[0] == '+' || isdigit(opt->arg[0]) || strstr(opt->arg, "EPSG:") )) continue;
-			if (opt->arg && (isdigit(opt->arg[0]) || strstr(opt->arg, "EPSG:") )) continue;
-
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
 			if ((id = gmtlib_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
@@ -416,7 +412,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 
 	int error = GMT_OK;
 	unsigned int arg, first_char, append = 0, n_args;
-	char option, **args = NULL, **new_args = NULL, *pch = NULL, *this_arg = NULL, buffer[BUFSIZ] = {""};
+	char option, **args = NULL, **new_args = NULL, *pch = NULL, *this_arg = NULL, buffer[GMT_LEN1024] = {""};
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -431,7 +427,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		unsigned int pos = 0, new_n_args = 0, k;
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
+		char p[GMT_LEN1024] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
 		new_args = gmt_M_memory (G, NULL, n_alloc, char *);
 		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -443,7 +439,8 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		}
 		while ((gmt_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
 			unsigned int i, o;
-			for (k = 0; p[k]; k++) if (p[k] == GMT_ASCII_GS) p[k] = '\t'; else if (p[k] == GMT_ASCII_US) p[k] = ' ';	/* Replace spaces and tabs masked above */
+			for (k = 0; p[k]; k++)
+				if (p[k] == GMT_ASCII_GS) p[k] = '\t'; else if (p[k] == GMT_ASCII_US) p[k] = ' ';	/* Replace spaces and tabs masked above */
 			for (i = o = 0; p[i]; i++) if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
 			p[o] = '\0';
 			new_args[new_n_args++] = strdup (p);
@@ -508,13 +505,25 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		}
 		else
 			this_arg = &args[arg][first_char];
-		if ((new_opt = GMT_Make_Option (API, option, this_arg)) == NULL)
-			return_null (API, error);	/* Create the new option structure given the args, or return the error */
+
+		/* To store -JEPSG:n or even -Jn in history we must prefix it with a '+' sign */
+		if (option == 'J' && (isdigit(this_arg[0]) || !strncmp(this_arg, "EPSG:", 5) || !strncmp(this_arg, "epsg:", 5))) {
+			char *t = malloc (strlen(this_arg)+2);
+			sprintf (t, "+%s", this_arg);
+			if ((new_opt = GMT_Make_Option (API, option, t)) == NULL) {
+				free (t);
+				return_null (API, error);	/* Create the new option structure given the args, or return the error */
+			}
+			free (t);
+		}
+		else
+			if ((new_opt = GMT_Make_Option (API, option, this_arg)) == NULL)
+				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
 		if (option == GMT_OPT_INFILE && ((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
 			/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
 			   However, the issue is that for these cases the machinery is set only to parse the request in the
-			   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let go.
+			   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let t go.
 			   JL 29-November 2014
 			*/
 			char t[GMT_LEN256] = {""};

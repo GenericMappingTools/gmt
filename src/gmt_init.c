@@ -13074,7 +13074,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		else
 			item_t1 = item;
 	}
-	else if (strstr(item, "EPSG:") || strstr(item, "epsg:"))
+	else if (!strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))
 		item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
 	else
 		item_t1 = item;
@@ -13256,7 +13256,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 #ifdef HAVE_GDAL
 				char   source[1024] = {""}, dest[1024] = {""}, *pch;
 
-				if ((pch = strstr(item, "+to")) == NULL) {
+				/* When reading from gmt.history, those are prefixed with a '+' but we must remove it */
+				if (!strncmp(item, "+EPSG", 5) || !strncmp(item, "+epsg", 5) || (item[0] == '+' && isdigit(item[1])))
+					item++;
+
+				if ((pch = strstr(item, "+to")) == NULL) {		/* A single CRS */
 					sprintf(source, "+proj=latlong +datum=WGS84");
 					error = parse_proj4 (GMT, item, dest);
 				}
