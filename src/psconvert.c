@@ -667,7 +667,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == 't')
 					mode = 1;
 				else {
-					gmt_default_error (GMT, opt->option);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: The -Q option requires setting -Qg or -Qt!\n");
 					n_errors++;
 					continue;
 
