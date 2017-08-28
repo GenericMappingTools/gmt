@@ -13252,7 +13252,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				                                 gmtinit_parse_J_option (GMT, item));
 				GMT->common.J.zactive = true;
 			}
-			else if (item && (item[0] == '+' || isdigit(item[0]) || strncmp(item, "EPSG:", 5) || strncmp(item, "epsg:", 5))) {
+			else if (item && (item[0] == '+' || isdigit(item[0]) || !strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))) {
 #ifdef HAVE_GDAL
 				char   source[1024] = {""}, dest[1024] = {""}, *pch;
 
