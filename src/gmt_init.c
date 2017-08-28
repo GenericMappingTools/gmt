@@ -13125,7 +13125,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	if (!strncmp(item, "+proj=", 6)) {
 		char prjcode[8] = {""};
 		k = 6;
-		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t')) k++;
+		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t' && item[k] != '/')) k++;
 		strncpy(prjcode, &item[6], k - 6 + 1);
 
 		/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
