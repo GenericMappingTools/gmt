@@ -274,7 +274,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
 
 			/* This is for the proj.4 calls via GDAL but like that it means no storing in history */
-			if (opt->arg && (opt->arg[0] == '+' || isdigit(opt->arg[0]) || strstr(opt->arg, "EPSG:") )) continue;
+			//if (opt->arg && (opt->arg[0] == '+' || isdigit(opt->arg[0]) || strstr(opt->arg, "EPSG:") )) continue;
+			if (opt->arg && (isdigit(opt->arg[0]) || strstr(opt->arg, "EPSG:") )) continue;
 
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
 			if ((id = gmtlib_get_option_id (0, str)) == GMT_NOTSET) Return;	/* No -J found at all - nothing more to do */
