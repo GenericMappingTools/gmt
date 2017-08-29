@@ -1,0 +1,60 @@
+#!/bin/bash
+#		GMT EXAMPLE 03
+#		$Id$
+#
+# Purpose:	Resample track data, do spectral analysis, and plot
+# GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
+# GMT modules:	spectrum1d, trend1d, pshistogram, psxy, pstext
+# Unix progs:	echo, rm
+#
+# This example begins with data files "ship_03.xyg" and "sat_03.xyg" which
+# are measurements of a quantity "g" (a "gravity anomaly" which is an
+# anomalous increase or decrease in the magnitude of the acceleration
+# of gravity at sea level).  g is measured at a sequence of points "x,y"
+# which in this case are "longitude,latitude".  The "sat_03.xyg" data were
+# obtained by a satellite and the sequence of points lies almost along
+# a great circle.  The "ship_03.xyg" data were obtained by a ship which
+# tried to follow the satellite's path but deviated from it in places.
+# Thus the two data sets are not measured at the same of points,
+# and we use various GMT tools to facilitate their comparison.
+#
+export GMT_PPID=$$
+gmt set GMT_FFT kiss
+
+gmt begin ex03 ps
+  # First, we use "gmt fitcircle" to find the parameters of a great circle
+  # most closely fitting the x,y points in "sat_03.xyg":
+  cpos=`gmt fitcircle @sat_03.xyg -L2 -Fm --IO_COL_SEPARATOR=/`
+  ppos=`gmt fitcircle @sat_03.xyg -L2 -Fn --IO_COL_SEPARATOR=/`
+  # Now we use "gmt project" to project the data in both sat_03.xyg and ship_03.xyg
+  # into data.pg, where g is the same and p is the oblique longitude around
+  # the great circle.  We use -Q to get the p distance in kilometers, and -S
+  # to sort the output into increasing p values.
+  gmt project  @sat_03.xyg -C$cpos -T$ppos -S -Fpz -Q > sat.pg
+  gmt project @ship_03.xyg -C$cpos -T$ppos -S -Fpz -Q > ship.pg
+  bounds=`gmt info ship.pg sat.pg -I1 -Af -L -C -i0  --IO_COL_SEPARATOR=/`
+  # Now we can use $bounds in gmt math to make a sampling points file for gmt sample1d:
+  gmt math -T$bounds/1 -N1/0 T = samp.x
+  # Now we can resample the gmt projected satellite data:
+  gmt sample1d sat.pg -Nsamp.x > samp_sat.pg
+  # For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample
+  # it because of the gaps > 1 km we found.  So we use gmt filter1d | gmt sample1d.  We also
+  # use the -E on gmt filter1d to use the data all the way out to bounds :
+  gmt filter1d ship.pg -Fm1 -T$bounds/1 -E | gmt sample1d -Nsamp.x > samp_ship.pg
+  # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
+  # data, we do this:
+  gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
+  # Time to plot spectra
+  gmt subplot begin 2x1 -M0.25i -LCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR
+  gmt subplot 1,1 -A"Input Power"
+  gmt psxy spectrum.xpower  -JX-4il/3.75i -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
+	-BWeSn+g240/255/240 -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
+	gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
+	S 0.1i T 0.07i red  - 0.3i Ship
+	S 0.1i c 0.07i blue - 0.3i Satellite
+	EOF
+  gmt subplot 2,1 -A"Coherency@+2@+"
+  gmt psxy spectrum.coh -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -R1/1000/0/1 -P -Sc0.07i -Gpurple -Ey+p0.5p
+  gmt subplot end
+gmt end
+rm -f report tmp samp* *.pg *.extr spectrum.*
