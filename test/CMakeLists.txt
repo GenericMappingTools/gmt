@@ -34,7 +34,7 @@ if (DO_TESTS)
 		ogr postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
 		pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz
 		sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
-		triangulate img meca mgd77 potential spotter x2sys)
+		triangulate img meca mgd77 potential spotter x2sys exmod)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)

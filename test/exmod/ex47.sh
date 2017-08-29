@@ -3,12 +3,14 @@
 #               $Id$
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
-# GMT modules:  gmtregress, psxy, pstext
+# GMT modules:  gmtregress, psxy, pstext, subplot
+# Unix progs:	rm
 #
 
-export GMT_PPID=1
-# Becahse all panels are almost identical we make a bash function that does
+# Because all panels are almost identical we make a bash function that does
 # the plotting.  It takes a few args that are options that differ between panels.
+
+export GMT_PPID=$$
 
 function plot_one { # First four args are: -E -N -c [-Barg]
   gmt regress data -Fxm $1 $2 -T2.85/5.25/0.1 > tmp
@@ -35,7 +37,7 @@ gmt begin ex47 ps
   plot_one -Eo -N2 -c2,2
   plot_one -Ex -N2 -c3,2
   plot_one -Ey -N2 -c4,2
-  #LMS regressions - also add label on right side
+  #LMS regressions - also add labels on right side
   plot_one -Er -Nr -c1,3 +tLMS
   echo "Y ON X" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
   plot_one -Eo -Nr -c2,3
@@ -46,4 +48,4 @@ gmt begin ex47 ps
   echo "REDUCED MAJOR AXIS" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
   gmt subplot end
 gmt end
-rm -f tmp data giants
+rm -f tmp data giants hertzsprung-russell.txt

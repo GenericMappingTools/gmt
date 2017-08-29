@@ -1,5 +1,13 @@
 #!/bin/bash
-export GMT_PPID=1
+#		GMT EXAMPLE 14
+#		$Id$
+#
+# Purpose:	Showing simple gridding, contouring, and resampling along tracks
+# GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, pstext,
+# GMT modules:	set, psxy, surface, subplot
+# Unix progs:	rm
+#
+export GMT_PPID=$$
 gmt begin ex14 ps
   gmt set MAP_GRID_PEN_PRIMARY thinnest,-
   # calculate mean data and grids
@@ -12,9 +20,9 @@ gmt begin ex14 ps
   gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
   gmt psxy -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -P
   gmt psxy trend.d -Wthinner,-
-  gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -LWSne -Y1.8i
+  gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -LWSne -Yh+0.4i
     # First draw network and label the nodes
-    gmt psxy @table_5.11 -R0/7/0/7 -Jx -Sc0.05i -Gblack -c1,1
+    gmt psxy @table_5.11 -R0/7/0/7 -Sc0.05i -Gblack -c1,1
     gmt pstext @table_5.11 -D0.1c/0 -F+f6p+jLM -N
     # Then draw gmt blockmean cells and label data values using one decimal
     gmt psxy mean.xyz -Ss0.05i -Gblack -c1,2
@@ -26,7 +34,6 @@ gmt begin ex14 ps
     gmt grdcontour trend.nc -C25 -A50 -Glct/cb -S4 -c2,2
     gmt psxy track -Wthick,.
   gmt subplot end
-  gmt psxy -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -Y6.4i
- gmt psxy trend.d -Wthinner,-
+  gmt psxy trend.d -Wthinner,-
 gmt end
-rm -f mean.xyz track trend.nc data.nc data.d trend.d gmt.conf
+rm -f mean.xyz track trend.nc data.nc data.d trend.d
