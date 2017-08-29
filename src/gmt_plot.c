@@ -5901,7 +5901,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	if (scale_factor < 0) scale_factor = 1;
 	szProj4[0] = 0;
 
-	switch (GMT->current.proj.projection) {
+	switch (GMT->current.proj.projection_GMT) {
 	/* Cylindrical projections */
 	case GMT_UTM:
 		snprintf (szProj4, GMT_LEN512, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
