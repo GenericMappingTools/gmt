@@ -36,30 +36,30 @@
 #define THIS_MODULE_OPTIONS "-JRVnr" GMT_OPT("S")
 
 struct GRDPROJECT_CTRL {
-	struct In {	/* Input grid */
+	struct GRDPRJ_In {	/* Input grid */
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C[<dx/dy>] */
+	struct GRDPRJ_C {	/* -C[<dx/dy>] */
 		bool active;
 		double easting, northing;
 	} C;
-	struct E {	/* -E<dpi> */
+	struct GRDPRJ_E {	/* -E<dpi> */
 		bool active;
 		int dpi;
 	} E;
-	struct F {	/* -F[k|m|n|i|c|p] */
+	struct GRDPRJ_F {	/* -F[k|m|n|i|c|p] */
 		bool active;
 		char unit;
 	} F;
-	struct G {	/* -G */
+	struct GRDPRJ_G {	/* -G */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -I */
+	struct GRDPRJ_I {	/* -I */
 		bool active;
 	} I;
-	struct M {	/* -Mc|i|m */
+	struct GRDPRJ_M {	/* -Mc|i|m */
 		bool active;
 		char unit;
 	} M;
@@ -198,13 +198,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 		}
 	}
 
+	/* See if scale == 1:1 and if yes set -C -F */
+	if (GMT->current.proj.pars[14] == 1)
+		Ctrl->C.active = Ctrl->F.active = true;
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -F and -M\n");
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] < 0.0),
-	                                 "Syntax error -D option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
+	                                   "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2,
+	                                   "Syntax error: Can specify only one of -F and -M\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1,
+	                                   "Syntax error: Must specify only one of -D or -E\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
+	                                   GMT->common.R.inc[GMT_Y] < 0.0),
+	                                   "Syntax error -D option: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -536,7 +544,12 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
-		Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+		if (GMT->common.J.proj4string)
+			Rect->header->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
+		else if (GMT->common.J.WKTstring)
+			Rect->header->ProjRefWKT = strdup(GMT->common.J.WKTstring);
+		else
+			Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
@@ -545,7 +558,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Rect) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		gmt_M_str_free (Rect->header->ProjRefPROJ4);
+		if (Rect->header->ProjRefPROJ4) gmt_M_str_free (Rect->header->ProjRefPROJ4);
+		if (Rect->header->ProjRefWKT)   gmt_M_str_free (Rect->header->ProjRefWKT);
 	}
 
 	Return (GMT_NOERROR);
