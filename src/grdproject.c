@@ -544,9 +544,9 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
-		if (GMT->common.J.proj4string)
+		if (GMT->common.J.proj4string[0])
 			Rect->header->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
-		else if (GMT->common.J.WKTstring)
+		else if (GMT->common.J.WKTstring[0])
 			Rect->header->ProjRefWKT = strdup(GMT->common.J.WKTstring);
 		else
 			Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
