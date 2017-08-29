@@ -4079,7 +4079,7 @@ GMT_LOCAL void grd_TPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 }
 
 GMT_LOCAL void grd_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: TRIM 3 1 Alpha-trimming for %-left = A, %-right = B, and grid = C.  */
+/*OPERATOR: TRIM 3 1 Alpha-trimming for %%-left = A, %%-right = B, and grid = C.  */
 {
 	/* Determine cumulative distribution and find left and right tail z cutoffs,
 	 * then set grid values in the tails to NaN */
