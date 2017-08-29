@@ -11002,6 +11002,8 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 
 	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
 
+    if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not evern return PS */
+
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
 		if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* -A writes dataset */
