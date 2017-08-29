@@ -3751,9 +3751,9 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
 
 	if (project == GMT_ZAXIS)
-		strncpy (GMT->common.J.zstring, args, GMT_LEN256-1);	/* Verbatim copy of -Jz|Z */
+		strncpy (GMT->common.J.zstring, args, GMT_LEN128-1);	/* Verbatim copy of -Jz|Z */
 	else
-		strncpy (GMT->common.J.string, args, GMT_LEN256-1);	/* Verbatim copy or map -J */
+		strncpy (GMT->common.J.string, args, GMT_LEN128-1);	/* Verbatim copy or map -J */
 	args += i;	/* Skip to first argument */
 	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
@@ -13075,6 +13075,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		}
 		else
 			item_t1 = item;
+
+		sprintf(GMT->common.J.proj4string, "%s", item);		/* Copy the proj.4 string */
 	}
 	else if (!strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))
 		item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
