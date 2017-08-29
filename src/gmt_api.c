@@ -1307,11 +1307,13 @@ GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometr
 }
 
 GMT_LOCAL char *api_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
-	char *tmp = NULL, *c = NULL;
-	if ((c = strchr (string, '@'))) {	/* Split KEYS: classic@modern, must get the relevant half */
+	char *tmp = NULL, *c = NULL, *string_;
+	string_ = strdup(string);	/* Have to make a copy because "string" is const and the c[0] = '\0' make it crash on Win for non-debug builds */
+	if ((c = strchr (string_, '@'))) {	/* Split KEYS: classic@modern, must get the relevant half */
 		c[0] = '\0';	/* Chop into two */
-		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (string);
-		c[0] = '@';	/* Restore */
+		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (string_);
+		//c[0] = '@';	/* Restore */
+		free(string_);
 	}
 	else	/* Only one set of KEYS */
 		tmp = strdup (string);		/* Get a working copy of string */
