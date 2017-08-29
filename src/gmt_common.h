@@ -69,9 +69,11 @@ struct GMT_COMMON {
 	struct J {	/* -J<params> */
 		bool active, zactive;
 		unsigned int id;
+		char string[GMT_LEN128];
+		char zstring[GMT_LEN128];	/* For -Jz|Z */
+		char proj4string[GMT_LEN256];
+		char WKTstring[GMT_LEN1024];
 		double par[6];
-		char string[GMT_LEN256];
-		char zstring[GMT_LEN256];	/* For -Jz|Z */
 	} J;
 	struct K {	/* -K */
 		bool active;
