@@ -5865,9 +5865,16 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		wipe_substr(szProj4, token);
 	}
 
-	strcat (opt_J, scale_c);
-	if (got_lonlat && (strlen(scale_c) != 3 || !strchr(scale_c, ':')))		/* But this will all fail if x-scale & y-scale is given */
-		strcat (opt_J, "d");
+	strcat (opt_J, scale_c);	/* Append the scale */
+	/* For geogs, append a 'd' to signal that fact to GMT */
+	if (got_lonlat && (strlen(scale_c) != 3))	{	/* But this will all fail if x-scale & y-scale is given */
+		if (opt_J[strlen(opt_J)-1] == 'W') {
+			opt_J[strlen(opt_J)-1]	= 'd';
+			strcat (opt_J, "W");
+		}
+		else
+			strcat (opt_J, "d");
+	}
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);
