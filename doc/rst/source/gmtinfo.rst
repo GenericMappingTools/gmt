@@ -143,9 +143,8 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *dz*\ [\ **+c**\ *col*]
-    Report the min/max of the first (0'th) column to the nearest
-    multiple of *dz* and output this as the string **-T**\ *zmin/zmax/dz*.
-    To use another column, append **+c**\ *col*. Only works when **-I** is selected. 
+    Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
+    string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**. 
 
 .. _-V:
 
