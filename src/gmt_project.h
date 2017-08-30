@@ -206,11 +206,7 @@ struct GMT_THREE_D {
 
 struct GMT_DATUM {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
-#ifdef PRJ4
 	double xyz[7];
-#else
-	double xyz[3];
-#endif
 	int ellipsoid_id;	/* Ellipsoid GMT ID number (or -1) */
 };
 
