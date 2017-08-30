@@ -611,6 +611,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Min and Max data values are equal.\n");
+				gmt_M_free (GMT, cdf_cpt);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}	/* End of stupid bug fix  */
