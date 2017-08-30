@@ -3724,6 +3724,14 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 }
 
 /*! . */
+GMT_LOCAL int gmtinit_autoscale (char *arg) {
+	/* Check for 0[d], -0[d], +0[d] */
+	if (!strcmp (arg, "-0") || !strcmp (arg, "-0d")) return -1;	/* Want same as other axis but negative direction */
+	if (!strcmp (arg,  "0") || !strcmp (arg,  "0d") || !strcmp (arg, "+0") || !strcmp (arg, "+0d")) return +1;	/* Same as other axis and same direction */
+	return 0;	/* No */
+}
+
+/*! . */
 GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	/* gmtinit_parse_J_option scans the arguments given and extracts the parameters needed
 	 * for the specified map projection. These parameters are passed through the
@@ -3833,9 +3841,9 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			strncpy (args_cp, args, GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
 			if (slash) args_cp[slash] = 0;	/* Chop off y part */
-			if (!strcmp (args_cp, "0") || !strcmp (args_cp, "+0"))
+			if (gmtinit_autoscale (args_cp) == +1)
 				GMT->current.proj.autoscl[GMT_X] = 1;	/* Want same scale as for y; compute width from x-range */
-			else if (!strcmp (args_cp, "-0"))
+			else if (gmtinit_autoscale (args_cp) == -1)
 				GMT->current.proj.autoscl[GMT_X] = -1;	/* Want same scale as for y but reverse direction; compute width from x-range */
 			k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with 1:xxx scale */
 			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
@@ -3868,9 +3876,9 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
-				if (!strcmp (args_cp, "0") || !strcmp (args_cp, "+0"))
+				if (gmtinit_autoscale (args_cp) == +1)
 					GMT->current.proj.autoscl[GMT_Y] = 1;	/* Want same scale as for x; compute height from y-range */
-				else if (!strcmp (args_cp, "-0"))
+				else if (gmtinit_autoscale (args_cp) == -1)
 					GMT->current.proj.autoscl[GMT_Y] = -1;	/* Want same scale as for x but reverse direction; compute height from y-range */
 				k = (!strncmp (args_cp, "1:", 2U)) ? 1 : -1;	/* Special check for linear proj with separate 1:xxx scale for y-axis */
 				if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
