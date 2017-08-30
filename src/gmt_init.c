@@ -13101,6 +13101,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 				pch = &item_t2[1];
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: this J string, %s, has no slash separating the scale\n", item_t2);
+				if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
+				free (item_t2);
 				return 1;
 			}
 		}
