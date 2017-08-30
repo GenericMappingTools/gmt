@@ -649,11 +649,11 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, double clon, double clat, int status[]) {
 	/* For a global -JE map we need to know if the projection center and its antipode are on land, ocean, what,
 	 * since it affects how donut-hell will behave */
-	char old_J[GMT_LEN64] = {""};
+	char old_J[GMT_LEN128] = {""};
 	double alon = clon + 180.0;
 	if (alon >= 360.0) alon -= 360.0;
 	/* Switch to linear projection */
-	strncpy (old_J, GMT->common.J.string, GMT_LEN256-1);
+	strncpy (old_J, GMT->common.J.string, GMT_LEN128-1);
 	GMT->common.J.active = false;
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
