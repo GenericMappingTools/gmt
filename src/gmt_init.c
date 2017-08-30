@@ -13267,12 +13267,19 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			else if (item && (item[0] == '+' || isdigit(item[0]) || !strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))) {
 #ifdef HAVE_GDAL
 				char   source[1024] = {""}, dest[1024] = {""}, *pch;
+				bool two = false;
 
 				/* When reading from gmt.history, those are prefixed with a '+' but we must remove it */
 				if (!strncmp(item, "+EPSG", 5) || !strncmp(item, "+epsg", 5) || (item[0] == '+' && isdigit(item[1])))
 					item++;
 
-				if ((pch = strstr(item, "+to")) == NULL) {		/* A single CRS */
+				/* Destinguish between the +to key extension and the +towgs84 key */
+				if ((pch = strstr(item, "+to")) != NULL) {
+					if (pch[3] == ' ' || pch[3] == '\t' || pch[3] == '+' || pch[3] == 'E' || pch[3] == 'e' || isdigit(pch[3]))
+						two = true;
+				}
+
+				if (!two) {		/* A single CRS */
 					sprintf(source, "+proj=latlong +datum=WGS84");
 					error = parse_proj4 (GMT, item, dest);
 				}
