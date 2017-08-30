@@ -13203,7 +13203,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
 		pch[0] = '\0';
 
-	if (wktext) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
+	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
 
 	return error;
 }
