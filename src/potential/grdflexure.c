@@ -887,7 +887,10 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (retain_original) {	/* We may need to reuse loads for different times and will have to keep copy of unchanged H(kx,ky) */
 		orig_load = gmt_M_memory (GMT, NULL, Load[0]->Grid->header->size, gmt_grdfloat);	/* Single temporary storage to hold one original H(kx,ky) grid */
 		/* We must also allocate a separate output grid */
-		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Load[0]->Grid)) == NULL) Return (API->error);	/* Output grid of same size as input */
+		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Load[0]->Grid)) == NULL) {
+			gmt_M_free (GMT, orig_load);
+			Return (API->error);	/* Output grid of same size as input */
+		}
 	}
 	else	/* With a single load -> flexure operation we can just recycle the input grid for the output */
 		Out = Load[0]->Grid;
@@ -899,6 +902,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);
+			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
@@ -954,8 +958,10 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT\n");
-		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
+			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
+		}
 
 		/* 4d. APPLY SCALING AND OFFSET */
 		gmt_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
@@ -966,16 +972,21 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &Ctrl->T.time[t_eval]);
 			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale,
 				gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out))
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out)) {
+				if (retain_original) gmt_M_free (GMT, orig_load);
 				Return (API->error);
+			}
 		}
 		else	/* Single output grid */
 			strcpy (file, Ctrl->G.file);
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) {
+			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (API->error);
+		}
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
 			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
+				if (retain_original) gmt_M_free (GMT, orig_load);
 				Return (API->error);
 		}
 		if (t_eval < (Ctrl->T.n_eval_times-1)) {	/* Must put the total grid back into interleave mode */
@@ -997,9 +1008,10 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 	}
 
+	error = GMT_NOERROR;
 	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing list of grid files to %s\n", Ctrl->L.file);
-		Return (API->error);
+		error = API->error;
 	}
 
 	/* 5. FREE ALL GRIDS AND ARRAYS */
@@ -1018,5 +1030,5 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (GMT_NOERROR);
+	Return (error);
 }
