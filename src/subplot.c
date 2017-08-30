@@ -782,7 +782,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (row) y -= Ctrl->M.margin[YHI];
 			if (Ctrl->F.debug) {	/* All rows share this upper y */
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
-					seg = row * Ctrl->N.dim[GMT_X] + col;
+					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_Y][2] = D->table[0]->segment[seg]->data[GMT_Y][3] = y + off[GMT_Y];
 				}
 			}
@@ -835,7 +835,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			By[row] = strdup (axes);
 			if (Ctrl->F.debug) {	/* ALl rows share this lower y */
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
-					seg = row * Ctrl->N.dim[GMT_X] + col;
+					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_Y][0] = D->table[0]->segment[seg]->data[GMT_Y][1] = y + off[GMT_Y];
 				}
 			}
@@ -848,7 +848,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (col) x += Ctrl->M.margin[XLO];
 			if (Ctrl->F.debug) {	/* All cols share this left x */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each col of panels */
-					seg = row * Ctrl->N.dim[GMT_X] + col;
+					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_X][0] = D->table[0]->segment[seg]->data[GMT_X][3] = x + off[GMT_X];
 				}
 			}
