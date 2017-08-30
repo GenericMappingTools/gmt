@@ -1070,27 +1070,39 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	/* Allocate memory and read in all the files; each file can have many records */
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);	/* Establishes data files or stdin */
 	}
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) {
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
+		Return (error);
+	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (Din->n_columns < (2 + Ctrl->W.n_weights)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Dataset only has %" PRIu64 " columns but %d are required by your settings!\n", Din->n_columns, 2 + Ctrl->W.n_weights);
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_columns)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_columns)) != 0) {
+		if (Ctrl->T.n) gmt_M_free (GMT, t);
+		Return (error);
+	}
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
 	
@@ -1235,9 +1247,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		Return (API->error);
-	}
+	error = GMT_NOERROR;
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
+		error = API->error;
 	
 	if (Ctrl->A.active) {	/* Free special arrays and segment used for -A experiment */
 		gmt_free_segment (GMT, &Sa);
@@ -1251,5 +1263,5 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	if (Ctrl->T.n)	/* Finally, free output locations for -T */
 		gmt_M_free (GMT, t);
 	
-	Return (GMT_NOERROR);
+	Return (error);
 }

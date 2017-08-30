@@ -6338,18 +6338,21 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	fclose (fp);
 	if (nlayers >= k) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot revert %d layers as only %d layers found!\n", nlayers, k);
+		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	
 	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not truncate file %s!\n", file);
+		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not create new file %s\n", file);
+		gmt_M_free (API->GMT, layer);
 		return GMT_ERROR_ON_FOPEN;
 	}
 	nlayers = k - nlayers;	/* Number of surviving layers */

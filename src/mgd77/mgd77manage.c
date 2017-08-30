@@ -612,6 +612,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		gmt_M_memset (wesn, 4, double);
 		if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
+			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (API->error);
 		}
 		interpolate = (GMT->common.n.threshold > 0.0);

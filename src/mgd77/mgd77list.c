@@ -854,6 +854,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
+				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				Return (GMT_FILE_NOT_FOUND);
 			}
 			Ctrl->L.file = path;
@@ -891,33 +892,45 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	}
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED || Ctrl->A.code[ADJ_DP] & DP_TWT_X_V_MINUS_CARTER || Ctrl->A.code[ADJ_CT] > CT_U_MINUS_DEPTH || Ctrl->A.code[ADJ_GR] > GR_FAA_STORED || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
-	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested \
-		|| auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED);
+	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested ||
+	             auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested ||
+	             auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested ||
+	             auxlist[MGD77_AUX_MG].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED);
 	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxiliary values) */
 	if (need_distances || need_lonlat) {	/* Must make sure we get lon,lat if they are not already requested */
-		 if (MGD77_Get_Column (GMT, "lat", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lat"), n_sub++;	/* Append lat to requested list */
-		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
+		 if (MGD77_Get_Column (GMT, "lat", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",lat"), n_sub++;	/* Append lat to requested list */
+		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
 	}
 	if ((Ctrl->D.active || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
-	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] <= CT_U_MINUS_CARTER) || (Ctrl->A.code[ADJ_DP] > DP_DEPTH_STORED));
+	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] <= CT_U_MINUS_CARTER) ||
+	            (Ctrl->A.code[ADJ_DP] > DP_DEPTH_STORED));
 	if (need_twt) {	/* Want to estimate Carter corrections */
-		 if (MGD77_Get_Column (GMT, "twt", &M) == MGD77_NOT_SET) strcat (fx_setting, ",twt"), n_sub++;	/* Must append twt to requested list */
+		 if (MGD77_Get_Column (GMT, "twt", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",twt"), n_sub++;	/* Must append twt to requested list */
 		MGD77_carter_init (GMT, &Carter);	/* Initialize Carter machinery */
 	}
-	need_depth = ((Ctrl->A.code[ADJ_CT] & (CT_U_MINUS_DEPTH | CT_UCORR_MINUS_CARTER_TU | CT_UCORR_CARTER_TU_MINUS_DEPTH)) || (Ctrl->A.code[ADJ_DP] & DP_DEPTH_STORED));
+	need_depth = ((Ctrl->A.code[ADJ_CT] & (CT_U_MINUS_DEPTH | CT_UCORR_MINUS_CARTER_TU | CT_UCORR_CARTER_TU_MINUS_DEPTH)) ||
+	              (Ctrl->A.code[ADJ_DP] & DP_DEPTH_STORED));
 	if (need_depth) {                   /* Need depth*/
-		 if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) strcat (fx_setting, ",depth"), n_sub++;	/* Must append depth to requested list */
+		 if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",depth"), n_sub++;	/* Must append depth to requested list */
 	}
 	if (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED) {     /* Need gobs */
-		 if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET) strcat (fx_setting, ",gobs"), n_sub++;	/* Must append gobs to requested list */
+		 if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",gobs"), n_sub++;	/* Must append gobs to requested list */
 	}
 	if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_EOT_MINUS_NGRAV) {    /* Need stored eot */
 		 if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
 	}
 	if (Ctrl->A.code[ADJ_MG] > MG_MAG_STORED) {     /* Need mtf1,2, and msens */
-		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
-		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
-		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET) strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
+		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
+		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
+		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET)
+		 	strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
 	}
 	else if (Ctrl->A.cable_adjust)
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */

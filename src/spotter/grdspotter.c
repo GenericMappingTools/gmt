@@ -496,7 +496,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	unsigned int row, row2, col, col2, k_step;
 	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
 	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
-	int error = 0;			/* nonzero when arguments are wrong */
+	int error = GMT_NOERROR;			/* nonzero when arguments are wrong */
 	int i, j;			/* Signed row,col variables */
 	int *ID = NULL;		/* Optional array with IDs for each node */
 	
@@ -865,16 +865,14 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Save z-slice CVA to file %s\n", file);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
-				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
+				error = API->error;
 				gmt_M_free (GMT, CVA_inc);
-				Return (API->error);
+				goto END;
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR) {
-				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
+				error = API->error;
 				gmt_M_free (GMT, CVA_inc);
-				Return (API->error);
+				goto END;
 			}
 		}
 		G->data = old;	/* Reset the array pointer */
@@ -883,10 +881,16 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			
 	if (Ctrl->D.active || Ctrl->PA.active) {	/* Must determine max CVA along each flowline */
 		if (Ctrl->D.active) {
-			if ((DI = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Z)) == NULL) Return (API->error);
+			if ((DI = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Z)) == NULL) {
+				error = API->error;
+				goto END;
+			}
 		}
 		if (Ctrl->PA.active) {
-			if ((PA = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Z)) == NULL) Return (API->error);
+			if ((PA = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Z)) == NULL) {
+				error = API->error;
+				goto END;
+			}
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
 
@@ -952,9 +956,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			snprintf (DI->header->remark, GMT_GRID_REMARK_LEN160, "CVA maxima along flowlines from each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, DI)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->D.file, DI) != GMT_NOERROR) {
-				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
-				Return (API->error);
+				error = API->error;
+				goto END;
 			}
 		}
 		if (Ctrl->PA.active) {
@@ -962,9 +965,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			snprintf (PA->header->remark, GMT_GRID_REMARK_LEN160, "Predicted age for each node");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, PA)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->PA.file, PA) != GMT_NOERROR) {
-				gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-				gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
-				Return (API->error);
+				error = API->error;
+				goto END;
 			}
 		}
 	}
@@ -979,22 +981,20 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
-			Return (error);
+			error = error;
+			goto END;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
-			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 
 		/* Now do bootstrap sampling of flowlines */
@@ -1042,12 +1042,14 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 	
 	/* Clean up memory */
 
+END:
 	gmt_M_free (GMT, processed_node);
 	for (m = 0; keep_flowlines && m < n_nodes; m++) {
 		gmt_M_free (GMT, flowline[m].node);

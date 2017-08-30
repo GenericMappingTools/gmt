@@ -318,6 +318,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			/* Allocate one or two tables with 1 segment each */
 			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
+				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
 			if (n_qfiles == 2) {	/* We want to build two lists (closed and open) */

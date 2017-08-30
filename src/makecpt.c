@@ -527,7 +527,10 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
+			if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) {
+				gmt_M_free (GMT, z);
+				return (API->error);
+			}
 			for (i = k = 0; i < (int)Pout->n_colors; i++) {
 				Pout->data[i].z_low = z[k];
 				Pout->data[i].z_high = z[++k];

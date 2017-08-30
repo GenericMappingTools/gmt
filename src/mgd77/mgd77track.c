@@ -635,7 +635,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		Return (GMT_PROJECTION_ERROR);
 	}
 	
-	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	

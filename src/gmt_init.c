@@ -10870,12 +10870,14 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %s %d", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], tag, first)) != 8) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to decode record from %s!\n", file);
 		API->error = GMT_RUNTIME_ERROR;
+		fclose (fp);
 		return GMT_RUNTIME_ERROR;
 	}
 	fclose (fp);
 	if (*row == 0 || *col == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Current panel has row or column outsiden range!\n");
 		API->error = GMT_RUNTIME_ERROR;
+		fclose (fp);
 		return GMT_RUNTIME_ERROR;
 	}
 	(*row)--;	(*col)--;	/* Since they were given on a 1-n,1-m basis */
@@ -14336,8 +14338,10 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 		}
 		if (_chsize (fileno (fp), (long)size)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to truncate file %s (via _chsize) back to %" PRIuS " bytes\n", file, size);
+			fclose (fp);
 			return errno;
 		}
+		fclose (fp);
 	}
 #else
     if (truncate (file, size)) {

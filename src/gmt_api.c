@@ -1313,10 +1313,11 @@ GMT_LOCAL char *api_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
 		c[0] = '\0';	/* Chop into two */
 		tmp = (API->GMT->current.setting.run_mode == GMT_MODERN) ? strdup (&c[1]) : strdup (string_);
 		//c[0] = '@';	/* Restore */
-		free(string_);
 	}
 	else	/* Only one set of KEYS */
 		tmp = strdup (string);		/* Get a working copy of string */
+
+	free(string_);
 	return (tmp);
 }
 
@@ -1337,7 +1338,10 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 	if (!string) return NULL;	/* Got NULL, so just give up */
 	tmp = api_prepare_keys (API, string);	/* Get the correct KEYS if there are separate ones for Classic and Modern mode */
 	len = strlen (tmp);			/* Get the length of this item */
-	if (len == 0) return NULL;	/* Got no characters, so give up */
+	if (len == 0) { 			/* Got no characters, so give up */
+		gmt_M_str_free (tmp);
+		return NULL;
+	}
 	/* Replace unknown types (marked as ?) in tmp with selected type give by input variable "type" */
 	if (type) {	/* Got a nonzero type */
 		for (k = 0; k < strlen (tmp); k++)
@@ -7191,8 +7195,14 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	family -= module_input;
 	API->module_input = (module_input) ? true : false;
 	if (a_grid_or_image (family)) {	/* Further checks on the data argument */
-		if ((mode & GMT_DATA_ONLY) && data == NULL) return_null (V_API, GMT_PTR_IS_NULL);
-		if ((mode & GMT_CONTAINER_ONLY) && data != NULL) return_null (V_API, GMT_PTR_NOT_NULL);
+		if ((mode & GMT_DATA_ONLY) && data == NULL) {
+			free (input);
+			return_null (V_API, GMT_PTR_IS_NULL);
+		}
+		if ((mode & GMT_CONTAINER_ONLY) && data != NULL) {
+			free (input);
+			return_null (V_API, GMT_PTR_NOT_NULL);
+		}
 	}
 
 	if (!gmt_M_file_is_cache(infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !api_file_with_netcdf_directive (API, infile)) {

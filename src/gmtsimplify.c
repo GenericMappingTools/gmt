@@ -389,7 +389,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			}
 			else
 				n_saved = 0;
-			if (np_out) gmt_M_free (GMT, index);	/* No longer needed */
+			gmt_M_free (GMT, index);	/* No longer needed */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
 		}
 		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */

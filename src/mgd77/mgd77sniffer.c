@@ -1020,6 +1020,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (API->error);
 	}
 
