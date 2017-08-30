@@ -3352,7 +3352,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					break;
 				case 't':
 					if (p[1]) {	/* Actual title was appended */
-						strcpy (GMT->current.map.frame.header, &p[1]);
+						strncpy (GMT->current.map.frame.header, &p[1], GMT_LEN256-1);
 						gmt_handle5_plussign (GMT, GMT->current.map.frame.header, NULL, 1);	/* Recover any non-modifier plus signs */
 						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
@@ -14088,6 +14088,7 @@ int gmtlib_read_figures (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FIG
 			if ((n = sscanf (line, "%d %s %s %s", &fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options)) < 3) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to read from figure file\n");
 				fclose (fp);
+				gmt_M_free (GMT, fig);
 				return 0;
 			}
 			if (n == 3) fig[k].options[0] = '\0';
