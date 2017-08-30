@@ -13092,8 +13092,12 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
 			item_t2[len-1] = '\0';
 		}
-		error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
-		                                 gmtinit_parse_J_option (GMT, item_t2));
+		if (item_t2[0] != '/') {	/* Because if == '/' than it means we have a scale only string (i.e. no GMT mapped proj) */
+			error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
+			                                 gmtinit_parse_J_option (GMT, item_t2));
+		}
+		else		/* Not particularly useful yet because mapproject will fail anyway when scale != 1:1 */
+			GMT->current.proj.projection_GMT = GMT_NO_PROJ;
 
 		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
 		pch = strrchr(item_t2, '/');
