@@ -278,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 						Ctrl->S.mode = DO_MODE;	Ctrl->S.scale = atof (&opt->arg[1]);	break;
 					case 'q':
 						Ctrl->S.mode = DO_TRIM;
-						n = sscanf (&opt->arg[1], "%[^/]/%s", txt_a, txt_b);
+						sscanf (&opt->arg[1], "%[^/]/%s", txt_a, txt_b);
 						gmt_scanf_float (GMT, txt_a, &Ctrl->S.q[0]);
 						gmt_scanf_float (GMT, txt_b, &Ctrl->S.q[1]);
 						break;
