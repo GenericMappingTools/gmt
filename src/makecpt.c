@@ -91,6 +91,7 @@ struct MAKECPT_CTRL {
 	} N;
 	struct S {	/* -S */
 		bool active;
+		bool discrete;
 		unsigned int mode;
 		double scale;
 		double q[2];
@@ -173,7 +174,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm<scl> Make symmetric range around median and +/- <scl> * L1_scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp<scl> Make symmetric range around mode and +/- <scl> * LMS_scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq<low>/<high> Set range from <low> quartile to <high> quartile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>	Read data and round range to nearest <inc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>[+d] Read data and round range to nearest <inc>; append +d for discrete CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S	Read data and use min/max as range.\n");	
 	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");	
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>/<z_max> to change the z-range for the colorscale in z-units.\n");
@@ -200,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 	int n;
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""};
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -284,7 +285,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 					case '\0':
 						Ctrl->S.mode = DO_RANGE;	break;
 					default:
-						Ctrl->S.mode = DO_ROUNDED_RANGE;	Ctrl->S.scale = atof (opt->arg);	break;
+						Ctrl->S.mode = DO_ROUNDED_RANGE;
+						if ((c = strstr (opt->arg, "+d"))) {
+							c[0] = '\0';	/* Temporarily chop off modifier */
+							Ctrl->S.discrete = true;
+						}
+						Ctrl->S.scale = atof (opt->arg);
+						if (c) c[0] = '+';	/* Restore modifier */
+						break;
 				}
 				break;
 			case 'T':	/* Sets up color z values */
@@ -419,8 +427,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 				Ctrl->T.low = D->min[zcol];	Ctrl->T.high = D->max[zcol];
 				break;
 			case DO_ROUNDED_RANGE:
-				Ctrl->T.low = floor (D->min[zcol] / Ctrl->S.scale) * Ctrl->S.scale;
-				Ctrl->T.high = ceil (D->max[zcol] / Ctrl->S.scale) * Ctrl->S.scale;
+				Ctrl->T.inc = Ctrl->S.scale;
+				Ctrl->T.interpolate = Ctrl->S.discrete;
+				Ctrl->T.active = true;
+				Ctrl->T.low = floor (D->min[zcol] / Ctrl->T.inc) * Ctrl->T.inc;
+				Ctrl->T.high = ceil (D->max[zcol] / Ctrl->T.inc) * Ctrl->T.inc;
 				break;
 			case DO_MEAN:
 				mean_z = gmt_mean_and_std (GMT, zz, n, &sig_z);
