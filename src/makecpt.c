@@ -441,14 +441,14 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			case DO_MEDIAN:
 				mean_z = (n % 2) ? zz[n/2] : 0.5 * (zz[n/2] + zz[(n/2)-1]);
 				gmt_getmad (GMT, zz, n, mean_z, &sig_z);
-				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z * MAD_NORMALIZE;
-				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z;
+				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z;
 				break;
 			case DO_MODE:
 				gmt_mode (GMT, zz, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &mean_z);
 				gmt_getmad (GMT, zz, n, mean_z, &sig_z);
-				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z * MAD_NORMALIZE;
-				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z;
+				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z;
 				break;
 			case DO_TRIM:
 				Ctrl->T.low = gmt_quantile (GMT, zz, Ctrl->S.q[0], n);	/* "Left" quantile */
