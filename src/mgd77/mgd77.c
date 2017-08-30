@@ -4363,7 +4363,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				d_name = line;
 #endif /* HAVE_DIRENT_H_ */
 				if (length && strncmp (d_name, this_arg, length)) continue;
-				k = (unsigned int)strlen (d_name) - 1;
+				k = (unsigned int)(strlen (d_name) - 1);
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (n == n_alloc) L = gmt_M_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
 				L[n] = gmt_M_memory (GMT, NULL, k + 1, char);
