@@ -960,7 +960,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	size_t i = 0, j;
 	int val;
 	unsigned int direction = (magic) ? GMT_IN : GMT_OUT;
-	char tmp[GMT_BUFSIZ] = {""};
+	char tmp[GMT_LEN512] = {""};		/* But it's copied at most 256 chars into header->name so 256 sould do */
 
 	grdio_grd_parse_xy_units (GMT, header, file, direction);	/* Parse and strip xy scaling via +u<unit> modifier */
 
@@ -984,7 +984,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
 				strncpy (tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
 				strcat (tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
-				if (strlen(&pch[1]) < (GMT_BUFSIZ-strlen(tmp)-1)) strcat (tmp, &pch[1]);
+				if (strlen(&pch[1]) < (GMT_LEN512-strlen(tmp)-1)) strncat (tmp, &pch[1], GMT_LEN512-1);
 				strncpy (header->name, tmp, GMT_LEN256-1);
 			}
 			else

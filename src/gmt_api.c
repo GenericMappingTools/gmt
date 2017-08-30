@@ -9643,10 +9643,7 @@ GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, cha
 	if ((GMT_BUFSIZ - len) > 0) {	/* Have enough space */
 		strcat (file, "_");
 		strcat (file, suffix);
-		if (j) strcat (file, &name[j]);
-#if 0
-		strcat (file, "=bf"); /* Make native for debugging */
-#endif
+		if (j) strncat (file, &name[j], GMT_LEN256-1);
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File name [ %s] way too long - trouble in fft_file_name_with_suffix\n", file);

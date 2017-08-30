@@ -4093,7 +4093,7 @@ GMT_LOCAL char *extract_label (char *label, unsigned int far_side) {
 			return (&c[2]);	/* Return starting address for 2nd label */
 		else {	/* The left/bottom label - must make temporary copy to static label buffer */
 			c[0] = '\0';	/* Temporarily chop off the 2nd label part */
-			strcpy (static_label, label);	/* Copy the first label */
+			strncpy (static_label, label, GMT_LEN256-1);	/* Copy the first label */
 			c[0] = '|';	/* Restore the 2nd label part */
 			return static_label;
 		}
