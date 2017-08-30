@@ -1897,7 +1897,7 @@ int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	}
 
 	if (sort) gmt_sort_array (GMT, x, n, GMT_DOUBLE);
-
+	while (n && gmt_M_is_dnan (x[n-1])) n--;	/* Skip any NaNs at end of sorted array */
 	istop = n - j;
 	multiplicity = 0;
 
