@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
 #define THIS_MODULE_KEYS	"<D{,AT)=t,CC(,ED(,DDD,G?(=1,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("EMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("Mmc")
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
@@ -751,7 +751,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -767,6 +767,13 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	/* Must intercept any old-style -Eaz/el here and change it to -p */
+	if ((opt = GMT_Find_Option (API, 'E', options)) && gmt_M_compat_check (GMT, 4)) {	/* Got -E, check if given a file */
+		if (gmt_access (GMT, opt->arg, F_OK)) {	/* Argument not a file we can open, so under compat mode we assume we got -Eaz/el */
+			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E<az/el>> is deprecated; use -p instead.\n");
+			opt->option = 'p';
+		}
+	}
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
