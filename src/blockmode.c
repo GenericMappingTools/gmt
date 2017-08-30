@@ -727,12 +727,16 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		Return (API->error);
-	}
 
-	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+	error = 0;
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		error = API->error;
+	}
+	else {
+		n_lost = n_read - n_pitched;	/* Number of points that did not get used */
+		GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+		error = GMT_NOERROR;
+	}
 
 	gmt_M_free (GMT, data);
 	if (do_extra) gmt_M_free (GMT, z_tmp);
@@ -746,5 +750,5 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, B);
 	}
 
-	Return (GMT_NOERROR);
+	Return (error);
 }
