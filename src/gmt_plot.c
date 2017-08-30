@@ -5456,12 +5456,15 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 	/* Set the substring str2 of str1 to blanks */
+	return;
+	/*			We have no current need for this anymore
 	char *pch;
 	if ((pch = strstr(str1, str2)) != NULL) {
 		size_t k;
 		for (k = 0; k < strlen(str2); k++)
 			pch[k] = ' ';
 	}
+	*/
 }
 
 char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
@@ -5711,11 +5714,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			strcat(opt_J, "0/");
 	}
 
-	else {
+	else	/* We don't return yet because we may have a +width/+scale to parse */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Sorry, mapping this projection '%s' is not supported in GMT\n", prjcode);
-		return (pStrOut);
-	}
 
+#if 0
 	/* Work on common flags */
 	if ((pch = strstr(szProj4, "+a=")) != NULL) {	/* Check for major axis +a=xxxx */
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
@@ -5853,6 +5855,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		wipe_substr(szProj4, token);
 	}
+#endif
 
 	/* Override the /1:xxx scale set at the begining of this function if a +scale=scale is found */
 	if ((pch = strstr(szProj4, "+scale=")) != NULL) {
@@ -5867,7 +5870,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		wipe_substr(szProj4, token);
 	}
 
-	strcat (opt_J, scale_c);	/* Append the scale */
+	if (!opt_J[0])		/* No corresponding GMT proj found but we need the scale separated with a slash */
+		sprintf(opt_J, "/%s", scale_c);
+	else
+		strcat (opt_J, scale_c);	/* Append the scale */
 	/* For geogs, append a 'd' to signal that fact to GMT */
 	if (got_lonlat && (strlen(scale_c) != 3))	{	/* But this will all fail if x-scale & y-scale is given */
 		if (opt_J[strlen(opt_J)-1] == 'W') {
@@ -5881,11 +5887,13 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);
 
+#if 0
 	/* This part is now not particularly useful but let it in case we may need it in future */
 	k = 0;
 	while (szProj4[k] && (szProj4[k] == ' ' || szProj4[k] == '+')) k++;
 	if (k < strlen(szProj4))
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
+#endif
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
