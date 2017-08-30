@@ -1902,7 +1902,7 @@ GMT_LOCAL void api_matrixinfo_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRI
 	}
 	else
 		gmt_M_memcpy (h->wesn, M_obj->range, 4, double);
-	gmt_M_memset (h->pad, 4, double);	/* External matrices have no padding */
+	gmt_M_memset (h->pad, 4, int);	/* External matrices have no padding */
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRID_NODE_REG) ? 0.0 : 0.5;
 	h->inc[GMT_X] = gmt_M_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->n_columns, h->registration);
