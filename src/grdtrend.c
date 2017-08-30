@@ -553,22 +553,24 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (weighted) {
 		if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
-				gmt_M_free (GMT, gtd);		gmt_M_free (GMT, gtg);
-				gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
-				gmt_M_free (GMT, old);		gmt_M_free (GMT, pstuff);
-				Return (API->error);
+				error = API->error;
+				goto END;
 			}
 			if (W->header->n_columns != G->header->n_columns || W->header->n_rows != G->header->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
-					Return (API->error);
+					error = API->error;
+					goto END;
 				}
 				set_ones = false;
 			}
 		}
 		if (set_ones) {
-			if ((W = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with unit weights  */
+			if ((W = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) { /* Pointer for grid with unit weights  */
+				error = API->error;
+				goto END;
+			}
 			gmt_M_setnval (W->data, W->header->size, 1.0f);
 		}
 	}
@@ -596,7 +598,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 		if (ierror) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
-			return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto END;
 		}
 		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 		if (Ctrl->D.active || Ctrl->N.robust) compute_resid (GMT, G, T, R);
@@ -613,7 +616,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 				if (ierror) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
-					return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;
+					goto END;
 				}
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
@@ -639,7 +643,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend surface", T)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, T)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->T.file, T) != GMT_NOERROR) {
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 	else if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
@@ -649,7 +654,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->D.file, R) != GMT_NOERROR) {
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust) {
@@ -661,7 +667,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend weights", W)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, W)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->W.file, W) != GMT_NOERROR) {
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 	else if (set_ones && GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
@@ -670,7 +677,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/* That's all, folks!  */
 
-
+END:
 	gmt_M_free (GMT, pstuff);
 	gmt_M_free (GMT, gtd);
 	gmt_M_free (GMT, gtg);
@@ -680,5 +687,5 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
-	Return (GMT_NOERROR);
+	Return (error);
 }
