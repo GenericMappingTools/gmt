@@ -852,7 +852,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
-			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);
+			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);	gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (API->error);	/* Original copy of Z grid used for contouring */
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Trace and bin contours...\n");
