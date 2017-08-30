@@ -129,8 +129,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct SUBPLOT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SUBPLOT_CTRL);
-	strncpy (C->A.placement, "TL", 2);
-	strncpy (C->A.justify,   "TL", 2);
+	sprintf (C->A.placement, "TL");
+	sprintf (C->A.justify, "TL");
 	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
 	C->A.clearance[GMT_X] = C->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
 	
