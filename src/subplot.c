@@ -896,7 +896,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				axes[k++] = 'r';
 			if (Ctrl->F.debug) {	/* ALl cols share this right x */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each col of panels */
-					seg = row * Ctrl->N.dim[GMT_X] + col;
+					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_X][1] = D->table[0]->segment[seg]->data[GMT_X][2] = x + off[GMT_X];
 				}
 			}
