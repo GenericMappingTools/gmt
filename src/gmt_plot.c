@@ -5456,10 +5456,12 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 	/* Set the substring str2 of str1 to blanks */
-	size_t k;
-	char *pch = strstr(str1, str2);
-	for (k = 0; k < strlen(str2); k++)
-		pch[k] = ' ';
+	char *pch;
+	if ((pch = strstr(str1, str2)) != NULL) {
+		size_t k;
+		for (k = 0; k < strlen(str2); k++)
+			pch[k] = ' ';
+	}
 }
 
 char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
