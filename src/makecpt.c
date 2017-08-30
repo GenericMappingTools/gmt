@@ -33,11 +33,18 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
-#define THIS_MODULE_KEYS	">C},ED(,TD("
+#define THIS_MODULE_KEYS	">C},ED(,SD(,TD("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->Vbdhi"
 
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+
+enum makecpt_enum_mode {DO_RANGE = 0,		/* Use actual data range in -T */
+	DO_ROUNDED_RANGE,			/* Round data range using inc */
+	DO_MEAN,				/* Use mean +/- n*std */
+	DO_MEDIAN,				/* Use median +/- n*L1_scale  */
+	DO_MODE,				/* Use mode +/- n*LMS_scale  */
+	DO_TRIM};				/* Use alpha-trimmed range */
 
 /* Control structure for makecpt */
 
@@ -82,6 +89,12 @@ struct MAKECPT_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
+	struct S {	/* -S */
+		bool active;
+		unsigned int mode;
+		double scale;
+		double q[2];
+	} S;
 	struct T {	/* -T<z_min/z_max[/z_inc>[+n]]|<zfile>|<z0,z1,...,zn> */
 		bool active;
 		bool interpolate;
@@ -125,7 +138,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-L] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-L] [-M] [-N] [-Q[i|o]] [-S[<mode>]] [-T<z_min>/<z_max>[/<z_inc>[+n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -155,6 +168,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Determine range in -T from input data table(s) instead.  Choose operation:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sa<scl> Make symmetric range around average (i.e., mean) and +/- <scl> * sigma.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm<scl> Make symmetric range around median and +/- <scl> * L1_scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp<scl> Make symmetric range around mode and +/- <scl> * LMS_scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq<low>/<high> Set range from <low> quartile to <high> quartile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>	Read data and round range to nearest <inc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -S	Read data and use min/max as range.\n");	
+	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");	
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>/<z_max> to change the z-range for the colorscale in z-units.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append /<z_inc> to sample the cpt discretely instead, or append +n to <z_inc>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to let <z_inc> indicate the number of z-values to produce instead.\n");
@@ -245,6 +266,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'N':	/* Do not output BNF colors */
 				Ctrl->N.active = true;
 				break;
+			case 'S':	/* Derive -T from input data */
+				Ctrl->S.active = true;
+				switch (opt->arg[0]) {
+					case 'a':
+						Ctrl->S.mode = DO_MEAN;	Ctrl->S.scale = atof (&opt->arg[1]);	break;
+					case 'm':
+						Ctrl->S.mode = DO_MEDIAN;	Ctrl->S.scale = atof (&opt->arg[1]);	break;
+					case 'p':
+						Ctrl->S.mode = DO_MODE;	Ctrl->S.scale = atof (&opt->arg[1]);	break;
+					case 'q':
+						Ctrl->S.mode = DO_TRIM;
+						n = sscanf (&opt->arg[1], "%[^/]/%s", txt_a, txt_b);
+						gmt_scanf_float (GMT, txt_a, &Ctrl->S.q[0]);
+						gmt_scanf_float (GMT, txt_b, &Ctrl->S.q[1]);
+						break;
+					case '\0':
+						Ctrl->S.mode = DO_RANGE;	break;
+					default:
+						Ctrl->S.mode = DO_ROUNDED_RANGE;	Ctrl->S.scale = atof (opt->arg);	break;
+				}
+				break;
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				if (!gmt_access (GMT, opt->arg, R_OK))
@@ -252,7 +294,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				else if (strchr (opt->arg, ','))
 					Ctrl->T.list = strdup (opt->arg);
 				else {
-					//n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 					gmt_scanf_float (GMT, txt_a, &Ctrl->T.low);
 					gmt_scanf_float (GMT, txt_b, &Ctrl->T.high);
@@ -288,26 +329,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active,
-	                                   "Syntax error: No input files expected unless -E is used\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
+	                                   "Syntax error: No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
 	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.file || Ctrl->T.list) && (Ctrl->T.low >= Ctrl->T.high),
+	if (!Ctrl->S.active) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->T.file || Ctrl->T.list) && (Ctrl->T.low >= Ctrl->T.high),
 	                                   "Syntax error -T option: Give z_min < z_max\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.list == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file == NULL && Ctrl->T.list == NULL && Ctrl->T.interpolate && Ctrl->T.inc <= 0.0,
 	                                   "Syntax error -T option: For interpolation, give z_inc > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
 	                                   "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
+		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
+			Ctrl->Z.active = false;
+		}
+		}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
-	if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
-		Ctrl->Z.active = false;
-	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -348,6 +391,66 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
+	if (Ctrl->S.active) {	/* Must read data and do statistics first, and then set -T values */
+		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+		uint64_t n, zcol, tbl, seg;
+		struct GMT_DATASET *D = NULL;
+		double *zz = NULL, mean_z, sig_z;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+			Return (API->error);
+		}
+		if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		zcol = D->n_columns - 1;	/* Always the last column */
+		if (!(Ctrl->S.mode == DO_RANGE || Ctrl->S.mode == DO_ROUNDED_RANGE)) {
+			zz = gmt_M_memory (GMT, NULL, D->n_records, double);
+			for (tbl = n = 0; tbl < D->n_tables; tbl++) {
+				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+					gmt_M_memcpy (&zz[n], D->table[tbl]->segment[seg]->data[zcol], D->table[tbl]->segment[seg]->n_rows, double);
+					n += D->table[tbl]->segment[seg]->n_rows;
+				}
+			}
+			gmt_sort_array (GMT, zz, n, GMT_DOUBLE);
+		}
+		switch (Ctrl->S.mode) {
+			case DO_RANGE:
+				Ctrl->T.low = D->min[zcol];	Ctrl->T.high = D->max[zcol];
+				break;
+			case DO_ROUNDED_RANGE:
+				Ctrl->T.low = floor (D->min[zcol] / Ctrl->S.scale) * Ctrl->S.scale;
+				Ctrl->T.high = ceil (D->max[zcol] / Ctrl->S.scale) * Ctrl->S.scale;
+				break;
+			case DO_MEAN:
+				mean_z = gmt_mean_and_std (GMT, zz, n, &sig_z);
+				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z;
+				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z;
+				break;
+			case DO_MEDIAN:
+				mean_z = (n % 2) ? zz[n/2] : 0.5 * (zz[n/2] + zz[(n/2)-1]);
+				gmt_getmad (GMT, zz, n, mean_z, &sig_z);
+				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				break;
+			case DO_MODE:
+				gmt_mode (GMT, zz, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &mean_z);
+				gmt_getmad (GMT, zz, n, mean_z, &sig_z);
+				Ctrl->T.low  = mean_z - Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				Ctrl->T.high = mean_z + Ctrl->S.scale * sig_z * MAD_NORMALIZE;
+				break;
+			case DO_TRIM:
+				Ctrl->T.low = gmt_quantile (GMT, zz, Ctrl->S.q[0], n);	/* "Left" quantile */
+				Ctrl->T.high = gmt_quantile (GMT, zz, Ctrl->S.q[1], n);	/* "Left" quantile */
+				break;
+		}
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		gmt_M_free (GMT, zz);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.low, Ctrl->T.high);
+	}
+		
 	if (Ctrl->C.active) {
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}

@@ -21,6 +21,7 @@ Synopsis
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [**c**][**z**] ] [ |-M| ]
 [ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
+[ |-S|\ [*mode*] ]
 [ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn* ]
 [ |-V|\ [*level*\ ] ]
 [ |-W|\ [**w**] ]
@@ -155,6 +156,19 @@ Optional Arguments
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
+
+.. _-S:
+
+**-S**\ [*mode*]
+    Determine a suitable range for the **-T** option from the input table(s) (or stdin).
+    Choose from several types of range determinations: 
+    **-S** will use the data min/max, **-S**\ *inc* will use the data min/max but rounded
+    to nearest *inc*, **-Sa**\ *scl* will make a symmetric range around the average (i.e., mean)
+    and +/- *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
+    and +/- *scl* * *L1_scale*, **-Sp**\ *scl* will make symmetric range around mode and
+    +/- *scl* * *LMS_scale*, while **-Sq**\ *low/high* sets the range from *low* quartile
+    to *high* quartile (in percentages).  We use the last data column for this calculation;
+    use **i** if you need to adjust the column orders.
 
 .. _-T:
 
