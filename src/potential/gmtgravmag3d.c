@@ -645,6 +645,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			cos_vec[i] = (Ctrl->box.is_geog) ? cos(y[i]*D2R): 1;
 	}
 
+	error = GMT_NOERROR;
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && i > j*one_100) {
 			GMT_Message (API, GMT_TIME_NONE, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
@@ -705,32 +706,32 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) {
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 	else {
 		double out[3];
 		char save[GMT_LEN64] = {""};
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 		strcpy (save, GMT->current.setting.format_float_out);
 		strcpy (GMT->current.setting.format_float_out, "%.9g");	/* Make sure we use enough decimals */
@@ -742,11 +743,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		}
 		strcpy (GMT->current.setting.format_float_out, save);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
-			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
-			Return (API->error);
+			error = API->error;
+			goto END;
 		}
 	}
 
+END:
 	gmt_M_free (GMT, x);
 	gmt_M_free (GMT, y);
 	gmt_M_free (GMT, g);
@@ -769,7 +771,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.m_var3) gmt_M_free (GMT, okabe_mag_var3);
 	gmt_M_free (GMT, okabe_mag_var4);
 
-	Return (GMT_NOERROR);
+	Return (error);
 }
 
 /* -------------------------------------------------------------------------*/
