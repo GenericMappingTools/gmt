@@ -5454,25 +5454,24 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	PSL_command (GMT->PSL, "[] 0 B\n");	/* Ensure no pen textures remain in effect */
 }
 
+#if 0        	// We have no current need for this anymore
 GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 	/* Set the substring str2 of str1 to blanks */
 	return;
-	/*			We have no current need for this anymore
 	char *pch;
 	if ((pch = strstr(str1, str2)) != NULL) {
 		size_t k;
 		for (k = 0; k < strlen(str2); k++)
 			pch[k] = ' ';
 	}
-	*/
 }
+#endif
 
 char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
-	unsigned int k = 0, pos = 0;
-	bool got_a = false, got_b = false, got_lonlat = false;
-	char *pStrOut = NULL;
+	unsigned int pos = 0;
+	bool got_lonlat = false;
 	char opt_J[GMT_LEN256] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
-	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, ename[GMT_LEN16] = {""}, *pch = NULL;
+	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, *pch = NULL, *pStrOut = NULL;
 	char lon_0[32] = {""}, lat_0[32] = {""}, lat_1[32] = {""}, lat_2[32] = {""}, lat_ts[32] = {""};
 
 	snprintf(szProj4, GMT_LEN256-1, "%s", pStr);
@@ -5521,7 +5520,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	gmt_strtok (szProj4, " \t+", &pos, token);
 	sprintf(prjcode, "%s",(token[0] == '"' ? &token[7] : (token[0] == '+' ? &token[6] : &token[5])));	/* PROJ4 projection code. */
-	wipe_substr(szProj4, token);	/* Consumed, clear it from list */
+	//wipe_substr(szProj4, token);	/* Consumed, clear it from list */
 
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
@@ -5539,11 +5538,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
 				strcat(lon_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
 				strcat(lat_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
@@ -5563,19 +5562,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_1=")) != NULL) {	
 				strcat(lon_1, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_1=")) != NULL) {
 				strcat(lat_1, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lon_2=")) != NULL) {	
 				strcat(lon_2, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_2=")) != NULL) {
 				strcat(lat_2, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		if (!lon_2[0] || !lat_2[0]) {
@@ -5593,18 +5592,18 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "zone=")) != NULL) {	
 				zone = atoi(&token[5]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "south=")) != NULL) {	
 				zone *= -1;
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lon_0=")) != NULL) {
 				double x;
 				gmt_scanf (GMT, &token[6], GMT_IS_GEO, &x);
 				if (x > 180) x -= 360;
 				zone = (int)(x + 180) / 6 + 1;
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		if (zone == 100) {
@@ -5630,19 +5629,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
 				strcat(lon_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
 				strcat(lat_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_1=")) != NULL) {	
 				strcat(lat_1, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_2=")) != NULL) {	
 				strcat(lat_2, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		/* Check if user errors */
@@ -5671,15 +5670,15 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
 				strcat(lon_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
 				strcat(lat_0, &token[6]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
 				strcat(lat_ts, &token[7]);
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		//if (!strcmp(prjcode, "ups")) lon_0[0] = lat_0[0] = '\0';
@@ -5707,7 +5706,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {
 				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
-				wipe_substr(szProj4, token);
+				//wipe_substr(szProj4, token);
 			}
 		}
 		if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
@@ -5718,6 +5717,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Sorry, mapping this projection '%s' is not supported in GMT\n", prjcode);
 
 #if 0
+	bool got_a = false, got_b = false;
+	char ename[GMT_LEN16] = {""};
 	/* Work on common flags */
 	if ((pch = strstr(szProj4, "+a=")) != NULL) {	/* Check for major axis +a=xxxx */
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
@@ -5861,13 +5862,13 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	if ((pch = strstr(szProj4, "+scale=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		sprintf(scale_c, "%s", &token[6]);
-		wipe_substr(szProj4, token);
+		//wipe_substr(szProj4, token);
 	}
 	/* If a +width=xx is given, append it a 'W' so that we identify this in gmt_parse_common_options() and act */
 	if ((pch = strstr(szProj4, "+width=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		sprintf(scale_c, "%sW", &token[6]);
-		wipe_substr(szProj4, token);
+		//wipe_substr(szProj4, token);
 	}
 
 	if (!opt_J[0])		/* No corresponding GMT proj found but we need the scale separated with a slash */
