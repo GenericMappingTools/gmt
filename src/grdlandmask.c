@@ -174,7 +174,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E<values> is presently being tested and is considered experimental\n");
 					Ctrl->E.linetrace = true;
 					j = pos = 0;
-					strncpy (line, opt->arg,  GMT_LEN256);
+					strncpy (line, opt->arg,  GMT_LEN256-1);
 					while (j < 4 && (gmt_strtok (line, "/", &pos, ptr))) {
 						Ctrl->N.mask[2*j+1] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (ptr);
 						j++;
