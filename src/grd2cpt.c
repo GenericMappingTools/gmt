@@ -659,9 +659,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
-		Return (API->error);
-	}
+	if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
+		error = API->error;
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
