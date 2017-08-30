@@ -558,8 +558,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "It shouldn't pass here\n");
-		gmt_M_free (GMT, body_verts);
-		return (GMT_RUNTIME_ERROR); /* should not happen but just in case */
+		error = GMT_RUNTIME_ERROR;
+		goto END;
 	}
 
 	/* Allocate a structure that will be used inside okabe().
