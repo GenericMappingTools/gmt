@@ -665,7 +665,10 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
-	error = free_them_grids (API, G, grdfile, ngrd);
+	if (error == GMT_NOERROR)
+		error = free_them_grids (API, G, grdfile, ngrd);
+	else
+		free_them_grids (API, G, grdfile, ngrd);
 	gmt_M_free (GMT, G);
 	gmt_M_free (GMT, grdfile);
 
