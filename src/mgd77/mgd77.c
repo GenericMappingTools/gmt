@@ -1512,7 +1512,7 @@ static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONT
 	place_int (MGD77_TZ, "%d");		strcat (line, "\t");
 	place_int (MGD77_YEAR, "%04d"); place_int (MGD77_MONTH, "%02d");	place_int (MGD77_DAY, "%02d");	strcat (line, "\t");
 	r_time = 100.0 * MGD77Record->number[MGD77_HOUR] + MGD77Record->number[MGD77_MIN];
-	if (!gmt_M_is_dnan (r_time)) { sprintf (buffer, "%.8g", r_time); fputs (buffer, F->fp); }	strcat (line, "\t");
+	if (!gmt_M_is_dnan (r_time)) { sprintf (buffer, "%.8g", r_time); strcat (line, buffer); }	strcat (line, "\t");
 	place_float (MGD77_LATITUDE, "%.8g");	strcat (line, "\t");
 	place_float (MGD77_LONGITUDE, "%.8g");	strcat (line, "\t");
 	place_int (MGD77_PTC, "%1d");		strcat (line, "\t");
