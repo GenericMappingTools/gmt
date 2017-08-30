@@ -2851,6 +2851,7 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 }
 
+#if 0
 GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
 	if (!strcmp(inname, "WGS84"))
@@ -2940,6 +2941,7 @@ GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 	else
 		outname[0] = '\0';
 }
+#endif
 
 GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
