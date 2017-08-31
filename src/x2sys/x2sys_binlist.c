@@ -287,18 +287,21 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		x2sys_end (GMT, s);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		x2sys_end (GMT, s);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
+		x2sys_end (GMT, s);
 		Return (API->error);
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -320,7 +323,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		}
 		
 		if (Ctrl->E.active) {	/* Project coordinates */
-			for (row = 0; row < p.n_rows; row++) gmt_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
+			for (row = 0; row < p.n_rows; row++)
+				gmt_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
 		}
 		
 		/* Reset bin flags */
@@ -329,7 +333,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			gmt_M_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL)
+				gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;
@@ -337,7 +342,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		last_bin_col = last_bin_row = -1;
 		for (row = 0; row < p.n_rows; row++) {
 			if (outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
-			 x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col, &this_bin_row, &B, &this_bin_index), "");
+			x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
+			                                          &this_bin_row, &B, &this_bin_index), "");
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep
 			 * turning the data flags on again and again. */
@@ -479,9 +485,9 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_km);
 	}
 	
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		Return (API->error);
-	}
+	error = GMT_NOERROR;
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
+		error = API->error;
 
 	gmt_M_free (GMT, X);
 	x2sys_end (GMT, s);
@@ -489,5 +495,5 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 	x2sys_free_list (GMT, trk_name, n_tracks);
 
-	Return (GMT_NOERROR);
+	Return (error);
 }

@@ -351,7 +351,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[8] = {""};
 	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64] = {""}, w_txt[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks, t, error = 0, expect, max_len;
+	int *ID[2] = {NULL, NULL}, ks, t, error = GMT_NOERROR, expect, max_len;
 	uint64_t n_par = 0, n, m, n_tracks = 0, n_active, n_expected_fields, n_constraints = 0;
 	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, *R = NULL, *col_off = NULL, *cluster = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
@@ -857,7 +857,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Singular matrix - unable to solve!\n");
-		Return (GMT_RUNTIME_ERROR);
+		gmt_M_free (GMT, N);
+		error = GMT_RUNTIME_ERROR;
+		goto END;
 	}
 
 	gmt_M_free (GMT, N);
@@ -897,13 +899,16 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	/* Write correction table */
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		Return (API->error);
+		error = API->error;
+		goto END;
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-		Return (API->error);
+		error = API->error;
+		goto END;
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-		Return (API->error);
+		error = API->error;
+		goto END;
 	}
 
 	/* Calculate the format string for the cruise name so that the printed table is better formatted */
@@ -945,6 +950,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Free up memory */
 
+END:
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) gmt_M_free (GMT, data[i]);
 	gmt_M_free (GMT, data[COL_WW]);
 	for (i = 0; i < 2; i++) gmt_M_free (GMT, ID[i]);
@@ -958,5 +964,5 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	x2sys_end (GMT, S);
 
-	Return (GMT_NOERROR);
+	Return (error);
 }

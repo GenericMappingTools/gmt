@@ -5503,12 +5503,13 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 		while (fgets (buffer, GMT_LEN256, fp)) {
 			if (buffer[0] == '#') continue;
-			pch = strstr(buffer, "+proj");
-			pch[-1] = '\0';		/* Break the line before the +proj=... */
-			if (EPSGID == atoi(buffer)) {
-				snprintf(szProj4, GMT_LEN256-1, "%s", pch);
-				found = true;
-				break;
+			if ((pch = strstr(buffer, "+proj")) != NULL) {
+				pch[0] = '\0';		/* Break the line before the +proj=... */
+				if (EPSGID == atoi(buffer)) {
+					snprintf(szProj4, GMT_LEN256-1, "%s", pch);
+					found = true;
+					break;
+				}
 			}
 		}
 		fclose (fp);
@@ -5707,7 +5708,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		else strcat (opt_J, "Ks");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {
-				strcat(opt_J, &token[6]);	strcat (opt_J, "/");
+				strncat(opt_J, &token[6], GMT_LEN256-1);	strcat (opt_J, "/");
 				//wipe_substr(szProj4, token);
 			}
 		}
@@ -5862,14 +5863,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 
 	/* Override the /1:xxx scale set at the begining of this function if a +scale=scale is found */
 	if ((pch = strstr(szProj4, "+scale=")) != NULL) {
-		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
-		sprintf(scale_c, "%s", &token[6]);
+		pos = 0;
+		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%s", &token[6]);
 		//wipe_substr(szProj4, token);
 	}
 	/* If a +width=xx is given, append it a 'W' so that we identify this in gmt_parse_common_options() and act */
 	if ((pch = strstr(szProj4, "+width=")) != NULL) {
-		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
-		sprintf(scale_c, "%sW", &token[6]);
+		pos = 0;	
+		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%sW", &token[6]);
 		//wipe_substr(szProj4, token);
 	}
 
@@ -5877,15 +5878,6 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		sprintf(opt_J, "/%s", scale_c);
 	else
 		strcat (opt_J, scale_c);	/* Append the scale */
-	/* For geogs, append a 'd' to signal that fact to GMT */
-	if (got_lonlat && (strlen(scale_c) != 3))	{	/* But this will all fail if x-scale & y-scale is given */
-		if (opt_J[strlen(opt_J)-1] == 'W') {
-			opt_J[strlen(opt_J)-1]	= 'd';
-			strcat (opt_J, "W");
-		}
-		else
-			strcat (opt_J, "d");
-	}
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);

@@ -2236,7 +2236,7 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	j -= k;
 	strncpy (scopy, s, j);
 	scopy[j] = 'e';
-	strcpy (&scopy[j+1], &p[1]);
+	strncpy (&scopy[j+1], &p[1], GMT_LEN64-1);
 	x = strtod (scopy, &p);
 	if (p[0] != 0) return (GMT_IS_NAN);
 	*val = x;

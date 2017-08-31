@@ -583,6 +583,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
+		if (fpi != stdin) fclose (fpi);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

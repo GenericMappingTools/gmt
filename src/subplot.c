@@ -234,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	if (!strncmp (opt->arg, "begin", 5U)) {	/* Initiate new subplot */
 		Ctrl->In.mode = SUBPLOT_BEGIN;
 		opt = opt->next;	/* The required number of rows and columns */
-		if (opt == NULL || opt->option != GMT_OPT_INFILE || (n = sscanf (opt->arg, "%dx%d", &Ctrl->N.dim[GMT_Y], &Ctrl->N.dim[GMT_X]) < 1)) {
+		if (opt->option != GMT_OPT_INFILE || (n = sscanf (opt->arg, "%dx%d", &Ctrl->N.dim[GMT_Y], &Ctrl->N.dim[GMT_X]) < 1)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: subplot begin: Unable to extract nrows and ncols from %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}

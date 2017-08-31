@@ -383,6 +383,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
+			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
@@ -425,6 +426,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
 		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) {
+			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (GMT_PROJECTION_ERROR);
 		}

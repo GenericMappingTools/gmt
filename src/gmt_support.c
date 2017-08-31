@@ -6249,22 +6249,22 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		size_t len;
 		if ((t2 = strstr (line, "+v"))) {	/* Keep the +v <args> since strtok will split them otherwise */
 			if ((t = strstr (line, "+vb"))) {	/* Keep the +v <args> since strtok will split them otherwise */
-				strcpy (v_args[BEG], &t[3]);
+				strncpy (v_args[BEG], &t[3], GMT_LEN256-1);
 				if ((t = strstr (v_args[BEG], "+ve"))) t[0] = '\0';	/* Chop off the other one */
 				use[BEG] = true;
 			}
 			if ((t = strstr (line, "+ve"))) {	/* Keep the +v <args> since strtok will split them otherwise */
-				strcpy (v_args[END], &t[3]);
+				strncpy (v_args[END], &t[3], GMT_LEN256-1);
 				if ((t = strstr (v_args[END], "+vb"))) t[0] = '\0';	/* Chop off the other one */
 				use[END] = true;
 			}
 			if (use[BEG] == false && use[END] == false) {	/* Just gave +v to apply to both ends */
-				strcpy (v_args[BEG], &t2[2]);
-				strcpy (v_args[END], &t2[2]);
+				strncpy (v_args[BEG], &t2[2], GMT_LEN256-1);
+				strncpy (v_args[END], &t2[2], GMT_LEN256-1);
 				may_differ = use[BEG] = use[END] = true;
 			}
 		}
-		strcpy (mods, &c[1]);	/* Get our copy of the modifiers */
+		strncpy (mods, &c[1], GMT_LEN256-1);	/* Get our copy of the modifiers */
 		c[0] = '\0';		/* Chop off modifiers */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pen modifier found: %s\n", mods);
 		while ((gmt_strtok (mods, "+", &pos, p))) {

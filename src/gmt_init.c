@@ -11640,7 +11640,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
 						sprintf (arg, "%s", P->Baxes);
-						strcat (arg, opt->arg);
+						strncat (arg, opt->arg, GMT_LEN256-1);
 						GMT_Update_Option (API, opt, arg);
 						frame_set = true;
 					}
@@ -13127,7 +13127,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
 		pch = strrchr(item_t2, '/');
 		if (pch == NULL) {
-			if (item_t2[0] == 'x' || item_t2[0] == 'X')		/* In this case we dont have a / but we know where scale starts */ 
+			if (item_t2[0] == 'x' || item_t2[0] == 'X' || item_t2[0] == 'q' || item_t2[0] == 'Q')	/* In this case we dont have a / but we know where scale starts */ 
 				pch = &item_t2[1];
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: this J string, %s, has no slash separating the scale\n", item_t2);
@@ -13136,12 +13136,14 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 				return 1;
 			}
 		}
+		else
+			pch = &item_t2[2];
 
 		if ((pch2 = strchr(pch, ':')) != NULL) {
 			if ((sc = atof(&pch2[1])) == 1)
 				GMT->current.proj.pars[14] = 1;
 		}
-		else if ((sc = atof(&pch[1])) == 1)
+		else if ((sc = atof(pch)) == 1)
 			GMT->current.proj.pars[14] = 1;
 
 		free (item_t2);			/* Cannot be freed before */
@@ -13169,7 +13171,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 		/* List taken from https://github.com/OSGeo/gdal/blob/trunk/gdal/ogr/ogr_srs_proj4.cpp#L616  */
 		if (strcmp(prjcode, "longlat") &&
-		    strcmp(prjcode, "geocent") &&
+			strcmp(prjcode, "latlong") &&
+			strcmp(prjcode, "geocent") &&
 		    strcmp(prjcode, "bonne") &&
 		    strcmp(prjcode, "cass") &&
 		    strcmp(prjcode, "nzmg") &&
