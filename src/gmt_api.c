@@ -1017,8 +1017,8 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
-	API->error = GMT_NOERROR;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	API->error = GMT_NOERROR;
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 	GMT = API->GMT;
 
