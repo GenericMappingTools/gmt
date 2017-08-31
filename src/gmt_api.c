@@ -7807,7 +7807,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 								strcat (GMT->current.io.record, value);
 								strcat (GMT->current.io.record, "\t");
 							}
-							strcat (GMT->current.io.record, M_obj->text[S_obj->rec-1]);
+							strncat (GMT->current.io.record, M_obj->text[S_obj->rec-1], GMT_BUFSIZ-1);
 							record = GMT->current.io.record;
 						}
 						else
