@@ -1354,6 +1354,10 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 	/* Here we must add a partial rotation to the last finite rotation */
 	
 	i--;
+	if ((i+2) > np) {	/* p[i] and p[i+1] must should exist but Coverity is not sure */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "spotter_get_rotation: Internal error - cannot copy two rotations!");
+		return;
+	}
 	gmt_M_memcpy (e, &p[i], 2, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
 	spotter_total_to_stages (GMT, e, 2, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	gmt_make_rot_matrix (GMT, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */

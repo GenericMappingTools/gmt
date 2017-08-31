@@ -6342,7 +6342,10 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c ", option);
-	gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+	if (strstr (string, "%s"))
+		gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+	else
+		gmt_message (GMT, string);
 	gmt_message (GMT, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
 	gmt_message (GMT, "\t       <width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	gmt_message (GMT, "\t   <width> >= 0.0 sets pen width (default units are points); alternatively a pen\n");
@@ -8072,9 +8075,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_PRIMARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
-				if (dval > 0.0)
+				if (dval > 0.0) {
 					GMT->current.setting.font_annot[GMT_PRIMARY].size = dval;
 					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_PRIMARY);
+				}
 				else
 					error = true;
 			}
@@ -8085,9 +8089,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_SECONDARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
-				if (dval > 0.0)
+				if (dval > 0.0) {
 					GMT->current.setting.font_annot[GMT_SECONDARY].size = dval;
 					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_SECONDARY);
+				}
 				else
 					error = true;
 			}
@@ -8098,9 +8103,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_TITLE");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
-				if (dval > 0.0)
+				if (dval > 0.0) {
 					GMT->current.setting.font_title.size = dval;
 					GMT_KEYWORD_UPDATE (GMTCASE_FONT_TITLE);
+				}
 				else
 					error = true;
 			}
@@ -8111,9 +8117,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("FONT_LABEL");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
-				if (dval > 0.0)
+				if (dval > 0.0) {
 					GMT->current.setting.font_label.size = dval;
 					GMT_KEYWORD_UPDATE (GMTCASE_FONT_LABEL);
+				}
 				else
 					error = true;
 			}
@@ -8171,12 +8178,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_CHANGE ("MAP_ANNOT_ORTHO");
-				if (!strcmp (lower_value, "ver_text"))
+				if (!strcmp (lower_value, "ver_text")) {
 					strncpy (GMT->current.setting.map_annot_ortho, "", 5U);
 					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
-				else if (!strcmp (lower_value, "hor_text"))
+				}
+				else if (!strcmp (lower_value, "hor_text")) {
 					strncpy (GMT->current.setting.map_annot_ortho, "we", 5U);
 					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
+				}
 				else
 					error = true;
 			}
@@ -9128,9 +9137,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_CHANGE ("GMT_VERBOSE");
 				ival = atoi (value) + 2;
-				if (ival >= GMT_MSG_QUIET && ival <= GMT_MSG_DEBUG)
+				if (ival >= GMT_MSG_QUIET && ival <= GMT_MSG_DEBUG) {
 					GMT->current.setting.verbose = ival;
 					GMT_KEYWORD_UPDATE (GMTCASE_GMT_VERBOSE);
+				}
 				else
 					error = true;
 			}
@@ -10984,7 +10994,12 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 			P->first = first;
 			gmt_M_memcpy (P->gap, gap, 4, double);
 			if (strcmp (tmp, "@")) strncpy (P->tag, tmp, GMT_LEN16-1);	/* Replace auto-tag with manually added tag */
-			c = strchr (line, GMT_ASCII_GS);	/* Get the position before frame setting */
+			if ((c = strchr (line, GMT_ASCII_GS)) == NULL) {	/* Get the position before frame setting */
+				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
+				fclose (fp);
+				gmt_M_free (API->GMT, P);
+				return NULL;
+			}
 			c++;	k = 0;	/* Now at start of axes */
 			while (*c != GMT_ASCII_GS) P->Baxes[k++] = *(c++);	/* Copy it over until end */
 			c++;	k = 0;	/* Now at start of xaxis */
@@ -10997,7 +11012,6 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 	fclose (fp);
 	if (!found) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Subplot Error: Unable to match specified row,col with subplot information\n", file);
-		gmt_M_free (API->GMT, P);
 		return NULL;
 	}
 	API->error = GMT_NOERROR;
@@ -11439,7 +11453,10 @@ GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_get_last_dimensions: Could not open file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height);
+	if (fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height) != 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_get_last_dimensions: Could not read dimensions from file %s\n", file);
+		return GMT_DATA_READ_ERROR;
+	}
 	fclose (fp);
 	return (GMT_NOERROR);
 }
@@ -14268,7 +14285,10 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt_get_current_figure: Could not open file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	fscanf (fp, "%d", &fig_no);
+	if (fscanf (fp, "%d", &fig_no) != 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt_get_current_figure: Could not read fig number from file %s\n", file);
+		return GMT_DATA_READ_ERROR;
+	}
 	fclose (fp);
 	return (fig_no);
 }

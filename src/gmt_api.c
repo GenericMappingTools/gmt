@@ -12522,7 +12522,7 @@ int GMT_Get_Enum (char *key) {
 		else if (value < 0)
 			hi = mid;
 	}
-	return (value == 0) ? gmt_api_enums[mid].value : GMT_NO_SUCH_ENUM;
+	return GMT_NO_SUCH_ENUM;
 }
 
 #ifdef FORTRAN_API

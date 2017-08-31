@@ -6270,12 +6270,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				if (P->pen[0]) {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
-					gmt_getpen (GMT, P->pen, &pen);
+					if (gmt_getpen (GMT, P->pen, &pen))
+						gmt_pen_syntax (GMT, 'w', "sets pen attributes:", 3);
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
-				if (P->fill[0])	/* Want to paint inside of tag box */
-					gmt_getfill (GMT, P->fill, &fill);
+				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
+					gmt_fill_syntax (GMT, 'g', " ");
+					
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
@@ -6323,9 +6325,11 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	/* Get the name of the corresponding gmt.layers file */
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
-		gmt_remove_file (API->GMT, file);	/* Remove the layers file */
+		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
-		gmt_remove_file (API->GMT, file);	/* Wipe the PS file */
+		if (gmt_remove_file (API->GMT, file))	/* Wipe the PS file */
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
 		return GMT_NOERROR;
 	}
 	/* See if there is a layers file to read for this figure */

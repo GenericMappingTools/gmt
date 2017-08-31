@@ -238,7 +238,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: subplot begin: Unable to extract nrows and ncols from %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
-		if (n == 1) Ctrl->N.dim[GMT_X] = Ctrl->N.dim[GMT_Y];
 		Ctrl->N.n_subplots = Ctrl->N.dim[GMT_X] * Ctrl->N.dim[GMT_Y];
 		Ctrl->N.active = true;
 	}
