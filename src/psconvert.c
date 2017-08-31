@@ -1582,22 +1582,23 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				fclose (fp);	fclose (fp2);
+				gmt_M_free (GMT, PS);
 				if (gmt_remove_file (GMT, BB_file))
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
-				gmt_M_free (GMT, PS);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
+				gmt_M_free (GMT, PS);
 				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return (GMT_RUNTIME_ERROR);
-				gmt_M_free (GMT, PS);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while ((file_line_reader (GMT, &line, &line_size, fpb, NULL, NULL) != EOF) && !got_BB) {
@@ -1651,8 +1652,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (fpb != NULL) { /* don't close twice */
 				fclose (fpb);	fpb = NULL;
 			}
-			if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file))	/* Remove the file with BB info */
+			if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file)) {	/* Remove the file with BB info */
+				fclose (fp);	fclose (fp2);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
@@ -1738,8 +1741,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (!got_BB) {
 			GMT_Report (API, GMT_MSG_NORMAL,
 			            "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
-			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))	/* Remove the temporary EPS file */
+			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file)) {	/* Remove the temporary EPS file */
+				fclose (fp);	fclose (fp2);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			continue;
 		}
 
