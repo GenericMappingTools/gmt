@@ -11455,6 +11455,7 @@ GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
 	}
 	if (fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height) != 2) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmtinit_get_last_dimensions: Could not read dimensions from file %s\n", file);
+		fclose (fp);
 		return GMT_DATA_READ_ERROR;
 	}
 	fclose (fp);
@@ -14290,6 +14291,7 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 	}
 	if (fscanf (fp, "%d", &fig_no) != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt_get_current_figure: Could not read fig number from file %s\n", file);
+		fclose (fp);
 		return GMT_DATA_READ_ERROR;
 	}
 	fclose (fp);
