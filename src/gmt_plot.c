@@ -5540,11 +5540,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		else strcat (opt_J, "C");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
-				strcat(lon_0, &token[6]);
+				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
-				strcat(lat_0, &token[6]);
+				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 		}
@@ -5564,19 +5564,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		strcat (opt_J, "OC");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_1=")) != NULL) {	
-				strcat(lon_1, &token[6]);
+				strncat(lon_1, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_1=")) != NULL) {
-				strcat(lat_1, &token[6]);
+				strncat(lat_1, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lon_2=")) != NULL) {	
-				strcat(lon_2, &token[6]);
+				strncat(lon_2, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_2=")) != NULL) {
-				strcat(lat_2, &token[6]);
+				strncat(lat_2, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 		}
@@ -5631,19 +5631,19 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		else strcat (opt_J, "Poly/");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
-				strcat(lon_0, &token[6]);
+				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
-				strcat(lat_0, &token[6]);
+				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_1=")) != NULL) {	
-				strcat(lat_1, &token[6]);
+				strncat(lat_1, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_2=")) != NULL) {	
-				strcat(lat_2, &token[6]);
+				strncat(lat_2, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 		}
@@ -5672,15 +5672,15 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		else strcat (opt_J, "S");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "lon_0=")) != NULL) {	
-				strcat(lon_0, &token[6]);
+				strncat(lon_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_0=")) != NULL) {	
-				strcat(lat_0, &token[6]);
+				strncat(lat_0, &token[6], 31);
 				//wipe_substr(szProj4, token);
 			}
 			else if ((pch = strstr(token, "lat_ts=")) != NULL) {	
-				strcat(lat_ts, &token[7]);
+				strncat(lat_ts, &token[7], 31);
 				//wipe_substr(szProj4, token);
 			}
 		}
