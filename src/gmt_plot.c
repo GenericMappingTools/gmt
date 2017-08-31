@@ -5519,11 +5519,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		}
 	}
 
-	if (szProj4[strlen(szProj4)-1] == '"') szProj4[strlen(szProj4)-1] = '\0';	/* Trim last " */
-
-	gmt_strtok (szProj4, " \t+", &pos, token);
-	sprintf(prjcode, "%s",(token[0] == '"' ? &token[7] : (token[0] == '+' ? &token[6] : &token[5])));	/* PROJ4 projection code. */
-	//wipe_substr(szProj4, token);	/* Consumed, clear it from list */
+	if (gmt_strtok(szProj4, " \t+", &pos, token)) {
+		sprintf(prjcode, "%s",(token[0] == '+' ? &token[6] : &token[5]));	/* PROJ4 projection code. */
+		//wipe_substr(szProj4, token);	/* Consumed, clear it from list */
+	}
 
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
