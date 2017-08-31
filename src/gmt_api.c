@@ -1588,9 +1588,9 @@ GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
 	 */
 
 	struct GMT_CTRL *GMT = NULL;
-	API->error = GMT_NOERROR;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	API->error = GMT_NOERROR;
 	if (!API->registered[direction])
 		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
 	/* Passed basic sanity checks */
