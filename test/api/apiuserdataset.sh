@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xv
 #	$Id$
 #
 # Test the C API for conversions between user matrices and
@@ -10,4 +10,4 @@
 # GMT allocate it.
 
 rm -f fail
-testapi_userdataset | grep ":FAIL" > fail
+testapi_userdataset grep ":FAIL" > fail

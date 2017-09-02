@@ -63,6 +63,8 @@ function psldemo()
   valgrind_wrapper "@GMT_BINARY_DIR@/src/psldemo" "$@"
 }
 
+# Must have wrappers for all test programs not part of GMT distro:
+
 # testapi wrapper
 function testapi()
 {
@@ -73,6 +75,24 @@ function testapi()
 function testgrdio()
 {
   valgrind_wrapper "@GMT_BINARY_DIR@/src/testgrdio" "$@"
+}
+
+# testapi_userdataset wrapper
+function testapi_userdataset()
+{
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_userdataset" "$@"
+}
+
+# testapi_uservectors wrapper
+function testapi_uservectors()
+{
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_uservectors" "$@"
+}
+
+# testapi_usergrid wrapper
+function testapi_usergrid()
+{
+  valgrind_wrapper "@GMT_BINARY_DIR@/src/testapi_usergrid" "$@"
 }
 
 # export function definitions to subshells
