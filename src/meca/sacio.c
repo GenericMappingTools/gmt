@@ -392,7 +392,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	if (nt2>npts) nt2 = npts;
 	nn = nt2 - nt1;
 
-	if (fread((char *)fpt, (size_t)nn * SAC_DATA_SIZEOF, 1, strm) != 1) {
+	if (fread((char *)fpt, ((size_t)nn) * SAC_DATA_SIZEOF, 1, strm) != 1) {
 		fprintf(stderr, "Error in reading SAC data %s\n", name);
 		free(ar);
 		fclose(strm);
@@ -400,7 +400,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	}
 	fclose(strm);
 
-	if (lswap == true) byte_swap((char*)ar, (size_t)nn*sizeof(float));
+	if (lswap == true) byte_swap((char*)ar, ((size_t)nn)*sizeof(float));
 
 	return ar;
 }
