@@ -10972,13 +10972,11 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding row/col from subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 			fclose (fp);
-			gmt_M_free (API->GMT, P);
 			return NULL;
 		}
 		if (row > P->nrows || col > P->ncolumns) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Selected current panel (%d,%d) exceeds dimension of current subplot (%dx%d)]\n", row, col, P->nrows, P->ncolumns);
 			fclose (fp);
-			gmt_M_free (API->GMT, P);
 			return NULL;
 		}
 		if (P->row == row && P->col == col) {	/* Found it */
@@ -10986,7 +10984,6 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 				&P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], &P->clearance[GMT_X], &P->clearance[GMT_Y], P->refpoint, P->justify, P->fill, P->pen)) != 13) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
-				gmt_M_free (API->GMT, P);
 				return NULL;
 			}
 			if (P->fill[0] == '-') P->fill[0] = '\0';	/* - means no fill */
@@ -10997,7 +10994,6 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 			if ((c = strchr (line, GMT_ASCII_GS)) == NULL) {	/* Get the position before frame setting */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
-				gmt_M_free (API->GMT, P);
 				return NULL;
 			}
 			c++;	k = 0;	/* Now at start of axes */
