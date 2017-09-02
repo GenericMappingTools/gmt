@@ -9,5 +9,4 @@
 # the case of user pre-allocated output vector or letting
 # GMT allocate them.
 
-rm -f fail
-testapi_uservectors | grep ":FAIL" > fail
+testapi_uservectors -q > fail

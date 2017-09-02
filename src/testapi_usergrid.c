@@ -242,28 +242,29 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 int main (int argc, char *argv[]) {
 	unsigned int in, answer, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
 	char *passfail[2] = {"PASS", "FAIL"};
-	(void)(argv);	/* Since not used */
+	unsigned int quiet = (argc == 2 && !strcmp (argv[1], "-q"));
+	if (quiet) V = 0;
 	for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
-			printf ("Test matrix/grid/matrix(prealloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
+			if (!quiet) printf ("Test matrix/grid/matrix(prealloc) for Input = index [%s], output = 10*input + 1 [%s] :", type[in], type[out]);
 			answer = deploy_test (in, out, 1, V);
-			printf (" :%s\n", passfail[answer]);
+			if (!quiet || answer) printf ("%s\n", passfail[answer]);
 			bad += answer;
 			n ++;
 			if (Q) out = in = GMT_DOUBLE;
 		}
 	}
-	if (bad) printf ("%d of %d combinations with preallocated output memory failed the test\n", bad, n);
+	if (bad && !quiet) printf ("%d of %d combinations with preallocated output memory failed the test\n", bad, n);
 	for (in = GMT_CHAR, bad = 0; in <= GMT_DOUBLE; in++) {
 		for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
-			printf ("Test matrix/grid/matrix(GMT alloc) for Input = index [%s], output = 10*input + 1 [%s]", type[in], type[out]);
+			if (!quiet) printf ("Test matrix/grid/matrix(GMT alloc) for Input = index [%s], output = 10*input + 1 [%s] :", type[in], type[out]);
 			answer = deploy_test (in, out, 0, V);
-			printf (" :%s\n", passfail[answer]);
+			if (!quiet || answer) printf ("%s\n", passfail[answer]);
 			bad += answer;
 			n ++;
 			if (Q) out = in = GMT_DOUBLE;
 		}
 	}
-	if (bad) printf ("%d of %d combinations with GMT-allocated output memory failed the test\n", bad, n);
+	if (bad && !quiet) printf ("%d of %d combinations with GMT-allocated output memory failed the test\n", bad, n);
 	exit (0);
 }

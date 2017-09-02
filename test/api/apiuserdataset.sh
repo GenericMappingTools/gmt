@@ -9,5 +9,4 @@
 # the case of user pre-allocated output matrix or letting
 # GMT allocate it.
 
-rm -f fail
-testapi_userdataset grep ":FAIL" > fail
+testapi_userdataset -q > fail

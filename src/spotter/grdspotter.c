@@ -981,7 +981,6 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
-			error = error;
 			goto END;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

@@ -9,5 +9,4 @@
 # the case of user pre-allocated output matrix or letting
 # GMT allocate it.
 
-rm -f fail
-testapi_usergrid | grep ":FAIL" > fail
+testapi_usergrid  -q > fail
