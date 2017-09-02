@@ -1031,6 +1031,16 @@ Relative time coordinates:
     value. When it is otherwise apparent that the coordinate is relative
     time (for example by using the **-f** switch), the **t** can be omitted.
 
+Radians:
+    For angular regions (and increments) specified in radians you may use a set of
+    forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
+    [±][\ *s*\ ]pi[*f*\ ], where is *s* and *f* are any integer or floating point numbers,
+    e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
+    of these forms we alert the labeling machinery to look for certain combinations of pi,
+    limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
+    annotated value is within roundoff-error of these combinations we typeset the label
+    using the Greek letter for pi and required multiples or fractions.
+
 Other coordinates:
     These are simply any coordinates that are not related to geographic
     or calendar time or relative time and are expected to be simple

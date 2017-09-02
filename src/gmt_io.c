@@ -2205,19 +2205,19 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	size_t j, k;
 
 	if (strstr (s, "pi")) {	/* Got a number given via multiple/fraction of pi */
-		/* Only allow parsing of [-|+][n]pi[m], with n = 1-9 and m = 2,3,4 */
+		/* Only allow parsing of [-|+][s]pi[f], with s and f are any number */
 		GMT->current.plot.substitute_pi = true;	/* Used in formatting labels */
 		k = 0;
 		if (s[0] == '-') x = -1.0, k = 1;
 		else if (s[0] == '+') x = 1.0, k = 1;
 		else x = 1.0;
 		if (isdigit (s[k])) {	/* Need an integer multiple of pi */
-			int ival = atoi (&s[k]);
-			x *= ival;	/* Get multiples of pi */
+			double fval = atof (&s[k]);
+			x *= fval;	/* Get multiples of pi */
 			while (isdigit (s[k])) k++;
 		}
 		k += 2;	/* Now skip the pi part */
-		if (s[k]) x /= (s[k]-'0');	/* Get pi fraction */
+		if (s[k]) x /= atof (&s[k]);	/* Get pi fraction */
 		*val = x * M_PI;	/* Scale up by pi */
 		return (GMT_IS_FLOAT);
 	}
