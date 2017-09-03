@@ -726,9 +726,11 @@ void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_c
 void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	gmt_M_memcpy (GMT->common.R.wesn, header->wesn, 4, double);	/* Set -R from grid */
 	if (header->grdtype != GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT) return;	/* Nothing to do */
-	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_rows * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT)	/* The w/e need to be complete 360 range */
+	if (header->registration == GMT_GRID_NODE_REG) return;	/* Nothing to do */
+	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_columns * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {	/* The w/e need to be complete 360 range */
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + 360.0;
-	if (!gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) && fabs (header->n_columns * header->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) {	/* The s/n need to be complete 180 range */
+	}
+	if (!gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) && fabs (header->n_rows * header->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) {	/* The s/n need to be complete 180 range */
 		GMT->common.R.wesn[YLO] = -90.0;
 		GMT->common.R.wesn[YHI] = +90.0;
 	}
