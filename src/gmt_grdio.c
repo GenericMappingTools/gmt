@@ -724,13 +724,22 @@ void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_c
 #endif
 
 void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	gmt_M_memcpy (GMT->common.R.wesn, header->wesn, 4, double);	/* Set -R from grid */
+	/* When no -R was given we will inherit the region from the grid.  However,
+	 * many grids are hobbled by not clearly specifying they are truly global grids.
+	 * What frequently happens is that gridnode-registered grids ommit the repeating
+	 * column in the east, leading to regions such as -R0/359/-90/90 for a 1-degree grid.
+	 * Since these are clearly global we do now want to pass 0/359 to the projection
+	 * machinery but 0/360.  Hence we test if the grid is truly global and make this decision. */
+	
+	gmt_M_memcpy (GMT->common.R.wesn, header->wesn, 4, double);	/* Initially we set -R as is from grid header */
 	if (header->grdtype != GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT) return;	/* Nothing to do */
-	if (header->registration == GMT_GRID_NODE_REG) return;	/* Nothing to do */
-	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_columns * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {	/* The w/e need to be complete 360 range */
+	//if (header->registration == GMT_GRID_NODE_REG) return;	/* Nothing to do */
+	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_columns * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
+		/* The w/e need to state the complete 360 range: Let east = 360 + west */
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + 360.0;
 	}
-	if (!gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) && fabs (header->n_rows * header->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) {	/* The s/n need to be complete 180 range */
+	if (!gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) && fabs (header->n_rows * header->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) {
+		/* The s/n need to state the complete 180 range */
 		GMT->common.R.wesn[YLO] = -90.0;
 		GMT->common.R.wesn[YHI] = +90.0;
 	}
