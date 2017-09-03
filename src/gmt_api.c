@@ -7547,18 +7547,25 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 				if (!API->object[out_item]->filename) API->object[out_item]->filename = strdup (output);
 			}
 		}	/* else it is a regular file and we just register it and get the new out_ID needed below */
-		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
+		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) {
+			gmt_M_str_free (output);	/* Done with this variable */
+			return_error (API, API->error);
+		}
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
 		if (family == GMT_IS_GRID) return_error (API, GMT_STREAM_NOT_ALLOWED);	/* Cannot write grids to stream */
 		if ((out_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, wesn, API->GMT->session.std[GMT_OUT])) == GMT_NOTSET) return_error (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: output == NULL && geometry == 0, so use the previously registered destination */
-		if ((n_reg = gmtapi_count_objects (API, family, geometry, GMT_OUT, &out_ID)) != 1) return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
+		if ((n_reg = gmtapi_count_objects (API, family, geometry, GMT_OUT, &out_ID)) != 1) {
+			gmt_M_str_free (output);	/* Done with this variable */
+			return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
+		}
 	}
-	/* With out_ID in hand we can now put the data where it should go */
-	if (api_put_data (API, out_ID, mode, data) != GMT_NOERROR) return_error (API, API->error);
 	gmt_M_str_free (output);	/* Done with this variable */
+	/* With out_ID in hand we can now put the data where it should go */
+	if (api_put_data (API, out_ID, mode, data) != GMT_NOERROR)
+		return_error (API, API->error);
 
 #ifdef DEBUG
 	api_list_objects (API, "GMT_Write_Data");
