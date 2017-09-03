@@ -743,7 +743,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, Topo->header->wesn, 4, double);	/* No -R, use grid region */
+	if (!GMT->common.R.active[RSET])	/* No -R, use grid region */
+		gmt_set_R_from_grd (GMT, Topo->header);
+
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
 	if (GMT->common.R.wesn[ZLO] == 0.0 && GMT->common.R.wesn[ZHI] == 0.0) {

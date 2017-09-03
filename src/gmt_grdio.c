@@ -39,6 +39,7 @@
  *  gmt_update_grd_info     : Update header in existing file (must be preceded by gmtlib_read_grd_info)
  *  gmtlib_write_grd_info      : Write header to new file
  *  gmtlib_write_grd           : Write header and data set to new file
+ *  gmt_set_R_from_grd
  *  gmt_grd_coord           :
  *  gmtlib_grd_real_interleave :
  *  gmt_grd_mux_demux       :
@@ -722,6 +723,17 @@ void gmt_grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool is_complex,
 #endif
 #endif
 
+void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	gmt_M_memcpy (GMT->common.R.wesn, header->wesn, 4, double);	/* Set -R from grid */
+	if (header->grdtype != GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT) return;	/* Nothing to do */
+	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (header->n_rows * header->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT)	/* The w/e need to be complete 360 range */
+		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + 360.0;
+	if (!gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) && fabs (header->n_columns * header->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) {	/* The s/n need to be complete 180 range */
+		GMT->common.R.wesn[YLO] = -90.0;
+		GMT->common.R.wesn[YHI] = +90.0;
+	}
+}
+
 void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Set input data types for columns 0, 1 and 2 based on unit strings for
 	   grid coordinates x, y and z.
@@ -1325,9 +1337,9 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 
 	if (expand) /* Must undo the region extension and reset n_columns, n_rows using original pad  */
 		gmt_M_memcpy (header->wesn, wesn, 4, double);
-	header->grdtype = gmtlib_get_grdtype (GMT, header);	/* Since may change if a subset */
 	gmt_M_grd_setpad (GMT, header, pad);	/* Copy the pad to the header */
 	gmt_set_grddim (GMT, header);		/* Update all dimensions */
+	header->grdtype = gmtlib_get_grdtype (GMT, header);	/* Since may change if a subset */
 	if (expand) gmt_grd_zminmax (GMT, header, grid);	/* Reset min/max since current extrema includes the padded region */
 	grdio_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset */
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
