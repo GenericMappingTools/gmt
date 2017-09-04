@@ -65,7 +65,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} G;
 	struct GRDLNDM_N {	/* -N<maskvalues> */
 		bool active;
-		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		unsigned int wetdry;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		gmt_grdfloat mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };
@@ -127,7 +127,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the lines to the indicated values [Deafault is no line tracing].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the lines to the indicated values [Default is no line tracing].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This is a new option and is experimental.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
@@ -215,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 mask values\n");
 					n_errors++;
 				}
-				Ctrl->N.mode = (j == 2);
+				Ctrl->N.wetdry = (j == 2);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -252,8 +253,6 @@ GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT
 	if (col < 0 || col > (int)C->n_columns) return;
 	*ij = gmt_M_ijp (G->header, row, col);
 	G->data[*ij] = f_level;
-	if (*ij == 82)
-		f_level = 0.0;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -323,7 +322,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
 	
-	if (Ctrl->N.mode) {	/* Must duplicate wet/dry settings */
+	if (Ctrl->N.wetdry) {	/* Must duplicate wet/dry settings */
 		Ctrl->N.mask[6] = Ctrl->N.mask[2];
 		Ctrl->N.mask[4] = Ctrl->N.mask[8] = Ctrl->N.mask[0];
 	}
@@ -336,23 +335,33 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-		if (Ctrl->N.mode) {
+		if (Ctrl->N.wetdry) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in water will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(gmt_M_is_fnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
+			(gmt_M_is_fnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
 		}
 		else {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in the oceans will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(gmt_M_is_fnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
-			(gmt_M_is_fnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
 			(gmt_M_is_fnan (Ctrl->N.mask[4])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[4]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[6])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[6]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[8])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[8]);
+		}
+		if (Ctrl->E.linetrace) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes near shoreline will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes near lakeline will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes near islandline will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[5])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[5]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes near pondline will be set to ");
+			(gmt_M_is_fnan (Ctrl->N.mask[7])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[7]);
 		}
 	}
 
@@ -483,7 +492,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 					last_not_set = true;
 					last_col = last_row = -1;
 
-					/* TO handle lines that exit the grid we pursue the entire line even if outside.
+					/* To handle lines that exit the grid we pursue the entire line even if outside.
 					 * We only check if (row,col) is inside when filling in between points and assigning nodes */
 					
 					for (pt = 0; pt < (unsigned int)p[k].n; pt++) {

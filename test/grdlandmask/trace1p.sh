@@ -10,5 +10,5 @@ cat << EOF > t.cpt
 4	white
 EOF
 gmt grdlandmask -R$R -Di -I1m -r -N1/2/3/4/5 -Gt.nc -E0/4/5/6
-gmt grdimage t.nc -JM6i -nn -K -Ct.cpt -Xc -t75 -P > $ps
+gmt grdimage t.nc -JQ6i -nn -K -Ct.cpt -Xc -t75 -P > $ps
 gmt pscoast -R -J -Di -Wthin -O -Bafg1m -BWSne --MAP_GRID_PEN=faint >> $ps

@@ -81,7 +81,7 @@ Optional Arguments
     Nodes that fall exactly on a polygon boundary should be
     considered to be outside the polygon [Default considers them to be inside].
     Alternatively, append either the four values *cborder/lborder/iborder/pborder*
-    or just the single value *bordervalue* (for the case when they are all the same).
+    or just the single value *bordervalue* (for the case when they should all be the same value).
     This turns on the line-tracking mode.  Now, after setting the mask values
     specified via **-N** we trace the lines and change the node values for all
     cells traversed by a line to the corresponding border value.  Here, *cborder*
