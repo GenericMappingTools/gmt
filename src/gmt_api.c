@@ -6138,7 +6138,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 		char file[GMT_LEN128] = {""};
 		FILE *fp = NULL;
 		if (API->session_tag == NULL) {
-			GMT_Report (API, GMT_MSG_DEBUG, "Must pass a sesssion tag to be used for error log file name\n");
+			GMT_Report (API, GMT_MSG_DEBUG, "Must pass a session tag to be used for error log file name\n");
 			return_null (API, GMT_ARG_IS_NULL);
 		}
 		sprintf (file, "%s.log", API->session_tag);
@@ -10848,7 +10848,7 @@ int GMT_Handle_Messages (void *V_API, unsigned int mode, unsigned int method, vo
 		case GMT_LOG_ONCE:	/* Redirect message just until end of next module */
 		case GMT_LOG_SET:	/* Redirect message until end of session (or changed) */
 			if (API->log_level)	/* Cannot turn on when already on */
-				return_error (V_API, GMT_LOGGING_AREADY_ACTIVE);
+				return_error (V_API, GMT_LOGGING_ALREADY_ACTIVE);
 			switch (method) {
 				case GMT_IS_FILE:
 					if ((fp = fopen (dest, "w")) == NULL) {

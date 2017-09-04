@@ -5860,7 +5860,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	}
 #endif
 
-	/* Override the /1:xxx scale set at the begining of this function if a +scale=scale is found */
+	/* Override the /1:xxx scale set at the beginning of this function if a +scale=scale is found */
 	if ((pch = strstr(szProj4, "+scale=")) != NULL) {
 		pos = 0;
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%s", &token[6]);
@@ -6089,7 +6089,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
 	
-		if (O_active == false && !gmtlib_fig_is_ps (GMT))	/* Dont need -P since we will do -A */
+		if (O_active == false && !gmtlib_fig_is_ps (GMT))	/* Don't need -P since we will do -A */
 			media_size[GMT_X] = media_size[GMT_Y] = MAX(media_size[GMT_X], media_size[GMT_Y]);
 	}
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */

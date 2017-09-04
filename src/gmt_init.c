@@ -10877,7 +10877,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
 		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
 		API->error = GMT_NOERROR;
-		return GMT_RUNTIME_ERROR;	/* It is an "error" in the sense we dont have a panel situation */
+		return GMT_RUNTIME_ERROR;	/* It is an "error" in the sense we don't have a panel situation */
 	}
 	/* Here there is a current panel, get it */
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -11391,7 +11391,7 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 }
 
 GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION **options) {
-	/* Determine if user is attemtping a modern mode one-liner plot */
+	/* Determine if user is attempting a modern mode one-liner plot */
 	unsigned int pos;
 	int error, k;
 	char figure[GMT_LEN128] = {""}, session[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
@@ -13124,7 +13124,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
 		pch = strrchr(item_t2, '/');
 		if (pch == NULL) {
-			if (item_t2[0] == 'x' || item_t2[0] == 'X' || item_t2[0] == 'q' || item_t2[0] == 'Q')	/* In this case we dont have a / but we know where scale starts */ 
+			if (item_t2[0] == 'x' || item_t2[0] == 'X' || item_t2[0] == 'q' || item_t2[0] == 'Q')	/* In this case we don't have a / but we know where scale starts */ 
 				pch = &item_t2[1];
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: this J string, %s, has no slash separating the scale\n", item_t2);
@@ -14321,7 +14321,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		/* This means the external API will call psconvert directly */
 		prefix[0] = formats[0] = '-';
 	}
-	else {	/* For regular comand line use, the figure prefix is required; the rest is optional */
+	else {	/* For regular command line use, the figure prefix is required; the rest is optional */
 		if (arg == NULL || arg[0] == '\0') {	/* This is clearly not allowed */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: gmt figure: No argument given\n");
 			return GMT_ARG_IS_NULL;

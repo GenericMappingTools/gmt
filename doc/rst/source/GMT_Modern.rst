@@ -197,7 +197,7 @@ Optional Arguments
 
 **-M**\ *margins*
     This is clearance that is added around each subplot beyond the automatic space allocated for tick marks,
-    annotations, and lables [0.5c].
+    annotations, and labels [0.5c].
     The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
     or the full set of four margins for the left, right, bottom, and top margin.
 

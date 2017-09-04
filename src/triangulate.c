@@ -150,7 +150,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Grid data. Give name of output grid file and specify -R -I [-r].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is used then output grids will hold propagated uncertainties and no -R -I [-r] is requred.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is used then output grids will hold propagated uncertainties and no -R -I [-r] is required.\n");
 #ifdef NNN_MODE
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Qn for natural nearest neighbors [Default is linear triangulation]\n");
 #endif

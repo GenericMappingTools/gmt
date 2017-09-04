@@ -8790,7 +8790,7 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	/* Core map setup function for the projection.  All program needing projection support
 	 * will call this either directly or indirectly.  Programs that _just_ need to project
-	 * to/from may call this function only, while all the plotting program need to hvae more
+	 * to/from may call this function only, while all the plotting program need to have more
 	 * things initialized and they will call gmt_map_setup instead, which starts by calling
 	 * gmt_proj_setup first. */
 	

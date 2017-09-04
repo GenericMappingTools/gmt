@@ -1586,7 +1586,7 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	 * in GMT5.  The simplest solution was to collect all those variables into
 	 * a single structure and pass a pointer to that structure to functions.
 	 */
-	if (Ctrl->S.active) {	/* Gave a serach radius; adjust if minutes or seconds where specified */
+	if (Ctrl->S.active) {	/* Gave a search radius; adjust if minutes or seconds where specified */
 		if (Ctrl->S.unit == 'm') Ctrl->S.radius /= 60.0;
 		if (Ctrl->S.unit == 's') Ctrl->S.radius /= 3600.0;
 	}

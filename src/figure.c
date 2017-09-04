@@ -88,7 +88,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	
 	/* Gave a figure prefix so can go on to check optional items */
 	
-	opt = opt->next;	/* Skip the figure prefix since we dont need to check it here */
+	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
 	
 	while (opt) {
 		arg_category = GMT_NOTSET;	/* We know noothing */

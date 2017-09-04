@@ -89,7 +89,7 @@ struct GSHHG_HEADER {	/* Global Self-consistent Hierarchical High-resolution Sho
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 9 for GSHHG release 9.
  	 * 3rd byte:	greenwich = (flag >> 16) & 3: Values: 0 if Greenwich nor Dateline are crossed,
 	 *		1 if Greenwich is crossed, 2 if Dateline is crossed, 3 if both is crossed.
-	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS.  If level = 5,6 then source is instad AC
+	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS.  If level = 5,6 then source is instead AC
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and GSHHG level = 2 (or WDBII class 0)
 	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */

@@ -444,7 +444,7 @@ EXTERN_MSC int PSL_fclose (struct PSL_CTRL *C);
 EXTERN_MSC void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], double rgb[], int outline);
 #endif
 
-/*! Macro for free that excplicitly checks for NULL pointer and sets freed pointer to NULL */
+/*! Macro for free that explicitly checks for NULL pointer and sets freed pointer to NULL */
 #define PSL_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
 
 #ifdef __cplusplus

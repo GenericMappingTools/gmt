@@ -726,7 +726,7 @@ void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_c
 void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* When no -R was given we will inherit the region from the grid.  However,
 	 * many grids are hobbled by not clearly specifying they are truly global grids.
-	 * What frequently happens is that gridnode-registered grids ommit the repeating
+	 * What frequently happens is that gridnode-registered grids omit the repeating
 	 * column in the east, leading to regions such as -R0/359/-90/90 for a 1-degree grid.
 	 * Since these are clearly global we do now want to pass 0/359 to the projection
 	 * machinery but 0/360.  Hence we test if the grid is truly global and make this decision. */
@@ -982,7 +982,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	size_t i = 0, j;
 	int val;
 	unsigned int direction = (magic) ? GMT_IN : GMT_OUT;
-	char tmp[GMT_LEN512] = {""};		/* But it's copied at most 256 chars into header->name so 256 sould do */
+	char tmp[GMT_LEN512] = {""};		/* But it's copied at most 256 chars into header->name so 256 should do */
 
 	grdio_grd_parse_xy_units (GMT, header, file, direction);	/* Parse and strip xy scaling via +u<unit> modifier */
 

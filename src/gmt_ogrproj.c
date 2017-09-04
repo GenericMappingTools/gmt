@@ -74,7 +74,7 @@ int gmt_ogrproj(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS, int n_pts,
 	   n_pts is the number of points to be transformed.
 	   xi,yi,zi are pointers to arrays of n_pts points. If only 2D transform is wanted, passs zi = NULL.
 	   insitu, is a bolean stating if the transformed points will overwrite the input data in xi,yi,zi (true)
-	   or, when false, the output is stored in xo,yo,zo. In this later case, it's user responsability
+	   or, when false, the output is stored in xo,yo,zo. In this later case, it's user responsibility
 	   to allocate the xo,yo[,zo] arrays with same size as xi,yi[,zi].
 	*/
 	OGRCoordinateTransformationH hCT = gmt_OGRCoordinateTransformation(GMT, pSrcSRS, pDstSRS); 

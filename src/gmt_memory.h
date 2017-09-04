@@ -58,7 +58,7 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 #define gmt_M_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__func__),(ptr)=NULL)
 #endif
 
-/*! Convenience macro for free that excplicitly sets freed pointer to NULL */
+/*! Convenience macro for free that explicitly sets freed pointer to NULL */
 #define gmt_M_str_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
 
 #ifdef MEMDEBUG
