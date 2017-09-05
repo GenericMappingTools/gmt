@@ -450,6 +450,11 @@ GMT_LOCAL int grdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRI
 	return (code);
 }
 
+GMT_LOCAL bool eq (double this, double that, double inc) {
+	/* this and that are the same value if less than 10e-4 * inc apart */
+	return ((fabs (this - that) / inc) < GMT_CONV4_LIMIT);
+}
+
 GMT_LOCAL int grdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P) {
 	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
@@ -467,7 +472,8 @@ GMT_LOCAL int grdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	gmt_M_memcpy (P->pad, pad, 4, int);					/* Duplicate the pad */
 	if (!wesn) return (false);						/* No subset requested */
 	if (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]) return (false);	/* Subset not set */
-	if (wesn[XLO] == header->wesn[XLO] && wesn[XHI] == header->wesn[XHI] && wesn[YLO] == header->wesn[YLO] && wesn[YHI] == header->wesn[YHI])
+	if (eq (wesn[XLO], header->wesn[XLO], header->inc[GMT_X]) && eq (wesn[XHI], header->wesn[XHI], header->inc[GMT_X])
+		&& eq (wesn[YLO], header->wesn[YLO], header->inc[GMT_Y]) && eq (wesn[YHI], header->wesn[YHI], header->inc[GMT_Y]))
 		return (false);	/* Subset equals whole area */
 	gmt_M_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
