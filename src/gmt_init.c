@@ -11016,12 +11016,15 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 }
 
 /*! Determine if the current module is a PostScript-producing module that writes PostScript */
-GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
-	struct GMT_OPTION *opt = NULL;
+GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
+	struct GMT_OPTION *opt = NULL, *options = NULL;
 
 	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
 
-    if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not evern return PS */
+	if (in_options == NULL) return false;	/* Modules not yet passing proper kes and options */
+	options = *in_options;
+	
+	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not evern return PS */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
@@ -11530,7 +11533,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	is_PS = is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+	is_PS = is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
 		if (set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
 			return NULL;
