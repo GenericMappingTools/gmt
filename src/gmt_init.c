@@ -10675,10 +10675,12 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 }
 
 /*! Determine if the current module is a PostScript-producing module that writes PostScript */
-GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION *options) {
-	struct GMT_OPTION *opt = NULL;
+GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
+	struct GMT_OPTION *opt = NULL, *options = NULL;
 
 	if (strstr (keys, ">X}") == NULL) return false;	/* Never produces PostScript */
+	if (in_options == NULL) return false;	/* External module not ready yet */
+	options = *in_options;
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
@@ -11053,7 +11055,7 @@ struct GMT_CTRL *gmt_init_module_OLD (struct GMTAPI_CTRL *API, const char *lib_n
 				return NULL;
 			}
 
-			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 			if (API->GMT->current.ps.active)	/* true if module will produce PS */
 				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
 		}
@@ -11119,7 +11121,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		struct GMT_OPTION *opt = NULL;
 
 		API->GMT->current.ps.initialize = false;	/* Start from scratch */
-		API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+		API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 
 		if (API->GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
