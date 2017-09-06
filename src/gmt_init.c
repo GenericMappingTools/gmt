@@ -11020,6 +11020,8 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 	struct GMT_OPTION *opt = NULL, *options = NULL;
 
 	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
+	if (in_options == NULL) return false;	/* External module not ready yet */
+	options = *in_options;
 
 	if (in_options == NULL) return false;	/* Modules not yet passing proper kes and options */
 	options = *in_options;
@@ -11427,9 +11429,37 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to call module begin from set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
 			}
+<<<<<<< .working
 			API->GMT->current.setting.run_mode = GMT_MODERN;
 			API->GMT->current.ps.oneliner = true;	/* Special flag */
 			return GMT_NOERROR;	/* All set */
+||||||| .merge-left.r18847
+			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for modern GMT mode.\n");
+				n_errors++;
+			}
+			if (n_errors) {	/* Oh, well, live and learn */
+				API->error = GMT_OPTION_NOT_ALLOWED;
+				return NULL;
+			}
+
+			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, *options);	/* true if module will produce PS */
+			if (API->GMT->current.ps.active)	/* true if module will produce PS */
+				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
+=======
+			if ((opt = gmt_find_J_option (API, *options)) && opt->arg[0] == '\0') {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Shorthand -J not allowed for modern GMT mode.\n");
+				n_errors++;
+			}
+			if (n_errors) {	/* Oh, well, live and learn */
+				API->error = GMT_OPTION_NOT_ALLOWED;
+				return NULL;
+			}
+
+			API->GMT->current.ps.active = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
+			if (API->GMT->current.ps.active)	/* true if module will produce PS */
+				(void)gmt_set_psfilename (API->GMT);	/* Sets API->GMT->current.ps.initialize=true if the expected (and hidden) PS plot file cannot be found */
+>>>>>>> .merge-right.r18857
 		}
 	}
 	return GMT_NOERROR;
