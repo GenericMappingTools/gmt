@@ -495,7 +495,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							if (string[0]) Ctrl->L.label[GMT_Y] = strdup (string);
 						}
 						break;
-					default:	/* Regular -LWESNwesn */
+					default:	/* Regular -LWESNwesnlrbt */
 						if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want space for x y-labels */
 							if (string[0] == 'x') Ctrl->L.has_label[GMT_X] = true;
 							else if (string[0] == 'y') Ctrl->L.has_label[GMT_Y] = true;
