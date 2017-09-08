@@ -1,6 +1,6 @@
 $Id$
 
-== Information for installing GMT 5 ==
+== Information for installing GMT 6 ==
 
 Note: The build system has recently been switched to CMake which is a
 cross-platform system for managing the build process. If you are familiar
@@ -21,7 +21,7 @@ other platforms.
 
 Note there are three GMT tar archives available (#3 is optional):
 
-1. gmt-5.x.x.tar.bz2:          The GMT 5 distribution
+1. gmt-6.x.x.tar.bz2:          The GMT 6 distribution
 2. gshhg-gmt-2.x.x.tar.gz:     All five resolutions of GSHHG coastline data
 3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
@@ -98,14 +98,13 @@ SOEST, U. of Hawaii                     ftp.soest.hawaii.edu
 Lab for Satellite Altimetry, NOAA       ibis.grdl.noaa.gov
 IRIS, Washington, US                    ftp.iris.washington.edu
 IAG-USP, U. of Sao Paulo, BRAZIL        ftp.iag.usp.br
-Dep. Geology, U. in Oslo, NORWAY        ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN         ftp.eos.hokudai.ac.jp
 GDS, Vienna U. of Technology, AUSTRIA   gd.tuwien.ac.at
 TENET, Tertiary Education & Research Networks, SOUTH AFRICA
                                         gmt.mirror.ac.za
 
 The development sources are available from the subversion repository at
-svn://gmtserver.soest.hawaii.edu/gmt5/trunk
+svn://gmtserver.soest.hawaii.edu/gmt/trunk
 
 Extract the files and put them in a separate directory (need not be
 where you eventually want to install GMT).

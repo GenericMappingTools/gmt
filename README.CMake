@@ -25,16 +25,16 @@ Build and runtime prerequisites
 2. Data:
   You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
 
-Information for building GMT 5 with CMake
------------------------------------------
+Information for building GMT with CMake
+---------------------------------------
 
 Quick start:
 ~~~~~~~~~~~~
 
 Checkout GMT5 from its subversion repository:
 
-  $ svn co svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5-dev
-  $ cd gmt5-dev
+  $ svn co svn://gmtserver.soest.hawaii.edu/gmt/trunk gmt-dev
+  $ cd gmt-dev
   $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
 
 Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
@@ -51,7 +51,7 @@ can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
   $ make -jx install
 
-installs a basic gmt in _build/gmt5_.
+installs a basic gmt in _build/gmt_.
 
 NOTE: All cmake command line options such as _-DCMAKE_INSTALL_PREFIX_ can be
 configured in *cmake/ConfigUser.cmake*.
