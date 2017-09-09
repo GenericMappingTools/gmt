@@ -13082,7 +13082,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
 	char  *item_t1 = NULL, *item_t2 = NULL, wktext[10] = {""}, *pch;
 	bool   do_free = false;
-	int    error = 0;
+	int    error = 0, scale_pos;
 	size_t k, len;
 	double sc;
 
@@ -13109,7 +13109,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	else
 		item_t1 = item;
 
-	item_t2 = gmt_importproj4 (GMT, item_t1);		/* This is GMT -J proj string */
+	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
 	if (item_t2) { 
 		char *pch2;
 		len = strlen(item_t2);
@@ -13117,7 +13117,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
 			item_t2[len-1] = '\0';
 		}
-		if (item_t2[0] != '/') {	/* Because if == '/' than it means we have a scale only string (i.e. no GMT mapped proj) */
+		if (scale_pos != 0) {	/* Because if == 0 than it means we have a scale only string (i.e. no GMT mapped proj) */
 			error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Warning: Option -J given more than once\n") ||
 			                                 gmtinit_parse_J_option (GMT, item_t2));
 		}
@@ -13125,20 +13125,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			GMT->current.proj.projection_GMT = GMT_NO_PROJ;
 
 		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
-		pch = strrchr(item_t2, '/');
-		if (pch == NULL) {
-			if (item_t2[0] == 'x' || item_t2[0] == 'X' || item_t2[0] == 'q' || item_t2[0] == 'Q')	/* In this case we don't have a / but we know where scale starts */ 
-				pch = &item_t2[1];
-			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: this J string, %s, has no slash separating the scale\n", item_t2);
-				if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
-				free (item_t2);
-				return 1;
-			}
-		}
-		else
-			pch = &item_t2[2];
-
+		pch = &item_t2[scale_pos];
 		if ((pch2 = strchr(pch, ':')) != NULL) {
 			if ((sc = atof(&pch2[1])) == 1)
 				GMT->current.proj.pars[14] = 1;
@@ -13226,7 +13213,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
 	}
 
-	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to inser spaces */
+	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
 
 	if ((pch = strchr(dest, '/')) != NULL)	/* If we have a scale, drop it before passing the string to GDAL */
 		pch[0] = '\0';

@@ -5469,7 +5469,10 @@ GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 }
 #endif
 
-char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
+char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
+	/* Take a PROJ.4 projection string or EPSG code and try to find the equivalent -J syntax
+	   scale_pos is position on the return string where starts the scale sub-string.
+	*/
 	unsigned int pos = 0;
 	bool got_lonlat = false;
 	char opt_J[GMT_LEN256] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
@@ -5553,9 +5556,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
 			strcat(opt_J, lat_0);	strcat (opt_J, "/");
 		}
-		else {		/* "mill" */
-			if (!lon_0[0]) strcat(lon_0, "0");
-			strcat(opt_J, lon_0);	strcat (opt_J, "/");
+		else {		// "mill"
+			if (lon_0[0]) strcat(opt_J, lon_0),	strcat (opt_J, "/");
 		}
 	}
 	else if (!strcmp(prjcode, "omerc")) {
@@ -5711,8 +5713,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 				//wipe_substr(szProj4, token);
 			}
 		}
-		if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
-			strcat(opt_J, "0/");
+		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
+			//strcat(opt_J, "0/");
 	}
 
 	else	/* We don't return yet because we may have a +width/+scale to parse */
@@ -5873,10 +5875,12 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 		//wipe_substr(szProj4, token);
 	}
 
+	*scale_pos = (int)strlen(opt_J);		/* The position at which the scale string will be appended */
+
 	if (!opt_J[0])		/* No corresponding GMT proj found but we need the scale separated with a slash */
 		sprintf(opt_J, "/%s", scale_c);
 	else
-		strcat (opt_J, scale_c);	/* Append the scale */
+		strcat(opt_J, scale_c);	/* Append the scale */
 
 	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);
@@ -5893,7 +5897,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr) {
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
 
 	pStrOut = strdup(opt_J);
-	return (pStrOut);
+	return pStrOut;
 }
 
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
