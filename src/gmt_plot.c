@@ -5712,6 +5712,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 				strncat(opt_J, &token[6], GMT_LEN256-1);	strcat (opt_J, "/");
 				//wipe_substr(szProj4, token);
 			}
+			else if ((pch = strstr(token, "lun_0=")) != NULL) {
+				strncat(opt_J, &token[6], GMT_LEN256-1);	strcat (opt_J, "/");
+			}
 		}
 		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
 			//strcat(opt_J, "0/");
