@@ -862,12 +862,12 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
-	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
+	/* Do what we do in the main code for the -A (if used here) option but on a in-memory PS 'file' */
 	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
 	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;
-	double    x0, y0, x1, y1, xt, yt;
+	double    x0, y0, x1, y1, xt = 0, yt = 0;
 	struct GMT_POSTSCRIPT *PS = NULL;
 #ifdef _WIN32
 	int       fd[2] = { 0, 0 };
@@ -945,10 +945,22 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	if (pch != NULL) landscape = true;
 	PS->data[500] = c;				/* Restore the deleted character */
 
-	if (landscape)					/* We will need these in pipe_ghost() */
-		xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
-	else
-		xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
+	if (Ctrl->A.active) {
+		if (landscape)					/* We will need these in pipe_ghost() */
+			xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
+		else
+			xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
+
+		if (margin == 0) margin = Ctrl->A.margin[0];		/* We may have margins set via -A*/
+	}
+	else {		/* Get the page size from original PS headers */
+		pch = strstr(PS->data, "%%HiResB");
+		sscanf (&pch[20], "%lf %lf %lf %lf", &x0, &y0, &x1, &y1);
+		if (landscape)	
+			*w = y1, *h = x1, r = -90;
+		else
+			*w = x1, *h = y1, r = 0;
+	}
 
 	/* Add a margin if user requested it (otherwise margin = 0) */
 	*w += 2 * margin;       *h += 2 * margin;
@@ -1595,6 +1607,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				gmt_M_free (GMT, PS);
+				fclose (fp);	fclose (fp2);
 				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
