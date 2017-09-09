@@ -62,6 +62,7 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 		OSRExportToPrettyWkt(hSrcSRS, &pszSrcWKT, FALSE);
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n%s\n%s\n", pszSrcWKT, pszDstWKT);
+		CPLFree(pszSrcWKT);		CPLFree(pszDstWKT);
 		CPLFree(pSrcSRS);		CPLFree(pDstSRS);
 	}
 	return hCT;
