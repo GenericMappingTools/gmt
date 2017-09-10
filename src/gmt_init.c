@@ -141,6 +141,7 @@ struct GMT5_params {
 	const char *name;
 };
 /* These are the active GMT5 keywords, containing no backwards-compatible variants.
+ * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
 
 static struct GMT5_params GMT5_keywords[]= {
@@ -7832,11 +7833,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* FONT GROUP */
 
 		case GMTCASE_FONT:	/* Special to set all fonts */
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
-			/* if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true; */
+			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_LABEL", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_TAG", value, core);
+			/*      gmtlib_setparameter (GMT, "FONT_LOGO", value, core) (purposely skipped) */
 			break;
 		case GMTCASE_FONT_ANNOT:
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
