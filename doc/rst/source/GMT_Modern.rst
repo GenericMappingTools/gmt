@@ -116,8 +116,11 @@ mode that defines the layout of the subplots:
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 **-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
 [ **-A**\ *autolabel* ]
-[ **-D**\ [**x**\ ]\ [**y**\ ] ]
-[ **-L**\ *layout* ] [ **-M**\ *margins* ]
+[ |SYN_OPT-B| ]
+|-J|\ *parameters*
+[ **-M**\ *margins* ]
+|SYN_OPT-R|
+[ **-S**\ *layout* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
 
 Required Arguments
@@ -126,7 +129,7 @@ Required Arguments
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
     the same number of subplots.  To construct figures with different number of
-    subplots per row you will need to make several subplots.
+    subplots per row you will need to stack separate subplots.
 
 .. _subplot_begin-F:
 
@@ -139,7 +142,10 @@ Required Arguments
     the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
     To specify different subplot dimensions for each row (or column), give a comma-separated
     list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
-    or exactly match the number of rows (or columns).
+    or exactly match the number of rows (or columns). For geographic maps the height of each panel depends on
+    your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
+    to compute the height of each subplot.  All subplot must share the same region and projection, or (2) you
+    can select *height* based on trial and error to suit your plot layout.
 
 Optional Arguments
 ------------------
@@ -164,34 +170,20 @@ Optional Arguments
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
 
-.. _subplot_begin-D:
+.. include:: explain_-B.rst_
 
-**-D**\ [**x**\ ]\ [**y**\ ]
-   If your subplots are Cartesian plots *and* one or both axes should have a reversed direction,
-   then you must indicate which axes should be reversed, e.g., **-Dy** for just the *y*-axis
-   [no reversed axes].
+.. _subplot_set-C:
 
-.. _subplot_begin-L:
+**-C**\ *side*\ /*clearance*\ [**u**\ ]
+    Reserve a space of dimension *clearance* between the margin and the subplot on the specified
+    side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
+    on more than one side.  Such space will be left untouched by the main map plotting but can
+    be accessed by modules plotting scales, bars, text, etc.  Settings apply to all panels.
 
-**-L**\ *layout*
-    Set subplot layout. May be set once (**-L**) or separately for rows (**-LR**) and columns (**-LC**).
-    **-L**:  Append a combination from WESNwesnlrbt to indicate which subplot frames should be annotated, ticked, and drawn.
-    Can be used with **-LR** and **-LC** to indicate which axes should be present in addition to those
-    that will be selected automatically.
-    Append **+l** to make space for axes labels on all subplots [no labels].
-    Append **x** to only use *x*-labels or **y** for only *y*-labels [both axis will be labeled].
-    **-LC**: Each subplot **C**\ olumn shares a common *x*-range. Only the first (i.e., **t**\ op) and the last
-    (i.e., **b**\ ottom) rows will have *x* annotations.  Append **t** or **b** to select only one of those two rows [both].
-    Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
-    for the entire subplot.
-    **-LR**: Each subplot **R**\ ow shares common *y*-range. Only the first (i.e., **l**\ eft) and the last
-    (i.e., **r**\ ight) columns will have *y*-annotations.  Append **l** or **r** to select only one of those two columns [both].
-    Append **+l** if annotated *y*-axes will have a label [none]; optionally append the label if it is the same
-    for the entire subplot.
-    Append **+g** to add grid-lines to each subplot [off].
-    Append **+p** to make all annotation axis-parallel [horizontal]. If used you may have to set **-C** to make
-    extra space for long horizontal annotations.
-    Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
 
 .. _subplot_begin-M:
 
@@ -201,11 +193,33 @@ Optional Arguments
     The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
     or the full set of four margins for the left, right, bottom, and top margin.
 
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. _subplot_begin-S:
+
+**-S**\ *layout*
+    Set subplot layout for shared axes. May be set separately for rows (**-SR**) and columns (**-SC**).
+    **-SC**: Each subplot **C**\ olumn shares a common *x*-range. The first (i.e., **t**\ op) and the last
+    (i.e., **b**\ ottom) rows will have *x* annotations; append **t** or **b** to select only one of those two rows [both].
+    Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
+    for the entire subplot.
+    **-SR**: Each subplot **R**\ ow shares common *y*-range. The first (i.e., **l**\ eft) and the last
+    (i.e., **r**\ ight) columns will have *y*-annotations; append **l** or **r** to select only one of those two columns [both].
+    Append **+l** if annotated *y*-axes will have a label [none]; optionally, append the label if it is the same
+    for the entire subplot.
+    Append **+g** to add grid-lines to each subplot [off].
+    Append **+p** to make all annotation axis-parallel [horizontal]; if used you may have to set **-C** to set aside
+    extra space for long horizontal annotations.
+    Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].
+
 .. _subplot_begin-T:
 
 **-T**\ *heading*
-    While individual subplots can have titles (see **-L**), the entire figure may also have a
-    overarching *heading* [no heading].
+    While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
+    overarching *heading* [no heading]. Font is determined by setting :ref:`FONT_HEADING <FONT_HEADING>`.
 
 .. _subplot_begin-V:
 

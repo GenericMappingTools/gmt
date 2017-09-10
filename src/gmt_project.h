@@ -477,6 +477,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LEN256];	/* Label of the axis */
+	char secondary_label[GMT_LEN256];	/* Optionally use this label when axis is right or top */
 	char unit[GMT_LEN64];	/* Axis unit appended to annotations */
 	char prefix[GMT_LEN64];	/* Axis prefix starting all annotations */
 	char *file_custom;		/* File with custom annotations */
