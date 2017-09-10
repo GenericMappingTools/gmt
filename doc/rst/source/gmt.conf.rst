@@ -114,7 +114,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _DIR_CACHE:
 
 **DIR_CACHE**
-    Cache directory where to save files downloaded when using external URL addresses or the 
+    Cache directory where to save files downloaded when using external URL addresses or the
     files called **earth_relief_**\ *res*\ **.grd** or filenames starting in @ (e.g., @hotspots.txt)
 
 .. _DIR_DATA:
@@ -138,7 +138,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _FONT:
 
 **FONT**
-    Sets the default for all fonts, except FONT_LOGO. This setting is
+    Sets the default for all fonts, except **FONT_LOGO**. This setting is
     not included in the **gmt.conf** file.
 
 .. _FONT_ANNOT:

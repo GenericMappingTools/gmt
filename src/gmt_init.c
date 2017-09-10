@@ -141,7 +141,7 @@ struct GMT5_params {
 };
 
 /* These are the active GMT5 keywords, containing no backwards-compatible variants.
- * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since not in gmt.conf.
+ * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
 
 static struct GMT5_params GMT5_keywords[]= {
@@ -7995,13 +7995,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* FONT GROUP */
 
 		case GMTCASE_FONT:	/* Special to set all fonts */
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
-			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
-			/* if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true; */
+			fprintf (stderr, "Set FONT: %s\n", value);
+			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_LABEL", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_TAG", value, core);
+			/*      gmtlib_setparameter (GMT, "FONT_LOGO", value, core) (purposely skipped) */
 			break;
 		case GMTCASE_FONT_ANNOT:
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
@@ -10965,7 +10966,7 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		GMT_Report (API, GMT_MSG_NORMAL, "Subplot Error: Unable to open file %s!\n", file);
 		return NULL;
 	}
-	
+
 	P = &(API->GMT->current.plot.panel);	/* Lazy shorthand only */
 	P->dir[GMT_X] = P->dir[GMT_Y] = +1;	/* Default direction of Cartesian axis if -JX */
 
@@ -11038,7 +11039,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 
 	if (in_options == NULL) return false;	/* Modules not yet passing proper kes and options */
 	options = *in_options;
-	
+
 	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not evern return PS */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
@@ -13125,7 +13126,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		item_t1 = item;
 
 	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
-	if (item_t2) { 
+	if (item_t2) {
 		char *pch2;
 		len = strlen(item_t2);
 		if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
@@ -14366,7 +14367,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* Set the current figure */
 	if (gmtlib_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
-	
+
 	return GMT_NOERROR;
 }
 
@@ -14376,7 +14377,7 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 #ifdef WIN32
 	{
 		FILE *fp = NULL;
-	
+
 		if ((fp = fopen (file, "a")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			return GMT_FILE_NOT_FOUND;
