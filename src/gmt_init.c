@@ -7995,7 +7995,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* FONT GROUP */
 
 		case GMTCASE_FONT:	/* Special to set all fonts */
-			fprintf (stderr, "Set FONT: %s\n", value);
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
