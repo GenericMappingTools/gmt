@@ -20,7 +20,7 @@ gmt begin ex14 ps
   gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
   gmt psxy -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -P
   gmt psxy trend.d -Wthinner,-
-  gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -LWSne -Yh+0.4i
+  gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -BWSne -Yh+0.4i
     # First draw network and label the nodes
     gmt psxy @table_5.11 -R0/7/0/7 -Sc0.05i -Gblack -c1,1
     gmt pstext @table_5.11 -D0.1c/0 -F+f6p+jLM -N

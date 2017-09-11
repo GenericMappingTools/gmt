@@ -13,8 +13,8 @@ export GMT_PPID=1
 gmt begin ex16 ps
   gmt set FONT_ANNOT_PRIMARY 9p FONT_TITLE 18p,Times-Roman
   gmt psscale -Dx3.25i/0i+jTC+w5i/0.25i+h -C@ex_16.cpt -P
-  gmt subplot begin 2x2 -M0.05i -Ff6.5i/6.5i+d -LCb+t -LRl -Yh+0.4i -T"Gridding of Data"
-    gmt pscontour -R0/6.5/-0.2/6.5 -Jx @table_5.11 -C@ex_16.cpt -I -B+t"pscontour (triangulate)" -c1,1
+  gmt subplot begin 2x2 -M0.05i -Fs3.25i/0+d -R0/6.5/-0.2/6.5 -Jx1i -SCb+t -SRl -Yh+0.4i -T"Gridding of Data"
+    gmt pscontour @table_5.11 -C@ex_16.cpt -I -B+t"pscontour (triangulate)" -c1,1
     # 
     gmt surface @table_5.11 -R0/6.5/-0.2/6.5 -I0.2 -Graws0.nc
     gmt grdview raws0.nc -C@ex_16.cpt -Qs -B+t"surface (tension = 0)" -c1,2

@@ -97,7 +97,6 @@ struct GMT_SUBPLOT {
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int candy;		/* 1 when we are plotting a scale, bar, etc and not map */
 	unsigned int parallel;		/* 1 for axis-parallel annotations [0 for standard] */
-	unsigned int grid_on;		/* 1 for grid on [0 for grid off] */
 	int dir[2];			/* Cartesian axis direction: +1 or -1 [1/1] */
 	double x, y;			/* LB corner of current panel */
 	double dx, dy;			/* Offset from LB when projection rescaling is required to center */
@@ -115,6 +114,8 @@ struct GMT_SUBPLOT {
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
 	char Bxlabel[GMT_LEN128];	/* The -Bx setting for x labels */
 	char Bylabel[GMT_LEN128];	/* The -By setting for x labels */
+	char Bxannot[GMT_LEN32];	/* The -Bx setting for annotations */
+	char Byannot[GMT_LEN32];	/* The -By setting for annotations */
 };
 
 /*! For trend-fitting models */

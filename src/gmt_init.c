@@ -3309,8 +3309,8 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
-	if (strchr ("WESNZwenz", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
-	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenz", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (strchr ("WESNZwenzlrbtu", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
+	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
 	if (is_frame == 0) return (-1);		/* No, nothing matched */
 
 	/* OK, here we are pretty sure this is a frame -B statement */
@@ -10976,8 +10976,6 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		if (line[0] == '#') {	/* Comment line */
 			if (!strncmp (line, "# ORIGIN:", 9U))
 				sscanf (&line[10], "%lg %lg", &P->origin[GMT_X], &P->origin[GMT_Y]);
-			else if (!strncmp (line, "# GRID_ON:", 10U))
-				P->grid_on = atoi (&line[11]);
 			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
@@ -11017,6 +11015,10 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 			while (*c != GMT_ASCII_GS) P->Bxlabel[k++] = *(c++);	/* Copy it over until end */
 			c++;	k = 0;	/* Now at start of yaxis */
 			while (*c != GMT_ASCII_GS) P->Bylabel[k++] = *(c++);	/* Copy it over until end */
+			c++;	k = 0;	/* Now at start of xannot */
+			while (*c != GMT_ASCII_GS) P->Bxannot[k++] = *(c++);	/* Copy it over until end */
+			c++;	k = 0;	/* Now at start of yannot */
+			while (*c != GMT_ASCII_GS) P->Byannot[k++] = *(c++);	/* Copy it over until end */
 			found = true;	/* We are done */
 		}
 	}
@@ -11661,7 +11663,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af[g] */
-							if (P->grid_on) sprintf (arg, "xafg%s", &opt->arg[1]); else sprintf (arg, "xaf%s", &opt->arg[1]);
+							sprintf (arg, "x%s%s", P->Bxannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
 						}
 						if (P->Bxlabel[0]) {
@@ -11679,7 +11681,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					else if (opt->arg[0] == 'y') {	/* Gave specific y-setting */
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
-							if (P->grid_on) sprintf (arg, "yafg%s", &opt->arg[1]); else sprintf (arg, "yaf%s", &opt->arg[1]);
+							sprintf (arg, "y%s%s", P->Byannot, &opt->arg[1]);
 						}
 						GMT_Update_Option (API, opt, arg);
 						if (P->Bylabel[0]) {
@@ -11706,13 +11708,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!x_set) {	/* Did not specify x-axis setting so do that now */
-					if (P->grid_on) sprintf (arg, "xafg"); else sprintf (arg, "xaf");
+					sprintf (arg, "x%s", P->Bxannot);
 					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!y_set) {	/* Did not specify y-axis setting so do that now */
-					if (P->grid_on) sprintf (arg, "yafg"); else sprintf (arg, "yaf");
+					sprintf (arg, "y%s", P->Byannot);
 					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */

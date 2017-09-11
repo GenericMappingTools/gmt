@@ -14,7 +14,7 @@ export GMT_PPID=$$
 
 function plot_one { # First four args are: -E -N -c [-Barg]
   gmt regress data -Fxm $1 $2 -T2.85/5.25/0.1 > tmp
-  gmt psxy -R2.85/5.25/3.9/6.3 -B+ghoneydew${4} data -Sc0.05i -Gblue $3
+  gmt psxy -B+ghoneydew${4} data -Sc0.05i -Gblue $3
   gmt psxy giants -Sc0.05i -Gred   -N
   gmt psxy giants -Sc0.1i  -W0.25p -N
   gmt psxy -W2p tmp	
@@ -26,7 +26,7 @@ gmt begin ex47 ps
   sed -e s/#//g hertzsprung-russell.txt > data
   # Identify the red giants (outliers)
   grep '#' hertzsprung-russell.txt | sed -e s/#//g > giants
-  gmt subplot begin 4x3 -Dx -M0p -Fs2i/2i -LRl+l"Log light intensity" -LCb+l"Log temperature"+tc -Lwesn+g
+  gmt subplot begin 4x3 -Dx -M0p -Fs2i/2i -R2.85/5.25/3.9/6.3 -Jx-1i/1i -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
   # L1 regressions
   plot_one -Ey -N1 -c1,1 +tL@-1@-
   plot_one -Er -N1 -c2,1

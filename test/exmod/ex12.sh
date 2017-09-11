@@ -8,10 +8,10 @@
 #
 export GMT_PPID=$$
 gmt begin ex12 ps
-  gmt subplot begin 2x2 -M0.05i -Ff6i/6i -LCb -LRl -LWSne -T"Delaunay Triangulation"
+  gmt subplot begin 2x2 -M0.05i -Fs3i/0 -SCb -SRl -R0/6.5/-0.2/6.5 -Jx3i -BWSne -T"Delaunay Triangulation"
   # First draw network and label the nodes
   gmt triangulate @table_5.11 -M > net.xy
-  gmt psxy -R0/6.5/-0.2/6.5 net.xy -Wthinner -P -c1,1
+  gmt psxy net.xy -Wthinner -P -c1,1
   gmt psxy @table_5.11 -Sc0.12i -Gwhite -Wthinnest
   gmt pstext @table_5.11 -F+f6p+r
   # Then draw network and print the node values

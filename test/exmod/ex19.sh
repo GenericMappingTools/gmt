@@ -11,9 +11,9 @@ gmt begin ex19 ps
   gmt grdmath X = lon.nc
   gmt makecpt -Cwhite,blue -T0,1 -Z -N > lat.cpt
   gmt makecpt -Crainbow -T-180/180 > lon.cpt
-  gmt subplot begin 3x1 -Fs6.5i/3.25i -M0 -Lbltr
+  gmt subplot begin 3x1 -Fs6.5i/0 -M0 -Bbltr -Rd -JI0/6.5i
 #   First make a worldmap with graded blue oceans and rainbow continents
-    gmt grdimage lat.nc -JI0 -Clat.cpt -nl -c1,1
+    gmt grdimage lat.nc -Clat.cpt -nl -c1,1
     gmt pscoast -Dc -A5000 -Gc
     gmt grdimage lon.nc -Clon.cpt -nl
     gmt pscoast -Q
