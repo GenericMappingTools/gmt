@@ -7,25 +7,24 @@
 # Unix progs:	rm
 #
 
-# Because all panels are almost identical we make a bash function that does
-# the plotting.  It takes a few args that are options that differ between panels.
+# Because all panels are almost identical we make a bash function that plots
+# one panel.  It takes a few options that differ between panels.
 
 export GMT_PPID=$$
 
-function plot_one { # First four args are: -E -N -c [-Barg]
-  gmt regress data -Fxm $1 $2 -T2.85/5.25/0.1 > tmp
-  gmt psxy -B+ghoneydew${4} data -Sc0.05i -Gblue $3
-  gmt psxy giants -Sc0.05i -Gred   -N
-  gmt psxy giants -Sc0.1i  -W0.25p -N
-  gmt psxy -W2p tmp	
+function plot_one { # First 3-4 args are: -E -N -c [-Barg]
+  gmt psxy -B+ghoneydew${4} data.txt -Sc0.05i -Gblue $3
+  gmt psxy giants.txt -Sc0.05i -Gred   -N
+  gmt psxy giants.txt -Sc0.1i  -W0.25p -N
+  gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt psxy -W2p	
 }
 
 gmt begin ex47 ps
   gmt which -Gl @hertzsprung-russell.txt
   # Allow outliers (commented out by #) to be included in the analysis:
-  sed -e s/#//g hertzsprung-russell.txt > data
+  sed -e s/#//g hertzsprung-russell.txt > data.txt
   # Identify the red giants (outliers)
-  grep '#' hertzsprung-russell.txt | sed -e s/#//g > giants
+  grep '#' hertzsprung-russell.txt | sed -e s/#//g > giants.txt
   gmt subplot begin 4x3 -M0p -Fs2i/2i -R2.85/5.25/3.9/6.3 -JX-2i/2i -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
   # L1 regressions
   plot_one -Ey -N1 -c1,1 +tL@-1@-
@@ -48,4 +47,4 @@ gmt begin ex47 ps
   echo "REDUCED MAJOR AXIS" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
   gmt subplot end
 gmt end
-rm -f tmp data giants hertzsprung-russell.txt
+rm -f data.txt giants.txt hertzsprung-russell.txt
