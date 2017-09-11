@@ -10900,7 +10900,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %s %d", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], tag, first)) != 8) {
+	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %d %s", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], first, tag)) != 8) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to decode record from %s!\n", file);
 		API->error = GMT_RUNTIME_ERROR;
 		fclose (fp);
@@ -10931,9 +10931,9 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 		return GMT_RUNTIME_ERROR;
 	}
 	if (gap == NULL)
-		fprintf (fp, "%d %d 0 0 0 0 %s %d\n", row, col, L, first);
+		fprintf (fp, "%d %d 0 0 0 0 %d %s\n", row, col, first, L);
 	else
-		fprintf (fp, "%d %d %g %g %g %g %s %d\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], L, first);
+		fprintf (fp, "%d %d %g %g %g %g %d %s\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], first, L);
 	fclose (fp);
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
@@ -11652,7 +11652,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */
 					/* Deal with the frame option check first */
-					if (strchr ("WESNwesn", opt->arg[0]))	/* User is overriding the axes settings - that is their choice */
+					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the axes settings - that is their choice */
 						frame_set = true;
 					else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
@@ -11727,7 +11727,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
 			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			if (opt_J) {	/* Gave -J, must append /1 as dummy scale/width */
+			if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/')))) {
+				/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
 				if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 					sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 				else	/* Just append dummy width */

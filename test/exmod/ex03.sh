@@ -45,16 +45,16 @@ gmt begin ex03 ps
   # data, we do this:
   gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
   # Time to plot spectra
-  gmt subplot begin 2x1 -M0.25i -LCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR
-  gmt subplot 1,1 -A"Input Power"
-  gmt psxy spectrum.xpower  -JX-4il/3.75i -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
+  gmt subplot begin 2x1 -M0.25i -SCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR
+    gmt subplot 1,1 -A"Input Power"
+    gmt psxy spectrum.xpower  -JX-4il/3.75i -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
 	-BWeSn+g240/255/240 -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
-	gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
+    gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
 	S 0.1i T 0.07i red  - 0.3i Ship
 	S 0.1i c 0.07i blue - 0.3i Satellite
 	EOF
-  gmt subplot 2,1 -A"Coherency@+2@+"
-  gmt psxy spectrum.coh -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -R1/1000/0/1 -P -Sc0.07i -Gpurple -Ey+p0.5p
+    gmt subplot 2,1 -A"Coherency@+2@+"
+    gmt psxy spectrum.coh -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -R1/1000/0/1 -P -Sc0.07i -Gpurple -Ey+p0.5p
   gmt subplot end
 gmt end
 rm -f report tmp samp* *.pg *.extr spectrum.*
