@@ -8,8 +8,7 @@
 # Illustrate various means of contouring, using triangulate and surface.
 # PW: Trouble with annotations and offset to title?
 #
-#export GMT_PPID=$$
-export GMT_PPID=1
+export GMT_PPID=$$
 gmt begin ex16 ps
   gmt set FONT_ANNOT_PRIMARY 9p FONT_TITLE 18p,Times-Roman
   gmt psscale -Dx3.25i/0i+jTC+w5i/0.25i+h -C@ex_16.cpt -P

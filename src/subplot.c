@@ -476,8 +476,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					break;
 				}
 				Ctrl->S[k].active = true;
-				if ((k == GMT_X && opt->arg[1] == 'l') || (k == GMT_Y && opt->arg[1] == 'b')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
-				else if ((k == GMT_X && opt->arg[1] == 'r') || (k == GMT_Y && opt->arg[1] == 't')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MAX;
+				if ((k == GMT_X && opt->arg[1] == 'b') || (k == GMT_Y && opt->arg[1] == 'l')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
+				else if ((k == GMT_X && opt->arg[1] == 't') || (k == GMT_Y && opt->arg[1] == 'r')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MAX;
 				else Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_BOTH;
 				if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want space for (primary) x-labels */
 					Ctrl->S[k].has_label = true;

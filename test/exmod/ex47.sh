@@ -26,7 +26,7 @@ gmt begin ex47 ps
   sed -e s/#//g hertzsprung-russell.txt > data
   # Identify the red giants (outliers)
   grep '#' hertzsprung-russell.txt | sed -e s/#//g > giants
-  gmt subplot begin 4x3 -Dx -M0p -Fs2i/2i -R2.85/5.25/3.9/6.3 -Jx-1i/1i -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
+  gmt subplot begin 4x3 -M0p -Fs2i/2i -R2.85/5.25/3.9/6.3 -JX-2i/2i -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
   # L1 regressions
   plot_one -Ey -N1 -c1,1 +tL@-1@-
   plot_one -Er -N1 -c2,1
