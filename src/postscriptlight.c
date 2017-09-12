@@ -4267,10 +4267,11 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		PSL_command (PSL, "\nend\n");
 		PSL_command (PSL, "%%%%EOF\n");
 	}
-	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
+	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a') {	/* Restore the origin of the plotting */
+		if (PSL->internal.comments)  PSL_command (PSL, "%% Reset plot origin:\n");
 		PSL_command (PSL, "%d %d TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
 			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.offset[1]) : 0);
-
+	}
 	if (PSL->internal.memory) {	/* Finalize memory buffer allocation */
 		memset (&PSL->internal.buffer[PSL->internal.n], 0, (PSL->internal.n_alloc-PSL->internal.n)*sizeof (char));	/* Wipe the unused stuff */
 		PSL->internal.n_alloc = PSL->internal.n;	/* Shrink allocated memory to what is needed to hold the PS */
@@ -4473,6 +4474,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	PSL_setfill (PSL, no_rgb, false);
 
 	/* Set origin of the plot */
+	
+	if (PSL->internal.comments)  PSL_command (PSL, "%% Set plot origin:\n");
 	for (i = 0; i < 2; i++) {
 		switch (PSL->internal.origin[i]) {
 			case 'f': PSL_command (PSL, "%d PSL_%corig sub ", psl_iz (PSL, offset[i]), xy[i]); break;

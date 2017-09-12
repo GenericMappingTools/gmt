@@ -10900,7 +10900,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %d %s", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], first, tag)) != 8) {
+	if ((ios = fscanf (fp, "%d %d %lg %lg %lg %lg %d %[^\n]", row, col, &gap[XLO], &gap[XHI], &gap[YLO], &gap[YHI], first, tag)) != 8) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to decode record from %s!\n", file);
 		API->error = GMT_RUNTIME_ERROR;
 		fclose (fp);
@@ -11662,16 +11662,17 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						frame_set = true;
 					}
 					else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
-						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af[g] */
+						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick given, prepend default determined in subplot  */
 							sprintf (arg, "x%s%s", P->Bxannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
 						}
-						if (P->Bxlabel[0]) {
+						if (P->Bxlabel[0]) {	/* Provided a label during subplot initialization */
+							strcpy (arg, opt->arg);	/* Start with what we were given */
 						 	if ((c = strstr (arg, "+l"))) {	/* See if we must append x label set during subplot call */
 								c += 2;
-								if (c[0] == '\0') strcat (arg, P->Bxlabel);
+								if (c[0] == '\0') strcat (arg, P->Bxlabel);	/* Yes, +l was empty so add preset label */
 							}
-							else {
+							else {	/* No panel-speicific label override, use the preset label */
 								strcat (arg, "+l");
 								strcat (arg, P->Bxlabel);
 							}
@@ -11682,14 +11683,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					else if (opt->arg[0] == 'y') {	/* Gave specific y-setting */
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
 							sprintf (arg, "y%s%s", P->Byannot, &opt->arg[1]);
+							GMT_Update_Option (API, opt, arg);
 						}
-						GMT_Update_Option (API, opt, arg);
 						if (P->Bylabel[0]) {
+							strcpy (arg, opt->arg);	/* Start with what we were given */
 						 	if ((c = strstr (arg, "+l"))) {	/* See if we must append y label set during subplot call */
 								c += 2;
-								if (c[0] == '\0') strcat (arg, P->Bylabel);
+								if (c[0] == '\0') strcat (arg, P->Bylabel);	/* Yes, +l was empty so add preset label */
 							}
-							else {
+							else {	/* No panel-speicific label override, use the preset label */
 								strcat (arg, "+l");
 								strcat (arg, P->Bylabel);
 							}
@@ -11697,47 +11699,50 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						}
 						y_set = true;
 					}
-					else /* Gave a common x and y setting */
+					else /* Gave a common x and y setting; keep as given */
 						x_set = y_set = true;
 				}
-				if (!frame_set) {	/* Did not specify frame setting so do that now */
+				if (!frame_set) {	/* Did not specify frame setting so impose the subplot choices */
 					if (P->Baxes[0]) {	/* Gave frame settings */
-						if ((opt = GMT_Make_Option (API, 'B', P->Baxes)) == NULL) return NULL;	/* Failure to make option */
+						if ((opt = GMT_Make_Option (API, 'B', P->Baxes)) == NULL) return NULL;
 					}
-					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Failure to make option */
+					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Add -B0 to just draw frame */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
-				if (!x_set) {	/* Did not specify x-axis setting so do that now */
-					sprintf (arg, "x%s", P->Bxannot);
-					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}
+				if (!x_set) {	/* Did not specify x-axis setting either via -Bx or -B so do that now */
+					sprintf (arg, "x%s", P->Bxannot);	/* Start with the x tick,annot,grid choices */
+					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!y_set) {	/* Did not specify y-axis setting so do that now */
-					sprintf (arg, "y%s", P->Byannot);
-					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}
+					sprintf (arg, "y%s", P->Byannot);	/* Start with the x tick,annot,grid choices */
+					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 			}
-			/* Set -X -Y for absolute positioning */
-			sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
-			if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
-			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
-			if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
-			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-			if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/')))) {
-				/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
-				if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
-					sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
-				else	/* Just append dummy width */
-					sprintf (scl, "%gi",  P->w);
-				if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))
-					sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the dummy width as only argument */
-				else
-					sprintf (arg, "%s/%s", opt_J->arg, scl);	/* Append the dummy width to other arguments */
-				GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+			if (GMT->hidden.func_level == 0) {	/* Top-level function called by subplot needs to handle positining and possibly set -J */
+				/* Set -X -Y for absolute positioning */
+				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
+				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				sprintf (arg, "a%gi", P->origin[GMT_Y] + P->y);
+				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/')))) {
+					/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
+					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
+						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
+					else	/* Just append dummy width */
+						sprintf (scl, "%gi",  P->w);
+					if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))
+						sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the dummy width as only argument */
+					else
+						sprintf (arg, "%s/%s", opt_J->arg, scl);	/* Append the dummy width to other arguments */
+					GMT_Update_Option (API, opt_J, arg);	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Func level %d, Updated -J option to use -J%s.\n", GMT->hidden.func_level, opt_J->arg);
+				}
 			}
 		}
 

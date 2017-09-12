@@ -667,6 +667,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: annot_height    = %g\n", annot_height);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: label_height    = %g\n", label_height);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: title_height    = %g\n", title_height);
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: header_offset   = %g\n", y_header_off);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: panel margin    = %g/%g/%g/%g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
 		/* Shrink these if media margins were requested */
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Start: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
@@ -707,7 +708,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col annot: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->S[GMT_X].has_label) {
 			fluff[GMT_Y] += ny * label_height;
-			y_header_off += label_height;
+			if (ny == 2 || Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX) y_header_off += label_height;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col labels: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE)
@@ -724,7 +725,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Plottable area: */
 		width  = Ctrl->F.dim[GMT_X];
 		height = Ctrl->F.dim[GMT_Y];
-		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
+		//y_heading = height + y_header_off + Ctrl->M.margin[YHI];
+		y_heading = height + y_header_off;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure dimensions: {%g, %g}\n", Ctrl->F.dim[GMT_X], Ctrl->F.dim[GMT_Y]);
 		sprintf (report, "%g", Ctrl->F.w[0]);
 		for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {

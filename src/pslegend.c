@@ -334,7 +334,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char yy[GMT_LEN256] = {""}, size[GMT_LEN256] = {""}, angle[GMT_LEN256] = {""}, mapscale[GMT_LEN256] = {""};
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_modifiers[GMT_LEN256] = {""};
-	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""};
+	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""};
 	char sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0, *c = NULL, *fill[PSLEGEND_MAX_COLS];
@@ -345,14 +345,14 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	unsigned char *dummy = NULL;
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, dy, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
-	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl;
+	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, xy_offset[2];
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off;
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
@@ -614,8 +614,14 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (GMT->current.map.frame.draw && b_cpt)	/* Two conflicting -B settings, reset main -B since we just finished the frame */
 		gmt_M_memset (&(GMT->current.map.frame), 1, struct GMT_PLOT_FRAME);
 
-	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
-	gmt_M_memset (GMT->current.setting.map_origin, 2, double);
+	/* Must save status of -X -Y as passed to PSL since we must undo at the end of pslegend */
+	gmt_M_memcpy (xy_mode, PSL->internal.origin, 2, char);
+	gmt_M_memcpy (xy_offset, PSL->internal.offset, 2, double);
+
+	if ((opt = GMT_Find_Option (API, 'X', options)) == NULL)
+		GMT_Delete_Option (API, opt, &options);
+	if ((opt = GMT_Find_Option (API, 'Y', options)) == NULL)
+		GMT_Delete_Option (API, opt, &options);
 
 	gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
@@ -1417,6 +1423,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	Ctrl->D.refpoint->x = x_orig;	Ctrl->D.refpoint->y = y_orig;
 
 	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_M_memcpy (PSL->internal.origin, xy_mode, 2, char);
+	gmt_M_memcpy (PSL->internal.offset, xy_offset, 2, double);
 	gmt_plotend (GMT);
 
 	for (id = 0; id < N_DAT; id++) {
