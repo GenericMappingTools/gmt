@@ -617,8 +617,6 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the subplot main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_NORMAL, "Warning: subplot is experimental and not complete.\n");
-	
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes */

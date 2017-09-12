@@ -18,7 +18,6 @@
 # Thus the two data sets are not measured at the same of points,
 # and we use various GMT tools to facilitate their comparison.
 #
-export GMT_PPID=$$
 gmt set GMT_FFT kiss
 
 gmt begin ex03 ps

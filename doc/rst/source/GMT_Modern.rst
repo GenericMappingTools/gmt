@@ -264,6 +264,15 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 
+Any number of plotting command can now take place and output will all be directed to the
+selected subplot panel.  There are a few other rules that need to be followed:
+(1) The subplot machinery expect that the first plotting command in a new subplot window
+will take care of plotting the base frame.  The particulars of this frame may have been 
+specified by **subplot begin**.  In either case, should you need to set or override
+frame and axis parameters then you must specify these **-B** options with this first plot
+command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
+the hood so these are not available for you while subplot is active.
+
 **gmt subplot end** [ |SYN_OPT-V| ]
 
 Exits subplot mode and returns the current plot location to where it was prior to

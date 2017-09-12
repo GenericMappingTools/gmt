@@ -6,7 +6,6 @@
 # GMT modules:	makecpt, gmtinfo, pscontour, pstext, psxy, triangulate, subplot
 # Unix progs:	rm
 #
-export GMT_PPID=$$
 gmt begin ex12 ps
   gmt subplot begin 2x2 -M0.05i -Fs3i/0 -SCb -SRl -R0/6.5/-0.2/6.5 -Jx3i -BWSne -T"Delaunay Triangulation"
   # First draw network and label the nodes

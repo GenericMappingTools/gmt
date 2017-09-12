@@ -6,7 +6,6 @@
 # GMT modules:	set, grdmath, grdcontour, grdvector, subplot
 # Unix progs:	rm
 #
-export GMT_PPID=$$
 gmt begin ex13 ps
   gmt set FONT_HEADING 40p,Times-Italic
   gmt grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc

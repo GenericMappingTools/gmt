@@ -243,7 +243,7 @@ export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 # Start with proper GMT defaults
 gmt set -Du
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
-if [ "X$script_mode" = "XM" ]; then
+if [ "X$script_mode" = "XM" ] || [ "X$script_mode" = "Xm" ]; then
 	export GMT_PPID=\$\$
 	echo "Set GMT_PPID = \$GMT_PPID"
 fi
@@ -253,7 +253,7 @@ EOF
 chmod 755 gmtest.sh
 . ./gmtest.sh
 # Modern mode needs to reestablish the $ps variable before exit
-if [ "X$script_mode" = "XM" ] && [ ! "X$ps" = "X" ]; then
+if [ ! "X$script_mode" = "XC" ] && [ ! "X$ps" = "X" ]; then
 	ps="${local_script%.sh}.ps"
 fi
 

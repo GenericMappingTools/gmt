@@ -876,6 +876,23 @@ GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void 
 	return fwrite (buffer, size, nmemb, out->fp);
 }
 
+#include "gmt_data.h"
+
+GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
+	/* Print attribution when the earth_relief_xxx.grd file is downloaded for the first time */
+	char tag[4] = {""};
+	int k, match = -1;
+	strncpy (tag, &file[strlen(file)-7], 3U);
+	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
+		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [size is %s].\n", file, gmt_data_info[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", file, gmt_data_info[k].remark);
+			match = k;
+		}
+	}
+	return (match == -1);	/* Not found */
+}
+
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). Values for mode:
@@ -971,6 +988,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
+	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
+	
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || curl_err != CURLE_REMOTE_FILE_NOT_FOUND) {	/* Unexpected failure - want to bitch about it */

@@ -5,7 +5,6 @@
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 # GMT modules:	set, subplot, psbasemap, grdcontour, pscoast
 #
-export GMT_PPID=$$
 gmt begin ex01 ps
   gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 FONT_ANNOT_PRIMARY 10p PS_MEDIA letter
   gmt subplot begin 2x1 -A -M0.25i -Blrtb -Bafg -T"Low Order Geoid" -Fs6.5i/0+p1p -Rg -JH0/6.5i

@@ -10,8 +10,6 @@
 # Because all panels are almost identical we make a bash function that plots
 # one panel.  It takes a few options that differ between panels.
 
-export GMT_PPID=$$
-
 function plot_one { # First 3-4 args are: -E -N -c [-Barg]
   gmt psxy -B+ghoneydew${4} data.txt -Sc0.05i -Gblue $3
   gmt psxy giants.txt -Sc0.05i -Gred   -N

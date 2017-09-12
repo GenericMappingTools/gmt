@@ -7,7 +7,6 @@
 # GMT modules:	gmtinfo, nearneighbor, pscoast, psmask, surface
 # Unix progs:	rm
 #
-export GMT_PPID=$$
 gmt begin ex15 ps
   gmt convert @ship_15.xyz -bo > ship.b
   region=`gmt info ship.b -I1 -bi3d`

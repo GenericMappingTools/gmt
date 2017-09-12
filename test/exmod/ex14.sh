@@ -7,7 +7,6 @@
 # GMT modules:	set, psxy, surface, subplot
 # Unix progs:	rm
 #
-export GMT_PPID=$$
 gmt begin ex14 ps
   gmt set MAP_GRID_PEN_PRIMARY thinnest,-
   # calculate mean data and grids

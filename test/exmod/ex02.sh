@@ -6,7 +6,6 @@
 # GMT modules:	set, grd2cpt, grdimage, makecpt, psscale, subplot
 # Unix progs:	rm
 #
-export GMT_PPID=$$
 gmt begin ex02 ps
   gmt set MAP_ANNOT_OBLIQUE 0 PS_MEDIA letter
   gmt makecpt -Crainbow -T-2/14/2 > g.cpt

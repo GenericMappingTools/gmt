@@ -30,11 +30,13 @@ if (DO_TESTS)
 		gmtspatial gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour
 		grdcut grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
-		grdvector grdview grdvolume greenspline gshhg kml makecpt modern mapproject nearneighbor
+		grdvector grdview grdvolume greenspline gshhg kml makecpt mapproject nearneighbor
 		ogr postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
 		pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz
 		sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
-		triangulate img meca mgd77 potential spotter x2sys exmod)
+		triangulate img meca mgd77 potential spotter x2sys)
+
+	set (GMT_TEST_DIRS_MODERN modern exmod)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
@@ -56,7 +58,7 @@ if (DO_TESTS)
 			${CMAKE_CURRENT_BINARY_DIR}/gmtest)
 	endif (CYGWIN_INSTALL_PATH)
 
-	# add tests
+	# add classic tests
 	foreach (_test_dir ${GMT_TEST_DIRS})
 		# find files RELATIVE so that test NAMEs are not absolute paths
 		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -65,6 +67,17 @@ if (DO_TESTS)
 			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				COMMAND ${BASH} gmtest ${_test} ${SCRIPT_MODE})
+		endforeach (_test ${_test_scripts})
+	endforeach (_test_dir ${GMT_TEST_DIRS})
+	# add classic tests
+	foreach (_test_dir ${GMT_TEST_DIRS_MODERN})
+		# find files RELATIVE so that test NAMEs are not absolute paths
+		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			"${CMAKE_CURRENT_SOURCE_DIR}/${_test_dir}/*.sh")
+		foreach (_test ${_test_scripts})
+			add_test (NAME ${_test}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND ${BASH} gmtest ${_test} m)
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)

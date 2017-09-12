@@ -4,8 +4,6 @@
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT modules:	grdimage, grdmath, makecpt, pscoast, pstext, psimage
 # Unix progs:	echo, rm
-# PW: Want no annotation or ticks but are getting them.
-export GMT_PPID=$$
 gmt begin ex19 ps
   gmt grdmath -Rd -I1 -r Y COSD 2 POW = lat.nc
   gmt grdmath X = lon.nc
