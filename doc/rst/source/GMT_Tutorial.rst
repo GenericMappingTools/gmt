@@ -1077,15 +1077,14 @@ Contouring gridded data sets
 ----------------------------
 
 GMT comes with several utilities that can create gridded data
-sets; we will discuss two such modules later this session.  First,
-we will assume that we already have gridded data sets.
-Among these data are ETOPO5, crustal ages, gravity and geoid,
-and DEM for the continental US.  Here, we will use :doc:`grdcut`
-to extract a GMT-ready grid that we will next use for contouring:
+sets; we will discuss two such modules later this session.  The
+data sets needed for this tutorial are obtained via the Internet
+as they are needed.  Here, we will use :doc:`grdcut` to obtain
+and extract a GMT-ready grid that we will next use for contouring:
 
    ::
 
-    gmt grdcut earth_relief_05m.grd -R-66/-60/30/35 -Gtut_bathy.nc -V
+    gmt grdcut @earth_relief_05m.grd -R-66/-60/30/35 -Gtut_bathy.nc -V
 
 Here we use the file extension .nc instead of the generic .grd
 to indicate that this is a netCDF file. It is good form, but not essential,
@@ -1547,7 +1546,7 @@ global 30" DEM called SRTM30+:
 
    ::
 
-    gmt grdcut earth_relief_30s.grd -R-108/-103/35/40 -Gtut_relief.nc
+    gmt grdcut @earth_relief_30s.grd -R-108/-103/35/40 -Gtut_relief.nc
 
 Using :doc:`grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we make a CPT accordingly:

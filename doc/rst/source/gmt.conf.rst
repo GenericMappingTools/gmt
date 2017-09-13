@@ -115,7 +115,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **DIR_CACHE**
     Cache directory where to save files downloaded when using external URL addresses or the
-    files called **earth_relief_**\ *res*\ **.grd** or filenames starting in @ (e.g., @hotspots.txt)
+    files called **@earth_relief_**\ *res*\ **.grd** or other remote filenames starting in @ (e.g., @hotspots.txt)
 
 .. _DIR_DATA:
 

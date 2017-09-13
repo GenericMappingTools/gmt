@@ -42,7 +42,7 @@ summary of these changes:
    the cache directory will be created if they do not exist.
 
 *  Any reference to Earth topographic/bathymetric relief files called
-   **earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
+   **@earth_relief_**\ *res*\ **.grd** will automatically obtain the grid
    from the GMT data server.  The resolution *res* allows a choice among
    13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m,
    01m, 30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb,

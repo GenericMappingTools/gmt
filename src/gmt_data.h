@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for list of data grids available via earth_relief_*.grd references.
+ * Include file for list of data grids available via @earth_relief_*.grd references.
  *
  * Author:      Paul Wessel
  * Date:        11-Sept-2017

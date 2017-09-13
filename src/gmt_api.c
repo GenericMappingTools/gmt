@@ -846,7 +846,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 /* Copy a file from the GMT auto-download directory or the Internet.  We recognize
  * different types and names of files.
  * 1. There are data sets of use to all GMT users, such as global relief:
- * 	   earth_relief_<res>.grd	Various global relief grids
+ * 	   @earth_relief_<res>.grd	Various global relief grids
  * We may add more data later but this is our start.
  * 2. Data sets only used to run an example or a test script
  * and these are all called @*, i.e., a '@' is pre-pended to the name.
@@ -879,14 +879,14 @@ GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void 
 #include "gmt_data.h"
 
 GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
-	/* Print attribution when the earth_relief_xxx.grd file is downloaded for the first time */
+	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
 	char tag[4] = {""};
 	int k, match = -1;
 	strncpy (tag, &file[strlen(file)-7], 3U);
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [size is %s].\n", file, gmt_data_info[k].size);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", file, gmt_data_info[k].remark);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [size is %s].\n", &file[1], gmt_data_info[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", &file[1], gmt_data_info[k].remark);
 			match = k;
 		}
 	}

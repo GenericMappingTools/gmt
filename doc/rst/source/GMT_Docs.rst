@@ -2167,7 +2167,7 @@ Three classes of files are given special treatment in GMT.
 
 #. Some data sets are ubiquitous and used by nearly all GMT users.
    At the moment this set is limited to Earth relief grids.  If you reference
-   files called **earth_relief_**\ *res*\ **.grd** on a command line then
+   files called **@earth_relief_**\ *res*\ **.grd** on a command line then
    that grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,

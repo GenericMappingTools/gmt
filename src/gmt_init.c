@@ -2559,7 +2559,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #endif
 		{
             GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
-            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of earth_relief_##m|s.grd files has been disabled.\n");
+            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of @earth_relief_##m|s.grd files has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			gmt_M_str_free (GMT->session.USERDIR);
 		}
@@ -13896,7 +13896,7 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 	if (*kind != GMT_URL_QUERY && !gmt_access (GMT, &file[pos], F_OK)) return false;	/* File exists already so no need to download */
 	/* Here the file does not yet exist locally, so we will try to download if it matches one of three criteria.
 	 * Otherwise, it is just a file that does not exist and will yield an error upstream */
-	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
+	if (!strncmp (&file[1], GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
 		*kind = GMT_DATA_FILE;
 	return (*kind) ? true : false;	/* Download if flagged as special file, else not */
 }
@@ -14511,7 +14511,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	 * 4:	Specified a netCDF slice/layer attribute, 0 otherwise
 	 * 8:	Specified a GMT grid format =<id>[<modifiers>] attribute, 0 otherwise
 	 * 16:	GDAL file called via =gd[...]
-	 * 32:	Special earth_relief grid to be downloaded if not found
+	 * 32:	Special @earth_relief grid to be downloaded if not found
 	 */
 	unsigned int code = 0;
 	char *a = NULL, *c = NULL, *e = NULL, *p = NULL, *q = NULL, *s = NULL;
