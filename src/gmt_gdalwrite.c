@@ -184,7 +184,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
 	int  n_cols, n_rows, i;
-	int  typeCLASS, nColors, n_byteOffset, n_bands, registration;
+	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;
 	void *data;
@@ -240,6 +240,12 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Unsupported input data class!\n");
 		return -1;
 	}
+
+	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into a int16 */
+	if (!strcasecmp(pszFormat,"JP2OpenJPEG") && typeCLASS == GDT_Float32)
+		typeCLASS_f = GDT_Int16;
+	else
+		typeCLASS_f = typeCLASS;
 
 	if (prhs->C.active) {
 		nColors = prhs->C.n_colors;
@@ -308,7 +314,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (prhs->alpha)		/* If transparency, number of requested bands must increment by one */
 		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands+1, typeCLASS, NULL);
 	else
-		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS, NULL);
+		hDstDS = GDALCreate(hDriver, "mem", n_cols, n_rows, n_bands, typeCLASS_f, NULL);
+		
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
@@ -395,16 +402,29 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_UInt32:
 			case GDT_Int32:
 				if (rint(prhs->nan_value) == prhs->nan_value)
-					/* Only set NoData if nan_value contains an integer value */
+					/* Only set NoData if nan_value contains an intger value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0,
-				                 prhs->nXSizeFull * n_byteOffset)) != CE_None)
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+				if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {			/* JP2 driver doesn't accept floats, so we must make a copy */
+					float *t = (float *)data;
+					uint64_t k, nm = (size_t)n_rows * n_cols;
+					short int *data16 = gmt_M_memory(GMT, NULL, nm, short int);
+					for (k = 0; k < nm; k++)
+						data16[k] = (short int)t[k];
+	
+					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data16, n_cols, n_rows, GDT_Int16, 0, 0)) != CE_None)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+					gmt_M_free (GMT, data16);
+				}
+				else {
+					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0,
+					                             prhs->nXSizeFull * n_byteOffset)) != CE_None)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
+				}
 				break;
 		}
 
