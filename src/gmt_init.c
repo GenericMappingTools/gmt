@@ -3400,9 +3400,10 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 * Axis settings:
 	 * 	-B[p|s][x|y|z]<info>
 	 *   where <info> is of the format
-	 * 	<intervals>[+L|l<label>][+p<prefix>][+u<unit>]
+	 * 	<intervals>[+L|l<label>][+S|s<altlabel>][+p<prefix>][+u<unit>]
 	 *   and each <intervals> is a concatenation of one or more [t][value][<unit>]
 	 *    		+l<label> as labels for the respective axes [none]. Use +L for only horizontal labels
+	 *    		+s<altlabel> as alternate label for the far axis [same as <label>]. Use +S for only horizontal labels
 	 *    		+u<unit> as as annotation suffix unit [none].
 	 *    		+p<prefix> as as annotation prefix unit [none].
 	 *
