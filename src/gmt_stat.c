@@ -1210,8 +1210,8 @@ double gmt_sinc (struct GMT_CTRL *GMT, double x) {
 /* gmt_factorial (n) calculates the factorial n! */
 
 double gmt_factorial (struct GMT_CTRL *GMT, int n) {
-	static int ntop = 8;	/* Initial portion filled in below */
-	static double a[33] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0};
+	static int ntop = 10;	/* Initial portion filled in below */
+	static double a[33] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0, 362880.0, 3628800.0};
 	int i;
 
 	if (n < 0) {
@@ -1220,7 +1220,7 @@ double gmt_factorial (struct GMT_CTRL *GMT, int n) {
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
 	}
-	if (n > 32) return (gmtstat_ln_gamma (GMT, n+1.0));
+	if (n > 32) return (exp(gmtstat_ln_gamma (GMT, n+1.0)));
 	while (ntop < n) {
 		i = ntop++;
 		a[ntop] = a[i] * ntop;
