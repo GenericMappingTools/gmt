@@ -183,7 +183,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALColorEntry   sEntry;
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int  n_cols, n_rows, i;
+	int  n_cols, n_rows, i, j;
 	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;
@@ -413,8 +413,14 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					float *t = (float *)data;
 					uint64_t k, nm = (size_t)n_rows * n_cols;
 					short int *data16 = gmt_M_memory(GMT, NULL, nm, short int);
-					for (k = 0; k < nm; k++)
-						data16[k] = (short int)t[k];
+					/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
+					   coherent we recied pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+					   (and not only this case) will probably fail for that case.
+					*/
+					t -= prhs->pad[0];
+					for (i = 0, k = 0; i < n_rows; i++)
+						for (j = 0; j < n_cols; j++)
+							data16[k++] = (short int)t[i*prhs->nXSizeFull + prhs->pad[0] + j];
 	
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data16, n_cols, n_rows, GDT_Int16, 0, 0)) != CE_None)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
