@@ -325,8 +325,17 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	}
 	GDALSetGeoTransform(hDstDS, adfGeoTransform);
 
-	/* Use compression with GeoTiff driver */
-	if (!strcasecmp(pszFormat,"GTiff")) {
+	if (prhs->co_options) {
+		int  pos = 0;
+		char token[64];
+		while (gmt_strtok (prhs->co_options, "+", &pos, token)) {
+			if (token[1] == 'c')
+				papszOptions = CSLAddString(papszOptions, token);
+		}
+	}
+
+	/* Use defaul compression with GeoTiff driver, unless co_options were passed. Than the above should have taken care of it. */
+	if (!strcasecmp(pszFormat,"GTiff") && !prhs->co_options) {
 		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE");
 		/* tiles are less efficient in small grids (padding) and are not
 		 * supported everywhere, when n_cols < tile_width || n_rows < tile_height */
@@ -339,6 +348,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		else
 			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
 	}
+	if (prhs->co_options) free (prhs->co_options);		/* Was allocated with an strdup() in gmt_gdal_write_grd() */
 
 	/* This was the only trick I found to set a "projection". */
 	if (is_geog || projWKT || !strcasecmp(pszFormat,"GTiff")) {
@@ -414,7 +424,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					uint64_t k, nm = (size_t)n_rows * n_cols;
 					short int *data16 = gmt_M_memory(GMT, NULL, nm, short int);
 					/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
-					   coherent we recied pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+					   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 					   (and not only this case) will probably fail for that case.
 					*/
 					t -= prhs->pad[0];

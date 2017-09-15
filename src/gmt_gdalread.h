@@ -32,6 +32,7 @@
 /*! Structure to control which options are transmitted to gmt_gdalwrite */
 struct GMT_GDALWRITE_CTRL {
 	char   *driver;            /* The GDAL diver name */
+	char   *co_options;        /* The GDAL -co options */
 	char   *type;              /* Data type */
 	char   *command;           /* command line */
 	char   *title;

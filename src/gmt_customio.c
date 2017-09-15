@@ -1965,15 +1965,16 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[],
+	                    unsigned int *pad, unsigned int complex_mode) {
 	uint64_t node = 0, ij, imag_offset, imsize;
-	int first_col, last_col;	/* First and last column to deal with */
-	int first_row, last_row;	/* First and last row to deal with */
-	unsigned int width_out;	/* Width of row as return (may include padding) */
-	unsigned int height_out;	/* Number of columns in subregion */
-	unsigned int *k = NULL;	/* Array with indices */
+	int first_col, last_col;    /* First and last column to deal with */
+	int first_row, last_row;    /* First and last row to deal with */
+	unsigned int width_out;     /* Width of row as return (may include padding) */
+	unsigned int height_out;    /* Number of columns in subregion */
+	unsigned int *k = NULL;     /* Array with indices */
 	unsigned int row, col;
-	char driver[16], type[16];
+	char driver[16], type[16], *pch;
 	unsigned char *zu8 = NULL;
 	short int *zi16 = NULL;
 	unsigned short int *zu16 = NULL;
@@ -1991,8 +1992,12 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
-	sscanf (header->pocket, "%[^/]/%s", driver, type);
 	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+	if ((pch = strstr(header->pocket, "+c")) != NULL) {		/* If we have a list of +c<options>, trim and save it */
+		to_GDALW->co_options = strdup (pch);
+		pch[0] = '\0';
+	}
+	sscanf (header->pocket, "%[^/]/%s", driver, type);
 	to_GDALW->driver = strdup(driver);
 	to_GDALW->P.ProjRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;
