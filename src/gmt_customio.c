@@ -1738,6 +1738,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	header->type = GMT_GRID_IS_GD;
+	header->orig_datatype = GMT_FLOAT;	/* Needs to be fixed */
 	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");
 	header->n_columns = from_gdalread->RasterXsize, header->n_rows = from_gdalread->RasterYsize;
