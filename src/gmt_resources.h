@@ -427,6 +427,7 @@ struct GMT_GRID_HEADER {
 	unsigned int gn;                 /* true if top    edge will be set as N pole  */
 	unsigned int gs;                 /* true if bottom edge will be set as S pole  */
 	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
+	enum GMT_enum_type orig_datatype; /* GMT_FLOAT, GMT_SHORT, etc how the source grid was represented */
 	size_t z_chunksize[2];           /* chunk size (lat,lon) */
 	unsigned int z_shuffle;          /* if shuffle filter is turned on */
 	unsigned int z_deflate_level;    /* if deflate filter is in use */

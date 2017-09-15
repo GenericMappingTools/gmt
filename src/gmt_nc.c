@@ -456,11 +456,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		gmt_M_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 		switch (z_type) {
-			case NC_BYTE:   header->type = GMT_GRID_IS_NB; break;
-			case NC_SHORT:  header->type = GMT_GRID_IS_NS; break;
-			case NC_INT:    header->type = GMT_GRID_IS_NI; break;
-			case NC_FLOAT:  header->type = GMT_GRID_IS_NF; break;
-			case NC_DOUBLE: header->type = GMT_GRID_IS_ND; break;
+			case NC_BYTE:   header->type = GMT_GRID_IS_NB; header->orig_datatype = GMT_CHAR; break;
+			case NC_SHORT:  header->type = GMT_GRID_IS_NS; header->orig_datatype = GMT_SHORT; break;
+			case NC_INT:    header->type = GMT_GRID_IS_NI; header->orig_datatype = GMT_INT; break;
+			case NC_FLOAT:  header->type = GMT_GRID_IS_NF; header->orig_datatype = GMT_FLOAT; break;
+			case NC_DOUBLE: header->type = GMT_GRID_IS_ND; header->orig_datatype = GMT_DOUBLE; break;
 			default:        header->type = k_grd_unknown_fmt; break;
 		}
 
@@ -1232,11 +1232,11 @@ int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	switch (z_type) {
-		case NC_BYTE:   header->type = old ? GMT_GRID_IS_CB : GMT_GRID_IS_NB; break;
-		case NC_SHORT:  header->type = old ? GMT_GRID_IS_CS : GMT_GRID_IS_NS; break;
-		case NC_INT:    header->type = old ? GMT_GRID_IS_CI : GMT_GRID_IS_NI; break;
-		case NC_FLOAT:  header->type = old ? GMT_GRID_IS_CF : GMT_GRID_IS_NF; break;
-		case NC_DOUBLE: header->type = old ? GMT_GRID_IS_CD : GMT_GRID_IS_ND; break;
+		case NC_BYTE:   header->type = old ? GMT_GRID_IS_CB : GMT_GRID_IS_NB; header->orig_datatype = GMT_CHAR;   break;
+		case NC_SHORT:  header->type = old ? GMT_GRID_IS_CS : GMT_GRID_IS_NS; header->orig_datatype = GMT_SHORT;  break;
+		case NC_INT:    header->type = old ? GMT_GRID_IS_CI : GMT_GRID_IS_NI; header->orig_datatype = GMT_INT;    break;
+		case NC_FLOAT:  header->type = old ? GMT_GRID_IS_CF : GMT_GRID_IS_NF; header->orig_datatype = GMT_FLOAT;  break;
+		case NC_DOUBLE: header->type = old ? GMT_GRID_IS_CD : GMT_GRID_IS_ND; header->orig_datatype = GMT_DOUBLE; break;
 		default:        header->type = k_grd_unknown_fmt; break;
 	}
 	nc_close (ncid);

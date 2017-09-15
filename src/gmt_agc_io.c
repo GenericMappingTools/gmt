@@ -168,6 +168,7 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		/* Yes, appears to be an AGC grid */
 		header->type = GMT_GRID_IS_AF;
 		header->nan_value = 0.0f; /* NaN value for AGC format */
+		header->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
 		return GMT_NOERROR;
 	}
 	return GMT_GRDIO_BAD_VAL;
@@ -194,6 +195,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 	
 	header->registration = GMT_GRID_NODE_REG;	/* Hardwired since no info about this in the header */
+	header->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
 	header->wesn[XLO]  = recdata[2];
 	header->wesn[XHI]  = recdata[3];
 	header->wesn[YLO]  = recdata[0];

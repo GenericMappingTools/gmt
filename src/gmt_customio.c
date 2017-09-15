@@ -260,7 +260,8 @@ int gmt_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->inc[GMT_X] = header->inc[GMT_Y] = 1.0;
 	header->registration = GMT_GRID_PIXEL_REG;	/* Always pixel format */
 	header->z_scale_factor = 1.0;	header->z_add_offset = 0.0;
-
+	header->orig_datatype = GMT_CHAR;
+	
 	return (GMT_NOERROR);
 }
 
@@ -585,12 +586,15 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				header->type = GMT_GRID_IS_BM;
 			else	/* No, junk data */
 				return (GMT_GRDIO_BAD_VAL);
+			header->orig_datatype = GMT_INT;
 			break;
 		case 1:	/* 1-byte elements */
 			header->type = GMT_GRID_IS_BB;
+			header->orig_datatype = GMT_CHAR;
 			break;
 		case 2:	/* 2-byte short int elements */
 			header->type = GMT_GRID_IS_BS;
+			header->orig_datatype = GMT_SHORT;
 			break;
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
@@ -601,10 +605,12 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV8_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV8_LIMIT) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Based on header values we guessed the grid is 4-byte float.  If wrong you must add =bi.\n");
 					header->type = GMT_GRID_IS_BF;
+					header->orig_datatype = GMT_FLOAT;
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Based on header values we guessed the grid is 4-byte int.  If wrong you must add =bf.\n");
 					header->type = GMT_GRID_IS_BI;
+					header->orig_datatype = GMT_INT;
 				}
 			}
 			else {
@@ -615,6 +621,7 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			break;
 		case 8:	/* 8-byte elements */
 			header->type = GMT_GRID_IS_BD;
+			header->orig_datatype = GMT_DOUBLE;
 			break;
 		default:	/* Garbage */
 			return (GMT_GRDIO_BAD_VAL);
@@ -1359,11 +1366,13 @@ int gmt_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	if (!strncmp (id, "DSBB", 4U)) {		/* Version 6 format */
 		if (customio_read_srfheader6 (fp, &h6)) return (GMT_GRDIO_READ_FAILED);
 		header->type = GMT_GRID_IS_SF;
+		header->orig_datatype = GMT_FLOAT;
 	}
 	else {					/* Version 7 format */
 		if (customio_read_srfheader7 (fp, &h7))  return (GMT_GRDIO_READ_FAILED);
 		if (h7.len_d != h7.n_columns * h7.n_rows * 8 || !strcmp (h7.id2, "GRID")) return (GMT_GRDIO_SURF7_UNSUPPORTED);
 		header->type = GMT_GRID_IS_SD;
+		header->orig_datatype = GMT_DOUBLE;
 	}
 
 	gmt_fclose (GMT, fp);

@@ -326,7 +326,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALSetGeoTransform(hDstDS, adfGeoTransform);
 
 	if (prhs->co_options) {
-		int  pos = 0;
+		unsigned int  pos = 0;
 		char token[64];
 		while (gmt_strtok (prhs->co_options, "+", &pos, token)) {
 			if (token[1] == 'c')

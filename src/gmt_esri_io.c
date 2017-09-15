@@ -158,6 +158,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	}
 			
 	gmt_fclose (GMT, fp);
+	header->orig_datatype = (header->bits == 16) ? GMT_SHORT : GMT_INT;
 
 	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YLO] = header->wesn[YHI] - (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
@@ -217,6 +218,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		else
 			header->nan_value = 9999.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
+		header->orig_datatype = GMT_SHORT;
 		return (GMT_NOERROR);
 	}
 	else if (header->flags[0] == 'B' && header->flags[1] == '1') {	/* A SRTM3 or SRTM1 file */
@@ -234,6 +236,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
 		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
+		header->orig_datatype = GMT_SHORT;
 		if (stat (header->name, &F))	/* Must finally find out if it is a 1 or 3 arcseconds file */
 			return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
 		if (F.st_size < 3e6) {		/* Actually the true size is 2884802 */
@@ -328,6 +331,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		header->flags[0] = (tmp[0] == 'L') ? 'L' : 'B';
 
 		header->bits = 32;	/* Those float binary files */
+		header->orig_datatype = GMT_FLOAT;
 		/* Ok, now as mentioned above undo the file pointer swapping (point again to data file) */
 		gmt_fclose (GMT, fp);
 		fp = fpBAK;
@@ -358,6 +362,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		char *file = NULL;
 		size_t name_len;
 
+		header->orig_datatype = GMT_SHORT;	/* May be overridden below */
 		/* If it got here, see if a companion .hdr file exists (must test upper & lower cases names) */
 		file = strdup (header->name);
 		gmt_chop_ext (file);
@@ -388,6 +393,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 				header->flags[0] = 'L';	/* If is truly 'L' or 'B' we'll find only when parsing the whole header */
 				header->flags[1] = '2';	/* Flag to let us know the file type */
+				header->orig_datatype = GMT_FLOAT;
 			}
 			else {	/* Cannot do anything with this data */
 				gmt_M_str_free (file);
@@ -413,6 +419,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				 * We'll use this to create header from file name info */
 				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 				strcpy  (header->remark, "Assumed to be a GTOPO30 or SRTM30 tile");
+				header->orig_datatype = GMT_SHORT;
 			}
 			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
 				/* Probably a SRTM1|3 file. In esri_read_info we'll check further if it is a 1 or 3 sec */
@@ -423,6 +430,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 					/* Store the file name with all extensions removed.
 					 * We'll use this to create header from file name info */
 					strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
+					header->orig_datatype = GMT_SHORT;
 				}
 			}
 			else {

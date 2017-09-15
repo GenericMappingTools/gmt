@@ -412,6 +412,7 @@ GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	if (Grid->data) return (GMT_PTR_NOT_NULL);
 	if (Grid->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat)) == NULL) return (GMT_MEMORY_ERROR);
+	Grid->header->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
 	return (GMT_NOERROR);
 }
 

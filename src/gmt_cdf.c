@@ -73,10 +73,10 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		gmt_M_err_trap (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
 		switch (header->type) {
-			case GMT_GRID_IS_CB: z_type = NC_BYTE; break;
-			case GMT_GRID_IS_CS: z_type = NC_SHORT; break;
-			case GMT_GRID_IS_CI: z_type = NC_INT; break;
-			case GMT_GRID_IS_CF: z_type = NC_FLOAT; break;
+			case GMT_GRID_IS_CB: z_type = NC_BYTE;   break;
+			case GMT_GRID_IS_CS: z_type = NC_SHORT;  break;
+			case GMT_GRID_IS_CI: z_type = NC_INT;    break;
+			case GMT_GRID_IS_CF: z_type = NC_FLOAT;  break;
 			case GMT_GRID_IS_CD: z_type = NC_DOUBLE; break;
 			default:			z_type = NC_NAT;
 		}
@@ -93,11 +93,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		gmt_M_err_trap (nc_inq_varid (ncid, "z", &z_id));
 		gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		switch (z_type) {
-			case NC_BYTE:   header->type = GMT_GRID_IS_CB; break;
-			case NC_SHORT:  header->type = GMT_GRID_IS_CS; break;
-			case NC_INT:    header->type = GMT_GRID_IS_CI; break;
-			case NC_FLOAT:  header->type = GMT_GRID_IS_CF; break;
-			case NC_DOUBLE: header->type = GMT_GRID_IS_CD; break;
+			case NC_BYTE:   header->type = GMT_GRID_IS_CB; header->orig_datatype = GMT_CHAR;   break;
+			case NC_SHORT:  header->type = GMT_GRID_IS_CS; header->orig_datatype = GMT_SHORT;  break;
+			case NC_INT:    header->type = GMT_GRID_IS_CI; header->orig_datatype = GMT_INT;    break;
+			case NC_FLOAT:  header->type = GMT_GRID_IS_CF; header->orig_datatype = GMT_FLOAT;  break;
+			case NC_DOUBLE: header->type = GMT_GRID_IS_CD; header->orig_datatype = GMT_DOUBLE; break;
 			default:        header->type = k_grd_unknown_fmt; break;
 		}
 	}

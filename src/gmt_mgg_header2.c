@@ -169,6 +169,13 @@ GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *
 	gmt->z_max = (double)mgg->maxValue / (double)mgg->precision;
 	gmt->z_scale_factor = 1.0;
 	gmt->z_add_offset = 0.0;
+	switch (mgg->numType) {
+		case  1:	gmt->orig_datatype = GMT_CHAR;  break;
+		case  2:	gmt->orig_datatype = GMT_SHORT; break;
+		case  4:	gmt->orig_datatype = GMT_INT;   break;
+		case -4:	gmt->orig_datatype = GMT_FLOAT; break;
+		default:	gmt->orig_datatype = GMT_INT;   break;
+	}
 }
 
 /*----------------------------------------------------------|
