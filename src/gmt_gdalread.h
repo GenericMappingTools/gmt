@@ -52,12 +52,12 @@ struct GMT_GDALWRITE_CTRL {
 	double	x_inc, y_inc;      /* Grid/Image increments */
 	double	nan_value;         /* unlike the nan_value in struct GMT_GRID_HEADER this one is of type double */
 	struct  GW_C {             /* Color map */
-		int    active;
+		bool   active;
 		int    n_colors;
 		float *cpt;
 	} C;
 	struct  GW_P {             /* Proj4/WKT string */
-		int    active;
+		bool   active;
 		char  *ProjRefPROJ4;
 		char  *ProjRefWKT;
 	} P;
@@ -66,17 +66,17 @@ struct GMT_GDALWRITE_CTRL {
 /*! Structure to control which options are transmitted to gmt_gdalread */
 struct GMT_GDALREAD_IN_CTRL {
 	struct GD_B {	/* Band selection */
-		int active;
+		bool active;
 		char *bands;
 	} B;
 	struct GD_I {	/* Interleaving by pixel (only for char data) */
-		int active;
+		bool active;
 	} I;
 	struct GD_L {	/* Left-Right flip */
-		int active;
+		bool active;
 	} L;
 	struct GD_M {	/* Metadata only */
-		int active;
+		bool active;
 	} M;
 	struct GD_O {	/* Three chars code to specify the array layout in memory */
 		/* first char T(op)|B(ot), second R(ow)|C(ol), third P(ix)|L(ine)|S(equencial) */
@@ -86,34 +86,34 @@ struct GMT_GDALREAD_IN_CTRL {
 		float nan_value;
 	} N;
 	struct GD_P {	/* Preview mode */
-		int active;
+		bool active;
 		char *jump;
 	} P;
 	struct GD_p {	/* Pad array in output */
-		int active;
+		bool active;
 		int pad;
 	} p;
 	struct GD_W {	/* Convert proj4 string into WKT */
-		int active;
+		bool active;
 	} W;
 	struct GD_R {	/* Sub-region in referenced coords */
-		int active;
+		bool active;
 		char *region;
 	} R;
 	struct GD_Z {	/* Tell to store data in a complex array */
-		int active;
+		bool active;
 		int complex_mode; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
 	} Z;
 	struct GD_cp {	/* Send in a pointer with allocated chars */
-		int active;
+		bool active;
 		unsigned char *grd;
 	} c_ptr;
 	struct GD_fp {	/* Send in a pointer with allocated floats */
-		int active;
+		bool active;
 		float *grd;
 	} f_ptr;
 	struct GD_r {	/* Sub-region in row/column coords */
-		int active;
+		bool active;
 		char *region;
 	} r;
 	struct GD_reg {	/* Registration type. Used only when sending a sub-region request. Than we need to know this */
@@ -121,7 +121,7 @@ struct GMT_GDALREAD_IN_CTRL {
 		int val;	/* 0 [default] means grid registration, 1 -> pixel registration */
 	} registration;
 	struct GD_hdr {	/* Some fields of the header structure */
-		int active;
+		bool active;
 		unsigned int mx, my;
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
@@ -144,31 +144,31 @@ struct GDAL_BAND_FNAMES {
 struct GMT_GDALREAD_OUT_CTRL {
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */
-		int active;
+		bool active;
 		unsigned char *data;
 	} UInt8;
 	struct UInt16 {			/* Declare short int pointers */
-		int active;
+		bool active;
 		unsigned short int *data;
 	} UInt16;
 	struct Int16 {			/* Declare unsigned short int pointers */
-		int active;
+		bool active;
 		short int *data;
 	} Int16;
 	struct UInt32 {			/* Declare unsigned int pointers */
-		int active;
+		bool active;
 		int *data;
 	} UInt32;
 	struct Int32 {			/* Declare int pointers */
-		int active;
+		bool active;
 		int *data;
 	} Int32;
 	struct Float {			/* Declare float pointers */
-		int active;
+		bool active;
 		float *data;
 	} Float;
 	struct Double {			/* Declare double pointers */
-		int active;
+		bool active;
 		double *data;
 	} Double;
 
