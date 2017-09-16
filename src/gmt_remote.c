@@ -260,7 +260,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		char name[GMT_LEN16] = {""};
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			sprintf (srtmlist, "%s/", API->tmp_dir);
-		sprintf (name, "=srtm%d.XXX", res);
+		sprintf (name, "=srtm%d.XXXXXX", res);
 		strcat (srtmlist, name);
 		if ((file = mktemp (srtmlist)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name.\n");
