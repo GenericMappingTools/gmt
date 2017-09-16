@@ -7836,9 +7836,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_LABEL", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_TAG", value, core);
+				gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
 			/*      gmtlib_setparameter (GMT, "FONT_LOGO", value, core) (purposely skipped) */
 			break;
 		case GMTCASE_FONT_ANNOT:

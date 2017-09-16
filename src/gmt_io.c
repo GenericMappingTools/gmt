@@ -4214,7 +4214,8 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (GMT, filename, mode);
 		if (!fd) {
-			if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) != NULL) fd = fopen(c, mode);
+			if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) != NULL)
+                fd = fopen(c, mode);
 		}
 		return (fd);
 	}

@@ -1948,6 +1948,9 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 		/* Seek past the grid header, unless there is none */
 		if (header && fseek (R->fp, (off_t)GMT_GRID_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 		alloc = (fmt[1] != 'f');	/* Only need to allocate the v_row array if grid is not float */
+#ifdef DEBUG
+		R->pos = ftell (R->fp);	/* Where we are */
+#endif
 	}
 
 	R->size = gmt_grd_data_size (GMT, G->header->type, &G->header->nan_value);
@@ -7989,6 +7992,9 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 			for (col = 0; col < G->header->n_columns; col++)
 				row[col] = gmtlib_decode (GMT, R->v_row, col, fmt[1]);	/* Convert whatever to float */
 		}
+#ifdef DEBUG
+		R->pos = ftell (R->fp);	/* Update where we are */
+#endif
 	}
 	if (R->check) {	/* Replace NaN-marker with actual NaN */
 		for (col = 0; col < G->header->n_columns; col++)

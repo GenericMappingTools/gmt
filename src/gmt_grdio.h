@@ -111,6 +111,9 @@ struct GMT_GRID_ROWBYROW {
 	int fid;		/* NetCDF file number [netcdf files only] */
 	size_t edge[2];		/* Dimension arrays [netcdf files only] */
 	size_t start[2];	/* Position arrays [netcdf files only] */
+#ifdef DEBUG
+	off_t pos;		/* Current file pos for binary files */
+#endif
 
 	FILE *fp;		/* File pointer [for native files] */
 
