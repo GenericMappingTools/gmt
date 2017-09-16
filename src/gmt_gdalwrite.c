@@ -169,6 +169,69 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
+	int error = 0, i, j;
+	float *t = (float *)data;
+	uint64_t k, n, nm = (size_t)n_rows * n_cols;
+	/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
+	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+	   (and not only this case) will probably fail for that case.
+	*/
+	t -= prhs->pad[0];
+	if (prhs->orig_type == GMT_UCHAR) {
+		char *dataT = gmt_M_memory(GMT, NULL, nm, char);
+		for (i = 0, k = 0; i < n_rows; i++) {
+			n = i*prhs->nXSizeFull + prhs->pad[0];
+			for (j = 0; j < n_cols; j++)
+				dataT[k++] = (char)t[n + j];
+		}
+		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_Byte, 0, 0);
+		gmt_M_free (GMT, dataT);
+	}
+	else if (prhs->orig_type == GMT_USHORT) {
+		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned short int);
+		for (i = 0, k = 0; i < n_rows; i++) {
+			n = i*prhs->nXSizeFull + prhs->pad[0];
+			for (j = 0; j < n_cols; j++)
+				dataT[k++] = (unsigned short int)t[n + j];
+		}
+		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_UInt16, 0, 0);
+		gmt_M_free (GMT, dataT);
+	}
+	else if (prhs->orig_type == GMT_SHORT) {
+		short int *dataT = gmt_M_memory(GMT, NULL, nm, short int);
+		for (i = 0, k = 0; i < n_rows; i++) {
+			n = i*prhs->nXSizeFull + prhs->pad[0];
+			for (j = 0; j < n_cols; j++)
+				dataT[k++] = (short int)t[n + j];
+		}
+		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_Int16, 0, 0);
+		gmt_M_free (GMT, dataT);
+	}
+	else if (prhs->orig_type == GMT_UINT) {
+		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
+		for (i = 0, k = 0; i < n_rows; i++) {
+			n = i*prhs->nXSizeFull + prhs->pad[0];
+			for (j = 0; j < n_cols; j++)
+				dataT[k++] = (unsigned int)t[n + j];
+		}
+		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_UInt32, 0, 0);
+		gmt_M_free (GMT, dataT);
+	}
+	else if (prhs->orig_type == GMT_INT) {
+		int *dataT = gmt_M_memory(GMT, NULL, nm, int);
+		for (i = 0, k = 0; i < n_rows; i++) {
+			n = i*prhs->nXSizeFull + prhs->pad[0];
+			for (j = 0; j < n_cols; j++)
+				dataT[k++] = (int)t[n + j];
+		}
+		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_Int32, 0, 0);
+		gmt_M_free (GMT, dataT);
+	}
+
+	return error;
+}
+
 int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
@@ -183,7 +246,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALColorEntry   sEntry;
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int  n_cols, n_rows, i, j;
+	int  n_cols, n_rows, i;
 	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;
@@ -242,8 +305,17 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	}
 
 	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into a int16 */
-	if (!strcasecmp(pszFormat,"JP2OpenJPEG") && typeCLASS == GDT_Float32)
-		typeCLASS_f = GDT_Int16;
+	if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {
+		if (prhs->orig_type == GMT_UCHAR)       typeCLASS_f = GDT_Byte;
+		else if (prhs->orig_type == GMT_USHORT) typeCLASS_f = GDT_UInt16;
+		else if (prhs->orig_type == GMT_SHORT)  typeCLASS_f = GDT_Int16;
+		else if (prhs->orig_type == GMT_UINT)   typeCLASS_f = GDT_Int32;
+		else if (prhs->orig_type == GMT_INT)    typeCLASS_f = GDT_UInt32;
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: The Jpeg2000 driver does not support floats.\n");
+			return -1;
+		}
+	}
 	else
 		typeCLASS_f = typeCLASS;
 
@@ -420,21 +492,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {			/* JP2 driver doesn't accept floats, so we must make a copy */
-					float *t = (float *)data;
-					uint64_t k, nm = (size_t)n_rows * n_cols;
-					short int *data16 = gmt_M_memory(GMT, NULL, nm, short int);
-					/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
-					   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
-					   (and not only this case) will probably fail for that case.
-					*/
-					t -= prhs->pad[0];
-					for (i = 0, k = 0; i < n_rows; i++)
-						for (j = 0; j < n_cols; j++)
-							data16[k++] = (short int)t[i*prhs->nXSizeFull + prhs->pad[0] + j];
-	
-					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data16, n_cols, n_rows, GDT_Int16, 0, 0)) != CE_None)
+					if ((gdal_err = write_jp2 (GMT, prhs, hBand, data, n_rows, n_cols)) != CE_None)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
-					gmt_M_free (GMT, data16);
 				}
 				else {
 					if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0,
