@@ -18,6 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |-J|\ *parameters* ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ [*flags*\ ] ]
@@ -89,6 +90,13 @@ Optional Arguments
 .. _-D:
 
 .. include:: explain_-D_cap.rst_
+
+.. _-J:
+
+.. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
+    netCDF grids. Remember also that PROJ.4 syntax can be used directly in **-J**. This referencing will be
+    recognized by GDAL and growingly by GMT.
+.. include:: explain_-J.rst_
 
 .. _-S:
 
