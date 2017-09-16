@@ -5890,6 +5890,12 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	char szProj4[GMT_LEN512], proj4_ename[GMT_LEN16];
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
+	/* If we already have a proj.4 string, obviously use it and return right away */
+	if (GMT->common.J.proj4string && GMT->common.J.proj4string[0] == '+') {
+		pStrOut = strdup(GMT->common.J.proj4string);
+		return pStrOut;
+	}
+
 	scale_factor = GMT->current.setting.proj_scale_factor;
 	if (scale_factor < 0) scale_factor = 1;
 	szProj4[0] = 0;
