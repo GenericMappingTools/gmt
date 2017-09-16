@@ -520,20 +520,22 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if ((new_opt = GMT_Make_Option (API, option, this_arg)) == NULL)
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
-		if (option == GMT_OPT_INFILE && ((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
-			/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
-			   However, the issue is that for these cases the machinery is set only to parse the request in the
-			   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let t go.
-			   JL 29-November 2014
-			*/
-			char t[GMT_LEN256] = {""};
-			pch[0] = '\0';
-			strcpy(t, new_opt->arg);
-			strcat(t, "=gd"); 
-			pch[0] = '+';			/* Restore what we have erased 2 lines above */
-			strcat(t, pch);
-			gmt_M_str_free (new_opt->arg);	/* free it so that we can extend it */
-			new_opt->arg = strdup(t);
+		if (option == GMT_OPT_INFILE) {	/* Some special checks on infiles */
+			if (((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
+				/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
+				   However, the issue is that for these cases the machinery is set only to parse the request in the
+				   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let t go.
+				   JL 29-November 2014
+				*/
+				char t[GMT_LEN256] = {""};
+				pch[0] = '\0';
+				strcpy (t, new_opt->arg);
+				strcat (t, "=gd"); 
+				pch[0] = '+';			/* Restore what we have erased 2 lines above */
+				strcat(t, pch);
+				gmt_M_str_free (new_opt->arg);	/* free it so that we can extend it */
+				new_opt->arg = strdup (t);
+			}
 		}
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */

@@ -24,8 +24,8 @@
  * Version:     6 API
  */
 
-#ifndef GMT_DATA_H
-#define GMT_DATA_H
+#ifndef GMT_REMOTE_H
+#define GMT_REMOTE_H
 
 struct GMT_DATA_INFO {
 	char tag[4];	/* E.g., 30m */
@@ -51,4 +51,4 @@ GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
 	{"15s", "2.6G", "Earth Relief at 15x15 arc seconds provided by SRTM15+ [Sandwell/SIO]"}
 };
 
-#endif /* GMT_DATA_H */
+#endif /* GMT_REMOTE_H */

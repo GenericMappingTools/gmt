@@ -11526,7 +11526,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 */
 
 	bool is_PS;
-	struct GMT_OPTION *E = NULL, *opt = NULL;
+	unsigned int srtm_res = 0;
+	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
 
@@ -11562,7 +11563,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
 		char arg[GMT_LEN256] = {""}, scl[GMT_LEN64] = {""};
-		struct GMT_OPTION *opt_R = NULL, *opt_J = NULL;
+		struct GMT_OPTION *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 
 		gmtinit_get_last_dimensions (API);	/* Get dimensions of previous plot, if any */
@@ -11792,6 +11793,22 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) && gmtlib_infile_is_srtm (GMT, opt->arg, &srtm_res)) {
+		char *list = NULL;
+		opt_R = GMT_Find_Option (API, 'R', *options);
+		if (opt_R == NULL) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s as input without specifying a region with -R!\n", opt->arg);
+			return NULL;
+		}
+		/* Replace the magic reference to SRTM with a file list of SRTM tiles */
+		opt_R = GMT_Find_Option (API, 'R', *options);
+		gmt_parse_R_option (GMT, opt_R->arg);
+		list = gmtlib_get_srtmlist (GMT, GMT->common.R.wesn, srtm_res);
+		gmt_M_str_free (opt->arg);
+		opt->arg = list;
+		GMT->common.R.active[RSET] = false;	/* Since we will parse it again officially in GMT_Parse_Common */
+	}
+	
 	/* Here we can call the rest of the initialization */
 
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));

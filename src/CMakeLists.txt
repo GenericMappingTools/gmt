@@ -282,7 +282,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
-	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h gmt_data.h
+	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h gmt_remote.h
 	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
@@ -291,7 +291,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
-	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c
+	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c gmt_remote.c
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
 	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
