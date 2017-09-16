@@ -231,9 +231,12 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) {	/* Specified a subset */
 		bool global = false;
+		double noise[2];
+		noise[GMT_X] = GMT_CONV4_LIMIT * Grid->header->inc[GMT_X];	/* Tolerate a bit of slop */
+		noise[GMT_Y] = GMT_CONV4_LIMIT * Grid->header->inc[GMT_Y];
 		global = gmt_M_grd_is_global (GMT, Grid->header);
-		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
-		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
+		if (!global && (GMT->common.R.wesn[XLO] < (Grid->header->wesn[XLO]-noise[GMT_X]) || GMT->common.R.wesn[XHI] > (Grid->header->wesn[XHI]+noise[GMT_X]))) error++;
+		if (GMT->common.R.wesn[YLO] < (Grid->header->wesn[YLO]-noise[GMT_Y]) || GMT->common.R.wesn[YHI] > (Grid->header->wesn[YHI]+noise[GMT_Y])) error++;
 		if (error) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
