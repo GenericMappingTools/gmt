@@ -4072,23 +4072,20 @@ then plot the ``sst.nc`` directly.
 Writing grids and images
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Saving images in the common raster formats is possible but, for the time
-being, only from :doc:`grdimage` and even
-that is restricted to raster type information. That is, vector data (for
-instance, coast lines) or text will not be saved. To save an image with
-:doc:`grdimage` use the
-**-A**\ *outimg=driver* mechanism, where *driver* is the driver code
-name used by GDAL (e.g. GTiff).
+Saving images in the common raster formats is possible but, for the time being, only from :doc:`grdimage` and even
+that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
+be saved. To save an image with :doc:`grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
+is the driver code name used by GDAL (e.g. GTiff).
 
-For all other programs that create grids, it is also possible to save
-them using GDAL. To do it one need to use the =gd appended with the
-necessary information regarding the driver and the data type to use.
-Generically, =\ **gd**\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*][:<*driver*\ >[/\ *dataType*]]
-where *driver* is the same as explained above and *dataType* is a 2 or 3
-chars code from: u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes
-signed\|unsigned. If not provided the default type is float32. Both
-driver names and data types are case insensitive. Note: you will have to
-specify a *nan* value for integer data types unless you wish that all NaN data values
+For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
+the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
+=\ **gd**\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*][:<*driver*\ >[/\ *dataType*][**+c**\ *options*]]
+where *driver* is the same as explained above and *dataType* is a 2 or 3 chars code from:
+u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes signed\|unsigned. If not provided the default type
+is float32. Both driver names and data types are case insensitive. The *options* is a list of one or more concatenated
+number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one would append
+**+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO 
+Note: you will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
 
 The NaN data value
