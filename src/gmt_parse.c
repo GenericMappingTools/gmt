@@ -200,6 +200,12 @@ GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	return (-1);				/* Error: Cannot be both */
 }
 
+GMT_LOCAL unsigned int count_slashes (char *txt) {
+	unsigned int i, n;
+	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
+	return (n);
+}
+
 /*! . */
 GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<n_columns>/<ny> we need access
@@ -209,7 +215,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	struct GMT_OPTION *opt = NULL;
 	bool got_extended_R = false;
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'R' && strlen (opt->arg) > 2 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
+		if (opt->option == 'R' && count_slashes (opt->arg) == 3 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
 			got_extended_R = true;
 	}
 	if (!got_extended_R) return 0;	/* No such situation */

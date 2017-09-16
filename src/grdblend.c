@@ -90,6 +90,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	int in_j0, in_j1, out_j0, out_j1;		/* Indices of outer and inner y-coordinates (in output grid coordinates) */
 	off_t offset;					/* grid offset when the grid extends beyond north */
 	off_t skip;					/* Byte offset to skip in native binary files */
+	off_t pos;					/* Current byte offset for native binary files */
 	bool ignore;					/* true if the grid is entirely outside desired region */
 	bool outside;				/* true if the current output row is outside the range of this grid */
 	bool invert;					/* true if weight was given as negative and we want to taper to zero INSIDE the grid region */
@@ -397,6 +398,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			else
 				B[n].skip = (off_t)(B[n].RbR->n_byte * abs (B[n].out_j0));	/* do the fseek when we are ready to read first row */
 		}
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid %s: out: %d/%d/%d/%d in: %d/%d/%d/%d skip: %d offset: %d\n",
+			B[n].file, B[n].out_i0, B[n].out_i1, B[n].out_j1, B[n].out_j0, B[n].in_i0, B[n].in_i1, B[n].in_j1, B[n].in_j0, (int)B[n].skip, (int)B[n].offset);
 
 		/* Allocate space for one entire row */
 
@@ -448,8 +451,19 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
 				GMT_exit (GMT, GMT_GRID_READ_ERROR); return GMT_GRID_READ_ERROR;
 			}
-			if (B[k].skip) fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
-			B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
+			gmt_M_memcpy (B[k].RbR, B[k].G->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
+			if (B[k].skip) {	/* Position for native binary files */
+				if (fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR)) {    /* Position for native binary files */
+					GMT_exit (GMT, GMT_GRDIO_SEEK_FAILED); return GMT_GRDIO_SEEK_FAILED;
+				}
+#ifdef DEBUG
+				B[k].RbR->pos = ftell (B[k].RbR->fp);
+#endif
+			}
+			else {	/* Set offsets for netCDF files */
+				B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
+				gmt_M_memcpy (B[k].G->extra, B[k].RbR, 1, struct GMT_GRID_ROWBYROW);	/* Synchronize these two again */
+			}
 			B[k].open = true;
 		}
 		GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
