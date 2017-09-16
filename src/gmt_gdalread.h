@@ -40,6 +40,7 @@ struct GMT_GDALWRITE_CTRL {
 	unsigned char   *alpha;    /* In case this is used to transmit an image that has a transparency layer */
 	void   *data;              /* To store the grid/image array */
 	char    layout[4];         /* A 3 letter code specifying the image memory layout plus a A|a if alpha data in array */
+	int     orig_type;         /* Original grid data type. Typed as in to match the orig_datatype in GMT_GRID_HEADER */
 	int     geog;
 	int     n_columns, n_rows; /* Number of columns & rows of the region to be saved */
 	int     nXSizeFull;        /* Total number of columns of the data array including padding */
