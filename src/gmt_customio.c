@@ -1737,8 +1737,22 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
+	if (from_gdalread->UInt8.active)
+		header->orig_datatype = GMT_UCHAR;
+	else if (from_gdalread->UInt16.active)
+		header->orig_datatype = GMT_USHORT;
+	else if (from_gdalread->Int16.active)
+		header->orig_datatype = GMT_SHORT;
+	else if (from_gdalread->UInt32.active)
+		header->orig_datatype = GMT_UINT;
+	else if (from_gdalread->Int32.active)
+		header->orig_datatype = GMT_INT;
+	else if (from_gdalread->Float.active)
+		header->orig_datatype = GMT_FLOAT;
+	else if (from_gdalread->Double.active)
+		header->orig_datatype = GMT_DOUBLE;
+
 	header->type = GMT_GRID_IS_GD;
-	header->orig_datatype = GMT_FLOAT;	/* Needs to be fixed */
 	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");
 	header->n_columns = from_gdalread->RasterXsize, header->n_rows = from_gdalread->RasterYsize;
@@ -2028,6 +2042,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->y_inc = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, header->registration);
 	to_GDALW->nan_value = header->nan_value;
 	to_GDALW->command = header->command;
+	to_GDALW->orig_type = header->orig_datatype;
 
 	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
 	if (!isnan (header->nan_value)) {
