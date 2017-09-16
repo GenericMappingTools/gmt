@@ -5891,8 +5891,8 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
 	/* If we already have a proj.4 string, obviously use it and return right away */
-	if (GMT->common.J.proj4string && GMT->common.J.proj4string[0] == '+') {
-		pStrOut = strdup(GMT->common.J.proj4string);
+	if (GMT->common.J.proj4string[0] == '+') {
+		pStrOut = strdup (GMT->common.J.proj4string);
 		return pStrOut;
 	}
 
