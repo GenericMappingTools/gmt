@@ -228,7 +228,7 @@ bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsi
 bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *file) {
 	size_t len = strlen(file);
 	gmt_M_unused (API);
-	if (len < 10) return false;	/* Too short a filename */
+	if (len < 13) return false;	/* Too short a filename */
 	if (strncmp (&file[len-13], "=srtm", 5U)) return false;	/* Not that kind of file */
 	return true;	/* We got one */
 }
