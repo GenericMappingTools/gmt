@@ -11793,7 +11793,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) && gmtlib_infile_is_srtm (GMT, opt->arg, &srtm_res)) {
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) && gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res)) {
 		char *list = NULL;
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		if (opt_R == NULL) {
@@ -11803,7 +11803,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		/* Replace the magic reference to SRTM with a file list of SRTM tiles */
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		gmt_parse_R_option (GMT, opt_R->arg);
-		list = gmtlib_get_srtmlist (GMT, GMT->common.R.wesn, srtm_res);
+		list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res);
 		gmt_M_str_free (opt->arg);
 		opt->arg = list;
 		GMT->common.R.active[RSET] = false;	/* Since we will parse it again officially in GMT_Parse_Common */

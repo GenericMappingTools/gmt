@@ -4588,6 +4588,19 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 	method = api_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
+			if (gmtlib_file_is_srtmlist (API, S_obj->filename)) {	/* Special list file */
+				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
+					if ((G_obj = gmtlib_assemble_srtm (API, NULL, S_obj->filename)) == NULL)
+						return_null (API, GMT_GRID_READ_ERROR);
+					if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
+						return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+					G_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+				}
+				else
+					G_obj = grid;	/* We are working on a srtm grid already allocated and here we also read the data so nothing to do */
+				S_obj->resource = G_obj;	/* Set resource pointer to the grid */
+				break;
+			}
 			/* When source is an actual file we place the grid container into the S_obj->resource slot; no new object required */
 			if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
 				if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY grid must already be allocated */

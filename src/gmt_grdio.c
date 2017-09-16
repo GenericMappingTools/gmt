@@ -987,12 +987,12 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 
 	size_t i = 0, j;
 	int val;
-	unsigned int direction = (magic) ? GMT_IN : GMT_OUT;
-	char tmp[GMT_LEN512] = {""};		/* But it's copied at most 256 chars into header->name so 256 should do */
+	unsigned int direction = (magic) ? GMT_IN : GMT_OUT, pos = 0;
+	char tmp[GMT_LEN512] = {""};	/* But it's copied at most 256 chars into header->name so 256 should do */
+	if (file[0] == '@') pos = 1;	/* At this point we will already have downloaded any remote file so skip the @ */
+	grdio_grd_parse_xy_units (GMT, header, &file[pos], direction);	/* Parse and strip xy scaling via +u<unit> modifier */
 
-	grdio_grd_parse_xy_units (GMT, header, file, direction);	/* Parse and strip xy scaling via +u<unit> modifier */
-
-	grdio_expand_filename (GMT, file, header->name);	/* May append a suffix to header->name */
+	grdio_expand_filename (GMT, &file[pos], header->name);	/* May append a suffix to header->name */
 
 	/* Must reset scale and invalid value because sometimes headers from input grids are
 	 * 'recycled' and used for output grids that may have a different type and z-range: */

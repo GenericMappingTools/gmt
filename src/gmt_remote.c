@@ -83,10 +83,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 * 2 : Place file in local (current) directory
 	 * Add 4 if the file may not be found and we should not complain about this here.
 	 */
-	unsigned int kind = 0, pos = 0, from = 0, to = 0, be_fussy;
+	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
 	CURL *Curl = NULL;
-	static char *ftp_dir[2] = {"/cache", ""}, *name[3] = {"CACHE", "USER", "LOCAL"};
+	static char *ftp_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
@@ -121,6 +121,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
+	if (gmtlib_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
+		from = (res == 1) ? 2 : 3;
+		to = GMT_CACHE_DIR;
+	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		sprintf (local_path, "%s", &file[pos]);
@@ -204,13 +208,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 }
 
 /* Support functions for SRTM tile grids
- * gmtlib_infile_is_srtm:	Determine if a SRTM 1 or 3 arc second request was given
+ * gmtlib_file_is_srtm:	Determine if a SRTM 1 or 3 arc second request was given
+ * gmtlib_file_is_srtmlist: Determine if file is a listfile with SRTM tile info
  * gmtlib_get_srtmlist:		Convert -Rw/e/s/n into a file with a list of the tiles needed
  */
 
-bool gmtlib_infile_is_srtm (struct GMT_CTRL *GMT, const char *file, unsigned int *res) {
+bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
 	size_t len = strlen(GMT_DATA_PREFIX);
-	gmt_M_unused (GMT);
+	gmt_M_unused (API);
 	if (file[0] != '@') return false;	/* Not a remote file */
 	if (strncmp (&file[1], GMT_DATA_PREFIX, len)) return false;	/* Not a remote earth_relief grid */
 	if (file[len+3] != 's') return false;	/* Not an arcsec grid */
@@ -220,17 +225,51 @@ bool gmtlib_infile_is_srtm (struct GMT_CTRL *GMT, const char *file, unsigned int
 	return true;
 }
 
-char *gmtlib_get_srtmlist  (struct GMT_CTRL *GMT, double wesn[], unsigned int res) {
+bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *file) {
+	size_t len = strlen(file);
+	gmt_M_unused (API);
+	if (len < 10) return false;	/* Too short a filename */
+	if (strncmp (&file[len-10], "=srtm", 5U)) return false;	/* Not that kind of file */
+	return true;	/* We got one */
+}
+
+bool gmtlib_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
+	/* Recognizes remote files like N42E126.SRTMGL1.nc */
+	char *p = NULL;
+	gmt_M_unused (API);
+	if ((p = strstr (file, ".SRTMGL")) == NULL) return false;	/* Nope */
+	*res = (unsigned int)(p[7] - '0');
+	return true;	/* Found it */
+}
+
+#define SRTM_EXT "nc"
+
+char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int res) {
 	int x, lon, lat, iw, ie, is, in, n_tiles = 0;
-	char srtmlist[PATH_MAX] = {""}, YS, XS;
+	char srtmlist[PATH_MAX] = {""}, YS, XS, *file = NULL;
 	FILE *fp = NULL;
 	
 	/* Get nearest whole integer wesn boundary */
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
 	is = (int)floor (wesn[YLO]);	in = (int)ceil (wesn[YHI]);
-	sprintf (srtmlist, "%s/=srtm%d.lis", (GMT->current.setting.run_mode == GMT_MODERN) ? GMT->parent->gwf_dir : GMT->parent->tmp_dir, res);
-	if ((fp = fopen (srtmlist, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", srtmlist);
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in */
+		sprintf (srtmlist, "%s/=srtm%d.000", API->GMT->parent->gwf_dir, res);
+		file = srtmlist;
+	}
+	else {	/* Must select a unique filename for the list */
+		char name[GMT_LEN16] = {""};
+		if (API->tmp_dir)			/* Have a recognized temp directory */
+			sprintf (srtmlist, "%s/", API->tmp_dir);
+		sprintf (name, "=srtm%d.XXX", res);
+		strcat (srtmlist, name);
+		if ((file = mktemp (srtmlist)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name.\n");
+			API->error = GMT_RUNTIME_ERROR;
+			return NULL;
+		}
+	}
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
 		return NULL;
 	}
 	for (lat = is; lat < in; lat++) {	/* Rows of tiles */
@@ -238,14 +277,76 @@ char *gmtlib_get_srtmlist  (struct GMT_CTRL *GMT, double wesn[], unsigned int re
 		for (x = iw; x < ie; x++) {	/* Columns of tiles */
 			lon = (x > 180) ? x - 360 : x;
 			XS = (lon < 0) ? 'W' : 'E';
-			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.nc\n", YS, abs(lat), XS, abs(lon), res);
+			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, SRTM_EXT);
 			n_tiles++;
 		}
 	}
 	fclose (fp);
 	if (n_tiles == 0) {	/* Shit happened */
-		gmt_remove_file (GMT, srtmlist);
+		gmt_remove_file (API->GMT, file);
 		return NULL;
 	}
-	return (strdup (srtmlist));
+	return (strdup (file));
 }
+
+struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file) {
+	/* Get here if file is a =srtm?.xxx file.  Need to do:
+	 * Set up a grdblend command and return the assembled grid
+	 */
+	unsigned int res = (file[strlen(file)-5] - '0');
+	struct GMT_GRID *G = NULL;
+	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
+	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
+	
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from listfile %s\n", file);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
+	
+	sprintf (cmd, "%s -R%g/%g/%g/%g -I%ds -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
+		return NULL;
+	}
+	if ((G = GMT_Read_VirtualFile (API, grid)) == NULL) {	/* Load in the resampled grid */
+		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to receive blended grid from grdblend\n");
+		return NULL;
+	}
+	G->header->orig_datatype = GMT_SHORT;	/* Since we know this */
+	return (G);
+}
+
+#if 0
+/* Code to apply and restore d2dxdy on integer grids (SRTM) */
+void gmtlib_srtm_d2dxdy (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int way) {
+	/* way = +1 apply d2dxdy to grid, -1 undo this effect */
+	int row, col;
+	uint64_t ij;
+	
+	if (way == +1) {	/* Apply d2dxdy to our grid */
+		int last_row = (int)(G->header->n_rows - 1), last_col = (int)(G->header->n_columns - 1);
+		for (row = last_row; row >= 0; row--) {	/* Start on last row and move to top */
+			ij = gmt_M_ijp (G->header, row, last_col);	/* Last node on this row */
+			for (col = last_col; col > 0; col--, ij--)
+				G->data[ij] -= G->data[ij-1];	/* Do d/dx from end to beginning of row */
+			if (row < last_row) {	/* Once past last row we can do d/dy */
+				ij = gmt_M_ijp (G->header, row, 0);	/* Start of current row */
+				for (col = 0; col < (int)G->header->n_columns; col++, ij++)
+					G->data[ij+G->header->mx] -= G->data[ij];
+			}
+		}
+	}
+	else if (way == -1) {	/* Undo d2dxdy for our grid */
+		for (row = 0; row < (int)G->header->n_rows; row++) {	/* Undo d/dx */
+			ij = gmt_M_ijp (G->header, row, 1);	/* 2nd node on this row */
+			for (col = 1; col < (int)G->header->n_columns; col++, ij++)
+				G->data[ij] += G->data[ij-1];
+			if (row) {	/* Undo d/dy once we have one row above us */
+				ij = gmt_M_ijp (G->header, row, 0);	/* Start of current row */
+				for (col = 0; col < (int)G->header->n_columns; col++, ij++)
+					G->data[ij] += G->data[ij-G->header->mx];
+			}
+		}
+	}
+	else
+		GMT_Report (API, GMT_MSG_NORMAL, "Must select way = -1 | +1!\n");
+}
+#endif
