@@ -397,6 +397,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			else
 				B[n].skip = (off_t)(B[n].RbR->n_byte * abs (B[n].out_j0));	/* do the fseek when we are ready to read first row */
 		}
+		//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid %s: out: %d/%d/%d/%d in: %d/%d/%d/%d offset: %d\n",
+		//	B[n].file, B[n].out_i0, B[n].out_i1, B[n].out_j1, B[n].out_j0, B[n].in_i0, B[n].in_i1, B[n].in_j1, B[n].in_j0, B[n].offset);
 
 		/* Allocate space for one entire row */
 
@@ -445,10 +447,14 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 		B[k].wt_y *= B[k].weight;
 
 		if (!B[k].open) {
+			off_t pos;
 			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
 				GMT_exit (GMT, GMT_GRID_READ_ERROR); return GMT_GRID_READ_ERROR;
 			}
-			if (B[k].skip) fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
+			if (B[k].skip && fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR)) {	/* Position for native binary files */
+				GMT_exit (GMT, GMT_GRDIO_SEEK_FAILED); return GMT_GRDIO_SEEK_FAILED;
+			}
+			pos = ftell (B[k].RbR->fp);
 			B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
 			B[k].open = true;
 		}
