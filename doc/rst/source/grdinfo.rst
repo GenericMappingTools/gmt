@@ -83,7 +83,7 @@ Optional Arguments
     the exact geographic region is given with **-Ii** (if not found
     then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
-    **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid's
+    **-I**\ *xinc*\ [/*yinc*\ ]. If **-Ib** is given we write each grid's
     bounding box polygon instead.
 
 .. _-L:

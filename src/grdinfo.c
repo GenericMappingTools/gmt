@@ -366,8 +366,10 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 			}
 		}
 		if (which != 2)	{	/* Single increment only, no slash situation */
-			if (ok[which])	/* Single increment and it works */
-				sprintf (text, "%d%c", int_inc[which], unit[use_unit[which]]);
+			if (ok[which]) {	/* Single increment and it works */
+				gmt_ascii_format_col (GMT, tmptxt, inc[which], GMT_OUT, GMT_Z);
+				sprintf (text, "%s (%d%c)", tmptxt, int_inc[which], unit[use_unit[which]]);
+			}
 			else
 				gmt_ascii_format_col (GMT, text, inc[which], GMT_OUT, GMT_Z);
 		}
@@ -613,8 +615,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
-			//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-			//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Z);	strcat (record, text);
 			smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
@@ -781,8 +781,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
-				//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
-				//if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->x_units);
 				sprintf (text, " n_columns: %d", G->header->n_columns);	strcat (record, text);
@@ -791,9 +789,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
-				//if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-				//strcat (record, " y_inc: ");	strcat (record, text);
 				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->y_units);
 				sprintf (text, " n_rows: %d", G->header->n_rows);	strcat (record, text);
