@@ -290,10 +290,10 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 }
 
 struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file) {
-	/* Get here if file is a =srtm?.xxx file.  Need to do:
+	/* Get here if file is a =srtm?.xxxxxx file.  Need to do:
 	 * Set up a grdblend command and return the assembled grid
 	 */
-	unsigned int res = (file[strlen(file)-5] - '0');
+	unsigned int res = (file[strlen(file)-8] - '0');
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
 	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
