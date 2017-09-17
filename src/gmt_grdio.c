@@ -1835,6 +1835,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		size_t len;
 		struct GMTAPI_CTRL *API = GMT->parent;
 		int argc = 0; char **argv = NULL;
+		char file[GMT_LEN32] = {""}, *txt = NULL;
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create argc, argv from linked structure options!\n");
@@ -1843,10 +1844,16 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320-1);
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
-			len += strlen (argv[i]) + 1;
+			if (gmtlib_file_is_srtmlist (API, argv[i])) {	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
+				sprintf (file, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
+				txt = file;
+			}
+			else
+				txt = argv[i];
+			len += strlen (txt) + 1;
 			if (len >= GMT_GRID_COMMAND_LEN320) continue;
 			strcat (header->command, " ");
-			strcat (header->command, argv[i]);
+			strcat (header->command, txt);
 		}
 		if (len < GMT_GRID_COMMAND_LEN320)
 			header->command[len] = 0;

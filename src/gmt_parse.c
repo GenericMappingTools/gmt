@@ -719,8 +719,12 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or numbers] */
-			sprintf (buffer, "%s", opt->arg);
+		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
+			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
+				sprintf (buffer, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
+			else
+				sprintf (buffer, "%s", opt->arg);
+		}
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
 		else							/* Regular -? commandline argument without argument */
