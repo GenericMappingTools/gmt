@@ -253,7 +253,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
 	is = (int)floor (wesn[YLO]);	in = (int)ceil (wesn[YHI]);
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in */
-		sprintf (srtmlist, "%s/=srtm%d.000", API->GMT->parent->gwf_dir, res);
+		sprintf (srtmlist, "%s/=srtm%d.000000", API->GMT->parent->gwf_dir, res);
 		file = srtmlist;
 	}
 	else {	/* Must select a unique filename for the list */
