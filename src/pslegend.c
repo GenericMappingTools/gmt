@@ -618,9 +618,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (xy_mode, PSL->internal.origin, 2, char);
 	gmt_M_memcpy (xy_offset, PSL->internal.offset, 2, double);
 
-	if ((opt = GMT_Find_Option (API, 'X', options)) == NULL)
+	if ((opt = GMT_Find_Option (API, 'X', options)) != NULL)
 		GMT_Delete_Option (API, opt, &options);
-	if ((opt = GMT_Find_Option (API, 'Y', options)) == NULL)
+	if ((opt = GMT_Find_Option (API, 'Y', options)) != NULL)
 		GMT_Delete_Option (API, opt, &options);
 
 	gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
