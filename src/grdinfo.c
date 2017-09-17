@@ -345,6 +345,67 @@ L_use_it:		row = 0;	/* Get here by goto and use is still true */
 	}
 }
 
+GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned int which, char *text) {
+	char tmptxt[GMT_LEN64] = {""};
+	if (gmt_M_is_geographic (GMT, GMT_IN) && ((which == 2 && inc[GMT_X] < 1.0 && inc[GMT_Y] < 1.0) || (which != 2 && inc[which] < 1.0))) {	/* See if we can report smart increments */
+		unsigned int col, s, k, int_inc[2], use_unit[2];
+		bool ok[2] = {false, false};
+		double new_inc;
+		static int try[10] = {30, 20, 15, 10, 6, 5, 4, 3, 2, 1}, scl[2] = {60, 3600};
+		static char unit[2] = {'m', 's'};
+		/* See if we can use arc units */
+		for (col = ((which == 2) ? GMT_X : which); col <= ((which == 2) ? GMT_Y : which); col++) {
+			for (s = 0, ok[col] = false; !ok[col] && s < 2; s++) {
+				for (k = 0; !ok[col] && k < 10; k++) {
+					new_inc = inc[col] * scl[s];	/* Now in minutes or seconds */
+					int_inc[col] = try[k] * irint (new_inc / try[k]);	/* Nearest in given multiple */
+					if (fabs ((new_inc - int_inc[col])/new_inc) < GMT_CONV4_LIMIT) {	/* Yes, hit bingo */
+						ok[col] = true;	use_unit[col] = s;
+					}
+				}
+			}
+		}
+		if (which != 2)	{	/* Single increment only, no slash situation */
+			if (ok[which])	/* Single increment and it works */
+				sprintf (text, "%d%c", int_inc[which], unit[use_unit[which]]);
+			else
+				gmt_ascii_format_col (GMT, text, inc[which], GMT_OUT, GMT_Z);
+		}
+		else if (ok[GMT_X] && ok[GMT_Y]) {	/* Both can use arc min or sec */
+			if (int_inc[GMT_X] == int_inc[GMT_Y] && use_unit[GMT_X] == use_unit[GMT_Y])	/* Same increments */
+				sprintf (text, "%d%c", int_inc[GMT_X], unit[use_unit[GMT_X]]);
+			else	/* Different so must use slash */
+				sprintf (text, "%d%c/%d%c", int_inc[GMT_X], unit[use_unit[GMT_X]], int_inc[GMT_Y], unit[use_unit[GMT_Y]]);
+		}
+		else if (ok[GMT_X]) {	/* Only x-inc can use arc units */
+			gmt_ascii_format_col (GMT, tmptxt, inc[GMT_Y], GMT_OUT, GMT_Z);
+			sprintf (text, "%d%c/%s", int_inc[GMT_X], unit[use_unit[GMT_X]], tmptxt);
+		}
+		else if (ok[GMT_Y]) {	/* Only y-inc can use arc units */
+			gmt_ascii_format_col (GMT, tmptxt, inc[GMT_X], GMT_OUT, GMT_Z);
+			sprintf (text, "%s/%d%c", tmptxt, int_inc[GMT_Y], unit[use_unit[GMT_Y]]);
+		}
+		else {	/* Neither can use arc units */
+			gmt_ascii_format_col (GMT, text, inc[GMT_X], GMT_OUT, GMT_Z);
+			gmt_ascii_format_col (GMT, tmptxt, inc[GMT_Y], GMT_OUT, GMT_Z);
+			strcat (text, "/");	strcat (text, tmptxt);
+		}
+	}
+	else {	/* Cartesian */
+		if (which == 2) {
+			if (doubleAlmostEqual (inc[GMT_X], inc[GMT_Y]))
+				gmt_ascii_format_col (GMT, text, inc[GMT_X], GMT_OUT, GMT_Z);
+			else {
+				gmt_ascii_format_col (GMT, text, inc[GMT_X], GMT_OUT, GMT_Z);
+				gmt_ascii_format_col (GMT, tmptxt, inc[GMT_Y], GMT_OUT, GMT_Z);
+				strcat (text, "/");	strcat (text, tmptxt);
+			}
+		}
+		else
+			gmt_ascii_format_col (GMT, text, inc[which], GMT_OUT, GMT_Z);
+	}
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -552,8 +613,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
-			gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-			gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Z);	strcat (record, text);
+			//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+			//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Z);	strcat (record, text);
+			smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
@@ -719,9 +781,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
-				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
-				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-				strcat (record, " x_inc: ");	strcat (record, text);
+				//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
+				//if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
+				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->x_units);
 				sprintf (text, " n_columns: %d", G->header->n_columns);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
@@ -729,9 +791,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
-				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-				strcat (record, " y_inc: ");	strcat (record, text);
+				//gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
+				//if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
+				//strcat (record, " y_inc: ");	strcat (record, text);
+				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->y_units);
 				sprintf (text, " n_rows: %d", G->header->n_rows);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
