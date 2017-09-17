@@ -245,9 +245,13 @@ bool gmtlib_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigne
 #define SRTM_EXT "nc"
 
 char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int res) {
+	/* Builds a list of SRTM tile to download for the chosen region and resolution.
+	 * Uses the srtm_tiles.nc grid on the cache to know if a 1x1 degree has a tile. */
 	int x, lon, lat, iw, ie, is, in, n_tiles = 0;
+	uint64_t node;
 	char srtmlist[PATH_MAX] = {""}, YS, XS, *file = NULL;
 	FILE *fp = NULL;
+	struct GMT_GRID *SRTM = NULL;
 	
 	/* Get nearest whole integer wesn boundary */
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
@@ -272,20 +276,30 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
 		return NULL;
 	}
+	if ((SRTM = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "@srtm_tiles.nc", NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to obtain list of available SRTM tiles.\n");
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
 	for (lat = is; lat < in; lat++) {	/* Rows of tiles */
+		if (lat < -60 || lat > 59) continue;	/* Outside SRTM band */
 		YS = (lat < 0) ? 'S' : 'N';
 		for (x = iw; x < ie; x++) {	/* Columns of tiles */
-			lon = (x > 180) ? x - 360 : x;
+			lon = (x < 0) ? x + 360 : x;	/* Get lon in 0-360 range */
+			node = gmt_M_ijp (SRTM->header, 60-lat, lon);
+			if (SRTM->data[node] == 0) continue;	/* Missing SRTM tile */
+			lon = (x >= 180) ? x - 360 : x;	/* Need lons 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
 			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, SRTM_EXT);
 			n_tiles++;
 		}
 	}
 	fclose (fp);
-	if (n_tiles == 0) {	/* Shit happened */
-		gmt_remove_file (API->GMT, file);
-		return NULL;
+	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
 	}
+	if (n_tiles == 0)	/* No tiles inside region */
+		GMT_Report (API, GMT_MSG_VERBOSE, "gmtlib_get_srtmlist: Warning: No SRTM tiles available for your region.\n");
 	return (strdup (file));
 }
 
