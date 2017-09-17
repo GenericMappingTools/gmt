@@ -124,7 +124,7 @@ GMT_LOCAL int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HE
 		}
 		if (h->type == type) {	/* Our file is in one of the unsupported formats that cannot do row-by-row i/o */
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid format type %s for file %s is not supported for row-by-row i/o.\n", not_supported[i], file);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "We will create a temporary output file which will be converted (vi grdconvert) to your chosen format.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "We will create a temporary output file which will be converted (via grdconvert) to your chosen format.\n");
 			return (1);
 		}
 	}

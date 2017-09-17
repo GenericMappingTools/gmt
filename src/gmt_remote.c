@@ -89,6 +89,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	static char *ftp_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
+	char srtmdir[PATH_MAX] = {""};
 	struct FtpFile ftpfile = {NULL, NULL};
 
 	if (!file_name) return 0;   /* Got nutin' */
@@ -124,6 +125,16 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (gmtlib_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
+		sprintf (srtmdir, "%s/srtm%d", user_dir[GMT_CACHE_DIR], res);
+		/* Check if srtm1|3 subdir exist - if not create it */
+		if (access (srtmdir, R_OK)) {
+#ifndef _WIN32
+			if (mkdir (srtmdir, (mode_t)0777))
+#else
+			if (mkdir (srtmdir))
+#endif
+	            		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
+		}
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
@@ -146,7 +157,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (file);
 		return 0;
 	}
-	if (mode != GMT_LOCAL_DIR && user_dir[to]) sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
+	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
+		if (from >= 2)
+			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
+		else
+			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
+	}
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
@@ -242,8 +258,6 @@ bool gmtlib_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigne
 	return true;	/* Found it */
 }
 
-#define SRTM_EXT "nc"
-
 char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int res) {
 	/* Builds a list of SRTM tile to download for the chosen region and resolution.
 	 * Uses the srtm_tiles.nc grid on the cache to know if a 1x1 degree has a tile. */
@@ -290,7 +304,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			if (SRTM->data[node] == 0) continue;	/* Missing SRTM tile */
 			lon = (x >= 180) ? x - 360 : x;	/* Need lons 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
-			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, SRTM_EXT);
+			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, GMT_SRTM_EXTENSION);
 			n_tiles++;
 		}
 	}
