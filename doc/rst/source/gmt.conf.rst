@@ -369,8 +369,19 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _GMT Miscellaneous Parameters:
 
-.. _GMT_COMPATIBILITY:
+.. _GMT_AUTO_DOWNLOAD:
 
+**GMT_AUTO_DOWNLOAD**
+    Determines if GMT is allowed to automatically download datasets and
+    files from the remote server selected via **GMT_DATA_URL**.  Default
+    is *on* but you can turn this off by setting it to *off*.
+
+.. _GMT_DATA_URL:
+
+**GMT_DATA_URL**
+    Address of the data directory on the remote server [The SOEST server].
+
+.. _GMT_COMPATIBILITY:
 
 **GMT_COMPATIBILITY**
     Determines if this GMT version should be able to parse command-line

@@ -74,6 +74,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL int clear_cache (struct GMTAPI_CTRL *API) {
+	char dir[PATH_MAX] = {""};
+	sprintf (dir, "%s/srtm1", API->GMT->session.CACHEDIR);
+	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
+		return GMT_RUNTIME_ERROR;
+	sprintf (dir, "%s/srtm3", API->GMT->session.CACHEDIR);
+	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
+		return GMT_RUNTIME_ERROR;
+	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+		return GMT_RUNTIME_ERROR;
+	return GMT_NOERROR;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -102,7 +115,7 @@ int GMT_clear (void *V_API, int mode, void *args) {
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
 	if (!strcmp (opt->arg, "all")) {	/* Clear all */
-		if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+		if (clear_cache (API))
 			error = GMT_RUNTIME_ERROR;
 		if (gmt_remove_file (API->GMT, "gmt.history"))
 			error = GMT_RUNTIME_ERROR;
@@ -110,7 +123,7 @@ int GMT_clear (void *V_API, int mode, void *args) {
 			error = GMT_RUNTIME_ERROR;
 	}
 	else if (!strcmp (opt->arg, "cache")) {	/* Clear the cache */
-		if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+		if (clear_cache (API))
 			error = GMT_RUNTIME_ERROR;
 	}
 	else if (!strcmp (opt->arg, "history")) {	/* Clear the history */

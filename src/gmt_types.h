@@ -362,6 +362,7 @@ struct GMT_SESSION {
 	char *DATADIR;			/* Path to one or more directories with data sets */
 	char *TMPDIR;			/* Path to the directory directory for isolation mode */
 	char *CUSTOM_LIBS;		/* Names of one or more comma-separated GMT-compatible shared libraries */
+	char *DATAURL;			/* URL where to get remote @files */
 	char **user_media_name;		/* Length of array with custom media dimensions */
 	struct GMT_FONTSPEC *font;		/* Array with font names and height specification */
 	struct GMT_MEDIA *user_media;		/* Array with custom media dimensions */

@@ -183,6 +183,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
 	{ 0, "GMT_AUTO_DOWNLOAD"},
+	{ 0, "GMT_DATA_URL"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -2600,6 +2601,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
 		}
 	}
+
+	if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL was set */
+		GMT->session.DATAURL = strdup (this_c);
+	else
+		GMT->session.DATAURL = strdup (GMT_DATA_URL);	/* SOEST default */
 
 	/* Determine GMT_DATADIR (data directories) */
 
@@ -5358,6 +5364,7 @@ GMT_LOCAL void gmtinit_free_dirnames (struct GMT_CTRL *GMT) {
 	gmt_M_str_free (GMT->session.CACHEDIR);
 	gmt_M_str_free (GMT->session.TMPDIR);
 	gmt_M_str_free (GMT->session.CUSTOM_LIBS);
+	gmt_M_str_free (GMT->session.DATAURL);
 }
 
 
@@ -9010,6 +9017,18 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
+		case GMTCASE_GMT_DATA_URL:
+			if (*value) {
+				if (GMT->session.DATAURL) {
+					if ((strcmp (GMT->session.DATAURL, value) == 0))
+						break; /* stop here if string in place is equal */
+					gmt_M_str_free (GMT->session.DATAURL);
+				}
+				/* Set session DATAURL dir */
+				GMT->session.DATAURL = strdup (value);
+			}
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
 				if (GMT->session.CUSTOM_LIBS) {
@@ -10152,6 +10171,10 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_LEN256-1);
 			break;
 
+		case GMTCASE_GMT_DATA_URL:
+			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_LEN256-1);
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256-1);
 			break;
@@ -10860,6 +10883,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	Csave->session.DATADIR = (GMT->session.DATADIR) ? strdup (GMT->session.DATADIR) : NULL;
 	Csave->session.TMPDIR = (GMT->session.TMPDIR) ? strdup (GMT->session.TMPDIR) : NULL;
 	Csave->session.CUSTOM_LIBS = (GMT->session.CUSTOM_LIBS) ? strdup (GMT->session.CUSTOM_LIBS) : NULL;
+	Csave->session.DATAURL = (GMT->session.DATAURL) ? strdup (GMT->session.DATAURL) : NULL;
 
 	/* Reset all the common.?.active settings to false */
 
@@ -11935,6 +11959,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->session.DATADIR = (Ccopy->session.DATADIR) ? strdup (Ccopy->session.DATADIR) : NULL;
 	GMT->session.TMPDIR = (Ccopy->session.TMPDIR) ? strdup (Ccopy->session.TMPDIR) : NULL;
 	GMT->session.CUSTOM_LIBS = (Ccopy->session.CUSTOM_LIBS) ? strdup (Ccopy->session.CUSTOM_LIBS) : NULL;
+	GMT->session.DATAURL = (Ccopy->session.DATAURL) ? strdup (Ccopy->session.DATAURL) : NULL;
 
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {

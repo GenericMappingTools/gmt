@@ -33,7 +33,7 @@ struct GMT_DATA_INFO {
 	char remark[GMT_LEN128];	/* What it is */
 };
 
-#define GMT_N_DATA_INFO_ITEMS 13
+#define GMT_N_DATA_INFO_ITEMS 15
 
 GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
 	{"60m", "112K", "Earth Relief at 60x60 arc minutes obtained by Gaussian spherical filtering (111 km fullwidth) of ETOPO1 (Ice g) [NOAA]"},
@@ -48,7 +48,9 @@ GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
 	{"02m",  "58M", "Earth Relief at 2x2 arc minutes provided by ETOPO2v2g_f4 [NOAA]"},
 	{"01m", "214M", "Earth Relief at 1x1 arc minutes provided by ETOPO1 (Ice g) [NOAA]"},
 	{"30s", "778M", "Earth Relief at 30x30 arc seconds provided by SRTM30+ [Sandwell/SIO]"},
-	{"15s", "2.6G", "Earth Relief at 15x15 arc seconds provided by SRTM15+ [Sandwell/SIO]"}
+	{"15s", "2.6G", "Earth Relief at 15x15 arc seconds provided by SRTM15+ [Sandwell/SIO]"},
+	{"03s", "6.8G", "Earth Relief at 3x3 arc seconds provided by SRTMGL3 (land only) [NASA/USGS]"},
+	{"01s",  "41G", "Earth Relief at 1x1 arc seconds provided by SRTMGL1 (land only) [NASA/USGS]"}
 };
 
 #endif /* GMT_REMOTE_H */
