@@ -677,7 +677,7 @@ int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	if (hDataset == NULL)
 		return (GMT_GRDIO_BAD_VAL);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n",
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "File %s reads with GDAL driver %s\n",
 	            header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	GDALDestroyDriverManager();
