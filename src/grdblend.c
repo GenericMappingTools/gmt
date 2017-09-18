@@ -123,8 +123,8 @@ GMT_LOCAL int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HE
 			return (GMT_GRDIO_UNKNOWN_FORMAT);
 		}
 		if (h->type == type) {	/* Our file is in one of the unsupported formats that cannot do row-by-row i/o */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid format type %s for file %s is not supported for row-by-row i/o.\n", not_supported[i], file);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "We will create a temporary output file which will be converted (via grdconvert) to your chosen format.\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid format type %s for file %s is not supported for row-by-row i/o.\n", not_supported[i], file);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "We will create a temporary output file which will be converted (via grdconvert) to your chosen format.\n");
 			return (1);
 		}
 	}
@@ -189,7 +189,8 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 
 GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
 	int type, status, not_supported;
-	unsigned int one_or_zero = !h->registration, n = 0, nr, do_sample;
+	unsigned int one_or_zero = !h->registration, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
+	bool srtm_job = false;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, *V_level = "qntcvld", buffer[GMT_BUFSIZ] = {""};
 	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
@@ -197,6 +198,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		char *file;
 		char *region;
 		double weight;
+		bool download;
 	} *L = NULL;
 
 	if (n_files > 1) {	/* Got a bunch of grid files */
@@ -209,9 +211,11 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	}
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
+		unsigned int res;
 		char *line = NULL, r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
 		double weight;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
+		
 		do {	/* Keep returning records until we reach EOF */
 			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
@@ -237,6 +241,14 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			L[n].region = (nr > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
 			if (n == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
 			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
+			if (gmt_file_is_srtmtile (GMT->parent, L[n].file, &res)) {
+				srtm_res = res;
+				srtm_job = true;
+				if (gmt_access (GMT, L[n].file, F_OK)) {	/* Tile must be downloaded */
+					L[n].download = true;
+					n_download++;
+				}
+			}
 			n++;
 		} while (true);
 		gmt_reset_meminc (GMT);
@@ -246,6 +258,10 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	B = gmt_M_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
+		
+		if (L[n].download)
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, L[n].file);
+			
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			for (n = 0; n < n_files; n++) {
@@ -285,7 +301,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		Iargs[0] = Rargs[0] = '\0';
 		do_sample = 0;
 		if (not_supported) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
 			do_sample |= 2;
 		}
 		if (fabs((B[n].G->header->inc[GMT_X] - h->inc[GMT_X]) / h->inc[GMT_X]) > 0.002 ||
@@ -340,6 +356,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
+				if (srtm_job)
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */

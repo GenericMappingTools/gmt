@@ -122,7 +122,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
-	if (gmtlib_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
+	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
 		sprintf (srtmdir, "%s/srtm%d", user_dir[GMT_CACHE_DIR], res);
@@ -249,7 +249,7 @@ bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *file) {
 	return true;	/* We got one */
 }
 
-bool gmtlib_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
+bool gmt_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
 	/* Recognizes remote files like N42E126.SRTMGL1.nc */
 	char *p = NULL;
 	gmt_M_unused (API);
@@ -326,7 +326,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
 	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
 	
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from listfile %s\n", file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	
 	sprintf (cmd, "%s -R%g/%g/%g/%g -I%ds -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
