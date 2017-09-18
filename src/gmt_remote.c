@@ -85,18 +85,21 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
+	bool is_srtm = false;
+	size_t len;
 	CURL *Curl = NULL;
 	static char *ftp_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
-	char srtmdir[PATH_MAX] = {""};
+	char srtmdir[PATH_MAX] = {""}, *srtm_local = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
 
 	if (!file_name) return 0;   /* Got nutin' */
 
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
 	
-	file = strdup (file_name);
+	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
+	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
@@ -117,7 +120,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	/* Return immediately if cannot be downloaded (for various reasons) */
 	if (!gmtlib_file_is_downloadable (GMT, file, &kind)) {
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
 		return (pos);
 	}
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
@@ -125,6 +128,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
+		is_srtm = true;
 		sprintf (srtmdir, "%s/srtm%d", user_dir[GMT_CACHE_DIR], res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK)) {
@@ -144,22 +148,26 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
   	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to not verify the peer\n");
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to follow redirects\n");
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
 		return 0;
 	}
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
-		if (from >= 2)
+		if (is_srtm) {	/* Doing SRTM tiles */
 			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
+			srtm_local = strdup (local_path);	/* What we want the local file to be called */
+			len = strlen (local_path);
+			if (!strncmp (&local_path[len-3], ".nc", 3U)) strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
+		}
 		else
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
 	}
@@ -169,25 +177,31 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
-	else			/* Use GMT ftp dir, possible from subfolder cache */
+	else {			/* Use GMT ftp dir, possible from subfolder cache */
 		sprintf (url, "%s%s/%s", GMT->session.DATAURL, ftp_dir[from], &file[pos]);
+		len = strlen (url);
+		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U)) strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
+	}
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to read from %s\n", url);
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
+		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
 	ftpfile.filename = local_path;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl output callback function\n");
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
+		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
 	/* Set a pointer to our struct to pass to the callback */
 	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &ftpfile)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to write to %s\n", local_path);
-		gmt_M_str_free (file);
+		gmt_M_free (GMT, file);
+		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
 	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
@@ -211,6 +225,25 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
+	if (is_srtm) {	/* Convert JP2 file to NC for local cache storage */
+		static char *args = "=ns -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+		char *cmd = gmt_M_memory (GMT, NULL, strlen (local_path)+strlen (srtm_local)+strlen(args)+2, char);
+		sprintf (cmd, "%s %s%s", local_path, srtm_local, args);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
+		if (GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", local_path);
+			gmt_M_free (GMT, file);
+			gmt_M_free (GMT, cmd);
+			if (is_srtm) gmt_M_str_free (srtm_local);
+			return 0;
+		}
+		gmt_M_free (GMT, cmd);
+		if (gmt_remove_file (GMT, local_path))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
+		strcpy (local_path, srtm_local);
+		gmt_M_str_free (srtm_local);
+	}
+	
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
@@ -218,7 +251,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		else
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
-	gmt_M_str_free (file);
+	gmt_M_free (GMT, file);
 
 	return (pos);
 }
@@ -304,7 +337,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			if (SRTM->data[node] == 0) continue;	/* Missing SRTM tile */
 			lon = (x >= 180) ? x - 360 : x;	/* Need lons 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
-			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, GMT_SRTM_EXTENSION);
+			fprintf (fp, "@%c%2.2d%c%3.3d.SRTMGL%d.%s\n", YS, abs(lat), XS, abs(lon), res, GMT_SRTM_EXTENSION_LOCAL);
 			n_tiles++;
 		}
 	}

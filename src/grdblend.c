@@ -244,7 +244,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			if (gmt_file_is_srtmtile (GMT->parent, L[n].file, &res)) {
 				srtm_res = res;
 				srtm_job = true;
-				if (gmt_access (GMT, L[n].file, F_OK)) {	/* Tile must be downloaded */
+				if (gmt_access (GMT, &L[n].file[1], F_OK)) {	/* Tile must be downloaded */
 					L[n].download = true;
 					n_download++;
 				}
@@ -259,8 +259,11 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		
-		if (L[n].download)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, L[n].file);
+		if (L[n].download) {
+			char tile[8] = {""};
+			strncpy (tile, &L[n].file[1], 7U);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, tile);
+		}
 			
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
