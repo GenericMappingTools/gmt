@@ -116,6 +116,11 @@ if (NOT DEFINED GMT_TEST_DATA)
 	set (GMT_TEST_DATA ${GMT_SOURCE_DIR}/test/data)
 endif (NOT DEFINED GMT_TEST_DATA)
 
+# Default location of remote data server
+if (NOT DEFINED GMT_DATA_URL)
+	set (GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data")
+endif (NOT DEFINED GMT_DATA_URL)
+
 # The GMT copyright - string version to be used in a source file.
 set (GMT_COPYRIGHT_STRING)
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis and F. Wobbe\\n")

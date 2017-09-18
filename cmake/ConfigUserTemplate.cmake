@@ -103,6 +103,9 @@
 ## automatically detect the rights version or path.)
 ##
 
+# Set URL to GMT Data server [auto]:
+#set (GMT_DATA_URL "data_server_url")
+
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")
 

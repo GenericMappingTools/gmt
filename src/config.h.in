@@ -43,6 +43,9 @@
 #define GMT_SHARE_DIR "@CMAKE_INSTALL_PREFIX@/@GMT_DATADIR@"
 #define GMT_SHARE_DIR_RELATIVE "@GMT_DATADIR@"
 
+/* URL to remote files */
+#define GMT_DATA_URL "@GMT_DATA_URL@"
+
 /* for running and debugging in ${GMT_BINARY_DIR} */
 #cmakedefine SUPPORT_EXEC_IN_BINARY_DIR
 #define GMT_SHARE_DIR_DEBUG "@GMT_SOURCE_DIR@/share"
