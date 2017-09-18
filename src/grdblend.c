@@ -13,7 +13,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmt.soest.hawaii.edu
+ *	Contact info: gmSRTMt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  * grdblend reads any number of grid files that may partly overlap and
@@ -260,7 +260,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		
 		if (L[n].download)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, L[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, L[n].file);
 			
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
@@ -357,7 +357,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				if (srtm_job)
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
