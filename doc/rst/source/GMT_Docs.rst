@@ -2202,6 +2202,12 @@ Three classes of files are given special treatment in GMT.
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**.
 
+.. figure:: /_images/GMT_SRTM.*
+   :width: 500 px
+   :align: center
+
+   The 14297 1x1 tiles (red) for which SRTM 1 and 3 arc second data are available.
+
 Verbose operation
 -----------------
 
