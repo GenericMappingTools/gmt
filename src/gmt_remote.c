@@ -103,7 +103,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
 	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
-	if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
+	if (gmt_M_file_is_remotedata (file))	/* A remote @earth_relief_xxm|s grid */
+		pos = 1;
+	else if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
 		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
 			c[0] = '\0';
@@ -163,6 +165,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_free (GMT, file);
 		return 0;
 	}
+	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to set curl option to fail for 4xx responses\n");
+		gmt_M_free (GMT, file);
+		return 0;
+	}  
+
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
 		if (is_srtm) {	/* Doing SRTM tiles */
 			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
@@ -173,6 +181,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		else
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
 	}
+	if (kind == GMT_DATA_FILE && !strstr (local_path, ".grd")) strcat (local_path, ".grd");	/* Must supply the .grd */
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
@@ -181,6 +190,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		sprintf (url, "%s", file);
 	else {			/* Use GMT ftp dir, possible from subfolder cache */
 		sprintf (url, "%s%s/%s", GMT->session.DATAURL, ftp_dir[from], &file[pos]);
+		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U)) strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
 	}
@@ -210,7 +220,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		if (be_fussy || curl_err != CURLE_REMOTE_FILE_NOT_FOUND) {	/* Unexpected failure - want to bitch about it */
+		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 			if (ftpfile.fp != NULL) {
 				fclose (ftpfile.fp);

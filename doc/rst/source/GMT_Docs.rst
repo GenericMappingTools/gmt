@@ -2160,8 +2160,8 @@ downloaded automatically by GMT modules.  See :ref:`directory parameters <DIR Pa
 for details. Program output is always written to the current directory
 unless a full path has been specified.
 
-URLs and special files
-----------------------
+URLs and remote files
+---------------------
 
 Three classes of files are given special treatment in GMT.
 
@@ -2171,16 +2171,17 @@ Three classes of files are given special treatment in GMT.
    that grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    15 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
-   30s, 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
+   30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb, respectively). Once
    one of these have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** or **DIR_CACHE** (except if explicitly removed by the user).
    Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
    ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM 1 and 3 arc-sec tiles are version 3 and stored as highly
-   compressed JPEG2000 tiles.  These are downloaded as requested, stored in subdirectories
-   srtm1 and srtm3 of **DIR_CACHE**, and blended into a seamless grid using :doc:`grdblend`.
+   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are stored as highly
+   compressed JPEG2000 tiles on the server.  These are downloaded as requested, converted to netCDF
+   grids and stored in subdirectories srtm1 and srtm3 of **DIR_CACHE**, and assembled
+   into a seamless grid using :doc:`grdblend`.
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).  If the URL is actually a CGI Get
@@ -2195,7 +2196,8 @@ Three classes of files are given special treatment in GMT.
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
    can override that by setting the environmental parameter **$GMT_DATA_URL** or
-   the default setting for **GMT_DATA_URL**.
+   the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
+   parameter GMT_DATA_URL at compile time.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**.

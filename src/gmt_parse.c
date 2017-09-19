@@ -701,7 +701,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 	 * correspond to the linked options provided.
 	 */
 
-	char *txt = NULL, buffer[GMT_BUFSIZ] = {""};
+	char *txt = NULL, *c = NULL, buffer[GMT_BUFSIZ] = {""};
 	bool first = true;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
@@ -722,6 +722,11 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
 				sprintf (buffer, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
+			else if (gmt_M_file_is_remotedata (opt->arg) && (c = strstr (opt->arg, ".grd"))) {
+				c[0] = '\0';
+				sprintf (buffer, "%s", opt->arg);
+				c[0] = '.';
+			}
 			else
 				sprintf (buffer, "%s", opt->arg);
 		}

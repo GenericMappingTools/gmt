@@ -145,7 +145,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	int error = 0, fmode;
 	unsigned int first = 0;	/* Real start of filename */
 	
-	char path[GMT_BUFSIZ] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
+	char path[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -193,9 +193,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 
-		if (gmt_getdatapath (GMT, &opt->arg[first], path, fmode)) {	/* Found the file */
+		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
+			sprintf (file, "%s.grd", opt->arg);
+		else
+			strcpy (file, opt->arg);
+		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
-				p = strstr (path, &opt->arg[first]);	/* Start of filename */
+				p = strstr (path, &file[first]);	/* Start of filename */
 				if (!strcmp (p, path)) /* Current directory */
 					GMT_Put_Record (API, GMT_WRITE_TEXT, cwd);
 				else {
@@ -208,7 +212,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		}
 		else {
 			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
-			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &opt->arg[first]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &file[first]);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

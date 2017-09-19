@@ -1834,7 +1834,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	if (options) {
 		size_t len;
 		struct GMTAPI_CTRL *API = GMT->parent;
-		int argc = 0; char **argv = NULL;
+		int argc = 0; char **argv = NULL, *c = NULL;
 		char file[GMT_LEN32] = {""}, *txt = NULL;
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
@@ -1846,6 +1846,12 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			if (gmtlib_file_is_srtmlist (API, argv[i])) {	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
 				sprintf (file, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
+				txt = file;
+			}
+			else if (gmt_M_file_is_remotedata (argv[i]) && (c = strstr (argv[i], ".grd"))) {
+				c[0] = '\0';
+				sprintf (file, "%s", argv[i]);
+				c[0] = '.';
 				txt = file;
 			}
 			else

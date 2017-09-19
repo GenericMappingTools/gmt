@@ -118,7 +118,7 @@ endif (NOT DEFINED GMT_TEST_DATA)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_URL)
-	set (GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data")
+	set (GMT_DATA_URL "http://www.soest.hawaii.edu/gmt/data")
 endif (NOT DEFINED GMT_DATA_URL)
 
 # The GMT copyright - string version to be used in a source file.
