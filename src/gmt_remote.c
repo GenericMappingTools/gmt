@@ -63,12 +63,14 @@ GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void 
 GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
 	char tag[4] = {""};
-	int k, match = -1;
-	strncpy (tag, &file[strlen(file)-7], 3U);
+	int k, match = -1, len = (int)strlen(file);
+	strncpy (tag, &file[len-3], 3U);
 	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [size is %s].\n", &file[1], gmt_data_info[k].size);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", &file[1], gmt_data_info[k].remark);
+			char name[GMT_LEN32] = {""};
+			(len == 3) ? sprintf (name, "earth_relief_%s", file) : sprintf (name, "%s", &file[1]);
+			if (len > 3) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", name, gmt_data_info[k].remark);
 			match = k;
 		}
 	}
@@ -354,15 +356,17 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	/* Get here if file is a =srtm?.xxxxxx file.  Need to do:
 	 * Set up a grdblend command and return the assembled grid
 	 */
-	unsigned int res = (file[strlen(file)-8] - '0');
+	char res = file[strlen(file)-8];
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
-	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
+	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""}, tag[4] = {"01s"};
 	
+	tag[1] = res;
+	give_data_attribution (API->GMT, tag);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	
-	sprintf (cmd, "%s -R%g/%g/%g/%g -I%ds -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	sprintf (cmd, "%s -R%g/%g/%g/%g -I%cs -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;
