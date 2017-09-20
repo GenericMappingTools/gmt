@@ -45,6 +45,7 @@
  * PSL_beginlayer	: Place begin object group DSC comment.
  * PSL_beginplot	: Initialize parameters for a new plot.
  * PSL_beginsession	: Creates a new PSL session
+ * PSL_copy		: Writes the given string as is to the PS output
  * PSL_endaxes		: Turns off mapping of user coordinates to PS units
  * PSL_endclipping	: Restores previous clipping path
  * PSL_endlayer		: Place end object group DSC comment.
@@ -3550,6 +3551,19 @@ int PSL_beginlayer (struct PSL_CTRL *PSL, int layer) {
 int PSL_endlayer (struct PSL_CTRL *PSL) {
 	/* Issue end group command */
 	PSL_command (PSL, "%%%%EndObject\n");
+	return (PSL_NO_ERROR);
+}
+
+int PSL_copy (struct PSL_CTRL *PSL, const char *txt) {
+	/* Just copies the given text as is to the PSL output stream or buffer */
+	if (PSL->internal.memory) {
+		size_t len = strlen (txt);
+		psl_prepare_buffer (PSL, len); /* Make sure we have enough memory to hold the text */ 
+		strncat (&(PSL->internal.buffer[PSL->internal.n]), txt, len); 
+		PSL->internal.n += len;
+	}
+	else	/* Just write to the PS file */
+		fprintf (PSL->internal.fp, "%s\n", txt);
 	return (PSL_NO_ERROR);
 }
 

@@ -167,6 +167,14 @@ initialization:
     Windows. Under non-Windows this functions is just a macro that
     becomes fopen.
 
+**void PSL_copy** (**struct PSL_CTRL** *\*PSL*, **char** *\*text*);
+
+    This functions simply adds the given *test* as is to the output
+    PostScript stream (or internal buffer).  It is used when the
+    text may exceed the internal 4096 buffer used in PSL_command
+    (which is implemented as a printf function and hence a buffer
+    of fixed size is used.)
+
 **void PSL_free** (**void** *\*ptr*)
 
     This function frees up the memory allocated inside PSL.
