@@ -250,13 +250,14 @@ struct GMT_IO {				/* Used to process input data records */
 	bool read_mixed;		/* true if we are reading ASCII x y [z] [variable numbers of text] */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
-
+	bool first_rec;			/* true when reading very first data record in a dataset */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
 	unsigned int tbl_no;		/* Number of current table in entire data set */
 	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
+	unsigned int start_of_text;	/* Entry into record[] holding the start of non-numerical input */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header

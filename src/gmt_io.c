@@ -3193,13 +3193,20 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 
 		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
+		
+		if (GMT->current.io.first_rec) {
+			unsigned int type, n_columns;
+			//static char *flavor[3] = {"numerical", "text", "mixed"};
+			//type = gmtlib_examine_record (GMT, line, &n_columns);
+			//fprintf (stderr, "examined: n_columns = %d type = %s\n", n_columns, flavor[type]);
+			GMT->current.io.first_rec = false;
+		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 		gmt_update_prev_rec (GMT, n_use);
 
-
 		bad_record = set_nan_flag = false;	/* Initialize flags */
-		gmtio_set_current_record (GMT, line);		/* Keep copy of current record around */
+		gmtio_set_current_record (GMT, line);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;		/* Initialize counters */
 		in_col = -1;				/* Since we will increment right away inside the loop */
 
@@ -7952,6 +7959,48 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 		if (k > 0 && n_digits == 0) return (true);	/* Probably a file */
 	}
 	return (false);	/* This may in fact be numeric */
+}
+
+unsigned int gmtlib_examine_record (struct GMT_CTRL *GMT, char *record, unsigned int *n_columns) {
+	/* Examines this data record to determine the nature of the input.  There
+	 * are three different scenarios:
+	 * 1. Record only contains numerical columns: Set ncols and return 0.
+	 * 2. Record only contains text: Set ncols to 0 and return 1.
+	 * 3. Record contains leading numerics followed by text: Set ncols and return 2.
+	 */
+	unsigned ret_val = 0, pos = 0, type;
+	int got;
+	bool found_text = false;
+	char token[GMT_BUFSIZ];
+	double value;
+	*n_columns = 0;	/* Initialize column counter */
+	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
+		type = GMT->current.io.col_type[GMT_IN][*n_columns];
+		switch (type) {
+			case GMT_IS_ABSTIME:	/* Here we must read with chosen format */
+				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+				break;
+			default:	/* Here we must check quite a bit */
+				if (strchr (token, (int)'T') && (type == GMT_IS_UNKNOWN || type == GMT_IS_FLOAT))	/* Found a T in the argument - assume Absolute time or else junk */
+					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+				else	/* Let gmt_scanf_arg figure it out */
+					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
+				break;
+		}
+		if (got == GMT_IS_NAN)
+			found_text = true;	/* Found our first non-number */
+		else {
+			if (type == GMT_IS_UNKNOWN || got != (int)type) {
+				//fprintf (stderr, "%d [%d]\t", got, type);
+				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
+			}
+			//else
+				//fprintf (stderr, "%d\t", got);
+			(*n_columns)++;
+		}
+	}
+	if (found_text) ret_val = (*n_columns) ? 2 : 1;
+	return (ret_val);
 }
 
 /*! . */

@@ -3406,6 +3406,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	D_obj->alloc_level = GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);		/* false if we insist on ASCII reading */
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
+	GMT->current.io.first_rec = true;
 	if (GMT->common.R.active[RSET] && GMT->common.R.wesn[XLO] < -180.0 && GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
 
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
@@ -6453,6 +6454,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	GMT->current.io.need_previous = (GMT->common.g.active || GMT->current.io.skip_duplicates);
 	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	GMT->current.io.segment_header[0] = GMT->current.io.record[0] = 0;
+	GMT->current.io.first_rec = true;
 	if (direction == GMT_OUT && S_obj->messenger && S_obj->resource) {	/* Need to destroy the dummy container before passing data out */
 		if ((error = api_destroy_data_ptr (API, S_obj->actual_family, S_obj->resource)))	/* Do the dirty deed */
 			return_error (API,error);
