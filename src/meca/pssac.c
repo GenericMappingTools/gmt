@@ -727,10 +727,15 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		}
 
 		/* Default to plot trace at station locations on geographic maps */
-		if (!gmt_M_is_linear(GMT) && L[n].position == false) {
-			L[n].position = true;
-			gmt_geo_to_xy (GMT, hd.stlo, hd.stla, &L[n].x, &L[n].y);
+		if (!gmt_M_is_linear(GMT)) {
+			/* Default to plot trace at station locations on geographic maps */
+			if (L[n].position == false) {
+				L[n].position = true;
+				L[n].x = hd.stlo;
+				L[n].y = hd.stla;
+			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "=> %s: Geographic location: (%g, %g)\n", L[n].file, hd.stlo, hd.stla);
+			gmt_geo_to_xy (GMT, L[n].x, L[n].y, &L[n].x, &L[n].y);
 		}
 
 		if (L[n].position) {   /* position (X0,Y0) on plots */
