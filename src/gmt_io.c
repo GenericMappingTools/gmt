@@ -3082,10 +3082,13 @@ GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	int64_t in_col;
+	size_t spos;
 	bool done = false, bad_record, set_nan_flag = false;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token = NULL, *stringp = NULL;
 	double val;
-
+	char * (*strscan) (char **, const char *, size_t *);	/* Pointer to strsepz or strsepzp */
+	strscan = &strsepz;	/* This is the default scanner */
+	
 	/* gmtio_ascii_input will skip blank lines and shell comment lines which start
 	 * with #.  Fields may be separated by spaces, tabs, or commas.  The routine returns
 	 * the actual number of items read [or 0 for segment header and -1 for EOF]
@@ -3199,6 +3202,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT->current.io.record_type = gmtlib_examine_record (GMT, line, &GMT->current.io.n_numerical_cols);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", GMT->current.io.n_numerical_cols, flavor[GMT->current.io.record_type]);
 			GMT->current.io.first_rec = false;
+			if (GMT->current.io.record_type) strscan = &strsepzp;	/* Need to maintain position in record */
 		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
@@ -3208,9 +3212,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		gmtio_set_current_record (GMT, line);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;		/* Initialize counters */
 		in_col = -1;				/* Since we will increment right away inside the loop */
+		spos = 0;				/* Position in current string record */
 
 		stringp = line;
-		while (!bad_record && col_no < n_use && (token = strsepz (&stringp, GMT_TOKEN_SEPARATORS)) != NULL) {	/* Get one field at the time until we run out or have issues */
+		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT_TOKEN_SEPARATORS, &spos)) != NULL) {	/* Get one field at the time until we run out or have issues */
 			++in_col;	/* This is the actual column number in the input file */
 			if (GMT->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (GMT->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
@@ -3244,6 +3249,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					n_ok++;
 				}
 			}
+			if (col_no == GMT->current.io.n_numerical_cols && GMT->current.io.record_type == GMT_READ_MIXED)	/* Save start of text portion of the record */
+				GMT->current.io.start_of_text = spos;
 		}
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;

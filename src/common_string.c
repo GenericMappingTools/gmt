@@ -530,10 +530,23 @@ char * strsep (char **stringp, const char *delim) {
 }
 #endif /* ifndef HAVE_STRSEP */
 
-/* Like strsep but ignores empty fields */
-char *strsepz (char **stringp, const char *delim) {
+/* Like strsep but ignores empty fields.
+ * PW: Made two near-identical version of strsepz:
+ *   strsepz:  As it was, but with an unused 3rd argument.
+ *   strsepzp: 3rd argument returns position in original stringp.
+ */
+
+char *strsepz (char **stringp, const char *delim, size_t *pos) {
 	char *c;
+	(void)(pos);
 	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' );
+	return c;
+}
+
+char *strsepzp (char **stringp, const char *delim, size_t *pos) {
+	char *c;
+	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' ) (*pos)++;
+	if (c) (*pos) += strlen (c) + 1;
 	return c;
 }
 
