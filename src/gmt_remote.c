@@ -141,11 +141,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 #else
 			if (mkdir (srtmdir))
 #endif
-	            		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
+	            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
 		}
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
-		if (mode != GMT_LOCAL_DIR) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
+		if (mode != GMT_LOCAL_DIR)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		sprintf (local_path, "%s", &file[pos]);
 	}
 	/* Here we will try to download a file */
@@ -176,7 +178,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
 			srtm_local = strdup (local_path);	/* What we want the local file to be called */
 			len = strlen (local_path);
-			if (!strncmp (&local_path[len-3], ".nc", 3U)) strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
+			if (!strncmp (&local_path[len-3], ".nc", 3U))
+				strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
 		}
 		else
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
