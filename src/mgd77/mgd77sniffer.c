@@ -1020,6 +1020,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (API->error);
 	}
 
@@ -1831,8 +1832,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						old_anom = gmt_M_memory (GMT, old_anom, n_alloc, double);
 					}
 					new_anom[n] = D[i].number[MGD77_GOBS] - MGD77_Theoretical_Gravity (GMT, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], 4);
+                			new_anom[n] = (floor(10*new_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 					if (m == 1 && !gmt_M_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
+					old_anom[n] = (floor(10*old_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 					n++;
 				}
 				if (n < 2) {
@@ -1888,23 +1891,45 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				(m == 1) ? sprintf (text,"+eot ") : sprintf (text," ");
 				if (stats[MGD77_RLS_SIG] == 1.0) {
 					if (((1.0 < (stats[MGD77_RLS_SLOPE]-range) || 1.0 > (stats[MGD77_RLS_SLOPE]+range)) || (0.0 < (stats[MGD77_RLS_ICEPT]-range2) || 0.0 > (stats[MGD77_RLS_ICEPT]+range2)))) {
-						if (!strcmp(display,"E77"))
-							fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,M.NGDC_id,\
-							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-						else if (warn[SUMMARY_WARN]) {
-							sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,fstats[MGD77_RLS_SLOPE],\
-							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+						if (m == 0) { 
+							if (!strcmp(display,"E77"))
+								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,M.NGDC_id,\
+								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+							else if (warn[SUMMARY_WARN]) {
+								sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,fstats[MGD77_RLS_SLOPE],\
+								fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+								gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+							}
+						} else {
+							if (!strcmp(display,"E77"))
+                                                        	fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,M.NGDC_id,\
+                                                        	(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+                                                	else if (warn[SUMMARY_WARN]) {
+                                                        	sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,\
+                                                        	fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+                                                        	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+                                                	}
 						}
 					} else {
-						if (!strcmp(display,"E77"))
-							fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,M.NGDC_id,\
-							(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-						else if (warn[SUMMARY_WARN]) {
-							sprintf (buffer, "%s (faa) anomaly statistically the same as gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,\
-							fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
-						}
+						if (m == 0) { 
+							if (!strcmp(display,"E77"))
+								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,M.NGDC_id,\
+								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+							else if (warn[SUMMARY_WARN]) {
+								sprintf (buffer, "%s (faa) anomaly statistically the same as gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,\
+								fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+								gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+							}
+						} else {
+                                                        if (!strcmp(display,"E77"))
+                                                                fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,M.NGDC_id,\
+                                                                (int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+                                                        else if (warn[SUMMARY_WARN]) {
+                                                                sprintf (buffer, "%s (faa) anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,fstats[MGD77_RLS_SLOPE],\
+                                                                fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
+                                                                gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+                                                        }	
+						}	
 					}
 					if (m == 1 && stats[MGD77_RLS_CORR] > lastCorr) {
 						if (!strcmp(display,"E77"))
@@ -1936,8 +1961,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				for (i = n = 0; i < nvalues; i++) {
 					if (gmt_M_is_dnan(D[i].number[MGD77_GOBS]) || gmt_M_is_dnan(D[i].number[MGD77_FAA])) continue;
 					new_anom[n] = D[i].number[MGD77_GOBS] - MGD77_Theoretical_Gravity (GMT, (int)D[i].number[MGD77_LONGITUDE], (int)D[i].number[MGD77_LATITUDE], (int)m);
+					new_anom[n] = (floor(10.0*new_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 					if (stats[MGD77_RLS_CORR] > lastCorr && !gmt_M_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
+					old_anom[n] = (floor(10.0*old_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 					n++;
 				}
 				if (decimated) {
@@ -2044,12 +2071,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				MGD77_gcal_from_dt (GMT, &M, D[i].time, &cal);	/* No adjust for TZ; this is GMT UTC time */
 				n_days = (gmtlib_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 				/* Get date as decimal year */
-				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
+				date = MGD77_cal_to_fyear (GMT, &cal);  /* Get date as decimal year */
 				MGD77_igrf10syn (GMT, 0, date, 1, 0.0, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], IGRF);
 				if (gmt_M_is_dnan(new_anom[n] = D[i].number[MGD77_MTF2-(int)mtf1] - IGRF[MGD77_IGRF_F])) continue;
 				if (!gmt_M_is_dnan(D[i].number[MGD77_DIUR]))
 					new_anom[n] += D[i].number[MGD77_DIUR];
+				new_anom[n] = (floor(10*new_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 				old_anom[n] = D[i].number[MGD77_MAG];
+				old_anom[n] = (floor(10*old_anom[n]))/10.0; /* Force %.1f precision for regression analysis */
 				n++;
 			}
 			if (n > 0) { /* must have time records for mag recalculation */
@@ -2113,7 +2142,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						}
 					} else {
 						if (warn[SUMMARY_WARN]) {
-							sprintf (buffer, "%s (mag) anomaly same as expected (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,fstats[MGD77_RLS_SLOPE],\
+							sprintf (buffer, "%s (mag) anomaly statistically the same as mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,2-(int)mtf1,fstats[MGD77_RLS_SLOPE],\
 							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
