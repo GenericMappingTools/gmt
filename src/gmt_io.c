@@ -3194,11 +3194,11 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
 		
-		if (GMT->current.io.first_rec) {
+		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			unsigned int type, n_columns;
-			//static char *flavor[3] = {"numerical", "text", "mixed"};
-			//type = gmtlib_examine_record (GMT, line, &n_columns);
-			//fprintf (stderr, "examined: n_columns = %d type = %s\n", n_columns, flavor[type]);
+			static char *flavor[3] = {"numerical", "text", "mixed"};
+			type = gmtlib_examine_record (GMT, line, &n_columns);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", n_columns, flavor[type]);
 			GMT->current.io.first_rec = false;
 		}
 
@@ -7964,11 +7964,15 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 unsigned int gmtlib_examine_record (struct GMT_CTRL *GMT, char *record, unsigned int *n_columns) {
 	/* Examines this data record to determine the nature of the input.  There
 	 * are three different scenarios:
-	 * 1. Record only contains numerical columns: Set ncols and return 0.
-	 * 2. Record only contains text: Set ncols to 0 and return 1.
-	 * 3. Record contains leading numerics followed by text: Set ncols and return 2.
+	 * 1. Record only contains numerical columns: Set ncols and return GMT_READ_DATA [0].
+	 * 2. Record only contains text: Set ncols to 0 and return GMT_READ_TEXT [1].
+	 * 3. Record contains leading numerics followed by text: Set ncols and return GMT_READ_MIXED [2].
+	 * Note: The convoluted switch/test below reflects the fact that gmt_scanf_arg was set up
+	 * to parse command-line arguments.  For ABSTIME these must be in ISO format while for input
+	 * (which is what we are handling here) a huge variety of datetime strings are possible via
+	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned ret_val = 0, pos = 0, type;
+	unsigned ret_val = GMT_READ_DATA, pos = 0, type;
 	int got;
 	bool found_text = false;
 	char token[GMT_BUFSIZ];
@@ -7977,29 +7981,26 @@ unsigned int gmtlib_examine_record (struct GMT_CTRL *GMT, char *record, unsigned
 	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
 		type = GMT->current.io.col_type[GMT_IN][*n_columns];
 		switch (type) {
-			case GMT_IS_ABSTIME:	/* Here we must read with chosen format */
+			case GMT_IS_ABSTIME:	/* Here we must read with expected format */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 				break;
-			default:	/* Here we must check quite a bit */
-				if (strchr (token, (int)'T') && (type == GMT_IS_UNKNOWN || type == GMT_IS_FLOAT))	/* Found a T in the argument - assume Absolute time or else junk */
+			default:	/* Here we can check quite a bit more */
+				if (strchr (token, 'T'))	/* Found a T in the argument - must assume Absolute time or else we got junk */
 					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
-				else	/* Let gmt_scanf_arg figure it out */
+				else	/* Let gmt_scanf_arg figure it out for us since ABSTIME is dealt with earlier */
 					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
 				break;
 		}
 		if (got == GMT_IS_NAN)
-			found_text = true;	/* Found our first non-number */
-		else {
-			if (type == GMT_IS_UNKNOWN || got != (int)type) {
-				//fprintf (stderr, "%d [%d]\t", got, type);
+			found_text = true;	/* Parsing failed means we found our first non-number */
+		else {	/* Parsing was successful but perhaps we learned the input was of a different type than expected */
+			/* If input type was not known before, OR if it was the default float but our analysis showed something else, we update the expectation */
+			if (type == GMT_IS_UNKNOWN || (type == GMT_IS_FLOAT && got != (int)type))
 				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-			}
-			//else
-				//fprintf (stderr, "%d\t", got);
-			(*n_columns)++;
+			(*n_columns)++;	/* One more succesful numerical parsing */
 		}
 	}
-	if (found_text) ret_val = (*n_columns) ? 2 : 1;
+	if (found_text) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
 	return (ret_val);
 }
 
