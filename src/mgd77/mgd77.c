@@ -3516,6 +3516,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		if (ref_field_code == 88) {
 			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",4U)) {
 				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
+				k++;
 				if (P->Magnetics_Ref_Field[k] == '-' || P->Magnetics_Ref_Field[k] == ' ') k++;
 				y = atoi (&P->Magnetics_Ref_Field[k]);
 				if (y < MGD77_OLDEST_YY)	/* 2-digit year, we assume 20xx */
@@ -3524,6 +3525,8 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 					rfEnd = 1900 + y;
 				else	/* 4-digit year given */
 					rfEnd = y;
+				/* IGRF is typically definitive up to the ref field code year (e.g., IGRF-85 is definitive to 1985), then predictive for five years */
+				rfEnd += 5; 
 				rfStart = rfEnd - 5;
 			}
 			else {

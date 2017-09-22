@@ -3083,7 +3083,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	int64_t in_col;
 	bool done = false, bad_record, set_nan_flag = false;
-	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token, *stringp;
+	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token = NULL, *stringp = NULL;
 	double val;
 
 	/* gmtio_ascii_input will skip blank lines and shell comment lines which start
@@ -3195,10 +3195,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
-			unsigned int type, n_columns;
-			static char *flavor[3] = {"numerical", "text", "mixed"};
-			type = gmtlib_examine_record (GMT, line, &n_columns);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", n_columns, flavor[type]);
+			static char *flavor[3] = {"numerical only", "text only", "numerical with trailing text"};
+			GMT->current.io.record_type = gmtlib_examine_record (GMT, line, &GMT->current.io.n_numerical_cols);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", GMT->current.io.n_numerical_cols, flavor[GMT->current.io.record_type]);
 			GMT->current.io.first_rec = false;
 		}
 

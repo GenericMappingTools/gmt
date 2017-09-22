@@ -10659,7 +10659,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 			source_info_len = strlen (message);	/* Update length of message from 0 */
 		}
 	}
-	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag);
+	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s [L-%d]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, level);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */
