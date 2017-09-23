@@ -3400,7 +3400,6 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	D_obj->alloc_level = GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);		/* false if we insist on ASCII reading */
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
-	GMT->current.io.first_rec = true;
 	if (GMT->common.R.active[RSET] && GMT->common.R.wesn[XLO] < -180.0 && GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
 
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
@@ -3433,6 +3432,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
 				/* gmtlib_read_table will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+				GMT->current.io.first_rec = true;
 				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0) {	/* Only single tables if GMT/OGR */
 					gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj);
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
@@ -7764,6 +7764,7 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 	 	case GMT_IS_STREAM:
 	 	case GMT_IS_FDESC:
 			API->api_get_record = api_get_record_fp_first;
+			GMT->current.io.first_rec = true;
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Here we copy/read from a user memory location which is a matrix */
@@ -7879,7 +7880,7 @@ GMT_LOCAL int api_put_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, voi
 			break;
 		case GMT_WRITE_DATA:		/* Export either a formatted ASCII data record or a binary record */
 			if (GMT->common.b.ncol[GMT_OUT] == UINT_MAX) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
-			error = GMT->current.io.output (GMT, API->current_fp, GMT->common.b.ncol[GMT_OUT], record);
+			error = GMT->current.io.output (GMT, API->current_fp, GMT->common.b.ncol[GMT_OUT], record, NULL);
 			break;
 		case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
 			s = (record) ? record : GMT->current.io.record;

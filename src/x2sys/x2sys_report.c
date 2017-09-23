@@ -474,7 +474,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 				n_out++;
 				if (i == n1 || out[0] < adj[k].K[i+1].d) {	/* Time to output */
 					out[1] /= n_out;
-					GMT->current.io.output (GMT, fp, 2, out);
+					GMT->current.io.output (GMT, fp, 2, out, NULL);
 					out[1] = 0.0;
 					n_out = 0;
 				}

@@ -812,11 +812,12 @@ GMT_LOCAL int gmtio_x_write (struct GMT_CTRL *GMT, FILE *fp, off_t n) {
 }
 
 /*! . */
-GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr) {
+GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	/* Return 0 if record was suppressed, otherwise number of items written */
 	int k;
 	uint64_t i, n_out, col_pos;
 	double val;
+	gmt_M_unused (txt);
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT])		/* Write lat/lon instead of lon/lat */
@@ -835,10 +836,11 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 }
 
 /*! . */
-GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr) {
+GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, last, n_out;
 	int e = 0, wn = 0;
 	double val;
+	gmt_M_unused (txt);
 
 	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
@@ -865,6 +867,38 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 
 		wn += e;
 	}
+	return ((e < 0) ? -1 : 0);
+}
+
+/*! . */
+GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+	uint64_t i, col, n_out;
+	int e = 0, wn = 0;
+	double val;
+
+	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
+	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
+
+	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
+		if (GMT->common.o.active)	/* Which data column to pick */
+			col = GMT->current.io.col[GMT_OUT][i].col;
+		else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && i < 2)
+			col = 1 - i;	/* Write lat/lon instead of lon/lat */
+		else
+			col = i;	/* Just goto next column */
+		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
+			val = GMT->common.d.nan_proxy[GMT_OUT];
+
+		e = gmt_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
+
+		if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
+			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
+
+		wn += e;
+	}
+	fprintf (fp, "%s\n", txt);
+	
 	return ((e < 0) ? -1 : 0);
 }
 
@@ -3130,8 +3164,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	bool done = false, bad_record, set_nan_flag = false;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token = NULL, *stringp = NULL;
 	double val;
-	char * (*strscan) (char **, const char *, size_t *);	/* Pointer to strsepz or strsepzp */
-	strscan = &strsepz;	/* This is the default scanner */
+	static char * (*strscan) (char **, const char *, size_t *);	/* Pointer to strsepz or strsepzp */
 	
 	/* gmtio_ascii_input will skip blank lines and shell comment lines which start
 	 * with #.  Fields may be separated by spaces, tabs, or commas.  The routine returns
@@ -3246,7 +3279,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT->current.io.record_type = gmtio_examine_record (GMT, line, n);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
 			GMT->current.io.first_rec = false;
-			if (GMT->current.io.record_type) strscan = &strsepzp;	/* Need to maintain position in record */
+			strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
@@ -3359,10 +3392,10 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	unsigned int k;
 	uint64_t row = 0, seg, col;
 	int *fd = NULL;
-	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile;
+	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile, *txt = NULL;
 	double *out = NULL;
 	FILE *fp = NULL;
-	int (*psave) (struct GMT_CTRL *, FILE *, uint64_t, double *) = NULL;	/* Pointer to function writing tables */
+	int (*psave) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *) = NULL;	/* Pointer to function writing tables */
 
 
 	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
@@ -3376,9 +3409,9 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	else {			/* Force ASCII mode */
 		strcpy (open_mode, (append) ? "a" : "w");
 		ASCII = true;
-		psave = GMT->current.io.output;		/* Save the previous pointer since we need to change it back at the end */
 		GMT->current.io.output = GMT->session.output_ascii;	/* Override and use ASCII mode */
 	}
+	psave = GMT->current.io.output;		/* Save the previous pointer since we need to change it back at the end */
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
@@ -3435,6 +3468,9 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
+		if (ASCII && table->segment[seg]->text)
+			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Override and use ASCII mode */
+		
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
 				out_file = table->segment[seg]->file[GMT_OUT];
@@ -3470,11 +3506,14 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			save = GMT->current.io.geo.range; GMT->current.io.geo.range = table->segment[seg]->range;
 		}
 		for (row = 0; row < table->segment[seg]->n_rows; row++) {
+			txt = (table->segment[seg]->text) ? table->segment[seg]->text[row] : NULL;
 			for (col = 0; col < table->segment[seg]->n_columns; col++) out[col] = table->segment[seg]->data[col][row];
-			GMT->current.io.output (GMT, fp, table->segment[seg]->n_columns, out);
+			GMT->current.io.output (GMT, fp, table->segment[seg]->n_columns, out, txt);
 		}
 		if (table->segment[seg]->range) GMT->current.io.geo.range = save; 	/* Restore formatting */
 		if (io_mode == GMT_WRITE_SEGMENT) gmt_fclose (GMT, fp);	/* Close the segment file */
+		if (ASCII && table->segment[seg]->text)
+			GMT->current.io.output = psave;	/* Override and use ASCII mode */
 	}
 
 	if (close_file) gmt_fclose (GMT, fp);	/* Close the file since we opened it */
@@ -4040,8 +4079,9 @@ void gmt_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false) 
 }
 
 /*! . */
-int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data) {
+int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data, char *txt) {
 	int err;
+	gmt_M_unused (txt);
 	if (gmt_skip_output (GMT, data, n)) return (-1);	/* Record was skipped via -s[a|r] */
 	err = GMT->current.io.write_item (GMT, fp, n, data);
 	/* Cast below since the output functions are declared with uint64_t but cannot really exceed 4096... SHould change uint64_t to uint32_t */
@@ -5265,7 +5305,7 @@ void gmt_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 
 	if (!GMT->current.io.multi_segments[GMT_OUT]) return;	/* No output segments requested */
 	if (GMT->common.b.active[GMT_OUT]) {			/* Binary native file uses all NaNs */
-		for (col = 0; col < n_cols; col++) GMT->current.io.output (GMT, fp, 1, &GMT->session.d_NaN);
+		for (col = 0; col < n_cols; col++) GMT->current.io.output (GMT, fp, 1, &GMT->session.d_NaN, NULL);
 		return;
 	}
 	/* Here we are doing ASCII */

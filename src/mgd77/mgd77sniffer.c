@@ -2703,7 +2703,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (curr > 0 || !strcmp (display,"VALS")) {
 						if (GMT->common.b.active[GMT_OUT])
 							/* Use GMT output machinery which can handle binary output */
-							GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out[curr]);
+							GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out[curr], NULL);
 						else {
 							for (i = 0; i < n_out_columns; i++) {
 								gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[curr][i], i);

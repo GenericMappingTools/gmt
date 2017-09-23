@@ -314,7 +314,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
-			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *);
+			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 			save = GMT->current.io.output;
 			
 			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */

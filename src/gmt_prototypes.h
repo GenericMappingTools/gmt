@@ -229,7 +229,7 @@ EXTERN_MSC bool gmt_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *he
 EXTERN_MSC void gmt_set_segmentheader (struct GMT_CTRL *GMT, int direction, bool true_false);
 EXTERN_MSC void gmt_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false);
 EXTERN_MSC void *gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status);
-EXTERN_MSC int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data);
+EXTERN_MSC int gmt_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data, char *txt);
 EXTERN_MSC int gmt_get_io_type (struct GMT_CTRL *GMT, char type);
 EXTERN_MSC struct GMT_QUAD *gmt_quad_init (struct GMT_CTRL *GMT, uint64_t n_items);
 EXTERN_MSC void gmt_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, uint64_t n_items);

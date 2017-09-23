@@ -315,7 +315,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].xpow;
 				out[GMT_Z] = eps_pow * C->spec[i].xpow;
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -332,7 +332,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow;
 				out[GMT_Z] = eps_pow * C->spec[i].ypow;
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -348,7 +348,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * C->spec[i].coh;
 				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt ( (2.0 - C->spec[i].coh) / C->spec[i].coh);
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -364,7 +364,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * (1.0 - C->spec[i].coh);
 				out[GMT_Z] = out[GMT_Y] * eps_pow;
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -380,7 +380,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].gain;
 				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -403,7 +403,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].radmit;
 				out[GMT_Z] = fabs (eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) ) * out[GMT_Y]);
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -419,7 +419,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].phase;
 				out[GMT_Z] = eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
@@ -435,7 +435,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].coh;
 				out[GMT_Z] = out[GMT_Y] * eps_pow * (1.0 - C->spec[i].coh) * sqrt(2.0 / C->spec[i].coh);
-				GMT->current.io.output (GMT, fpout, 3, out);
+				GMT->current.io.output (GMT, fpout, 3, out, NULL);
 			}
 			gmt_fclose (GMT, fpout);
 			break;
