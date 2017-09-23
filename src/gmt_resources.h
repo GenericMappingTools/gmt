@@ -296,6 +296,13 @@ enum GMT_enum_verbose {GMT_MSG_QUIET = 0,   /* No messages whatsoever */
 	GMT_MSG_DEBUG		= 6        /* Debug messages for developers mostly */
 }; 
 
+/* GMT_RECORD Declaration */
+
+struct GMT_RECORD {
+	double *data;	/* Points to the current record's leading numerical data array (or NULL)*/
+	char *text;	/* Points to the start of the current record's trailing text (or NULL); */
+};
+
 /*============================================================ */
 /*===============+ GMT_GRID Public Declaration =============== */
 /*============================================================ */

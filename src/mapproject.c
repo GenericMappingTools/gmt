@@ -994,20 +994,17 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	rmode = (gmt_is_ascii_record (GMT, options) && gmt_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DATA;
-	family = (rmode == GMT_READ_DATA) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
-	geometry = (rmode == GMT_READ_DATA) ? GMT_IS_POINT : GMT_IS_NONE;
-	if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 	if ((error = gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN))) != 0) Return (error);
-	if (geodetic_calc && rmode == GMT_READ_MIXED) {
+	if (geodetic_calc) {
 		for (col = 0, k = GMT_Z; col < MP_COL_N; col++) {
 			if (Ctrl->used[col]) {
 				GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
@@ -1022,7 +1019,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
