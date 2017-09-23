@@ -7614,7 +7614,7 @@ void *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_
 	}
 	else {	/* Read from this resource */
 		struct GMT_VECTOR *V = API->current_get_V;
-		uint64_t ij, n_use, col_pos;
+		uint64_t n_use, col_pos;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = api_n_cols_needed_for_gaps (GMT, S->n_columns);
@@ -7753,8 +7753,8 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 		return;
 	}
 	API->error = GMT_NOERROR;
-	S = API->object[API->current_item[GMT_IN]];	/* Shorthand for the current data source we are working on */
-	GMT = API->GMT;	/* Shorthand for GMT access */
+	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
+	GMT = API->GMT;			/* Shorthand for GMT access */
 
 	method = api_set_method (S);	/* Get the actual method to use */
 	GMT->current.io.status = 0;	/* Initialize status to OK */
@@ -8064,7 +8064,7 @@ GMT_LOCAL int api_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mode,
 	int error = GMT_NOERROR;
 	struct GMT_VECTOR *V = API->current_put_V;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
-	uint64_t col, ij;
+	uint64_t col;
 
 	if (mode == GMT_WRITE_SEGMENT_HEADER && GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 		for (col = 0; col < V->n_columns; col++)	/* Place the output items */
@@ -8139,7 +8139,6 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, v
 		case GMT_IS_REFERENCE:	/* Fill in a DATASET structure with one table only */
 			if (S_obj->family == GMT_IS_DATASET) {
 				struct GMT_DATASET *D_obj = S_obj->resource;
-				struct GMT_DATATABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation of the single output table */
 					D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
@@ -8163,7 +8162,6 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, v
 			}
 			else {	/* TEXTSET */
 				struct GMT_TEXTSET *D_obj = S_obj->resource;
-				struct GMT_TEXTTABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation of one table */
 					D_obj = gmtlib_create_textset (GMT, 1, GMT_TINY_CHUNK, 0, true);
 					S_obj->resource = D_obj;
@@ -8307,7 +8305,6 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	GMT = API->GMT;
 	/* Must initialize record-by-record machinery for dataset or textset */
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Initialize record-by-record access for %s\n", GMT_direction[direction]);
-	if (direction == GMT_OUT) API->api_put_record = api_put_record_init;
 	API->current_item[direction] = -1;	/* api_next_data_object (below) will wind it to the first item >= 0 */
 	if ((error = api_next_data_object (API, family, direction))) return_error (API, GMT_NO_RESOURCES);	/* Something went bad */
 	item = API->current_item[direction];	/* Next item */
@@ -8318,15 +8315,22 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	GMT->current.io.segment_header[0] = GMT->current.io.record[0] = 0;
 	GMT->current.io.first_rec = true;
-	if (direction == GMT_OUT && S_obj->messenger && S_obj->resource) {	/* Need to destroy the dummy container before passing data out */
-		if ((error = api_destroy_data_ptr (API, S_obj->actual_family, S_obj->resource)))	/* Do the dirty deed */
-			return_error (API,error);
-		S_obj->resource  = NULL;	/* Since we now have nothing */
-		S_obj->messenger = false;	/* OK, now clean for output */
+	if (direction == GMT_OUT) {	/* Special checks for output */
+		if (S_obj->messenger && S_obj->resource) {	/* Need to destroy the dummy container before passing data out */
+			if ((error = api_destroy_data_ptr (API, S_obj->actual_family, S_obj->resource)))	/* Do the dirty deed */
+				return_error (API,error);
+			S_obj->resource  = NULL;	/* Since we now have nothing */
+			S_obj->messenger = false;	/* OK, now clean for output */
+		}
+		API->current_put_obj = S_obj;
+		API->api_put_record = api_put_record_init;
+		if (header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
+	}
+	else {
+		API->current_get_obj = S_obj;
+		gmt_get_record_init (API);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
-	if (direction == GMT_OUT && header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
-	if (direction == GMT_IN) gmt_get_record_init (API);
 	
 	return_error (V_API, GMT_NOERROR);	/* No error encountered */
 }

@@ -3077,6 +3077,50 @@ GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 		gmt_M_memset (GMT->current.io.record, GMT_BUFSIZ, char);
 }
 
+GMT_LOCAL unsigned int gmtio_examine_record (struct GMT_CTRL *GMT, char *record, uint64_t *n_columns) {
+	/* Examines this data record to determine the nature of the input.  There
+	 * are three different scenarios:
+	 * 1. Record only contains numerical columns: Set ncols and return GMT_READ_DATA [0].
+	 * 2. Record only contains text: Set ncols to 0 and return GMT_READ_TEXT [1].
+	 * 3. Record contains leading numerics followed by text: Set ncols and return GMT_READ_MIXED [2].
+	 * Note: The convoluted switch/test below reflects the fact that gmt_scanf_arg was set up
+	 * to parse command-line arguments.  For ABSTIME these must be in ISO format while for input
+	 * (which is what we are handling here) a huge variety of datetime strings are possible via
+	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
+	 */
+	unsigned ret_val = GMT_READ_DATA, pos = 0, type;
+	int got;
+	bool found_text = false;
+	char token[GMT_BUFSIZ];
+	double value;
+	*n_columns = 0;	/* Initialize column counter */
+	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
+		type = GMT->current.io.col_type[GMT_IN][*n_columns];
+		switch (type) {
+			case GMT_IS_ABSTIME:	/* Here we must read with expected format */
+				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+				break;
+			default:	/* Here we can check quite a bit more */
+				if (strchr (token, 'T'))	/* Found a T in the argument - must assume Absolute time or else we got junk */
+					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+				else	/* Let gmt_scanf_arg figure it out for us since ABSTIME is dealt with earlier */
+					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
+				break;
+		}
+		if (got == GMT_IS_NAN)
+			found_text = true;	/* Parsing failed means we found our first non-number */
+		else {	/* Parsing was successful but perhaps we learned the input was of a different type than expected */
+			/* If input type was not known before, OR if it was the default float but our analysis showed something else, we update the expectation */
+			if (type == GMT_IS_UNKNOWN || (type == GMT_IS_FLOAT && got != (int)type))
+				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
+			(*n_columns)++;	/* One more succesful numerical parsing */
+		}
+	}
+	if (found_text) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+	return (ret_val);
+}
+
+
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
@@ -3199,8 +3243,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			static char *flavor[3] = {"numerical only", "text only", "numerical with trailing text"};
-			GMT->current.io.record_type = gmtlib_examine_record (GMT, line, &GMT->current.io.n_numerical_cols);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", GMT->current.io.n_numerical_cols, flavor[GMT->current.io.record_type]);
+			GMT->current.io.record_type = gmtio_examine_record (GMT, line, n);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
 			GMT->current.io.first_rec = false;
 			if (GMT->current.io.record_type) strscan = &strsepzp;	/* Need to maintain position in record */
 		}
@@ -3249,8 +3293,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					n_ok++;
 				}
 			}
-			if (col_no == GMT->current.io.n_numerical_cols && GMT->current.io.record_type == GMT_READ_MIXED)	/* Save start of text portion of the record */
-				GMT->current.io.start_of_text = spos;
+		}
+		if (GMT->current.io.record_type == GMT_READ_MIXED) {	/* Save start of text portion of the record */
+			while (GMT->current.io.record[spos] == ' ') spos++;
+			GMT->current.io.start_of_text = &GMT->current.io.record[spos];
 		}
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
@@ -6970,12 +7016,26 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uin
 			S->data[col] = GMT->hidden.mem_coord[col];	/* Pass the pointer */
 			GMT->hidden.mem_coord[col] = NULL;		/* Null this out to start over for next segment */
 		}
+		if (GMT->current.io.record_type == GMT_READ_MIXED) {
+			if (n_rows < GMT->hidden.mem_rows)
+				GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, n_rows, char *);	/* Trim back */
+			S->text = GMT->hidden.mem_txt;	/* Pass the pointer */
+			GMT->hidden.mem_txt = NULL;		/* Null this out to start over for next segment */
+		}
 		GMT->hidden.mem_cols = 0;	/* Flag that we need to reallocate new temp arrays for next segment, if any */
 	}
 	else {	/* Small segments, allocate and memcpy, leave tmp array as is for further use */
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
 			S->data[col] = gmt_M_memory (GMT, S->data[col], n_rows, double);
 			gmt_M_memcpy (S->data[col], GMT->hidden.mem_coord[col], n_rows, double);
+		}
+		if (GMT->current.io.record_type == GMT_READ_MIXED) {
+			uint64_t row;
+			S->text = gmt_M_memory (GMT, S->text, n_rows, char *);
+			for (row = 0; row < n_rows; row++) {
+				S->text[row] = GMT->hidden.mem_txt[row];
+				GMT->hidden.mem_txt[row] = NULL;
+			}
 		}
 	}
 	S->n_rows = n_rows;
@@ -7253,6 +7313,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 					if (!greenwich && GMT->hidden.mem_coord[col][row] < 0.0)  GMT->hidden.mem_coord[col][row] += 360.0;
 				}
 			}
+			if (GMT->current.io.record_type == GMT_READ_MIXED)
+				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.start_of_text);
 
 			row++;
 			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
@@ -7519,6 +7581,15 @@ void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	gmtlib_set_dataset_minmax (GMT, D);		/* Update column stats */
 }
 
+GMT_LOCAL void gmtio_free_segment_text (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+	/* Frees any array of trailing text items */
+	uint64_t row;
+	if (S->text == NULL) return;	/* No text */
+	for (row = 0; row < S->n_rows; row++)
+		gmt_M_str_free (S->text[row]);
+	gmt_M_free (GMT, S->text);
+}
+
 /*! . */
 void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 	/* Free memory allocated by gmtlib_read_table */
@@ -7537,6 +7608,7 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 	gmt_M_str_free ( segment->header);
 	for (k = 0; k < 2; k++) gmt_M_str_free (segment->file[k]);
 	if (segment->ogr) gmtio_free_ogr_seg (GMT, segment);	/* OGR metadata */
+	gmtio_free_segment_text (GMT, segment);
 	gmt_M_free (GMT, segment);
 	*S = NULL;
 }
@@ -7965,49 +8037,6 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 		if (k > 0 && n_digits == 0) return (true);	/* Probably a file */
 	}
 	return (false);	/* This may in fact be numeric */
-}
-
-unsigned int gmtlib_examine_record (struct GMT_CTRL *GMT, char *record, unsigned int *n_columns) {
-	/* Examines this data record to determine the nature of the input.  There
-	 * are three different scenarios:
-	 * 1. Record only contains numerical columns: Set ncols and return GMT_READ_DATA [0].
-	 * 2. Record only contains text: Set ncols to 0 and return GMT_READ_TEXT [1].
-	 * 3. Record contains leading numerics followed by text: Set ncols and return GMT_READ_MIXED [2].
-	 * Note: The convoluted switch/test below reflects the fact that gmt_scanf_arg was set up
-	 * to parse command-line arguments.  For ABSTIME these must be in ISO format while for input
-	 * (which is what we are handling here) a huge variety of datetime strings are possible via
-	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
-	 */
-	unsigned ret_val = GMT_READ_DATA, pos = 0, type;
-	int got;
-	bool found_text = false;
-	char token[GMT_BUFSIZ];
-	double value;
-	*n_columns = 0;	/* Initialize column counter */
-	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
-		type = GMT->current.io.col_type[GMT_IN][*n_columns];
-		switch (type) {
-			case GMT_IS_ABSTIME:	/* Here we must read with expected format */
-				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
-				break;
-			default:	/* Here we can check quite a bit more */
-				if (strchr (token, 'T'))	/* Found a T in the argument - must assume Absolute time or else we got junk */
-					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
-				else	/* Let gmt_scanf_arg figure it out for us since ABSTIME is dealt with earlier */
-					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
-				break;
-		}
-		if (got == GMT_IS_NAN)
-			found_text = true;	/* Parsing failed means we found our first non-number */
-		else {	/* Parsing was successful but perhaps we learned the input was of a different type than expected */
-			/* If input type was not known before, OR if it was the default float but our analysis showed something else, we update the expectation */
-			if (type == GMT_IS_UNKNOWN || (type == GMT_IS_FLOAT && got != (int)type))
-				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-			(*n_columns)++;	/* One more succesful numerical parsing */
-		}
-	}
-	if (found_text) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
-	return (ret_val);
 }
 
 /*! . */

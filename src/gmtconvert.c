@@ -388,7 +388,7 @@ GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
-	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
+	uint64_t out_col, col, n_cols_in, n_cols_out, tbl, tlen;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 
@@ -543,8 +543,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 					}
 				}
 				/* Pull out current virtual row (may consist of a single or many (-A) table rows) */
-				for (tbl_hor = out_col = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
+				for (tbl_hor = out_col = tlen = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 					use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
+					if (D[GMT_IN]->table[use_tbl]->segment[seg]->text) tlen += strlen (D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]) + 1;	/* String + separator */
 					for (col = 0; col < D[GMT_IN]->table[use_tbl]->segment[seg]->n_columns; col++, out_col++) {	/* Now go across all columns in current table */
 						val[out_col] = D[GMT_IN]->table[use_tbl]->segment[seg]->data[col][row];
 					}
@@ -552,6 +553,15 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				for (col = 0; col < n_cols_out; col++) {	/* Now go across the single virtual row */
 					if (col >= n_cols_in) continue;			/* This column is beyond end of this table */
 					D[GMT_OUT]->table[tbl_ver]->segment[seg]->data[col][n_rows] = val[col];
+				}
+				if (tlen) {
+					if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text == NULL) D[GMT_OUT]->table[tbl_ver]->segment[seg]->text = gmt_M_memory (GMT, NULL, S->n_rows, char *);
+					D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows] = malloc (tlen+1);	/* Space for trailing \0 */
+					for (tbl_hor = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
+						use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
+						if (use_tbl) strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], GMT->current.setting.io_col_separator);
+						strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]);
+					}
 				}
 				n_rows++;
 			}

@@ -255,7 +255,7 @@ struct GMT_IO {				/* Used to process input data records */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
-	size_t start_of_text;		/* Entry into record[] holding the start of non-numerical input */
+	char * start_of_text;		/* Entry into record[] holding the start of non-numerical input */
 	unsigned int tbl_no;		/* Number of current table in entire data set */
 	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
 	unsigned int record_type;	/* Either GMT_READ_DATA (0), GMT_READ_TEXT (1), or GMT_READ_MIXED (2) */

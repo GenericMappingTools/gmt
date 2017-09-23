@@ -647,9 +647,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
 
-	enum GMT_enum_family family;
-	enum GMT_enum_geometry geometry;
-
 	unsigned int i = 0, col, pos, speed_col = 2;
 	unsigned int ecol_type[MP_COL_N] = {GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT,
                                         GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_ABSTIME};
