@@ -836,7 +836,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 }
 
 /*! . */
-GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+GMT_LOCAL int gmtio_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, last, n_out;
 	int e = 0, wn = 0;
 	double val;
@@ -900,6 +900,55 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 	fprintf (fp, "%s\n", txt);
 	
 	return ((e < 0) ? -1 : 0);
+}
+
+/*! . */
+GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+	uint64_t i, col, last, n_out;
+	int e = 0, wn = 0;
+	double val;
+
+	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
+	
+	/* First time we decide if we have floats only or a mix and finalize pointer settings */
+	if (txt) {
+		GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text */
+		return gmtio_ascii_output_with_text (GMT, fp, n, ptr, txt);
+	}
+	else {
+		GMT->current.io.output = gmtio_ascii_output_no_text;	/* Just numbers */
+		return gmtio_ascii_output_no_text (GMT, fp, n, ptr, txt);
+	}
+	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
+
+	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
+
+	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
+		if (GMT->common.o.active)	/* Which data column to pick */
+			col = GMT->current.io.col[GMT_OUT][i].col;
+		else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && i < 2)
+			col = 1 - i;	/* Write lat/lon instead of lon/lat */
+		else
+			col = i;	/* Just goto next column */
+		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
+			val = GMT->common.d.nan_proxy[GMT_OUT];
+
+		e = gmt_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
+
+		if (i == last)					/* This is the last field, must add newline */
+			putc ('\n', fp);
+		else if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
+			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
+
+		wn += e;
+	}
+	return ((e < 0) ? -1 : 0);
+}
+
+/*! . */
+void gmtlib_reset_input (struct GMT_CTRL *GMT) {
+	if (GMT->current.io.output == gmtio_ascii_output_with_text) GMT->current.io.output = gmtio_ascii_output;	/* Go back to being agnostic */
 }
 
 /*! . */
@@ -3049,7 +3098,7 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 	GMT->current.io.pt_no++;
 
 	*retval = (int)n_read;
-	return (GMT->current.io.curr_rec);
+	return (&GMT->current.io.record);
 }
 
 /*! . */
@@ -3106,9 +3155,9 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 	while (*text && strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace */
 	if (*text)	/* Got some text to remember */
-		strncpy (GMT->current.io.record, text, GMT_BUFSIZ-1);
+		strncpy (GMT->current.io.curr_text, text, GMT_BUFSIZ-1);
 	else	/* Nutin' */
-		gmt_M_memset (GMT->current.io.record, GMT_BUFSIZ, char);
+		gmt_M_memset (GMT->current.io.curr_text, GMT_BUFSIZ, char);
 }
 
 GMT_LOCAL unsigned int gmtio_examine_record (struct GMT_CTRL *GMT, char *record, uint64_t *n_columns) {
@@ -3160,7 +3209,7 @@ GMT_LOCAL unsigned int gmtio_examine_record (struct GMT_CTRL *GMT, char *record,
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	int64_t in_col;
-	size_t spos;
+	size_t start_of_text;
 	bool done = false, bad_record, set_nan_flag = false;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token = NULL, *stringp = NULL;
 	double val;
@@ -3289,10 +3338,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		gmtio_set_current_record (GMT, line);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;		/* Initialize counters */
 		in_col = -1;				/* Since we will increment right away inside the loop */
-		spos = 0;				/* Position in current string record */
+		start_of_text = 0;			/* Position in current string record */
 
 		stringp = line;
-		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT_TOKEN_SEPARATORS, &spos)) != NULL) {	/* Get one field at the time until we run out or have issues */
+		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT_TOKEN_SEPARATORS, &start_of_text)) != NULL) {	/* Get one field at the time until we run out or have issues */
 			++in_col;	/* This is the actual column number in the input file */
 			if (GMT->common.i.active) {	/* Must do special column-based processing since the -i option was set */
 				if (GMT->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
@@ -3327,10 +3376,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				}
 			}
 		}
-		if (GMT->current.io.record_type == GMT_READ_MIXED) {	/* Save start of text portion of the record */
-			while (GMT->current.io.record[spos] == ' ') spos++;
-			GMT->current.io.start_of_text = &GMT->current.io.record[spos];
-		}
+		if (start_of_text)	/* Save pointer to start of trailing text portion of the record */
+			GMT->current.io.record.text = &GMT->current.io.curr_text[start_of_text];
+
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
 			n_ok += add;
@@ -3378,7 +3426,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
 		return (GMT->current.io.curr_rec);	/* Pass back pointer to data array */
 	}
-	return ((GMT->current.io.status) ? NULL : GMT->current.io.curr_rec);	/* Pass back pointer to data array */
+	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
 }
 
 /*! . */
@@ -3468,8 +3516,6 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
-		if (ASCII && table->segment[seg]->text)
-			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Override and use ASCII mode */
 		
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
@@ -3597,7 +3643,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 	}
 	GMT->current.io.pt_no++;
 	*retval = (int)*n;
-	return (GMT->current.io.curr_rec);
+	return (&GMT->current.io.record);
 }
 
 /*! . */
@@ -4804,7 +4850,7 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 	GMT->current.io.pt_no++;	/* Got a valid text record */
 	*n = 1ULL;			/* We always return 1 item as there are no columns */
 	*status = 1;
-	return (GMT->current.io.record);
+	return (GMT->current.io.curr_text);
 }
 
 /*! Returns true if we should skip this line (because it is blank) */
@@ -5017,6 +5063,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_type[GMT_IN][i] = GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
 	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
+	GMT->current.io.record.data = GMT->current.io.curr_rec;
 }
 
 /*! . */
@@ -6347,7 +6394,7 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 	while (status >= 0 && !gmt_M_rec_is_eof (GMT)) {	/* Not yet EOF */
 		if (header) {
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) || gmt_M_rec_is_table_header (GMT)) { /* Process headers */
-				T->header[T->n_headers] = strdup (GMT->current.io.record);
+				T->header[T->n_headers] = strdup (GMT->current.io.curr_text);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
 					n_head_alloc <<= 1;
@@ -7177,7 +7224,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
-	double d, *in = NULL;
+	double d;
+	struct GMT_RECORD *In = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	void * (*psave) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;	/* Pointer to function reading tables */
@@ -7253,7 +7301,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		}
 	}
 
-	in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
+	In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
 	n_read++;
 	if (gmt_M_rec_is_eof(GMT)) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s is empty!\n", file);
@@ -7276,13 +7324,13 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		if (header) {	/* Only true at start of an ASCII file */
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) ||
 			        gmt_M_rec_is_table_header (GMT)) { /* Process headers */
-				T->header[T->n_headers] = strdup (GMT->current.io.record);
+				T->header[T->n_headers] = strdup (GMT->current.io.curr_text);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
 					n_head_alloc <<= 1;
 					T->header = gmt_M_memory (GMT, T->header, n_head_alloc, char *);
 				}
-				in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
+				In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
 				n_read++;
 			}
 			if (T->n_headers)
@@ -7314,7 +7362,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			/* Segment initialization */
 			row = 0;
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
-				while (!gmt_M_rec_is_eof (GMT) && (in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
+				while (!gmt_M_rec_is_eof (GMT) && (In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
 			}
 			T->segment[seg]->n_columns = (n_returned) ? n_returned : n_expected_fields;	/* This is where number of columns are determined */
 			no_segments = false;	/* This has now served its purpose */
@@ -7347,18 +7395,18 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 			gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or reallocate tmp read vectors */
 			for (col = 0; col < T->segment[seg]->n_columns; col++) {
-				GMT->hidden.mem_coord[col][row] = in[col];
+				GMT->hidden.mem_coord[col][row] = In->data[col];
 				if (GMT->current.io.col_type[GMT_IN][col] & GMT_IS_LON) {	/* Must handle greenwich/dateline alignments */
 					if (greenwich && GMT->hidden.mem_coord[col][row] > 180.0) GMT->hidden.mem_coord[col][row] -= 360.0;
 					if (!greenwich && GMT->hidden.mem_coord[col][row] < 0.0)  GMT->hidden.mem_coord[col][row] += 360.0;
 				}
 			}
 			if (GMT->current.io.record_type == GMT_READ_MIXED)
-				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.start_of_text);
+				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
 
 			row++;
-			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
-			while (gmt_M_rec_is_table_header (GMT)) in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Just wind past other comments */
+			In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
+			while (gmt_M_rec_is_table_header (GMT)) In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Just wind past other comments */
 			n_read++;
 		}
 

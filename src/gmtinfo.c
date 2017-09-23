@@ -766,14 +766,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					if (GMT->common.b.active[GMT_IN])
 						gmt_M_memcpy (dchosen, in, ncol, double);
 					else
-						strncpy (chosen, GMT->current.io.record, GMT_BUFSIZ);
+						strncpy (chosen, GMT->current.io.curr_text, GMT_BUFSIZ);
 				}
 				else if (Ctrl->E.mode == +1 && value > e_max) {	/* Higher than previous high */
 					e_max = value;
 					if (GMT->common.b.active[GMT_IN])
 						gmt_M_memcpy (dchosen, in, ncol, double);
 					else
-						strncpy (chosen, GMT->current.io.record, GMT_BUFSIZ);
+						strncpy (chosen, GMT->current.io.curr_text, GMT_BUFSIZ);
 				}
 			}
 		}

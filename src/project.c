@@ -1027,8 +1027,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
 				if (pure_ascii) {	/* Must store all text beyond x,y columns */
-					p_data[P.n_used].t = gmt_M_memory (GMT, NULL, strlen (GMT->current.io.record), char);
-					copy_text_from_col3 (GMT->current.io.record, p_data[P.n_used].t);
+					p_data[P.n_used].t = gmt_M_memory (GMT, NULL, strlen (GMT->current.io.curr_text), char);
+					copy_text_from_col3 (GMT->current.io.curr_text, p_data[P.n_used].t);
 				}
 				else {
 					p_data[P.n_used].z = gmt_M_memory (GMT, NULL, P.n_z, double);

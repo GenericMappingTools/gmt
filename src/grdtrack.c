@@ -1160,9 +1160,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
 
 				/* First get rid of any commas that may cause grief */
-				for (k = 0; GMT->current.io.record[k]; k++) if (GMT->current.io.record[k] == ',') GMT->current.io.record[k] = ' ';
+				for (k = 0; GMT->current.io.curr_text[k]; k++) if (GMT->current.io.curr_text[k] == ',') GMT->current.io.curr_text[k] = ' ';
 				record[0] = 0;
-				sscanf (GMT->current.io.record, "%*s %*s %[^\n]", line);
+				sscanf (GMT->current.io.curr_text, "%*s %*s %[^\n]", line);
 				gmt_add_to_record (GMT, record, in[ix], ix, GMT_OUT, 2);	/* Format our output x value */
 				gmt_add_to_record (GMT, record, in[iy], iy, GMT_OUT, 2);	/* Format our output y value */
 				strcat (record, line);

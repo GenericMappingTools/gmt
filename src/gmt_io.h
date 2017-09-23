@@ -255,7 +255,6 @@ struct GMT_IO {				/* Used to process input data records */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
-	char * start_of_text;		/* Entry into record[] holding the start of non-numerical input */
 	unsigned int tbl_no;		/* Number of current table in entire data set */
 	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
 	unsigned int record_type;	/* Either GMT_READ_DATA (0), GMT_READ_TEXT (1), or GMT_READ_MIXED (2) */
@@ -273,7 +272,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char record[GMT_BUFSIZ];	/* Current ASCII record */
+	char curr_text[GMT_BUFSIZ];	/* Current ASCII record */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
@@ -296,6 +295,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
+	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */

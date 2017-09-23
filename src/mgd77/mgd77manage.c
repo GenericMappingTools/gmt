@@ -705,7 +705,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			if (strings) {	/* number in col1, string in col2 */
 				coldnt[n]   = in[0];
-				sscanf (GMT->current.io.record, "%*s %s", word);
+				sscanf (GMT->current.io.curr_text, "%*s %s", word);
 				tmp_string[n] = gmt_M_memory (GMT, NULL, strlen(word) + 1, char);
 				strcpy (tmp_string[n], word);
 			}
