@@ -661,6 +661,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	struct PSHISTOGRAM_INFO F;
 	struct PSHISTOGRAM_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -725,7 +726,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, data);
 				if (F.weights) gmt_M_free (GMT, weights);
@@ -737,6 +738,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		data[n] = in[GMT_X];
 		if (!gmt_M_is_dnan (data[n])) {
@@ -884,6 +886,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		else {	/* Report the min/max values as the data result */
 			double out[4];
 			unsigned int col_type[4];
+			struct GMT_RECORD Rec;
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
@@ -910,8 +913,10 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
 			if (Ctrl->F.active) strcat (format, " -F");
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
-			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			Rec.data = out;	Rec.text = format;
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Rec);	/* Write this to output if -ho */
+			Rec.text = NULL;
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);	

@@ -641,7 +641,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mapproject (void *V_API, int mode, void *args) {
-	int x, y, ks, rmode, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
+	int x, y, ks, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
@@ -667,6 +667,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -822,7 +823,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, w_out);	/* Write this to output */
+		Out.data = w_out;	Out.text = NULL;
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -1014,9 +1016,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
+	Out.data = out;	Out.text = In->text;
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1033,10 +1036,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				break;
 			continue;	/* Go back and read the next record */
 		}
-		if (in == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
+		if (In == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
 		}
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1109,37 +1113,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				y_out_max = MAX (y_out_max, out[GMT_Y]);
 			}
 
-			if (rmode == GMT_READ_MIXED) {
-				/* Special case: ASCII i/o and at least 3 input columns:
-				   Columns beyond first two could be text strings */
-
-				/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-				 * will then be the user text that we want to preserve.  Since strtok places
-				 * 0 to indicate start of next token we count our way to the start of the text. */
-
-				strncpy (line, GMT->current.io.curr_text, GMT_BUFSIZ-1);
-				gmt_chop (line);	/* Chop of line feed */
-				pos = record[0] = 0;	/* Start with blank record */
-				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-				gmt_add_to_record (GMT, record, out[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
-				gmt_add_to_record (GMT, record, out[y], GMT_Y, GMT_OUT, 2);	/* Format our output y value */
-				if (Ctrl->E.active) {
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
-					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
-				}
-				if (line[pos]) strncat (record, &line[pos],GMT_BUFSIZ-1);	/* Append the remainder of the user text */
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
-
+			/* Simply copy other columns and output */
+			if (n_output == 0) {
+				gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+				n_output = gmt_get_cols (GMT, GMT_OUT);
 			}
-			else {	/* Simply copy other columns and output */
-				if (n_output == 0) {
-					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
-					n_output = gmt_get_cols (GMT, GMT_OUT);
-				}
-				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
-			}
+			for (k = two; k < n_output; k++) out[k] = in[k];
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
@@ -1258,48 +1238,24 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						extra[MP_COL_AT] += extra[MP_COL_DT];
 					last_speed = speed;
 				}
-				if (rmode == GMT_READ_MIXED) {
-					/* Special case: ASCII input and at least 3 columns:
-					   Columns beyond first two could be text strings */
-
-					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-					 * will then be the user text that we want to preserve.  Since strtok places
-					 * 0 to indicate start of next token we count our way to the start of the text. */
-
-					strncpy (line, GMT->current.io.curr_text, GMT_BUFSIZ);
-					gmt_chop (line);
-					pos = record[0] = 0;	/* Start with blank record */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-					gmt_add_to_record (GMT, record, in[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, in[y], GMT_Y, GMT_OUT, 0);	/* Format our output y value */
-					if (line[pos]) {	/* Append user text */
-						strcat (record, GMT->current.setting.io_col_separator);
-						strcat (record, &line[pos]);
-					}
-					for (col = 0; col < MP_COL_N; col++)
-						if (Ctrl->used[col]) gmt_add_to_record (GMT, record, extra[col], ecol_type[col], GMT_OUT, 1);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
-				}
-				else {	/* Simply copy other columns and output */
-					if (n_output == 0) {
-						for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
-						gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
-						n_output = gmt_get_cols (GMT, GMT_OUT);
-						if (geodetic_calc) {
-							for (col = 0, k = n_fields; col < MP_COL_N; col++) {
-								if (Ctrl->used[col]) {
-									GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-									ecol_type[col] = (unsigned int)k++;
-								}
+				/* Simply copy other columns and output */
+				if (n_output == 0) {
+					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
+					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
+					n_output = gmt_get_cols (GMT, GMT_OUT);
+					if (geodetic_calc) {
+						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
+							if (Ctrl->used[col]) {
+								GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
+								ecol_type[col] = (unsigned int)k++;
 							}
 						}
 					}
-					for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
-					for (col = 0; col < MP_COL_N; col++)
-						if (Ctrl->used[col]) out[ks++] = extra[col];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
+				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
+				for (col = 0; col < MP_COL_N; col++)
+					if (Ctrl->used[col]) out[ks++] = extra[col];
+				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 			}
 			else {
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -1308,36 +1264,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					y_out_min = MIN (y_out_min, out[GMT_Y]);
 					y_out_max = MAX (y_out_max, out[GMT_Y]);
 				}
-				if (rmode == GMT_READ_MIXED) {
-					/* Special case: ASCII input and at least 3 columns:
-					   Columns beyond first two could be text strings */
-
-					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-					 * will then be the user text that we want to preserve.  Since strtok places
-					 * 0 to indicate start of next token we count our way to the start of the text. */
-
-					strncpy (line, GMT->current.io.curr_text, GMT_BUFSIZ);
-					gmt_chop (line);
-					pos = record[0] = 0;	/* Start with blank record */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
-					gmt_add_to_record (GMT, record, out[x], o_type[GMT_X], GMT_OUT, 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, out[y], o_type[GMT_Y], GMT_OUT, 2);	/* Format our output y value */
-					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
-						gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
-						gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
-					}
-					strcat (record, &line[pos]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
+				/* Simply copy other columns and output */
+				if (n_output == 0) {
+					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
-				else {	/* Simply copy other columns and output */
-					if (n_output == 0) {
-						gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
-						n_output = gmt_get_cols (GMT, GMT_OUT);
-					}
-					for (k = two; k < n_output; k++) out[k] = in[k];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
-				}
+				for (k = two; k < n_output; k++) out[k] = in[k];
+				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 			}
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);

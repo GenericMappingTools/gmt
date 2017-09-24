@@ -1057,7 +1057,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char *record = NULL;
+		struct GMT_RECORD *In = NULL;
 		int got, in_ID;
 		double tmp;
 
@@ -1077,16 +1077,16 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (record != NULL);						/* Should never get here */
+				assert (In->text != NULL);						/* Should never get here */
 			}
-			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			if (gmt_is_a_blank_line (In->text)) continue;	/* Nothing in this record */
 
 			/* Data record to process */
 
@@ -1095,7 +1095,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				gmt_M_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
 				gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
-			got = sscanf (record, "%lf %c %lf", &contour[n_contours], &cont_type[n_contours], &tmp);
+			got = sscanf (In->text, "%lf %c %lf", &contour[n_contours], &cont_type[n_contours], &tmp);
 			if (cont_type[n_contours] == '\0') cont_type[n_contours] = 'C';
 			cont_do_tick[n_contours] = (Ctrl->T.active && (cont_type[n_contours] == 'C' || cont_type[n_contours] == 'A')) ? 1 : 0;
 			cont_angle[n_contours] = (got == 3) ? tmp : GMT->session.d_NaN;

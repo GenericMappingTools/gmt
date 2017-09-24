@@ -321,6 +321,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *G = NULL;	/* Grid structure for output CVA grid */
 	struct GMT_GRID *G_rad = NULL;	/* Same but has radians in header (no grid) */
+	struct GMT_RECORD *In = NULL;
 
 	struct EULER *p = NULL;		/* Array of structures with Euler stage rotations */
 	struct GMT_OPTION *ptr = NULL;
@@ -418,7 +419,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, processed_node);
 				Return (GMT_RUNTIME_ERROR);
@@ -427,10 +428,11 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 	
 		/* STEP 1: Read information about a single seamount from input record */
 

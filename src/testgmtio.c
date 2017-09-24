@@ -30,7 +30,7 @@
 
 int main (int argc, char *argv[]) {
 	int n_fields = 0, mode = 0,  error = 0;
-	double *in = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_CTRL *GMT = NULL;
@@ -62,7 +62,7 @@ int main (int argc, char *argv[]) {
 	
 	do {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DATA;	/* Normally we treat data as double precision values */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {	/* This check kicks in if the data has bad formatting, text etc */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Error found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "E: ");
@@ -100,7 +100,7 @@ int main (int argc, char *argv[]) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 			API->print_func (stdout, "D: ");
 		}
-		GMT_Put_Record (API, mode, in);
+		GMT_Put_Record (API, mode, In);
 	} while (true);
 	
 	API->print_func (stdout, "B: --- End of All Files ---\n");

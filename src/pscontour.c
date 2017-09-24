@@ -760,6 +760,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -833,7 +834,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	skip_triangles = (Ctrl->S.active && Ctrl->S.mode == 1);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
@@ -844,6 +845,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 		
 		if (skip_points) {	/* Must check if points are inside plot region */
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
@@ -1004,7 +1006,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		n_contours = c;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char *record = NULL;
+		struct GMT_RECORD *Rec = NULL;
 		int got, in_ID, NL;
 		double tmp;
 
@@ -1018,7 +1020,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		c = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((Rec = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
@@ -1026,13 +1028,13 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
-			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			if (gmt_is_a_blank_line (Rec->text)) continue;	/* Nothing in this record */
 
 			/* Data record to process */
 
 			if (c == c_alloc) cont = gmt_M_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
-			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
+			got = sscanf (Rec->text, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (Ctrl->Q.zero && gmt_M_is_zero (cont[c].val)) continue;	/* Skip zero-contour */
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;

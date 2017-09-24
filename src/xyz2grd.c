@@ -324,6 +324,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;
+	struct GMT_RECORD *In = NULL;
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -397,7 +398,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
@@ -409,7 +410,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 			/* Data record to process */
 
-			GMT_Put_Record (API, GMT_WRITE_DATA, in);
+			GMT_Put_Record (API, GMT_WRITE_DATA, In);
 		} while (true);
 
 		GMT->current.io.input = save_i;			/* Reset input pointer */
@@ -600,7 +601,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -611,6 +612,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		n_read++;
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {

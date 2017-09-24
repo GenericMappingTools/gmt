@@ -81,12 +81,13 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
+	struct GMT_RECORD *In = NULL;
 
 	*data = gmt_M_memory (GMT, NULL, n_alloc, struct TREND2D_DATA);
 
 	i = 0;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (GMT->parent, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
@@ -94,11 +95,12 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
-		if (in == NULL) {	/* Crazy safety valve but it should never get here*/
+		if (In == NULL) {	/* Crazy safety valve but it should never get here*/
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
 			return (GMT_PTR_IS_NULL);
 		}
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 	
 		(*data)[i].x = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
@@ -145,6 +147,9 @@ GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *da
 	uint64_t i;
 	unsigned int j;
 	static double out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	struct GMT_RECORD Out;
+
+	Out.data = out;	Out.text = NULL;
 
 	for (i = 0; i < n_data; i++) {
 		for (j = 0; j < n_outputs; j++) {
@@ -169,7 +174,7 @@ GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *da
 					break;
 			}
 		}
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);	/* Write this to output */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);	/* Write this to output */
 	}
 }
 

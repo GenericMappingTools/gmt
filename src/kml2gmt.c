@@ -166,6 +166,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	
 	FILE *fp = NULL;
 
+	struct GMT_RECORD Out;
 	struct KML2GMT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -229,11 +230,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
 
+	Out.data = out;	Out.text = buffer;
 	/* Now we are ready to take on some input values */
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	
-	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Out);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) {	/* New Placemark, reset name and description */
@@ -256,7 +258,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			gmt_chop (name);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Out);	/* Write this to output */
 				first = false;
 			}
 		}
@@ -269,7 +271,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			gmt_chop (description);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Out);	/* Write this to output */
 				first = false;
 			}
 		}
@@ -297,7 +299,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 		}
 		else if (single) {	/* Process multiple points from current single record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
@@ -305,14 +307,14 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			while (gmt_strtok (line, " \t", &pos, word)) {	/* Look for clusters of x,y,z separated by whitespace */
 				n_scan = sscanf (word, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 				if (n_scan == 2 || n_scan == 3)
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 				else
 					break;
 			}
 		}
 		else {	/* Processes points from separate lines */
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 			}
 		}
 		n_features++;

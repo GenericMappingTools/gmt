@@ -268,6 +268,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	gmt_grdfloat f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
 	struct STRIPACK T;
 	struct GMT_DATASEGMENT *P = NULL;
@@ -389,7 +390,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -401,6 +402,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
+			in = In->data;	/* Only need to process numerical part here */
 
 			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
 				first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];

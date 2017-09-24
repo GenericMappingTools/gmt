@@ -606,6 +606,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct PSMASK_INFO info;
 	struct PSMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -734,8 +735,9 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (in != NULL);						/* Should never get here */
+				assert (In != NULL);						/* Should never get here */
 			}
+			in = In->data;	/* Only need to process numerical part here */
 
 			if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */

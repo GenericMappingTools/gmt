@@ -230,6 +230,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *pol = NULL;
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
+	struct GMT_RECORD *In = NULL, Out;
 	struct GMT_OPTION *ptr = NULL;
 	struct GMTPMODELER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -322,22 +323,25 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
+	Out.data = out;	Out.text = NULL;
 	if (GMT->current.setting.io_header[GMT_OUT]) {
 		char header[GMT_BUFSIZ] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			strncat (header, tag[k], GMT_BUFSIZ-1);
 			if (k < (Ctrl->S.n_items-1)) strncat (header, GMT->current.setting.io_col_separator, GMT_BUFSIZ-1);
 		}
-		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
+		Out.text = header;
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Out);	/* Write a header record */
 	}
-
+	Out.text = NULL;
+	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 
 	/* Read the location data from file or stdin */
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_table_header (GMT)) {	/* Skip all table headers */
@@ -350,10 +354,13 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;
+		Out.text = In->text;
+
 		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 				if (gmt_M_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
@@ -450,7 +457,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			}
 			out[k+3] = value;
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */

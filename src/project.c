@@ -550,11 +550,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P) {
+GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P) {
 	int error;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""};
+	struct GMT_RECORD Out;
 
 	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 
@@ -590,40 +591,23 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 	n_items = P->n_outputs + ((P->want_z_output && P->n_z) ? P->n_z - 1 : 0);
 	out = gmt_M_memory (GMT, NULL, n_items, double);
+	Out.data = out;	Out.text = NULL;
 
 	if (P->first && (error = gmt_set_cols (GMT, GMT_OUT, n_items)) != 0) return (error);
 
 	/* Now output  */
 
-	/* Special case for pure ASCII since we may pass text */
-
-	if (P->n_z && pure_ascii) {
-		for (rec = 0; rec < P->n_used; rec++) {
-			record[0] = 0;
-			for (col = 0; col < P->n_outputs; col++) {
-				if (P->output_choice[col] == -1)	/* Output all z columns as one string */
-					strncat (record, p_data[rec].t, GMT_BUFSIZ-1);
-				else {
-					sprintf (text, GMT->current.setting.format_float_out, p_data[rec].a[P->output_choice[col]]);
-					strcat (record, text);
-				}
-				(col == (P->n_outputs - 1)) ? strcat (record, "\n") : strcat (record, GMT->current.setting.io_col_separator);
+	for (rec = 0; rec < P->n_used; rec++) {
+		for (col = k = 0; col < P->n_outputs; col++) {
+			if (P->output_choice[col] == -1) {	/* Copy over all z columns */
+				gmt_M_memcpy (&out[k], p_data[rec].z, P->n_z, double);
+				k += P->n_z;
 			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
+			else
+				out[k++] = p_data[rec].a[P->output_choice[col]];
 		}
-	}
-	else {	/* Any other i/o combination */
-		for (rec = 0; rec < P->n_used; rec++) {
-			for (col = k = 0; col < P->n_outputs; col++) {
-				if (P->output_choice[col] == -1) {	/* Copy over all z columns */
-					gmt_M_memcpy (&out[k], p_data[rec].z, P->n_z, double);
-					k += P->n_z;
-				}
-				else
-					out[k++] = p_data[rec].a[P->output_choice[col]];
-			}
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);	/* Write this to output */
-		}
+		Out.text = p_data[rec].t;	/* The trailing text */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);	/* Write this to output */
 	}
 	gmt_M_free (GMT, out);
 	return (0);
@@ -646,6 +630,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	struct PROJECT_DATA *p_data = NULL;
 	struct PROJECT_INFO P;
+	struct GMT_RECORD Out;
 	struct PROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -836,9 +821,11 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Not input data expected, just generate x,y,d track from arguments given */
 		double out[3];
+		struct GMT_RECORD Out;
 		P.output_choice[0] = 4;
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
+		Out.data = out;	Out.text = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
@@ -901,20 +888,20 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
 			for (rec = 0; rec < P.n_used; rec++) {
-				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
+				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Failed to enable data output and set access mode */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, p_data);
 				Return (API->error);
 			}
 			for (rec = 0; rec < P.n_used; rec++) {
-				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
+				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
 			Return (API->error);
@@ -929,13 +916,11 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 		}
 	}
 	else {	/* Must read input file */
-		bool pure_ascii = false;
-		enum GMT_enum_family family;
-		enum GMT_enum_geometry geometry;
+		struct GMT_RECORD *In = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
@@ -950,19 +935,14 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		pure_ascii = gmt_is_ascii_record (GMT, options);
-
-		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DATA;
-		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
 		
 		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
@@ -970,7 +950,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -978,7 +958,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
-						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
+						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
@@ -990,11 +970,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
+			in = In->data;	/* Only need to process numerical part here */
 
 			if (z_first) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN);
 				if (n_cols == 2 && P.want_z_output) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "No data columns after leading coordinates, cannot use z flag in -F\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				else
@@ -1026,14 +1007,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
-				if (pure_ascii) {	/* Must store all text beyond x,y columns */
-					p_data[P.n_used].t = gmt_M_memory (GMT, NULL, strlen (GMT->current.io.curr_text), char);
-					copy_text_from_col3 (GMT->current.io.curr_text, p_data[P.n_used].t);
-				}
-				else {
-					p_data[P.n_used].z = gmt_M_memory (GMT, NULL, P.n_z, double);
-					gmt_M_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
-				}
+				if (In->text)	/* Must store all text beyond x,y columns */
+					p_data[P.n_used].t = strdup (In->text);
+				p_data[P.n_used].z = gmt_M_memory (GMT, NULL, P.n_z, double);
+				gmt_M_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 			}
 			P.n_used++;
 			if (P.n_used == n_alloc) {
@@ -1047,7 +1024,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if (P.n_used < n_alloc) p_data = gmt_M_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
-			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
+			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
 			n_total_used += P.n_used;
 		}
 
@@ -1062,7 +1039,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
-		gmt_M_free (GMT, p_data[rec].t);
+		gmt_M_str_free (p_data[rec].t);
 		gmt_M_free (GMT, p_data[rec].z);
 	}
 

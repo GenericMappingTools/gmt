@@ -181,6 +181,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct BLK_PAIR *xy = NULL, *zw = NULL;
 	struct BLK_SLHG *slhg = NULL;
 	struct BLOCKMEAN_CTRL *Ctrl = NULL;
@@ -264,7 +265,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -272,7 +273,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
-		
+		in = In->data;	/* Only need to process numerical part here */
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
 
@@ -358,6 +359,8 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	Out.data = out;	Out.text = NULL;	/* Since we only need to worry about numerics in this module */
+	
 	for (node = 0; node < Grid->header->nm; node++) {	/* Visit all possible blocks to see if they were visited */
 
 		if (zw[node].a[BLK_W] == 0.0) continue;	/* No values in this block; skip */
@@ -395,7 +398,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			out[4] = slhg[node].a[BLK_L];	/* Minimum value in block */
 			out[5] = slhg[node].a[BLK_H];	/* Maximum value in block */
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);

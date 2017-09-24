@@ -212,12 +212,13 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
 		unsigned int res;
-		char *line = NULL, r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
+		struct GMT_RECORD *In = NULL;
+		char r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
 		double weight;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 		
 		do {	/* Keep returning records until we reach EOF */
-			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					return (GMT_RUNTIME_ERROR);
 				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -231,7 +232,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
 			 */
 
-			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
+			nr = sscanf (In->text, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error for blending parameters near row %d\n", n);
 				return (GMT_DATA_READ_ERROR);

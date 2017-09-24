@@ -215,6 +215,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SPHINTERPOLATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -262,7 +263,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
 	
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
@@ -274,6 +275,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];

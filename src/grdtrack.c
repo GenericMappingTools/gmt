@@ -731,6 +731,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GRD_CONTAINER *GC = NULL;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -1127,11 +1128,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
+			in = In->data;	/* Only need to process numerical part here */
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
 				n_out = gmt_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get total # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
 				if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
+				Out.data = out;	/* Simply use this pointer instead */
+				Out.text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */
 			}
 			
 			n_read++;
@@ -1152,40 +1156,15 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (Ctrl->Z.active)	/* Simply print out values */
-				GMT_Put_Record (API, GMT_WRITE_DATA, value);
-			else if (pure_ascii && n_fields >= 2) {
-				/* Special case: ASCII i/o and at least 3 columns:
-				   Columns beyond first two could be text strings */
-				if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
-
-				/* First get rid of any commas that may cause grief */
-				for (k = 0; GMT->current.io.curr_text[k]; k++) if (GMT->current.io.curr_text[k] == ',') GMT->current.io.curr_text[k] = ' ';
-				record[0] = 0;
-				sscanf (GMT->current.io.curr_text, "%*s %*s %[^\n]", line);
-				gmt_add_to_record (GMT, record, in[ix], ix, GMT_OUT, 2);	/* Format our output x value */
-				gmt_add_to_record (GMT, record, in[iy], iy, GMT_OUT, 2);	/* Format our output y value */
-				strcat (record, line);
-				for (g = 0; g < Ctrl->G.n_grids; g++) {
-					gmt_add_to_record (GMT, record, value[g], GMT_Z+g, GMT_OUT, 1);	/* Format our output y value */
-				}
-				if (Ctrl->T.mode == 2) {	/* Add extra columns */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->x[Ctrl->T.S->col], GMT_X, GMT_OUT, 1);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->y[Ctrl->T.S->row], GMT_Y, GMT_OUT, 1);	/* Format our output y value */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->radius, GMT_Z, GMT_OUT, 1);			/* Format our radius */
-				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
+			/* Simply copy other columns, append value, and output */
+			for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
+			for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
+			if (Ctrl->T.mode == 2) {	/* Add extra columns */
+				out[ks++] = Ctrl->T.S->x[Ctrl->T.S->col];	/* Add our output x value */
+				out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
+				out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
 			}
-			else {	/* Simply copy other columns, append value, and output */
-				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
-				for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
-				if (Ctrl->T.mode == 2) {	/* Add extra columns */
-					out[ks++] = Ctrl->T.S->x[Ctrl->T.S->col];	/* Add our output x value */
-					out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
-					out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
-				}
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
-			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 
 			n_points++;
 		} while (true);

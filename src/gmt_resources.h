@@ -234,6 +234,7 @@ enum GMT_enum_write {
 	GMT_WRITE_DATA = 0,		/* Write double array to output */
 	GMT_WRITE_DOUBLE = 0,		/* Write double array to output [obsolete, replaced by GMT_WRITE_DATA for clarity] */
 	GMT_WRITE_TEXT = 1,		/* Write ASCII current record to output */
+	GMT_WRITE_MIXED = 2,		/* Write mixed numerical/text record to output */
 	GMT_WRITE_SEGMENT_HEADER = 2,	/* Write segment header record to output */
 	GMT_WRITE_TABLE_HEADER = 3,	/* Write current record as table header to output */
 	GMT_WRITE_TABLE_START = 4,	/* Write common header block to output (optional title + command line) */

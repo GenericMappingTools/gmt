@@ -316,9 +316,9 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
 
-	char *station_name = NULL, *p = NULL;
-	char *line = NULL, col[12][GMT_LEN64];
+	char *station_name = NULL, *p = NULL, col[12][GMT_LEN64];
 
+	struct GMT_RECORD *In = NULL;
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -374,25 +374,25 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	n_k = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) ? 7 : 9;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (line != NULL);						/* Should never get here */
+			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
 
 		n_rec++;
 		if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) {
-			sscanf (line, "%s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], station_name);
 		}
 		else {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
 		}
 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */

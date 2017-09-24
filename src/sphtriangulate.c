@@ -541,6 +541,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	struct SPHTRIANGULATE_CTRL *Ctrl = NULL;
 	struct STRIPACK T;
 	struct GMT_DATASET *Dout[2] = {NULL, NULL};
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -592,7 +593,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	n = 0;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
@@ -607,6 +608,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (first) {	/* Beginning of new segment; kep track of the very first coordinate in case of duplicates */
 			first_x = in[GMT_X];	first_y = in[GMT_Y];

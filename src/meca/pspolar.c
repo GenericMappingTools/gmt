@@ -441,9 +441,9 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
 
-	char *line = NULL, col[4][GMT_LEN64];
-	char pol, stacode[GMT_LEN64] = {""};
+	char col[4][GMT_LEN64], pol, stacode[GMT_LEN64] = {""};
 
+	struct GMT_RECORD *In = NULL;
 	struct PSPOLAR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -511,39 +511,39 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (line != NULL);						/* Should never get here */
+			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
 
-		for (k = 0; k < (int)strlen (line); k++) if (line[k] == ',') line[k] = ' ';	/* Replace commas with spaces */
+		for (k = 0; k < (int)strlen (In->text); k++) if (In->text[k] == ',') In->text[k] = ' ';	/* Replace commas with spaces */
 		if (Ctrl->H2.active) {
 			if (Ctrl->S2.active) {
-				n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
+				n = sscanf (In->text, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
 				pol = col[3][2];
 				if (n == 7)
 					azS = -1.0;
 			}
 			else { /* !Ctrl->S2.active */
-				sscanf (line, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
+				sscanf (In->text, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
 				pol = col[3][2];
 			}
 		}
 		else { /* !Ctrl->H2.active */
 			if (Ctrl->S2.active) {
-				n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
+				n = sscanf (In->text, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
 				if (n == 4)
 					azS = -1.0;
 			}
 			else /* !Ctrl->S2.active */
-				sscanf (line, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
+				sscanf (In->text, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
 		}
 
 		if (strcmp (col[0], "000000")) {

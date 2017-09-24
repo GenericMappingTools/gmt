@@ -417,6 +417,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct BIN_MODE_INFO *B = NULL;
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMODE_CTRL *Ctrl = NULL;
@@ -509,6 +510,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
@@ -598,6 +600,8 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		B = bin_setup (GMT, data, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, n_pitched, GMT_Z);
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
+
+	Out.data = out;	Out.text = NULL;	/* Since we only need to worry about numerics in this module */
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -722,7 +726,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / weight : weight;
 		if (emode) out[i_col] = (double)src_id;
 
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

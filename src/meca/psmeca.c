@@ -498,7 +498,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""}, *line = NULL, *p = NULL, col[15][GMT_LEN64];
+	char string[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""}, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca;
 	struct MOMENT moment;
@@ -506,6 +506,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	struct AXIS T, N, P;
 
 	struct GMT_PALETTE *CPT = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct PSMECA_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -562,45 +563,45 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (line != NULL);						/* Should never get here */
+			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
 
 		n_rec++;
 		if (Ctrl->S.readmode == READ_CMT) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], col[8], col[9], col[10], col[11], string);
 			last = 11;
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], string);
 			last = 7;
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], col[8], string);
 			last = 8;
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
 				col[8], col[9], col[10], col[11], col[12], col[13], string);
 			last = 13;
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
 				col[8], col[9], col[10], string);
 			last = 10;
@@ -687,7 +688,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", In->text);
 			}
 			else
 				meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);

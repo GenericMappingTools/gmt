@@ -256,6 +256,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMEDIAN_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -347,7 +348,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	/* Read the input data */
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -355,6 +356,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
@@ -432,6 +434,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
+	Out.data = out;	Out.text = NULL;	/* Since we only need to worry about numerics in this module */
+
 	/* Find n_in_cell and write appropriate output  */
 
 	first_in_cell = n_cells_filled = nz = 0;
@@ -479,7 +483,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / weight : weight;
 		if (emode) out[i_col] = extra[3];
 
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

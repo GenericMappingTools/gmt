@@ -350,6 +350,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	struct GMT_QUAD *Q = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
+	struct GMT_RECORD *In = NULL, Out;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -402,7 +403,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					out[3] += (double)(D->table[tbl]->n_headers);
 				if (D->n_segments == 1) out[4] -= 1.0;	/* Still unsure about this.  How do we know file actually had a segment header? */
 				out[4] = out[3] + out[1] + out[2];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, &Out);
 				break;
 			case GMT_INFO_TABLEINFO:	/* Virtual data set or individual tables */
 			case GMT_INFO_DATAINFO:
@@ -421,7 +422,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						out[2] = (double)S->n_rows;
 						out[3] = (double)start_rec;
 						out[4] = (double)(start_rec + S->n_rows - 1);
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, &Out);
 						start_rec += S->n_rows;
 					}
 				}
@@ -484,14 +485,17 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	}
 		
 	save_range = GMT->current.io.geo.range;
+	Out.data = (Ctrl->C.active) ? GMT->current.io.curr_rec : out;	Out.text = NULL;	/* Since we only need to worry about numerics in this module */
+	
 	first_data_record = true;
 	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		in = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, NULL);
+		In = GMT_Get_Record (API, GMT_READ_DATA | GMT_READ_FILEBREAK, NULL);
 
 		if (gmt_M_rec_is_error (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (gmt_M_rec_is_table_header (GMT)) continue;	/* Skip table headers */
 		if ((gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT)) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
+		in = In->data;	/* Only need to process numerical part here */
 		
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
 			if (gmt_M_rec_is_segment_header (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
@@ -527,18 +531,18 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					south = xyzmin[GMT_Y];	north = xyzmax[GMT_Y];
 				}
 				else if (Ctrl->I.mode == BOUNDBOX) {	/* Write out bounding box */
-					sprintf (buffer, "Bounding box for table data");
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);
+					sprintf (GMT->current.io.curr_text, "Bounding box for table data");
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, &Out);
 					out[GMT_X] = xyzmin[GMT_X];	out[GMT_Y] = xyzmin[GMT_Y];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					out[GMT_X] = xyzmax[GMT_X];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					out[GMT_Y] = xyzmax[GMT_Y];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					out[GMT_X] = xyzmin[GMT_X];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					out[GMT_Y] = xyzmin[GMT_Y];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					do_report = false;
 				}
 				else if (Ctrl->L.active) { /* Round down to nearest inc for this segment or table */
@@ -693,10 +697,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (do_report) {
 				if (Ctrl->C.active) {	/* Plain data record */
-					GMT_Put_Record (API, GMT_WRITE_DATA, GMT->current.io.curr_rec);	/* Write data record to output destination */
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write data record to output destination */
 				}
 				else {
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);	/* Write text record to output destination */
 				}
 			}
 			got_stuff = true;		/* We have at least reported something */

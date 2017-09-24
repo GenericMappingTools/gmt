@@ -534,6 +534,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	struct TALWANI2D_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Out = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -625,13 +626,14 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, body);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
+			in = In->data;	/* Only need to process numerical part here */
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
 				if (!first) {	/* First close previous body */
 					if (!(x[n-1] == x[0] && z[n-1] == z[0])) {	/* Copy first point to last */

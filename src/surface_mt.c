@@ -842,6 +842,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	uint64_t k = 0, kmax = 0, kmin = 0, n_dup = 0;
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GMT_GRID_HEADER *h = C->Grid->header;
+	struct GMT_RECORD *In = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
@@ -863,7 +864,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		return (GMT->parent->error);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (GMT->parent, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (GMT->parent, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				return (GMT_RUNTIME_ERROR);
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -872,6 +873,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 	
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;	/* Cannot use NaN values */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue; /* Outside y-range (or latitude) */

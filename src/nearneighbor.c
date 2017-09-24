@@ -276,6 +276,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct NEARNEIGHBOR_NODE **grid_node = NULL;
 	struct NEARNEIGHBOR_POINT *point = NULL;
 	struct NEARNEIGHBOR_CTRL *Ctrl = NULL;
@@ -392,7 +393,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -400,6 +401,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				break;
 			continue;	/* Go back and read the next record */
 		}
+		in = In->data;	/* Only need to process numerical part here */
 		
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */

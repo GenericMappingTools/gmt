@@ -779,13 +779,14 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[GMT_BUFSIZ] = {""}, *line = NULL, *p = NULL, col[15][GMT_LEN64];
+	char event_title[GMT_BUFSIZ] = {""}, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca, mecar;
 	struct MOMENT moment;
 	struct M_TENSOR mt, mtr;
 	struct AXIS T, N, P, Tr, Nr, Pr;
 	struct GMT_PALETTE *CPT = NULL;
+	struct GMT_RECORD *In = NULL;
 
 	struct PSCOUPE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -869,7 +870,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_k = 3;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				fclose (pnew);
 				fclose (pext);
@@ -879,7 +880,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (line != NULL);						/* Should never get here */
+			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
@@ -888,41 +889,41 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		size = Ctrl->S.scale;
 
 		if (Ctrl->S.readmode == READ_CMT) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], col[8], col[9], col[10], col[11], col[12], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], col[8], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
 				col[7], col[8], col[9], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
 				col[8], col[9], col[10], col[11], col[12], col[13], col[14], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
+			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
 				col[8], col[9], col[10], col[11], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
 		else if (gmt_M_is_zero (Ctrl->S.scale)) {
-			sscanf (line, "%s %s %s %s %[^\n]\n", col[0], col[1], col[2], col[3], event_title);
+			sscanf (In->text, "%s %s %s %s %[^\n]\n", col[0], col[1], col[2], col[3], event_title);
 			size = gmt_M_to_inch (GMT, col[3]);
 		}
 		else
-			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
+			sscanf (In->text, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
  		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
@@ -951,7 +952,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		if (Ctrl->S.symbol) {
 			if (!Ctrl->Q.active) {
 				fprintf (pnew, "%f %f %f %s\n", distance, n_dep, depth, col[3]);
-				fprintf (pext, "%s\n", line);
+				fprintf (pext, "%s\n", In->text);
 			}
 			gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &size, Ctrl->S.symbol);
@@ -995,7 +996,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", In->text);
 			}
 			else
 				meca.NP1.rake = meca_computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
@@ -1073,7 +1074,7 @@ Definition of scalar moment.
 
 			size = (meca_computed_mw (moment, meca.magms) / 5.0) * Ctrl->S.scale;
 
-			if (!Ctrl->Q.active) fprintf (pext, "%s\n", line);
+			if (!Ctrl->Q.active) fprintf (pext, "%s\n", In->text);
 			if (Ctrl->S.readmode == READ_AXIS) {
 				if (!Ctrl->Q.active)
 					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",

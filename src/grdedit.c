@@ -237,7 +237,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	uint64_t ij, n_data, n_use;
 
-	double shift_amount = 0.0, *in = NULL;
+	double shift_amount = 0.0;
 
 	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL;
 
@@ -334,6 +334,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->N.active) {
 		int in_ID;
+		struct GMT_RECORD *In = NULL;
+		double *in = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
 		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
@@ -354,7 +356,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		n_data = n_use = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -362,6 +364,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 					break;
 				continue;	/* Go back and read the next record */
 			}
+			in = In->data;	/* Only need to process numerical part here */
 
 			/* Data record to process */
 

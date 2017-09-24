@@ -522,6 +522,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	FILE *fp = NULL;
 #endif
 	struct GMT_GRID *Grid = NULL, *Out[2] = {NULL, NULL};
+	struct GMT_RECORD *In = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
 	struct GMT_GRID_INFO info;
@@ -591,7 +592,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	n_uv = n_read = 0;
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, X);
 				Return (GMT_RUNTIME_ERROR);
@@ -600,10 +601,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (geo) {	/* Ensure geographic longitudes fit the range since the normalization function expects it */
 			if (in[GMT_X] < GMT->common.R.wesn[XLO] && (in[GMT_X] + 360.0) < GMT->common.R.wesn[XHI]) in[GMT_X] += 360.0;
@@ -1007,6 +1009,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	if (Ctrl->N.file) {	/* Predict solution at specified discrete points only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
 		double out[4] = {0.0, 0.0, 0.0, 0.0};
+		struct GMT_RECORD Rec;
 
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
@@ -1029,6 +1032,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		/* This cannot be under OpenMP as is since the record writing would appear to be out of sync.  Must instead
 		 * save to memory and THEN write the output via GMT_Write_Data */
+		Rec.data = out;	Rec.text = NULL;
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
 				out[GMT_X] = T->segment[seg]->data[GMT_X][row];
@@ -1040,7 +1044,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					out[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
 				undo_gps_normalization (out, normalize, norm);
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

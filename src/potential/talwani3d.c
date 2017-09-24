@@ -702,6 +702,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	struct GMT_GRID *G = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -785,13 +786,14 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, cake);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
+			in = In->data;	/* Only need to process numerical part here */
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
 				/* First close previous segment */
 				if (!first_slice) {
@@ -918,6 +920,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		unsigned int wmode = GMT_ADD_DEFAULT;
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? (1.0 / METERS_IN_A_KM) : 1.0;	/* Perhaps convert to km */
 		double out[4];
+		struct GMT_RECORD Rec;
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
 			int out_ID;
@@ -942,11 +945,13 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
+		Rec.data = out;	Rec.text = NULL;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				int64_t row;
 				S = D->table[tbl]->segment[seg];	/* Current segment */
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
+				Rec.text = S->header;
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, &Rec);
 				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
@@ -965,7 +970,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 					out[GMT_Y] = S->data[GMT_Y][row];
 					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->data[GMT_Z][row];
 					out[3] = GMT->hidden.mem_coord[GMT_X][row];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);	/* Write this to output */
 				}
 			}
 		}

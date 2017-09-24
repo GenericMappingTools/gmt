@@ -408,6 +408,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
 	struct GMT_DATATABLE *P = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -489,7 +490,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
@@ -501,6 +502,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (n_in == 2) {	/* Read azimuth and length */
 			length[n]  = in[GMT_X];
@@ -601,6 +603,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];
+			struct GMT_RECORD Rec;
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 7U)) != GMT_NOERROR) {
@@ -638,8 +641,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			sprintf (format, "n\tmean_az\tmean_r\tmean_resultant_length\tmax\tscaled_mean_r\tlinear_length_sum");
 			out[0] = (double)n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
 			out[4] = max;	out[5] = mean_radius;	out[6] = total;
-			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			Rec.data = out;	Rec.text = format;
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Rec);	/* Write this to output if -ho */
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);
