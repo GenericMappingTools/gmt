@@ -796,6 +796,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		{ "recno",   MGD77_AUX_RN, true,  false, "recno"},
 		{ "ngdcid",  MGD77_AUX_ID, true,  false, "NGDC-ID"}
 	};
+	struct GMT_RECORD *Out = NULL;
 	struct MGD77LIST_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1033,6 +1034,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (!string_output) gmt_set_cols (GMT, GMT_OUT, n_out_columns);
+
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	for (argno = 0; argno < (unsigned int)n_paths; argno++) {		/* Process each ID */
 	
@@ -1565,7 +1568,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						out[pos] = dvalue[kk][rec] - correction;
 					}
 				}
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			n_out++;
 		}
@@ -1587,6 +1590,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (!string_output) gmt_M_free (GMT, out);
 	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_ID]);
 	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_DA]);
+	gmt_M_free (GMT, Out);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	

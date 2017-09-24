@@ -261,7 +261,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	double R[3][3], DR[3][3], Ri[3][3], E[3], this_h[3], xyz_mean_pole[3], xyz_mean_quat[4], z_unit_vector[3];
 	double mean_rot_age, std_rot_age, *H[3], mean_H[3], Ccopy[9], *mangle = NULL, this_lon, this_lat;
 	struct AGEROT *D = NULL;
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct ROTSMOOTHER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -310,7 +310,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	t_col = (Ctrl->A.active) ? GMT_Z : 3;	/* If no time we use angle as proxy for time */
 	w_col = t_col + 1;
 	D = (struct AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct AGEROT);
-	Out.data = out;	Out.text = NULL;
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -479,7 +479,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		n_out++;
 
 		if (!Ctrl->C.active) {	/* No covariance requested, print this rotation and continue */
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			continue;
 		}
 
@@ -574,7 +574,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		out[16] = EigenValue[0];
 		out[17] = EigenValue[1];
 		out[18] = EigenValue[2];
-		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -589,6 +589,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	/* Free up memory used for the array */
 
 	gmt_M_free (GMT, D);
+	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

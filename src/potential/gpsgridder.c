@@ -1009,7 +1009,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	if (Ctrl->N.file) {	/* Predict solution at specified discrete points only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
 		double out[4] = {0.0, 0.0, 0.0, 0.0};
-		struct GMT_RECORD Rec;
+		struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
@@ -1032,7 +1032,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		/* This cannot be under OpenMP as is since the record writing would appear to be out of sync.  Must instead
 		 * save to memory and THEN write the output via GMT_Write_Data */
-		Rec.data = out;	Rec.text = NULL;
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
 				out[GMT_X] = T->segment[seg]->data[GMT_X][row];
@@ -1044,9 +1043,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					out[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
 				undo_gps_normalization (out, normalize, norm);
-				GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
+		gmt_M_free (GMT, Rec);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}

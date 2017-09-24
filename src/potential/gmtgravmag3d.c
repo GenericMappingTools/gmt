@@ -717,6 +717,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else {
 		double out[3];
 		char save[GMT_LEN64] = {""};
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			error = API->error;
 			goto END;
@@ -739,8 +740,9 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			out[GMT_X] = point->segment[0]->data[GMT_X][k];
 			out[GMT_Y] = point->segment[0]->data[GMT_Y][k];
 			out[GMT_Z] = g[k];
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
+		gmt_M_free (GMT, Out);
 		strcpy (GMT->current.setting.format_float_out, save);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			error = API->error;

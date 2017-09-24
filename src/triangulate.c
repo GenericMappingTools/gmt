@@ -330,7 +330,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Grid = NULL, *F = NULL, *Slopes = NULL;
 	struct GMT_DATASET *V = NULL;
 	struct GMT_DATASEGMENT *P = NULL;
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 
 	struct TRIANGULATE_EDGE *edge = NULL;
 	struct TRIANGULATE_CTRL *Ctrl = NULL;
@@ -785,9 +785,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 	}
 	
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (do_output && (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) {	/* Requires output to stdout */
-		struct GMT_RECORD Out;
-		Out.data = out;	Out.text = NULL;
 
 		if (!Ctrl->Q.active) {	/* Still record-by-record output */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -840,12 +839,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " unique triangle edges\n", n_edge);
 
 				for (i = 0; i < n_edge; i++) {
-					sprintf (record, "Edge %d-%d", edge[i].begin, edge[i].end);	Out.text = record;
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, &Out);
+					sprintf (record, "Edge %d-%d", edge[i].begin, edge[i].end);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
-					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
-					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				gmt_M_free (GMT, edge);
 			}
@@ -861,15 +860,15 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			for (i = ij = 0; i < np; i++, ij += 3) {
-				sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);	Out.text = record;
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, &Out);
+				sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				for (k = 0; k < 3; k++) {	/* Three vertices */
 					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
-					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 				/* Explicitly close the polygon */
 				out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij]];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, &Out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, Out);	/* Write this to output */
 			}
 		}
 		else if (Ctrl->N.active) {	/* Write table of indices */
@@ -878,7 +877,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 			for (i = ij = 0; i < np; i++, ij += 3) {
 				for (k = 0; k < 3; k++) out[k] = (double)link[ij+k];
-				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 		if (!Ctrl->Q.active && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -890,6 +889,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xx);
 	gmt_M_free (GMT, yy);
 	if (zpol) gmt_M_free (GMT, zpol);

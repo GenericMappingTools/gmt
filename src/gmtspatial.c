@@ -264,8 +264,10 @@ GMT_LOCAL int comp_pairs (const void *a, const void *b) {
 GMT_LOCAL void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
 	uint64_t c;
 	double out[GMT_MAX_COLUMNS];
+	struct GMT_RECORD Out;
+	Out.data = out;	Out.text = NULL;
 	for (c = 0; c < n; c++) out[c] = R[c][p];
-	GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+	GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);
 }
 
 GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
@@ -1011,6 +1013,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_RECORD Out;
 	struct GMTSPATIAL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1114,6 +1117,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
+		Out.data = out;	Out.text = NULL;
 		if (Ctrl->A.mode) {	/* Need to combine close neighbors until minimum distance >= min_dist, then output revised dataset */
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;
@@ -1186,7 +1190,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			out[col++] = NN_dist[k].distance;
 			out[col++] = (double)NN_dist[k].ID;
 			out[col++] = (double)NN_dist[k].neighbor;
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write area or length to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write area or length to output */
 		}
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			d_bar /= n_points;
@@ -1325,7 +1329,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		
+		Out.data = out;	Out.text = NULL;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
@@ -1378,7 +1382,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					handedness = Ctrl->E.mode;
 				}
 				if (!new_data)	/* Just write centroid and area|length to output */
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 			}
 		}
 		if (Ctrl->Q.header || Ctrl->E.active) {		/* Must write out a revised dataset */
@@ -1463,7 +1467,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		sprintf (fmt, "%s%s%s%s%s%s%s%s%%s%s%%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
-
+		Out.data = out;	Out.text = NULL;
 		for (tbl1 = 0; tbl1 < C->n_tables; tbl1++) {
 			for (seg1 = 0; seg1 < C->table[tbl1]->n_segments; seg1++) {
 				S1 = C->table[tbl1]->segment[seg1];
@@ -1515,7 +1519,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 											GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 											first = false;
 										}
-										GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+										GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 									}
 									/* Always output crossover point */
 									if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
@@ -1528,7 +1532,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									}
 									for (col = 2; col < S2->n_columns; col++) out[col] = 0.0;
 									out[GMT_X] = xx[px];	out[GMT_Y] = yy[px];
-									GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 									px++;
 									in = !in;	/* Go from out to in or vice versa */
 									if (!in) first = true;	/* Since we went outside */
@@ -1545,7 +1549,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 												GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 												first = false;
 											}
-											GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+											GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 										}
 										go = false;
 									}
@@ -1563,9 +1567,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ-1);
 									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ-1);
 								}
+								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
 									sprintf (record, fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
-									GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+									GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
 								}
 							}
 							gmt_x_free (GMT, &XC);
@@ -1582,7 +1587,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								}
 								for (row = 0; row < S2->n_rows; row++) {
 									for (col = 0; col < S2->n_columns; col++) out[col] = S2->data[col][row];
-									GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+									GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
 								}
 							}
 						}
@@ -1662,6 +1667,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g",
 		         GMT->current.setting.format_float_out);
 		
+		Out.text = record;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S1 = D->table[tbl]->segment[seg];
@@ -1687,7 +1693,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						poly_D = (gmt_polygon_is_open (GMT, D->table[tbl]->segment[seg]->data[GMT_X], D->table[tbl]->segment[seg]->data[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
 						sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
 					}
 					continue;
 				}
@@ -1705,7 +1711,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else
 							sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2],
 							         dup, from, I->distance, I->closeness, I->setratio);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
 					}
 				}
 			}
@@ -1802,6 +1808,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
+		Out.text = record;
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (gmt_M_polygon_is_hole (S2)) continue;	/* Holes are handled in gmt_inonout */
@@ -1836,7 +1843,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					/* Here we are inside */
 					if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
 						sprintf (record, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->data[n][row] = (double)ID;

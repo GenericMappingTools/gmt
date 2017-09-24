@@ -239,6 +239,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_QUAD *Q = NULL;
@@ -368,6 +369,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_set_geographic (GMT, GMT_OUT);
 	}
 	pos = 0;
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	while (gmt_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
@@ -490,7 +492,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
 					out[GMT_Y] = P->data[GMT_Y][kk];
-					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 				}
 				seg++;
 			}
@@ -518,6 +520,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	nc_close (ncid);
 	gmt_M_free (GMT, GMT_DCW_country);
 	gmt_M_free (GMT, GMT_DCW_state);
+	gmt_M_free (GMT, Out);
 
 	if (mode & GMT_DCW_REGION) {
 		j = gmt_quad_finalize (GMT, &Q[GMT_X]);

@@ -230,7 +230,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *pol = NULL;
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GMTPMODELER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -323,17 +323,15 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
-	Out.data = out;	Out.text = NULL;
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (GMT->current.setting.io_header[GMT_OUT]) {
 		char header[GMT_BUFSIZ] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			strncat (header, tag[k], GMT_BUFSIZ-1);
 			if (k < (Ctrl->S.n_items-1)) strncat (header, GMT->current.setting.io_col_separator, GMT_BUFSIZ-1);
 		}
-		Out.text = header;
-		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Out);	/* Write a header record */
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 	}
-	Out.text = NULL;
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 
@@ -359,7 +357,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		in = In->data;
-		Out.text = In->text;
+		Out->text = In->text;
 
 		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
@@ -457,7 +455,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			}
 			out[k+3] = value;
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
@@ -472,6 +470,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 
 	gmt_M_free (GMT, out);
+	gmt_M_free (GMT, Out);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

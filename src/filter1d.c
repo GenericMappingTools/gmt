@@ -542,12 +542,14 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	double *outval = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
 	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
 	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
 	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
 	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	Out = gmt_new_record (GMT, NULL, NULL);
 
 	if(!F->out_at_time) {	/* Position i_t_output at first output time  */
 		for(i_t_output = 0; F->data[F->t_col][i_t_output] < F->t_start; ++i_t_output);
@@ -634,7 +636,8 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		if (F->filter_type > FILTER1D_CONVOLVE) {
 
 			/* Need to count how many good ones; use data_sum area  */
-
+			
+			Out->data = data_sum;
 			n_good_ones = 0;
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (i_col == F->t_col)
@@ -646,7 +649,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
 			}
-			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DATA, data_sum);
+			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DATA, Out);
 		}
 		else {
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
@@ -700,6 +703,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				++n_good_ones;
 			}
 			if (n_good_ones) {
+				Out->data = outval;
 				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
 						outval[i_col] = t_time;
@@ -710,7 +714,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
-				GMT_Put_Record (C, GMT_WRITE_DATA, outval);
+				GMT_Put_Record (C, GMT_WRITE_DATA, Out);
 			}
 		}
 

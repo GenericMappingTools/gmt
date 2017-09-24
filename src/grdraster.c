@@ -744,6 +744,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GRDRASTER_INFO myras;
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct GRDRASTER_CTRL *Ctrl = NULL;
@@ -992,9 +993,10 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
-	} else {	/* Need an entire (padded) grid */
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat);
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
+	else	/* Need an entire (padded) grid */
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat);
 
 	ksize = get_byte_size (GMT, myras.type);
 	if (ksize == 0) {	/* Bits; Need to read the whole thing */
@@ -1060,7 +1062,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[0] = x[col];
 					out[2] = Grid->data[col];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 		}
@@ -1139,7 +1141,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->n_columns; col++) {
 					out[GMT_X] = x[col];
 					out[GMT_Z] = Grid->data[col];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 		}
@@ -1158,6 +1160,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_M_free (GMT, x);
+		gmt_M_free (GMT, Out);
 	}
 	else {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);

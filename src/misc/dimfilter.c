@@ -953,6 +953,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 	else {	/* Here -Q is active */
 		int err_l = 1;
 		double err_workarray[50], err_min, err_max, err_null_median = 0.0, err_median, err_mad, err_depth, err_sum, out[3];
+		struct GMT_RECORD *Out = NULL;
 
 		FILE *ip = NULL;
 
@@ -968,6 +969,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		/* Check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
@@ -1011,13 +1013,14 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
 
 			/* print out the results */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
 			GMT_Report (API, GMT_MSG_DEBUG, "line %d passed\n", err_l);
 			err_l++;
 		}
 		/* close the input */
 		fclose (ip);
+		gmt_M_free (GMT, Out);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 			Return (API->error);	/* Disables further data output */
 		}

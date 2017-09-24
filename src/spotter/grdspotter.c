@@ -972,6 +972,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->W.active) {	/* Use bootstrapping to estimate confidence region for CVA maxima */
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			GMT_Message (API, GMT_TIME_NONE, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
@@ -1037,9 +1038,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			out[1] = gmt_M_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;
 			
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
+		gmt_M_free (GMT, Out);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			error = API->error;
 			goto END;

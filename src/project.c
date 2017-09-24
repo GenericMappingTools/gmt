@@ -555,7 +555,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""};
-	struct GMT_RECORD Out;
+	struct GMT_RECORD *Out = NULL;
 
 	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 
@@ -591,7 +591,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 	n_items = P->n_outputs + ((P->want_z_output && P->n_z) ? P->n_z - 1 : 0);
 	out = gmt_M_memory (GMT, NULL, n_items, double);
-	Out.data = out;	Out.text = NULL;
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	if (P->first && (error = gmt_set_cols (GMT, GMT_OUT, n_items)) != 0) return (error);
 
@@ -606,10 +606,11 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 			else
 				out[k++] = p_data[rec].a[P->output_choice[col]];
 		}
-		Out.text = p_data[rec].t;	/* The trailing text */
-		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);	/* Write this to output */
+		Out->text = p_data[rec].t;	/* The trailing text */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	gmt_M_free (GMT, out);
+	gmt_M_free (GMT, Out);
 	return (0);
 }
 
@@ -821,11 +822,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Not input data expected, just generate x,y,d track from arguments given */
 		double out[3];
-		struct GMT_RECORD Out;
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 		P.output_choice[0] = 4;
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
-		Out.data = out;	Out.text = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
@@ -916,8 +916,9 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
+		gmt_M_free (GMT, Out);
 	}
 	else {	/* Must read input file */
 		struct GMT_RECORD *In = NULL;

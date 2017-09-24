@@ -667,7 +667,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -797,6 +797,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
+	Out = gmt_new_record (GMT, NULL, NULL);
+	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};
 		switch (Ctrl->W.mode) {
@@ -823,8 +825,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		Out.data = w_out;	Out.text = NULL;
-		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+		Out->data = w_out;
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -1016,7 +1018,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
-	Out.data = out;	Out.text = In->text;
+	Out->data = out;	Out->text = In->text;
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1119,7 +1121,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				n_output = gmt_get_cols (GMT, GMT_OUT);
 			}
 			for (k = two; k < n_output; k++) out[k] = in[k];
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
@@ -1255,7 +1257,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 				for (col = 0; col < MP_COL_N; col++)
 					if (Ctrl->used[col]) out[ks++] = extra[col];
-				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			else {
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -1270,7 +1272,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
@@ -1320,6 +1322,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, out);
+	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

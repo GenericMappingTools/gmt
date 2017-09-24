@@ -235,6 +235,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
 	double t_scale;				/* Scale to give time in seconds */
 
+	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_FILE_INFO p;		/* File information */
 	struct X2SYS_BIX B;
@@ -455,6 +456,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 	
 	out = gmt_M_memory (GMT, NULL, s->n_fields, double);
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	if (Ctrl->A.active) {	/* Allocate an along-track adjustment table */
 		A = gmt_M_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
@@ -541,9 +543,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, fmt_record);
 			}
-			else {
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
-			}
+			else
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 
 		/* Free memory allocated for the current data set */
@@ -565,6 +566,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	x2sys_end (GMT, s);
 	gmt_M_free (GMT, out);
+	gmt_M_free (GMT, Out);
 	if (Ctrl->A.active) {
 		gmt_M_free (GMT, A);
 		gmt_M_free (GMT, adj_col);

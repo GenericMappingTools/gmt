@@ -212,6 +212,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
+	struct GMT_RECORD *Out = NULL;
 
 	cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 
@@ -231,6 +232,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	nxy = Grid->header->nm;
 	while (nxy > 0 && gmt_M_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	n_cells_m1 = n_cells - 1;
 	current_cell = 0;
 	i = 0;
@@ -252,7 +254,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 		}
 
 		i = j;
@@ -260,6 +262,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	}
 	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
 		gmt_M_free (GMT, cell);
+		gmt_M_free (GMT, Out);
 		return (GMT->parent->error);
 	}
 
@@ -284,6 +287,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	struct CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION);
+	struct GMT_RECORD *Out = NULL;
 
 	/* Determine the area weights */
 	gmt_get_cellarea (GMT, W);
@@ -308,6 +312,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	
 	/* Find the division points using the normalized 0-1 weights */
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	n_cells_m1 = n_cells - 1;
 	current_cell = 0;
 	i = j = 0;
@@ -328,7 +333,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)cell[current_cell].low; out[GMT_Y] = (double)cell[current_cell].high; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 		}
 
 		i = j;
@@ -338,6 +343,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
 		gmt_M_free (GMT, cell);
 		gmt_M_free (GMT, pair);
+		gmt_M_free (GMT, Out);
 		return (GMT->parent->error);
 	}
 

@@ -423,6 +423,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	struct MGD77MAGREF_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -570,6 +571,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {	/* Loop over all input tables */
 		T = Din->table[tbl];	/* Current table */
@@ -657,7 +659,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			else {					/* DID CM4 and IGRF */
@@ -676,7 +678,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 							out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*3+j] + igrf_xyz[i*3+j];
 					}
 
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 
@@ -686,6 +688,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, Out);
 	gmt_M_str_free (Ctrl->CM4->CM4_D.dst);
 	gmt_M_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) gmt_M_free (GMT, time_years);

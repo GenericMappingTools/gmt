@@ -335,6 +335,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	struct X2SYS_BIX Bix;
 	struct PAIR *pair = NULL;		/* Used with -Akombinations.lis option */
 	FILE *fp = NULL, *fpC = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -484,6 +485,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	out = gmt_M_memory (GMT, NULL, n_output, double);
 	xdata[0] = gmt_M_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = gmt_M_memory (GMT, NULL, s->n_out_columns, double);
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -665,7 +667,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 				gmt_x_free (GMT, &XC);
 			}
@@ -869,7 +871,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					}
 
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 
 				gmt_x_free (GMT, &XC);
@@ -907,6 +909,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[0]);
 	gmt_M_free (GMT, xdata[1]);
 	gmt_M_free (GMT, out);

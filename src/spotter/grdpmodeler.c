@@ -266,6 +266,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *G_age = NULL, **G_mod = NULL, *G = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -394,6 +395,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
 
 	grd_x  = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
@@ -503,7 +505,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			else
 				out[k+3] = value;
 		}
-		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, out);
+		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
 	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
@@ -530,6 +532,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_M_free (GMT, out);
+		gmt_M_free (GMT, Out);
 	}
 
 	gmt_M_free (GMT, grd_x);

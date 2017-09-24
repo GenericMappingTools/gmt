@@ -396,7 +396,7 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {GMT_Destroy_Data (API, &Grid); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (void *V_API, int mode, void *args) {
 	bool mode_xy, do_extra = false, is_integer, duplicate_col;
@@ -417,7 +417,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct BIN_MODE_INFO *B = NULL;
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMODE_CTRL *Ctrl = NULL;
@@ -601,7 +601,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
 
-	Out.data = out;	Out.text = NULL;	/* Since we only need to worry about numerics in this module */
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -726,7 +726,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = (Ctrl->W.sigma[GMT_OUT]) ? 1.0 / weight : weight;
 		if (emode) out[i_col] = (double)src_id;
 
-		GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

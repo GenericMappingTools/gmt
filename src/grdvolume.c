@@ -450,6 +450,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	struct GRDVOLUME_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Grid = NULL, *Work = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -704,26 +705,28 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_cartesian (GMT, GMT_OUT);	/* Since no coordinates are written */
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	else {			/* Return information for all contours (possibly one if -C<val> was used) */
 		if (Ctrl->C.reverse) {
 			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];	out[3] = out[2] / out[1];
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		else {
 			for (c = 0; c < n_contours; c++) {
 				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);
+		gmt_M_free (GMT, height);	gmt_M_free (GMT, Out);
 		Return (API->error);
 	}
 

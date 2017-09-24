@@ -14681,6 +14681,14 @@ char * gmt_memory_use (size_t bytes, int width) {
 	return mem_report;
 }
 
+struct GMT_RECORD *gmt_new_record (struct GMT_CTRL *GMT, double *d, char *t) {
+	/* Allocate a new record structure and initialize to d and t */
+	struct GMT_RECORD *R = gmt_M_memory (GMT, NULL, 1, struct GMT_RECORD);
+	R->data = d;
+	R->text = t;
+	return R;
+}
+
 char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]) {
 	/* Consolidate all args into a string */
 	int k;

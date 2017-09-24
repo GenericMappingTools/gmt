@@ -240,6 +240,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	unsigned int coe_kind;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct X2SYS_REPORT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -385,6 +386,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			len -= strlen (word);
 		}
 	}
+	Out = gmt_new_record (GMT, NULL, record);	/* Since we only need to worry about text in this module */
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	sprintf (record, "track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]", c, c, c, c, c, n_use);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
@@ -395,7 +397,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
 	         GMT->current.setting.format_float_out);
 	sprintf (record, fmt, c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
-	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n",
 	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
 	         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -406,8 +408,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
 		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 	}
+	gmt_M_free (GMT, Out);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}

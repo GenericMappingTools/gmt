@@ -1407,7 +1407,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
 	struct GMT_GRID_INFO info;
-	struct GMT_RECORD *In = NULL, Rec;
+	struct GMT_RECORD *In = NULL, *Rec = NULL;
 	struct GREENSPLINE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -2194,6 +2194,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
+	Rec = gmt_new_record (GMT, NULL, NULL);	
+
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
 		double out[4];
@@ -2217,12 +2219,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 		gmt_M_memset (out, 4, double);
-		Rec.data = out;	Rec.text = NULL;
+		Rec->data = out;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		for (seg = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
 				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->data[ii][row];
-				if (T->segment[seg]->text) Rec.text = T->segment[seg]->text[row];
+				if (T->segment[seg]->text) Rec->text = T->segment[seg]->text[row];
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = get_radius (GMT, out, X[p], dimension);
@@ -2235,7 +2237,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					out[dimension] += alpha[p] * part;
 				}
 				out[dimension] = undo_normalization (out, out[dimension], normalize, norm, dimension);
-				GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -2332,7 +2334,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, ssave);
 		}
 		else {
-			Rec.data = V;	Rec.text = NULL;
+			Rec->data = V;
 			for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 				int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
 				double z_level = 0.0;
@@ -2372,7 +2374,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					for (col = 0; col < Grid->header->n_columns; col++) {
 						V[GMT_X] = xp[col];
 						V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
-						GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 					}
 				}
 				else if (dimension == 3) {	/* Must dump 3-D grid as ASCII slices for now */
@@ -2383,7 +2385,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 							V[GMT_X] = xp[col];
 							ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
 							V[dimension] = Out->data[ij];
-							GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+							GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 						}
 					}
 				}
@@ -2402,6 +2404,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
+		gmt_M_free (GMT, Rec);
 		gmt_M_free (GMT, xp);
 		if (dimension > 1) gmt_M_free (GMT, yp);
 	}

@@ -508,6 +508,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	struct GMT_TEXTSET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
 	struct GMT_TEXTSEGMENT *S = NULL;
 	struct GMT_TEXTSET *L = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GRDSEAMOUNT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -619,6 +620,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 	
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_memset (in, 9, double);
 	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -652,7 +654,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					out[col++] = area;
 					out[col++] = volume;
 					out[col++] = height;
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 				GMT_Report (API, GMT_MSG_VERBOSE, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
 			}
@@ -664,6 +666,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (API->error);
 		}
+		gmt_M_free (GMT, Out);
 		gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 		Return (GMT_NOERROR);

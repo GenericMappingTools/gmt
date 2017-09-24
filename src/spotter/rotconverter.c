@@ -277,8 +277,8 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	char *end_text[2] = {"tend(My)", "aend(deg)"};
 	char *time_text[2] = {"ttime(My)", "tangle(deg)"};
 	char record[GMT_BUFSIZ] = {""};
-	
 
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *ptr = NULL, *opt = NULL;
 	struct ROTCONVERTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -451,6 +451,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (Ctrl->G.active)		/* GPlates header */
 		sprintf (record, "#plateid%stime%slatitude%slongitude%sangle%sfixedplateid\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
@@ -499,10 +500,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			spotter_covar_to_record (GMT, &a[stage], K);
 			for (k = 0; k < 9; k++) out[col++] = K[k];
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 	
 	gmt_M_free (GMT, a);
+	gmt_M_free (GMT, Out);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {		/* Disables further data output */
 		Return (API->error);

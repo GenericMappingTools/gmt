@@ -228,6 +228,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	double wesn[4], d_value, out[4], *x = NULL, *y = NULL;
 
 	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_OPTION *opt = NULL;
 	struct GRD2XYZ_CTRL *Ctrl = NULL;
@@ -413,6 +414,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			x = gmt_grd_coord (GMT, G->header, GMT_X);
 			y = gmt_grd_coord (GMT, G->header, GMT_Y);
+			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
 					gmt_M_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
@@ -460,11 +462,12 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				if (Ctrl->W.area) out[w_col] = W->data[ij];
-				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, out);		/* Write this to output */
+				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, &Out);		/* Write this to output */
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, y);
+			gmt_M_free (GMT, Out);
 			if (W) gmt_free_grid (GMT, &W, true);
 		}
 	}

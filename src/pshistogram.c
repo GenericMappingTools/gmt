@@ -886,7 +886,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		else {	/* Report the min/max values as the data result */
 			double out[4];
 			unsigned int col_type[4];
-			struct GMT_RECORD Rec;
+			struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
@@ -913,15 +913,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
 			if (Ctrl->F.active) strcat (format, " -F");
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
-			Rec.data = out;	Rec.text = format;
-			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, &Rec);	/* Write this to output if -ho */
-			Rec.text = NULL;
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);	
 				Return (API->error);
 			}
+			gmt_M_free (GMT, Rec);
 			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, unsigned int);	/* Restore 4 current output col types */
 		}
 		gmt_M_free (GMT, data);

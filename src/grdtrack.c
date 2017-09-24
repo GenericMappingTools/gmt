@@ -731,7 +731,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GRD_CONTAINER *GC = NULL;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL;
-	struct GMT_RECORD *In = NULL, Out;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -1065,7 +1065,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;
-		int ix, iy, n_fields, rmode;
+		int ix, iy, n_fields;
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
@@ -1102,7 +1102,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-		rmode = (pure_ascii && gmt_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DATA;
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
@@ -1114,7 +1114,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((in = GMT_Get_Record (API, GMT_READ_MIXED, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -1134,8 +1134,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				if (Ctrl->T.mode == 2) n_out += 3;
 				if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
-				Out.data = out;	/* Simply use this pointer instead */
-				Out.text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */
+				Out->text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */
 			}
 			
 			n_read++;
@@ -1164,7 +1163,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
 				out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
 			}
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 
 			n_points++;
 		} while (true);
@@ -1177,6 +1176,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 
 		gmt_M_free (GMT, out);
+		gmt_M_free (GMT, Out);
 	}
 	if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some input points were outside the grid domain(s).\n");
 	/* Clean up */

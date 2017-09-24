@@ -1007,6 +1007,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *Sa = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMTREGRESS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1105,7 +1106,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
-	
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	/* Process all tables and their segments */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -1163,7 +1164,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include result in segment header */
 				for (row = 0; row < n_try; row++) {	/* Write the saved results of the experiment */
 					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) out[k] = Sa->data[k][row];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 			}
 			else {	/* Here we are solving for the best regression */
@@ -1179,7 +1180,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[6] = par[GMTREGRESS_ICEPT];
 					out[7] = par[GMTREGRESS_SIGSL];
 					out[8] = par[GMTREGRESS_SIGIC];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 				else {
 					/* Make segment header with the findings for best regression */
@@ -1239,7 +1240,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 									break;
 							}
 						}
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 					}
 				}
 				gmt_M_free (GMT, z_score);	/* Done with this array */
@@ -1247,6 +1248,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_M_free (GMT, Out);
 	error = GMT_NOERROR;
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 		error = API->error;

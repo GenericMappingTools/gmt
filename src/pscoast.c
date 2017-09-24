@@ -696,6 +696,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	struct GMT_SHORE c;
 	struct GMT_BR b, r;
 	struct GMT_GSHHS_POL *p = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct PSCOAST_CTRL *Ctrl = NULL;		/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -797,6 +798,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		int id = 0;
 		char header[GMT_BUFSIZ] = {""}, *kind[3] = {"Coastlines", "Political boundaries", "Rivers"}, *version = NULL, *title = NULL, *source = NULL;
+		struct GMT_RECORD *Out = NULL;
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -831,6 +833,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			sprintf (header, "# %s\n# %s\n", title, source);
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
 	else {
 		if (Ctrl->Q.active)
@@ -1058,7 +1061,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
@@ -1121,7 +1124,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else {
@@ -1182,7 +1185,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else {
@@ -1223,6 +1226,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 		Return (API->error);	/* Disables further data output */
 	}
+	gmt_M_free (GMT, Out);
 	
 	GMT->current.map.coastline = false;
 

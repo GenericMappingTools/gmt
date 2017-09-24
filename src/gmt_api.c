@@ -7531,7 +7531,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	/* Gets next data record from current matrix */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
-	void *record;
+	struct GMT_RECORD *record;
 	
 	if (S->rec >= S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
 		S->status = GMT_IS_USED;	/* Mark as read */
@@ -7572,23 +7572,20 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 			record = NULL;
 		}
 		else {	/* Valid data record */
-			if (M->text) {	/* Also have text as part of record */
+			if (M->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, M->text[S->rec-1], GMT_BUFSIZ-1);
-				record = GMT->current.io.curr_text;
-			}
-			else
-				record = GMT->current.io.curr_rec;
 		}
 		*n_fields = API->current_get_n_columns;
+		record = &GMT->current.io.record;
 	}
-	return record;
+	return (record);
 }
 
 struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current vector */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
-	void *record;
+	struct GMT_RECORD *record;
 	uint64_t col;
 	
 	if (S->rec == S->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
@@ -7630,13 +7627,10 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 			record = NULL;
 		}
 		else {	/* Valid data record */
-			if (V->text) {	/* Also have text as part of record */
+			if (V->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, V->text[S->rec-1], GMT_BUFSIZ-1);
-				record = GMT->current.io.curr_text;
-			}
-			else
-				record = GMT->current.io.curr_rec;
 		}
+		record = &GMT->current.io.record;
 		*n_fields = API->current_get_n_columns;
 	}
 	return record;
@@ -7649,7 +7643,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 	int64_t *count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
 	struct GMT_DATASET *D = API->current_get_D_set;	/* Get the current dataset */
 	uint64_t col, col_pos;
-	void *record;
+	struct GMT_RECORD *record;
 	int status = api_wind_to_next_datarecord (count, D, mode);	/* Get current record status and wind counters if needed */
 	switch (status) {
 		case GMT_IO_DATA_RECORD:	/* Got a data record */
@@ -7658,7 +7652,9 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 				col_pos = api_pick_in_col_number (GMT, (unsigned int)col);
 				GMT->current.io.curr_rec[col] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos][count[GMT_ROW]];
 			}
-			record = GMT->current.io.curr_rec;	/* We will return this double array */
+			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text)
+				strncpy (GMT->current.io.curr_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
+			record = &GMT->current.io.record;
 			*n_fields = GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
 			count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 			break;
@@ -7693,21 +7689,23 @@ struct GMT_RECORD *api_get_record_textset (struct GMTAPI_CTRL *API, unsigned int
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_TEXTSET *T = API->current_get_T_set;	/* Get the current textset */
 	struct GMT_CTRL *GMT = API->GMT;
-	void *record;
+	struct GMT_RECORD *record;
 	int64_t *count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
 	int status = api_wind_to_next_textrecord (count, T, mode);	/* Get current record status and wind counters if needed */
 	switch (status) {
 		case GMT_IO_DATA_RECORD:	/* Got a data record */
 			S->status = GMT_IS_USING;		/* Mark this resource as currently being read */
-			record = strncpy (GMT->current.io.curr_text, T->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[count[GMT_ROW]], GMT_BUFSIZ-1);	/* Copy record */
+			strncpy (GMT->current.io.curr_text, T->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[count[GMT_ROW]], GMT_BUFSIZ-1);	/* Copy record */
 			if (GMT->current.io.curr_text[0] == GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Got a seg header pretending to be data */
 				strncpy (GMT->current.io.segment_header, gmtlib_trim_segheader (GMT, GMT->current.io.curr_text), GMT_BUFSIZ-1);
 				record = NULL;	/* No data record to return */
 				*n_fields = 0;
 				status = GMT_IO_SEGMENT_HEADER;	/* Change our mind */
 			}
-			else	/* A read data record */
+			else {	/* A read data record */
+				record = &GMT->current.io.record;
 				*n_fields = 1;	/* Can only be one string since it is the entire record */
+			}
 			count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 			break;
 		case GMT_IO_SEGMENT_HEADER:	/* Segment break */
@@ -7872,11 +7870,11 @@ GMT_LOCAL int api_put_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, str
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
 	switch (mode) {
 		case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
-			s = (record) ? record->text : GMT->current.io.curr_text;	/* Default to last input record if NULL */
+			s = (record) ? (char*) (record) : GMT->current.io.curr_text;	/* Default to last input record if NULL */
 			gmtlib_write_tableheader (GMT, API->current_fp, s);	error = 1;	/* Write one item */
 			break;
 		case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
-			if (record) strncpy (GMT->current.io.segment_header, record->text, GMT_BUFSIZ-1);	/* Default to last segment record if NULL */
+			if (record) strncpy (GMT->current.io.segment_header, (char*) (record), GMT_BUFSIZ-1);	/* Default to last segment record if NULL */
 			gmt_write_segmentheader (GMT, API->current_fp, GMT->common.b.ncol[GMT_OUT]);	error = 1;	/* Write one item */
 			break;
 		case GMT_WRITE_DATA:		/* Export either a formatted ASCII data record or a binary record */

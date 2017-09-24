@@ -920,7 +920,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		unsigned int wmode = GMT_ADD_DEFAULT;
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? (1.0 / METERS_IN_A_KM) : 1.0;	/* Perhaps convert to km */
 		double out[4];
-		struct GMT_RECORD Rec;
+		struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
 			int out_ID;
@@ -945,13 +945,11 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
-		Rec.data = out;	Rec.text = NULL;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				int64_t row;
 				S = D->table[tbl]->segment[seg];	/* Current segment */
-				Rec.text = S->header;
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, &Rec);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
 				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
@@ -970,10 +968,11 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 					out[GMT_Y] = S->data[GMT_Y][row];
 					if (S->n_columns == 3 && !Ctrl->Z.active) out[GMT_Z] = S->data[GMT_Z][row];
 					out[3] = GMT->hidden.mem_coord[GMT_X][row];
-					GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Rec);	/* Write this to output */
 				}
 			}
 		}
+		gmt_M_free (GMT, Rec);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			gmt_M_free (GMT, depths);
 			Return (API->error);

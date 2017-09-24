@@ -312,6 +312,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct X2SYS_LIST_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -630,6 +631,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		}
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	}
+	if (!mixed) Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 		if (Ctrl->N.active && (trk_nx[P[p].id[0]] < Ctrl->N.min || trk_nx[P[p].id[1]] < Ctrl->N.min)) continue;			/* Not enough COEs */
@@ -756,7 +758,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			if (mixed)
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			else
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -768,6 +770,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
 	x2sys_free_coe_dbase (GMT, P, np);
 	gmt_M_free (GMT, trk_nx);
+	if (!mixed) gmt_M_free (GMT, Out);
 	if (Ctrl->A.active) gmt_M_free (GMT,  trk_symm);
 
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
