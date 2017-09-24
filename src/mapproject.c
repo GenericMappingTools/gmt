@@ -1017,7 +1017,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
-	Out->data = out;	Out->text = In->text;
+	Out->data = out;
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1042,7 +1042,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (GMT_PTR_IS_NULL);
 		}
 		in = In->data;	/* Only need to process numerical part here */
-
+		Out->text = In->text;
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			GMT->current.io.status = 0;	/* Done with gap */
