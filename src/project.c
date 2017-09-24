@@ -294,18 +294,6 @@ GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double
 	e[2] = -e[1];
 }
 
-GMT_LOCAL void copy_text_from_col3 (char *line, char *z_cols) {
-	/* returns the input line starting at the 3rd column */
-
-	unsigned int i;
-
-	/* First replace any commas with spaces */
-
-	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';
-
-	sscanf (line, "%*s %*s %[^\n]", z_cols);
-}
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PROJECT_CTRL *C;
 
@@ -554,7 +542,6 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 	int error;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
-	char record[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
 
 	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
@@ -619,7 +606,6 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
-	unsigned int rmode;
 	bool skip, z_first = true;
 	int error = 0;
 
@@ -631,7 +617,6 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	struct PROJECT_DATA *p_data = NULL;
 	struct PROJECT_INFO P;
-	struct GMT_RECORD Out;
 	struct PROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

@@ -317,6 +317,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
 			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 			save = GMT->current.io.output;
+			Out = gmt_new_record (GMT, &d_value, NULL);	/* Since we only need to worry about numerics in this module */
 			
 			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
@@ -331,9 +332,10 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
 				else if (gmt_input_is_nan_proxy (GMT, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
-				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, &d_value);
+				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
+			gmt_M_free (GMT, Out);
 			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
 			if (rst) GMT->current.io.io_nan_col[0] = GMT_Z;	/* Reset to what it was */
@@ -462,7 +464,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				if (Ctrl->W.area) out[w_col] = W->data[ij];
-				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, &Out);		/* Write this to output */
+				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			gmt_M_free (GMT, x);

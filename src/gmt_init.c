@@ -10390,7 +10390,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 	if (GMT_Set_Geometry (GMT->parent, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 		return (GMT->parent->error);
 	}
-	Out.data = NULL;	Out.text = param;
+	Out.data = NULL;
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg)
 			continue;		/* Skip other and empty options */
@@ -10403,8 +10403,10 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 			error = GMT_OPTION_NOT_FOUND;
 			break;
 		}
-		if (lines)
-			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, &Out);		/* Separate lines */
+		if (lines) {	/* Separate lines */
+			Out.text = param;
+			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, &Out);
+		}
 		else
 			strncat (record, param, GMT_BUFSIZ-1);
 		n++;

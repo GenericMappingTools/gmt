@@ -1064,13 +1064,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Standard resampling point case */
-		bool pure_ascii = false;
 		int ix, iy, n_fields;
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
-		char record[GMT_BUFSIZ];
-		enum GMT_enum_family family;
-		enum GMT_enum_geometry geometry;
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
@@ -1078,14 +1074,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		pure_ascii = gmt_is_ascii_record (GMT, options);
-		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
 
-		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
@@ -1102,7 +1095,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
@@ -1114,7 +1106,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_MIXED, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_MIXED, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -1134,6 +1126,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				if (Ctrl->T.mode == 2) n_out += 3;
 				if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
+				Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 				Out->text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */
 			}
 			

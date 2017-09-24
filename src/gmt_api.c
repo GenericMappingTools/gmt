@@ -3452,6 +3452,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 #ifdef SET_IO_MODE
 				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
+				GMT->current.io.first_rec = true;
 				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	{	/* Only single tables if GMT/OGR */
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_OGR_ONE_TABLE_ONLY);
 				}

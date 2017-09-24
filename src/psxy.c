@@ -822,8 +822,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	void *record = NULL;	/* Opaque pointer to either a text (buffer) or double (in) record */
-
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -1020,6 +1018,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		unsigned int n_warn[3] = {0, 0, 0}, set_type, warn, item, n_times, read_mode;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width = 0.0;
+		struct GMT_RECORD *In = NULL;
 
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
@@ -1053,7 +1052,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -1079,13 +1078,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
+			in = In->data;
 
 			n_total_read++;
 
 			if (S.read_symbol_cmd) {	/* Must do special processing */
 				int save[2];
 				bool col_reset = false;
-				text_rec = (char *)record;
+				text_rec = In->text;
 
 				/* First establish the symbol type given at the end of the record */
 				gmt_chop (text_rec);		/* Get rid of \n \r */
@@ -1133,7 +1133,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 			}
 			else if (read_mode == GMT_READ_TEXT) {	/* Must unscramble the text record from the API */
-				if (gmt_conv_intext2dbl (GMT, record, n_needed)) {
+				if (gmt_conv_intext2dbl (GMT, In->text, n_needed)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}

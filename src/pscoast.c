@@ -798,7 +798,6 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		int id = 0;
 		char header[GMT_BUFSIZ] = {""}, *kind[3] = {"Coastlines", "Political boundaries", "Rivers"}, *version = NULL, *title = NULL, *source = NULL;
-		struct GMT_RECORD *Out = NULL;
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */

@@ -575,7 +575,6 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
-	char extra[GMT_BUFSIZ] = {""};
 
 	struct GMT_DATATABLE *pol = NULL, *line = NULL, *point = NULL;
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};

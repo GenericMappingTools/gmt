@@ -3417,14 +3417,14 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 	if (gmtlib_gap_detected (GMT)) {	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 		*status = gmtlib_set_gap (GMT);
-		return (GMT->current.io.curr_rec);
+		return (&GMT->current.io.record);
 	}
 
 	GMT->current.io.pt_no++;	/* Got a valid data record (which is true even if it was a gap) */
 	*status = (int)n_ok;			/* Return the number of fields successfully read */
 	if (set_nan_flag) {
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
-		return (GMT->current.io.curr_rec);	/* Pass back pointer to data array */
+		return (&GMT->current.io.record);	/* Pass back pointer to data array */
 	}
 	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
 }
